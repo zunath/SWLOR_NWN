@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.ChatCommand
             MessageHub.Instance.Publish(new OnRequestCacheStats(user));
 
             user.SendMessage("======================================================");
-            long memoryInUse = GC.GetTotalMemory(true);
+            var memoryInUse = GC.GetTotalMemory(true);
             user.SendMessage("Memory In Use = " + memoryInUse);
         }
 

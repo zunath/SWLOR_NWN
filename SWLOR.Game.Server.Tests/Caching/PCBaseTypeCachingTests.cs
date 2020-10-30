@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsPCBaseType()
         {
             // Arrange
-            PCBaseType entity = new PCBaseType {ID = 1};
+            var entity = new PCBaseType {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseType>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            PCBaseType entity1 = new PCBaseType { ID = 1};
-            PCBaseType entity2 = new PCBaseType { ID = 2};
+            var entity1 = new PCBaseType { ID = 1};
+            var entity2 = new PCBaseType { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseType>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            PCBaseType entity1 = new PCBaseType { ID = 1};
-            PCBaseType entity2 = new PCBaseType { ID = 2};
+            var entity1 = new PCBaseType { ID = 1};
+            var entity2 = new PCBaseType { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseType>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            PCBaseType entity1 = new PCBaseType { ID = 1};
-            PCBaseType entity2 = new PCBaseType { ID = 2};
+            var entity1 = new PCBaseType { ID = 1};
+            var entity2 = new PCBaseType { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseType>(entity1));

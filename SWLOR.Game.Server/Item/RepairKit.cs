@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -22,15 +21,15 @@ namespace SWLOR.Game.Server.Item
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            SkillType skillType = GetSkillType(item);
+            var skillType = GetSkillType(item);
             NWItem targetitem = (target.Object);
-            int tech = item.GetLocalInt("TECH_LEVEL");
-            float maxDurabilityReductionPenalty = item.GetLocalFloat("MAX_DURABILITY_REDUCTION_PENALTY");
-            int repairAmount = tech * 2;
+            var tech = item.GetLocalInt("TECH_LEVEL");
+            var maxDurabilityReductionPenalty = item.GetLocalFloat("MAX_DURABILITY_REDUCTION_PENALTY");
+            var repairAmount = tech * 2;
             int skillRank;
-            int level = targetitem.RecommendedLevel;
-            int delta = 0;
-            int baseXP = 0;
+            var level = targetitem.RecommendedLevel;
+            var delta = 0;
+            var baseXP = 0;
             if (skillType == SkillType.Armorsmith)
             {
                 skillRank = (SkillService.GetPCSkillRank(user.Object, skillType));
@@ -49,9 +48,9 @@ namespace SWLOR.Game.Server.Item
                 repairAmount += item.CraftBonusEngineering + (PerkService.GetCreaturePerkLevel(user.Object, PerkType.ElectronicRepair) * 2);
                 delta = level - skillRank;
             }
-            float minReduction = 0.05f * tech;
-            float maxReduction = 0.15f * tech;
-            float reductionAmount = RandomService.RandomFloat(minReduction, maxReduction);
+            var minReduction = 0.05f * tech;
+            var maxReduction = 0.15f * tech;
+            var reductionAmount = RandomService.RandomFloat(minReduction, maxReduction);
             if (delta >= 6) baseXP = 400;
             else if (delta == 5) baseXP = 350;
             else if (delta == 4) baseXP = 325;
@@ -74,7 +73,7 @@ namespace SWLOR.Game.Server.Item
                 return SkillType.Engineering;
             }
 
-            CustomItemType repairItemType = (CustomItemType)item.GetLocalInt("REPAIR_CUSTOM_ITEM_TYPE_ID");
+            var repairItemType = (CustomItemType)item.GetLocalInt("REPAIR_CUSTOM_ITEM_TYPE_ID");
             switch (repairItemType)
             {
                 case CustomItemType.LightArmor:
@@ -131,8 +130,8 @@ namespace SWLOR.Game.Server.Item
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             NWItem targetItem = target.Object;
-            float maxDurability = DurabilityService.GetMaxDurability(targetItem);
-            float durability = DurabilityService.GetDurability(targetItem);
+            var maxDurability = DurabilityService.GetMaxDurability(targetItem);
+            var durability = DurabilityService.GetDurability(targetItem);
 
             if (target.ObjectType != ObjectType.Item)
             {
@@ -160,8 +159,8 @@ namespace SWLOR.Game.Server.Item
                 return "You cannot repair that item any more.";
             }
 
-            SkillType skillType = GetSkillType(item);
-            int techLevel = item.GetLocalInt("TECH_LEVEL");
+            var skillType = GetSkillType(item);
+            var techLevel = item.GetLocalInt("TECH_LEVEL");
             return null;
         }
 

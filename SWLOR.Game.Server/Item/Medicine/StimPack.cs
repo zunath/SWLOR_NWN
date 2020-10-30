@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -31,14 +30,14 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             NWPlayer player = user.Object;
             var ability = (AbilityType)item.GetLocalInt("ABILITY_TYPE");
-            int amount = item.GetLocalInt("AMOUNT") + (item.MedicineBonus * 2);
-            int rank = player.IsPlayer ? SkillService.GetPCSkillRank(player, SkillType.Medicine) : 0;
-            int recommendedLevel = item.RecommendedLevel;
-            float duration = 30.0f * (rank / 10);
-            int perkLevel = player.IsPlayer ? PerkService.GetCreaturePerkLevel(player, PerkType.StimFiend) : 0;
-            float percentIncrease = perkLevel * 0.25f;
+            var amount = item.GetLocalInt("AMOUNT") + (item.MedicineBonus * 2);
+            var rank = player.IsPlayer ? SkillService.GetPCSkillRank(player, SkillType.Medicine) : 0;
+            var recommendedLevel = item.RecommendedLevel;
+            var duration = 30.0f * (rank / 10);
+            var perkLevel = player.IsPlayer ? PerkService.GetCreaturePerkLevel(player, PerkType.StimFiend) : 0;
+            var percentIncrease = perkLevel * 0.25f;
             duration = duration + (duration * percentIncrease);
-            Effect effect = NWScript.EffectAbilityIncrease(ability, amount);
+            var effect = NWScript.EffectAbilityIncrease(ability, amount);
             effect = NWScript.TagEffect(effect, "STIM_PACK_EFFECT");
 
             NWScript.ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
@@ -53,7 +52,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 targetCreature.SendMessage(user.Name + " injects you with a stim pack.");
             }
 
-            int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
+            var xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
             SkillService.GiveSkillXP(player, SkillType.Medicine, xp);
         }
 

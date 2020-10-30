@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -20,7 +19,7 @@ namespace SWLOR.Game.Server.Item
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             user.SetLocalObject("ITEM_BEING_RENAMED", item);
-            string conversation = item.GetLocalString("CONVERSATION");
+            var conversation = item.GetLocalString("CONVERSATION");
             DialogService.StartConversation((NWPlayer)user, user, conversation);
         }
 

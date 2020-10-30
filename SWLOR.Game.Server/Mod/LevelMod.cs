@@ -12,8 +12,8 @@ namespace SWLOR.Game.Server.Mod
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            int value = Convert.ToInt32(args[0]);
-            int level = target.RecommendedLevel;
+            var value = Convert.ToInt32(args[0]);
+            var level = target.RecommendedLevel;
 
             if (value > MinValue && level >= MaxValue)
                 return "You can't raise that item's recommended level any further.";
@@ -25,8 +25,8 @@ namespace SWLOR.Game.Server.Mod
 
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
-            int value = Convert.ToInt32(args[0]);
-            int level = target.RecommendedLevel + value;
+            var value = Convert.ToInt32(args[0]);
+            var level = target.RecommendedLevel + value;
 
             if (level > MaxValue) level = MaxValue;
             else if (level < MinValue) level = MinValue;
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Mod
 
         public string Description(NWPlayer player, NWItem target, params string[] args)
         {
-            int value = Convert.ToInt32(args[0]);
+            var value = Convert.ToInt32(args[0]);
             
             return "Level " + value;
         }

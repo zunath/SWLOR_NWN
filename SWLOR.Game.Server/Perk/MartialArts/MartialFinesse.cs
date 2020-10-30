@@ -1,6 +1,5 @@
 ﻿using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -71,11 +70,11 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
         private void ApplyFeatChanges(NWCreature creature, NWItem unequippingItem)
         {
-            NWItem mainHand = creature.RightHand;
-            NWItem offHand = creature.LeftHand;
-            CustomItemType mainType = mainHand.CustomItemType;
-            CustomItemType offType = offHand.CustomItemType;
-            bool receivesFeat = false;
+            var mainHand = creature.RightHand;
+            var offHand = creature.LeftHand;
+            var mainType = mainHand.CustomItemType;
+            var offType = offHand.CustomItemType;
+            var receivesFeat = false;
 
             if (unequippingItem != null && Equals(unequippingItem, mainHand))
             {

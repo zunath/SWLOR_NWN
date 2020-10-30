@@ -1,7 +1,5 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -26,9 +24,9 @@ namespace SWLOR.Game.Server.Item.Medicine
         {
             NWPlayer player = user.Object;
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
-            int skillRank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
-            int perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.ResuscitationDevices);
-            int rank = item.GetLocalInt("RANK");
+            var skillRank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
+            var perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.ResuscitationDevices);
+            var rank = item.GetLocalInt("RANK");
             int baseHeal;
 
             switch (rank)
@@ -52,8 +50,8 @@ namespace SWLOR.Game.Server.Item.Medicine
             baseHeal += effectiveStats.Medicine / 2;
             baseHeal += item.MedicineBonus / 2;
 
-            int delta = item.RecommendedLevel - skillRank;
-            float effectivenessPercent = 1.0f;
+            var delta = item.RecommendedLevel - skillRank;
+            var effectivenessPercent = 1.0f;
 
             if (delta > 0)
             {
@@ -62,9 +60,9 @@ namespace SWLOR.Game.Server.Item.Medicine
             if (target.IsPlayer)
             {
                 baseHeal = (int)(baseHeal * effectivenessPercent);
-                Player dbPlayer = DataService.Player.GetByID(target.GlobalID);
-                int fpRecover = (int)(dbPlayer.MaxFP * (0.01f * baseHeal));
-                int hpRecover = (int)(target.MaxHP * (0.01f * baseHeal));
+                var dbPlayer = DataService.Player.GetByID(target.GlobalID);
+                var fpRecover = (int)(dbPlayer.MaxFP * (0.01f * baseHeal));
+                var hpRecover = (int)(target.MaxHP * (0.01f * baseHeal));
 
                 NWScript.PlaySound("use_bacta");
                 NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectResurrection(), target);
@@ -73,13 +71,13 @@ namespace SWLOR.Game.Server.Item.Medicine
                 DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
                 player.SendMessage("You successfully resuscitate " + target.Name + "!");
 
-                int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(600, item.RecommendedLevel, skillRank);
+                var xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(600, item.RecommendedLevel, skillRank);
                 SkillService.GiveSkillXP(player, SkillType.Medicine, xp);
             }
             else
             {
                 baseHeal = (int)(baseHeal * effectivenessPercent);
-                int hpRecover = (int)(target.MaxHP * (0.01f * baseHeal));
+                var hpRecover = (int)(target.MaxHP * (0.01f * baseHeal));
                 NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectResurrection(), target);
                 NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectHeal(hpRecover), target);
                 player.SendMessage("You successfully resuscitate " + target.Name + "!");
@@ -93,7 +91,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return 0.1f;
             }
 
-            int rank = SkillService.GetPCSkillRank((NWPlayer)user, SkillType.Medicine);
+            var rank = SkillService.GetPCSkillRank((NWPlayer)user, SkillType.Medicine);
             return 12.0f - (rank * 0.1f);
         }
 
@@ -114,7 +112,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            int consumeChance = PerkService.GetCreaturePerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
+            var consumeChance = PerkService.GetCreaturePerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
             return RandomService.Random(100) + 1 > consumeChance;
         }
 
@@ -135,8 +133,8 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "You are in combat.";
             }
 
-            int perkLevel = PerkService.GetCreaturePerkLevel(user.Object, PerkType.ResuscitationDevices);
-            int requiredLevel = item.GetLocalInt("RANK");
+            var perkLevel = PerkService.GetCreaturePerkLevel(user.Object, PerkType.ResuscitationDevices);
+            var requiredLevel = item.GetLocalInt("RANK");
 
             if (perkLevel < requiredLevel)
             {

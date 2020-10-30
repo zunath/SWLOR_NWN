@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN;
 
 
 namespace SWLOR.Game.Server.Service
@@ -13,7 +10,7 @@ namespace SWLOR.Game.Server.Service
     {
         public static bool OnModuleExamine(NWPlayer examiner, NWObject target)
         {
-            string backupDescription = target.GetLocalString("BACKUP_DESCRIPTION");
+            var backupDescription = target.GetLocalString("BACKUP_DESCRIPTION");
 
             if (!string.IsNullOrWhiteSpace(backupDescription))
             {
@@ -23,11 +20,11 @@ namespace SWLOR.Game.Server.Service
 
             backupDescription = target.IdentifiedDescription;
             target.SetLocalString("BACKUP_DESCRIPTION", backupDescription);
-            Player playerEntity = DataService.Player.GetByID(target.GlobalID);
-            NWArea area = NWModule.Get().Areas.Single(x => x.Resref == playerEntity.RespawnAreaResref);
-            string respawnAreaName = area.Name;
+            var playerEntity = DataService.Player.GetByID(target.GlobalID);
+            var area = NWModule.Get().Areas.Single(x => x.Resref == playerEntity.RespawnAreaResref);
+            var respawnAreaName = area.Name;
 
-            StringBuilder description =
+            var description =
                 new StringBuilder(
                     ColorTokenService.Green("ID: ") + target.GlobalID + "\n" +
                     ColorTokenService.Green("Character Name: ") + target.Name + "\n" +
@@ -36,11 +33,11 @@ namespace SWLOR.Game.Server.Service
                     ColorTokenService.Green("FP: ") + playerEntity.CurrentFP + " / " + playerEntity.MaxFP + "\n" +
                     ColorTokenService.Green("Skill Levels: ") + "\n\n");
 
-            List<PCSkill> pcSkills = SkillService.GetAllPCSkills(target.Object);
+            var pcSkills = SkillService.GetAllPCSkills(target.Object);
 
-            foreach (PCSkill pcSkill in pcSkills)
+            foreach (var pcSkill in pcSkills)
             {
-                Skill skill = SkillService.GetSkill(pcSkill.SkillID);
+                var skill = SkillService.GetSkill(pcSkill.SkillID);
                 description.Append(skill.Name).Append(" rank ").Append(pcSkill.Rank).AppendLine();
             }
 
@@ -48,7 +45,7 @@ namespace SWLOR.Game.Server.Service
 
             var pcPerks = DataService.PCPerk.GetAllByPlayerID(target.GlobalID);
             
-            foreach (PCPerk pcPerk in pcPerks)
+            foreach (var pcPerk in pcPerks)
             {
                 var perk = DataService.Perk.GetByID(pcPerk.PerkID);
                 description.Append(perk.Name).Append(" Lvl. ").Append(pcPerk.PerkLevel).AppendLine();

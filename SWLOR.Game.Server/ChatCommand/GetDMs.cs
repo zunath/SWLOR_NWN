@@ -12,12 +12,12 @@ namespace SWLOR.Game.Server.ChatCommand
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             var staff = DataService.AuthorizedDM.GetAll();
-            string message = string.Empty;
+            var message = string.Empty;
 
             foreach(var member in staff)
             {
-                string role = member.DMRole == 1 ? "DM" : "Admin";
-                string active = member.IsActive ? 
+                var role = member.DMRole == 1 ? "DM" : "Admin";
+                var active = member.IsActive ? 
                     ColorTokenService.Green(" [ACTIVE]") :
                     ColorTokenService.Red(" [INACTIVE]");
 

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Numerics;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
@@ -25,10 +22,10 @@ namespace SWLOR.Game.Server.Scripts.Delayed
         {
             using (new Profiler(nameof(FinishActionItem)))
             {
-                IActionItem actionItem = ItemService.GetActionItemHandler(data.ClassName);
+                var actionItem = ItemService.GetActionItemHandler(data.ClassName);
                 data.Player.IsBusy = false;
 
-                Vector3 userPosition = data.Player.Position;
+                var userPosition = data.Player.Position;
                 if (userPosition.X != data.UserPosition.X ||
                     userPosition.Y != data.UserPosition.Y ||
                     userPosition.Z != data.UserPosition.Z)
@@ -37,7 +34,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                     return;
                 }
 
-                float maxDistance = actionItem.MaxDistance(data.Player, data.Item, data.Target, data.TargetLocation);
+                var maxDistance = actionItem.MaxDistance(data.Player, data.Item, data.Target, data.TargetLocation);
                 if (maxDistance > 0.0f)
                 {
                     NWObject owner = GetItemPossessor(data.Target);
@@ -73,7 +70,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                     return;
                 }
 
-                string invalidTargetMessage = actionItem.IsValidTarget(data.Player, data.Item, data.Target, data.TargetLocation);
+                var invalidTargetMessage = actionItem.IsValidTarget(data.Player, data.Item, data.Target, data.TargetLocation);
                 if (!string.IsNullOrWhiteSpace(invalidTargetMessage))
                 {
                     data.Player.SendMessage(invalidTargetMessage);

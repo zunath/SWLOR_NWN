@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Bioware;
-using SWLOR.Game.Server.Core;
+﻿using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
-using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Service;
 
@@ -20,19 +16,19 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
 
         private void OnCompleteSmelt(OnCompleteSmelt data)
         {
-            NWPlayer player = data.Player;
-            string oreResref = data.OreResref;
-            List<ItemProperty> itemProperties = data.ItemProperties;
+            var player = data.Player;
+            var oreResref = data.OreResref;
+            var itemProperties = data.ItemProperties;
 
             player.IsBusy = false;
 
-            int rank = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
-            int level = CraftService.GetIngotLevel(oreResref);
-            string ingotResref = CraftService.GetIngotResref(oreResref);
+            var rank = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
+            var level = CraftService.GetIngotLevel(oreResref);
+            var ingotResref = CraftService.GetIngotResref(oreResref);
             if (level < 0 || string.IsNullOrWhiteSpace(ingotResref)) return;
 
-            int delta = rank - level;
-            int count = 2;
+            var delta = rank - level;
+            var count = 2;
 
             if (delta > 2) count = delta;
             if (count > 4) count = 4;
@@ -47,7 +43,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
                 count++;
             }
 
-            for (int x = 1; x <= count; x++)
+            for (var x = 1; x <= count; x++)
             {
                 var item = (NWScript.CreateItemOnObject(ingotResref, player.Object));
                 int chance;
@@ -82,13 +78,13 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
             }
 
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
-            int harvestingSkill = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
-            int perkBonus = PerkService.GetCreaturePerkLevel(player, PerkType.StronidiumRefining) + 1;
-            int stronidiumAmount = 10 + effectiveStats.Harvesting + harvestingSkill + RandomService.Random(1, 5);
+            var harvestingSkill = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
+            var perkBonus = PerkService.GetCreaturePerkLevel(player, PerkType.StronidiumRefining) + 1;
+            var stronidiumAmount = 10 + effectiveStats.Harvesting + harvestingSkill + RandomService.Random(1, 5);
             stronidiumAmount *= perkBonus;
             NWScript.CreateItemOnObject("stronidium", player.Object, stronidiumAmount);
 
-            int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, level, rank);
+            var xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, level, rank);
             SkillService.GiveSkillXP(player, SkillType.Harvesting, xp);
         }
 

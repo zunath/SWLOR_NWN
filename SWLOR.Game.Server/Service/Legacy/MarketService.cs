@@ -3,7 +3,6 @@ using System.Linq;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Extension;
@@ -12,7 +11,6 @@ using SWLOR.Game.Server.Messaging;
 
 using SWLOR.Game.Server.ValueObject;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
-using Player = SWLOR.Game.Server.Data.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -64,7 +62,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The ID which links up to the MarketRegion database table.</returns>
         public static int GetMarketRegionID(NWPlaceable terminal)
         {
-            int marketRegionID = terminal.GetLocalInt("GTN_REGION_ID");
+            var marketRegionID = terminal.GetLocalInt("GTN_REGION_ID");
             if (marketRegionID <= 0)
                 throw new Exception("GTN Region ID not specified on target terminal object: " + terminal.Name);
 
@@ -79,7 +77,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="amount">The amount of gold to give them.</param>
         public static void GiveMarketGoldToPlayer(Guid playerID, int amount)
         {
-            NWPlayer player = NWModule.Get().Players.SingleOrDefault(x => x.GlobalID == playerID);
+            var player = NWModule.Get().Players.SingleOrDefault(x => x.GlobalID == playerID);
 
             // Player is online. Give them the gold directly and notify them they sold an item.
             if (player != null && player.IsValid)
@@ -90,7 +88,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Player is offline. Put the gold into their "Till" and give it to them the next time they log on.
-            Player dbPlayer = DataService.Player.GetByID(playerID);
+            var dbPlayer = DataService.Player.GetByID(playerID);
             dbPlayer.GoldTill += amount;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
@@ -104,7 +102,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = NWScript.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            Player dbPlayer = DataService.Player.GetByID(player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
 
             if (dbPlayer.GoldTill > 0)
             {
@@ -356,7 +354,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Check base structures.
-            int baseStructureID = item.GetLocalInt("BASE_STRUCTURE_ID");
+            var baseStructureID = item.GetLocalInt("BASE_STRUCTURE_ID");
             if (baseStructureID > 0)
             {
                 var baseStructure = DataService.BaseStructure.GetByID(baseStructureID);

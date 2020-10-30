@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Conversation
                 mainOptions = new DialogPage(header, "Crew the guns!");
             }
 
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
             dialog.AddPage("MainPage", mainOptions);
 

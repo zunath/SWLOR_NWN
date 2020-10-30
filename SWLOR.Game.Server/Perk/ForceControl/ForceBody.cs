@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -56,7 +55,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
-            float percent = 0.0f;
+            var percent = 0.0f;
 
             switch (spellTier)
             {
@@ -74,14 +73,14 @@ namespace SWLOR.Game.Server.Perk.ForceControl
                     break;
             }
 
-            int recovery = (int)(target.CurrentHP * percent);
+            var recovery = (int)(target.CurrentHP * percent);
             if (recovery < 1) recovery = 1;
 
             // Damage user.
             NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectDamage(recovery), creature);
             
             // Check lucky chance.
-            int luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
+            var luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
             if (RandomService.D100(1) <= luck)
             {
                 recovery *= 2;

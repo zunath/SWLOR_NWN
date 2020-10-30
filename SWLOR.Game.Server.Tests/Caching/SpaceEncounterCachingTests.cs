@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsSpaceEncounter()
         {
             // Arrange
-            SpaceEncounter entity = new SpaceEncounter {ID = 1};
+            var entity = new SpaceEncounter {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<SpaceEncounter>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            SpaceEncounter entity1 = new SpaceEncounter { ID = 1};
-            SpaceEncounter entity2 = new SpaceEncounter { ID = 2};
+            var entity1 = new SpaceEncounter { ID = 1};
+            var entity2 = new SpaceEncounter { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<SpaceEncounter>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            SpaceEncounter entity1 = new SpaceEncounter { ID = 1};
-            SpaceEncounter entity2 = new SpaceEncounter { ID = 2};
+            var entity1 = new SpaceEncounter { ID = 1};
+            var entity2 = new SpaceEncounter { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<SpaceEncounter>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            SpaceEncounter entity1 = new SpaceEncounter { ID = 1};
-            SpaceEncounter entity2 = new SpaceEncounter { ID = 2};
+            var entity1 = new SpaceEncounter { ID = 1};
+            var entity2 = new SpaceEncounter { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<SpaceEncounter>(entity1));

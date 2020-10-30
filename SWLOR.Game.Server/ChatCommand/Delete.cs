@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using Player = SWLOR.Game.Server.Data.Entity.Player;
 
 
 namespace SWLOR.Game.Server.ChatCommand
@@ -23,14 +22,14 @@ namespace SWLOR.Game.Server.ChatCommand
         /// <param name="args"></param>
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            string lastSubmission = user.GetLocalString("DELETE_CHARACTER_LAST_SUBMISSION");
-            bool isFirstSubmission = true;
+            var lastSubmission = user.GetLocalString("DELETE_CHARACTER_LAST_SUBMISSION");
+            var isFirstSubmission = true;
 
             // Check for the last submission, if any.
             if (!string.IsNullOrWhiteSpace(lastSubmission))
             {
                 // Found one, parse it.
-                DateTime dateTime = DateTime.Parse(lastSubmission);
+                var dateTime = DateTime.Parse(lastSubmission);
                 if(DateTime.UtcNow <= dateTime.AddSeconds(30))
                 {
                     // Player submitted a second request within 30 seconds of the last one. 
@@ -47,7 +46,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
             else
             {
-                Player dbPlayer = DataService.Player.GetByID(user.GlobalID);
+                var dbPlayer = DataService.Player.GetByID(user.GlobalID);
                 dbPlayer.IsDeleted = true;
                 DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 
@@ -68,8 +67,8 @@ namespace SWLOR.Game.Server.ChatCommand
             if (!user.IsPlayer)
                 return "You can only delete a player character.";
 
-            string cdKey = NWScript.GetPCPublicCDKey(user);
-            string enteredCDKey = args.Length > 0 ? args[0] : string.Empty;
+            var cdKey = NWScript.GetPCPublicCDKey(user);
+            var enteredCDKey = args.Length > 0 ? args[0] : string.Empty;
 
             if (cdKey != enteredCDKey)
             {

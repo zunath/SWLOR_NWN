@@ -1,6 +1,5 @@
 ﻿using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
@@ -17,9 +16,9 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainPage = new DialogPage(); // Dynamically built
-            DialogPage salvagePage = new DialogPage("<SET LATER>",
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage(); // Dynamically built
+            var salvagePage = new DialogPage("<SET LATER>",
                 "Reassemble Component(s)"); 
             
             dialog.AddPage("MainPage", mainPage);
@@ -47,7 +46,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadMainPage()
         {
-            string header = ColorTokenService.Green("Molecular Reassembler") + "\n\n";
+            var header = ColorTokenService.Green("Molecular Reassembler") + "\n\n";
             header += "This device can be used to salvage equipment and reassemble them into components.\n\n";
             header += "Please select the type of item you wish to create. The new item(s) created will have a chance to receive property bonuses from the salvaged item.\n";
             header += "A 'Reassembly Power Unit' must be in your inventory in order to reassemble an item. This will be consumed when you start the process.\n\n";
@@ -66,7 +65,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var model = CraftService.GetPlayerCraftingData(player);
-            DialogResponse response = GetResponseByID("MainPage", responseID);
+            var response = GetResponseByID("MainPage", responseID);
             model.SalvageComponentTypeID = (int)response.CustomData;
 
             LoadSalvagePage();
@@ -80,7 +79,7 @@ namespace SWLOR.Game.Server.Conversation
             NWPlaceable tempStorage = NWScript.GetObjectByTag("TEMP_ITEM_STORAGE");
             var item = SerializationService.DeserializeItem(model.SerializedSalvageItem, tempStorage);
             var componentType = DataService.ComponentType.GetByID(model.SalvageComponentTypeID);
-            string header = ColorTokenService.Green("Item: ") + item.Name + "\n\n";
+            var header = ColorTokenService.Green("Item: ") + item.Name + "\n\n";
             header += "Reassembling this item will create the following " + ColorTokenService.Green(componentType.Name) + " component(s). Chance to create depends on your perks, skills, and harvesting bonus on items.\n\n";
 
             // Always create one item with zero bonuses.
@@ -93,7 +92,7 @@ namespace SWLOR.Game.Server.Conversation
                 if (propTypeID == ItemPropertyType.AttackBonus)
                 {
                     // Get the amount of Attack Bonus
-                    int amount = NWScript.GetItemPropertyCostTableValue(prop);
+                    var amount = NWScript.GetItemPropertyCostTableValue(prop);
                     header += ProcessPropertyDetails(amount, componentType.Name, "Attack Bonus", 3);
                 }
             }
@@ -138,7 +137,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private string GetChanceColor(int chance)
         {
-            string message = "-" + chance + "%-";
+            var message = "-" + chance + "%-";
             if (chance <= 50)
                 return ColorTokenService.Red(message);
             else if (chance <= 80)
@@ -149,22 +148,22 @@ namespace SWLOR.Game.Server.Conversation
         private string ProcessPropertyDetails(int amount, string componentName, string propertyName, int maxBonuses, float levelsPerBonus = 1.0f)
         {
             var player = GetPC();
-            string result = string.Empty;
-            int penalty = 0;
+            var result = string.Empty;
+            var penalty = 0;
             while (amount > 0)
             {
                 if (amount >= maxBonuses)
                 {
-                    int levelIncrease = (int)(maxBonuses * levelsPerBonus);
-                    int chanceToTransfer = CraftService.CalculateReassemblyChance(player, penalty);
+                    var levelIncrease = (int)(maxBonuses * levelsPerBonus);
+                    var chanceToTransfer = CraftService.CalculateReassemblyChance(player, penalty);
                     result += componentName + " (+" + maxBonuses + " " + propertyName + ") [RL: " + levelIncrease + "] " + GetChanceColor(chanceToTransfer) + "\n";
                     penalty += (maxBonuses * 5);
                     amount -= maxBonuses;
                 }
                 else
                 {
-                    int levelIncrease = (int)(amount * levelsPerBonus);
-                    int chanceToTransfer = CraftService.CalculateReassemblyChance(player, penalty);
+                    var levelIncrease = (int)(amount * levelsPerBonus);
+                    var chanceToTransfer = CraftService.CalculateReassemblyChance(player, penalty);
                     result += componentName + " (+" + amount + " " + propertyName + ") [RL: " + levelIncrease + "] " + GetChanceColor(chanceToTransfer)+ "\n";
                     break;
                 }
@@ -193,7 +192,7 @@ namespace SWLOR.Game.Server.Conversation
                     if (model.IsConfirmingReassemble)
                     {
                         // Calculate delay, fire off delayed event, and show timing bar.
-                        float delay = CraftService.CalculateCraftingDelay(player, (int) SkillType.Harvesting);
+                        var delay = CraftService.CalculateCraftingDelay(player, (int) SkillType.Harvesting);
                         Player.StartGuiTimingBar(player, delay, string.Empty);
                         var @event = new OnReassembleComplete(player, model.SerializedSalvageItem, model.SalvageComponentTypeID);
                         player.DelayEvent(delay, @event);

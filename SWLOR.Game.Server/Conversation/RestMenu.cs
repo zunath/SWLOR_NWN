@@ -1,10 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
@@ -16,8 +12,8 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainPage = new DialogPage(
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage(
                 BuildMainPageHeader(player),
                 ColorTokenService.Green("Open Overflow Inventory"),
                 "View Skills",
@@ -36,7 +32,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            Guid playerID = GetPC().GlobalID;
+            var playerID = GetPC().GlobalID;
             long overflowCount = DataService.PCOverflowItem.GetAllByPlayerID(playerID).Count();
 
             if (overflowCount <= 0)
@@ -110,16 +106,16 @@ namespace SWLOR.Game.Server.Conversation
 
         private string BuildMainPageHeader(NWPlayer player)
         {
-            Player playerEntity = DataService.Player.GetByID(player.GlobalID);
+            var playerEntity = DataService.Player.GetByID(player.GlobalID);
             var association = DataService.Association.GetByID(playerEntity.AssociationID);
 
             // Get all player skills and then sum them up by the rank.
-            int totalSkillCount = DataService.PCSkill
+            var totalSkillCount = DataService.PCSkill
                 .GetAllByPlayerID(player.GlobalID)
                 .Where(x => DataService.Skill.GetByID(x.SkillID).ContributesToSkillCap)
                 .Sum(s => s.Rank);
 
-            string header = ColorTokenService.Green("Name: ") + player.Name + "\n";
+            var header = ColorTokenService.Green("Name: ") + player.Name + "\n";
             header += ColorTokenService.Green("Association: ") + association.Name + "\n\n";
             header += ColorTokenService.Green("Skill Points: ") + totalSkillCount + " / " + SkillService.SkillCap + "\n";
             header += ColorTokenService.Green("Unallocated SP: ") + playerEntity.UnallocatedSP + "\n";

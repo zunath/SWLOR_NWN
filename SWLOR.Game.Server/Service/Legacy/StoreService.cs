@@ -58,8 +58,8 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleHeartbeat()
         {
-            NWModule module = NWModule.Get();
-            int ticks = module.GetLocalInt("STORE_SERVICE_TICKS") + 1;
+            var module = NWModule.Get();
+            var ticks = module.GetLocalInt("STORE_SERVICE_TICKS") + 1;
 
             // Check to see if it's time to clean stores.
             if (ticks >= 300) // 300 ticks * 6 seconds = 30 minutes
@@ -84,10 +84,10 @@ namespace SWLOR.Game.Server.Service
             if (store.GetLocalInt("STORE_SERVICE_PLAYERS_ACCESSING") > 0) return;
 
             // Only process if the store was closed more than 10 minutes ago.
-            string closeDateString = store.GetLocalString("STORE_SERVICE_LAST_CLOSE_DATE");
+            var closeDateString = store.GetLocalString("STORE_SERVICE_LAST_CLOSE_DATE");
             if(!string.IsNullOrWhiteSpace(closeDateString))
             {
-                DateTime closeDate = DateTime.Parse(closeDateString);
+                var closeDate = DateTime.Parse(closeDateString);
                 if (DateTime.UtcNow < closeDate.AddMinutes(10)) return;
             }
 
@@ -103,22 +103,22 @@ namespace SWLOR.Game.Server.Service
         private static void OnStoreOpened()
         {
             NWObject store = OBJECT_SELF;
-            int playersAccessing = store.GetLocalInt("STORE_SERVICE_PLAYERS_ACCESSING") + 1;
+            var playersAccessing = store.GetLocalInt("STORE_SERVICE_PLAYERS_ACCESSING") + 1;
             store.SetLocalInt("STORE_SERVICE_PLAYERS_ACCESSING", playersAccessing);
         }
 
         private static void OnStoreClosed()
         {
             NWObject store = OBJECT_SELF;
-            int playersAccessing = store.GetLocalInt("STORE_SERVICE_PLAYERS_ACCESSING") - 1;
+            var playersAccessing = store.GetLocalInt("STORE_SERVICE_PLAYERS_ACCESSING") - 1;
             if (playersAccessing <= 0)
             {
                 playersAccessing = 0;
                 // We don't want to immediately clean it,
                 // to give players a grace period to come back and buy back something they mistakenly sold.
                 // So we'll track the current timestamp and later check it on the heartbeat event.
-                DateTime now = DateTime.UtcNow;
-                string nowString = now.ToString(CultureInfo.InvariantCulture);
+                var now = DateTime.UtcNow;
+                var nowString = now.ToString(CultureInfo.InvariantCulture);
                 store.SetLocalString("STORE_SERVICE_LAST_CLOSE_DATE", nowString);
             }
             store.SetLocalInt("STORE_SERVICE_PLAYERS_ACCESSING", playersAccessing);

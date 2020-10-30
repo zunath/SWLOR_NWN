@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -28,17 +26,17 @@ namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem.ItemCollector
             NWPlayer player = NWScript.GetLastDisturbed();
             NWItem item = NWScript.GetInventoryDisturbItem();
             var disturbType = NWScript.GetInventoryDisturbType();
-            string crafterPlayerID = item.GetLocalString("CRAFTER_PLAYER_ID");
+            var crafterPlayerID = item.GetLocalString("CRAFTER_PLAYER_ID");
             Guid? crafterPlayerGUID = null;
             if (!string.IsNullOrWhiteSpace(crafterPlayerID))
                 crafterPlayerGUID = new Guid(crafterPlayerID);
 
             if (disturbType == DisturbType.Added)
             {
-                int questID = container.GetLocalInt("QUEST_ID");
-                PCQuestStatus status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
-                PCQuestItemProgress progress = DataService.PCQuestItemProgress.GetByPCQuestStatusIDAndResrefOrDefault(status.ID, item.Resref);
-                DatabaseActionType action = DatabaseActionType.Update;
+                var questID = container.GetLocalInt("QUEST_ID");
+                var status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
+                var progress = DataService.PCQuestItemProgress.GetByPCQuestStatusIDAndResrefOrDefault(status.ID, item.Resref);
+                var action = DatabaseActionType.Update;
 
                 if (progress == null)
                 {
@@ -63,7 +61,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem.ItemCollector
                     DataService.SubmitDataChange(progress, action);
 
                     // Recalc the remaining items needed.
-                    int remainingCount = DataService.PCQuestItemProgress.GetCountByPCQuestStatusID(status.ID);
+                    var remainingCount = DataService.PCQuestItemProgress.GetCountByPCQuestStatusID(status.ID);
                     if (remainingCount <= 0)
                     {
                         var quest = QuestService.GetQuestByID(questID);
@@ -77,7 +75,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem.ItemCollector
                 var questItemProgresses = DataService.PCQuestItemProgress.GetAllByPCQuestStatusID(status.ID);
                 if (!questItemProgresses.Any())
                 {
-                    string conversation = NWScript.GetLocalString(owner, "CONVERSATION");
+                    var conversation = NWScript.GetLocalString(owner, "CONVERSATION");
 
                     // Either start a SWLOR conversation
                     if (!string.IsNullOrWhiteSpace(conversation))

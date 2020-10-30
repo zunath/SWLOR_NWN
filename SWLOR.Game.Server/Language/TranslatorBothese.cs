@@ -6,9 +6,9 @@ namespace SWLOR.Game.Server.Language
     {
         public string Translate(string message)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
 
-            foreach (char ch in message)
+            foreach (var ch in message)
             {
                 switch (ch)
                 {

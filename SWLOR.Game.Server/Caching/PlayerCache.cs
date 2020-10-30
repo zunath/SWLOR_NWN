@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Caching
         private void RemoveByPrimaryResidencePCBaseID(Player entity)
         {
             var existingPlayers = ByPrimaryResidencePCBaseID.Where(x => x.Value == entity.ID).ToList();
-            for(int x = existingPlayers.Count - 1; x >= 0; x--)
+            for(var x = existingPlayers.Count - 1; x >= 0; x--)
             {
                 var existing = existingPlayers.ElementAt(x);
                 ByPrimaryResidencePCBaseID.Remove(existing.Key);
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Caching
         private void RemoveByPrimaryResidencePCBaseStructureID(Player entity)
         {
             var existingPlayers = ByPrimaryResidencePCBaseStructureID.Where(x => x.Value == entity.ID).ToList();
-            for(int x = existingPlayers.Count - 1; x >= 0; x--)
+            for(var x = existingPlayers.Count - 1; x >= 0; x--)
             {
                 var existing = existingPlayers.ElementAt(x);
                 ByPrimaryResidencePCBaseStructureID.Remove(existing.Key);

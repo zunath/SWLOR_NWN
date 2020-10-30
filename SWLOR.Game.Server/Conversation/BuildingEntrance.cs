@@ -1,7 +1,5 @@
 ﻿using System;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -14,8 +12,8 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainPage = new DialogPage(
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage(
                 "Please select an option.",
                 "Enter the building",
                 "Knock on the door");
@@ -28,7 +26,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlaceable door = GetDialogTarget().Object;
             var structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            bool canEnterBuilding = BasePermissionService.HasStructurePermission(GetPC(), structureID, StructurePermission.CanEnterBuilding);
+            var canEnterBuilding = BasePermissionService.HasStructurePermission(GetPC(), structureID, StructurePermission.CanEnterBuilding);
 
             SetHeader();
             SetResponseVisible("MainPage", 1, canEnterBuilding);
@@ -38,16 +36,16 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlaceable door = GetDialogTarget().Object;
             var structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureID);
-            PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
-            Player owner = PlayerService.GetPlayerEntity(pcBase.PlayerID);
-            string buildingName = owner.CharacterName + "'s Building";
+            var structure = DataService.PCBaseStructure.GetByID(structureID);
+            var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
+            var owner = PlayerService.GetPlayerEntity(pcBase.PlayerID);
+            var buildingName = owner.CharacterName + "'s Building";
             if (!string.IsNullOrWhiteSpace(structure.CustomName))
             {
                 buildingName = structure.CustomName;
             }
 
-            string header = buildingName + "\n\nPlease select an option.";
+            var header = buildingName + "\n\nPlease select an option.";
             SetPageHeader("MainPage", header);
         }
 
@@ -80,9 +78,9 @@ namespace SWLOR.Game.Server.Conversation
 
         private void DoEnterBuilding()
         {
-            NWPlayer oPC = GetPC();
+            var oPC = GetPC();
             NWPlaceable door = GetDialogTarget().Object;
-            string pcBaseStructureID = door.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var pcBaseStructureID = door.GetLocalString("PC_BASE_STRUCTURE_ID");
 
             if (string.IsNullOrWhiteSpace(pcBaseStructureID))
             {
@@ -90,7 +88,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
             var structureID = new Guid(pcBaseStructureID);
-            bool canEnterBuilding = BasePermissionService.HasStructurePermission(GetPC(), structureID, StructurePermission.CanEnterBuilding);
+            var canEnterBuilding = BasePermissionService.HasStructurePermission(GetPC(), structureID, StructurePermission.CanEnterBuilding);
 
             if (!canEnterBuilding)
             {
@@ -98,7 +96,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            NWArea instance = BaseService.GetAreaInstance(structureID, false);
+            var instance = BaseService.GetAreaInstance(structureID, false);
 
             if (instance == null)
             {
@@ -111,8 +109,8 @@ namespace SWLOR.Game.Server.Conversation
         private void DoKnockOnDoor()
         {
             NWPlaceable door = GetDialogTarget().Object;
-            Guid structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            NWArea instance = BaseService.GetAreaInstance(structureID, false);
+            var structureID = new Guid(door.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            var instance = BaseService.GetAreaInstance(structureID, false);
 
             NWScript.FloatingTextStringOnCreature("You knock on the door.", GetPC().Object, false);
 

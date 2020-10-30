@@ -20,13 +20,13 @@ namespace SWLOR.Game.Server.Conversation
         
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage(
+            var mainPage = new DialogPage(
                 "You have undistributed skill ranks. You are allowed to distribute these to skills within a single category up to rank " + MaxRankForDistribution + ". You MUST distribute all of these before you can acquire XP in any of the skills within this category.");
 
-            DialogPage skillListPage = new DialogPage();
-            DialogPage skillPage = new DialogPage(
+            var skillListPage = new DialogPage();
+            var skillPage = new DialogPage(
                 "<SET LATER>",
                 "Distribute 1 Rank",
                 "Distribute 5 Ranks",
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void MainResponses(int responseID)
         {
-            DialogResponse response = GetResponseByID("MainPage", responseID);
+            var response = GetResponseByID("MainPage", responseID);
             var categoryID = (int)response.CustomData;
             var model = GetDialogCustomData<Model>();
             model.SkillCategoryID = categoryID;
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Conversation
             var pool = DataService.PCSkillPool.GetByPlayerIDAndSkillCategoryID(GetPC().GlobalID, model.SkillCategoryID);
             var skills = DataService.Skill.GetAllBySkillCategoryIDAndActive(model.SkillCategoryID);
 
-            string header = ColorTokenService.Green("Category: ") + category.Name + "\n";
+            var header = ColorTokenService.Green("Category: ") + category.Name + "\n";
             header += ColorTokenService.Green("Ranks to Distribute: ") + pool.Levels + "\n\n";
             header += "You may distribute ranks to any of the following skills. Note that you may only increase a rank to a maximum level of 40. You will not gain any new experience towards any of the following skills until *ALL* ranks have been distributed.";
 

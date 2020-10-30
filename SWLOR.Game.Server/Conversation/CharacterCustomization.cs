@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -26,9 +25,9 @@ namespace SWLOR.Game.Server.Conversation
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage(
+            var mainPage = new DialogPage(
                 "You can customize your character here. Once you leave the entry area you can't make any changes to your appearance or association. Be sure you have it set up like you want!\n\nNote: We limit the available options based on the race you selected at character creation. This is intended to maintain the 'feel' of the setting. If you don't see an option here then it's unfortunately not available for your race.\n\nYou can request that new options be added on our Discord.",
                 "Change Association",
                 "Change Skin Color",
@@ -37,7 +36,7 @@ namespace SWLOR.Game.Server.Conversation
                 "Change Body Parts",
                 "Change Tattoo Color");
 
-            DialogPage changeAssociationPage = new DialogPage(
+            var changeAssociationPage = new DialogPage(
                 "Please select an association from the list below.",
                 "Jedi Order",
                 "Mandalorian",
@@ -49,20 +48,20 @@ namespace SWLOR.Game.Server.Conversation
                 "Czerka",
                 "Sith Order");
 
-            DialogPage confirmAssociationPage = new DialogPage(
+            var confirmAssociationPage = new DialogPage(
                 "",
                 "Select this association");
 
-            DialogPage changeSkinColorPage = new DialogPage(
+            var changeSkinColorPage = new DialogPage(
                 "Please select a skin color from the list below.");
 
-            DialogPage changeHeadPage = new DialogPage(
+            var changeHeadPage = new DialogPage(
                 "Please select a head from the list below.");
 
-            DialogPage changeHairColorPage = new DialogPage(
+            var changeHairColorPage = new DialogPage(
                 "Please select a hair color from the list below.");
 
-            DialogPage changeBodyPartsPage = new DialogPage(
+            var changeBodyPartsPage = new DialogPage(
                 "Please select a body part from the list below.",
                 "Torso",
                 "Pelvis",
@@ -77,15 +76,15 @@ namespace SWLOR.Game.Server.Conversation
                 "Left Thigh",
                 "Left Shin");
 
-            DialogPage changeTattoosPage = new DialogPage(
+            var changeTattoosPage = new DialogPage(
                 "Please select a tattoo option from the list below.",
                 "Tattoo Color 1",
                 "Tattoo Color 2");
 
-            DialogPage changeTattooColorPage = new DialogPage(
+            var changeTattooColorPage = new DialogPage(
                 "Please select a tattoo color from the list below.");
 
-            DialogPage editPartPage = new DialogPage();
+            var editPartPage = new DialogPage();
 
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("ChangeAssociationPage", changeAssociationPage);
@@ -102,8 +101,8 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            RacialType race = (RacialType)GetPC().RacialType;
-            string hairText = "Hair";
+            var race = (RacialType)GetPC().RacialType;
+            var hairText = "Hair";
 
             if (race == RacialType.Trandoshan ||
                 race == RacialType.MonCalamari)
@@ -218,7 +217,7 @@ namespace SWLOR.Game.Server.Conversation
             };
             int[] UgnaughtSkinColors = { 0, 1, 2, 3, 4, 5, 10, 12, 13, 14, 116, 117 };
 
-            RacialType race = (RacialType)GetPC().RacialType;
+            var race = (RacialType)GetPC().RacialType;
             int[] colorsToUse;
 
             switch (race)
@@ -335,7 +334,7 @@ namespace SWLOR.Game.Server.Conversation
         private void ApplyAssociationAlignment()
         {
             var model = GetDialogCustomData<Model>();
-            int association = model.AssociationID;
+            var association = model.AssociationID;
             var player = GetPC();
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
 
@@ -345,7 +344,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void ChangeSkinColorResponses(int responseID)
         {
-            int colorID = (int)GetResponseByID("ChangeSkinColorPage", responseID).CustomData;
+            var colorID = (int)GetResponseByID("ChangeSkinColorPage", responseID).CustomData;
             NWScript.SetColor(GetPC(), ColorChannel.Skin, colorID);
 
         }
@@ -353,7 +352,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void ChangeHeadResponses(int responseID)
         {
-            int headID = (int)GetResponseByID("ChangeHeadPage", responseID).CustomData;
+            var headID = (int)GetResponseByID("ChangeHeadPage", responseID).CustomData;
             NWScript.SetCreatureBodyPart(CreaturePart.Head, headID, GetPC());
         }
 
@@ -389,7 +388,7 @@ namespace SWLOR.Game.Server.Conversation
             int[] FemaleMonCalamariHeads = { 3, 6, 16, 17, 21, 26, 29, 41, 43, 47, 109, 110, 115, 119, 122 };
             int[] FemaleUgnaughtHeads = { 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110 };
 
-            RacialType race = (RacialType)GetPC().RacialType;
+            var race = (RacialType)GetPC().RacialType;
             var gender = GetPC().Gender;
             int[] headsToUse;
             
@@ -472,7 +471,7 @@ namespace SWLOR.Game.Server.Conversation
             int[] MonCalamariHairColors = { }; // All
             int[] UgnaughtHairColors = { 16, 17, 18, 19, 62, 120, 128, 164, 166, 168 };
 
-            RacialType race = (RacialType)GetPC().RacialType;
+            var race = (RacialType)GetPC().RacialType;
             int[] colorsToUse;
 
             switch (race)
@@ -523,7 +522,7 @@ namespace SWLOR.Game.Server.Conversation
             // If none specified, display all.
             if (colorsToUse.Length <= 0)
             {
-                for (int x = 0; x <= 175; x++)
+                for (var x = 0; x <= 175; x++)
                 {
                     AddResponseToPage("ChangeHairColorPage", "Color #" + x, true, x);
                 }
@@ -540,7 +539,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void ChangeHairColorResponses(int responseID)
         {
-            int colorID = (int)GetResponseByID("ChangeHairColorPage", responseID).CustomData;
+            var colorID = (int)GetResponseByID("ChangeHairColorPage", responseID).CustomData;
             
             NWScript.SetColor(GetPC(), ColorChannel.Hair, colorID);
         }
@@ -548,7 +547,7 @@ namespace SWLOR.Game.Server.Conversation
         private void ChangeBodyPartResponses(int responseID)
         {
             var model = GetDialogCustomData<Model>();
-            RacialType race = (RacialType)GetPC().RacialType;
+            var race = (RacialType)GetPC().RacialType;
             
             // Note: The following part IDs are found in the "parts_*.2da" files.
             // Don't use the ID number listed in the toolset when selecting parts to make available.
@@ -775,7 +774,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("ChangeTattooColorPage");
 
-            for (int x = 0; x <= 175; x++)
+            for (var x = 0; x <= 175; x++)
             {
                 AddResponseToPage("ChangeTattooColorPage", "Color #" + x, true, x);
             }
@@ -785,7 +784,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var model = GetDialogCustomData<Model>();
             var response = GetResponseByID("ChangeTattooColorPage", responseID);
-            int colorID = (int)response.CustomData;
+            var colorID = (int)response.CustomData;
             var colorChannel = model.TattooChannel;
 
             NWScript.SetColor(GetPC(), colorChannel, colorID);
@@ -801,7 +800,7 @@ namespace SWLOR.Game.Server.Conversation
                 AddResponseToPage("EditPartPage", model.PartName + " #" + modelID, true, modelID);
             }
             
-            string header = ColorTokenService.Green("Body Part: ") + model.PartName + "\n\n";
+            var header = ColorTokenService.Green("Body Part: ") + model.PartName + "\n\n";
             header += "You may need to unequip any clothes or armor you are wearing to see changes made to your body parts.\n\nPlease be aware that many armors override your selection here. This is a limitation in NWN that we can't work around.";
 
             SetPageHeader("EditPartPage", header);
@@ -811,7 +810,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var model = GetDialogCustomData<Model>();
             var response = GetResponseByID("EditPartPage", responseID);
-            int modelID = (int)response.CustomData;
+            var modelID = (int)response.CustomData;
             NWScript.SetCreatureBodyPart(model.BodyPartID, modelID, GetPC());
         }
 

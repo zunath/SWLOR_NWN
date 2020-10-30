@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using System;
@@ -16,13 +15,13 @@ namespace SWLOR.Game.Server.Service
         public static string GetResourceDescription(NWPlaceable resource)
         {
             NWPlaceable tempStorage = (NWScript.GetObjectByTag("TEMP_ITEM_STORAGE"));
-            string resref = resource.GetLocalString("RESOURCE_RESREF");
-            string qualityName = resource.GetLocalString("RESOURCE_QUALITY_NAME");
+            var resref = resource.GetLocalString("RESOURCE_RESREF");
+            var qualityName = resource.GetLocalString("RESOURCE_QUALITY_NAME");
 
             NWItem tempItem = (NWScript.CreateItemOnObject(resref, tempStorage.Object));
-            string resourceName = tempItem.Name;
+            var resourceName = tempItem.Name;
             
-            int typeID = 0;
+            var typeID = 0;
 
             foreach (var ip in tempItem.ItemProperties)
             {
@@ -38,12 +37,12 @@ namespace SWLOR.Game.Server.Service
                 return "Invalid component type";
             }
 
-            int tlkID = Convert.ToInt32(NWScript.Get2DAString("iprp_comptype", "Name", typeID));
-            string componentName = NWScript.GetStringByStrRef(tlkID);
+            var tlkID = Convert.ToInt32(NWScript.Get2DAString("iprp_comptype", "Name", typeID));
+            var componentName = NWScript.GetStringByStrRef(tlkID);
 
-            string description = qualityName + " " +
-                                 resourceName + " (" +
-                                 componentName + ")";
+            var description = qualityName + " " +
+                              resourceName + " (" +
+                              componentName + ")";
 
             tempItem.Destroy();
 
@@ -65,14 +64,14 @@ namespace SWLOR.Game.Server.Service
 
         public static int CalculateChanceForComponentBonus(NWPlayer player, int tier, ResourceQuality quality, bool scavenging = false)
         {
-            int rank = (scavenging ? SkillService.GetPCSkillRank(player, SkillType.Scavenging) : SkillService.GetPCSkillRank(player, SkillType.Harvesting));
-            int difficulty = (tier - 1) * 10 + GetDifficultyAdjustment(quality);
-            int delta = difficulty - rank;
+            var rank = (scavenging ? SkillService.GetPCSkillRank(player, SkillType.Scavenging) : SkillService.GetPCSkillRank(player, SkillType.Harvesting));
+            var difficulty = (tier - 1) * 10 + GetDifficultyAdjustment(quality);
+            var delta = difficulty - rank;
 
             if (delta >= 7) return 0;
             if (delta <= -7) return 45;
 
-            int chance = 0;
+            var chance = 0;
             switch (delta)
             {
                 case 6: chance = 1; break;
@@ -91,7 +90,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
-            int itemBonus = (scavenging ? effectiveStats.Scavenging : effectiveStats.Harvesting) / 2;
+            var itemBonus = (scavenging ? effectiveStats.Scavenging : effectiveStats.Harvesting) / 2;
             if (itemBonus > 30) itemBonus = 30;
             chance += itemBonus;
 
@@ -109,14 +108,14 @@ namespace SWLOR.Game.Server.Service
             // Misc (sneak attack, emnity up/down) = Yellow = 5
             // Attack, damage = red = 6
             // HP, FP, HP regen, FP regen, rest, meditate = Cyan = 7
-            HashSet<string> greenIP = new HashSet<string>
+            var greenIP = new HashSet<string>
             {
                  "compbon_ac1",
                  "compbon_ac2",
                  "compbon_ac3"
             };
 
-            HashSet<string> blueIP = new HashSet<string>
+            var blueIP = new HashSet<string>
             {
                 "compbon_arm1",
                 "compbon_cooking1",
@@ -144,21 +143,21 @@ namespace SWLOR.Game.Server.Service
                 "compbon_scanup3",
             };
 
-            HashSet<string> purpleIP = new HashSet<string>
+            var purpleIP = new HashSet<string>
             {
                 "compbon_cspd1",
                 "compbon_cspd2",
                 "compbon_cspd3"
             };
 
-            HashSet<string> orangeIP = new HashSet<string>
+            var orangeIP = new HashSet<string>
             {
                 "compbon_charges1",
                 "compbon_charges2",
                 "compbon_charges3"
             };
 
-            HashSet<string> lightPurpleIP = new HashSet<string>
+            var lightPurpleIP = new HashSet<string>
             {
                 "compbon_str1",
                 "compbon_dex1",
@@ -183,7 +182,7 @@ namespace SWLOR.Game.Server.Service
                 "compbon_cha3"
             };
 
-            HashSet<string> yellowIP = new HashSet<string>
+            var yellowIP = new HashSet<string>
             {
                 "compbon_enmdown1",
                 "compbon_enmup1",
@@ -196,7 +195,7 @@ namespace SWLOR.Game.Server.Service
                 "compbon_snkatk3"
             };
 
-            HashSet<string> redIP = new HashSet<string>
+            var redIP = new HashSet<string>
             {
                 "compbon_dmg1",
                 "compbon_ab1",
@@ -206,7 +205,7 @@ namespace SWLOR.Game.Server.Service
                 "compbon_ab3"
             };
 
-            HashSet<string> cyanIP = new HashSet<string>
+            var cyanIP = new HashSet<string>
             {
                 "compbon_hpregen1",
                 "compbon_fpregen1",
@@ -349,8 +348,8 @@ namespace SWLOR.Game.Server.Service
                     throw new ArgumentOutOfRangeException(nameof(quality), quality, null);
             }
             
-            int index = RandomService.Random(0, setToUse.Length - 1);
-            string itemTag = setToUse[index];
+            var index = RandomService.Random(0, setToUse.Length - 1);
+            var itemTag = setToUse[index];
 
             return new Tuple<ItemProperty, int>(ItemService.GetCustomItemPropertyByItemTag(itemTag), Colorize(itemTag)); 
         }

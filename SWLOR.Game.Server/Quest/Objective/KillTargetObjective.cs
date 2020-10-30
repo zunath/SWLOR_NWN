@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Quest.Objective
         public void Initialize(NWPlayer player, int questID)
         {
             var status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
-            PCQuestKillTargetProgress pcKT = new PCQuestKillTargetProgress
+            var pcKT = new PCQuestKillTargetProgress
             {
                 RemainingToKill = _amount,
                 NPCGroupID = (int)_group,

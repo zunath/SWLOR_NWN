@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
@@ -42,7 +41,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!PlayerHasKeyItem(oPC, keyItemID))
             {
-                PCKeyItem entity = new PCKeyItem
+                var entity = new PCKeyItem
                 {
                     PlayerID = oPC.GlobalID,
                     KeyItemID = keyItemID,
@@ -50,7 +49,7 @@ namespace SWLOR.Game.Server.Service
                 };
                 DataService.SubmitDataChange(entity, DatabaseActionType.Insert);
                 
-                KeyItem keyItem = DataService.KeyItem.GetByID(keyItemID);
+                var keyItem = DataService.KeyItem.GetByID(keyItemID);
                 oPC.SendMessage("You acquired the key item '" + keyItem.Name + "'.");
             }
         }
@@ -60,7 +59,7 @@ namespace SWLOR.Game.Server.Service
             if (PlayerHasKeyItem(oPC, keyItemID))
             {
 
-                PCKeyItem entity = DataService.PCKeyItem.GetByPlayerAndKeyItemID(oPC.GlobalID, keyItemID);
+                var entity = DataService.PCKeyItem.GetByPlayerAndKeyItemID(oPC.GlobalID, keyItemID);
                 DataService.SubmitDataChange(entity, DatabaseActionType.Delete);
             }
         }
@@ -86,7 +85,7 @@ namespace SWLOR.Game.Server.Service
             if (!oPC.IsPlayer) return;
 
             NWItem oItem = (NWScript.GetModuleItemAcquired());
-            int keyItemID = oItem.GetLocalInt("KEY_ITEM_ID");
+            var keyItemID = oItem.GetLocalInt("KEY_ITEM_ID");
 
             if (keyItemID <= 0) return;
 

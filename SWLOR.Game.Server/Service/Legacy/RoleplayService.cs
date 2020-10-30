@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
@@ -43,17 +42,17 @@ namespace SWLOR.Game.Server.Service
             if (message.IsOutOfCharacter) return;
             
             // Grab the current timestamp
-            string timestampString = sender.GetLocalString("RP_SYSTEM_LAST_MESSAGE_TIMESTAMP");
+            var timestampString = sender.GetLocalString("RP_SYSTEM_LAST_MESSAGE_TIMESTAMP");
 
             // Regardless if the message makes it through spam prevention, we want to update the latest timestamp.
-            DateTime now = DateTime.UtcNow;
+            var now = DateTime.UtcNow;
             sender.SetLocalString("RP_SYSTEM_LAST_MESSAGE_TIMESTAMP", now.ToString(CultureInfo.InvariantCulture));
 
             // If there was a timestamp then we'll check for spam and prevent it from counting towards
             // the RP XP points.
             if (!string.IsNullOrWhiteSpace(timestampString))
             {
-                DateTime lastSend = DateTime.Parse(timestampString);
+                var lastSend = DateTime.Parse(timestampString);
                 if (now <= lastSend.AddSeconds(1))
                 {
                     Console.WriteLine("Spam preventing firing");
@@ -62,7 +61,7 @@ namespace SWLOR.Game.Server.Service
             }
             
             // Validate whether player should receive an RP Point
-            bool canReceivePoint = CanReceiveRPPoint(sender.Object, channel);
+            var canReceivePoint = CanReceiveRPPoint(sender.Object, channel);
             if (!canReceivePoint) return;
             
             // Player was allowed to gain this RP point.
@@ -99,9 +98,9 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer.RoleplayPoints >= 50)
             {
                 const int BaseXP = 1000;
-                float residencyBonus = PlayerStatService.EffectiveResidencyBonus(player);
-                int xp = (int)(BaseXP + BaseXP * residencyBonus);
-                float dmBonusModifier = dbPlayer.XPBonus * 0.01f;
+                var residencyBonus = PlayerStatService.EffectiveResidencyBonus(player);
+                var xp = (int)(BaseXP + BaseXP * residencyBonus);
+                var dmBonusModifier = dbPlayer.XPBonus * 0.01f;
                 if (dmBonusModifier > 0.25f)
                     dmBonusModifier = 0.25f;
                 xp += (int)(xp * dmBonusModifier + ((dbPlayer.RoleplayPoints - 50) * 50));

@@ -53,8 +53,8 @@ namespace SWLOR.Game.Server.ValueObject
             // Draw for first turn.
             while (startedThisRound == null)
             {
-                int c1 = DrawCard();
-                int c2 = DrawCard();
+                var c1 = DrawCard();
+                var c2 = DrawCard();
                 FloatingTextStringOnCreature("Draws " + c1 + " for first player (highest plays first)", player1, false);
 
                 if (GetIsPC(player2))
@@ -80,14 +80,14 @@ namespace SWLOR.Game.Server.ValueObject
         private void BuildSideDeck(NWObject player)
         {
             NWItem collection = player.GetLocalObject("ACTIVE_COLLECTION");
-            List<int> deckToBuild = new List<int>(4);
-            List<int> playerDeck = new List<int>(10);
+            var deckToBuild = new List<int>(4);
+            var playerDeck = new List<int>(10);
 
             int random;
             if (collection.IsValid)
             {
                 // We have a player with a real deck.  Build the list and select 4 random cards from it. 
-                for (int ii = 1; ii <= 10; ii++)
+                for (var ii = 1; ii <= 10; ii++)
                 {
                     playerDeck.Add(PazaakService.GetCardInCollection(PazaakService.GetCardInDeck(ii, collection), collection));
                 }
@@ -155,8 +155,8 @@ namespace SWLOR.Game.Server.ValueObject
                 SpeakString("Deck empty! Reshuffling.");
             }
 
-            int card = RandomService.Random(deck.Count);
-            int retVal = deck.ElementAt(card);
+            var card = RandomService.Random(deck.Count);
+            var retVal = deck.ElementAt(card);
             deck.RemoveAt(card);
             return retVal;            
         }

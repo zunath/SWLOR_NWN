@@ -25,8 +25,8 @@ namespace SWLOR.Game.Server.Mod
 
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
-            int amount = Convert.ToInt32(args[0]);
-            int newValue = target.CustomAC + amount;
+            var amount = Convert.ToInt32(args[0]);
+            var newValue = target.CustomAC + amount;
             if (newValue > MaxValue) newValue = MaxValue;
 
             target.CustomAC = newValue;
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Mod
 
         public string Description(NWPlayer player, NWItem target, params string[] args)
         {
-            int amount = Convert.ToInt32(args[0]);
+            var amount = Convert.ToInt32(args[0]);
             return "AC +" + amount;
         }
     }

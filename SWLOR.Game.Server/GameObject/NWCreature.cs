@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
-using SWLOR.Game.Server.NWN;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.GameObject
@@ -145,7 +143,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                for (int slot = 0; slot < NumberOfInventorySlots; slot++)
+                for (var slot = 0; slot < NumberOfInventorySlots; slot++)
                 {
                     yield return GetItemInSlot((InventorySlot)slot, Object);
                 }
@@ -175,8 +173,8 @@ namespace SWLOR.Game.Server.GameObject
 
         public static bool operator ==(NWCreature lhs, NWCreature rhs)
         {
-            bool lhsNull = lhs is null;
-            bool rhsNull = rhs is null;
+            var lhsNull = lhs is null;
+            var rhsNull = rhs is null;
             return (lhsNull && rhsNull) || (!lhsNull && !rhsNull && lhs.Object == rhs.Object);
         }
 
@@ -187,7 +185,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public override bool Equals(object o)
         {
-            NWCreature other = o as NWCreature;
+            var other = o as NWCreature;
             return other != null && other == this;
         }
 

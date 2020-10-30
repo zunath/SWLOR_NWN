@@ -24,14 +24,14 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Bank
         public void Main()
         {
             NWPlaceable terminal = OBJECT_SELF;
-            int bankID = terminal.GetLocalInt("BANK_ID");
+            var bankID = terminal.GetLocalInt("BANK_ID");
             if (bankID <= 0) return;
 
             NWPlayer player = GetLastDisturbed();
             NWItem item = GetInventoryDisturbItem();
             var disturbType = GetInventoryDisturbType();
-            int itemCount = terminal.InventoryItems.Count();
-            int itemLimit = terminal.GetLocalInt("BANK_LIMIT");
+            var itemCount = terminal.InventoryItems.Count();
+            var itemLimit = terminal.GetLocalInt("BANK_LIMIT");
             if (itemLimit <= 0) itemLimit = 20;
 
             if (disturbType == DisturbType.Added)
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Bank
                 }
                 else
                 {
-                    BankItem itemEntity = new BankItem
+                    var itemEntity = new BankItem
                     {
                         ItemName = item.Name,
                         ItemTag = item.Tag,

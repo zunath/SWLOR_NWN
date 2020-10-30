@@ -1,7 +1,5 @@
 ﻿using System;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -92,9 +90,9 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         private void ApplyEffect(NWCreature creature, NWObject target, int spellTier)
         {
-            float radiusSize = RadiusSize.Small;            
+            var radiusSize = RadiusSize.Small;            
 
-            Effect confusionEffect = NWScript.EffectConfused();
+            var confusionEffect = NWScript.EffectConfused();
 
             // Handle effects for differing spellTier values
             switch (spellTier)

@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Quest
         
         public void AddObjective(IQuestObjective objective)
         {
-            int index = Objectives.Count;
+            var index = Objectives.Count;
             Objectives[index] = objective;
         }
 

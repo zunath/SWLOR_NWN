@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
@@ -12,11 +11,11 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.OnQuestState
         {
             using (new Profiler(nameof(QuestCheckState)))
             {
-                int index = (int) args[0];
-                int state = (int) args[1];
+                var index = (int) args[0];
+                var state = (int) args[1];
                 NWPlayer player = NWScript.GetPCSpeaker();
                 NWObject talkTo = NWScript.OBJECT_SELF;
-                int questID = talkTo.GetLocalInt("QUEST_ID_" + index);
+                var questID = talkTo.GetLocalInt("QUEST_ID_" + index);
                 if (questID <= 0) questID = talkTo.GetLocalInt("QST_ID_" + index);
 
                 if (!QuestService.QuestExistsByID(questID))
@@ -28,7 +27,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.OnQuestState
                 var status = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, questID);
                 if (status == null) return false;
 
-                bool has = status.QuestState == state && status.CompletionDate == null;
+                var has = status.QuestState == state && status.CompletionDate == null;
                 return has;
             }
         }

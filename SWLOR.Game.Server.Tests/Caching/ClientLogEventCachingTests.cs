@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            ModuleEvent entity = new ModuleEvent {ID = id};
+            var entity = new ModuleEvent {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ModuleEvent>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            ModuleEvent entity1 = new ModuleEvent { ID = id1};
-            ModuleEvent entity2 = new ModuleEvent { ID = id2};
+            var entity1 = new ModuleEvent { ID = id1};
+            var entity2 = new ModuleEvent { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ModuleEvent>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            ModuleEvent entity1 = new ModuleEvent { ID = id1};
-            ModuleEvent entity2 = new ModuleEvent { ID = id2};
+            var entity1 = new ModuleEvent { ID = id1};
+            var entity2 = new ModuleEvent { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ModuleEvent>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            ModuleEvent entity1 = new ModuleEvent { ID = id1};
-            ModuleEvent entity2 = new ModuleEvent { ID = id2};
+            var entity1 = new ModuleEvent { ID = id1};
+            var entity2 = new ModuleEvent { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ModuleEvent>(entity1));

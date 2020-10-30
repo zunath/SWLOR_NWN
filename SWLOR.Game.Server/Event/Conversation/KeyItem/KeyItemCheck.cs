@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
@@ -16,10 +15,10 @@ namespace SWLOR.Game.Server.Event.Conversation.KeyItem
                 NWPlayer player = NWScript.GetPCSpeaker();
                 NWObject talkingTo = NWScript.OBJECT_SELF;
 
-                int count = 1;
-                List<int> requiredKeyItemIDs = new List<int>();
+                var count = 1;
+                var requiredKeyItemIDs = new List<int>();
 
-                int keyItemID = talkingTo.GetLocalInt($"KEY_ITEM_{index}_REQ_{count}");
+                var keyItemID = talkingTo.GetLocalInt($"KEY_ITEM_{index}_REQ_{count}");
 
                 while (keyItemID > 0)
                 {

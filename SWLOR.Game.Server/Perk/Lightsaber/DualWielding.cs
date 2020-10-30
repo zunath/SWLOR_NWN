@@ -84,8 +84,8 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
         private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
         {
-            NWItem mainEquipped = oItem ?? creature.RightHand;
-            NWItem offEquipped = oItem ?? creature.LeftHand;
+            var mainEquipped = oItem ?? creature.RightHand;
+            var offEquipped = oItem ?? creature.LeftHand;
 
             // oItem was unequipped.
             if (Equals(mainEquipped, oItem) || Equals(offEquipped, oItem))
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
             }
 
 
-            int perkLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.LightsaberDualWielding);
+            var perkLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.LightsaberDualWielding);
             Creature.AddFeat(creature, Feat.TwoWeaponFighting);
 
             if (perkLevel >= 2)

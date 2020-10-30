@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Data.Entity;
+﻿using System.Linq;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -13,8 +11,8 @@ namespace SWLOR.Game.Server.Conversation
         public override PlayerDialog SetUp(NWPlayer player)
         {
 
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainPage = new DialogPage(
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage(
                 "Select a key item category.",
                 "Maps",
                 "Quest Items",
@@ -22,7 +20,7 @@ namespace SWLOR.Game.Server.Conversation
                 "Keys"
             );
 
-            DialogPage keyItemListPage = new DialogPage(
+            var keyItemListPage = new DialogPage(
                 "Select a key item."
             );
 
@@ -77,10 +75,10 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadKeyItemsOptions(int categoryID)
         {
-            List<PCKeyItem> items = KeyItemService.GetPlayerKeyItemsByCategory(GetPC(), categoryID).ToList();
+            var items = KeyItemService.GetPlayerKeyItemsByCategory(GetPC(), categoryID).ToList();
 
             ClearPageResponses("KeyItemsListPage");
-            foreach (PCKeyItem item in items)
+            foreach (var item in items)
             {
                 var keyItem = KeyItemService.GetKeyItemByID(item.KeyItemID);
                 AddResponseToPage("KeyItemsListPage", keyItem.Name, true, item.KeyItemID);
@@ -90,8 +88,8 @@ namespace SWLOR.Game.Server.Conversation
 
         private void HandleKeyItemSelection(int responseID)
         {
-            DialogResponse response = GetResponseByID(GetCurrentPageName(), responseID);
-            int keyItemID = (int)response.CustomData;
+            var response = GetResponseByID(GetCurrentPageName(), responseID);
+            var keyItemID = (int)response.CustomData;
 
             if (keyItemID <= 0)
             {
@@ -107,11 +105,11 @@ namespace SWLOR.Game.Server.Conversation
 
         private string BuildKeyItemHeader(int responseID)
         {
-            DialogResponse response = GetResponseByID(GetCurrentPageName(), responseID);
-            int keyItemID = (int)response.CustomData;
-            KeyItem entity = KeyItemService.GetKeyItemByID(keyItemID);
+            var response = GetResponseByID(GetCurrentPageName(), responseID);
+            var keyItemID = (int)response.CustomData;
+            var entity = KeyItemService.GetKeyItemByID(keyItemID);
 
-            string header = ColorTokenService.Green("Key Item: ") + entity.Name + "\n\n";
+            var header = ColorTokenService.Green("Key Item: ") + entity.Name + "\n\n";
             header += ColorTokenService.Green("Description: ") + entity.Description + "\n";
 
             return header;

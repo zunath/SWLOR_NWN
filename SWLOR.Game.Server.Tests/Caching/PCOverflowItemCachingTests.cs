@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCOverflowItem entity = new PCOverflowItem {ID = id};
+            var entity = new PCOverflowItem {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCOverflowItem>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCOverflowItem entity1 = new PCOverflowItem { ID = id1};
-            PCOverflowItem entity2 = new PCOverflowItem { ID = id2};
+            var entity1 = new PCOverflowItem { ID = id1};
+            var entity2 = new PCOverflowItem { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCOverflowItem>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCOverflowItem entity1 = new PCOverflowItem { ID = id1};
-            PCOverflowItem entity2 = new PCOverflowItem { ID = id2};
+            var entity1 = new PCOverflowItem { ID = id1};
+            var entity2 = new PCOverflowItem { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCOverflowItem>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCOverflowItem entity1 = new PCOverflowItem { ID = id1};
-            PCOverflowItem entity2 = new PCOverflowItem { ID = id2};
+            var entity1 = new PCOverflowItem { ID = id1};
+            var entity2 = new PCOverflowItem { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCOverflowItem>(entity1));

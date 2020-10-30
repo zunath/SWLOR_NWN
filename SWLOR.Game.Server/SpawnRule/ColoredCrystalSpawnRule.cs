@@ -11,17 +11,17 @@ namespace SWLOR.Game.Server.SpawnRule
     {
         public void Run(NWObject target, params object[] args)
         {
-            int roll = RandomService.Random(0, 100);
-            ResourceQuality quality = ResourceQuality.Low;
-            string qualityName = "Sparse";
+            var roll = RandomService.Random(0, 100);
+            var quality = ResourceQuality.Low;
+            var qualityName = "Sparse";
 
             const int NormalQualityChance = 20;
             const int HighQualityChance = 10;
             const int VeryHighQualityChance = 2;
 
             var dbArea = DataService.Area.GetByResref(target.Area.Resref);
-            int tier = dbArea.ResourceQuality;
-            int maxTier = dbArea.MaxResourceQuality;
+            var tier = dbArea.ResourceQuality;
+            var maxTier = dbArea.MaxResourceQuality;
 
             if (tier <= 0)
             {
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.SpawnRule
             if (tier > maxTier)
                 tier = maxTier;
 
-            int quantity = RandomService.Random(1, 3);
+            var quantity = RandomService.Random(1, 3);
 
             target.SetLocalInt("RESOURCE_QUALITY", (int)quality);
             target.SetLocalInt("RESOURCE_TIER", tier);

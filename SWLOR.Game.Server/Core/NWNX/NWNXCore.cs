@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         public static Core.ItemProperty NWNX_GetReturnValueItemProperty(string pluginName, string functionName)
         {
-            Core.ItemProperty ip = NWScript.NWScript.ItemPropertyTrueSeeing();
+            var ip = NWScript.NWScript.ItemPropertyTrueSeeing();
             return NWScript.NWScript.TagItemProperty(ip, NWNX_INTERNAL_BuildString(pluginName, functionName, "POP"));
         }
     }

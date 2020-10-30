@@ -1,9 +1,6 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
@@ -15,8 +12,8 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainPage = new DialogPage();
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage();
 
             dialog.AddPage("MainPage", mainPage);
             return dialog;
@@ -127,8 +124,8 @@ namespace SWLOR.Game.Server.Conversation
         private void BuildMainPageOptions()
         {
             var model = CraftService.GetPlayerCraftingData(GetPC());
-            int maxEnhancements = model.PlayerPerkLevel / 2;
-            bool canAddEnhancements = model.Blueprint.EnhancementSlots > 0 && maxEnhancements > 0;
+            var maxEnhancements = model.PlayerPerkLevel / 2;
+            var canAddEnhancements = model.Blueprint.EnhancementSlots > 0 && maxEnhancements > 0;
 
             AddResponseToPage("MainPage", "Examine Base Item");
             AddResponseToPage("MainPage", "Create Item", model.CanBuildItem);
@@ -143,12 +140,12 @@ namespace SWLOR.Game.Server.Conversation
         private void HandleMainPageResponses(int responseID)
         {
             var model = CraftService.GetPlayerCraftingData(GetPC());
-            NWPlaceable device = GetDevice();
+            var device = GetDevice();
 
             switch (responseID)
             {
                 case 1: // Examine Base Item
-                    CraftBlueprint entity = CraftService.GetBlueprintByID(model.BlueprintID);
+                    var entity = CraftService.GetBlueprintByID(model.BlueprintID);
                     NWPlaceable tempContainer = (NWScript.GetObjectByTag("craft_temp_store"));
                     NWItem examineItem = (NWScript.CreateItemOnObject(entity.ItemResref, tempContainer.Object));
                     GetPC().AssignCommand(() => NWScript.ActionExamine(examineItem.Object));
@@ -161,8 +158,8 @@ namespace SWLOR.Game.Server.Conversation
                         return;
                     }
 
-                    int effectiveLevel = CraftService.CalculatePCEffectiveLevel(GetPC(), model.PlayerSkillRank, (SkillType)model.Blueprint.SkillID);
-                    int difficulty = effectiveLevel - model.AdjustedLevel;
+                    var effectiveLevel = CraftService.CalculatePCEffectiveLevel(GetPC(), model.PlayerSkillRank, (SkillType)model.Blueprint.SkillID);
+                    var difficulty = effectiveLevel - model.AdjustedLevel;
 
                     if(difficulty <= -5)
                     {
@@ -200,7 +197,7 @@ namespace SWLOR.Game.Server.Conversation
         private void OpenDeviceInventory()
         {
             var model = CraftService.GetPlayerCraftingData(GetPC());
-            NWPlaceable device = GetDevice();
+            var device = GetDevice();
             device.IsLocked = false;
             model.IsAccessingStorage = true;
 

@@ -1,10 +1,8 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
 {
@@ -27,7 +25,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(oPC);
             const int baseChanceToFullyHarvest = 50;
             
-            bool hasBeenSearched = point.GetLocalInt("SCAVENGE_POINT_FULLY_HARVESTED") == 1;
+            var hasBeenSearched = point.GetLocalInt("SCAVENGE_POINT_FULLY_HARVESTED") == 1;
             if (hasBeenSearched)
             {
                 oPC.SendMessage("There's nothing left to harvest here...");
@@ -36,10 +34,10 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
 
 
             if (!oPC.IsPlayer && !oPC.IsDM) return;
-            int rank = SkillService.GetPCSkillRank(oPC, SkillType.Scavenging);
-            int lootTableID = point.GetLocalInt("SCAVENGE_POINT_LOOT_TABLE_ID");
-            int level = point.GetLocalInt("SCAVENGE_POINT_LEVEL");
-            int delta = level - rank;
+            var rank = SkillService.GetPCSkillRank(oPC, SkillType.Scavenging);
+            var lootTableID = point.GetLocalInt("SCAVENGE_POINT_LOOT_TABLE_ID");
+            var level = point.GetLocalInt("SCAVENGE_POINT_LEVEL");
+            var delta = level - rank;
 
             if (delta > 8)
             {
@@ -48,11 +46,11 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
                 return;
             }
 
-            int dc = 6 + delta;
+            var dc = 6 + delta;
             if (dc <= 4) dc = 4;
-            int searchAttempts = 1 + CalculateSearchAttempts(oPC);
+            var searchAttempts = 1 + CalculateSearchAttempts(oPC);
 
-            int luck = PerkService.GetCreaturePerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck;
+            var luck = PerkService.GetCreaturePerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck;
             if (RandomService.Random(100) + 1 <= luck / 2)
             {
                 dc--;
@@ -60,13 +58,13 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
 
             oPC.AssignCommand(() => NWScript.ActionPlayAnimation(Animation.LoopingGetLow, 1.0f, 2.0f));
 
-            for (int attempt = 1; attempt <= searchAttempts; attempt++)
+            for (var attempt = 1; attempt <= searchAttempts; attempt++)
             {
-                int roll = RandomService.Random(20) + 1;
+                var roll = RandomService.Random(20) + 1;
                 if (roll >= dc)
                 {
                     oPC.FloatingText(ColorTokenService.SkillCheck("Search: *success*: (" + roll + " vs. DC: " + dc + ")"));
-                    ItemVO spawnItem = LootService.PickRandomItemFromLootTable(lootTableID);
+                    var spawnItem = LootService.PickRandomItemFromLootTable(lootTableID);
 
                     if (spawnItem == null)
                     {
@@ -78,21 +76,21 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
                         NWScript.CreateItemOnObject(spawnItem.Resref, point.Object, spawnItem.Quantity);
                     }
 
-                    float xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(200, level, rank);
+                    var xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(200, level, rank);
                     SkillService.GiveSkillXP(oPC, SkillType.Scavenging, (int)xp);
                 }
                 else
                 {
                     oPC.FloatingText(ColorTokenService.SkillCheck("Search: *failure*: (" + roll + " vs. DC: " + dc + ")"));
 
-                    float xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(50, level, rank);
+                    var xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(50, level, rank);
                     SkillService.GiveSkillXP(oPC, SkillType.Scavenging, (int)xp);
                 }
                 dc += RandomService.Random(3) + 1;
             }
             
             // Chance to destroy the scavenge point.
-            int chanceToFullyHarvest = baseChanceToFullyHarvest - (PerkService.GetCreaturePerkLevel(oPC, PerkType.CarefulScavenger) * 5);
+            var chanceToFullyHarvest = baseChanceToFullyHarvest - (PerkService.GetCreaturePerkLevel(oPC, PerkType.CarefulScavenger) * 5);
             
             if (chanceToFullyHarvest <= 5) chanceToFullyHarvest = 5;
 
@@ -105,11 +103,11 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
 
         private int CalculateSearchAttempts(NWPlayer oPC)
         {
-            int perkLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.ScavengingExpert);
+            var perkLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.ScavengingExpert);
 
-            int numberOfSearches = 0;
-            int attempt1Chance = 0;
-            int attempt2Chance = 0;
+            var numberOfSearches = 0;
+            var attempt1Chance = 0;
+            var attempt2Chance = 0;
 
             switch (perkLevel)
             {

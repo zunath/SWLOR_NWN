@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsStructureMode()
         {
             // Arrange
-            StructureMode entity = new StructureMode {ID = 1};
+            var entity = new StructureMode {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<StructureMode>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            StructureMode entity1 = new StructureMode { ID = 1};
-            StructureMode entity2 = new StructureMode { ID = 2};
+            var entity1 = new StructureMode { ID = 1};
+            var entity2 = new StructureMode { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<StructureMode>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            StructureMode entity1 = new StructureMode { ID = 1};
-            StructureMode entity2 = new StructureMode { ID = 2};
+            var entity1 = new StructureMode { ID = 1};
+            var entity2 = new StructureMode { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<StructureMode>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            StructureMode entity1 = new StructureMode { ID = 1};
-            StructureMode entity2 = new StructureMode { ID = 2};
+            var entity1 = new StructureMode { ID = 1};
+            var entity2 = new StructureMode { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<StructureMode>(entity1));

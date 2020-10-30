@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -68,7 +67,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
-            int amount = 0;
+            var amount = 0;
 
 
             switch (perkLevel)
@@ -81,7 +80,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             }
 
             // If target is at max HP, we do nothing else.
-            int difference = target.MaxHP - target.CurrentHP;
+            var difference = target.MaxHP - target.CurrentHP;
             if (difference <= 0) return;
 
             // If we would heal the target for more than their max, reduce the amount healed to that number.

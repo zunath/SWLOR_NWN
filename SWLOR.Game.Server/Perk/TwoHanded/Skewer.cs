@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
 
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
-            int chance = perkLevel * 25;
+            var chance = perkLevel * 25;
 
             // Failed to interrupt.
             if(RandomService.D100(1) > chance)

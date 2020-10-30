@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Language;
 using System;
@@ -15,7 +14,7 @@ namespace SWLOR.Game.Server.Service
     {
         public static string TranslateSnippetForListener(NWObject speaker, NWObject listener, SkillType language, string snippet)
         {
-            Dictionary<SkillType, Type> map = new Dictionary<SkillType, Type>
+            var map = new Dictionary<SkillType, Type>
             {
                 { SkillType.Bothese, typeof(TranslatorBothese) },
                 { SkillType.Catharese, typeof(TranslatorCatharese) },
@@ -32,23 +31,23 @@ namespace SWLOR.Game.Server.Service
                 { SkillType.Ugnaught, typeof(TranslatorUgnaught) }
             };
 
-            Type type = typeof(TranslatorGeneric);
+            var type = typeof(TranslatorGeneric);
             map.TryGetValue(language, out type);
-            ITranslator translator = (ITranslator)Activator.CreateInstance(type);
+            var translator = (ITranslator)Activator.CreateInstance(type);
 
             if (speaker.IsPC && !speaker.IsDM)
             {
                 // Get the rank and max rank for the speaker, and garble their English text based on it.
                 NWPlayer speakerAsPlayer = speaker.Object;
-                int speakerSkillRank = SkillService.GetPCSkillRank(speakerAsPlayer, language);
-                int speakerSkillMaxRank = SkillService.GetSkill(language).MaxRank;
+                var speakerSkillRank = SkillService.GetPCSkillRank(speakerAsPlayer, language);
+                var speakerSkillMaxRank = SkillService.GetSkill(language).MaxRank;
 
                 if (speakerSkillRank != speakerSkillMaxRank)
                 {
-                    int garbledChance = 100 - (int)(((float)speakerSkillRank / (float)speakerSkillMaxRank) * 100);
+                    var garbledChance = 100 - (int)(((float)speakerSkillRank / (float)speakerSkillMaxRank) * 100);
 
-                    string[] split = snippet.Split(' ');
-                    for (int i = 0; i < split.Length; ++i)
+                    var split = snippet.Split(' ');
+                    for (var i = 0; i < split.Length; ++i)
                     {
                         if (RandomService.Random(100) <= garbledChance)
                         {
@@ -68,15 +67,15 @@ namespace SWLOR.Game.Server.Service
 
             // Let's grab the max rank for the listener skill, and then we roll for a successful translate based on that.
             NWPlayer listenerAsPlayer = listener.Object;
-            int rank = SkillService.GetPCSkillRank(listenerAsPlayer, language);
-            int maxRank = SkillService.GetSkill(language).MaxRank;
+            var rank = SkillService.GetPCSkillRank(listenerAsPlayer, language);
+            var maxRank = SkillService.GetSkill(language).MaxRank;
 
             // Check for the Comprehend Speech concentration ability.
-            Player dbPlayer = DataService.Player.GetByID(listenerAsPlayer.GlobalID);
-            bool grantSenseXP = false;
+            var dbPlayer = DataService.Player.GetByID(listenerAsPlayer.GlobalID);
+            var grantSenseXP = false;
             if (dbPlayer.ActiveConcentrationPerkID == (int)PerkType.ComprehendSpeech)
             {
-                int bonus = 5 * dbPlayer.ActiveConcentrationTier;
+                var bonus = 5 * dbPlayer.ActiveConcentrationTier;
                 rank += bonus;
                 grantSenseXP = true;
             }
@@ -91,20 +90,20 @@ namespace SWLOR.Game.Server.Service
                 return snippet;
             }
 
-            string textAsForeignLanguage = translator.Translate(snippet);
+            var textAsForeignLanguage = translator.Translate(snippet);
 
             if (rank != 0)
             {
-                int englishChance = (int)(((float)rank / (float)maxRank) * 100);
+                var englishChance = (int)(((float)rank / (float)maxRank) * 100);
 
-                string[] originalSplit = snippet.Split(' ');
-                string[] foreignSplit = textAsForeignLanguage.Split(' ');
+                var originalSplit = snippet.Split(' ');
+                var foreignSplit = textAsForeignLanguage.Split(' ');
 
-                StringBuilder endResult = new StringBuilder();
+                var endResult = new StringBuilder();
 
                 // WARNING: We're making the assumption that originalSplit.Length == foreignSplit.Length.
                 // If this assumption changes, the below logic needs to change too.
-                for (int i = 0; i < originalSplit.Length; ++i)
+                for (var i = 0; i < originalSplit.Length; ++i)
                 {
                     if (RandomService.Random(100) <= englishChance)
                     {
@@ -121,16 +120,16 @@ namespace SWLOR.Game.Server.Service
                 textAsForeignLanguage = endResult.ToString();
             }
 
-            long now = DateTime.Now.Ticks;
-            int lastSkillUpLow = listenerAsPlayer.GetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_LOW");
-            int lastSkillUpHigh = listenerAsPlayer.GetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_HIGH");
+            var now = DateTime.Now.Ticks;
+            var lastSkillUpLow = listenerAsPlayer.GetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_LOW");
+            var lastSkillUpHigh = listenerAsPlayer.GetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_HIGH");
             long lastSkillUp = lastSkillUpHigh;
             lastSkillUp = (lastSkillUp << 32) | (uint)lastSkillUpLow;
-            long differenceInSeconds = (now - lastSkillUp) / 10000000;
+            var differenceInSeconds = (now - lastSkillUp) / 10000000;
 
             if (differenceInSeconds / 60 >= 2)
             {
-                int amount = Math.Max(10, Math.Min(150, snippet.Length) / 3);
+                var amount = Math.Max(10, Math.Min(150, snippet.Length) / 3);
                 // Reward exp towards the language - we scale this with character count, maxing at 50 exp for 150 characters.
                 SkillService.GiveSkillXP(listenerAsPlayer, language, amount);
 
@@ -195,8 +194,8 @@ namespace SWLOR.Game.Server.Service
 
         public static void InitializePlayerLanguages(NWPlayer player)
         {
-            RacialType race = (RacialType)player.RacialType;
-            BackgroundType background = (BackgroundType)player.Class1;
+            var race = (RacialType)player.RacialType;
+            var background = (BackgroundType)player.Class1;
             var languages = new List<SkillType>(new[] { SkillType.Basic });
 
             switch (race)
@@ -247,14 +246,14 @@ namespace SWLOR.Game.Server.Service
             // Languages don't level up like normal skills (no stat increases, SP, etc.)
             // So it's safe to simply set the player's rank in the skill to max.
 
-            List<int> languageSkillIDs = languages.ConvertAll(x => (int) x);
+            var languageSkillIDs = languages.ConvertAll(x => (int) x);
             var pcSkills = DataService.PCSkill.GetAllByPlayerIDAndSkillIDs(player.GlobalID, languageSkillIDs).ToList();
 
             foreach (var pcSkill in pcSkills)
             {
                 var skill = DataService.Skill.GetByID(pcSkill.SkillID);
-                int maxRank = skill.MaxRank;
-                int maxRankXP = SkillService.SkillXPRequirements[maxRank];
+                var maxRank = skill.MaxRank;
+                var maxRankXP = SkillService.SkillXPRequirements[maxRank];
 
                 pcSkill.Rank = maxRank;
                 pcSkill.XP = maxRankXP - 1;
@@ -266,7 +265,7 @@ namespace SWLOR.Game.Server.Service
 
         public static SkillType GetActiveLanguage(NWObject obj)
         {
-            int ret = obj.GetLocalInt("ACTIVE_LANGUAGE");
+            var ret = obj.GetLocalInt("ACTIVE_LANGUAGE");
 
             if (ret == 0)
             {

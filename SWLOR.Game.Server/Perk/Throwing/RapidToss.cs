@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Perk.Throwing
 
         private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
         {
-            NWItem equippedWeapon = oItem ?? creature.RightHand;
+            var equippedWeapon = oItem ?? creature.RightHand;
 
             if (Equals(equippedWeapon, oItem) ||
                 equippedWeapon.CustomItemType != CustomItemType.Throwing)

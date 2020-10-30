@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -21,7 +20,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
             NWObject door = NWScript.GetNearestObjectByTag("aban_director_exit", overridePlaceable);
             NWPlayer player = NWScript.GetLastUsedBy();
             door.AssignCommand(() =>NWScript.SetLocked(door, false));
-            int questID = overridePlaceable.GetLocalInt("QUEST_ID_1");
+            var questID = overridePlaceable.GetLocalInt("QUEST_ID_1");
 
             NWScript.SpeakString("The tractor beam has been disabled. A door in this room has unlocked.");
 
@@ -38,7 +37,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
             foreach (var member in player.PartyMembers)
             {
                 // Not in one of the three areas? Move to the next member.
-                NWArea area = member.Area;
+                var area = member.Area;
                 if (area != mainLevel &&
                     area != restrictedLevel &&
                     area != directorsChambers)

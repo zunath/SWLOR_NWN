@@ -1,12 +1,9 @@
 ﻿using System;
-using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Perk.ForceAlter
@@ -110,15 +107,15 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 return;
             }
 
-            AbilityResistanceResult result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
+            var result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
             
             // Tranquilization effect - Daze target(s). Occurs on succeeding the DC check.
-            Effect successEffect = EffectDazed();
+            var successEffect = EffectDazed();
             successEffect = EffectLinkEffects(successEffect, EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
             successEffect = TagEffect(successEffect, "TRANQUILIZER_EFFECT");
 
             // AC & AB decrease effect - Occurs on failing the DC check.
-            Effect failureEffect = (EffectAttackDecrease(5));
+            var failureEffect = (EffectAttackDecrease(5));
 
 
             if (!result.IsResisted)

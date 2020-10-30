@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -17,7 +16,7 @@ namespace SWLOR.Game.Server.CustomEffect
         public string Apply(NWCreature oCaster, NWObject oTarget, int effectiveLevel)
         {
             PlayerStatService.ApplyStatChanges(oTarget.Object, null);
-            int healAmount = (int)(CustomEffectService.CalculateEffectHPBonusPercent(oTarget.Object) * oTarget.MaxHP);
+            var healAmount = (int)(CustomEffectService.CalculateEffectHPBonusPercent(oTarget.Object) * oTarget.MaxHP);
 
             if (healAmount > 0)
             {

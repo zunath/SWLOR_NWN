@@ -1,6 +1,4 @@
-﻿using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -14,8 +12,8 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainPage = new DialogPage(
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage(
                 "Please select an option.",
                 "Exit the building",
                 "Peek outside",
@@ -29,11 +27,11 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             NWPlaceable door = GetDialogTarget().Object;
-            NWArea area = door.Area;
-            BuildingType type = (BuildingType)area.GetLocalInt("BUILDING_TYPE");
-            bool isPreview = area.GetLocalBool("IS_BUILDING_PREVIEW") == true;
-            bool canPeek = type == BuildingType.Interior && !isPreview;
-            bool canChangeApartment = type == BuildingType.Apartment && !isPreview;
+            var area = door.Area;
+            var type = (BuildingType)area.GetLocalInt("BUILDING_TYPE");
+            var isPreview = area.GetLocalBool("IS_BUILDING_PREVIEW") == true;
+            var canPeek = type == BuildingType.Interior && !isPreview;
+            var canChangeApartment = type == BuildingType.Apartment && !isPreview;
 
             SetResponseVisible("MainPage", 2, canPeek);
             SetResponseVisible("MainPage", 3, canChangeApartment);
@@ -79,10 +77,10 @@ namespace SWLOR.Game.Server.Conversation
         {
             const float MaxDistance = 2.5f;
             NWPlaceable door = GetDialogTarget().Object;
-            Location location = door.GetLocalLocation("PLAYER_HOME_EXIT_LOCATION");
+            var location = door.GetLocalLocation("PLAYER_HOME_EXIT_LOCATION");
 
-            int numberFound = 0;
-            int nth = 1;
+            var numberFound = 0;
+            var nth = 1;
             NWCreature nearest = (NWScript.GetNearestObjectToLocation(location, ObjectType.Creature, nth));
             while (nearest.IsValid)
             {

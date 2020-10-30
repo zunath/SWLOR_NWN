@@ -1,6 +1,5 @@
 ﻿using System;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -32,7 +31,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests
             }
 
             // Player is on stage 2, so they're able to click the crystal, get a cluster, complete the quest, and teleport back to the cavern.
-            int type = crystal.GetLocalInt("CRYSTAL_COLOR_TYPE");
+            var type = crystal.GetLocalInt("CRYSTAL_COLOR_TYPE");
             string cluster;
 
             switch (type)

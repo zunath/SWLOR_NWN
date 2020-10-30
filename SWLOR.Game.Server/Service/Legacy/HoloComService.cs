@@ -1,6 +1,5 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
@@ -62,9 +61,9 @@ namespace SWLOR.Game.Server.Service
             if (talkvolume == TalkVolume.SilentShout) return;            
             if (talkvolume == TalkVolume.SilentTalk) return;
 
-            NWPlayer receiver = GetHoloGram(sender);
+            var receiver = GetHoloGram(sender);
 
-            string text = NWScript.GetPCChatMessage().Trim();
+            var text = NWScript.GetPCChatMessage().Trim();
 
             if (text.StartsWith("/")) return;
 
@@ -102,7 +101,7 @@ namespace SWLOR.Game.Server.Service
                 sender.SetLocalObject("HOLOCOM_CALL_CONNECTED_WITH", receiver);
                 receiver.SetLocalObject("HOLOCOM_CALL_CONNECTED_WITH", sender);
                 
-                string message = "Call Connected. (Use the HoloCom or the chat command /endcall to terminate the call)";
+                var message = "Call Connected. (Use the HoloCom or the chat command /endcall to terminate the call)";
                 SendMessageToPC(sender, message);
                 SendMessageToPC(receiver, message);
                 var effectImmobilized = EffectCutsceneImmobilize();

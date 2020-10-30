@@ -1,7 +1,6 @@
 ﻿using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -86,7 +85,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             }
             
             // Check lucky chance.
-            int luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
+            var luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
             if (RandomService.D100(1) <= luck)
             {
                 duration *= 2;
@@ -99,8 +98,8 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             if (creature.IsPlayer)
             {
                 NWPlayer player = creature.Object;
-                int skillLevel = SkillService.GetPCSkillRank(player, SkillType.ForceControl);
-                int xp = skillLevel * 10 + 50;
+                var skillLevel = SkillService.GetPCSkillRank(player, SkillType.ForceControl);
+                var xp = skillLevel * 10 + 50;
                 SkillService.GiveSkillXP(player, SkillType.ForceControl, xp);
             }
         }

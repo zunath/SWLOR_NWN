@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCSkill entity = new PCSkill {ID = id};
+            var entity = new PCSkill {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCSkill>(entity));
@@ -46,8 +46,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCSkill entity1 = new PCSkill { ID = id1};
-            PCSkill entity2 = new PCSkill { ID = id2};
+            var entity1 = new PCSkill { ID = id1};
+            var entity2 = new PCSkill { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCSkill>(entity1));
@@ -64,8 +64,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCSkill entity1 = new PCSkill { ID = id1};
-            PCSkill entity2 = new PCSkill { ID = id2};
+            var entity1 = new PCSkill { ID = id1};
+            var entity2 = new PCSkill { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCSkill>(entity1));
@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCSkill entity1 = new PCSkill { ID = id1};
-            PCSkill entity2 = new PCSkill { ID = id2};
+            var entity1 = new PCSkill { ID = id1};
+            var entity2 = new PCSkill { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCSkill>(entity1));

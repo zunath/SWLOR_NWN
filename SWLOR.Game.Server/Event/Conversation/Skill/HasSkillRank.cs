@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
@@ -15,15 +14,15 @@ namespace SWLOR.Game.Server.Event.Conversation.Skill
                 NWPlayer player = NWScript.GetPCSpeaker();
                 NWObject talkTo = NWScript.OBJECT_SELF;
 
-                int count = 1;
-                string varName = "SKILL_" + index + "_REQ_";
-                int skillID = talkTo.GetLocalInt(varName + count);
-                bool displayNode = true;
+                var count = 1;
+                var varName = "SKILL_" + index + "_REQ_";
+                var skillID = talkTo.GetLocalInt(varName + count);
+                var displayNode = true;
 
                 while (skillID > 0)
                 {
-                    int requiredLevel = talkTo.GetLocalInt(varName + "LEVEL_" + count);
-                    bool meetsRequirement = SkillService.GetPCSkillRank(player, skillID) >= requiredLevel;
+                    var requiredLevel = talkTo.GetLocalInt(varName + "LEVEL_" + count);
+                    var meetsRequirement = SkillService.GetPCSkillRank(player, skillID) >= requiredLevel;
 
                     // OR = Any one of the listed skills can be met and the node will appear.
                     if (method == "OR")

@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Data
         /// </summary>
         private static void BuildDatabase()
         {
-            bool exists = CheckDatabaseExists();
+            var exists = CheckDatabaseExists();
 
             if (!exists)
             {
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Data
                 using (var connection = new MySqlConnection(DataService.SWLORConnectionString))
                 {
                     Console.WriteLine("Creating tables, procedures, views, etc...");
-                    string sql = ReadResourceFile(FolderName + ".Initialization.sql");
+                    var sql = ReadResourceFile(FolderName + ".Initialization.sql");
                     ExecuteBatchNonQuery(sql, connection);
 
                     Console.WriteLine("Tables, procedures, views, etc... all created successfully!");
@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Data
             DatabaseVersion currentVersion;
             using (var connection = new MySqlConnection(DataService.SWLORConnectionString))
             {
-                string sql = "select ID, ScriptName, DateApplied, VersionDate, VersionNumber FROM DatabaseVersion ORDER BY VersionDate DESC, VersionNumber DESC LIMIT 1;";
+                var sql = "select ID, ScriptName, DateApplied, VersionDate, VersionNumber FROM DatabaseVersion ORDER BY VersionDate DESC, VersionNumber DESC LIMIT 1;";
                 currentVersion = connection.QueryFirstOrDefault<DatabaseVersion>(sql);
             }
 
@@ -158,11 +158,11 @@ namespace SWLOR.Game.Server.Data
         private static Tuple<DateTime, int> GetVersionInformation(string fileName)
         {
             // Remove file extension (.sql), split by period denoting date and version number.
-            string fileNameNoExtension = Path.GetFileNameWithoutExtension(fileName);
-            string[] data = fileNameNoExtension.Split('.');
+            var fileNameNoExtension = Path.GetFileNameWithoutExtension(fileName);
+            var data = fileNameNoExtension.Split('.');
 
-            DateTime fileDate = DateTime.ParseExact(data[0], "yyyy-MM-dd", null);
-            int fileVersion = int.Parse(data[1]);
+            var fileDate = DateTime.ParseExact(data[0], "yyyy-MM-dd", null);
+            var fileVersion = int.Parse(data[1]);
 
             return new Tuple<DateTime, int>(fileDate, fileVersion);
         }
@@ -173,14 +173,14 @@ namespace SWLOR.Game.Server.Data
         /// <param name="resource">The full resource path of the including namespace.</param>
         private static void ApplyMigrationScript(string resource)
         {
-            string fileName = GetFileNameFromScriptResourceName(resource);
+            var fileName = GetFileNameFromScriptResourceName(resource);
             Console.WriteLine("Applying migration script: " + resource);
 
             using (var connection = new MySqlConnection(DataService.SWLORConnectionString))
             {
                 try
                 {
-                    string sql = ReadResourceFile(resource);
+                    var sql = ReadResourceFile(resource);
 
                     if (!string.IsNullOrWhiteSpace(sql))
                     {
@@ -210,7 +210,7 @@ namespace SWLOR.Game.Server.Data
 
             using (var stream = executingAssembly.GetManifestResourceStream(resource))
             {
-                using (StreamReader reader = new StreamReader(stream))
+                using (var reader = new StreamReader(stream))
                 {
                     sql = reader.ReadToEnd();
                 }

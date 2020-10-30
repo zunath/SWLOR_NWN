@@ -1,6 +1,5 @@
 ﻿using System;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
@@ -28,7 +27,7 @@ namespace SWLOR.Game.Server.Service
             NWItem item = (GetPCItemLastEquipped());
             if (item.BaseItemType != BaseItem.Helmet) return;
 
-            Player pc = DataService.Player.GetByID(player.GlobalID);
+            var pc = DataService.Player.GetByID(player.GlobalID);
             SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
         
         }
@@ -43,7 +42,7 @@ namespace SWLOR.Game.Server.Service
             NWItem item = (GetPCItemLastUnequipped());
             if (item.BaseItemType != BaseItem.Helmet) return;
 
-            Player pc = DataService.Player.GetByID(player.GlobalID);
+            var pc = DataService.Player.GetByID(player.GlobalID);
             SetHiddenWhenEquipped(item.Object, !pc.DisplayHelmet == false ? 0 : 1);
         
         }
@@ -54,7 +53,7 @@ namespace SWLOR.Game.Server.Service
 
             if (!player.IsPlayer) return;
 
-            Player pc = DataService.Player.GetByID(player.GlobalID);
+            var pc = DataService.Player.GetByID(player.GlobalID);
             pc.DisplayHelmet = !pc.DisplayHelmet;
             DataService.SubmitDataChange(pc, DatabaseActionType.Update);
             

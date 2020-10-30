@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.ChatCommand
         /// <param name="args"></param>
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            string cdKey = NWScript.GetPCPublicCDKey(user);
+            var cdKey = NWScript.GetPCPublicCDKey(user);
             user.SendMessage("Your public CD Key is: " + cdKey);
         }
 

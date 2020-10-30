@@ -1,9 +1,6 @@
 ﻿using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
-
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -28,7 +25,7 @@ namespace SWLOR.Game.Server.Item
         {
             NWPlayer player = (user.Object);
 
-            int starcharts = item.GetLocalInt("Starcharts");
+            var starcharts = item.GetLocalInt("Starcharts");
 
             if (starcharts == 0)
             {
@@ -37,10 +34,10 @@ namespace SWLOR.Game.Server.Item
             }
 
             // Get the base.
-            string starshipID = NWScript.GetLocalString(NWScript.GetArea(target), "PC_BASE_STRUCTURE_ID");
-            Guid starshipGuid = new Guid(starshipID);
-            PCBaseStructure starship = DataService.PCBaseStructure.GetByID(starshipGuid);
-            PCBase starkillerBase = DataService.PCBase.GetByID(starship.PCBaseID);
+            var starshipID = NWScript.GetLocalString(NWScript.GetArea(target), "PC_BASE_STRUCTURE_ID");
+            var starshipGuid = new Guid(starshipID);
+            var starship = DataService.PCBaseStructure.GetByID(starshipGuid);
+            var starkillerBase = DataService.PCBase.GetByID(starship.PCBaseID);
 
             starkillerBase.Starcharts |= starcharts;
             DataService.SubmitDataChange(starkillerBase, DatabaseActionType.Update);

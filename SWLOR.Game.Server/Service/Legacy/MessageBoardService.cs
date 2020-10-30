@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = Chat.GetSender();
             
             if (!CanHandleChat(player)) return;
-            string message = Chat.GetMessage();
+            var message = Chat.GetMessage();
             Chat.SkipMessage();
 
             player.SetLocalString("MESSAGE_BOARD_TEXT", message);

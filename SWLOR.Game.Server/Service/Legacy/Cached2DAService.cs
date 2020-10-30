@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 
@@ -31,12 +30,12 @@ namespace SWLOR.Game.Server.Service
             // and an empty value. For this reason we have to hard code the row number. If someone's got
             // a better solution, please implement it.
             const int NumberOfRows = 150;
-            for (int x = 0; x <= NumberOfRows; x++)
+            for (var x = 0; x <= NumberOfRows; x++)
             {
-                string value = NWScript.Get2DAString(File, "Value", x);
+                var value = NWScript.Get2DAString(File, "Value", x);
                 if (string.IsNullOrWhiteSpace(value) || value == "0") continue; // Ignore empty / zero values.
 
-                int valueNumber = Convert.ToInt32(value);
+                var valueNumber = Convert.ToInt32(value);
                 if (ImmunityCosts.Values.Contains(valueNumber)) continue; // Ignore duplicate values.
 
                 ImmunityCosts.Add(x, valueNumber);

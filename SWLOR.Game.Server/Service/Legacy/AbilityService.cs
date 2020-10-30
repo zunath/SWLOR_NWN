@@ -1,4 +1,3 @@
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -69,7 +68,7 @@ namespace SWLOR.Game.Server.Service
             if (!pc.IsPlayer) return;
 
             // Reapply the visual effect icon to player if they logged in with an active concentration ability.
-            Player dbPlayer = DataService.Player.GetByID(pc.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(pc.GlobalID);
             if (dbPlayer.ActiveConcentrationPerkID != null)
             {
                 NWScript.ApplyEffectToObject(DurationType.Permanent, NWScript.EffectSkillIncrease(Skill.UseMagicDevice, 1), pc);
@@ -97,7 +96,7 @@ namespace SWLOR.Game.Server.Service
             if (perkFeat == null) return false;
 
             // Retrieve the perk information.
-            Data.Entity.Perk perk = DataService.Perk.GetByIDOrDefault(perkFeat.PerkID);
+            var perk = DataService.Perk.GetByIDOrDefault(perkFeat.PerkID);
 
             // No perk could be found. Exit early.
             if (perk == null) return false;
@@ -113,7 +112,7 @@ namespace SWLOR.Game.Server.Service
             var handler = PerkService.GetPerkHandler(perkFeat.PerkID);
 
             // Get the creature's perk level.
-            int creaturePerkLevel = PerkService.GetCreaturePerkLevel(activator, perk.ID);
+            var creaturePerkLevel = PerkService.GetCreaturePerkLevel(activator, perk.ID);
 
             // If player is disabling an existing stance, remove that effect.
             if (perk.ExecutionTypeID == PerkExecutionType.Stance)
@@ -122,7 +121,7 @@ namespace SWLOR.Game.Server.Service
                 // todo: handle NPC stances.
                 if (!activator.IsPlayer) return false;
 
-                PCCustomEffect stanceEffect = DataService.PCCustomEffect.GetByStancePerkOrDefault(activator.GlobalID, perk.ID);
+                var stanceEffect = DataService.PCCustomEffect.GetByStancePerkOrDefault(activator.GlobalID, perk.ID);
 
                 if (stanceEffect != null)
                 {
@@ -155,7 +154,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Run this perk's specific checks on whether the activator may use this perk on the target.
-            string canCast = handler.CanCastSpell(activator, target, perkFeat.PerkLevelUnlocked);
+            var canCast = handler.CanCastSpell(activator, target, perkFeat.PerkLevelUnlocked);
             if (!string.IsNullOrWhiteSpace(canCast))
             {
                 activator.SendMessage(canCast);
@@ -163,8 +162,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Calculate the FP cost to use this ability. Verify activator has sufficient FP.
-            int fpCost = handler.FPCost(activator, handler.FPCost(activator, perkFeat.BaseFPCost, perkFeat.PerkLevelUnlocked), perkFeat.PerkLevelUnlocked);
-            int currentFP = GetCurrentFP(activator);
+            var fpCost = handler.FPCost(activator, handler.FPCost(activator, perkFeat.BaseFPCost, perkFeat.PerkLevelUnlocked), perkFeat.PerkLevelUnlocked);
+            var currentFP = GetCurrentFP(activator);
             if (currentFP < fpCost)
             {
                 activator.SendMessage("You do not have enough FP. (Required: " + fpCost + ". You have: " + currentFP + ")");
@@ -203,14 +202,14 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Retrieve the cooldown information and determine the unlock time.
-            int? cooldownCategoryID = handler.CooldownCategoryID(activator, perk.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
-            DateTime now = DateTime.UtcNow;
-            DateTime unlockDateTime = cooldownCategoryID == null ? now : GetAbilityCooldownUnlocked(activator, (int)cooldownCategoryID);
+            var cooldownCategoryID = handler.CooldownCategoryID(activator, perk.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
+            var now = DateTime.UtcNow;
+            var unlockDateTime = cooldownCategoryID == null ? now : GetAbilityCooldownUnlocked(activator, (int)cooldownCategoryID);
 
             // Check if we've passed the unlock date. Exit early if we have not.
             if (unlockDateTime > now)
             {
-                string timeToWait = TimeService.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
+                var timeToWait = TimeService.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
                 activator.SendMessage("That ability can be used in " + timeToWait + ".");
                 return false;
             }
@@ -236,8 +235,8 @@ namespace SWLOR.Game.Server.Service
 
             // Retrieve information necessary for activation of perk feat.
             var perkFeat = DataService.PerkFeat.GetByFeatID((int)featID);
-            Data.Entity.Perk perk = DataService.Perk.GetByID(perkFeat.PerkID);
-            int creaturePerkLevel = PerkService.GetCreaturePerkLevel(activator, perk.ID);
+            var perk = DataService.Perk.GetByID(perkFeat.PerkID);
+            var creaturePerkLevel = PerkService.GetCreaturePerkLevel(activator, perk.ID);
             var handler = PerkService.GetPerkHandler(perkFeat.PerkID);
 
             SendAOEMessage(activator, activator.Name + " readies " + perk.Name + ".");
@@ -285,7 +284,7 @@ namespace SWLOR.Game.Server.Service
             // Players: Retrieve info from cache/DB, if it doesn't exist create a new record and insert it. Return unlock date.
             if (activator.IsPlayer)
             {
-                PCCooldown pcCooldown = DataService.PCCooldown.GetByPlayerAndCooldownCategoryIDOrDefault(activator.GlobalID, cooldownCategoryID);
+                var pcCooldown = DataService.PCCooldown.GetByPlayerAndCooldownCategoryIDOrDefault(activator.GlobalID, cooldownCategoryID);
                 if (pcCooldown == null)
                 {
                     pcCooldown = new PCCooldown
@@ -303,7 +302,7 @@ namespace SWLOR.Game.Server.Service
             // Creatures: Retrieve info from local variable, convert to DateTime if possible. Return parsed unlock date.
             else
             {
-                string unlockDate = activator.GetLocalString("ABILITY_COOLDOWN_ID_" + cooldownCategoryID);
+                var unlockDate = activator.GetLocalString("ABILITY_COOLDOWN_ID_" + cooldownCategoryID);
                 if (string.IsNullOrWhiteSpace(unlockDate))
                 {
                     return DateTime.UtcNow.AddSeconds(-1);
@@ -325,7 +324,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (creature.IsPlayer)
             {
-                Player dbPlayer = DataService.Player.GetByID(creature.GlobalID);
+                var dbPlayer = DataService.Player.GetByID(creature.GlobalID);
                 if (dbPlayer.ActiveConcentrationPerkID == null) return new ConcentrationEffect(PerkType.Unknown, 0);
 
                 return new ConcentrationEffect((PerkType)dbPlayer.ActiveConcentrationPerkID, dbPlayer.ActiveConcentrationTier);
@@ -333,9 +332,9 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 // Creatures are assumed to always use the highest perk level available.
-                int perkID = creature.GetLocalInt("ACTIVE_CONCENTRATION_PERK_ID");
-                int tier = creature.GetLocalInt("PERK_LEVEL_" + perkID);
-                PerkType type = perkID <= 0 ? PerkType.Unknown : (PerkType) perkID;
+                var perkID = creature.GetLocalInt("ACTIVE_CONCENTRATION_PERK_ID");
+                var tier = creature.GetLocalInt("PERK_LEVEL_" + perkID);
+                var type = perkID <= 0 ? PerkType.Unknown : (PerkType) perkID;
                 return new ConcentrationEffect(type, tier);
             }
 
@@ -371,7 +370,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (creature.IsPlayer)
             {
-                Player player = DataService.Player.GetByID(creature.GlobalID);
+                var player = DataService.Player.GetByID(creature.GlobalID);
                 if (player.ActiveConcentrationPerkID == null) return;
 
                 player.ActiveConcentrationPerkID = null;
@@ -394,13 +393,13 @@ namespace SWLOR.Game.Server.Service
         {
             // Loop through each creature. If they have a concentration ability active,
             // process it using that perk's OnConcentrationTick() method.
-            for(int index = ConcentratingCreatures.Count-1; index >= 0; index--)
+            for(var index = ConcentratingCreatures.Count-1; index >= 0; index--)
             {
                 var creature = ConcentratingCreatures.ElementAt(index);
                 var activeAbility = GetActiveConcentrationEffect(creature);
-                int perkID = (int)activeAbility.Type;
-                int tier = activeAbility.Tier;
-                bool ended = false;
+                var perkID = (int)activeAbility.Type;
+                var tier = activeAbility.Tier;
+                var ended = false;
 
                 // If we have an invalid creature for any reason, remove it and move to the next one.
                 if (!creature.IsValid || creature.CurrentHP <= 0 || activeAbility.Type == PerkType.Unknown)
@@ -410,20 +409,20 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // Track the current tick.
-                int tick = creature.GetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK") + 1;
+                var tick = creature.GetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK") + 1;
                 creature.SetLocalInt("ACTIVE_CONCENTRATION_ABILITY_TICK", tick);
                 
-                PerkFeat perkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlocked(perkID, tier);
+                var perkFeat = DataService.PerkFeat.GetByPerkIDAndLevelUnlocked(perkID, tier);
 
                 // Are we ready to continue processing this concentration effect?
                 if (tick % perkFeat.ConcentrationTickInterval != 0) continue;
 
                 // Get the perk handler, FP cost, and the target.
                 var handler = PerkService.GetPerkHandler(perkID);
-                int fpCost = handler.FPCost(creature, perkFeat.ConcentrationFPCost, tier);
+                var fpCost = handler.FPCost(creature, perkFeat.ConcentrationFPCost, tier);
                 NWObject target = creature.GetLocalObject("CONCENTRATION_TARGET");
-                int currentFP = GetCurrentFP(creature);
-                int maxFP = GetMaxFP(creature);
+                var currentFP = GetCurrentFP(creature);
+                var maxFP = GetMaxFP(creature);
 
                 // Is the target still valid?
                 if (!target.IsValid || target.CurrentHP <= 0)
@@ -506,9 +505,9 @@ namespace SWLOR.Game.Server.Service
             PerkExecutionType executionType,
             int spellTier)
         {
-            string uuid = Guid.NewGuid().ToString();
-            float baseActivationTime = perkHandler.CastingTime(activator, (float)entity.BaseCastingTime, spellTier);
-            float activationTime = baseActivationTime;
+            var uuid = Guid.NewGuid().ToString();
+            var baseActivationTime = perkHandler.CastingTime(activator, (float)entity.BaseCastingTime, spellTier);
+            var activationTime = baseActivationTime;
             var vfxID = VisualEffect.None;
             var animationID = Animation.Invalid;
             
@@ -516,11 +515,11 @@ namespace SWLOR.Game.Server.Service
                 activationTime = 1.0f;
 
             // Force ability armor penalties
-            float armorPenalty = 0.0f;
+            var armorPenalty = 0.0f;
             if (executionType == PerkExecutionType.ForceAbility || 
                 executionType == PerkExecutionType.ConcentrationAbility)
             {
-                string penaltyMessage = string.Empty;
+                var penaltyMessage = string.Empty;
                 foreach (var item in activator.EquippedItems)
                 {
                     if (item.CustomItemType == CustomItemType.HeavyArmor)
@@ -599,7 +598,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Run the FinishAbilityUse event at the end of the activation time.
-            int perkID = entity.ID;
+            var perkID = entity.ID;
 
             var @event = new OnFinishAbilityUse(activator, uuid, perkID, target, pcPerkLevel, spellTier, armorPenalty);
             activator.DelayEvent(activationTime + 0.2f, @event);
@@ -624,20 +623,20 @@ namespace SWLOR.Game.Server.Service
             if (armorPenalty < 0.5f)
                 armorPenalty = 0.5f;
             
-            float finalCooldown = handler.CooldownTime(creature, (float)cooldown.BaseCooldownTime, spellTier) * armorPenalty;
-            int cooldownSeconds = (int)finalCooldown;
-            int cooldownMillis = (int)((finalCooldown - cooldownSeconds) * 100);
-            DateTime unlockDate = DateTime.UtcNow.AddSeconds(cooldownSeconds).AddMilliseconds(cooldownMillis);
+            var finalCooldown = handler.CooldownTime(creature, (float)cooldown.BaseCooldownTime, spellTier) * armorPenalty;
+            var cooldownSeconds = (int)finalCooldown;
+            var cooldownMillis = (int)((finalCooldown - cooldownSeconds) * 100);
+            var unlockDate = DateTime.UtcNow.AddSeconds(cooldownSeconds).AddMilliseconds(cooldownMillis);
 
             if (creature.IsPlayer)
             {
-                PCCooldown pcCooldown = DataService.PCCooldown.GetByPlayerAndCooldownCategoryID(creature.GlobalID, cooldown.ID);
+                var pcCooldown = DataService.PCCooldown.GetByPlayerAndCooldownCategoryID(creature.GlobalID, cooldown.ID);
                 pcCooldown.DateUnlocked = unlockDate;
                 DataService.SubmitDataChange(pcCooldown, DatabaseActionType.Update);
             }
             else
             {
-                string unlockDateString = unlockDate.ToString("yyyy-MM-dd hh:mm:ss");
+                var unlockDateString = unlockDate.ToString("yyyy-MM-dd hh:mm:ss");
                 creature.SetLocalString("ABILITY_COOLDOWN_ID_" + (int)handler.PerkType, unlockDateString);
             }
         }
@@ -646,7 +645,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (activator.GetLocalInt(spellUUID) == (int)SpellStatusType.Completed) return;
 
-            Vector3 currentPosition = activator.Position;
+            var currentPosition = activator.Position;
 
             if (currentPosition.X != position.X ||
                 currentPosition.Y != position.Y ||
@@ -671,9 +670,9 @@ namespace SWLOR.Game.Server.Service
         private static void HandleQueueWeaponSkill(NWCreature activator, Data.Entity.Perk entity, IPerkHandler ability, Feat spellFeatID)
         {
             var perkFeat = DataService.PerkFeat.GetByFeatID((int)spellFeatID);
-            int? cooldownCategoryID = ability.CooldownCategoryID(activator, entity.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
+            var cooldownCategoryID = ability.CooldownCategoryID(activator, entity.CooldownCategoryID, perkFeat.PerkLevelUnlocked);
             var cooldownCategory = DataService.CooldownCategory.GetByID(Convert.ToInt32(cooldownCategoryID));
-            string queueUUID = Guid.NewGuid().ToString();
+            var queueUUID = Guid.NewGuid().ToString();
             activator.SetLocalInt("ACTIVE_WEAPON_SKILL", entity.ID);
             activator.SetLocalString("ACTIVE_WEAPON_SKILL_UUID", queueUUID);
             activator.SetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID", (int)spellFeatID);
@@ -734,7 +733,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                int maxFP = creature.GetLocalInt("MAX_FP");
+                var maxFP = creature.GetLocalInt("MAX_FP");
                 if (amount > maxFP) amount = maxFP;
                 creature.SetLocalInt("CURRENT_FP", amount);
             }
@@ -796,7 +795,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void RestorePlayerFP(NWPlayer oPC, int amount)
         {
-            Player entity = DataService.Player.GetByID(oPC.GlobalID);
+            var entity = DataService.Player.GetByID(oPC.GlobalID);
             RestorePlayerFP(oPC, amount, entity);
             DataService.SubmitDataChange(entity, DatabaseActionType.Update);
         }
@@ -818,17 +817,17 @@ namespace SWLOR.Game.Server.Service
 
             HandleGrenadeProficiency(oPC, oTarget);
             HandlePlasmaCellPerk(oPC, oTarget);
-            int activeWeaponSkillID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL");
+            var activeWeaponSkillID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL");
             if (activeWeaponSkillID <= 0) return;
-            int activeWeaponSkillFeatID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID");
+            var activeWeaponSkillFeatID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID");
             if (activeWeaponSkillFeatID < 0) activeWeaponSkillFeatID = -1;
 
-            PCPerk entity = DataService.PCPerk.GetByPlayerAndPerkID(oPC.GlobalID, activeWeaponSkillID);
+            var entity = DataService.PCPerk.GetByPlayerAndPerkID(oPC.GlobalID, activeWeaponSkillID);
             var perk = DataService.Perk.GetByID(entity.PerkID);
             var perkFeat = DataService.PerkFeat.GetByFeatID(activeWeaponSkillFeatID);
             var handler = PerkService.GetPerkHandler(activeWeaponSkillID);
 
-            string canCast = handler.CanCastSpell(oPC, oTarget, perkFeat.PerkLevelUnlocked);
+            var canCast = handler.CanCastSpell(oPC, oTarget, perkFeat.PerkLevelUnlocked);
             if (string.IsNullOrWhiteSpace(canCast))
             {
                 handler.OnImpact(oPC, oTarget, entity.PerkLevel, perkFeat.PerkLevelUnlocked);
@@ -856,7 +855,7 @@ namespace SWLOR.Game.Server.Service
             if (GetLocalBool(player, "PLASMA_CELL_TOGGLE_OFF") == true) return;  // Check if Plasma Cell toggle is on or off
             if (GetLocalBool(target, "TRANQUILIZER_EFFECT_FIRST_RUN") == true) return;
 
-            int perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.PlasmaCell);
+            var perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.PlasmaCell);
             int chance;
             CustomEffectType[] damageTypes;
             switch (perkLevel)
@@ -920,8 +919,8 @@ namespace SWLOR.Game.Server.Service
             NWItem weapon = NWScript.GetSpellCastItem();
             if (weapon.BaseItemType != BaseItem.Grenade) return;
 
-            int perkLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.GrenadeProficiency);
-            int chance = 10 * perkLevel;
+            var perkLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.GrenadeProficiency);
+            var chance = 10 * perkLevel;
             float duration;
 
             switch (perkLevel)
@@ -969,21 +968,21 @@ namespace SWLOR.Game.Server.Service
             var featIDs = new List<int>();
 
             // Add all feats the creature has to the list.
-            int featCount = Creature.GetFeatCount(self);
-            for (int x = 0; x <= featCount - 1; x++)
+            var featCount = Creature.GetFeatCount(self);
+            for (var x = 0; x <= featCount - 1; x++)
             {
                 var featID = Creature.GetFeatByIndex(self, x);
                 featIDs.Add((int)featID);
             }
 
-            bool hasPerkFeat = false;
+            var hasPerkFeat = false;
             // Retrieve perk feat information for only those feats registered as a perk.
             var perkFeats = DataService.PerkFeat.GetAllByIDs(featIDs);
 
             // Mark the highest perk level on the creature.
             foreach (var perkFeat in perkFeats)
             {
-                int level = self.GetLocalInt("PERK_LEVEL_" + perkFeat.PerkID);
+                var level = self.GetLocalInt("PERK_LEVEL_" + perkFeat.PerkID);
                 if (level >= perkFeat.PerkLevelUnlocked) continue;
 
                 var perk = DataService.Perk.GetByID(perkFeat.PerkID);
@@ -995,7 +994,7 @@ namespace SWLOR.Game.Server.Service
             // If a builder sets a perk feat but forgets to set the FP, do it automatically.
             if(hasPerkFeat && self.GetLocalInt("MAX_FP") <= 0)
             {
-                int fp = 50;
+                var fp = 50;
                 fp += (self.IntelligenceModifier + self.WisdomModifier + self.CharismaModifier) * 5;
                 SetMaxFP(self, fp);
                 SetCurrentFP(self, fp);
@@ -1017,7 +1016,7 @@ namespace SWLOR.Game.Server.Service
         private static void SendAOEMessage(NWCreature sender, string message)
         {
             const float MaxDistance = 10.0f;
-            int nth = 1;
+            var nth = 1;
             NWCreature nearby = NWScript.GetNearestCreature(CreatureType.IsAlive, 1, sender, nth);
             while (nearby.IsValid && GetDistanceBetween(sender, nearby) <= MaxDistance)
             {

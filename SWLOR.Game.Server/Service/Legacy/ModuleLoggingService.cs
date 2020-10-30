@@ -10,7 +10,6 @@ using SWLOR.Game.Server.Messaging;
 
 using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using Area = SWLOR.Game.Server.Data.Entity.Area;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using PCBaseType = SWLOR.Game.Server.Enumeration.PCBaseType;
 
@@ -39,11 +38,11 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleEnter()
         {
             NWPlayer oPC = (GetEnteringObject());
-            string name = oPC.Name;
-            string cdKey = GetPCPublicCDKey(oPC.Object);
-            string account = GetPCPlayerName(oPC.Object);
-            DateTime now = DateTime.UtcNow;
-            string nowString = now.ToString("yyyy-MM-dd hh:mm:ss");
+            var name = oPC.Name;
+            var cdKey = GetPCPublicCDKey(oPC.Object);
+            var account = GetPCPlayerName(oPC.Object);
+            var now = DateTime.UtcNow;
+            var nowString = now.ToString("yyyy-MM-dd hh:mm:ss");
 
             // CD Key and accounts are stored as local strings on the PC
             // because they cannot be retrieved using NWScript functions
@@ -54,7 +53,7 @@ namespace SWLOR.Game.Server.Service
 
             Console.WriteLine(nowString + ": " + name + " (" + account + "/" + cdKey + ") connected to the server.");
             
-            ModuleEvent entity = new ModuleEvent
+            var entity = new ModuleEvent
             {
                 AccountName = account,
                 CDKey = cdKey,
@@ -70,15 +69,15 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleLeave()
         {
             NWPlayer oPC = (GetExitingObject());
-            string name = oPC.Name;
-            string cdKey = oPC.GetLocalString("PC_CD_KEY");
-            string account = oPC.GetLocalString("PC_ACCOUNT");
-            DateTime now = DateTime.UtcNow;
-            string nowString = now.ToString("yyyy-MM-dd hh:mm:ss");
+            var name = oPC.Name;
+            var cdKey = oPC.GetLocalString("PC_CD_KEY");
+            var account = oPC.GetLocalString("PC_ACCOUNT");
+            var now = DateTime.UtcNow;
+            var nowString = now.ToString("yyyy-MM-dd hh:mm:ss");
 
             Console.WriteLine(nowString + ": " + name + " (" + account + "/" + cdKey + ") left the server.");
 
-            ModuleEvent entity = new ModuleEvent
+            var entity = new ModuleEvent
             {
                 AccountName = account,
                 CDKey = cdKey,
@@ -122,17 +121,17 @@ namespace SWLOR.Game.Server.Service
         {
             NWPlayer sender = OBJECT_SELF;
             if (!sender.IsPlayer && !sender.IsDM) return;
-            string text = Chat.GetMessage();
+            var text = Chat.GetMessage();
             if (string.IsNullOrWhiteSpace(text)) return;
 
             var mode = Chat.GetChannel();
-            int channel = ConvertNWNXChatChannelIDToDatabaseID(mode);
+            var channel = ConvertNWNXChatChannelIDToDatabaseID(mode);
             NWObject recipient = Chat.GetTarget();
             var channelEntity = DataService.ChatChannel.GetByID(channel);
 
             // Sender - should always have this data.
-            string senderCDKey = GetPCPublicCDKey(sender.Object);
-            string senderAccountName = sender.Name;
+            var senderCDKey = GetPCPublicCDKey(sender.Object);
+            var senderAccountName = sender.Name;
             Guid? senderPlayerID = null;
             string senderDMName = null;
 
@@ -161,7 +160,7 @@ namespace SWLOR.Game.Server.Service
                     receiverPlayerID = recipient.GlobalID;
             }
 
-            ChatLog entity = new ChatLog
+            var entity = new ChatLog
             {
                 Message = text,
                 SenderCDKey = senderCDKey,
@@ -182,7 +181,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnDMAction(int actionTypeID)
         {
-            string details = ProcessEventAndBuildDetails(actionTypeID);
+            var details = ProcessEventAndBuildDetails(actionTypeID);
 
             NWObject dm = OBJECT_SELF;
 
@@ -200,7 +199,7 @@ namespace SWLOR.Game.Server.Service
 
         private static string ProcessEventAndBuildDetails(int eventID)
         {
-            string details = string.Empty;
+            var details = string.Empty;
             NWObject target;
             int amount;
 
@@ -208,12 +207,12 @@ namespace SWLOR.Game.Server.Service
             {
                 case 1: // Spawn Creature
                     var area = StringToObject(Events.GetEventData("AREA"));
-                    string areaName = GetName(area);
+                    var areaName = GetName(area);
                     NWCreature creature = StringToObject(Events.GetEventData("OBJECT"));
-                    int objectTypeID = Convert.ToInt32(Events.GetEventData("OBJECT_TYPE"));
-                    float x = (float)Convert.ToDouble(Events.GetEventData("POS_X"));
-                    float y = (float)Convert.ToDouble(Events.GetEventData("POS_Y"));
-                    float z = (float)Convert.ToDouble(Events.GetEventData("POS_Z"));
+                    var objectTypeID = Convert.ToInt32(Events.GetEventData("OBJECT_TYPE"));
+                    var x = (float)Convert.ToDouble(Events.GetEventData("POS_X"));
+                    var y = (float)Convert.ToDouble(Events.GetEventData("POS_Y"));
+                    var z = (float)Convert.ToDouble(Events.GetEventData("POS_Z"));
                     SetLocalBool(creature, "DM_SPAWNED", true);
                     details = areaName + "," + creature.Name + "," + objectTypeID + "," + x + "," + y + "," + z;
                     break;
@@ -307,7 +306,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnStoreStructureItem(NWPlayer player, PCBaseStructureItem entity)
         {
-            PCBaseStructure pcBaseStructure = DataService.PCBaseStructure.GetByID(entity.PCBaseStructureID);
+            var pcBaseStructure = DataService.PCBaseStructure.GetByID(entity.PCBaseStructureID);
 
             var @event = new ModuleEvent
             {
@@ -331,7 +330,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnRemoveStructureItem(NWPlayer player, PCBaseStructureItem entity)
         {
-            PCBaseStructure pcBaseStructure = DataService.PCBaseStructure.GetByID(entity.PCBaseStructureID);
+            var pcBaseStructure = DataService.PCBaseStructure.GetByID(entity.PCBaseStructureID);
 
             var @event = new ModuleEvent
             {
@@ -374,7 +373,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnPCBaseLeaseExpired(PCBase pcBase)
         {
-            Area dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
+            var dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
 
             var @event = new ModuleEvent
             {
@@ -395,7 +394,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnPCBaseDestroyed(PCBase pcBase, NWCreature lastAttacker)
         {
-            Area dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
+            var dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
 
             var @event = new ModuleEvent
             {
@@ -417,7 +416,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnPCBaseLeaseCanceled(PCBase pcBase)
         {
-            Area dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
+            var dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
 
             var @event = new ModuleEvent
             {

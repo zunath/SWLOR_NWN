@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsBank()
         {
             // Arrange
-            Bank entity = new Bank {ID = 1};
+            var entity = new Bank {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Bank>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            Bank entity1 = new Bank { ID = 1};
-            Bank entity2 = new Bank { ID = 2};
+            var entity1 = new Bank { ID = 1};
+            var entity2 = new Bank { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Bank>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            Bank entity1 = new Bank { ID = 1};
-            Bank entity2 = new Bank { ID = 2};
+            var entity1 = new Bank { ID = 1};
+            var entity2 = new Bank { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Bank>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            Bank entity1 = new Bank { ID = 1};
-            Bank entity2 = new Bank { ID = 2};
+            var entity1 = new Bank { ID = 1};
+            var entity2 = new Bank { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Bank>(entity1));

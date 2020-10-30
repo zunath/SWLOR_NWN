@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Mod
         
         private ParsedData ParseData(NWItem target, params string[] data)
         {
-            ParsedData result = new ParsedData();
+            var result = new ParsedData();
 
             // STR, DEX, CON, INT, WIS, or CHA
             result.TypeName = data[0];
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Mod
         {
             var data = ParseData(target, args);
             
-            int newValue = data.CurrentValue + data.Amount;
+            var newValue = data.CurrentValue + data.Amount;
             if (newValue > MaxValue) newValue = MaxValue;
 
             switch (data.TypeName)

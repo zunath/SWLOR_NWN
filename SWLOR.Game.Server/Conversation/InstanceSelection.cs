@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -18,9 +17,9 @@ namespace SWLOR.Game.Server.Conversation
         
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage(
+            var mainPage = new DialogPage(
                 "One or more party member is in this instance. Which will you enter?");
 
             dialog.AddPage("MainPage", mainPage);
@@ -66,7 +65,7 @@ namespace SWLOR.Game.Server.Conversation
             else
             {
                 var response = GetResponseByID("MainPage", responseID);
-                NWObject member = (NWObject)response.CustomData;
+                var member = (NWObject)response.CustomData;
 
                 if (!member.IsValid)
                 {

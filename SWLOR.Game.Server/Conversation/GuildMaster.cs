@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Quest.Objective;
@@ -20,19 +19,19 @@ namespace SWLOR.Game.Server.Conversation
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainPage = new DialogPage("<SET LATER>",
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage("<SET LATER>",
                 "Tell me about guilds.",
                 "Show me the task list.",
                 "Show me the guild shop.");
 
-            DialogPage tellMePage = new DialogPage();
-            DialogPage rankTooLowPage = new DialogPage("I'm sorry but your rank is too low to grant you access to that. Perform tasks for us and come back when you've increased your rank with our guild.");
-            DialogPage taskListPage = new DialogPage("The following tasks are available for you.");
-            DialogPage taskDetailsPage = new DialogPage("<SET LATER>",
+            var tellMePage = new DialogPage();
+            var rankTooLowPage = new DialogPage("I'm sorry but your rank is too low to grant you access to that. Perform tasks for us and come back when you've increased your rank with our guild.");
+            var taskListPage = new DialogPage("The following tasks are available for you.");
+            var taskDetailsPage = new DialogPage("<SET LATER>",
                 "Accept Task",
                 "Give Report");
-            DialogPage guildStorePage = new DialogPage("Which store would you like to view?",
+            var guildStorePage = new DialogPage("Which store would you like to view?",
                 "Rank 1",
                 "Rank 2",
                 "Rank 3",
@@ -59,8 +58,8 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            NWObject speaker = GetDialogTarget();
-            GuildType guild = (GuildType)speaker.GetLocalInt("GUILD_ID");
+            var speaker = GetDialogTarget();
+            var guild = (GuildType)speaker.GetLocalInt("GUILD_ID");
 
             var model = new Model
             {
@@ -97,9 +96,9 @@ namespace SWLOR.Game.Server.Conversation
             var model = GetDialogCustomData<Model>();
             var guild = DataService.Guild.GetByID((int) model.Guild);
             var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, guild.ID);
-            int requiredPoints = GuildService.RankProgression[pcGP.Rank];
+            var requiredPoints = GuildService.RankProgression[pcGP.Rank];
 
-            string header = ColorTokenService.Green("Guild: ") + guild.Name + "\n";
+            var header = ColorTokenService.Green("Guild: ") + guild.Name + "\n";
             header += ColorTokenService.Green("Rank: ") + pcGP.Rank + " (" + pcGP.Points + " / " + requiredPoints + " GP)\n"; 
             header += ColorTokenService.Green("Description: ") + guild.Description + "\n\n";
             header += "Welcome to my guild, " + player.Name + ". What can I help you with?";
@@ -129,7 +128,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var guilds = DataService.Guild.GetAll();
 
-            string header = "Guilds are organizations focused on the advancement of a particular task. Every guild is freely open for you to contribute as you see fit. Those who contribute the most will receive the biggest benefits.\n\n";
+            var header = "Guilds are organizations focused on the advancement of a particular task. Every guild is freely open for you to contribute as you see fit. Those who contribute the most will receive the biggest benefits.\n\n";
             header += "One of the ways we reward contributors is by way of Guild Points or GP. When you complete a task - such as hunting a beast or creating needed supplies - you'll receive not only payment but also GP.\n\n";
             header += "When you acquire enough GP, the guild will increase your rank. Higher ranks unlock benefits like access to new items in the guild store.\n\n";
             header += "There's no fee to join and you may come and go as you please. Here's some information on the guilds currently operating in this sector.\n\n";
@@ -180,7 +179,7 @@ namespace SWLOR.Game.Server.Conversation
             else
             {
                 var speaker = GetDialogTarget();
-                string storeTag = speaker.GetLocalString("STORE_TAG_RANK_" + responseID);
+                var storeTag = speaker.GetLocalString("STORE_TAG_RANK_" + responseID);
 
                 // Invalid local variable set.
                 if (string.IsNullOrWhiteSpace(storeTag))
@@ -207,7 +206,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var model = GetDialogCustomData<Model>();
-            string header = "These are our currently available tasks. Please check back periodically because our needs are always changing.";
+            var header = "These are our currently available tasks. Please check back periodically because our needs are always changing.";
             SetPageHeader("TaskListPage", header);
 
             ClearPageResponses("TaskListPage");
@@ -230,7 +229,7 @@ namespace SWLOR.Game.Server.Conversation
             foreach (var task in expiredTasks)
             {
                 var quest = QuestService.GetQuestByID(task.QuestID);
-                string status = ColorTokenService.Green("{ACCEPTED}");
+                var status = ColorTokenService.Green("{ACCEPTED}");
                 AddResponseToPage("TaskListPage", quest.Name + " [Rank " + (task.RequiredRank+1) + "] " + status + ColorTokenService.Red(" [EXPIRED]"), true, task.ID);
             }
 
@@ -249,7 +248,7 @@ namespace SWLOR.Game.Server.Conversation
                 // The reason for this is to prevent players from repeating the same tasks over and over without impunity.
                 if (questStatus != null && questStatus.CompletionDate >= lastUpdate) continue;
 
-                string status = ColorTokenService.Green("{ACCEPTED}");
+                var status = ColorTokenService.Green("{ACCEPTED}");
                 // Player has never accepted the quest, or they've already completed it at least once and can accept it again.
                 if (questStatus == null || questStatus.CompletionDate != null)
                 {
@@ -278,13 +277,13 @@ namespace SWLOR.Game.Server.Conversation
             var task = DataService.GuildTask.GetByID(model.TaskID);
             var quest = QuestService.GetQuestByID(task.QuestID);
             var status = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, task.QuestID);
-            bool showQuestAccept = status == null || status.CompletionDate != null; // Never accepted, or has already been completed once.
-            bool showGiveReport = status != null && status.CompletionDate == null; // Accepted, but not completed.
+            var showQuestAccept = status == null || status.CompletionDate != null; // Never accepted, or has already been completed once.
+            var showGiveReport = status != null && status.CompletionDate == null; // Accepted, but not completed.
             var gpRewards = quest.GetRewards().Where(x => x.GetType() == typeof(QuestGPReward)).Cast<QuestGPReward>();
             var goldRewards = quest.GetRewards().Where(x => x.GetType() == typeof(QuestGoldReward)).Cast<QuestGoldReward>();
 
-            int gpAmount = 0;
-            int goldAmount = 0;
+            var gpAmount = 0;
+            var goldAmount = 0;
 
             foreach (var gpReward in gpRewards)
             {
@@ -296,7 +295,7 @@ namespace SWLOR.Game.Server.Conversation
                 goldAmount += goldReward.Amount;
             }
 
-            string header = ColorTokenService.Green("Task: ") + quest.Name + "\n\n";
+            var header = ColorTokenService.Green("Task: ") + quest.Name + "\n\n";
 
             header += "Rewards:\n\n";
             header += ColorTokenService.Green("Credits: ") + goldAmount + "\n";

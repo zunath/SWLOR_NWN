@@ -2,8 +2,6 @@
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
@@ -73,7 +71,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
         {
-            NWItem equipped = oItem ?? creature.RightHand;
+            var equipped = oItem ?? creature.RightHand;
 
             if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.Baton)
             {
@@ -90,7 +88,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
                 return;
             }
 
-            int perkLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.BluntPowerAttack);
+            var perkLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.BluntPowerAttack);
             Creature.AddFeat(creature, Feat.PowerAttack);
 
             if (perkLevel >= 2)

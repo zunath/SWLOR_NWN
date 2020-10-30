@@ -16,8 +16,8 @@ namespace SWLOR.Game.Server.Event.Legacy
 
             using (new Profiler(nameof(ScriptEvent) + "." + script))
             {
-                string rootNamespace = Assembly.GetExecutingAssembly().GetName().Name;
-                string scriptNamespace = rootNamespace + ".Scripts." + script;
+                var rootNamespace = Assembly.GetExecutingAssembly().GetName().Name;
+                var scriptNamespace = rootNamespace + ".Scripts." + script;
 
                 // Check the script cache first. If it exists, we run it.
                 if (ScriptService.IsScriptRegisteredByNamespace(scriptNamespace))

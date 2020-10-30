@@ -29,8 +29,8 @@ namespace SWLOR.Game.Server.Quest.Reward
         {
             if (_amount <= 0 || _fameRegionID <= 0) return;
 
-            PCRegionalFame fame = DataService.PCRegionalFame.GetByPlayerIDAndFameRegionIDOrDefault(player.GlobalID, _fameRegionID);
-            DatabaseActionType action = DatabaseActionType.Update;
+            var fame = DataService.PCRegionalFame.GetByPlayerIDAndFameRegionIDOrDefault(player.GlobalID, _fameRegionID);
+            var action = DatabaseActionType.Update;
 
             if (fame == null)
             {

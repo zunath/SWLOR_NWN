@@ -2,8 +2,6 @@
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
@@ -69,12 +67,12 @@ namespace SWLOR.Game.Server.Perk.Weapons
 
         private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
         {
-            NWItem equipped = oItem ?? creature.RightHand;
+            var equipped = oItem ?? creature.RightHand;
             RemoveAllFeats(creature);
 
             // Unarmed check
-            NWItem mainHand = creature.RightHand;
-            NWItem offHand = creature.LeftHand;
+            var mainHand = creature.RightHand;
+            var offHand = creature.LeftHand;
             if (oItem != null && Equals(oItem, mainHand))
             {
                 mainHand = NWScript.OBJECT_INVALID;
@@ -119,7 +117,7 @@ namespace SWLOR.Game.Server.Perk.Weapons
                 perkType = PerkType.ImprovedCriticalLightsabers;
             }
             
-            int perkLevel = PerkService.GetCreaturePerkLevel(creature, perkType);
+            var perkLevel = PerkService.GetCreaturePerkLevel(creature, perkType);
             var type = equipped.BaseItemType;
             if (perkLevel > 0)
             {

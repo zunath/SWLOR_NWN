@@ -1,8 +1,5 @@
 ﻿using System.Linq;
-using System.Numerics;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
@@ -71,18 +68,18 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
                 return false;
             }
 
-            int level = CraftService.GetIngotLevel(item.Resref);
-            int rank = SkillService.GetPCSkillRank(pc, SkillType.Harvesting);
+            var level = CraftService.GetIngotLevel(item.Resref);
+            var rank = SkillService.GetPCSkillRank(pc, SkillType.Harvesting);
             
-            int delta = rank - level;
+            var delta = rank - level;
             if (delta <= -4)
             {
                 ReturnItemToPC(pc, item, "You do not have enough skill to refine this material.");
                 return false;
             }
 
-            int pcPerkLevel = PerkService.GetCreaturePerkLevel(pc, PerkType.Refining);
-            int orePerkLevel = CraftService.GetIngotPerkLevel(item.Resref);
+            var pcPerkLevel = PerkService.GetCreaturePerkLevel(pc, PerkType.Refining);
+            var orePerkLevel = CraftService.GetIngotPerkLevel(item.Resref);
 
             if (pcPerkLevel < orePerkLevel)
             {
@@ -95,7 +92,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
 
         private void StartSmelt(NWPlaceable forge, NWPlayer pc, NWItem item)
         {
-            int charges = forge.GetLocalInt("FORGE_CHARGES");
+            var charges = forge.GetLocalInt("FORGE_CHARGES");
             if (item.Resref == "power_core")
             {
                 item.Destroy();
@@ -105,8 +102,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
                 NWPlaceable flames = (forge.GetLocalObject("FORGE_FLAMES"));
                 if (!flames.IsValid)
                 {
-                    Vector3 flamePosition = BiowarePosition.GetChangedPosition(forge.Position, 0.36f, forge.Facing);
-                    Location flameLocation = NWScript.Location(forge.Area.Object, flamePosition, 0.0f);
+                    var flamePosition = BiowarePosition.GetChangedPosition(forge.Position, 0.36f, forge.Facing);
+                    var flameLocation = NWScript.Location(forge.Area.Object, flamePosition, 0.0f);
                     flames = (NWScript.CreateObject(ObjectType.Placeable, "forge_flame", flameLocation));
                     forge.SetLocalObject("FORGE_FLAMES", flames.Object);
                 }
@@ -120,7 +117,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
             }
 
             // Ready to smelt
-            float baseCraftDelay = 18.0f - (18.0f * PerkService.GetCreaturePerkLevel(pc, PerkType.SpeedyRefining) * 0.1f);
+            var baseCraftDelay = 18.0f - (18.0f * PerkService.GetCreaturePerkLevel(pc, PerkType.SpeedyRefining) * 0.1f);
 
             pc.IsBusy = true;
             Player.StartGuiTimingBar(pc, baseCraftDelay, string.Empty);
@@ -130,7 +127,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
                 NWScript.GetItemPropertyType(x) == ItemPropertyType.ComponentBonus ||
                 NWScript.GetItemPropertyType(x) == ItemPropertyType.RecommendedLevel).ToList();
 
-            string itemResref = item.Resref;
+            var itemResref = item.Resref;
 
             var @event = new OnCompleteSmelt(pc, itemResref, itemProperties);
             pc.DelayEvent(baseCraftDelay, @event);
@@ -142,15 +139,15 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
 
         private int GetPowerCoreDurability(NWItem item)
         {
-            int durability = 0;
+            var durability = 0;
             foreach (var ip in item.ItemProperties)
             {
                 if (NWScript.GetItemPropertyType(ip) == ItemPropertyType.ComponentBonus)
                 {
-                    int bonusTypeID = NWScript.GetItemPropertySubType(ip);
+                    var bonusTypeID = NWScript.GetItemPropertySubType(ip);
                     if (bonusTypeID == (int) ComponentBonusType.DurabilityUp)
                     {
-                        int amount = NWScript.GetItemPropertyCostTableValue(ip);
+                        var amount = NWScript.GetItemPropertyCostTableValue(ip);
                         durability += amount;
                     }
                 }
@@ -168,7 +165,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
 
         private int CalculatePerkCoalBonusCharges(NWPlayer pc)
         {
-            int perkLevel = PerkService.GetCreaturePerkLevel(pc, PerkType.RefineryManagement);
+            var perkLevel = PerkService.GetCreaturePerkLevel(pc, PerkType.RefineryManagement);
 
             switch (perkLevel)
             {

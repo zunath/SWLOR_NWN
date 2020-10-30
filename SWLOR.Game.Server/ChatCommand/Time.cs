@@ -10,8 +10,8 @@ namespace SWLOR.Game.Server.ChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            DateTime now = DateTime.UtcNow;
-            string nowText = now.ToString("yyyy-MM-dd hh:mm:ss");
+            var now = DateTime.UtcNow;
+            var nowText = now.ToString("yyyy-MM-dd hh:mm:ss");
 
             user.SendMessage("Current Server Date: " + nowText);
         }

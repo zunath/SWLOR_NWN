@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Perk.TwoHanded
 
         private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
         {
-            NWItem equipped = oItem ?? creature.RightHand;
+            var equipped = oItem ?? creature.RightHand;
 
             if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.HeavyVibroblade)
             {

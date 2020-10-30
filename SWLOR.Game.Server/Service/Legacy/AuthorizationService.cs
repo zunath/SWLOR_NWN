@@ -38,9 +38,9 @@ namespace SWLOR.Game.Server.Service
         {
             if (!player.IsPlayer && !player.IsDM) return DMAuthorizationType.None;
 
-            string cdKey = GetPCPublicCDKey(player);
+            var cdKey = GetPCPublicCDKey(player);
 
-            AuthorizedDM entity = DataService.AuthorizedDM.GetByCDKeyAndActiveOrDefault(cdKey);
+            var entity = DataService.AuthorizedDM.GetByCDKeyAndActiveOrDefault(cdKey);
             if (entity == null) return DMAuthorizationType.None;
 
             if (entity.DMRole == 1)
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Service
             var now = DateTime.UtcNow;
             var eventType = isAuthorizationSuccessful ? 13 : 14;
 
-            ModuleEvent entity = new ModuleEvent
+            var entity = new ModuleEvent
             {
                 AccountName = account,
                 CDKey = cdKey,

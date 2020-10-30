@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -37,7 +36,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleNWNXChat()
         {
-            ChatChannel channel = (ChatChannel)Chat.GetChannel();
+            var channel = (ChatChannel)Chat.GetChannel();
 
             // So we're going to play with a couple of channels here.
 
@@ -48,13 +47,13 @@ namespace SWLOR.Game.Server.Service
             // - PlayerShout sends a holocom message server-wide through the DMTell channel.
             // - PlayerDM echoes back the message received to the sender.
 
-            bool inCharacterChat =
+            var inCharacterChat =
                 channel == ChatChannel.PlayerTalk ||
                 channel == ChatChannel.PlayerWhisper ||
                 channel == ChatChannel.PlayerParty ||
                 channel == ChatChannel.PlayerShout;
 
-            bool messageToDm = channel == ChatChannel.PlayerDM;
+            var messageToDm = channel == ChatChannel.PlayerDM;
 
             if (!inCharacterChat && !messageToDm)
             {
@@ -63,7 +62,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             NWObject sender = Chat.GetSender();
-            string message = Chat.GetMessage().Trim();
+            var message = Chat.GetMessage().Trim();
 
             if (string.IsNullOrWhiteSpace(message))
             {
@@ -104,10 +103,10 @@ namespace SWLOR.Game.Server.Service
             List<ChatComponent> chatComponents;
 
             // Quick early out - if we start with "//" or "((", this is an OOC message.
-            bool isOOC = false;
+            var isOOC = false;
             if (message.Length >= 2 && (message.Substring(0, 2) == "//" || message.Substring(0, 2) == "(("))
             {
-                ChatComponent component = new ChatComponent
+                var component = new ChatComponent
                 {
                     m_Text = message,
                     m_CustomColour = true,
@@ -139,7 +138,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // For any components with colour, set the emote colour.
-                foreach (ChatComponent component in chatComponents)
+                foreach (var component in chatComponents)
                 {
                     if (component.m_CustomColour)
                     {
@@ -151,11 +150,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Now, depending on the chat channel, we need to build a list of recipients.
-            bool needsAreaCheck = false;
-            float distanceCheck = 0.0f;
+            var needsAreaCheck = false;
+            var distanceCheck = 0.0f;
             
             // The sender always wants to see their own message.
-            List<NWObject> recipients = new List<NWObject> {sender};
+            var recipients = new List<NWObject> {sender};
 
             // This is a server-wide holonet message (that receivers can toggle on or off).
             if (channel == ChatChannel.PlayerShout)
@@ -196,11 +195,11 @@ namespace SWLOR.Game.Server.Service
             // Now we have a list of who is going to actually receive a message, we need to modify
             // the message for each recipient then dispatch them.
 
-            foreach (NWObject obj in recipients.Distinct())
+            foreach (var obj in recipients.Distinct())
             {
                 // Generate the final message as perceived by obj.
 
-                StringBuilder finalMessage = new StringBuilder();
+                var finalMessage = new StringBuilder();
 
                 if (channel == ChatChannel.PlayerShout)
                 {
@@ -215,13 +214,13 @@ namespace SWLOR.Game.Server.Service
                         // Convenience for DMs - append the party members.
                         finalMessage.Append("{ ");
 
-                        int count = 0;
+                        var count = 0;
                         NWPlayer player = sender.Object;
-                        List<NWCreature> partyMembers = player.PartyMembers.ToList();
+                        var partyMembers = player.PartyMembers.ToList();
 
-                        foreach (NWCreature otherPlayer in partyMembers)
+                        foreach (var otherPlayer in partyMembers)
                         {
-                            string name = otherPlayer.Name;
+                            var name = otherPlayer.Name;
                             finalMessage.Append(name.Substring(0, Math.Min(name.Length, 10)));
 
                             ++count;
@@ -248,31 +247,31 @@ namespace SWLOR.Game.Server.Service
                     sender = HoloComService.GetHoloGramOwner(sender);
                 }
 
-                SkillType language = LanguageService.GetActiveLanguage(sender);
+                var language = LanguageService.GetActiveLanguage(sender);
                 
                 // Wookiees cannot speak any other language (but they can understand them).
                 // Swap their language if they attempt to speak in any other language.
-                RacialType race = (RacialType) NWScript.GetRacialType(sender);                
+                var race = (RacialType) NWScript.GetRacialType(sender);                
                 if (race == RacialType.Wookiee && language != SkillType.Shyriiwook)
                 {
                     LanguageService.SetActiveLanguage(sender, SkillType.Shyriiwook);
                     language = SkillType.Shyriiwook;
                 }
 
-                int colour = LanguageService.GetColour(language);
-                byte r = (byte)(colour >> 24 & 0xFF);
-                byte g = (byte)(colour >> 16 & 0xFF);
-                byte b = (byte)(colour >> 8 & 0xFF);
+                var colour = LanguageService.GetColour(language);
+                var r = (byte)(colour >> 24 & 0xFF);
+                var g = (byte)(colour >> 16 & 0xFF);
+                var b = (byte)(colour >> 8 & 0xFF);
 
                 if (language != SkillType.Basic)
                 {
-                    string languageName = LanguageService.GetName(language);
+                    var languageName = LanguageService.GetName(language);
                     finalMessage.Append(ColorTokenService.Custom($"[{languageName}] ", r, g, b));
                 }
 
-                foreach (ChatComponent component in chatComponents)
+                foreach (var component in chatComponents)
                 {
-                    string text = component.m_Text;
+                    var text = component.m_Text;
 
                     if (component.m_Translatable && language != SkillType.Basic)
                     {
@@ -298,7 +297,7 @@ namespace SWLOR.Game.Server.Service
                 //   We could use the native channels for these but the [shout] or [party chat] labels look silly.
                 // - Talk and whisper are sent as-is.
 
-                ChatChannel finalChannel = channel;
+                var finalChannel = channel;
 
                 if (channel == ChatChannel.PlayerShout || channel == ChatChannel.PlayerParty)
                 {
@@ -309,7 +308,7 @@ namespace SWLOR.Game.Server.Service
                 // - One for holonet (shout).
                 // - One for comms (party chat).
 
-                string finalMessageColoured = finalMessage.ToString();
+                var finalMessageColoured = finalMessage.ToString();
 
                 if (channel == ChatChannel.PlayerShout)
                 {
@@ -349,16 +348,16 @@ namespace SWLOR.Game.Server.Service
 
         private static List<ChatComponent> SplitMessageIntoComponents_Regular(string message)
         {
-            List<ChatComponent> components = new List<ChatComponent>();
+            var components = new List<ChatComponent>();
 
-            WorkingOnEmoteStyle workingOn = WorkingOnEmoteStyle.None;
-            int indexStart = 0;
-            int length = -1;
-            int depth = 0;
+            var workingOn = WorkingOnEmoteStyle.None;
+            var indexStart = 0;
+            var length = -1;
+            var depth = 0;
 
-            for (int i = 0; i < message.Length; ++i)
+            for (var i = 0; i < message.Length; ++i)
             {
-                char ch = message[i];
+                var ch = message[i];
 
                 if (ch == '[')
                 {
@@ -367,7 +366,7 @@ namespace SWLOR.Game.Server.Service
                         depth += 1;
                         if (depth == 1)
                         {
-                            ChatComponent component = new ChatComponent
+                            var component = new ChatComponent
                             {
                                 m_CustomColour = false,
                                 m_Translatable = true,
@@ -397,7 +396,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         if (depth == 0)
                         {
-                            ChatComponent component = new ChatComponent
+                            var component = new ChatComponent
                             {
                                 m_CustomColour = false,
                                 m_Translatable = true,
@@ -427,7 +426,7 @@ namespace SWLOR.Game.Server.Service
                             // This needs to be done because a single colon can be used in normal chat.
                             if (i + 1 < message.Length && message[i + 1] == ':')
                             {
-                                ChatComponent component = new ChatComponent
+                                var component = new ChatComponent
                                 {
                                     m_CustomColour = false,
                                     m_Translatable = true,
@@ -460,7 +459,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (length != -1)
                 {
-                    ChatComponent component = new ChatComponent
+                    var component = new ChatComponent
                     {
                         m_CustomColour = workingOn != WorkingOnEmoteStyle.Bracket || message[indexStart] == '[',
                         m_Translatable = false,
@@ -477,7 +476,7 @@ namespace SWLOR.Game.Server.Service
                     // If this is the last character in the string, we should just display what we've got.
                     if (i == message.Length - 1)
                     {
-                        ChatComponent component = new ChatComponent
+                        var component = new ChatComponent
                         {
                             m_CustomColour = depth != 0,
                             m_Translatable = depth == 0,
@@ -496,21 +495,21 @@ namespace SWLOR.Game.Server.Service
 
         private static List<ChatComponent> SplitMessageIntoComponents_Novel(string message)
         {
-            List<ChatComponent> components = new List<ChatComponent>();
+            var components = new List<ChatComponent>();
 
-            int indexStart = 0;
-            bool workingOnQuotes = false;
-            bool workingOnBrackets = false;
+            var indexStart = 0;
+            var workingOnQuotes = false;
+            var workingOnBrackets = false;
 
-            for (int i = 0; i < message.Length; ++i)
+            for (var i = 0; i < message.Length; ++i)
             {
-                char ch = message[i];
+                var ch = message[i];
 
                 if (ch == '"')
                 {
                     if (!workingOnQuotes)
                     {
-                        ChatComponent component = new ChatComponent
+                        var component = new ChatComponent
                         {
                             m_CustomColour = true,
                             m_Translatable = false,
@@ -523,7 +522,7 @@ namespace SWLOR.Game.Server.Service
                     }
                     else
                     {
-                        ChatComponent component = new ChatComponent
+                        var component = new ChatComponent
                         {
                             m_CustomColour = false,
                             m_Translatable = true,
@@ -537,9 +536,9 @@ namespace SWLOR.Game.Server.Service
                 }
                 else if (ch == '[')
                 {
-                    bool translate = workingOnQuotes;
+                    var translate = workingOnQuotes;
 
-                    ChatComponent component = new ChatComponent
+                    var component = new ChatComponent
                     {
                         m_CustomColour = !translate,
                         m_Translatable = translate,
@@ -552,7 +551,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 else if (ch == ']')
                 {
-                    ChatComponent component = new ChatComponent
+                    var component = new ChatComponent
                     {
                         m_CustomColour = true,
                         m_Translatable = false,
@@ -566,9 +565,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             {
-                bool translate = workingOnQuotes && !workingOnBrackets;
+                var translate = workingOnQuotes && !workingOnBrackets;
 
-                ChatComponent component = new ChatComponent
+                var component = new ChatComponent
                 {
                     m_CustomColour = !translate,
                     m_Translatable = translate,

@@ -25,11 +25,11 @@ namespace SWLOR.Game.Server.Conversation
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage();
+            var mainPage = new DialogPage();
 
-            DialogPage confirmPage = new DialogPage(
+            var confirmPage = new DialogPage(
                 "",
                 "Confirm Refund");
 
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (dbPlayer.DatePerkRefundAvailable != null && dbPlayer.DatePerkRefundAvailable > DateTime.UtcNow)
             {
-                TimeSpan delta = (DateTime)dbPlayer.DatePerkRefundAvailable - DateTime.UtcNow;
+                var delta = (DateTime)dbPlayer.DatePerkRefundAvailable - DateTime.UtcNow;
                 var time = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
                 header += "You can refund another perk in " + time;   
             }
@@ -112,11 +112,11 @@ namespace SWLOR.Game.Server.Conversation
             if (IsGrantedByBackground((PerkType) perk.ID))
                 minimumLevel = 2;
 
-            int refundAmount = DataService.PerkLevel.GetAllByPerkID(perk.ID).Where(x => 
+            var refundAmount = DataService.PerkLevel.GetAllByPerkID(perk.ID).Where(x => 
                 x.Level <= pcPerk.PerkLevel &&
                 x.Level >= minimumLevel).Sum(x => x.Price);
 
-            string header = ColorTokenService.Green("Perk: ") + perk.Name + "\n";
+            var header = ColorTokenService.Green("Perk: ") + perk.Name + "\n";
             header += ColorTokenService.Green("Level: ") + pcPerk.PerkLevel + "\n\n";
 
             header += "You will receive " + ColorTokenService.Green(refundAmount.ToString()) + " SP if you refund this perk. Are you sure you want to refund it?";
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Conversation
         private void MainPageResponse(int responseID)
         {
             var response = GetResponseByID("MainPage", responseID);
-            Guid pcPerkID = (Guid)response.CustomData;
+            var pcPerkID = (Guid)response.CustomData;
             var model = GetDialogCustomData<Model>();
             model.PCPerkID = pcPerkID;
             LoadConfirmPage();
@@ -161,13 +161,13 @@ namespace SWLOR.Game.Server.Conversation
 
             if (dbPlayer.DatePerkRefundAvailable == null) return true;
 
-            DateTime refundDate = (DateTime)dbPlayer.DatePerkRefundAvailable;
-            bool canRefund = refundDate <= DateTime.UtcNow;
+            var refundDate = (DateTime)dbPlayer.DatePerkRefundAvailable;
+            var canRefund = refundDate <= DateTime.UtcNow;
 
             if (canRefund) return true;
             
-            TimeSpan delta = refundDate - DateTime.UtcNow;
-            string time = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
+            var delta = refundDate - DateTime.UtcNow;
+            var time = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
             GetPC().FloatingText("You can refund another perk in " + time);
     
             return false;

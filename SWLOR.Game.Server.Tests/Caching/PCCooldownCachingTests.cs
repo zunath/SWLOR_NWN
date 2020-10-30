@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCCooldown entity = new PCCooldown {ID = id};
+            var entity = new PCCooldown {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCCooldown>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCCooldown entity1 = new PCCooldown { ID = id1};
-            PCCooldown entity2 = new PCCooldown { ID = id2};
+            var entity1 = new PCCooldown { ID = id1};
+            var entity2 = new PCCooldown { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCCooldown>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCCooldown entity1 = new PCCooldown { ID = id1};
-            PCCooldown entity2 = new PCCooldown { ID = id2};
+            var entity1 = new PCCooldown { ID = id1};
+            var entity2 = new PCCooldown { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCCooldown>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCCooldown entity1 = new PCCooldown { ID = id1};
-            PCCooldown entity2 = new PCCooldown { ID = id2};
+            var entity1 = new PCCooldown { ID = id1};
+            var entity2 = new PCCooldown { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCCooldown>(entity1));

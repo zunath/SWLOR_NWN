@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 
 
@@ -11,8 +10,8 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainPage = new DialogPage(
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage(
                 "Are you sure you want to destroy your player guide? This action is irreversible!",
                 "Destroy Player Guide"
             );

@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCPerkRefund entity = new PCPerkRefund {ID = id};
+            var entity = new PCPerkRefund {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCPerkRefund>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCPerkRefund entity1 = new PCPerkRefund { ID = id1};
-            PCPerkRefund entity2 = new PCPerkRefund { ID = id2};
+            var entity1 = new PCPerkRefund { ID = id1};
+            var entity2 = new PCPerkRefund { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCPerkRefund>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCPerkRefund entity1 = new PCPerkRefund { ID = id1};
-            PCPerkRefund entity2 = new PCPerkRefund { ID = id2};
+            var entity1 = new PCPerkRefund { ID = id1};
+            var entity2 = new PCPerkRefund { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCPerkRefund>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCPerkRefund entity1 = new PCPerkRefund { ID = id1};
-            PCPerkRefund entity2 = new PCPerkRefund { ID = id2};
+            var entity1 = new PCPerkRefund { ID = id1};
+            var entity2 = new PCPerkRefund { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCPerkRefund>(entity1));

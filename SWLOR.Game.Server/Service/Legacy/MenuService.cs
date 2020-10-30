@@ -14,10 +14,10 @@ namespace SWLOR.Game.Server.Service
             if (colorToken == null)
                 colorToken = ColorTokenService.TokenStart(255, 127, 0); // Orange
 
-            string xpBar = string.Empty;
-            int highlightedBars = (int)(currentValue / (float)requiredValue * numberOfBars);
+            var xpBar = string.Empty;
+            var highlightedBars = (int)(currentValue / (float)requiredValue * numberOfBars);
 
-            for (int bar = 1; bar <= numberOfBars; bar++)
+            for (var bar = 1; bar <= numberOfBars; bar++)
             {
                 if (bar <= highlightedBars)
                 {

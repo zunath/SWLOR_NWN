@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsClientLogEventType()
         {
             // Arrange
-            ModuleEventType entity = new ModuleEventType {ID = 1};
+            var entity = new ModuleEventType {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ModuleEventType>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            ModuleEventType entity1 = new ModuleEventType { ID = 1};
-            ModuleEventType entity2 = new ModuleEventType { ID = 2};
+            var entity1 = new ModuleEventType { ID = 1};
+            var entity2 = new ModuleEventType { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ModuleEventType>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            ModuleEventType entity1 = new ModuleEventType { ID = 1};
-            ModuleEventType entity2 = new ModuleEventType { ID = 2};
+            var entity1 = new ModuleEventType { ID = 1};
+            var entity2 = new ModuleEventType { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ModuleEventType>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            ModuleEventType entity1 = new ModuleEventType { ID = 1};
-            ModuleEventType entity2 = new ModuleEventType { ID = 2};
+            var entity1 = new ModuleEventType { ID = 1};
+            var entity2 = new ModuleEventType { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ModuleEventType>(entity1));

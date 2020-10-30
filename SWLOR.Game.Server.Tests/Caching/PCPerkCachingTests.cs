@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCPerk entity = new PCPerk {ID = id};
+            var entity = new PCPerk {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCPerk>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCPerk entity1 = new PCPerk { ID = id1};
-            PCPerk entity2 = new PCPerk { ID = id2};
+            var entity1 = new PCPerk { ID = id1};
+            var entity2 = new PCPerk { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCPerk>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCPerk entity1 = new PCPerk { ID = id1};
-            PCPerk entity2 = new PCPerk { ID = id2};
+            var entity1 = new PCPerk { ID = id1};
+            var entity2 = new PCPerk { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCPerk>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCPerk entity1 = new PCPerk { ID = id1};
-            PCPerk entity2 = new PCPerk { ID = id2};
+            var entity1 = new PCPerk { ID = id1};
+            var entity2 = new PCPerk { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCPerk>(entity1));

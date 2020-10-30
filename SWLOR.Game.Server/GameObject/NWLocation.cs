@@ -1,7 +1,6 @@
 ﻿using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.GameObject
 {

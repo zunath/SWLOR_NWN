@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -42,8 +41,8 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
 
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
-            int damage = 0;
-            float duration = 0.0f;
+            var damage = 0;
+            var duration = 0.0f;
 
             switch (perkLevel)
             {

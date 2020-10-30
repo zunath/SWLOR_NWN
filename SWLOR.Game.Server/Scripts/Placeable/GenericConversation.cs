@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable
 
             if (!user.IsPlayer && !user.IsDM) return;
 
-            string conversation = placeable.GetLocalString("CONVERSATION");
+            var conversation = placeable.GetLocalString("CONVERSATION");
             NWObject target = GetLocalBool(placeable, "TARGET_PC") ? user.Object : placeable.Object;
 
             if (!string.IsNullOrWhiteSpace(conversation))

@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -11,9 +10,9 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage("You can slice this terminal. What would you like to do?",
+            var mainPage = new DialogPage("You can slice this terminal. What would you like to do?",
                 "Slice the terminal");
 
             dialog.AddPage("MainPage", mainPage);
@@ -41,7 +40,7 @@ namespace SWLOR.Game.Server.Conversation
         private void DoSlice()
         {
             NWPlaceable self = NWScript.OBJECT_SELF;
-            int keyItemID = self.GetLocalInt("KEY_ITEM_ID");
+            var keyItemID = self.GetLocalInt("KEY_ITEM_ID");
 
             if (keyItemID <= 0)
             {
@@ -51,7 +50,7 @@ namespace SWLOR.Game.Server.Conversation
 
             KeyItemService.GivePlayerKeyItem(GetPC(), keyItemID);
 
-            string visibilityObjectID = self.GetLocalString("VISIBILITY_OBJECT_ID");
+            var visibilityObjectID = self.GetLocalString("VISIBILITY_OBJECT_ID");
 
             if (!string.IsNullOrWhiteSpace(visibilityObjectID))
             {

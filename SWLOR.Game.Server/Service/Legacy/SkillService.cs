@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Data.Entity;
@@ -170,20 +169,20 @@ namespace SWLOR.Game.Server.Service
 
         public static void RegisterPCToAllCombatTargetsForSkill(NWPlayer player, SkillType skillType, NWCreature target)
         {
-            int skillID = (int)skillType;
+            var skillID = (int)skillType;
             if (!player.IsPlayer) return;
             if (skillID <= 0) return;
 
-            List<NWCreature> members = player.PartyMembers.ToList();
+            var members = player.PartyMembers.ToList();
 
-            int nth = 1;
+            var nth = 1;
             NWCreature creature = GetNearestCreature(CreatureType.IsAlive, 1, player.Object, nth, (int)CreatureType.PlayerCharacter, 0);
             while (creature.IsValid)
             {
                 if (GetDistanceBetween(player.Object, creature.Object) > 20.0f) break;
 
                 // Check NPC's enmity table 
-                EnmityTable enmityTable = EnmityService.GetEnmityTable(creature);
+                var enmityTable = EnmityService.GetEnmityTable(creature);
                 foreach (var member in members)
                 {
                     if (enmityTable.ContainsKey(member.GlobalID) || (target != null && target.IsValid && target == creature))
@@ -230,7 +229,7 @@ namespace SWLOR.Game.Server.Service
             {
                 xp = (int)(xp + xp * PlayerStatService.EffectiveResidencyBonus(oPC));
             }
-            Player player = DataService.Player.GetByID(oPC.GlobalID);
+            var player = DataService.Player.GetByID(oPC.GlobalID);
             var skill = GetSkill(skillID);
 
             // Check if the player has any undistributed skill ranks for this skill category.
@@ -242,11 +241,11 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            PCSkill pcSkill = GetPCSkill(oPC, skillID);
-            int req = SkillXPRequirements[pcSkill.Rank];
-            int maxRank = skill.MaxRank;
-            int originalRank = pcSkill.Rank;
-            float xpBonusModifier = player.XPBonus * 0.01f;
+            var pcSkill = GetPCSkill(oPC, skillID);
+            var req = SkillXPRequirements[pcSkill.Rank];
+            var maxRank = skill.MaxRank;
+            var originalRank = pcSkill.Rank;
+            var xpBonusModifier = player.XPBonus * 0.01f;
 
             // Guard against XP bonuses being too high.
             if (xpBonusModifier > 0.25)
@@ -292,7 +291,7 @@ namespace SWLOR.Game.Server.Service
                 req = SkillXPRequirements[pcSkill.Rank];
 
                 // Reapply skill penalties on a skill level up.
-                for (int slot = 0; slot < NumberOfInventorySlots; slot++)
+                for (var slot = 0; slot < NumberOfInventorySlots; slot++)
                 {
                     NWItem item = GetItemInSlot((InventorySlot)slot, oPC.Object);
                     RemoveWeaponPenalties(item);
@@ -386,7 +385,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void ToggleSkillLock(Guid playerID, int skillID)
         {
-            PCSkill pcSkill = DataService.PCSkill.GetByPlayerIDAndSkillID(playerID, skillID);
+            var pcSkill = DataService.PCSkill.GetByPlayerIDAndSkillID(playerID, skillID);
             pcSkill.IsLocked = !pcSkill.IsLocked;
 
             DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
@@ -395,17 +394,17 @@ namespace SWLOR.Game.Server.Service
         private static void OnCreatureDeath()
         {
             NWCreature creature = OBJECT_SELF;
-            CreatureSkillRegistration reg = GetCreatureSkillRegistration(creature.GlobalID);
-            List<PlayerSkillRegistration> playerRegs = reg.GetAllRegistrations();
+            var reg = GetCreatureSkillRegistration(creature.GlobalID);
+            var playerRegs = reg.GetAllRegistrations();
             var registration = reg.Registrations.OrderByDescending(o => o.Value.HighestRank).FirstOrDefault();
             if (registration.Value == null) return;
 
-            int partyLevel = registration.Value.HighestRank;
+            var partyLevel = registration.Value.HighestRank;
 
             // Identify base XP using delta between party level and enemy level.
-            float cr = creature.ChallengeRating;
-            int enemyLevel = (int)(cr * 5.0f);
-            int delta = enemyLevel - partyLevel;
+            var cr = creature.ChallengeRating;
+            var enemyLevel = (int)(cr * 5.0f);
+            var delta = enemyLevel - partyLevel;
             float baseXP = 0;
 
             if (delta >= 6) baseXP = 600;
@@ -420,14 +419,14 @@ namespace SWLOR.Game.Server.Service
             else if (delta == -3) baseXP = 75;
             else if (delta == -4) baseXP = 38;
 
-            float bonusXPPercentage = creature.GetLocalFloat("BONUS_XP_PERCENTAGE");
+            var bonusXPPercentage = creature.GetLocalFloat("BONUS_XP_PERCENTAGE");
             if (bonusXPPercentage > 1) bonusXPPercentage = 1;
             else if (bonusXPPercentage < 0) bonusXPPercentage = 0;
 
             baseXP = baseXP + (baseXP * bonusXPPercentage);
 
             // Process each player skill registration.
-            foreach (PlayerSkillRegistration preg in playerRegs)
+            foreach (var preg in playerRegs)
             {
                 // Rules for acquiring skill XP:
                 // Player must be valid.
@@ -438,38 +437,38 @@ namespace SWLOR.Game.Server.Service
                         GetDistanceBetween(preg.Player.Object, creature.Object) > 40.0f)
                     continue;
 
-                List<Tuple<int, PlayerSkillPointTracker>> skillRegs = preg.GetSkillRegistrationPoints();
-                int totalPoints = preg.GetTotalSkillRegistrationPoints();
+                var skillRegs = preg.GetSkillRegistrationPoints();
+                var totalPoints = preg.GetTotalSkillRegistrationPoints();
 
                 // Retrieve all necessary PC skills up front
-                int[] skillIDsToSearchFor = skillRegs.Select(x => x.Item2.SkillID).ToArray();
+                var skillIDsToSearchFor = skillRegs.Select(x => x.Item2.SkillID).ToArray();
 
                 var pcSkills = GetAllPCSkills(preg.Player)
                     .Where(x => skillIDsToSearchFor.Contains(x.SkillID))
                     .ToList();
 
                 // Grant XP based on points acquired during combat.
-                foreach (Tuple<int, PlayerSkillPointTracker> skreg in skillRegs)
+                foreach (var skreg in skillRegs)
                 {
-                    int skillID = skreg.Item1;
-                    int skillRank = pcSkills.Single(x => x.SkillID == skillID).Rank;
+                    var skillID = skreg.Item1;
+                    var skillRank = pcSkills.Single(x => x.SkillID == skillID).Rank;
 
-                    int points = skreg.Item2.Points;
+                    var points = skreg.Item2.Points;
 
-                    float percentage = points / (float)totalPoints;
-                    float skillLDP = CalculatePartyLevelDifferencePenalty(partyLevel, skillRank);
-                    float adjustedXP = baseXP * percentage * skillLDP;
+                    var percentage = points / (float)totalPoints;
+                    var skillLDP = CalculatePartyLevelDifferencePenalty(partyLevel, skillRank);
+                    var adjustedXP = baseXP * percentage * skillLDP;
                     adjustedXP = CalculateRegisteredSkillLevelAdjustedXP(adjustedXP, skillRank, skillRank);
 
                     GiveSkillXP(preg.Player, skillID, (int)adjustedXP);
                 }
 
-                float armorXP = baseXP;
-                int lightArmorPoints = 0;
-                int heavyArmorPoints = 0;
-                int forceArmorPoints = 0;
+                var armorXP = baseXP;
+                var lightArmorPoints = 0;
+                var heavyArmorPoints = 0;
+                var forceArmorPoints = 0;
 
-                for (int slot = 0; slot < NumberOfInventorySlots; slot++)
+                for (var slot = 0; slot < NumberOfInventorySlots; slot++)
                 {
                     NWItem item = GetItemInSlot((InventorySlot)slot, preg.Player.Object);
                     if (item.CustomItemType == CustomItemType.LightArmor)
@@ -488,9 +487,9 @@ namespace SWLOR.Game.Server.Service
                 totalPoints = lightArmorPoints + heavyArmorPoints + forceArmorPoints;
                 if (totalPoints <= 0) continue;
 
-                int armorRank = GetPCSkillRank(preg.Player, SkillType.LightArmor);
-                float armorLDP = CalculatePartyLevelDifferencePenalty(partyLevel, armorRank);
-                float percent = lightArmorPoints / (float)totalPoints;
+                var armorRank = GetPCSkillRank(preg.Player, SkillType.LightArmor);
+                var armorLDP = CalculatePartyLevelDifferencePenalty(partyLevel, armorRank);
+                var percent = lightArmorPoints / (float)totalPoints;
 
                 GiveSkillXP(preg.Player, SkillType.LightArmor, (int)(armorXP * percent * armorLDP));
 
@@ -514,8 +513,8 @@ namespace SWLOR.Game.Server.Service
 
         private static float CalculatePartyLevelDifferencePenalty(int highestSkillRank, int skillRank)
         {
-            int levelDifference = highestSkillRank - skillRank;
-            float levelDifferencePenalty = 1.0f;
+            var levelDifference = highestSkillRank - skillRank;
+            var levelDifferencePenalty = 1.0f;
             if (levelDifference > 10)
             {
                 levelDifferencePenalty = 1.0f - 0.05f * (levelDifference - 10);
@@ -596,8 +595,8 @@ namespace SWLOR.Game.Server.Service
 
         public static float CalculateRegisteredSkillLevelAdjustedXP(float xp, int registeredLevel, int skillRank)
         {
-            int delta = registeredLevel - skillRank;
-            float levelAdjustment = 0.14f * delta;
+            var delta = registeredLevel - skillRank;
+            var levelAdjustment = 0.14f * delta;
 
             if (levelAdjustment > 0.0f) levelAdjustment = 0.0f;
             if (levelAdjustment < -1.0f) levelAdjustment = -1.0f;
@@ -623,7 +622,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void RemovePlayerFromRegistrations(NWPlayer oPC)
         {
-            foreach (CreatureSkillRegistration reg in AppCache.CreatureSkillRegistrations.Values.ToArray())
+            foreach (var reg in AppCache.CreatureSkillRegistrations.Values.ToArray())
             {
                 reg.RemovePlayerRegistration(oPC);
 
@@ -665,7 +664,7 @@ namespace SWLOR.Game.Server.Service
 
         private static bool ApplySkillDecay(NWPlayer oPC, PCSkill levelingSkill, int xp)
         {
-            int totalSkillRanks = GetPCTotalSkillCount(oPC);
+            var totalSkillRanks = GetPCTotalSkillCount(oPC);
             if (totalSkillRanks < SkillCap) return true;
 
             // Find out if we have enough XP to remove. If we don't, make no changes and return false signifying no XP could be removed.
@@ -677,7 +676,7 @@ namespace SWLOR.Game.Server.Service
                 return new { s.SkillID, TotalSkillXP = totalXP };
             }).ToList();
 
-            int aggregateXP = 0;
+            var aggregateXP = 0;
             foreach (var p in totalXPs)
             {
                 aggregateXP += p.TotalSkillXP;
@@ -703,10 +702,10 @@ namespace SWLOR.Game.Server.Service
 
             while (xp > 0)
             {
-                int skillIndex = RandomService.Random(skillsPossibleToDecay.Count);
-                PCSkill decaySkill = skillsPossibleToDecay[skillIndex];
-                int totalDecaySkillXP = totalXPs.Find(x => x.SkillID == decaySkill.SkillID).TotalSkillXP;
-                int oldRank = decaySkill.Rank;
+                var skillIndex = RandomService.Random(skillsPossibleToDecay.Count);
+                var decaySkill = skillsPossibleToDecay[skillIndex];
+                var totalDecaySkillXP = totalXPs.Find(x => x.SkillID == decaySkill.SkillID).TotalSkillXP;
+                var oldRank = decaySkill.Rank;
 
                 if (totalDecaySkillXP >= xp)
                 {
@@ -734,7 +733,7 @@ namespace SWLOR.Game.Server.Service
 
 
                     // The first entry in the database is for rank 0, and if passed, will raise us to 1.  So start our count at 0.
-                    int newDecaySkillRank = 0;
+                    var newDecaySkillRank = 0;
                     foreach (var req in reqs)
                     {
                         if (totalDecaySkillXP >= req.Value)
@@ -752,7 +751,7 @@ namespace SWLOR.Game.Server.Service
                     decaySkill.XP = totalDecaySkillXP;
                 }
 
-                PCSkill dbDecaySkill = new PCSkill
+                var dbDecaySkill = new PCSkill
                 {
                     SkillID = decaySkill.SkillID,
                     IsLocked = decaySkill.IsLocked,
@@ -790,7 +789,7 @@ namespace SWLOR.Game.Server.Service
             NWItem oSpellOrigin = (GetSpellCastItem());
             NWCreature oTarget = (GetSpellTargetObject());
 
-            SkillType skillType = ItemService.GetSkillTypeForItem(oSpellOrigin);
+            var skillType = ItemService.GetSkillTypeForItem(oSpellOrigin);
 
             if (skillType == SkillType.Unknown ||
                 skillType == SkillType.LightArmor ||
@@ -800,14 +799,14 @@ namespace SWLOR.Game.Server.Service
             if (oTarget.IsPlayer || oTarget.IsDM) return;
             if (oTarget.ObjectType != ObjectType.Creature) return;
 
-            int skillID = (int)skillType;
-            CreatureSkillRegistration reg = GetCreatureSkillRegistration(oTarget.GlobalID);
-            int rank = GetPCSkillRank(oPC, skillID);
+            var skillID = (int)skillType;
+            var reg = GetCreatureSkillRegistration(oTarget.GlobalID);
+            var rank = GetPCSkillRank(oPC, skillID);
             reg.AddSkillRegistrationPoint(oPC, skillID, oSpellOrigin.RecommendedLevel, rank);
 
             // Add a registration point if a shield is equipped. This is to prevent players from swapping out a weapon for a shield
             // just before they kill an enemy.
-            NWItem oShield = oPC.LeftHand;
+            var oShield = oPC.LeftHand;
             if (oShield.BaseItemType == BaseItem.SmallShield ||
                 oShield.BaseItemType == BaseItem.LargeShield ||
                 oShield.BaseItemType == BaseItem.TowerShield)
@@ -828,15 +827,15 @@ namespace SWLOR.Game.Server.Service
             if (npc.IsPlayer || npc.IsDM || !npc.IsValid) return;
             if (skillID <= 0) return;
 
-            int rank = GetPCSkillRank(pc, skillID);
+            var rank = GetPCSkillRank(pc, skillID);
 
-            CreatureSkillRegistration reg = GetCreatureSkillRegistration(npc.GlobalID);
+            var reg = GetCreatureSkillRegistration(npc.GlobalID);
             reg.AddSkillRegistrationPoint(pc, skillID, rank, rank);
         }
 
         private static void ApplyWeaponPenalties(NWPlayer oPC, NWItem oItem)
         {
-            SkillType skillType = ItemService.GetSkillTypeForItem(oItem);
+            var skillType = ItemService.GetSkillTypeForItem(oItem);
 
             if (skillType == SkillType.Unknown ||
                 skillType == SkillType.HeavyArmor ||
@@ -844,12 +843,12 @@ namespace SWLOR.Game.Server.Service
                 skillType == SkillType.ForceArmor ||
                 skillType == SkillType.Shields) return;
 
-            int skillID = (int)skillType;
-            int rank = GetPCSkillRank(oPC, skillID);
-            int recommendedRank = oItem.RecommendedLevel;
+            var skillID = (int)skillType;
+            var rank = GetPCSkillRank(oPC, skillID);
+            var recommendedRank = oItem.RecommendedLevel;
             if (rank >= recommendedRank) return;
 
-            int delta = rank - recommendedRank;
+            var delta = rank - recommendedRank;
             int penalty;
 
             if (delta <= -20)
@@ -881,14 +880,14 @@ namespace SWLOR.Game.Server.Service
             // No combat damage penalty
             if (penalty == 99)
             {
-                ItemProperty noDamage = ItemPropertyNoDamage();
+                var noDamage = ItemPropertyNoDamage();
                 noDamage = TagItemProperty(noDamage, IPWeaponPenaltyTag);
                 BiowareXP2.IPSafeAddItemProperty(oItem, noDamage, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
                 penalty = 5; // Reset to 5 so that the following penalties apply.
             }
 
             // Decreased attack penalty
-            ItemProperty ipPenalty = ItemPropertyAttackPenalty(penalty);
+            var ipPenalty = ItemPropertyAttackPenalty(penalty);
             ipPenalty = TagItemProperty(ipPenalty, IPWeaponPenaltyTag);
             BiowareXP2.IPSafeAddItemProperty(oItem, ipPenalty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
@@ -907,16 +906,16 @@ namespace SWLOR.Game.Server.Service
 
         private static void RemoveWeaponPenalties(NWItem oItem)
         {
-            SkillType skillType = ItemService.GetSkillTypeForItem(oItem);
+            var skillType = ItemService.GetSkillTypeForItem(oItem);
             if (skillType == SkillType.Unknown ||
                 skillType == SkillType.HeavyArmor ||
                 skillType == SkillType.LightArmor ||
                 skillType == SkillType.ForceArmor ||
                 skillType == SkillType.Shields) return;
 
-            foreach (ItemProperty ip in oItem.ItemProperties)
+            foreach (var ip in oItem.ItemProperties)
             {
-                string tag = GetItemPropertyTag(ip);
+                var tag = GetItemPropertyTag(ip);
                 if (tag == IPWeaponPenaltyTag)
                 {
                     RemoveItemProperty(oItem.Object, ip);
@@ -984,10 +983,10 @@ namespace SWLOR.Game.Server.Service
             // Rings/Amulets use the highest skill rank out of the player's armor skills
             if (item.BaseItemType == BaseItem.Ring || item.BaseItemType == BaseItem.Amulet)
             {
-                int forceArmor = GetPCSkillRank(player, SkillType.ForceArmor);
-                int lightArmor = GetPCSkillRank(player, SkillType.LightArmor);
-                int heavyArmor = GetPCSkillRank(player, SkillType.HeavyArmor);
-                int highest = forceArmor;
+                var forceArmor = GetPCSkillRank(player, SkillType.ForceArmor);
+                var lightArmor = GetPCSkillRank(player, SkillType.LightArmor);
+                var heavyArmor = GetPCSkillRank(player, SkillType.HeavyArmor);
+                var highest = forceArmor;
                 skill = SkillType.ForceArmor;
 
                 if (lightArmor > highest)
@@ -1009,8 +1008,8 @@ namespace SWLOR.Game.Server.Service
             if (skill == SkillType.Unknown) return;
 
             // Determine the delta between player's skill and the item's recommended level.
-            int rank = GetPCSkillRank(player, skill);
-            int delta = item.RecommendedLevel - rank;
+            var rank = GetPCSkillRank(player, skill);
+            var delta = item.RecommendedLevel - rank;
 
             // Player meets or exceeds recommended level. Exit early.
             if (delta <= 0) return;
@@ -1022,7 +1021,7 @@ namespace SWLOR.Game.Server.Service
             // An example of where this happens is with item appearance modification.
             if (GetLocalBool(item, "PENALTIES_APPLIED") == true) return;
 
-            List<ItemProperty> ipsToApply = new List<ItemProperty>();
+            var ipsToApply = new List<ItemProperty>();
 
             // Attributes
             int str = 0, dex = 0, con = 0, wis = 0, @int = 0, cha = 0;
@@ -1034,8 +1033,8 @@ namespace SWLOR.Game.Server.Service
             foreach (var ip in item.ItemProperties)
             {
                 var type = GetItemPropertyType(ip);
-                int subType = GetItemPropertySubType(ip);
-                int value = GetItemPropertyCostTableValue(ip);
+                var subType = GetItemPropertySubType(ip);
+                var value = GetItemPropertyCostTableValue(ip);
 
                 if (type == ItemPropertyType.AbilityBonus)
                 {
@@ -1087,14 +1086,14 @@ namespace SWLOR.Game.Server.Service
                     item.SetLocalInt(immunity.VariableName, immunity.Amount);
 
                     // Calculate the new value (minimum of 1).
-                    int newImmunity = 1 + (immunity.Amount - delta * 5);
+                    var newImmunity = 1 + (immunity.Amount - delta * 5);
                     if (newImmunity < 1) newImmunity = 1;
 
                     if (newImmunity > immunity.Amount) newImmunity = immunity.Amount;
 
                     // We have the amount but we need to find the corresponding ID in the 2DA.
                     // Check our cached 2DA data for this value.
-                    int costTableID = Cached2DAService.ImmunityCosts.Single(x => x.Value == newImmunity).Key;
+                    var costTableID = Cached2DAService.ImmunityCosts.Single(x => x.Value == newImmunity).Key;
 
                     // Unpack the IP and adjust its value.
                     var unpacked = Core.NWNX.ItemProperty.UnpackIP(ip);
@@ -1126,15 +1125,15 @@ namespace SWLOR.Game.Server.Service
                     item.SetLocalInt("PENALTY_ORIGINAL_DR_AMOUNT_ID", value);
 
                     // +1's ID is 0 so we don't need to offset by 1 here.
-                    int newPlus = subType - (delta / 3);
+                    var newPlus = subType - (delta / 3);
                     if (newPlus < 0) newPlus = 0;
 
                     // Reduce soak amount.
-                    int newDR = value - (delta / 5);
+                    var newDR = value - (delta / 5);
                     if (newDR < 1) newDR = 1;
 
                     // Add the modified item property to the list for later application.
-                    ItemProperty newIP = ItemPropertyDamageReduction((DamageReduction)newPlus, (DamageSoak)newDR);
+                    var newIP = ItemPropertyDamageReduction((DamageReduction)newPlus, (DamageSoak)newDR);
                     ipsToApply.Add(newIP);
 
                     RemoveItemProperty(item, ip);
@@ -1147,73 +1146,73 @@ namespace SWLOR.Game.Server.Service
             // The original property is left unaffected.
             if (str > 0)
             {
-                int newStr = 1 + delta / 5;
+                var newStr = 1 + delta / 5;
                 if (newStr > str) newStr = str;
 
-                ItemProperty ip = ItemPropertyDecreaseAbility(Ability.Strength, newStr);
+                var ip = ItemPropertyDecreaseAbility(Ability.Strength, newStr);
                 ip = TagItemProperty(ip, IPEquipmentPenaltyTag);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (dex > 0)
             {
-                int newDex = 1 + delta / 5;
+                var newDex = 1 + delta / 5;
                 if (newDex > dex) newDex = dex;
 
-                ItemProperty ip = ItemPropertyDecreaseAbility(Ability.Dexterity, newDex);
+                var ip = ItemPropertyDecreaseAbility(Ability.Dexterity, newDex);
                 ip = TagItemProperty(ip, IPEquipmentPenaltyTag);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (con > 0)
             {
-                int newCon = 1 + delta / 5;
+                var newCon = 1 + delta / 5;
                 if (newCon > con) newCon = con;
 
-                ItemProperty ip = ItemPropertyDecreaseAbility(Ability.Constitution, newCon);
+                var ip = ItemPropertyDecreaseAbility(Ability.Constitution, newCon);
                 ip = TagItemProperty(ip, IPEquipmentPenaltyTag);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (@int > 0)
             {
-                int newInt = 1 + delta / 5;
+                var newInt = 1 + delta / 5;
                 if (newInt > @int) newInt = @int;
 
-                ItemProperty ip = ItemPropertyDecreaseAbility(Ability.Intelligence, newInt);
+                var ip = ItemPropertyDecreaseAbility(Ability.Intelligence, newInt);
                 ip = TagItemProperty(ip, IPEquipmentPenaltyTag);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (wis > 0)
             {
-                int newWis = 1 + delta / 5;
+                var newWis = 1 + delta / 5;
                 if (newWis > wis) newWis = wis;
 
-                ItemProperty ip = ItemPropertyDecreaseAbility(Ability.Wisdom, newWis);
+                var ip = ItemPropertyDecreaseAbility(Ability.Wisdom, newWis);
                 ip = TagItemProperty(ip, IPEquipmentPenaltyTag);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (cha > 0)
             {
-                int newCha = 1 + delta / 5;
+                var newCha = 1 + delta / 5;
                 if (newCha > cha) newCha = cha;
 
-                ItemProperty ip = ItemPropertyDecreaseAbility(Ability.Charisma, newCha);
+                var ip = ItemPropertyDecreaseAbility(Ability.Charisma, newCha);
                 ip = TagItemProperty(ip, IPEquipmentPenaltyTag);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (ab > 0)
             {
-                int newAB = 1 + delta / 5;
+                var newAB = 1 + delta / 5;
                 if (newAB > ab) newAB = ab;
 
-                ItemProperty ip = ItemPropertyAttackPenalty(newAB);
+                var ip = ItemPropertyAttackPenalty(newAB);
                 ip = TagItemProperty(ip, IPEquipmentPenaltyTag);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
             if (eb > 0)
             {
-                int newEB = 1 + delta / 5;
+                var newEB = 1 + delta / 5;
                 if (newEB > eb) newEB = eb;
 
-                ItemProperty ip = ItemPropertyEnhancementPenalty(newEB);
+                var ip = ItemPropertyEnhancementPenalty(newEB);
                 ip = TagItemProperty(ip, IPEquipmentPenaltyTag);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
             }
@@ -1241,7 +1240,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var type = GetItemPropertyType(ip);
                 // Remove any temporary item properties with a matching penalty tag.
-                string tag = GetItemPropertyTag(ip);
+                var tag = GetItemPropertyTag(ip);
                 if (tag == IPEquipmentPenaltyTag)
                 {
                     RemoveItemProperty(item, ip);
@@ -1251,9 +1250,9 @@ namespace SWLOR.Game.Server.Service
                 {
                     // Take the existing IP, modify it, then put it in the list for later addition to the item.
                     // We can't directly modify the item property on the item, so we use this as a workaround.
-                    int subType = GetItemPropertySubType(ip);
-                    string varName = immunities[(DamageType)subType].VariableName;
-                    int costTableID = item.GetLocalInt(varName);
+                    var subType = GetItemPropertySubType(ip);
+                    var varName = immunities[(DamageType)subType].VariableName;
+                    var costTableID = item.GetLocalInt(varName);
 
                     if (costTableID > 0)
                     {
@@ -1271,11 +1270,11 @@ namespace SWLOR.Game.Server.Service
                 }
                 else if (type == ItemPropertyType.DamageReduction)
                 {
-                    int plusID = item.GetLocalInt("PENALTY_ORIGINAL_DR_PLUS_ID");
-                    int amountID = item.GetLocalInt("PENALTY_ORIGINAL_DR_AMOUNT_ID");
+                    var plusID = item.GetLocalInt("PENALTY_ORIGINAL_DR_PLUS_ID");
+                    var amountID = item.GetLocalInt("PENALTY_ORIGINAL_DR_AMOUNT_ID");
                     if (plusID > 0 && amountID > 0)
                     {
-                        ItemProperty newIP = ItemPropertyDamageReduction((DamageReduction)plusID, (DamageSoak)amountID);
+                        var newIP = ItemPropertyDamageReduction((DamageReduction)plusID, (DamageSoak)amountID);
                         ipsToApply.Add(newIP);
 
                         RemoveItemProperty(item, ip);
@@ -1289,11 +1288,11 @@ namespace SWLOR.Game.Server.Service
             // Re-add resistance item properties to the item.
             foreach (var resistance in resistances)
             {
-                string varName = resistance.Value.VariableName;
-                int costTableID = item.GetLocalInt(varName);
+                var varName = resistance.Value.VariableName;
+                var costTableID = item.GetLocalInt(varName);
                 if (costTableID > 0)
                 {
-                    ItemProperty ip = ItemPropertyDamageResistance(resistance.Key, (DamageResist)costTableID);
+                    var ip = ItemPropertyDamageResistance(resistance.Key, (DamageResist)costTableID);
                     ipsToApply.Add(ip);
                 }
 

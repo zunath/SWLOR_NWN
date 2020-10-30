@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
 
         private void ApplyFeatChanges(NWCreature creature, NWItem unequippedItem)
         {
-            NWItem equipped = unequippedItem ?? creature.RightHand;
+            var equipped = unequippedItem ?? creature.RightHand;
 
             if (Equals(equipped, unequippedItem) || equipped.CustomItemType != CustomItemType.Saberstaff)
             {
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Perk.Lightsaber
                 return;
             }
 
-            int perkLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.SaberstaffMastery);
+            var perkLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.SaberstaffMastery);
             Creature.AddFeat(creature, Feat.TwoWeaponFighting);
 
             if (perkLevel >= 2)

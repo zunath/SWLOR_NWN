@@ -1,6 +1,5 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.ChatCommand.Contracts;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -20,8 +19,8 @@ namespace SWLOR.Game.Server.ChatCommand
                 return;
             }
 
-            int type = int.Parse(args[0]);
-            Player dbPlayer = DataService.Player.GetByID(target.GlobalID);
+            var type = int.Parse(args[0]);
+            var dbPlayer = DataService.Player.GetByID(target.GlobalID);
             dbPlayer.SpecializationID = (SpecializationType) type;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
             NWScript.SendMessageToPC(target, "A DM has set your Force Specialization type to " + type);
@@ -37,7 +36,7 @@ namespace SWLOR.Game.Server.ChatCommand
             }
 
             // Can't parse the amount?
-            if(!int.TryParse(args[0], out int amount))
+            if(!int.TryParse(args[0], out var amount))
             {
                 return "Please specify a valid valid parameter. 0 = None, 1 = Guardian, 2 = Consular, 3 = Sentinel.";
             }

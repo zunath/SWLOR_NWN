@@ -17,22 +17,22 @@ namespace SWLOR.Game.Server.Conversation
         
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage(
+            var mainPage = new DialogPage(
                 "Which blueprints would you like to view?",
                 "Crafting Blueprints"
             );
 
-            DialogPage craftCategoriesPage = new DialogPage(
+            var craftCategoriesPage = new DialogPage(
                 "Which category would you like to view?"
             );
 
-            DialogPage blueprintList = new DialogPage(
+            var blueprintList = new DialogPage(
                 "Which blueprint would you like to view?"
             );
 
-            DialogPage blueprintDetails = new DialogPage(
+            var blueprintDetails = new DialogPage(
                 "<SET LATER>"
             );
 
@@ -46,11 +46,11 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            Model vm = GetDialogCustomData<Model>();
+            var vm = GetDialogCustomData<Model>();
 
             vm.CraftCategories = CraftService.GetCategoriesAvailableToPC(GetPC().GlobalID);
 
-            foreach (CraftBlueprintCategory category in vm.CraftCategories)
+            foreach (var category in vm.CraftCategories)
             {
                 AddResponseToPage("CraftCategoriesPage", category.Name, true, category.ID);
             }
@@ -91,14 +91,14 @@ namespace SWLOR.Game.Server.Conversation
 
         private void HandleCraftCategoriesPageResponse(int responseID)
         {
-            Model vm = GetDialogCustomData<Model>();
+            var vm = GetDialogCustomData<Model>();
             ClearPageResponses("BlueprintListPage");
-            DialogResponse response = GetResponseByID("CraftCategoriesPage", responseID);
-            int categoryID = (int) response.CustomData;
+            var response = GetResponseByID("CraftCategoriesPage", responseID);
+            var categoryID = (int) response.CustomData;
             
             vm.CraftBlueprints = CraftService.GetPCBlueprintsByCategoryID(GetPC().GlobalID, categoryID);
 
-            foreach (CraftBlueprint bp in vm.CraftBlueprints)
+            foreach (var bp in vm.CraftBlueprints)
             {
                 AddResponseToPage("BlueprintListPage", bp.ItemName, true, bp.ID);
             }
@@ -108,8 +108,8 @@ namespace SWLOR.Game.Server.Conversation
 
         private void HandleBlueprintListPageResponse(int responseID)
         {
-            DialogResponse response = GetResponseByID("BlueprintListPage", responseID);
-            int blueprintID = (int)response.CustomData;
+            var response = GetResponseByID("BlueprintListPage", responseID);
+            var blueprintID = (int)response.CustomData;
 
             if (blueprintID == -1)
             {
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Conversation
             model.TertiaryMinimum = model.Blueprint.TertiaryMinimum;
             model.TertiaryMaximum = model.Blueprint.TertiaryMaximum;
 
-            string header = CraftService.BuildBlueprintHeader(GetPC(), false);
+            var header = CraftService.BuildBlueprintHeader(GetPC(), false);
 
             SetPageHeader("BlueprintDetailsPage", header);
             ChangePage("BlueprintDetailsPage");

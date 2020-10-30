@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = 555;
-            Starport entity = new Starport { ID = id, PlanetName = "My Planet"};
+            var entity = new Starport { ID = id, PlanetName = "My Planet"};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Starport>(entity));
@@ -44,8 +44,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = 100;
             var id2 = 500;
-            Starport entity1 = new Starport { ID = id1, PlanetName = "My Planet" };
-            Starport entity2 = new Starport { ID = id2, PlanetName = "My Planet 2" };
+            var entity1 = new Starport { ID = id1, PlanetName = "My Planet" };
+            var entity2 = new Starport { ID = id2, PlanetName = "My Planet 2" };
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Starport>(entity1));
@@ -62,8 +62,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = 100;
             var id2 = 200;
-            Starport entity1 = new Starport { ID = id1, PlanetName = "My Planet" };
-            Starport entity2 = new Starport { ID = id2, PlanetName = "My Planet" };
+            var entity1 = new Starport { ID = id1, PlanetName = "My Planet" };
+            var entity2 = new Starport { ID = id2, PlanetName = "My Planet" };
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Starport>(entity1));
@@ -81,8 +81,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = 100;
             var id2 = 200;
-            Starport entity1 = new Starport { ID = id1, PlanetName = "My Planet" };
-            Starport entity2 = new Starport { ID = id2, PlanetName = "My Planet" };
+            var entity1 = new Starport { ID = id1, PlanetName = "My Planet" };
+            var entity2 = new Starport { ID = id2, PlanetName = "My Planet" };
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Starport>(entity1));

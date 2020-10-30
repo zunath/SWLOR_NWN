@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.ChatCommand
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             // Did the player pass in the 'end' argument? If so, we're ending the concentration effect.
-            bool doEnd = args.Length > 0 && args[0] == "end";
+            var doEnd = args.Length > 0 && args[0] == "end";
 
             if (doEnd)
             {

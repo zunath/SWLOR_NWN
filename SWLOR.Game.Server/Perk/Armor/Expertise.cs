@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
         {
-            NWItem equipped = oItem ?? creature.Chest;
+            var equipped = oItem ?? creature.Chest;
 
             if (equipped.Equals(oItem) || equipped.CustomItemType != CustomItemType.HeavyArmor)
             {

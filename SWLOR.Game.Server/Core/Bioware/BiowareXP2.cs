@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Core.Bioware
         public static void IPSafeAddItemProperty(uint oItem, ItemProperty ip, float fDuration, AddItemPropertyPolicy nAddItemPropertyPolicy, bool bIgnoreDurationType, bool bIgnoreSubType)
         {
             var nType = GetItemPropertyType(ip);
-            int nSubType = GetItemPropertySubType(ip);
+            var nSubType = GetItemPropertySubType(ip);
             DurationType nDuration;
             // if duration is 0.0f, make the item property permanent
             if (fDuration == 0.0f)

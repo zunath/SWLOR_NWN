@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -48,7 +47,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
             creature.SetLocalInt("RECOVERY_BLAST_ACTIVE", 1);
 
             var members = creature.PartyMembers.Where(x => NWScript.GetDistanceBetween(x, target) <= 10.0f);
-            int luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
+            var luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
 
             foreach (var member in members)
             {

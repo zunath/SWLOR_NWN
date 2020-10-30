@@ -1,5 +1,4 @@
 ﻿using System;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -13,8 +12,8 @@ namespace SWLOR.Game.Server.Service
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
 
-            Player pc = DataService.Player.GetByID(player.GlobalID);
-            DateTime now = DateTime.UtcNow;
+            var pc = DataService.Player.GetByID(player.GlobalID);
+            var now = DateTime.UtcNow;
 
             return !pc.IsSanctuaryOverrideEnabled && now <= pc.DateSanctuaryEnds;
         }
@@ -23,7 +22,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
 
-            Player pc = DataService.Player.GetByID(player.GlobalID);
+            var pc = DataService.Player.GetByID(player.GlobalID);
             pc.IsSanctuaryOverrideEnabled = overrideStatus;
             DataService.SubmitDataChange(pc, DatabaseActionType.Update);
         }

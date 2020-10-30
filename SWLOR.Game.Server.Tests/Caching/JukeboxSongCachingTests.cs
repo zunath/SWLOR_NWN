@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsJukeboxSong()
         {
             // Arrange
-            JukeboxSong entity = new JukeboxSong {ID = 1};
+            var entity = new JukeboxSong {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<JukeboxSong>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            JukeboxSong entity1 = new JukeboxSong { ID = 1};
-            JukeboxSong entity2 = new JukeboxSong { ID = 2};
+            var entity1 = new JukeboxSong { ID = 1};
+            var entity2 = new JukeboxSong { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<JukeboxSong>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            JukeboxSong entity1 = new JukeboxSong { ID = 1};
-            JukeboxSong entity2 = new JukeboxSong { ID = 2};
+            var entity1 = new JukeboxSong { ID = 1};
+            var entity2 = new JukeboxSong { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<JukeboxSong>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            JukeboxSong entity1 = new JukeboxSong { ID = 1};
-            JukeboxSong entity2 = new JukeboxSong { ID = 2};
+            var entity1 = new JukeboxSong { ID = 1};
+            var entity2 = new JukeboxSong { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<JukeboxSong>(entity1));

@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsSkill()
         {
             // Arrange
-            Skill entity = new Skill {ID = 1};
+            var entity = new Skill {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Skill>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            Skill entity1 = new Skill { ID = 1};
-            Skill entity2 = new Skill { ID = 2};
+            var entity1 = new Skill { ID = 1};
+            var entity2 = new Skill { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Skill>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            Skill entity1 = new Skill { ID = 1};
-            Skill entity2 = new Skill { ID = 2};
+            var entity1 = new Skill { ID = 1};
+            var entity2 = new Skill { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Skill>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            Skill entity1 = new Skill { ID = 1};
-            Skill entity2 = new Skill { ID = 2};
+            var entity1 = new Skill { ID = 1};
+            var entity2 = new Skill { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Skill>(entity1));

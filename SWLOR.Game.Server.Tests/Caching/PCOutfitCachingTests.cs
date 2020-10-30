@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCOutfit entity = new PCOutfit {PlayerID = id};
+            var entity = new PCOutfit {PlayerID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCOutfit>(entity));
@@ -44,8 +44,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCOutfit entity1 = new PCOutfit { PlayerID = id1};
-            PCOutfit entity2 = new PCOutfit { PlayerID = id2};
+            var entity1 = new PCOutfit { PlayerID = id1};
+            var entity2 = new PCOutfit { PlayerID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCOutfit>(entity1));
@@ -62,8 +62,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCOutfit entity1 = new PCOutfit { PlayerID = id1};
-            PCOutfit entity2 = new PCOutfit { PlayerID = id2};
+            var entity1 = new PCOutfit { PlayerID = id1};
+            var entity2 = new PCOutfit { PlayerID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCOutfit>(entity1));
@@ -81,8 +81,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCOutfit entity1 = new PCOutfit { PlayerID = id1};
-            PCOutfit entity2 = new PCOutfit { PlayerID = id2};
+            var entity1 = new PCOutfit { PlayerID = id1};
+            var entity2 = new PCOutfit { PlayerID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCOutfit>(entity1));

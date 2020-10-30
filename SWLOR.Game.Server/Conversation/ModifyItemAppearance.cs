@@ -21,8 +21,8 @@ namespace SWLOR.Game.Server.Conversation
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainPage = new DialogPage(
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage(
                 "What would you like to modify?",
                 "Save/Load Outfits",
                 "Main Weapon",
@@ -30,13 +30,13 @@ namespace SWLOR.Game.Server.Conversation
                 "Armor",
                 "Helmet");
 
-            DialogPage weaponPartPage = new DialogPage(
+            var weaponPartPage = new DialogPage(
                 "Which weapon part would you like to modify?",
                 "Top",
                 "Middle",
                 "Bottom"); 
 
-            DialogPage armorPartPage = new DialogPage(
+            var armorPartPage = new DialogPage(
                 "Which armor part would you like to modify?",
                 "Neck",
                 "Torso",
@@ -59,11 +59,11 @@ namespace SWLOR.Game.Server.Conversation
                 "Left Glove",
                 "Helmet");
 
-            DialogPage helmetPartPage = new DialogPage(
+            var helmetPartPage = new DialogPage(
                 "Would you like to modify your helmet?",
                 "Helmet");
 
-            DialogPage partPage = new DialogPage(
+            var partPage = new DialogPage(
                 "Please select a new model.");
 
             dialog.AddPage("MainPage", mainPage);
@@ -82,34 +82,34 @@ namespace SWLOR.Game.Server.Conversation
         
         private bool IsArmorValid()
         {
-            NWPlayer player = GetPC();
-            NWItem armor = player.Chest;
+            var player = GetPC();
+            var armor = player.Chest;
 
-            bool canModifyArmor = armor.IsValid && !armor.IsPlot && !armor.IsCursed;
+            var canModifyArmor = armor.IsValid && !armor.IsPlot && !armor.IsCursed;
             return canModifyArmor;
         }
 
         private bool IsHelmetValid()
         {
-            NWPlayer player = GetPC();
-            NWItem helmet = player.Head;
+            var player = GetPC();
+            var helmet = player.Head;
 
-            bool canModifyHelmet = helmet.IsValid && !helmet.IsPlot && !helmet.IsCursed;
+            var canModifyHelmet = helmet.IsValid && !helmet.IsPlot && !helmet.IsCursed;
             return canModifyHelmet;
         }
 
         private bool IsMainValid()
         {
-            NWPlayer player = GetPC();
-            NWItem main = player.RightHand;           
+            var player = GetPC();
+            var main = player.RightHand;           
 
-            bool canModifyMain = main.IsValid && 
-                                 !main.IsPlot && 
-                                 !main.IsCursed &&
-                                 // https://github.com/zunath/SWLOR_NWN/issues/942#issue-467176236
-                                 main.CustomItemType != CustomItemType.Lightsaber && 
-                                 main.CustomItemType != CustomItemType.Saberstaff &&
-                                 main.GetLocalBool("LIGHTSABER") == false;
+            var canModifyMain = main.IsValid && 
+                                !main.IsPlot && 
+                                !main.IsCursed &&
+                                // https://github.com/zunath/SWLOR_NWN/issues/942#issue-467176236
+                                main.CustomItemType != CustomItemType.Lightsaber && 
+                                main.CustomItemType != CustomItemType.Saberstaff &&
+                                main.GetLocalBool("LIGHTSABER") == false;
 
             if (canModifyMain)
             {
@@ -122,12 +122,12 @@ namespace SWLOR.Game.Server.Conversation
 
         private bool IsOffHandValid()
         {
-            NWPlayer player = GetPC();
-            NWItem offHand = player.LeftHand;
+            var player = GetPC();
+            var offHand = player.LeftHand;
 
-            bool canModifyOffHand = offHand.IsValid && !offHand.IsPlot && !offHand.IsCursed &&
-                                    // https://github.com/zunath/SWLOR_NWN/issues/942#issue-467176236
-                                    offHand.CustomItemType != CustomItemType.Lightsaber && offHand.GetLocalBool("LIGHTSABER") == false;
+            var canModifyOffHand = offHand.IsValid && !offHand.IsPlot && !offHand.IsCursed &&
+                                   // https://github.com/zunath/SWLOR_NWN/issues/942#issue-467176236
+                                   offHand.CustomItemType != CustomItemType.Lightsaber && offHand.GetLocalBool("LIGHTSABER") == false;
 
             if (canModifyOffHand)
             {
@@ -649,11 +649,11 @@ namespace SWLOR.Game.Server.Conversation
         {
             var player = GetPC();
             var model = GetDialogCustomData<Model>();
-            int partID = (int)GetResponseByID("PartPage", responseID).CustomData;
-            NWItem item = model.TargetItem;
+            var partID = (int)GetResponseByID("PartPage", responseID).CustomData;
+            var item = model.TargetItem;
             var slotID = model.InventorySlotID;
             var type = model.ItemTypeID;
-            int index = model.Index;
+            var index = model.Index;
 
             NWItem copy = CopyItemAndModify(item, type, index, partID, true);
             item.Destroy();

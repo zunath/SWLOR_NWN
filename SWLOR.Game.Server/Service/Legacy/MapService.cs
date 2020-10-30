@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Service
         private static void SaveMapProgression(NWArea area, NWPlayer player)
         {
             var map = DataService.PCMapProgression.GetByPlayerIDAndAreaResrefOrDefault(player.GlobalID, area.Resref);
-            DatabaseActionType action = DatabaseActionType.Update;
+            var action = DatabaseActionType.Update;
 
             if (map == null)
             {

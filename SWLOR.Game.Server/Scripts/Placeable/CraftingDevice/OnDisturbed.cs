@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -55,11 +54,11 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
             NWPlaceable storage = NWScript.GetObjectByTag("craft_temp_store");
 
             List<NWItem> list = null;
-            ComponentType allowedType = ComponentType.None;
-            bool reachedCap = false;
-            bool reachedEnhancementLimit = false;
+            var allowedType = ComponentType.None;
+            var reachedCap = false;
+            var reachedEnhancementLimit = false;
 
-            string componentName = string.Empty;
+            var componentName = string.Empty;
             switch (model.Access)
             {
                 case CraftingAccessType.MainComponent:
@@ -112,13 +111,13 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
 
             var props = oItem.ItemProperties.ToList();
             var allowedItemTypes = new List<CustomItemType>();
-            CustomItemType finishedItemType = ItemService.GetCustomItemTypeByResref(model.Blueprint.ItemResref);
+            var finishedItemType = ItemService.GetCustomItemTypeByResref(model.Blueprint.ItemResref);
 
             foreach (var ip in props)
             {
                 if (NWScript.GetItemPropertyType(ip) == ItemPropertyType.ComponentItemTypeRestriction)
                 {
-                    int restrictionType = NWScript.GetItemPropertyCostTableValue(ip);
+                    var restrictionType = NWScript.GetItemPropertyCostTableValue(ip);
                     allowedItemTypes.Add((CustomItemType)restrictionType);
                 }
             }
@@ -137,7 +136,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
             {
                 if (NWScript.GetItemPropertyType(ip) == ItemPropertyType.ComponentType)
                 {
-                    int compType = NWScript.GetItemPropertyCostTableValue(ip);
+                    var compType = NWScript.GetItemPropertyCostTableValue(ip);
                     if (compType == (int) allowedType)
                     {
                         oItem.GetOrAssignGlobalID();
@@ -194,8 +193,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
                     break;
             }
 
-            NWItem copy = storage.InventoryItems.SingleOrDefault(x => x.GlobalID == oItem.GlobalID);
-            NWItem listItem = items?.SingleOrDefault(x => x.GlobalID == oItem.GlobalID);
+            var copy = storage.InventoryItems.SingleOrDefault(x => x.GlobalID == oItem.GlobalID);
+            var listItem = items?.SingleOrDefault(x => x.GlobalID == oItem.GlobalID);
             if (listItem == null || copy == null || !copy.IsValid) return;
 
             copy.Destroy();

@@ -1,7 +1,5 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -17,8 +15,8 @@ namespace SWLOR.Game.Server.Conversation
         
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage characterManagementPage = new DialogPage(
+            var dialog = new PlayerDialog("MainPage");
+            var characterManagementPage = new DialogPage(
                 "Character Management & Information Page",
                 "Disable PVP Protection",
                 "Toggle Helmet Display",
@@ -73,7 +71,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void HandleDisablePVPProtection()
         {
-            Model dto = GetDialogCustomData<Model>();
+            var dto = GetDialogCustomData<Model>();
             
             if (!PVPSanctuaryService.PlayerHasPVPSanctuary(GetPC()))
             {

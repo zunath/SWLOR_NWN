@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCBaseStructure entity = new PCBaseStructure {ID = id};
+            var entity = new PCBaseStructure {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseStructure>(entity));
@@ -46,8 +46,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCBaseStructure entity1 = new PCBaseStructure { ID = id1};
-            PCBaseStructure entity2 = new PCBaseStructure { ID = id2};
+            var entity1 = new PCBaseStructure { ID = id1};
+            var entity2 = new PCBaseStructure { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseStructure>(entity1));
@@ -64,8 +64,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCBaseStructure entity1 = new PCBaseStructure { ID = id1};
-            PCBaseStructure entity2 = new PCBaseStructure { ID = id2};
+            var entity1 = new PCBaseStructure { ID = id1};
+            var entity2 = new PCBaseStructure { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseStructure>(entity1));
@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCBaseStructure entity1 = new PCBaseStructure { ID = id1};
-            PCBaseStructure entity2 = new PCBaseStructure { ID = id2};
+            var entity1 = new PCBaseStructure { ID = id1};
+            var entity2 = new PCBaseStructure { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseStructure>(entity1));

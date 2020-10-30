@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -14,9 +12,9 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage("Please select which ship you would like to enter from the list below. Ships must be built on a base, but once built they can be berthed here for a fee.");
+            var mainPage = new DialogPage("Please select which ship you would like to enter from the list below. Ships must be built on a base, but once built they can be berthed here for a fee.");
 
             dialog.AddPage("MainPage", mainPage);
             return dialog;
@@ -40,7 +38,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             NWPlaceable door = NWScript.OBJECT_SELF;
-            string starportID = door.GetLocalString("STARPORT_ID");
+            var starportID = door.GetLocalString("STARPORT_ID");
 
             if (string.IsNullOrWhiteSpace(starportID))
             {
@@ -67,16 +65,16 @@ namespace SWLOR.Game.Server.Conversation
                     x.DateRentDue <= DateTime.UtcNow ||
                     x.PlayerID == player.GlobalID) return false;
 
-                PCBaseStructure ship = DataService.PCBaseStructure.GetStarshipExteriorByPCBaseID(x.ID);
+                var ship = DataService.PCBaseStructure.GetStarshipExteriorByPCBaseID(x.ID);
                 var permission = permissions.SingleOrDefault(p => p.PCBaseStructureID == ship.ID);
                 return permission != null && permission.CanEnterBuilding;
             })
                 .ToList();
 
-            int count = 1;
+            var count = 1;
             foreach (var ship in ships)
             {
-                string name = "Starship #" + count;
+                var name = "Starship #" + count;
 
                 if (!string.IsNullOrWhiteSpace(ship.CustomName))
                 {
@@ -92,7 +90,7 @@ namespace SWLOR.Game.Server.Conversation
             foreach (var ship in permissionedShips)
             {
                 var owner = DataService.Player.GetByID(ship.PlayerID);
-                string name = owner.CharacterName + "'s Starship [" + owner.CharacterName + "]";
+                var name = owner.CharacterName + "'s Starship [" + owner.CharacterName + "]";
 
                 if (!string.IsNullOrWhiteSpace(ship.CustomName))
                 {
@@ -107,19 +105,19 @@ namespace SWLOR.Game.Server.Conversation
         private void MainPageResponses(int responseID)
         {
             var response = GetResponseByID("MainPage", responseID);
-            Guid pcApartmentID = (Guid)response.CustomData;
+            var pcApartmentID = (Guid)response.CustomData;
             EnterShip(pcApartmentID);
         }
 
         private void EnterShip(Guid pcBaseID)
         {
-            NWPlayer oPC = GetPC();
+            var oPC = GetPC();
 
             var shipBase = DataService.PCBase.GetByID(pcBaseID);
             var ship = DataService.PCBaseStructure.GetStarshipInteriorByPCBaseIDOrDefault(shipBase.ID);
             if (ship == null) return;
 
-            NWArea instance = BaseService.GetAreaInstance(ship.ID, false);
+            var instance = BaseService.GetAreaInstance(ship.ID, false);
 
             if (instance == null)
             {

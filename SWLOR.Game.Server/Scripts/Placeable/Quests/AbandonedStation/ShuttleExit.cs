@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -33,7 +32,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
             NWArea restrictedLevel = exit.Area.GetLocalObject("RESTRICTED_LEVEL");
             NWArea directorsChambers = exit.Area.GetLocalObject("DIRECTORS_CHAMBERS");
 
-            int playersInAreas = Core.NWNX.Area.GetNumberOfPlayersInArea(mainLevel) +
+            var playersInAreas = Core.NWNX.Area.GetNumberOfPlayersInArea(mainLevel) +
                                  Core.NWNX.Area.GetNumberOfPlayersInArea(restrictedLevel) +
                                  Core.NWNX.Area.GetNumberOfPlayersInArea(directorsChambers);
 

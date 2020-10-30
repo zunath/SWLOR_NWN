@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsNPCGroup()
         {
             // Arrange
-            NPCGroup entity = new NPCGroup {ID = 1};
+            var entity = new NPCGroup {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<NPCGroup>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            NPCGroup entity1 = new NPCGroup { ID = 1};
-            NPCGroup entity2 = new NPCGroup { ID = 2};
+            var entity1 = new NPCGroup { ID = 1};
+            var entity2 = new NPCGroup { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<NPCGroup>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            NPCGroup entity1 = new NPCGroup { ID = 1};
-            NPCGroup entity2 = new NPCGroup { ID = 2};
+            var entity1 = new NPCGroup { ID = 1};
+            var entity2 = new NPCGroup { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<NPCGroup>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            NPCGroup entity1 = new NPCGroup { ID = 1};
-            NPCGroup entity2 = new NPCGroup { ID = 2};
+            var entity1 = new NPCGroup { ID = 1};
+            var entity2 = new NPCGroup { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<NPCGroup>(entity1));

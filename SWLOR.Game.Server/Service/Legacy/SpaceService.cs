@@ -1,6 +1,4 @@
-﻿using SWLOR.Game.Server.NWN;
-
-using SWLOR.Game.Server.Data.Entity;
+﻿using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject;
@@ -10,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Bioware;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Event.Creature;
@@ -24,9 +21,6 @@ using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.NWN.Events.Creature;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
-using Effect = SWLOR.Game.Server.Core.Effect;
-using ItemProperty = SWLOR.Game.Server.Core.ItemProperty;
-using Player = SWLOR.Game.Server.Data.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -61,7 +55,7 @@ namespace SWLOR.Game.Server.Service
 
         private static ShipStats GetShipStatsByAppearance(AppearanceType appearance)
         {
-            ShipStats stats = new ShipStats();
+            var stats = new ShipStats();
 
             switch (appearance)
             {
@@ -311,24 +305,24 @@ namespace SWLOR.Game.Server.Service
         {
             if (!Guid.TryParse(location, out var locationGuid)) return false;
 
-            Starport starport = DataService.Starport.GetByStarportIDOrDefault(locationGuid);
+            var starport = DataService.Starport.GetByStarportIDOrDefault(locationGuid);
             return starport != null;
 
         }
 
         public static string GetPlanetFromLocation(string location)
         {
-            int hyphen = location.IndexOf(" - ");
+            var hyphen = location.IndexOf(" - ");
             if (hyphen == -1)
             {
                 // Ship is docked.  Get the PCBaseStructure of the dock and find its parent base.  
                 // Then find the area from the resref.
-                PCBaseStructure dock = DataService.PCBaseStructure.GetByIDOrDefault(new Guid(location));
+                var dock = DataService.PCBaseStructure.GetByIDOrDefault(new Guid(location));
 
                 if (dock != null)
                 {
-                    PCBase parentBase = DataService.PCBase.GetByID(dock.PCBaseID);
-                    IEnumerable<NWArea> areas = NWModule.Get().Areas;
+                    var parentBase = DataService.PCBase.GetByID(dock.PCBaseID);
+                    var areas = NWModule.Get().Areas;
 
                     foreach (var area in areas)
                     {
@@ -342,7 +336,7 @@ namespace SWLOR.Game.Server.Service
                 else 
                 {
                     // Not on a PC dock.  Are we on a starport dock?
-                    Starport starport = DataService.Starport.GetByStarportIDOrDefault(new Guid(location));
+                    var starport = DataService.Starport.GetByStarportIDOrDefault(new Guid(location));
 
                     if (starport != null)
                     {
@@ -387,10 +381,10 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Guid structureID = new Guid(starship.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            var structureID = new Guid(starship.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structureItems = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structureID);
             
-            Location location = (player != null ? player.Location : Location(starship, Vector3(1, 1, 0), 0));
+            var location = (player != null ? player.Location : Location(starship, Vector3(1, 1, 0), 0));
             bay = CreateObject(ObjectType.Placeable, "resource_bay", location);
 
             starship.SetLocalObject("STARSHIP_RESOURCE_BAY", bay.Object);
@@ -406,9 +400,9 @@ namespace SWLOR.Game.Server.Service
 
         private static void UpdateCargoBonus(NWArea area, NWCreature ship)
         {
-            ShipStats stats = GetShipStatsByAppearance(GetAppearanceType(ship));
+            var stats = GetShipStatsByAppearance(GetAppearanceType(ship));
 
-            string baseStructureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var baseStructureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
 
             if (string.IsNullOrWhiteSpace(baseStructureID))
             {
@@ -416,10 +410,10 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            Guid baseStructureGuid = new Guid(baseStructureID);
-            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(baseStructureGuid);
-            PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
-            NWPlaceable bay = GetCargoBay(area, null);
+            var baseStructureGuid = new Guid(baseStructureID);
+            var structure = DataService.PCBaseStructure.GetByID(baseStructureGuid);
+            var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
+            var bay = GetCargoBay(area, null);
 
             ship.SetLocalInt("WEAPONS", stats.weapons + GetCargoBonus(bay, ItemPropertyType.StarshipWeaponsBonus));
             ship.SetLocalInt("SHIELDS", stats.shields + GetCargoBonus(bay, ItemPropertyType.StarshipShieldsBonus));
@@ -433,7 +427,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetCargoBonus(NWPlaceable bay, ItemPropertyType stat)
         {
-            int bonus = 0;
+            var bonus = 0;
             if (bay == null) return bonus;
             if (!bay.IsValid) return bonus;
 
@@ -441,7 +435,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var item in bay.InventoryItems)
             {
                 // Find any items with the right properties to improve starship abilities.
-                ItemProperty prop = GetFirstItemProperty(item);
+                var prop = GetFirstItemProperty(item);
 
                 while (GetIsItemPropertyValid(prop))
                 {
@@ -455,16 +449,16 @@ namespace SWLOR.Game.Server.Service
 
         public static void SetShipLocation(NWArea area, string location)
         {
-            string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
             if (string.IsNullOrWhiteSpace(structureID))
             {
                 LoggingService.Trace(TraceComponent.Space, "Asked to set location of invalid ship area.");
                 return;
             }
 
-            Guid structureGuid = new Guid(structureID);
-            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureGuid);
-            PCBase starkillerBase = DataService.PCBase.GetByID(structure.PCBaseID);
+            var structureGuid = new Guid(structureID);
+            var structure = DataService.PCBaseStructure.GetByID(structureGuid);
+            var starkillerBase = DataService.PCBase.GetByID(structure.PCBaseID);
             starkillerBase.ShipLocation = location;
             area.SetLocalString("SHIP_LOCATION", location);
             DataService.SubmitDataChange(starkillerBase, DatabaseActionType.Update);
@@ -473,23 +467,23 @@ namespace SWLOR.Game.Server.Service
         public static string GetShipLocation(NWArea area)
         {
             // We cache the location on the area to save database lookups, especially on module heartbeat.
-            string location = area.GetLocalString("SHIP_LOCATION");
+            var location = area.GetLocalString("SHIP_LOCATION");
 
             if (!string.IsNullOrWhiteSpace(location))
             {
                 return location;
             }
 
-            string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
             if (string.IsNullOrWhiteSpace(structureID))
             {
                 LoggingService.Trace(TraceComponent.Space, "Asked to get location of invalid ship area.");
                 return "";
             }
 
-            Guid structureGuid = new Guid(structureID);
-            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureGuid);
-            PCBase starkillerBase = DataService.PCBase.GetByID(structure.PCBaseID);
+            var structureGuid = new Guid(structureID);
+            var structure = DataService.PCBaseStructure.GetByID(structureGuid);
+            var starkillerBase = DataService.PCBase.GetByID(structure.PCBaseID);
 
             return starkillerBase.ShipLocation;
         }
@@ -522,8 +516,8 @@ namespace SWLOR.Game.Server.Service
 
         public static string[] GetHyperspaceDestinationList(PCBase pcBase)
         {
-            int? destinations = pcBase.Starcharts;
-            string planet = GetPlanetFromLocation(pcBase.ShipLocation);
+            var destinations = pcBase.Starcharts;
+            var planet = GetPlanetFromLocation(pcBase.ShipLocation);
 
             if (destinations == null)
             {
@@ -533,7 +527,7 @@ namespace SWLOR.Game.Server.Service
                 return new string[] { DestinationToPlanet((int)destinations) };
             }
 
-            List<String> list = new List<string>();
+            var list = new List<string>();
 
             if (((int)destinations & (int)Planet.Viscara) == (int)Planet.Viscara && PlanetToDestination(planet) != (int)Planet.Viscara) list.Add(DestinationToPlanet((int)Planet.Viscara));
             if (((int)destinations & (int)Planet.Tatooine) == (int)Planet.Tatooine && PlanetToDestination(planet) != (int)Planet.Tatooine) list.Add(DestinationToPlanet((int)Planet.Tatooine));
@@ -546,8 +540,8 @@ namespace SWLOR.Game.Server.Service
         // Returns a Hashtable where the keys are the text to use, and the values are the PC base structure IDs of the landing pads.
         public static Hashtable GetLandingDestinationList(NWPlayer player, PCBase pcBase)
         {
-            string planet = GetPlanetFromLocation(pcBase.ShipLocation);
-            Hashtable landingSpots = new Hashtable();
+            var planet = GetPlanetFromLocation(pcBase.ShipLocation);
+            var landingSpots = new Hashtable();
 
             // First get any public starport.
             var starport = DataService.Starport.GetByPlanetNameOrDefault(planet);
@@ -562,7 +556,7 @@ namespace SWLOR.Game.Server.Service
             {
                 // Number bases in each area to ensure unique keys.  (We can't use GUIDs as keys as we need to map back from
                 // the response text to the GUID).
-                int Count = 1;
+                var Count = 1;
 
                 if (GetName(area).StartsWith(planet))
                 {
@@ -587,7 +581,7 @@ namespace SWLOR.Game.Server.Service
                             var structures = DataService.PCBaseStructure.GetAllByPCBaseID(@base.ID);
                             foreach (var structure in structures)
                             {
-                                BaseStructure baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
+                                var baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
                                 if (baseStructure.BaseStructureTypeID == (int)BaseStructureType.StarshipProduction)
                                 {
                                     LoggingService.Trace(TraceComponent.Space, "Found a dock with ID " + baseStructure.ID.ToString());
@@ -626,11 +620,11 @@ namespace SWLOR.Game.Server.Service
             // Get the player's piloting skill (including gear bonuses).
             if (!player.IsPlayer) return false;
             
-            EffectiveItemStats effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
-            int rank = SkillService.GetPCSkillRank(player, SkillType.Piloting);
+            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
+            var rank = SkillService.GetPCSkillRank(player, SkillType.Piloting);
 
             // Award XP. 
-            float xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(250, DC, rank);
+            var xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(250, DC, rank);
 
             rank += effectiveStats.Piloting;
 
@@ -659,7 +653,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Creates the ship instance in space.
-            string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
 
             if (string.IsNullOrWhiteSpace(shipID))
             {
@@ -667,13 +661,13 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            Guid shipGuid = new Guid(shipID);
-            PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByID(shipGuid);
-            PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
+            var shipGuid = new Guid(shipID);
+            var shipStructure = DataService.PCBaseStructure.GetByID(shipGuid);
+            var shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
 
             if (location == null)
             {
-                string planet = GetPlanetFromLocation(shipBase.ShipLocation);
+                var planet = GetPlanetFromLocation(shipBase.ShipLocation);
                 // Planet names may have spaces in them - so remove any spaces before looking for the tag.
                 NWObject waypoint = GetObjectByTag(Regex.Replace(planet, @"\s+", "") + "_Orbit");
                 LoggingService.Trace(TraceComponent.Space, "Found space waypoint " + waypoint.Name + " in " + waypoint.Area.Name);
@@ -717,11 +711,11 @@ namespace SWLOR.Game.Server.Service
 
         public static bool CanLandOnPlanet(NWArea ship)
         {
-            string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
-            Guid shipGuid = new Guid(shipID);
-            PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByID(shipGuid);
-            PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
-            string planet = GetPlanetFromLocation(shipBase.ShipLocation);
+            var shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var shipGuid = new Guid(shipID);
+            var shipStructure = DataService.PCBaseStructure.GetByID(shipGuid);
+            var shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
+            var planet = GetPlanetFromLocation(shipBase.ShipLocation);
 
             NWCreature shipCreature = ship.GetLocalObject("CREATURE");
             NWObject waypoint = GetObjectByTag(Regex.Replace(planet, @"\s+", "") + "_Orbit");
@@ -744,7 +738,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Retrieve information about the ship.
-            string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
 
             if (string.IsNullOrWhiteSpace(shipID))
             {
@@ -756,13 +750,13 @@ namespace SWLOR.Game.Server.Service
             // Save our location so we come back to the computer if we disconnect in space.
             PlayerService.SaveLocation(player);
 
-            Guid shipGuid = new Guid(shipID);
-            PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByID(shipGuid);
-            PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
+            var shipGuid = new Guid(shipID);
+            var shipStructure = DataService.PCBaseStructure.GetByID(shipGuid);
+            var shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
 
             var shipAppearance = GetPCShipAppearanceByStyleID((int) shipBase.BuildingStyleID);
 
-            int shipSpeed = GetShipStatsByAppearance(shipAppearance).speed + 
+            var shipSpeed = GetShipStatsByAppearance(shipAppearance).speed + 
                             25 * GetCargoBonus(GetCargoBay(ship, null), ItemPropertyType.StarshipSpeedBonus);
 
             NWPlaceable chair = GetNearestObjectByTag("pilot_chair", player);
@@ -813,7 +807,7 @@ namespace SWLOR.Game.Server.Service
 
             // This might be called when a player disconnects in space.  If so, save their location as
             // being on board the ship so we can send them back to the right place afterwards.
-            Player entity = PlayerService.GetPlayerEntity(player.GlobalID);
+            var entity = PlayerService.GetPlayerEntity(player.GlobalID);
             entity.LocationAreaResref = copy.Area.Resref;
             entity.LocationX = copy.Position.X;
             entity.LocationY = copy.Position.Y;
@@ -824,7 +818,7 @@ namespace SWLOR.Game.Server.Service
             DataService.SubmitDataChange(entity, DatabaseActionType.Update);
 
             // Apply ghost effects so we can stand on each other's heads, and create the ship again.
-            Effect eGhost = EffectCutsceneGhost();
+            var eGhost = EffectCutsceneGhost();
             ApplyEffectToObject(DurationType.Temporary, eGhost, player, 3.5f);
             ApplyEffectToObject(DurationType.Temporary, eGhost, copy, 3.5f);
             copy.Area.DeleteLocalObject("CREATURE");
@@ -930,8 +924,8 @@ namespace SWLOR.Game.Server.Service
             NWObject copy = CopyObject(player, player.Location, OBJECT_INVALID, "spaceship_copy");
             NWScript.ChangeToStandardFaction(copy, StandardFaction.Defender);
 
-            Effect eInv = EffectVisualEffect(VisualEffect.Vfx_Dur_Cutscene_Invisibility);
-            Effect eGhost = EffectCutsceneGhost();
+            var eInv = EffectVisualEffect(VisualEffect.Vfx_Dur_Cutscene_Invisibility);
+            var eGhost = EffectCutsceneGhost();
 
             player.SetLocalObject("COPY", copy);
             copy.SetLocalObject("OWNER", player);
@@ -986,7 +980,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            string message = Chat.GetMessage().Trim();
+            var message = Chat.GetMessage().Trim();
 
             if (speaker.GetLocalInt("IS_SHIP") == 1 || speaker.GetLocalInt("IS_GUNNER") == 1)
             {
@@ -1013,7 +1007,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Can a clone of a pilot or gunner hear the speaker?
-            int nNth = 1;
+            var nNth = 1;
             NWCreature copy = GetNearestObjectByTag("spaceship_copy", speaker, nNth);
 
             while (copy.IsValid)
@@ -1048,16 +1042,16 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPC || player.GetLocalInt("IS_SHIP") == 0) return;            
             NWArea ship = player.GetLocalObject("AREA");
 
-            string shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
-            Guid shipGuid = new Guid(shipID);
-            PCBaseStructure shipStructure = DataService.PCBaseStructure.GetByID(shipGuid);
-            PCBase shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
-            string planet = GetPlanetFromLocation(shipBase.ShipLocation);
+            var shipID = ship.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var shipGuid = new Guid(shipID);
+            var shipStructure = DataService.PCBaseStructure.GetByID(shipGuid);
+            var shipBase = DataService.PCBase.GetByID(shipStructure.PCBaseID);
+            var planet = GetPlanetFromLocation(shipBase.ShipLocation);
 
             LoggingService.Trace(TraceComponent.Space, "Creating space encounter for " + player.Name + " near planet " + planet);
 
-            List<SpaceEncounter> encounters = DataService.SpaceEncounter.GetAllByPlanet(planet).ToList();
-            int totalChance = 0;
+            var encounters = DataService.SpaceEncounter.GetAllByPlanet(planet).ToList();
+            var totalChance = 0;
 
             foreach (var encounter in encounters)
             {
@@ -1079,7 +1073,7 @@ namespace SWLOR.Game.Server.Service
                 totalChance += encounter.Chance;
             }
 
-            int random = Random(totalChance - 1);
+            var random = Random(totalChance - 1);
 
             foreach (var encounter in encounters)
             {
@@ -1089,7 +1083,7 @@ namespace SWLOR.Game.Server.Service
                     if (encounter.TypeID == 1 || encounter.TypeID == 4)
                     {
                         // For now, do pirates (4) instead of customs (1).
-                        string resref = d2() == 1 ? "pirate_fighter_1" : "pirate_fighter_2";
+                        var resref = d2() == 1 ? "pirate_fighter_1" : "pirate_fighter_2";
                         NWCreature pirate = CreateObject(ObjectType.Creature, resref, trigger.Location);
                         pirate.SetLocalInt("DC", encounter.Difficulty);
                         pirate.SetLocalInt("LOOT_TABLE_ID", encounter.LootTable);
@@ -1105,10 +1099,10 @@ namespace SWLOR.Game.Server.Service
                         else
                         {
                             player.SendMessage("The asteroid hits your ship!");
-                            int damage = d6(3);
+                            var damage = d6(3);
 
                             // Apply the damage.
-                            int targetHP = player.GetLocalInt("HP") - damage;
+                            var targetHP = player.GetLocalInt("HP") - damage;
 
                             // Feedback.
                             if (targetHP <= 0)
@@ -1137,8 +1131,8 @@ namespace SWLOR.Game.Server.Service
                         {
                             player.SendMessage("You found some salvage!");
 
-                            BaseStructure structure = DataService.BaseStructure.GetByID(shipStructure.BaseStructureID);
-                            int count = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(shipStructure.ID).Count() + 1;
+                            var structure = DataService.BaseStructure.GetByID(shipStructure.BaseStructureID);
+                            var count = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(shipStructure.ID).Count() + 1;
                             if (count > (structure.ResourceStorage + shipStructure.StructureBonus))
                             {
                                 player.SendMessage("Your cargo bay is full!  You weren't able to collect the salvage.");
@@ -1198,12 +1192,12 @@ namespace SWLOR.Game.Server.Service
         private static void DoSpaceAttack(NWCreature attacker, NWCreature target, bool gunner)
         {
             // Figure out whether either party is a PC ship.  If they are, the relevant area will be the starship interior area.  Else null.
-            NWArea attackerArea = attacker.IsPC ? ((NWObject)attacker.GetLocalObject("COPY")).Area : ((NWArea)attacker.GetLocalObject("AREA"));
-            NWArea defenderArea = target.IsPC ? ((NWObject)target.GetLocalObject("COPY")).Area : ((NWArea)target.GetLocalObject("AREA"));
+            var attackerArea = attacker.IsPC ? ((NWObject)attacker.GetLocalObject("COPY")).Area : ((NWArea)attacker.GetLocalObject("AREA"));
+            var defenderArea = target.IsPC ? ((NWObject)target.GetLocalObject("COPY")).Area : ((NWArea)target.GetLocalObject("AREA"));
 
             // Get the current stronidium reserves of the attacker and defender.
-            int attackStron = attacker.GetLocalInt("STRONIDIUM");
-            int defendStron = target.GetLocalInt("STRONIDIUM");
+            var attackStron = attacker.GetLocalInt("STRONIDIUM");
+            var defendStron = target.GetLocalInt("STRONIDIUM");
 
             if (attackStron == 0)
             {
@@ -1213,22 +1207,22 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Get the current weapon and shield strength of attacker and defender.
-            int attackWeapons = attacker.GetLocalInt("WEAPONS");
+            var attackWeapons = attacker.GetLocalInt("WEAPONS");
             if (attackWeapons > attackStron) attackWeapons = attackStron;
-            int defendShields = target.GetLocalInt("SHIELDS");
+            var defendShields = target.GetLocalInt("SHIELDS");
             if (defendShields > defendStron) defendShields = defendStron;
 
             LoggingService.Trace(TraceComponent.Space, "Attacker weapons: " + attackWeapons + ", defender shields " + defendShields);
 
             // Get the piloting skill of the attacker and defender
-            int attackerPiloting = 0;
-            int defenderPiloting = 0;
+            var attackerPiloting = 0;
+            var defenderPiloting = 0;
             
             NWPlayer pcGunner = null;
             if (gunner && attackerArea != null) // Should always have an area in this case but doesn't hurt to check.
             {
                 pcGunner = attackerArea.GetLocalObject("GUNNER");
-                EffectiveItemStats effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(pcGunner);
+                var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(pcGunner);
                 attackerPiloting += SkillService.GetPCSkillRank(pcGunner, SkillType.Piloting) + effectiveStats.Piloting;
 
                 attackerPiloting += 3 * PerkService.GetCreaturePerkLevel(pcGunner, PerkType.CrackShot);
@@ -1236,7 +1230,7 @@ namespace SWLOR.Game.Server.Service
 
             if (attacker.IsPC)
             {
-                EffectiveItemStats effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(new NWPlayer(attacker));
+                var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(new NWPlayer(attacker));
                 attackerPiloting += SkillService.GetPCSkillRank(new NWPlayer(attacker), SkillType.Piloting) + effectiveStats.Piloting;                
             }
             else
@@ -1246,7 +1240,7 @@ namespace SWLOR.Game.Server.Service
             
             if (target.IsPC)
             {
-                EffectiveItemStats effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(new NWPlayer(target));
+                var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(new NWPlayer(target));
                 defenderPiloting += SkillService.GetPCSkillRank(new NWPlayer(target), SkillType.Piloting) + effectiveStats.Piloting;
 
                 defenderPiloting += 3 * PerkService.GetCreaturePerkLevel(new NWPlayer(target), PerkType.Evasive);
@@ -1259,7 +1253,7 @@ namespace SWLOR.Game.Server.Service
             LoggingService.Trace(TraceComponent.Space, "Attacker skill " + attackerPiloting + ", defender skill " + defenderPiloting);
 
             // Make the shot... preparing some VFX.
-            int damage = 0;
+            var damage = 0;
             /*
              * TODO - improve the VFX here by using a custom spell and a miss vector.  Miss vectors on EffectBeam are... not very good.
             Vector3 vAttacker = NWScript.GetPosition(attacker);
@@ -1267,7 +1261,7 @@ namespace SWLOR.Game.Server.Service
             float fAngle = NWScript.VectorToAngle(vDiff) - NWScript.GetFacing(attacker);
             float fTargetDistance = NWScript.GetDistanceBetween(attacker, target);*/
 
-            int check = d100();
+            var check = d100();
             LoggingService.Trace(TraceComponent.Space, "Check result " + check);
 
             if (check < (100 * attackerPiloting) / (attackerPiloting + defenderPiloting))
@@ -1277,7 +1271,7 @@ namespace SWLOR.Game.Server.Service
                 if (target.IsPC) SkillService.GiveSkillXP(new NWPlayer(target), SkillType.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(25, attackerPiloting, defenderPiloting));
                 if (gunner) SkillService.GiveSkillXP(pcGunner, SkillType.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, defenderPiloting, attackerPiloting));
 
-                Effect eBeam = EffectBeam(VisualEffect.Vfx_Beam_Disintegrate, attacker,  BodyNode.Chest);
+                var eBeam = EffectBeam(VisualEffect.Vfx_Beam_Disintegrate, attacker,  BodyNode.Chest);
                 ApplyEffectToObject(DurationType.Temporary, eBeam, target, 0.5f);
 
                 // Reduce the attacker's Stronidium by half their weapon strength.
@@ -1289,15 +1283,15 @@ namespace SWLOR.Game.Server.Service
                 target.SetLocalInt("STRONIDIUM", defendStron);
 
                 // Calculate damage. 
-                int overkill = (100 * attackerPiloting) / (attackerPiloting + defenderPiloting) - check; // how much we beat the check by.
-                float bonus = overkill / 100.0f;
+                var overkill = (100 * attackerPiloting) / (attackerPiloting + defenderPiloting) - check; // how much we beat the check by.
+                var bonus = overkill / 100.0f;
                 LoggingService.Trace(TraceComponent.Space, "Hit! Bonus % damage: " + bonus);
 
                 damage = (int)(attackWeapons * (1.0f + bonus)) - defendShields;
                 if (damage < 0) damage = 0;
 
                 // Apply the damage.
-                int targetHP = target.GetLocalInt("HP") - damage;
+                var targetHP = target.GetLocalInt("HP") - damage;
 
                 // Feedback.
                 if (targetHP <= 0)
@@ -1324,7 +1318,7 @@ namespace SWLOR.Game.Server.Service
                 if (gunner) SkillService.GiveSkillXP(pcGunner, SkillType.Piloting, (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(25, defenderPiloting, attackerPiloting));
 
                 // Get a miss location near the target.
-                Effect eBeam = EffectBeam(VisualEffect.Vfx_Beam_Disintegrate, attacker, BodyNode.Chest, true);
+                var eBeam = EffectBeam(VisualEffect.Vfx_Beam_Disintegrate, attacker, BodyNode.Chest, true);
                 ApplyEffectToObject(DurationType.Temporary, eBeam, target, 0.5f);
 
                 /* See amove comment about making a custom spell that uses this.
@@ -1346,17 +1340,17 @@ namespace SWLOR.Game.Server.Service
             // If either ship is part of a base, update the base stronidium reserve and the structure durability.
             if (attackerArea != null && attackerArea.IsValid)
             {
-                string baseStructureID = attackerArea.GetLocalString("PC_BASE_STRUCTURE_ID");
-                Guid baseStructureGuid = new Guid(baseStructureID);
-                PCBaseStructure structure = DataService.PCBaseStructure.GetByID(baseStructureGuid);
-                PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
+                var baseStructureID = attackerArea.GetLocalString("PC_BASE_STRUCTURE_ID");
+                var baseStructureGuid = new Guid(baseStructureID);
+                var structure = DataService.PCBaseStructure.GetByID(baseStructureGuid);
+                var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
 
-                int stronLoss = pcBase.ReinforcedFuel - attackStron;
+                var stronLoss = pcBase.ReinforcedFuel - attackStron;
 
                 if (stronLoss > 1)
                 {
                     // Look for an engineer on board the ship who can reduce the loss. 
-                    foreach (NWObject obj in attackerArea.Objects)
+                    foreach (var obj in attackerArea.Objects)
                     {
                         if (obj.IsPC)
                         {
@@ -1381,17 +1375,17 @@ namespace SWLOR.Game.Server.Service
 
             if (defenderArea.IsValid)
             {
-                string baseStructureID = defenderArea.GetLocalString("PC_BASE_STRUCTURE_ID");
-                Guid baseStructureGuid = new Guid(baseStructureID);
-                PCBaseStructure structure = DataService.PCBaseStructure.GetByID(baseStructureGuid);
-                PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
+                var baseStructureID = defenderArea.GetLocalString("PC_BASE_STRUCTURE_ID");
+                var baseStructureGuid = new Guid(baseStructureID);
+                var structure = DataService.PCBaseStructure.GetByID(baseStructureGuid);
+                var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
 
-                int stronLoss = pcBase.ReinforcedFuel - defendStron;
+                var stronLoss = pcBase.ReinforcedFuel - defendStron;
 
                 if (stronLoss > 1)
                 {
                     // Look for an engineer on board the ship who can reduce the loss. 
-                    foreach (NWObject obj in attackerArea.Objects)
+                    foreach (var obj in attackerArea.Objects)
                     {
                         if (obj.IsPC)
                         {
@@ -1437,7 +1431,7 @@ namespace SWLOR.Game.Server.Service
             NWCreature creature = OBJECT_SELF;
 
             // Only do things for ships. 
-            ShipStats stats = GetShipStatsByAppearance(GetAppearanceType(creature));
+            var stats = GetShipStatsByAppearance(GetAppearanceType(creature));
             if (stats.scale == default(float)) return;
 
             SetObjectVisualTransform(creature, ObjectVisualTransform.Scale, stats.scale);
@@ -1460,14 +1454,14 @@ namespace SWLOR.Game.Server.Service
 
         private static void ShootValidTarget(NWCreature creature)
         {
-            ShipStats stats = GetShipStatsByAppearance(GetAppearanceType(creature));
+            var stats = GetShipStatsByAppearance(GetAppearanceType(creature));
 
             // Fire weapons.
-            bool hasGunner = false;
+            var hasGunner = false;
             var shape = Shape.SpellCylinder;
-            float range = stats.range;
+            var range = stats.range;
 
-            Location targetLocation = Location(
+            var targetLocation = Location(
                 creature.Area.Object,
                 BiowarePosition.GetChangedPosition(creature.Position, range, creature.Facing),
                 creature.Facing + 180.0f);
@@ -1511,7 +1505,7 @@ namespace SWLOR.Game.Server.Service
 
             // Only do things for armed ships. 
             if (creature.IsDead) return;
-            ShipStats stats = GetShipStatsByAppearance(GetAppearanceType(creature));
+            var stats = GetShipStatsByAppearance(GetAppearanceType(creature));
             if (stats.scale == default(float)) return;
             if (creature.GetLocalInt("WEAPONS") == 0) return;
 
@@ -1541,7 +1535,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void OnPhysicalAttacked(NWCreature creature, NWCreature attacker)
         {
-            ShipStats stats = GetShipStatsByAppearance(GetAppearanceType(creature));
+            var stats = GetShipStatsByAppearance(GetAppearanceType(creature));
 
             if (stats.scale == default(float)) return;
 
@@ -1557,7 +1551,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void OnPerception(NWCreature creature, NWCreature perceived)
         {
-            ShipStats stats = GetShipStatsByAppearance(GetAppearanceType(creature));
+            var stats = GetShipStatsByAppearance(GetAppearanceType(creature));
 
             if (stats.scale == default(float)) return;
 
@@ -1585,14 +1579,14 @@ namespace SWLOR.Game.Server.Service
         private static bool AdjustFacingAndAttack(NWCreature creature)
         {
             // If we have an enemy in front of us, process them. 
-            Location targetLocation = Location(
+            var targetLocation = Location(
                 creature.Area.Object,
                 BiowarePosition.GetChangedPosition(creature.Position, 25.0f, creature.Facing),
                 creature.Facing + 180.0f);
 
             var shape = Shape.SpellCone;           
 
-            bool hasGunner = creature.GetLocalInt("HAS_GUNNER") == 1;
+            var hasGunner = creature.GetLocalInt("HAS_GUNNER") == 1;
             if (hasGunner)
             {
                 shape = Shape.Sphere;
@@ -1617,11 +1611,11 @@ namespace SWLOR.Game.Server.Service
             if (enemy.IsValid && GetDistanceBetween(enemy, creature) < 25.0f)
             {
                 // We have an enemy but they are not in our front arc.  
-                float facing = BiowarePosition.GetRelativeFacing(creature, enemy);
+                var facing = BiowarePosition.GetRelativeFacing(creature, enemy);
 
                 // Creature facing is, for some reason, based with 0= due east and proceeding counter clockwise.
                 // Convert to clockwise with due north as 0 so that we can compare it. 
-                float myFacing = creature.Facing;
+                var myFacing = creature.Facing;
 
                 if (facing > myFacing && facing - myFacing < 180.0f)
                 {
@@ -1653,7 +1647,7 @@ namespace SWLOR.Game.Server.Service
         // use different AI. 
         public static void OnHeartbeat(NWCreature creature)
         {
-            ShipStats stats = GetShipStatsByAppearance(GetAppearanceType(creature));
+            var stats = GetShipStatsByAppearance(GetAppearanceType(creature));
             if (stats.scale == default(float)) return;
 
             // Turn to face the nearest enemy if they are within range.

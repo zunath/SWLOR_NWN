@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsKeyItemCategory()
         {
             // Arrange
-            KeyItemCategory entity = new KeyItemCategory {ID = 1};
+            var entity = new KeyItemCategory {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<KeyItemCategory>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            KeyItemCategory entity1 = new KeyItemCategory { ID = 1};
-            KeyItemCategory entity2 = new KeyItemCategory { ID = 2};
+            var entity1 = new KeyItemCategory { ID = 1};
+            var entity2 = new KeyItemCategory { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<KeyItemCategory>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            KeyItemCategory entity1 = new KeyItemCategory { ID = 1};
-            KeyItemCategory entity2 = new KeyItemCategory { ID = 2};
+            var entity1 = new KeyItemCategory { ID = 1};
+            var entity2 = new KeyItemCategory { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<KeyItemCategory>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            KeyItemCategory entity1 = new KeyItemCategory { ID = 1};
-            KeyItemCategory entity2 = new KeyItemCategory { ID = 2};
+            var entity1 = new KeyItemCategory { ID = 1};
+            var entity2 = new KeyItemCategory { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<KeyItemCategory>(entity1));

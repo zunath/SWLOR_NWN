@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ChatCommand;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
@@ -16,7 +15,6 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using Object = SWLOR.Game.Server.Core.NWNX.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -38,8 +36,8 @@ namespace SWLOR.Game.Server.Service
 
         public static bool CanHandleChat(NWObject sender, string message)
         {
-            bool validTarget = sender.IsPlayer || sender.IsDM;
-            bool validMessage = message.Length >= 2 && message[0] == '/' && message[1] != '/';
+            var validTarget = sender.IsPlayer || sender.IsDM;
+            var validMessage = message.Length >= 2 && message[0] == '/' && message[1] != '/';
             return validTarget && validMessage;
         }
 
@@ -57,14 +55,14 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var type in classes)
             {
-                IChatCommand instance = Activator.CreateInstance(type) as IChatCommand;
+                var instance = Activator.CreateInstance(type) as IChatCommand;
                 
                 if (instance == null)
                 {
                     throw new NullReferenceException("Unable to activate instance of type: " + type);
                 }
                 // We use the lower-case class name as the key because later on we do a lookup based on text entered by the player.
-                string key = type.Name.ToLower();
+                var key = type.Name.ToLower();
                 _chatCommands.Add(key, instance);
             }
         }
@@ -89,7 +87,7 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleNWNXChat()
         {
             NWPlayer sender = NWScript.OBJECT_SELF;
-            string originalMessage = Chat.GetMessage().Trim();
+            var originalMessage = Chat.GetMessage().Trim();
 
             if (!CanHandleChat(sender, originalMessage))
             {
@@ -103,7 +101,7 @@ namespace SWLOR.Game.Server.Service
                 split.Add(originalMessage);
 
             split[0] = split[0].ToLower();
-            string command = split[0].Substring(1, split[0].Length - 1);
+            var command = split[0].Substring(1, split[0].Length - 1);
             split.RemoveAt(0);
 
             Chat.SkipMessage();
@@ -114,8 +112,8 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            IChatCommand chatCommand = GetChatCommandHandler(command);
-            string args = string.Join(" ", split);
+            var chatCommand = GetChatCommandHandler(command);
+            var args = string.Join(" ", split);
 
             if (!chatCommand.RequiresTarget)
             {
@@ -123,7 +121,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                string error = chatCommand.ValidateArguments(sender, split.ToArray());
+                var error = chatCommand.ValidateArguments(sender, split.ToArray());
                 if (!string.IsNullOrWhiteSpace(error))
                 {
                     sender.SendMessage(error);
@@ -155,7 +153,7 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleUseFeat()
         {
             NWPlayer pc = NWScript.OBJECT_SELF;
-            int featID = Convert.ToInt32(Events.GetEventData("FEAT_ID")); 
+            var featID = Convert.ToInt32(Events.GetEventData("FEAT_ID")); 
 
             if (featID != (int)Feat.ChatCommandTargeter) return;
 
@@ -167,8 +165,8 @@ namespace SWLOR.Game.Server.Service
             var targetArea = StringToObject( Events.GetEventData("AREA_OBJECT_ID"));
 
             var targetLocation = Location(targetArea, targetPosition, 0.0f);
-            string command = pc.GetLocalString("CHAT_COMMAND");
-            string args = pc.GetLocalString("CHAT_COMMAND_ARGS");
+            var command = pc.GetLocalString("CHAT_COMMAND");
+            var args = pc.GetLocalString("CHAT_COMMAND_ARGS");
 
             if (string.IsNullOrWhiteSpace(command))
             {
@@ -176,7 +174,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            IChatCommand chatCommand = GetChatCommandHandler(command);
+            var chatCommand = GetChatCommandHandler(command);
             ProcessChatCommand(chatCommand, pc, target, targetLocation, args);
             
             pc.DeleteLocalString("CHAT_COMMAND");
@@ -196,7 +194,7 @@ namespace SWLOR.Game.Server.Service
                 targetLocation = sender.Location;
             }
 
-            CommandDetailsAttribute attribute = command.GetType().GetCustomAttribute<CommandDetailsAttribute>();
+            var attribute = command.GetType().GetCustomAttribute<CommandDetailsAttribute>();
             var authorization = AuthorizationService.GetDMAuthorizationType(sender);
 
             if (attribute != null &&
@@ -204,8 +202,8 @@ namespace SWLOR.Game.Server.Service
                  attribute.Permissions.HasFlag(CommandPermissionType.DM) && authorization == DMAuthorizationType.DM ||
                  attribute.Permissions.HasFlag(CommandPermissionType.Admin) && authorization == DMAuthorizationType.Admin))
             {
-                string[] argsArr = string.IsNullOrWhiteSpace(args) ? new string[0] : args.Split(' ').ToArray();
-                string error = command.ValidateArguments(sender, argsArr);
+                var argsArr = string.IsNullOrWhiteSpace(args) ? new string[0] : args.Split(' ').ToArray();
+                var error = command.ValidateArguments(sender, argsArr);
 
                 if (!string.IsNullOrWhiteSpace(error))
                 {

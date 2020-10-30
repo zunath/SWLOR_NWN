@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCMapProgression entity = new PCMapProgression {ID = id};
+            var entity = new PCMapProgression {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCMapProgression>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCMapProgression entity1 = new PCMapProgression { ID = id1};
-            PCMapProgression entity2 = new PCMapProgression { ID = id2};
+            var entity1 = new PCMapProgression { ID = id1};
+            var entity2 = new PCMapProgression { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCMapProgression>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCMapProgression entity1 = new PCMapProgression { ID = id1};
-            PCMapProgression entity2 = new PCMapProgression { ID = id2};
+            var entity1 = new PCMapProgression { ID = id1};
+            var entity2 = new PCMapProgression { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCMapProgression>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCMapProgression entity1 = new PCMapProgression { ID = id1};
-            PCMapProgression entity2 = new PCMapProgression { ID = id2};
+            var entity1 = new PCMapProgression { ID = id1};
+            var entity2 = new PCMapProgression { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCMapProgression>(entity1));

@@ -1,10 +1,8 @@
-﻿using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.CustomEffect.Contracts;
+﻿using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using System;
-using System.Numerics;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
@@ -28,7 +26,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             player.IsBusy = true;
 
-            string data = $"{player.Position.X},{player.Position.Y},{player.Position.Z}";
+            var data = $"{player.Position.X},{player.Position.Y},{player.Position.Z}";
 
             return data;
         }
@@ -38,11 +36,11 @@ namespace SWLOR.Game.Server.CustomEffect
             AbilityService.EndConcentrationEffect(oCaster);
 
             NWPlayer player = oTarget.Object;
-            int meditateTick = oTarget.GetLocalInt("MEDITATE_TICK") + 1;
+            var meditateTick = oTarget.GetLocalInt("MEDITATE_TICK") + 1;
 
             // Pull original position from data
-            string[] values = data.Split(',');
-            Vector3 originalPosition = NWScript.Vector3
+            var values = data.Split(',');
+            var originalPosition = NWScript.Vector3
             (
                 Convert.ToSingle(values[0]),
                 Convert.ToSingle(values[1]),
@@ -50,7 +48,7 @@ namespace SWLOR.Game.Server.CustomEffect
             );
 
             // Check position
-            Vector3 position = player.Position;
+            var position = player.Position;
 
             if ((Math.Abs(position.X - originalPosition.X) > 0.01f ||
                  Math.Abs(position.Y - originalPosition.Y) > 0.01f ||
@@ -72,7 +70,7 @@ namespace SWLOR.Game.Server.CustomEffect
             
             if (meditateTick >= 6)
             {
-                int amount = CalculateAmount(player);
+                var amount = CalculateAmount(player);
 
                 AbilityService.RestorePlayerFP(player, amount);
                 var vfx = NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Mind);
@@ -93,7 +91,7 @@ namespace SWLOR.Game.Server.CustomEffect
         private int CalculateAmount(NWPlayer player)
         {
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
-            int perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.Meditate);
+            var perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.Meditate);
             int amount;
             switch (perkLevel)
             {
@@ -116,10 +114,10 @@ namespace SWLOR.Game.Server.CustomEffect
 
         public static bool CanMeditate(NWCreature meditator)
         {
-            bool canMeditate = !meditator.IsInCombat;
+            var canMeditate = !meditator.IsInCombat;
 
-            NWArea area = meditator.Area;
-            foreach (NWCreature member in meditator.PartyMembers)
+            var area = meditator.Area;
+            foreach (var member in meditator.PartyMembers)
             {
                 if (!member.Area.Equals(area)) continue;
 

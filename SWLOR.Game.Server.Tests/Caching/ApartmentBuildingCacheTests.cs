@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsApartmentBuilding()
         {
             // Arrange
-            ApartmentBuilding building = new ApartmentBuilding {ID = 1, Name = "MyBuilding"};
+            var building = new ApartmentBuilding {ID = 1, Name = "MyBuilding"};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ApartmentBuilding>(building));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            ApartmentBuilding building1 = new ApartmentBuilding { ID = 1, Name = "Building1" };
-            ApartmentBuilding building2 = new ApartmentBuilding { ID = 2, Name = "Building2" };
+            var building1 = new ApartmentBuilding { ID = 1, Name = "Building1" };
+            var building2 = new ApartmentBuilding { ID = 2, Name = "Building2" };
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ApartmentBuilding>(building1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            ApartmentBuilding building1 = new ApartmentBuilding { ID = 1, Name = "Building1" };
-            ApartmentBuilding building2 = new ApartmentBuilding { ID = 2, Name = "Building2" };
+            var building1 = new ApartmentBuilding { ID = 1, Name = "Building1" };
+            var building2 = new ApartmentBuilding { ID = 2, Name = "Building2" };
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ApartmentBuilding>(building1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            ApartmentBuilding building1 = new ApartmentBuilding { ID = 1, Name = "Building1" };
-            ApartmentBuilding building2 = new ApartmentBuilding { ID = 2, Name = "Building2" };
+            var building1 = new ApartmentBuilding { ID = 1, Name = "Building1" };
+            var building2 = new ApartmentBuilding { ID = 2, Name = "Building2" };
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ApartmentBuilding>(building1));

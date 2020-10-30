@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCCustomEffect entity = new PCCustomEffect {ID = id};
+            var entity = new PCCustomEffect {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCCustomEffect>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCCustomEffect entity1 = new PCCustomEffect { ID = id1};
-            PCCustomEffect entity2 = new PCCustomEffect { ID = id2};
+            var entity1 = new PCCustomEffect { ID = id1};
+            var entity2 = new PCCustomEffect { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCCustomEffect>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCCustomEffect entity1 = new PCCustomEffect { ID = id1};
-            PCCustomEffect entity2 = new PCCustomEffect { ID = id2};
+            var entity1 = new PCCustomEffect { ID = id1};
+            var entity2 = new PCCustomEffect { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCCustomEffect>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCCustomEffect entity1 = new PCCustomEffect { ID = id1};
-            PCCustomEffect entity2 = new PCCustomEffect { ID = id2};
+            var entity1 = new PCCustomEffect { ID = id1};
+            var entity2 = new PCCustomEffect { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCCustomEffect>(entity1));

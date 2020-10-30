@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -13,9 +11,9 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage(
+            var mainPage = new DialogPage(
                 "This door is locked. It looks like it needs a key to be opened.",
                 "Use Key");
 
@@ -26,11 +24,11 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             NWObject door = NWScript.OBJECT_SELF;
-            NWPlayer player = GetPC();
-            List<int> keyItemIDs = new List<int>();
+            var player = GetPC();
+            var keyItemIDs = new List<int>();
 
-            int count = 1;
-            int keyItemID = door.GetLocalInt("REQUIRED_KEY_ITEM_ID_" + count);
+            var count = 1;
+            var keyItemID = door.GetLocalInt("REQUIRED_KEY_ITEM_ID_" + count);
             while (keyItemID > 0)
             {
                 keyItemIDs.Add(keyItemID);
@@ -39,8 +37,8 @@ namespace SWLOR.Game.Server.Conversation
                 keyItemID = door.GetLocalInt("REQUIRED_KEY_ITEM_ID_" + count);
             }
             
-            bool hasKeyItems = KeyItemService.PlayerHasAllKeyItems(player, keyItemIDs.ToArray());
-            string doorDialogue = door.GetLocalString("DOOR_DIALOGUE");
+            var hasKeyItems = KeyItemService.PlayerHasAllKeyItems(player, keyItemIDs.ToArray());
+            var doorDialogue = door.GetLocalString("DOOR_DIALOGUE");
 
             if (!string.IsNullOrWhiteSpace(doorDialogue))
             {
@@ -62,9 +60,9 @@ namespace SWLOR.Game.Server.Conversation
             if (responseID != 1) return;
 
             NWObject door = NWScript.OBJECT_SELF;
-            string insideWP = door.GetLocalString("LOCKED_DOOR_INSIDE_WP");
+            var insideWP = door.GetLocalString("LOCKED_DOOR_INSIDE_WP");
             NWObject wp = NWScript.GetWaypointByTag(insideWP);
-            Location portTo = wp.Location;
+            var portTo = wp.Location;
 
             NWScript.AssignCommand(player, () =>
             {

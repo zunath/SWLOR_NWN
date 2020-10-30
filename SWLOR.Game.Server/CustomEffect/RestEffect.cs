@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Numerics;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -27,7 +25,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             player.IsBusy = true;
 
-            string data = $"{player.Position.X},{player.Position.Y},{player.Position.Z}";
+            var data = $"{player.Position.X},{player.Position.Y},{player.Position.Z}";
 
             return data;
         }
@@ -37,12 +35,12 @@ namespace SWLOR.Game.Server.CustomEffect
             AbilityService.EndConcentrationEffect(oCaster);
 
             NWPlayer player = oTarget.Object;
-            int restTick = oTarget.GetLocalInt("REST_TICK") + 1;
+            var restTick = oTarget.GetLocalInt("REST_TICK") + 1;
 
 
             // Pull original position from data
-            string[] values = data.Split(',');
-            Vector3 originalPosition = NWScript.Vector3
+            var values = data.Split(',');
+            var originalPosition = NWScript.Vector3
             (
                 Convert.ToSingle(values[0]),
                 Convert.ToSingle(values[1]),
@@ -50,7 +48,7 @@ namespace SWLOR.Game.Server.CustomEffect
             );
 
             // Check position
-            Vector3 position = player.Position;
+            var position = player.Position;
 
             if ((Math.Abs(position.X - originalPosition.X) > 0.01f ||
                  Math.Abs(position.Y - originalPosition.Y) > 0.01f ||
@@ -72,7 +70,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             if (restTick >= 6)
             {
-                int amount = CalculateAmount(player);
+                var amount = CalculateAmount(player);
 
                 NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectHeal(amount), player);
                 var vfx = NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Holy);
@@ -92,7 +90,7 @@ namespace SWLOR.Game.Server.CustomEffect
         private int CalculateAmount(NWPlayer player)
         {
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
-            int perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.Rest);
+            var perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.Rest);
             int amount;
             switch (perkLevel)
             {
@@ -115,10 +113,10 @@ namespace SWLOR.Game.Server.CustomEffect
         
         public static bool CanRest(NWCreature creature)
         {
-            bool canRest = !creature.IsInCombat;
+            var canRest = !creature.IsInCombat;
 
-            NWArea pcArea = creature.Area;
-            foreach (NWCreature member in creature.PartyMembers)
+            var pcArea = creature.Area;
+            foreach (var member in creature.PartyMembers)
             {
                 if (!member.Area.Equals(pcArea)) continue;
 

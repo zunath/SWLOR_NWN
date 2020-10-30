@@ -1,7 +1,5 @@
 ﻿using System;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -15,19 +13,19 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainPage = new DialogPage(
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage(
                 ColorTokenService.Green("Persistent Storage Menu") + "\n\nPlease select an option.",
                 "Open Storage",
                 "Change Container Name"
             );
 
-            DialogPage changeNamePage = new DialogPage(
+            var changeNamePage = new DialogPage(
                 ColorTokenService.Green("Change Container Name") + "\n\nPlease type a name for the container into your chat bar and then press enter. After that's done click the 'Next' button on this conversation window.",
                 "Next"
             );
 
-            DialogPage confirmChangeName = new DialogPage(
+            var confirmChangeName = new DialogPage(
                 "<SET LATER>",
                 "Confirm Name Change"
             );
@@ -40,8 +38,8 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            NWPlaceable container = (NWPlaceable) GetDialogTarget();
-            Guid structureID = new Guid(container.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            var container = (NWPlaceable) GetDialogTarget();
+            var structureID = new Guid(container.GetLocalString("PC_BASE_STRUCTURE_ID"));
 
             if (!BasePermissionService.HasStructurePermission(GetPC(), structureID, StructurePermission.CanAccessStructureInventory))
             {
@@ -101,14 +99,14 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1: // Next
-                    string name = GetPC().GetLocalString("NEW_CONTAINER_NAME");
+                    var name = GetPC().GetLocalString("NEW_CONTAINER_NAME");
                     if (name == "")
                     {
                         GetPC().FloatingText("Type in a new name to the chat bar and then press 'Next'.");
                         return;
                     }
 
-                    string header = ColorTokenService.Green("Change Container Name") + "\n\n";
+                    var header = ColorTokenService.Green("Change Container Name") + "\n\n";
                     header += ColorTokenService.Green("New Container Name: ") + name + "\n\n";
                     header += "Are you sure you want to change your container to this name?";
 
@@ -123,8 +121,8 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1: // Confirm Change Name
-                    string name = GetPC().GetLocalString("NEW_CONTAINER_NAME");
-                    Guid structureID = new Guid(GetDialogTarget().GetLocalString("PC_BASE_STRUCTURE_ID"));
+                    var name = GetPC().GetLocalString("NEW_CONTAINER_NAME");
+                    var structureID = new Guid(GetDialogTarget().GetLocalString("PC_BASE_STRUCTURE_ID"));
                     var structure = DataService.PCBaseStructure.GetByID(structureID);
                     structure.CustomName = name;
                     GetDialogTarget().Name = name;
@@ -148,8 +146,8 @@ namespace SWLOR.Game.Server.Conversation
 
         private void OpenPersistentStorage()
         {
-            NWPlaceable chest = (NWPlaceable)GetDialogTarget();
-            NWPlayer oPC = GetPC();
+            var chest = (NWPlaceable)GetDialogTarget();
+            var oPC = GetPC();
 
             if (((NWPlaceable)chest.GetLocalObject("STRUCTURE_TEMP_INVENTORY_OPENED")).IsValid)
             {
@@ -157,8 +155,8 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            string structureID = chest.GetLocalString("PC_BASE_STRUCTURE_ID");
-            Location location = oPC.Location;
+            var structureID = chest.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var location = oPC.Location;
             NWPlaceable copy = (NWScript.CreateObject(ObjectType.Placeable, "str_storage_copy", location));
             copy.Name = chest.Name;
             copy.AssignCommand(() => NWScript.SetFacingPoint(oPC.Position));

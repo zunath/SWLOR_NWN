@@ -9,8 +9,8 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainPage = new DialogPage(
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage(
                 "If you die, you will return to the last medical facility you registered at. Would you like to register to this medical facility?",
                 ColorTokenService.Green("Register")
             );

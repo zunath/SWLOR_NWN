@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -23,14 +22,14 @@ namespace SWLOR.Game.Server.Item
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            int lootTableID = GetLootTable(targetLocation);
+            var lootTableID = GetLootTable(targetLocation);
             if (lootTableID <= 0) return;
 
             NWArea area = NWScript.GetAreaFromLocation(targetLocation);
             var items = DataService.LootTableItem.GetAllByLootTableID(lootTableID)
                 .OrderByDescending(o => o.Weight);
-            string sector = BaseService.GetSectorOfLocation(targetLocation);
-            string sectorName = "Unknown";
+            var sector = BaseService.GetSectorOfLocation(targetLocation);
+            var sectorName = "Unknown";
 
             switch (sector)
             {
@@ -45,7 +44,7 @@ namespace SWLOR.Game.Server.Item
 
             foreach (var lti in items)
             {
-                string name = ItemService.GetNameByResref(lti.Resref);
+                var name = ItemService.GetNameByResref(lti.Resref);
                 user.SendMessage(name + " [Density: " + lti.Weight + "]");
             }
             
@@ -55,7 +54,7 @@ namespace SWLOR.Game.Server.Item
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             const float BaseScanningTime = 16.0f;
-            float scanningTime = BaseScanningTime;
+            var scanningTime = BaseScanningTime;
 
             if (user.IsPlayer)
             {
@@ -91,7 +90,7 @@ namespace SWLOR.Game.Server.Item
             NWArea area = NWScript.GetAreaFromLocation(targetLocation);
             var dbArea = DataService.Area.GetByResref(area.Resref);
             var sector = BaseService.GetSectorOfLocation(targetLocation);
-            int lootTableID = 0;
+            var lootTableID = 0;
 
             switch (sector)
             {
@@ -114,7 +113,7 @@ namespace SWLOR.Game.Server.Item
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            int lootTableID = GetLootTable(targetLocation);
+            var lootTableID = GetLootTable(targetLocation);
             if (lootTableID <= 0) return "That location cannot be scanned.";
             
             return null;

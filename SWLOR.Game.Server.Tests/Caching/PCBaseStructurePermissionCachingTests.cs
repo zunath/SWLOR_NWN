@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCBaseStructurePermission entity = new PCBaseStructurePermission {ID = id};
+            var entity = new PCBaseStructurePermission {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseStructurePermission>(entity));
@@ -46,8 +46,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCBaseStructurePermission entity1 = new PCBaseStructurePermission { ID = id1};
-            PCBaseStructurePermission entity2 = new PCBaseStructurePermission { ID = id2};
+            var entity1 = new PCBaseStructurePermission { ID = id1};
+            var entity2 = new PCBaseStructurePermission { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseStructurePermission>(entity1));
@@ -64,8 +64,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCBaseStructurePermission entity1 = new PCBaseStructurePermission { ID = id1};
-            PCBaseStructurePermission entity2 = new PCBaseStructurePermission { ID = id2};
+            var entity1 = new PCBaseStructurePermission { ID = id1};
+            var entity2 = new PCBaseStructurePermission { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseStructurePermission>(entity1));
@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCBaseStructurePermission entity1 = new PCBaseStructurePermission { ID = id1};
-            PCBaseStructurePermission entity2 = new PCBaseStructurePermission { ID = id2};
+            var entity1 = new PCBaseStructurePermission { ID = id1};
+            var entity2 = new PCBaseStructurePermission { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseStructurePermission>(entity1));
@@ -106,10 +106,10 @@ namespace SWLOR.Game.Server.Tests.Caching
             var id2 = Guid.NewGuid();
             var id3 = Guid.NewGuid();
             var id4 = Guid.NewGuid();
-            PCBaseStructurePermission entity1 = new PCBaseStructurePermission { ID = id1, PlayerID = playerID };
-            PCBaseStructurePermission entity2 = new PCBaseStructurePermission { ID = id2, PlayerID = playerID };
-            PCBaseStructurePermission entity3 = new PCBaseStructurePermission { ID = id3, PlayerID = playerID };
-            PCBaseStructurePermission entity4 = new PCBaseStructurePermission { ID = id4, PlayerID = playerID };
+            var entity1 = new PCBaseStructurePermission { ID = id1, PlayerID = playerID };
+            var entity2 = new PCBaseStructurePermission { ID = id2, PlayerID = playerID };
+            var entity3 = new PCBaseStructurePermission { ID = id3, PlayerID = playerID };
+            var entity4 = new PCBaseStructurePermission { ID = id4, PlayerID = playerID };
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCBaseStructurePermission>(entity1));

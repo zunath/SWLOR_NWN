@@ -2,10 +2,7 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Mod.Contracts;
-
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
@@ -23,7 +20,7 @@ namespace SWLOR.Game.Server.Mod
             if (!ItemService.WeaponBaseItemTypes.Contains(target.BaseItemType))
                 return "This mod can only be applied to weapons.";
 
-            int existingEnhancementBonus = GetExistingEnhancementBonus(target);
+            var existingEnhancementBonus = GetExistingEnhancementBonus(target);
             if (existingEnhancementBonus >= MaxValue) return "You cannot improve that item's enhancement bonus any further.";
 
             return null;
@@ -31,12 +28,12 @@ namespace SWLOR.Game.Server.Mod
 
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
-            int additionalEnhancementBonus = Convert.ToInt32(args[0]);
-            int existingEnhancementBonus = GetExistingEnhancementBonus(target);
-            int newValue = existingEnhancementBonus + additionalEnhancementBonus;
+            var additionalEnhancementBonus = Convert.ToInt32(args[0]);
+            var existingEnhancementBonus = GetExistingEnhancementBonus(target);
+            var newValue = existingEnhancementBonus + additionalEnhancementBonus;
             if (newValue > MaxValue) newValue = MaxValue;
 
-            ItemProperty ip = NWScript.ItemPropertyEnhancementBonus(newValue);
+            var ip = NWScript.ItemPropertyEnhancementBonus(newValue);
             ip = NWScript.TagItemProperty(ip, "RUNE_IP");
 
             BiowareXP2.IPSafeAddItemProperty(target, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
@@ -44,7 +41,7 @@ namespace SWLOR.Game.Server.Mod
 
         public string Description(NWPlayer player, NWItem target, params string[] args)
         {
-            int value = Convert.ToInt32(args[0]);
+            var value = Convert.ToInt32(args[0]);
             return "Enhancement Bonus +" + value;
         }
 

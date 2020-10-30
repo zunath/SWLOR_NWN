@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCQuestStatus entity = new PCQuestStatus {ID = id};
+            var entity = new PCQuestStatus {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCQuestStatus>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCQuestStatus entity1 = new PCQuestStatus { ID = id1};
-            PCQuestStatus entity2 = new PCQuestStatus { ID = id2};
+            var entity1 = new PCQuestStatus { ID = id1};
+            var entity2 = new PCQuestStatus { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCQuestStatus>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCQuestStatus entity1 = new PCQuestStatus { ID = id1};
-            PCQuestStatus entity2 = new PCQuestStatus { ID = id2};
+            var entity1 = new PCQuestStatus { ID = id1};
+            var entity2 = new PCQuestStatus { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCQuestStatus>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCQuestStatus entity1 = new PCQuestStatus { ID = id1};
-            PCQuestStatus entity2 = new PCQuestStatus { ID = id2};
+            var entity1 = new PCQuestStatus { ID = id1};
+            var entity2 = new PCQuestStatus { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCQuestStatus>(entity1));

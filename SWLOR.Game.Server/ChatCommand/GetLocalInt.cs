@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.ChatCommand
                 target = user.Area;
             }
 
-            string variableName = Convert.ToString(args[0]);
-            int value = NWScript.GetLocalInt(target, variableName);
+            var variableName = Convert.ToString(args[0]);
+            var value = NWScript.GetLocalInt(target, variableName);
 
            user.SendMessage(variableName + " = " + value);
         }

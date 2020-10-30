@@ -1,7 +1,5 @@
-﻿using System.Numerics;
-using SWLOR.Game.Server.Core;
+﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.DoorRule.Contracts;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -12,18 +10,18 @@ namespace SWLOR.Game.Server.DoorRule
     {
         public NWPlaceable Run(NWArea area, Location location, float orientationOverride = 0f, float sqrtValue = 0f)
         {
-            Vector3 doorPosition = NWScript.GetPositionFromLocation(location);
-            float fOrient = NWScript.GetFacingFromLocation(location);
+            var doorPosition = NWScript.GetPositionFromLocation(location);
+            var fOrient = NWScript.GetFacingFromLocation(location);
 
             fOrient = fOrient + 126.31f;
             if (fOrient > 360.0) fOrient = fOrient - 360.0f;
 
-            float fMod = NWScript.sqrt(13.0f) * NWScript.sin(fOrient);
+            var fMod = NWScript.sqrt(13.0f) * NWScript.sin(fOrient);
             doorPosition.X = doorPosition.X + fMod;
 
             fMod = NWScript.sqrt(13.0f) * NWScript.cos(fOrient);
             doorPosition.Y = doorPosition.Y - fMod;
-            Location doorLocation = NWScript.Location(area.Object, doorPosition, NWScript.GetFacingFromLocation(location));
+            var doorLocation = NWScript.Location(area.Object, doorPosition, NWScript.GetFacingFromLocation(location));
 
             return NWScript.CreateObject(ObjectType.Placeable, "building_door", doorLocation);
         }

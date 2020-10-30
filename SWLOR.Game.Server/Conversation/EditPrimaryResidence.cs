@@ -13,17 +13,17 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage(
+            var mainPage = new DialogPage(
                 string.Empty,
                 "Select as my primary residence",                                 
                 "Revoke primary residence");
 
-            DialogPage revokePage = new DialogPage("Are you sure you want to revoke the current resident's residency?",
+            var revokePage = new DialogPage("Are you sure you want to revoke the current resident's residency?",
                 "Yes, revoke their residency");
 
-            DialogPage setAsResidence = new DialogPage("Are you sure you want to claim this building as your primary residence?\n\nThe current resident's residency will be revoked.",
+            var setAsResidence = new DialogPage("Are you sure you want to claim this building as your primary residence?\n\nThe current resident's residency will be revoked.",
                 "Yes, set as my primary residence");
             
             dialog.AddPage("MainPage", mainPage);
@@ -46,12 +46,12 @@ namespace SWLOR.Game.Server.Conversation
             
             if (data.BuildingType == BuildingType.Interior || data.BuildingType == BuildingType.Starship)
             {
-                Guid structureID = data.StructureID;
+                var structureID = data.StructureID;
                 player = DataService.Player.GetByPrimaryResidencePCBaseStructureIDOrDefault(structureID);
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
-                Guid pcBaseID = data.PCBaseID;
+                var pcBaseID = data.PCBaseID;
                 player = DataService.Player.GetByPrimaryResidencePCBaseIDOrDefault(pcBaseID);
             }
             else
@@ -60,11 +60,11 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            string residentName = player == null ? "[Unclaimed]" : player.CharacterName;
+            var residentName = player == null ? "[Unclaimed]" : player.CharacterName;
 
-            string header = "Selecting a primary residence grants your character benefits such as increased XP gain and bonuses. These are modified based on the structures you place inside your primary residence.\n\n" +
-                            "You may only have one primary residence at a time. A building or starship may only have one primary resident at a time.\n\n" +
-                            "Your primary residence may be revoked by the base owner or any player with permission to do so.\n\n";
+            var header = "Selecting a primary residence grants your character benefits such as increased XP gain and bonuses. These are modified based on the structures you place inside your primary residence.\n\n" +
+                         "You may only have one primary residence at a time. A building or starship may only have one primary resident at a time.\n\n" +
+                         "Your primary residence may be revoked by the base owner or any player with permission to do so.\n\n";
             header += ColorTokenService.Green("Primary Resident: ") + residentName + "\n";
 
             SetPageHeader("MainPage", header);
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             var data = BaseService.GetPlayerTempData(player);
 
-            Player dbPlayer = DataService.Player.GetByID(player.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             Player primaryResident;
 
             bool isPrimaryResident;
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (data.BuildingType == BuildingType.Interior || data.BuildingType == BuildingType.Starship) 
             {
-                Guid structureID = data.StructureID;
+                var structureID = data.StructureID;
                 primaryResident = DataService.Player.GetByPrimaryResidencePCBaseStructureIDOrDefault(structureID);
 
                 isPrimaryResident = dbPlayer.PrimaryResidencePCBaseStructureID != null && dbPlayer.PrimaryResidencePCBaseStructureID == structureID;
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
-                Guid pcBaseID = data.PCBaseID;
+                var pcBaseID = data.PCBaseID;
                 primaryResident = DataService.Player.GetByPrimaryResidencePCBaseIDOrDefault(pcBaseID);
 
                 isPrimaryResident = dbPlayer.PrimaryResidencePCBaseID != null && dbPlayer.PrimaryResidencePCBaseID == pcBaseID;
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (data.BuildingType == BuildingType.Interior || data.BuildingType == BuildingType.Starship)
             {
-                Guid structureID = data.StructureID;
+                var structureID = data.StructureID;
                 currentResident = DataService.Player.GetByPrimaryResidencePCBaseStructureIDOrDefault(structureID);
 
                 isPrimaryResident = newResident.PrimaryResidencePCBaseStructureID != null && newResident.PrimaryResidencePCBaseStructureID == structureID;
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (data.BuildingType == BuildingType.Apartment)
             {
-                Guid pcBaseID = data.PCBaseID;
+                var pcBaseID = data.PCBaseID;
                 currentResident = DataService.Player.GetByPrimaryResidencePCBaseIDOrDefault(pcBaseID);
 
                 isPrimaryResident = newResident.PrimaryResidencePCBaseID != null && newResident.PrimaryResidencePCBaseID == pcBaseID;

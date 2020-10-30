@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
 
         private void ApplyFeatChanges(NWCreature creature, NWItem unequippedItem)
         {
-            NWItem equipped = unequippedItem ?? creature.RightHand;
+            var equipped = unequippedItem ?? creature.RightHand;
 
             if (Equals(equipped, unequippedItem) || equipped.CustomItemType != CustomItemType.TwinBlade)
             {
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
                 return;
             }
 
-            int perkLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.TwinBladeMastery);
+            var perkLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.TwinBladeMastery);
             Creature.AddFeat(creature, Feat.TwoWeaponFighting);
 
             if (perkLevel >= 2)

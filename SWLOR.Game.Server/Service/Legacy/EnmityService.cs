@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.NWN;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
+﻿using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject;
 using System;
@@ -50,10 +49,10 @@ namespace SWLOR.Game.Server.Service
             if (!npc.IsNPC) return;
             if (attacker == null || attacker.Area != npc.Area || LineOfSightObject(npc, attacker) == false) return;
 
-            bool adjustVolatile = volatileAdjust != 0;
-            bool adjustCumulative = cumulativeAdjust != 0;
+            var adjustVolatile = volatileAdjust != 0;
+            var adjustCumulative = cumulativeAdjust != 0;
 
-            float effectiveEnmityRate = 1.0f;
+            var effectiveEnmityRate = 1.0f;
             if (attacker.IsPlayer)
             {
                 NWPlayer player = (attacker.Object);
@@ -104,8 +103,8 @@ namespace SWLOR.Game.Server.Service
             foreach (var table in tables)
             {
                 var enmity = GetEnmity(table.Value.NPCObject, attacker);
-                float volatileAdjust = volatilePercentAdjust * 0.01f;
-                float cumulativeAdjust = cumulativePercentAdjust * 0.01f;
+                var volatileAdjust = volatilePercentAdjust * 0.01f;
+                var cumulativeAdjust = cumulativePercentAdjust * 0.01f;
 
                 if (volatilePercentAdjust != 0)
                 {
@@ -131,7 +130,7 @@ namespace SWLOR.Game.Server.Service
         {
             NWCreature self = (NWScript.OBJECT_SELF);
             NWCreature damager = (NWScript.GetLastDamager(NWScript.OBJECT_SELF));
-            int enmityAmount = NWScript.GetTotalDamageDealt();
+            var enmityAmount = NWScript.GetTotalDamageDealt();
             if (enmityAmount <= 0) enmityAmount = 1;
 
             AdjustEnmity(self, damager, 0, enmityAmount);
@@ -144,8 +143,8 @@ namespace SWLOR.Game.Server.Service
 
             if (!player.IsPlayer || !npc.IsNPC) return;
 
-            int damage = NWScript.GetTotalDamageDealt();
-            Enmity enmity = GetEnmity(npc, player);
+            var damage = NWScript.GetTotalDamageDealt();
+            var enmity = GetEnmity(npc, player);
             enmity.CumulativeAmount -= damage;
         }
 
@@ -165,7 +164,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!npc.IsNPC && !npc.IsDMPossessed) throw new Exception("Only NPCs have enmity tables. Object name = " + npc.Name);
 
-            EnmityTable table = GetEnmityTable(npc);
+            var table = GetEnmityTable(npc);
 
             return table.ContainsKey(target.GlobalID);
         }
@@ -174,7 +173,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!npc.IsNPC && !npc.IsDMPossessed) throw new Exception("Only NPCs have enmity tables. Object name = " + npc.Name);
 
-            EnmityTable table = GetEnmityTable(npc);
+            var table = GetEnmityTable(npc);
             return table.Count <= 0;
         }
     }

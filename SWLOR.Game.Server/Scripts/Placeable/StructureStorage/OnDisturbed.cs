@@ -31,10 +31,10 @@ namespace SWLOR.Game.Server.Scripts.Placeable.StructureStorage
             var structureID = new Guid(container.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structure = DataService.PCBaseStructure.GetByID(structureID);
             var baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
-            int itemLimit = baseStructure.Storage + structure.StructureBonus;
+            var itemLimit = baseStructure.Storage + structure.StructureBonus;
 
-            int itemCount = container.InventoryItems.Count();
-            string itemResref = item.Resref;
+            var itemCount = container.InventoryItems.Count();
+            var itemResref = item.Resref;
 
             if (disturbType == DisturbType.Added)
             {
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.StructureStorage
                 }
                 else
                 {
-                    PCBaseStructureItem itemEntity = new PCBaseStructureItem
+                    var itemEntity = new PCBaseStructureItem
                     {
                         ItemName = item.Name,
                         ItemResref = itemResref,

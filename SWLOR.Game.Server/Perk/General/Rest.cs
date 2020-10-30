@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Perk.General
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
-            int perkLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.Rest);
+            var perkLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.Rest);
 
             switch (perkLevel)
             {

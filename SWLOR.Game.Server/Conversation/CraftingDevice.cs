@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -15,11 +13,11 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainPage = new DialogPage(
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage(
                 "Please select a blueprint. Only blueprints you've learned will be displayed here. Learn more blueprints by purchasing crafting perks!"
             );
-            DialogPage blueprintListPage = new DialogPage(
+            var blueprintListPage = new DialogPage(
                 "Please select a blueprint. Only blueprints you've learned will be displayed here. Learn more blueprints by purchasing crafting perks!"
             );
 
@@ -57,9 +55,9 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadCategoryResponses()
         {
-            NWPlaceable device = (NWPlaceable)GetDialogTarget();
-            int deviceID = device.GetLocalInt("CRAFT_DEVICE_ID");
-            List<CraftBlueprintCategory> categories = CraftService.GetCategoriesAvailableToPCByDeviceID(GetPC().GlobalID, deviceID);
+            var device = (NWPlaceable)GetDialogTarget();
+            var deviceID = device.GetLocalInt("CRAFT_DEVICE_ID");
+            var categories = CraftService.GetCategoriesAvailableToPCByDeviceID(GetPC().GlobalID, deviceID);
 
             ClearPageResponses("MainPage");
 
@@ -71,7 +69,7 @@ namespace SWLOR.Game.Server.Conversation
 
             AddResponseToPage("MainPage", "Scrap Item");
 
-            foreach (CraftBlueprintCategory category in categories)
+            foreach (var category in categories)
             {
                 AddResponseToPage("MainPage", category.Name, category.IsActive, new Tuple<int, Type>(category.ID, typeof(CraftBlueprintCategory)));
             }
@@ -79,13 +77,13 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadBlueprintListPage(int categoryID)
         {
-            NWObject device = GetDialogTarget();
-            int deviceID = device.GetLocalInt("CRAFT_DEVICE_ID");
+            var device = GetDialogTarget();
+            var deviceID = device.GetLocalInt("CRAFT_DEVICE_ID");
 
-            List<CraftBlueprint> blueprints = CraftService.GetPCBlueprintsByDeviceAndCategoryID(GetPC().GlobalID, deviceID, categoryID);
+            var blueprints = CraftService.GetPCBlueprintsByDeviceAndCategoryID(GetPC().GlobalID, deviceID, categoryID);
 
             ClearPageResponses("BlueprintListPage");
-            foreach (CraftBlueprint bp in blueprints)
+            foreach (var bp in blueprints)
             {
                 AddResponseToPage("BlueprintListPage", bp.Quantity + "x " + bp.ItemName, bp.IsActive, bp.ID);
             }
@@ -93,7 +91,7 @@ namespace SWLOR.Game.Server.Conversation
         
         private void HandleCategoryResponse(int responseID)
         {
-            DialogResponse response = GetResponseByID("MainPage", responseID);
+            var response = GetResponseByID("MainPage", responseID);
             
             if (response.CustomData == null) // 2 = Scrap Item
             {
@@ -116,8 +114,8 @@ namespace SWLOR.Game.Server.Conversation
 
         private void HandleBlueprintListResponse(int responseID)
         {
-            DialogResponse response = GetResponseByID("BlueprintListPage", responseID);
-            int blueprintID = (int)response.CustomData;
+            var response = GetResponseByID("BlueprintListPage", responseID);
+            var blueprintID = (int)response.CustomData;
             LoadCraftPage(blueprintID);
         }
 

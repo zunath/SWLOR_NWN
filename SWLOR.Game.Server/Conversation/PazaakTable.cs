@@ -1,10 +1,8 @@
-﻿using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using System;
-using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -17,9 +15,9 @@ namespace SWLOR.Game.Server.Conversation
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage();
+            var mainPage = new DialogPage();
 
             dialog.AddPage("MainPage", mainPage);
             return dialog;
@@ -43,7 +41,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             NWObject table = NWScript.OBJECT_SELF;
-            NWPlayer pc = GetPC();
+            var pc = GetPC();
             game = PazaakService.GetCurrentGame(table);
 
             if (game == null && table.GetLocalInt("IN_GAME") == 2)
@@ -128,9 +126,9 @@ namespace SWLOR.Game.Server.Conversation
         private void BuildTurnOptions(NWPlayer pc)
         {
             // Draw a card.
-            int score = pc == game.player1 ? game.player1Score : game.player2Score;
+            var score = pc == game.player1 ? game.player1Score : game.player2Score;
 
-            int card = game.DrawCard();
+            var card = game.DrawCard();
             score += card;
             game.lastCardPlayed = card;
             pc.FloatingText("You drew a " + card + " putting your score at " + score);
@@ -144,10 +142,10 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             // Since we're having a turn, we can't be the one standing... 
-            bool bStand = game.player1Standing || game.player2Standing;
+            var bStand = game.player1Standing || game.player2Standing;
 
-            string header = "Your score is at " + score + ". " + (bStand ? "The other player is standing. " : "") +
-                "What do you want to do?";
+            var header = "Your score is at " + score + ". " + (bStand ? "The other player is standing. " : "") +
+                         "What do you want to do?";
             SpeakString(pc.Name + " draws a " + card + " from the deck.  Their score is now " + score);
 
             if (pc.GetLocalInt("PAZAAK_REMINDED") == 0)
@@ -159,10 +157,10 @@ namespace SWLOR.Game.Server.Conversation
             SetPageHeader("MainPage", header);
             ClearPageResponses("MainPage");
 
-            List<int> sideDeck = pc == game.player1 ? game.player1SideDeck : game.player2SideDeck;
+            var sideDeck = pc == game.player1 ? game.player1SideDeck : game.player2SideDeck;
 
             // Build options from the side deck.
-            foreach (int sideCard in sideDeck)
+            foreach (var sideCard in sideDeck)
             {
                 if ((sideCard > 100 && sideCard < 107) || sideCard == 203)
                 {
@@ -184,7 +182,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var response = GetResponseByID("MainPage", responseID);
             NWObject table = NWScript.OBJECT_SELF;
-            NWPlayer pc = GetPC();
+            var pc = GetPC();
             game = PazaakService.GetCurrentGame(table);
 
             if (response.Text == "A player")
@@ -225,8 +223,8 @@ namespace SWLOR.Game.Server.Conversation
             else if (response.Text.StartsWith("Play card from side deck"))
             {
                 // Get the card value and modify the score.  Then rebuild the options. 
-                int card = Convert.ToInt32(GetResponseByID("MainPage", responseID).CustomData.ToString());
-                string cardText = "You play a " + PazaakService.Display(card);
+                var card = Convert.ToInt32(GetResponseByID("MainPage", responseID).CustomData.ToString());
+                var cardText = "You play a " + PazaakService.Display(card);
 
                 if (pc == game.player1) game.player1SideDeck.Remove(card);
                 else game.player2SideDeck.Remove(card);
@@ -289,10 +287,10 @@ namespace SWLOR.Game.Server.Conversation
                 SpeakString(pc.Name + " plays a " + cardText + ", taking their score to " + score);
 
                 // Since we're having a turn, we can't be the one standing... 
-                bool bStand = game.player1Standing || game.player2Standing;
+                var bStand = game.player1Standing || game.player2Standing;
 
-                string header = "Your score is at " + score + ". " + (bStand ? "The other player is standing. " : "") +
-                    "What do you want to do?";
+                var header = "Your score is at " + score + ". " + (bStand ? "The other player is standing. " : "") +
+                             "What do you want to do?";
 
                 SetPageHeader("MainPage", header);
                 ClearPageResponses("MainPage");
@@ -317,7 +315,7 @@ namespace SWLOR.Game.Server.Conversation
 
                 // If both players are PCs, we shouldn't have to do anything more now.  But if we're playing with an NPC, now the NPC needs 
                 // to take their turn. 
-                float delay = 1.0f;
+                var delay = 1.0f;
 
                 if (!CheckEndRound(table) && game.player2.IsNPC && !game.player2Standing)
                 {
@@ -337,9 +335,9 @@ namespace SWLOR.Game.Server.Conversation
 
         private PazaakGame DoNPCTurn(PazaakGame game, float delay = 0.0f)
         {
-            int card = game.DrawCard();
+            var card = game.DrawCard();
             game.player2Score += card;
-            int score = game.player2Score;
+            var score = game.player2Score;
             DelayCommand(0.5f + delay, () => { SpeakString(GetName(game.player2) + " draws a " + card + " from the deck.  Their score is now " + score); });
 
             // Decide what to do next.
@@ -350,7 +348,7 @@ namespace SWLOR.Game.Server.Conversation
             // If the PC has stood and we have a card that will put us above them, play it.
             // If we have 18 or more points (and aren't losing), stand.
             // Else end turn. 
-            bool bStand = false;
+            var bStand = false;
 
             if (score > 20) PlayNPCCard(delay);
             else if (score == 20) bStand = true;
@@ -375,9 +373,9 @@ namespace SWLOR.Game.Server.Conversation
             // NPCs will never have the "special" cards (200+). 
             if (game.player2Score > 20)
             {
-                foreach (int card in game.player2SideDeck)
+                foreach (var card in game.player2SideDeck)
                 {
-                    int adjust = 0;
+                    var adjust = 0;
                     if (card > 0 && card < 7) continue;
                     if (card > 100 && card < 107) adjust = -1 * (card - 100);
                     if (card < 0) adjust = card;
@@ -385,7 +383,7 @@ namespace SWLOR.Game.Server.Conversation
                     if (game.player2Score + adjust < 21)
                     {
                         game.player2Score += adjust;
-                        int score = game.player2Score;
+                        var score = game.player2Score;
                         DelayCommand(1.0f + delay, () => { SpeakString(GetName(game.player2) + " plays " + PazaakService.Display(card) + " from hand.  Score is now " + score); });
                         game.player2SideDeck.Remove(card);
                         break;
@@ -394,11 +392,11 @@ namespace SWLOR.Game.Server.Conversation
             }
             else
             {
-                int targetScore = game.player1Standing ? game.player1Score : 19;
+                var targetScore = game.player1Standing ? game.player1Score : 19;
 
-                foreach (int card in game.player2SideDeck)
+                foreach (var card in game.player2SideDeck)
                 {
-                    int adjust = 0;
+                    var adjust = 0;
                     if (card > 0 && card < 7) adjust = card;
                     if (card > 100 && card < 107) adjust = card - 100;
                     if (card < 0) continue;
@@ -406,7 +404,7 @@ namespace SWLOR.Game.Server.Conversation
                     if (game.player2Score + adjust < 21 && game.player2Score + adjust > targetScore)
                     {
                         game.player2Score += adjust;
-                        int score = game.player2Score;
+                        var score = game.player2Score;
                         DelayCommand(1.0f + delay, () => { SpeakString(GetName(game.player2) + " plays " + PazaakService.Display(card) + " from hand.  Score is now " + score); });
                         game.player2SideDeck.Remove(card);
                         break;

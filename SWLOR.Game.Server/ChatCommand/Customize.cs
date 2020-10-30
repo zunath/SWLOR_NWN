@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.ChatCommand
             if (NWScript.GetIsDM(user)) return string.Empty;
 
             // Players can only do this in certain areas.
-            string areaResref = user.Area.Resref;
+            var areaResref = user.Area.Resref;
             if (areaResref != "ooc_area" && areaResref != "customize_char")
             {
                 return "Customization can only occur in the starting area or the DM customization area. You can't use this command any more.";

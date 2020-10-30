@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using System;
 using SWLOR.Game.Server.Core;
@@ -71,7 +70,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
             Effect effect;
-            float duration = 6.1f;
+            var duration = 6.1f;
             int concealment;
             int hitpoints;
 

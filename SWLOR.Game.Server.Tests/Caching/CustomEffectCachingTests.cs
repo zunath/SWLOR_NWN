@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsCustomEffect()
         {
             // Arrange
-            Data.Entity.CustomEffect entity = new Data.Entity.CustomEffect {ID = 1};
+            var entity = new Data.Entity.CustomEffect {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Data.Entity.CustomEffect>(entity));
@@ -40,8 +40,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            Data.Entity.CustomEffect entity1 = new Data.Entity.CustomEffect { ID = 1};
-            Data.Entity.CustomEffect entity2 = new Data.Entity.CustomEffect { ID = 2};
+            var entity1 = new Data.Entity.CustomEffect { ID = 1};
+            var entity2 = new Data.Entity.CustomEffect { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Data.Entity.CustomEffect>(entity1));
@@ -56,8 +56,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            Data.Entity.CustomEffect entity1 = new Data.Entity.CustomEffect { ID = 1};
-            Data.Entity.CustomEffect entity2 = new Data.Entity.CustomEffect { ID = 2};
+            var entity1 = new Data.Entity.CustomEffect { ID = 1};
+            var entity2 = new Data.Entity.CustomEffect { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Data.Entity.CustomEffect>(entity1));
@@ -73,8 +73,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            Data.Entity.CustomEffect entity1 = new Data.Entity.CustomEffect { ID = 1};
-            Data.Entity.CustomEffect entity2 = new Data.Entity.CustomEffect { ID = 2};
+            var entity1 = new Data.Entity.CustomEffect { ID = 1};
+            var entity2 = new Data.Entity.CustomEffect { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Data.Entity.CustomEffect>(entity1));

@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
 
                 foreach (var item in list)
                 {
-                    NWItem storageItem = storageItems.Single(x => x.GlobalID == item.GlobalID);
+                    var storageItem = storageItems.Single(x => x.GlobalID == item.GlobalID);
                     CopyItem(storageItem.Object, device.Object, true);
                 }
 

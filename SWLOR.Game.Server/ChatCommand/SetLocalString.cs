@@ -17,10 +17,10 @@ namespace SWLOR.Game.Server.ChatCommand
                 target = user.Area;
             }
 
-            string variableName = Convert.ToString(args[0]);
-            string value = string.Empty;
+            var variableName = Convert.ToString(args[0]);
+            var value = string.Empty;
 
-            for (int x = 1; x < args.Length; x++)
+            for (var x = 1; x < args.Length; x++)
             {
                 value += " " + args[x];
             }

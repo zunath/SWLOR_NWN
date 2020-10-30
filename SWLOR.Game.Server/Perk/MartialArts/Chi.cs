@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -40,9 +39,9 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
-            int wisdom = creature.WisdomModifier;
-            int constitution = creature.ConstitutionModifier;
-            int min = 1 + wisdom / 2 + constitution / 3;
+            var wisdom = creature.WisdomModifier;
+            var constitution = creature.ConstitutionModifier;
+            var min = 1 + wisdom / 2 + constitution / 3;
 
             // Rank 7 and up: AOE heal party members
             if (perkLevel >= 7)
@@ -62,8 +61,8 @@ namespace SWLOR.Game.Server.Perk.MartialArts
 
         private void DoHeal(NWObject target, int perkLevel, int minimum)
         {
-            float percentage = perkLevel * 0.10f;
-            int heal = (int)(target.MaxHP * percentage);
+            var percentage = perkLevel * 0.10f;
+            var heal = (int)(target.MaxHP * percentage);
 
             heal = RandomService.Random(minimum, heal);
 

@@ -2,10 +2,7 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Mod.Contracts;
-
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
@@ -23,7 +20,7 @@ namespace SWLOR.Game.Server.Mod
             if (!ItemService.WeaponBaseItemTypes.Contains(target.BaseItemType))
                 return "This mod can only be applied to weapons.";
 
-            int existingAB = GetExistingAB(target);
+            var existingAB = GetExistingAB(target);
             if (existingAB >= MaxValue) return "You cannot improve that item's attack bonus any further.";
 
             return null;
@@ -31,12 +28,12 @@ namespace SWLOR.Game.Server.Mod
 
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
-            int additionalAB = Convert.ToInt32(args[0]);
-            int existingAB = GetExistingAB(target);
-            int newValue = existingAB + additionalAB;
+            var additionalAB = Convert.ToInt32(args[0]);
+            var existingAB = GetExistingAB(target);
+            var newValue = existingAB + additionalAB;
             if (newValue > MaxValue) newValue = MaxValue;
 
-            ItemProperty ip = NWScript.ItemPropertyAttackBonus(newValue);
+            var ip = NWScript.ItemPropertyAttackBonus(newValue);
             ip = NWScript.TagItemProperty(ip, "RUNE_IP");
 
             BiowareXP2.IPSafeAddItemProperty(target, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
@@ -44,19 +41,19 @@ namespace SWLOR.Game.Server.Mod
 
         public string Description(NWPlayer player, NWItem target, params string[] args)
         {
-            int value = Convert.ToInt32(args[0]);
+            var value = Convert.ToInt32(args[0]);
             return "Attack Bonus +" + value;
         }
 
         private int GetExistingAB(NWItem item)
         {
-            int currentAB = 0;
+            var currentAB = 0;
             foreach (var ip in item.ItemProperties)
             {
                 var type = NWScript.GetItemPropertyType(ip);
                 if (type == ItemPropertyType.AttackBonus)
                 {
-                    int bonus =  NWScript.GetItemPropertyCostTableValue(ip);
+                    var bonus =  NWScript.GetItemPropertyCostTableValue(ip);
                     currentAB += bonus;
                 }
             }

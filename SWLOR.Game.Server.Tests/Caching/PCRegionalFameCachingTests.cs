@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCRegionalFame entity = new PCRegionalFame {ID = id};
+            var entity = new PCRegionalFame {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCRegionalFame>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCRegionalFame entity1 = new PCRegionalFame { ID = id1};
-            PCRegionalFame entity2 = new PCRegionalFame { ID = id2};
+            var entity1 = new PCRegionalFame { ID = id1};
+            var entity2 = new PCRegionalFame { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCRegionalFame>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCRegionalFame entity1 = new PCRegionalFame { ID = id1};
-            PCRegionalFame entity2 = new PCRegionalFame { ID = id2};
+            var entity1 = new PCRegionalFame { ID = id1};
+            var entity2 = new PCRegionalFame { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCRegionalFame>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCRegionalFame entity1 = new PCRegionalFame { ID = id1};
-            PCRegionalFame entity2 = new PCRegionalFame { ID = id2};
+            var entity1 = new PCRegionalFame { ID = id1};
+            var entity2 = new PCRegionalFame { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCRegionalFame>(entity1));

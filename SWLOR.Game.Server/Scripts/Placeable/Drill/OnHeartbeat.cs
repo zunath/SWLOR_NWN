@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -24,19 +23,19 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Drill
         public void Main()
         {
             NWPlaceable drill = NWScript.OBJECT_SELF;
-            string structureID = drill.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var structureID = drill.GetLocalString("PC_BASE_STRUCTURE_ID");
 
             if (string.IsNullOrWhiteSpace(structureID))
             {
-                string areaName = drill.Area.Name;
+                var areaName = drill.Area.Name;
                 Console.WriteLine("There was an error retrieving the PC_BASE_STRUCTURE_ID variable on drill in area: " + areaName);
                 return;
             }
 
-            Guid structureGUID = new Guid(structureID);
-            PCBaseStructure pcStructure = DataService.PCBaseStructure.GetByID(structureGUID);
-            PCBase pcBase = DataService.PCBase.GetByID(pcStructure.PCBaseID);
-            PCBaseStructure tower = BaseService.GetBaseControlTower(pcBase.ID);
+            var structureGUID = new Guid(structureID);
+            var pcStructure = DataService.PCBaseStructure.GetByID(structureGUID);
+            var pcBase = DataService.PCBase.GetByID(pcStructure.PCBaseID);
+            var tower = BaseService.GetBaseControlTower(pcBase.ID);
 
             if (tower == null)
             {
@@ -45,12 +44,12 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Drill
             }
 
             // Check whether there's space in this tower.
-            int capacity = BaseService.CalculateResourceCapacity(pcBase.ID);
-            int count = DataService.PCBaseStructureItem.GetNumberOfItemsContainedBy(tower.ID) + 1;
+            var capacity = BaseService.CalculateResourceCapacity(pcBase.ID);
+            var count = DataService.PCBaseStructureItem.GetNumberOfItemsContainedBy(tower.ID) + 1;
             if (count > capacity) return;
 
-            BaseStructure baseStructure = DataService.BaseStructure.GetByID(pcStructure.BaseStructureID);
-            DateTime now = DateTime.UtcNow;
+            var baseStructure = DataService.BaseStructure.GetByID(pcStructure.BaseStructureID);
+            var now = DateTime.UtcNow;
 
             var outOfPowerEffect = drill.Effects.SingleOrDefault(x => NWScript.GetEffectTag(x) == "CONTROL_TOWER_OUT_OF_POWER");
             if (now >= pcBase.DateFuelEnds)
@@ -69,9 +68,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Drill
                 NWScript.RemoveEffect(drill, outOfPowerEffect);
             }
 
-            int minuteReduce = 2 * pcStructure.StructureBonus;
-            int increaseMinutes = 60 - minuteReduce;
-            int retrievalRating = baseStructure.RetrievalRating;
+            var minuteReduce = 2 * pcStructure.StructureBonus;
+            var increaseMinutes = 60 - minuteReduce;
+            var retrievalRating = baseStructure.RetrievalRating;
 
             if (increaseMinutes <= 20) increaseMinutes = 20;
             if (pcStructure.DateNextActivity == null)
@@ -84,8 +83,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Drill
 
             // Time to spawn a new item and reset the timer.
             var dbArea = DataService.Area.GetByResref(pcBase.AreaResref);
-            string sector = pcBase.Sector;
-            int lootTableID = 0;
+            var sector = pcBase.Sector;
+            var lootTableID = 0;
 
             switch (sector)
             {

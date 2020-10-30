@@ -28,12 +28,12 @@ namespace SWLOR.Game.Server.Scripts.Placeable.WarpDevice
             }
 
             NWPlaceable self = OBJECT_SELF;
-            string destination = self.GetLocalString("DESTINATION");
+            var destination = self.GetLocalString("DESTINATION");
             var visualEffectID = self.GetLocalInt("VISUAL_EFFECT") > 0 ? (VisualEffect)self.GetLocalInt("VISUAL_EFFECT") : VisualEffect.None;
-            int keyItemID = self.GetLocalInt("KEY_ITEM_ID");
-            string missingKeyItemMessage = self.GetLocalString("MISSING_KEY_ITEM_MESSAGE");
-            bool isInstance = GetLocalBool(self, "INSTANCE") == true;
-            bool personalInstanceOnly = GetLocalBool(self, "PERSONAL_INSTANCE_ONLY");
+            var keyItemID = self.GetLocalInt("KEY_ITEM_ID");
+            var missingKeyItemMessage = self.GetLocalString("MISSING_KEY_ITEM_MESSAGE");
+            var isInstance = GetLocalBool(self, "INSTANCE") == true;
+            var personalInstanceOnly = GetLocalBool(self, "PERSONAL_INSTANCE_ONLY");
 
             if (keyItemID > 0)
             {
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.WarpDevice
                 }
 
                 // Otherwise no instance exists yet or this instance only allows one player. Make a new one for this player.
-                NWArea instance = AreaService.CreateAreaInstance(oPC, entranceWP.Area.Resref, entranceWP.Area.Name, destination);
+                var instance = AreaService.CreateAreaInstance(oPC, entranceWP.Area.Resref, entranceWP.Area.Name, destination);
                 location = instance.GetLocalLocation("INSTANCE_ENTRANCE");
                 PlayerService.SaveLocation(oPC);
             }

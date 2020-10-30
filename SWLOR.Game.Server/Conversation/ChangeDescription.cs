@@ -1,7 +1,5 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -13,14 +11,14 @@ namespace SWLOR.Game.Server.Conversation
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage(
+            var mainPage = new DialogPage(
                 "<SET LATER>",
                 "Next"
             );
 
-            DialogPage confirmSetPage = new DialogPage(
+            var confirmSetPage = new DialogPage(
                 "<SET LATER>",
                 "Confirm Description Change"
             );
@@ -32,7 +30,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            string header = "Please type the new description for your character into the chat box. Then press the 'Next' button.\n\n";
+            var header = "Please type the new description for your character into the chat box. Then press the 'Next' button.\n\n";
             header += ColorTokenService.Green("Current Description: ") + "\n\n";
             header += NWScript.GetDescription(GetPC().Object);
             SetPageHeader("MainPage", header);
@@ -61,7 +59,7 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1: // Next
-                    string newDescription = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
+                    var newDescription = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
 
                     if (string.IsNullOrWhiteSpace(newDescription))
                     {
@@ -69,7 +67,7 @@ namespace SWLOR.Game.Server.Conversation
                         return;
                     }
 
-                    string header = "Your new description follows. If you need to make a change, click 'Back', type in a new description, and then hit 'Next' again.\n\n";
+                    var header = "Your new description follows. If you need to make a change, click 'Back', type in a new description, and then hit 'Next' again.\n\n";
                     header += ColorTokenService.Green("New Description: ") + "\n\n";
                     header += newDescription;
                     SetPageHeader("ConfirmSetPage", header);

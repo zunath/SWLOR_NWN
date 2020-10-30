@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
@@ -61,15 +60,15 @@ namespace SWLOR.Game.Server.Scripts.Delayed
 
             var model = CraftService.GetPlayerCraftingData(player);
 
-            CraftBlueprint blueprint = DataService.CraftBlueprint.GetByID(model.BlueprintID);
-            BaseStructure baseStructure = blueprint.BaseStructureID == null ? null : DataService.BaseStructure.GetByID(Convert.ToInt32(blueprint.BaseStructureID));
-            PCSkill pcSkill = SkillService.GetPCSkill(player, blueprint.SkillID);
+            var blueprint = DataService.CraftBlueprint.GetByID(model.BlueprintID);
+            var baseStructure = blueprint.BaseStructureID == null ? null : DataService.BaseStructure.GetByID(Convert.ToInt32(blueprint.BaseStructureID));
+            var pcSkill = SkillService.GetPCSkill(player, blueprint.SkillID);
 
-            int pcEffectiveLevel = CraftService.CalculatePCEffectiveLevel(player, pcSkill.Rank, (SkillType)blueprint.SkillID);
-            int itemLevel = model.AdjustedLevel;
-            int atmosphereBonus = CraftService.CalculateAreaAtmosphereBonus(player.Area);
-            float chance = CalculateBaseChanceToAddProperty(pcEffectiveLevel, itemLevel, atmosphereBonus);
-            float equipmentBonus = CalculateEquipmentBonus(player, (SkillType)blueprint.SkillID);
+            var pcEffectiveLevel = CraftService.CalculatePCEffectiveLevel(player, pcSkill.Rank, (SkillType)blueprint.SkillID);
+            var itemLevel = model.AdjustedLevel;
+            var atmosphereBonus = CraftService.CalculateAreaAtmosphereBonus(player.Area);
+            var chance = CalculateBaseChanceToAddProperty(pcEffectiveLevel, itemLevel, atmosphereBonus);
+            var equipmentBonus = CalculateEquipmentBonus(player, (SkillType)blueprint.SkillID);
 
             if (chance <= 1.0f)
             {
@@ -78,7 +77,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                 return;
             }
 
-            int luckyBonus = PerkService.GetCreaturePerkLevel(player, PerkType.Lucky);
+            var luckyBonus = PerkService.GetCreaturePerkLevel(player, PerkType.Lucky);
             var craftedItems = new List<NWItem>();
             NWItem craftedItem = (NWScript.CreateItemOnObject(blueprint.ItemResref, player.Object, blueprint.Quantity));
             craftedItem.IsIdentified = true;
@@ -87,7 +86,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
             // If item isn't stackable, loop through and create as many as necessary.
             if (craftedItem.StackSize < blueprint.Quantity)
             {
-                for (int x = 2; x <= blueprint.Quantity; x++)
+                for (var x = 2; x <= blueprint.Quantity; x++)
                 {
                     craftedItem = (NWScript.CreateItemOnObject(blueprint.ItemResref, player.Object));
                     craftedItem.IsIdentified = true;
@@ -110,7 +109,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                 chance += RandomService.Random(1, luckyBonus);
             }
             
-            int successAmount = 0;
+            var successAmount = 0;
             foreach (var component in model.MainComponents)
             {
                 var result = RunComponentBonusAttempt(player, component, equipmentBonus, chance, craftedItems);
@@ -149,10 +148,10 @@ namespace SWLOR.Game.Server.Scripts.Delayed
             }
             
             player.SendMessage("You created " + blueprint.Quantity + "x " + blueprint.ItemName + "!");
-            int baseXP = 750 + successAmount * RandomService.Random(1, 50);
-            float xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(baseXP, model.AdjustedLevel, pcSkill.Rank);
+            var baseXP = 750 + successAmount * RandomService.Random(1, 50);
+            var xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(baseXP, model.AdjustedLevel, pcSkill.Rank);
 
-            bool exists = DataService.PCCraftedBlueprint.ExistsByPlayerIDAndCraftedBlueprintID(player.GlobalID, blueprint.ID);
+            var exists = DataService.PCCraftedBlueprint.ExistsByPlayerIDAndCraftedBlueprintID(player.GlobalID, blueprint.ID);
             if(!exists)
             {
                 xp = xp * 1.50f;
@@ -176,22 +175,22 @@ namespace SWLOR.Game.Server.Scripts.Delayed
 
         private Tuple<int, float> RunComponentBonusAttempt(NWPlayer player, NWItem component, float equipmentBonus, float chance, List<NWItem> itemSet)
         {
-            int successAmount = 0;
+            var successAmount = 0;
 
             // Note - this line MUST be outside the foreach loop, as inspecting component properties will reset the component.ItemProperties counter.
-            int componentLevel = component.LevelIncrease > 0 ? component.LevelIncrease : component.RecommendedLevel;
+            var componentLevel = component.LevelIncrease > 0 ? component.LevelIncrease : component.RecommendedLevel;
             if (componentLevel < 1) componentLevel = 1;
             foreach (var ip in component.ItemProperties)
             {
                 var ipType = NWScript.GetItemPropertyType(ip);
                 if (ipType != ItemPropertyType.ComponentBonus) continue;
 
-                int bonusTypeID = NWScript.GetItemPropertySubType(ip);
-                int tlkID = Convert.ToInt32(NWScript.Get2DAString("iprp_compbon", "Name", bonusTypeID));
-                int amount = NWScript.GetItemPropertyCostTableValue(ip);
-                string bonusName = NWScript.GetStringByStrRef(tlkID) + " " + amount;
-                float random = RandomService.RandomFloat() * 100.0f;
-                float modifiedEquipmentBonus = equipmentBonus * 0.25f;
+                var bonusTypeID = NWScript.GetItemPropertySubType(ip);
+                var tlkID = Convert.ToInt32(NWScript.Get2DAString("iprp_compbon", "Name", bonusTypeID));
+                var amount = NWScript.GetItemPropertyCostTableValue(ip);
+                var bonusName = NWScript.GetStringByStrRef(tlkID) + " " + amount;
+                var random = RandomService.RandomFloat() * 100.0f;
+                var modifiedEquipmentBonus = equipmentBonus * 0.25f;
 
                 if (random <= chance + modifiedEquipmentBonus)
                 {
@@ -209,7 +208,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                     }
                     player.SendMessage(ColorTokenService.Green("Successfully applied component property: " + bonusName));
 
-                    ComponentBonusType bonusType = (ComponentBonusType)NWScript.GetItemPropertySubType(ip);
+                    var bonusType = (ComponentBonusType)NWScript.GetItemPropertySubType(ip);
                     if (bonusType != ComponentBonusType.DurabilityUp)
                     {
                         // Durability bonuses don't increase the penalty.  Higher level components transfer multiple
@@ -252,9 +251,9 @@ namespace SWLOR.Game.Server.Scripts.Delayed
         private float CalculateEquipmentBonus(NWPlayer player, SkillType skillType)
         {
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
-            int equipmentBonus = 0;
-            float multiplier = 0.5f;
-            int atmosphere = CraftService.CalculateAreaAtmosphereBonus(player.Area);
+            var equipmentBonus = 0;
+            var multiplier = 0.5f;
+            var atmosphere = CraftService.CalculateAreaAtmosphereBonus(player.Area);
 
             if (atmosphere >= 150)
             {
@@ -284,8 +283,8 @@ namespace SWLOR.Game.Server.Scripts.Delayed
 
         private float CalculateBaseChanceToAddProperty(int pcLevel, int blueprintLevel, int atmosphereBonus)
         {
-            int delta = pcLevel - blueprintLevel;
-            float percentage = 0.0f;
+            var delta = pcLevel - blueprintLevel;
+            var percentage = 0.0f;
 
             if (delta <= -5)
             {

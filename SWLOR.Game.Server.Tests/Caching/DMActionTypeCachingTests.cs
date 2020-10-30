@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsDMActionType()
         {
             // Arrange
-            DMActionType entity = new DMActionType {ID = 1};
+            var entity = new DMActionType {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<DMActionType>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            DMActionType entity1 = new DMActionType { ID = 1};
-            DMActionType entity2 = new DMActionType { ID = 2};
+            var entity1 = new DMActionType { ID = 1};
+            var entity2 = new DMActionType { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<DMActionType>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            DMActionType entity1 = new DMActionType { ID = 1};
-            DMActionType entity2 = new DMActionType { ID = 2};
+            var entity1 = new DMActionType { ID = 1};
+            var entity2 = new DMActionType { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<DMActionType>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            DMActionType entity1 = new DMActionType { ID = 1};
-            DMActionType entity2 = new DMActionType { ID = 2};
+            var entity1 = new DMActionType { ID = 1};
+            var entity2 = new DMActionType { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<DMActionType>(entity1));

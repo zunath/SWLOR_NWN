@@ -19,10 +19,10 @@ namespace SWLOR.Game.Server.ChatCommand
             }
             else
             {
-                DateTime now = DateTime.UtcNow;
+                var now = DateTime.UtcNow;
                 var delta = ServerRestartProcessor.RestartTime - now;
-                string rebootString = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
-                string message = "Server will automatically reboot in " + rebootString;
+                var rebootString = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
+                var message = "Server will automatically reboot in " + rebootString;
                 user.FloatingText(message);
             }
 

@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsPerkCategory()
         {
             // Arrange
-            PerkCategory entity = new PerkCategory {ID = 1};
+            var entity = new PerkCategory {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PerkCategory>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            PerkCategory entity1 = new PerkCategory { ID = 1};
-            PerkCategory entity2 = new PerkCategory { ID = 2};
+            var entity1 = new PerkCategory { ID = 1};
+            var entity2 = new PerkCategory { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PerkCategory>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            PerkCategory entity1 = new PerkCategory { ID = 1};
-            PerkCategory entity2 = new PerkCategory { ID = 2};
+            var entity1 = new PerkCategory { ID = 1};
+            var entity2 = new PerkCategory { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PerkCategory>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            PerkCategory entity1 = new PerkCategory { ID = 1};
-            PerkCategory entity2 = new PerkCategory { ID = 2};
+            var entity1 = new PerkCategory { ID = 1};
+            var entity2 = new PerkCategory { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PerkCategory>(entity1));

@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Tests.ValueObject.Dialog
         [Test]
         public void DialogPage_Ctor_ShouldHaveValidDefaultValues()
         {
-            DialogPage page = new DialogPage();
+            var page = new DialogPage();
 
             Assert.AreEqual(string.Empty, page.Header);
             Assert.AreEqual(0, page.Responses.Count);
@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Tests.ValueObject.Dialog
         [Test]
         public void DialogPage_CtorValues_ShouldHaveValidDefaultValues()
         {
-            DialogPage page = new DialogPage(
+            var page = new DialogPage(
                 "MyHeader",
                 "Response 1",
                 "Response 2");

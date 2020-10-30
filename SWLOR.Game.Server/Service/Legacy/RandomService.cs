@@ -39,15 +39,15 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetRandomWeightedIndex(int[] weights)
         {
-            int totalWeight = 0;
-            foreach (int weight in weights)
+            var totalWeight = 0;
+            foreach (var weight in weights)
             {
                 totalWeight += weight;
             }
 
-            int randomIndex = -1;
+            var randomIndex = -1;
             double random = RandomFloat() * totalWeight;
-            for (int i = 0; i < weights.Length; ++i)
+            for (var i = 0; i < weights.Length; ++i)
             {
                 random -= weights[i];
                 if (random <= 0.0d)
@@ -66,8 +66,8 @@ namespace SWLOR.Game.Server.Service
             if (min < 1) min = 1;
             if (min > max) min = max;
 
-            int result = 0;
-            for (int x = 1; x <= numberOfDice; x++)
+            var result = 0;
+            for (var x = 1; x <= numberOfDice; x++)
             {
                 result += _random.Next(min, max);
             }

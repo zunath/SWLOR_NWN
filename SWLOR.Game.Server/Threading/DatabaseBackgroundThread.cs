@@ -1,7 +1,6 @@
 ﻿
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.ValueObject;
 using System;
 using Dapper.Contrib.Extensions;
 using MySqlConnector;
@@ -28,7 +27,7 @@ namespace SWLOR.Game.Server.Threading
         {
             while (!DataService.DataQueue.IsEmpty)
             {
-                if (!DataService.DataQueue.TryDequeue(out DatabaseAction request))
+                if (!DataService.DataQueue.TryDequeue(out var request))
                 {
                     Console.WriteLine("DATABASE WORKER: Was unable to process an object. Will try again...");
                     return;

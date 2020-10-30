@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Bioware;
+﻿using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -25,20 +24,20 @@ namespace SWLOR.Game.Server.Item
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             NWPlayer player = user.Object;
-            ResourceQuality quality = (ResourceQuality)target.GetLocalInt("RESOURCE_QUALITY");
-            int tier = target.GetLocalInt("RESOURCE_TIER");
-            int remaining = target.GetLocalInt("RESOURCE_COUNT") - 1;
-            string itemResref = target.GetLocalString("RESOURCE_RESREF");
-            int gemChance = ResourceService.CalculateChanceForComponentBonus(player, tier, quality);
-            int roll = RandomService.Random(1, 100);
-            int rank = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
+            var quality = (ResourceQuality)target.GetLocalInt("RESOURCE_QUALITY");
+            var tier = target.GetLocalInt("RESOURCE_TIER");
+            var remaining = target.GetLocalInt("RESOURCE_COUNT") - 1;
+            var itemResref = target.GetLocalString("RESOURCE_RESREF");
+            var gemChance = ResourceService.CalculateChanceForComponentBonus(player, tier, quality);
+            var roll = RandomService.Random(1, 100);
+            var rank = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
             if (item.RecommendedLevel < rank)
                 rank = item.RecommendedLevel;
 
-            int difficulty = (tier-1) * 10 + ResourceService.GetDifficultyAdjustment(quality);
-            int delta = difficulty - rank;
+            var difficulty = (tier-1) * 10 + ResourceService.GetDifficultyAdjustment(quality);
+            var delta = difficulty - rank;
 
-            int baseXP = 0;
+            var baseXP = 0;
             if (delta >= 6) baseXP = 400;
             else if (delta == 5) baseXP = 350;
             else if (delta == 4) baseXP = 325;
@@ -51,8 +50,8 @@ namespace SWLOR.Game.Server.Item
             else if (delta == -3) baseXP = 50;
             else if (delta == -4) baseXP = 25;
 
-            int itemHarvestBonus = item.HarvestingBonus;
-            int scanningBonus = user.GetLocalInt(target.GlobalID.ToString());
+            var itemHarvestBonus = item.HarvestingBonus;
+            var scanningBonus = user.GetLocalInt(target.GlobalID.ToString());
             gemChance += itemHarvestBonus * 2 + scanningBonus * 2;
 
             baseXP = baseXP + scanningBonus * 5;
@@ -112,8 +111,8 @@ namespace SWLOR.Game.Server.Item
                 user.SendMessage("You harvest " + resource.Name + ".");
             }
 
-            float decayMinimum = 0.03f;
-            float decayMaximum = 0.07f;
+            var decayMinimum = 0.03f;
+            var decayMaximum = 0.07f;
 
             if(delta > 0)
             {
@@ -122,7 +121,7 @@ namespace SWLOR.Game.Server.Item
             }
 
             DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(decayMinimum, decayMaximum));
-            int xp = baseXP;
+            var xp = baseXP;
             SkillService.GiveSkillXP(player, SkillType.Harvesting, xp);
 
             if (remaining <= 0)
@@ -149,7 +148,7 @@ namespace SWLOR.Game.Server.Item
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             const float BaseHarvestingTime = 16.0f;
-            float harvestingTime = BaseHarvestingTime;
+            var harvestingTime = BaseHarvestingTime;
 
             if (user.IsPlayer)
             {
@@ -187,7 +186,7 @@ namespace SWLOR.Game.Server.Item
                 return "Please select a target to harvest.";
             }
 
-            int qualityID = target.GetLocalInt("RESOURCE_QUALITY");
+            var qualityID = target.GetLocalInt("RESOURCE_QUALITY");
 
             if(qualityID <= 0)
             {
@@ -195,11 +194,11 @@ namespace SWLOR.Game.Server.Item
             }
 
             NWPlayer player = (user.Object);
-            ResourceQuality quality = (ResourceQuality)qualityID;
-            int tier = target.GetLocalInt("RESOURCE_TIER");
-            int rank = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
-            int difficulty = (tier - 1) * 10 + ResourceService.GetDifficultyAdjustment(quality);
-            int delta = difficulty - rank;
+            var quality = (ResourceQuality)qualityID;
+            var tier = target.GetLocalInt("RESOURCE_TIER");
+            var rank = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
+            var difficulty = (tier - 1) * 10 + ResourceService.GetDifficultyAdjustment(quality);
+            var delta = difficulty - rank;
 
             if (delta >= 5)
             {

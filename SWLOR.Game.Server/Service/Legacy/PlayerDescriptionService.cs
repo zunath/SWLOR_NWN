@@ -1,8 +1,6 @@
 ﻿using System;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 
@@ -22,7 +20,7 @@ namespace SWLOR.Game.Server.Service
             if (sender.GetLocalInt("LISTENING_FOR_DESCRIPTION") != 1) return;
             if (!sender.IsPlayer) return;
 
-            string text = NWScript.GetPCChatMessage().Trim();
+            var text = NWScript.GetPCChatMessage().Trim();
             sender.SetLocalString("NEW_DESCRIPTION_TO_SET", text);
 
             NWScript.SetPCChatMessage(string.Empty); // Skip the message
@@ -34,7 +32,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (player == null) throw new ArgumentNullException(nameof(player));
 
-            string newDescription = player.GetLocalString("NEW_DESCRIPTION_TO_SET");
+            var newDescription = player.GetLocalString("NEW_DESCRIPTION_TO_SET");
             NWScript.SetDescription(player.Object, newDescription);
             NWScript.SetDescription(player.Object, newDescription, false);
 

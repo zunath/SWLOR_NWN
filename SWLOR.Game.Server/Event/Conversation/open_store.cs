@@ -1,6 +1,5 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.ValueObject;
 
@@ -17,7 +16,7 @@ namespace NWN.Scripts
             {
                 NWPlayer player = NWScript.GetPCSpeaker();
                 NWObject self = NWScript.OBJECT_SELF;
-                string storeTag = self.GetLocalString("STORE_TAG");
+                var storeTag = self.GetLocalString("STORE_TAG");
                 NWObject store;
 
                 if (string.IsNullOrWhiteSpace(storeTag))

@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            BugReport entity = new BugReport {ID = id};
+            var entity = new BugReport {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<BugReport>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            BugReport entity1 = new BugReport { ID = id1};
-            BugReport entity2 = new BugReport { ID = id2};
+            var entity1 = new BugReport { ID = id1};
+            var entity2 = new BugReport { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<BugReport>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            BugReport entity1 = new BugReport { ID = id1};
-            BugReport entity2 = new BugReport { ID = id2};
+            var entity1 = new BugReport { ID = id1};
+            var entity2 = new BugReport { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<BugReport>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            BugReport entity1 = new BugReport { ID = id1};
-            BugReport entity2 = new BugReport { ID = id2};
+            var entity1 = new BugReport { ID = id1};
+            var entity2 = new BugReport { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<BugReport>(entity1));

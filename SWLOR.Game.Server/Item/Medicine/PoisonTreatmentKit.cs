@@ -1,6 +1,5 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -25,7 +24,7 @@ namespace SWLOR.Game.Server.Item.Medicine
         {
             CustomEffectService.RemovePCCustomEffect(target.Object, CustomEffectType.Poison);
 
-            foreach (Effect effect in target.Effects)
+            foreach (var effect in target.Effects)
             {
                 if (NWScript.GetIsEffectValid(effect) == true)
                 {
@@ -39,10 +38,10 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             user.SendMessage("You successfully treat " + target.Name + "'s infection.");
 
-            int rank = SkillService.GetPCSkillRank(user.Object, SkillType.Medicine);
+            var rank = SkillService.GetPCSkillRank(user.Object, SkillType.Medicine);
             
             if(target.IsPlayer){
-                int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
+                var xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
                 SkillService.GiveSkillXP(user.Object, SkillType.Medicine, xp);
             }
         }
@@ -57,7 +56,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return 0.1f;
             }
 
-            int rank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
+            var rank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
             return 12.0f - (rank + effectiveStats.Medicine / 2) * 0.1f;
         }
 
@@ -78,7 +77,7 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            int consumeChance = PerkService.GetCreaturePerkLevel(user.Object, PerkType.FrugalMedic) * 10;
+            var consumeChance = PerkService.GetCreaturePerkLevel(user.Object, PerkType.FrugalMedic) * 10;
             return RandomService.Random(100) + 1 > consumeChance;
         }
 
@@ -89,8 +88,8 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "Only creatures may be targeted with this item.";
             }
 
-            bool hasEffect = false;
-            foreach (Effect effect in target.Effects)
+            var hasEffect = false;
+            foreach (var effect in target.Effects)
             {
                 if (NWScript.GetIsEffectValid(effect) == true)
                 {
@@ -112,7 +111,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "This player is not diseased or poisoned.";
             }
 
-            int rank = SkillService.GetPCSkillRank(user.Object, SkillType.Medicine);
+            var rank = SkillService.GetPCSkillRank(user.Object, SkillType.Medicine);
 
             if (rank < item.RecommendedLevel)
             {

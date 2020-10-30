@@ -1,6 +1,4 @@
-﻿using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -38,7 +36,7 @@ namespace SWLOR.Game.Server.Perk.General
 
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
-            float duration = 60.0f;
+            var duration = 60.0f;
             int speed;
 
             switch (perkLevel)
@@ -73,7 +71,7 @@ namespace SWLOR.Game.Server.Perk.General
                 duration = duration + creature.DexterityModifier * 5;
             }
 
-            Effect movement = NWScript.EffectMovementSpeedIncrease(speed);
+            var movement = NWScript.EffectMovementSpeedIncrease(speed);
             movement = NWScript.TagEffect(movement, "DASH");
 
             NWScript.ApplyEffectToObject(DurationType.Temporary, movement, target, duration);

@@ -1,6 +1,4 @@
-﻿using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
+﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -24,9 +22,9 @@ namespace SWLOR.Game.Server.Conversation
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainPage = new DialogPage("Charter flights leave hourly. Please select one our available destinations below.");
-            DialogPage confirmPage = new DialogPage("<SET LATER>", 
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage("Charter flights leave hourly. Please select one our available destinations below.");
+            var confirmPage = new DialogPage("<SET LATER>", 
                 "Confirm Flight");
 
             dialog.AddPage("MainPage", mainPage);
@@ -41,8 +39,8 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadDestinations()
         {
-            NWObject terminal = GetDialogTarget();
-            int currentLocation = terminal.GetLocalInt("CURRENT_LOCATION");
+            var terminal = GetDialogTarget();
+            var currentLocation = terminal.GetLocalInt("CURRENT_LOCATION");
 
             ClearPageResponses("MainPage");
             AddResponseToPage("MainPage", "Viscara", currentLocation != (int)Planet.Viscara);
@@ -66,7 +64,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void MainPageResponses(int responseID)
         {
-            NWPlayer player = GetPC();
+            var player = GetPC();
             string planet;
             int price;
             string destinationTag;
@@ -95,7 +93,7 @@ namespace SWLOR.Game.Server.Conversation
                 default: return;
             }
 
-            string header = ColorTokenService.Green("Selected Destination: ") + planet + "\n";
+            var header = ColorTokenService.Green("Selected Destination: ") + planet + "\n";
             header += ColorTokenService.Green("Price: ") + price + "\n\n";
             header += "This trip is one-way and non-refundable. Are you sure you want to take this flight?";
 
@@ -138,7 +136,7 @@ namespace SWLOR.Game.Server.Conversation
                     NWScript.TakeGoldFromCreature(model.Price, player, true);
 
                     // Get the location based on the waypoint tag.
-                    Location location = NWScript.GetLocation(NWScript.GetWaypointByTag(model.DestinationTag));
+                    var location = NWScript.GetLocation(NWScript.GetWaypointByTag(model.DestinationTag));
 
                     // Transport player.
                     player.AssignCommand(() =>

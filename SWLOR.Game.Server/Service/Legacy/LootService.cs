@@ -1,9 +1,5 @@
 ﻿using System.Linq;
-using System.Numerics;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -26,16 +22,16 @@ namespace SWLOR.Game.Server.Service
             var lootTableItems = DataService.LootTableItem.GetAllByLootTableID(lootTableID).ToList();
 
             if (lootTableItems.Count <= 0) return null;
-            int[] weights = new int[lootTableItems.Count];
-            for (int x = 0; x < lootTableItems.Count; x++)
+            var weights = new int[lootTableItems.Count];
+            for (var x = 0; x < lootTableItems.Count; x++)
             {
                 weights[x] = lootTableItems.ElementAt(x).Weight;
             }
 
-            int randomIndex = RandomService.GetRandomWeightedIndex(weights);
-            LootTableItem itemEntity = lootTableItems.ElementAt(randomIndex);
-            int quantity = RandomService.Random(itemEntity.MaxQuantity) + 1;
-            ItemVO result = new ItemVO
+            var randomIndex = RandomService.GetRandomWeightedIndex(weights);
+            var itemEntity = lootTableItems.ElementAt(randomIndex);
+            var quantity = RandomService.Random(itemEntity.MaxQuantity) + 1;
+            var result = new ItemVO
             {
                 Quantity = quantity,
                 Resref = itemEntity.Resref,
@@ -56,22 +52,22 @@ namespace SWLOR.Game.Server.Service
             NWCreature creature = NWScript.OBJECT_SELF;
             
             // Single loot table (without an index)
-            int singleLootTableID = creature.GetLocalInt("LOOT_TABLE_ID");
+            var singleLootTableID = creature.GetLocalInt("LOOT_TABLE_ID");
             if (singleLootTableID > 0)
             {
-                int chance = creature.GetLocalInt("LOOT_TABLE_CHANCE");
-                int attempts = creature.GetLocalInt("LOOT_TABLE_ATTEMPTS");
+                var chance = creature.GetLocalInt("LOOT_TABLE_CHANCE");
+                var attempts = creature.GetLocalInt("LOOT_TABLE_ATTEMPTS");
 
                 RunLootAttempt(creature, singleLootTableID, chance, attempts);
             }
 
             // Multiple loot tables (with an index)
-            int lootTableNumber = 1;
-            int lootTableID = creature.GetLocalInt("LOOT_TABLE_ID_" + lootTableNumber);
+            var lootTableNumber = 1;
+            var lootTableID = creature.GetLocalInt("LOOT_TABLE_ID_" + lootTableNumber);
             while (lootTableID > 0)
             {
-                int chance = creature.GetLocalInt("LOOT_TABLE_CHANCE_" + lootTableNumber);
-                int attempts = creature.GetLocalInt("LOOT_TABLE_ATTEMPTS_" + lootTableNumber);
+                var chance = creature.GetLocalInt("LOOT_TABLE_CHANCE_" + lootTableNumber);
+                var attempts = creature.GetLocalInt("LOOT_TABLE_ATTEMPTS_" + lootTableNumber);
 
                 RunLootAttempt(creature, lootTableID, chance, attempts);
 
@@ -89,16 +85,16 @@ namespace SWLOR.Game.Server.Service
             if (attempts <= 0)
                 attempts = 1;
 
-            for (int a = 1; a <= attempts; a++)
+            for (var a = 1; a <= attempts; a++)
             {
                 if (RandomService.Random(100) + 1 <= chance)
                 {
-                    ItemVO model = PickRandomItemFromLootTable(lootTableID);
+                    var model = PickRandomItemFromLootTable(lootTableID);
                     if (model == null) continue;
 
-                    int spawnQuantity = model.Quantity > 1 ? RandomService.Random(1, model.Quantity) : 1;
+                    var spawnQuantity = model.Quantity > 1 ? RandomService.Random(1, model.Quantity) : 1;
 
-                    for (int x = 1; x <= spawnQuantity; x++)
+                    for (var x = 1; x <= spawnQuantity; x++)
                     {
                         var item = CreateItemOnObject(model.Resref, target);
                         if (!string.IsNullOrWhiteSpace(model.SpawnRule))
@@ -119,8 +115,8 @@ namespace SWLOR.Game.Server.Service
             NWObject self = NWScript.OBJECT_SELF;
             if (self.Tag == "spaceship_copy") return;
 
-            Vector3 lootPosition = Vector3(self.Position.X, self.Position.Y, self.Position.Z - 0.11f);
-            Location spawnLocation = Location(self.Area, lootPosition, self.Facing);
+            var lootPosition = Vector3(self.Position.X, self.Position.Y, self.Position.Z - 0.11f);
+            var spawnLocation = Location(self.Area, lootPosition, self.Facing);
 
             NWPlaceable container = CreateObject(ObjectType.Placeable, "corpse", spawnLocation);
             container.SetLocalObject("CORPSE_BODY", self);

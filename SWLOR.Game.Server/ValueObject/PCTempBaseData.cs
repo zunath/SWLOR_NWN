@@ -1,6 +1,5 @@
 ﻿using System;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 

@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.ValueObject
         {
             get
             {
-                int adjustedLevel = Blueprint.BaseLevel;
+                var adjustedLevel = Blueprint.BaseLevel;
                 foreach (var comp in MainComponents)
                 {
                     adjustedLevel += comp.LevelIncrease > 0 ? comp.LevelIncrease : comp.RecommendedLevel;

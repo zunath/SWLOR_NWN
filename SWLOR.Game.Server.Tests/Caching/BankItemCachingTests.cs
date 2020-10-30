@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            BankItem entity = new BankItem {ID = id};
+            var entity = new BankItem {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<BankItem>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            BankItem entity1 = new BankItem { ID = id1};
-            BankItem entity2 = new BankItem { ID = id2};
+            var entity1 = new BankItem { ID = id1};
+            var entity2 = new BankItem { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<BankItem>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            BankItem entity1 = new BankItem { ID = id1};
-            BankItem entity2 = new BankItem { ID = id2};
+            var entity1 = new BankItem { ID = id1};
+            var entity2 = new BankItem { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<BankItem>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            BankItem entity1 = new BankItem { ID = id1};
-            BankItem entity2 = new BankItem { ID = id2};
+            var entity1 = new BankItem { ID = id1};
+            var entity2 = new BankItem { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<BankItem>(entity1));

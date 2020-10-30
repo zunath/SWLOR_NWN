@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Quest
         
         public IQuestState AddState()
         {
-            int index = QuestStates.Count;
+            var index = QuestStates.Count;
             QuestStates[index] = new QuestState();
             return QuestStates[index];
         }
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Quest
         {
             // Retrieve the player's current quest status for this quest.
             // If they haven't accepted it yet, this will be null.
-            PCQuestStatus status = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, QuestID);
+            var status = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, QuestID);
 
             // If the status is null, it's assumed that the player hasn't accepted it yet.
             if (status != null)
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Quest
             var pcStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, QuestID);
             if (pcStatus == null) return false;
             
-            int count = GetStates().Count();
+            var count = GetStates().Count();
             return pcStatus.QuestState == count;
         }
 
@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Quest
             // By this point, it's assumed the player will accept the quest.
             // However, if this quest is repeatable we must first update the existing entry.
             var status = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, QuestID);
-            bool foundExisting = status != null;
+            var foundExisting = status != null;
 
             // Didn't find an existing state so we'll create a new object.
             if (status == null)
@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Quest
             if (!player.IsPlayer) return;
             
             // Retrieve the player's current quest state.
-            PCQuestStatus questStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, QuestID);
+            var questStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, QuestID);
 
             // Can't find a state? Notify the player they haven't accepted the quest.
             if (questStatus == null)
@@ -241,7 +241,7 @@ namespace SWLOR.Game.Server.Quest
             if (!player.IsPlayer) return;
             if (!CanComplete(player)) return;
 
-            PCQuestStatus pcState = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, QuestID);
+            var pcState = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, QuestID);
 
             // Mark player as being on the last state of the quest.
             pcState.QuestState = GetStates().Count();

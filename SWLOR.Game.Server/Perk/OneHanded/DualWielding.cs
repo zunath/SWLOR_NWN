@@ -87,8 +87,8 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
         {
-            NWItem mainEquipped = oItem ?? creature.RightHand;
-            NWItem offEquipped = oItem ?? creature.LeftHand;
+            var mainEquipped = oItem ?? creature.RightHand;
+            var offEquipped = oItem ?? creature.LeftHand;
             
             // oItem was unequipped.
             if (Equals(mainEquipped, oItem) || Equals(offEquipped, oItem))
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
             }
 
 
-            int perkLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.OneHandedDualWielding);
+            var perkLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.OneHandedDualWielding);
             Creature.AddFeat(creature, Feat.TwoWeaponFighting);
 
             if (perkLevel >= 2)

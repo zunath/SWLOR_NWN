@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            Player entity = new Player {ID = id};
+            var entity = new Player {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Player>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            Player entity1 = new Player { ID = id1};
-            Player entity2 = new Player { ID = id2};
+            var entity1 = new Player { ID = id1};
+            var entity2 = new Player { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Player>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            Player entity1 = new Player { ID = id1};
-            Player entity2 = new Player { ID = id2};
+            var entity1 = new Player { ID = id1};
+            var entity2 = new Player { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Player>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            Player entity1 = new Player { ID = id1};
-            Player entity2 = new Player { ID = id2};
+            var entity1 = new Player { ID = id1};
+            var entity2 = new Player { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Player>(entity1));
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByPrimaryResidenceStructureIDOrDefault_NoEntries_ShouldReturnNull()
         {
             // Arrange
-            Guid id = Guid.NewGuid();
+            var id = Guid.NewGuid();
 
             // Act
             var result = _cache.GetByPrimaryResidencePCBaseStructureIDOrDefault(id);
@@ -113,8 +113,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByPrimaryResidenceStructureIDOrDefault_TwoEntries_ShouldReturnPlayer()
         {
             // Arrange
-            Guid playerID = Guid.NewGuid();
-            Guid structureID = Guid.NewGuid();
+            var playerID = Guid.NewGuid();
+            var structureID = Guid.NewGuid();
             var player = new Player { ID = playerID, PrimaryResidencePCBaseStructureID = structureID };
             var player2 = new Player { ID = Guid.NewGuid() };
 

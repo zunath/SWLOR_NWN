@@ -1,7 +1,5 @@
 ﻿using System;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -71,7 +69,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
             const float MaxDistance = 5.0f;
-            int nth = 1;
+            var nth = 1;
             int amount;
 
             switch (perkLevel)
@@ -87,7 +85,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             }
 
             // Penalize the caster
-            Effect effect = NWScript.EffectACDecrease(0);
+            var effect = NWScript.EffectACDecrease(0);
             effect = NWScript.EffectLinkEffects(effect, NWScript.EffectAttackDecrease(amount));
             ApplyEffectToObject(DurationType.Temporary, effect, creature, 6.1f);
 

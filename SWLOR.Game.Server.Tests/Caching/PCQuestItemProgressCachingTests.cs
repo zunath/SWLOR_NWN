@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCQuestItemProgress entity = new PCQuestItemProgress {ID = id};
+            var entity = new PCQuestItemProgress {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCQuestItemProgress>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCQuestItemProgress entity1 = new PCQuestItemProgress { ID = id1};
-            PCQuestItemProgress entity2 = new PCQuestItemProgress { ID = id2};
+            var entity1 = new PCQuestItemProgress { ID = id1};
+            var entity2 = new PCQuestItemProgress { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCQuestItemProgress>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCQuestItemProgress entity1 = new PCQuestItemProgress { ID = id1};
-            PCQuestItemProgress entity2 = new PCQuestItemProgress { ID = id2};
+            var entity1 = new PCQuestItemProgress { ID = id1};
+            var entity2 = new PCQuestItemProgress { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCQuestItemProgress>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCQuestItemProgress entity1 = new PCQuestItemProgress { ID = id1};
-            PCQuestItemProgress entity2 = new PCQuestItemProgress { ID = id2};
+            var entity1 = new PCQuestItemProgress { ID = id1};
+            var entity2 = new PCQuestItemProgress { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCQuestItemProgress>(entity1));

@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -22,7 +21,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable
             if (!player.IsPlayer) return;
 
             NWPlaceable placeable = NWScript.OBJECT_SELF;
-            int keyItemID = placeable.GetLocalInt("KEY_ITEM_ID");
+            var keyItemID = placeable.GetLocalInt("KEY_ITEM_ID");
             
             if (keyItemID <= 0) return;
 
@@ -34,7 +33,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable
 
             KeyItemService.GivePlayerKeyItem(player, keyItemID);
 
-            string visibilityGUID = placeable.GetLocalString("VISIBILITY_OBJECT_ID");
+            var visibilityGUID = placeable.GetLocalString("VISIBILITY_OBJECT_ID");
             if (!string.IsNullOrWhiteSpace(visibilityGUID))
             {
                 ObjectVisibilityService.AdjustVisibility(player, placeable, false);

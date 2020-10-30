@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Service;
@@ -26,18 +25,18 @@ namespace SWLOR.Game.Server.Item
         {
             NWPlayer player = (user.Object);
             NWItem targetItem = (target.Object);
-            ModSlots slots = ModService.GetModSlots(targetItem);
-            ItemPropertyType modType = ModService.GetModType(modItem);
-            int modID = modItem.GetLocalInt("RUNE_ID");
-            string[] modArgs = modItem.GetLocalString("RUNE_VALUE").Split(',');
-            int modLevel = modItem.RecommendedLevel;
-            int levelIncrease = modItem.LevelIncrease;
+            var slots = ModService.GetModSlots(targetItem);
+            var modType = ModService.GetModType(modItem);
+            var modID = modItem.GetLocalInt("RUNE_ID");
+            var modArgs = modItem.GetLocalString("RUNE_VALUE").Split(',');
+            var modLevel = modItem.RecommendedLevel;
+            var levelIncrease = modItem.LevelIncrease;
 
             var mod = ModService.GetModHandler(modID);
             mod.Apply(player, targetItem, modArgs);
 
-            string description = mod.Description(player, targetItem, modArgs);
-            bool usePrismatic = false;
+            var description = mod.Description(player, targetItem, modArgs);
+            var usePrismatic = false;
             switch (modType)
             {
                 case ItemPropertyType.RedMod:
@@ -80,7 +79,7 @@ namespace SWLOR.Game.Server.Item
 
             if (usePrismatic)
             {
-                string prismaticText = ModService.PrismaticString();
+                var prismaticText = ModService.PrismaticString();
                 targetItem.SetLocalInt("MOD_SLOT_PRISMATIC_" + (slots.FilledPrismaticSlots + 1), modID);
                 targetItem.SetLocalString("MOD_SLOT_PRISMATIC_DESC_" + (slots.FilledPrismaticSlots + 1), description);
                 player.SendMessage("Mod installed into " + prismaticText + " slot #" + (slots.FilledPrismaticSlots + 1));
@@ -109,8 +108,8 @@ namespace SWLOR.Game.Server.Item
             }
             else return;
 
-            int rank = SkillService.GetPCSkillRank(player, skillType);
-            int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(400, modLevel, rank);
+            var rank = SkillService.GetPCSkillRank(player, skillType);
+            var xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(400, modLevel, rank);
             SkillService.GiveSkillXP(player, skillType, xp);
         }
 
@@ -118,11 +117,11 @@ namespace SWLOR.Game.Server.Item
         {
             NWPlayer userPlayer = (user.Object);
             NWItem targetItem = (target.Object);
-            float perkBonus = 0.0f;
+            var perkBonus = 0.0f;
 
             perkBonus = PerkService.GetCreaturePerkLevel(userPlayer, PerkType.SpeedyCrafting) * 0.1f;
 
-            float seconds = 18.0f - (18.0f * perkBonus);
+            var seconds = 18.0f - (18.0f * perkBonus);
             if (seconds <= 0.1f) seconds = 0.1f;
             return seconds;
         }
@@ -154,15 +153,15 @@ namespace SWLOR.Game.Server.Item
             NWPlayer player = (user.Object);
             NWItem targetItem = (target.Object);
 
-            int modLevel = mod.RecommendedLevel;
-            int itemLevel = targetItem.RecommendedLevel;
-            int requiredPerkLevel = modLevel / 5;
+            var modLevel = mod.RecommendedLevel;
+            var itemLevel = targetItem.RecommendedLevel;
+            var requiredPerkLevel = modLevel / 5;
             if (requiredPerkLevel <= 0) requiredPerkLevel = 1;
-            int perkLevel = 0;
-            ItemPropertyType modType = ModService.GetModType(mod);
-            ModSlots modSlots = ModService.GetModSlots(targetItem);
-            int modID = mod.GetLocalInt("RUNE_ID");
-            string[] modArgs = mod.GetLocalString("RUNE_VALUE").Split(',');
+            var perkLevel = 0;
+            var modType = ModService.GetModType(mod);
+            var modSlots = ModService.GetModSlots(targetItem);
+            var modID = mod.GetLocalInt("RUNE_ID");
+            var modArgs = mod.GetLocalString("RUNE_VALUE").Split(',');
 
             // Check for a misconfigured mod item.
             if (modType == ItemPropertyType.Invalid) return "Mod color couldn't be found. Notify an admin that this mod item is not set up properly.";
@@ -190,7 +189,7 @@ namespace SWLOR.Game.Server.Item
             }
 
             // Ensure item isn't equipped.
-            for (int slot = 0; slot < NumberOfInventorySlots; slot++)
+            for (var slot = 0; slot < NumberOfInventorySlots; slot++)
             {
                 if (NWScript.GetItemInSlot((InventorySlot)slot, user.Object) == targetItem.Object)
                 {

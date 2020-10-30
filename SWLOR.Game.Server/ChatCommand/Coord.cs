@@ -1,6 +1,4 @@
-﻿using System.Numerics;
-using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.ChatCommand.Contracts;
+﻿using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -20,11 +18,11 @@ namespace SWLOR.Game.Server.ChatCommand
         /// <param name="args"></param>
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            NWArea area = user.Area;
-            Vector3 position = user.Position;
-            int cellX = (int)(position.X / 10);
-            int cellY = (int)(position.Y / 10);
-            string sector = "N/A"; 
+            var area = user.Area;
+            var position = user.Position;
+            var cellX = (int)(position.X / 10);
+            var cellY = (int)(position.Y / 10);
+            var sector = "N/A"; 
 
             if(area.Width == 32 && area.Height == 32)
                 sector = BaseService.GetSectorOfLocation(user.Location);

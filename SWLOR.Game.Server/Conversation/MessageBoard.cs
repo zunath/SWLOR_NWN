@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -22,12 +21,12 @@ namespace SWLOR.Game.Server.Conversation
         
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage("Messages may be viewed or posted here. Please select a message from the list below or create a new one.");
-            DialogPage postDetailsPage = new DialogPage("<SET LATER>",
+            var mainPage = new DialogPage("Messages may be viewed or posted here. Please select a message from the list below or create a new one.");
+            var postDetailsPage = new DialogPage("<SET LATER>",
                 "Remove Post");
-            DialogPage createPostPage = new DialogPage("<SET LATER>",
+            var createPostPage = new DialogPage("<SET LATER>",
                 "Set Title",
                 "Set Message",
                 "Post Message");
@@ -62,11 +61,11 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadMainPage()
         {
-            NWPlayer player = GetPC();
+            var player = GetPC();
             NWPlaceable terminal = NWScript.OBJECT_SELF;
-            DateTime now = DateTime.UtcNow;
-            Guid boardID = new Guid(terminal.GetLocalString("MESSAGE_BOARD_ID"));
-            bool isDM = player.IsDM;
+            var now = DateTime.UtcNow;
+            var boardID = new Guid(terminal.GetLocalString("MESSAGE_BOARD_ID"));
+            var isDM = player.IsDM;
             var messages = DataService.Message
                 .GetAllByBoardID(boardID)
                 .Where(x => x.DateExpires > now && x.DateRemoved == null)
@@ -76,7 +75,7 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("MainPage", ColorTokenService.Green("Create New Post"), !isDM);
             foreach (var message in messages)
             {
-                string title = message.Title;
+                var title = message.Title;
                 if (message.PlayerID == player.GlobalID)
                     title = ColorTokenService.Cyan(title);
                 AddResponseToPage("MainPage", title, true, message.ID);
@@ -85,7 +84,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void MainPageResponses(int responseID)
         {
-            DialogResponse response = GetResponseByID("MainPage", responseID);
+            var response = GetResponseByID("MainPage", responseID);
             if (!response.HasCustomData)
             {
                 LoadCreatePostPage();
@@ -101,11 +100,11 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadPostDetailsPage()
         {
-            NWPlayer player = GetPC();
-            Model model = GetDialogCustomData<Model>();
-            Message message = DataService.Message.GetByID(model.MessageID);
-            Player poster = DataService.Player.GetByID(message.PlayerID);
-            string header = ColorTokenService.Green("Title: ") + message.Title + "\n";
+            var player = GetPC();
+            var model = GetDialogCustomData<Model>();
+            var message = DataService.Message.GetByID(model.MessageID);
+            var poster = DataService.Player.GetByID(message.PlayerID);
+            var header = ColorTokenService.Green("Title: ") + message.Title + "\n";
             header += ColorTokenService.Green("Posted By: ") + poster.CharacterName + "\n";
             header += ColorTokenService.Green("Date: ") + message.DatePosted + "\n\n";
             header += message.Text;
@@ -146,10 +145,10 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadCreatePostPage()
         {
             var player = GetPC();
-            Model model = GetDialogCustomData<Model>();
+            var model = GetDialogCustomData<Model>();
             NWPlaceable terminal = NWScript.OBJECT_SELF;
-            int price = terminal.GetLocalInt("PRICE");
-            string header = "Please enter text and then click the 'Set Title' or 'Set Message' buttons. Titles must be 256 characters or less. Messages must be 4000 characters or less.\n\n";
+            var price = terminal.GetLocalInt("PRICE");
+            var header = "Please enter text and then click the 'Set Title' or 'Set Message' buttons. Titles must be 256 characters or less. Messages must be 4000 characters or less.\n\n";
             header += "Posting a message costs " + price + " credits. Posts last for 30 days (real world time) before they will expire.\n\n";
             header += ColorTokenService.Green("Title: ") + model.Title + "\n";
             header += ColorTokenService.Green("Message: ") + model.Message + "\n";
@@ -164,10 +163,10 @@ namespace SWLOR.Game.Server.Conversation
             var player = GetPC();
             NWPlaceable terminal = NWScript.OBJECT_SELF;
             var model = GetDialogCustomData<Model>();
-            int price = terminal.GetLocalInt("PRICE");
-            string text = player.GetLocalString("MESSAGE_BOARD_TEXT");
-            Guid boardID = new Guid(terminal.GetLocalString("MESSAGE_BOARD_ID"));
-            DateTime now = DateTime.UtcNow;
+            var price = terminal.GetLocalInt("PRICE");
+            var text = player.GetLocalString("MESSAGE_BOARD_TEXT");
+            var boardID = new Guid(terminal.GetLocalString("MESSAGE_BOARD_ID"));
+            var now = DateTime.UtcNow;
 
             switch (responseID)
             {
@@ -263,7 +262,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void ClearTempData()
         {
-            NWPlayer player = GetPC();
+            var player = GetPC();
             var model = GetDialogCustomData<Model>();
             model.IsConfirming = false;
             model.Title = string.Empty;

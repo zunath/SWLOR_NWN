@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsSpawn()
         {
             // Arrange
-            Spawn entity = new Spawn {ID = 1};
+            var entity = new Spawn {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Spawn>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            Spawn entity1 = new Spawn { ID = 1};
-            Spawn entity2 = new Spawn { ID = 2};
+            var entity1 = new Spawn { ID = 1};
+            var entity2 = new Spawn { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Spawn>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            Spawn entity1 = new Spawn { ID = 1};
-            Spawn entity2 = new Spawn { ID = 2};
+            var entity1 = new Spawn { ID = 1};
+            var entity2 = new Spawn { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Spawn>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            Spawn entity1 = new Spawn { ID = 1};
-            Spawn entity2 = new Spawn { ID = 2};
+            var entity1 = new Spawn { ID = 1};
+            var entity2 = new Spawn { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Spawn>(entity1));

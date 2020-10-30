@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
         {
-            NWItem equipped = oItem ?? creature.RightHand;
+            var equipped = oItem ?? creature.RightHand;
 
             if (equipped.Equals(oItem) || 
                     (equipped.CustomItemType != CustomItemType.BlasterPistol && 

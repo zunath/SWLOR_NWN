@@ -1,8 +1,6 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
@@ -17,7 +15,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
-            NWItem armor = oPC.Chest;
+            var armor = oPC.Chest;
             if (armor.CustomItemType != CustomItemType.HeavyArmor)
                 return "You must be equipped with heavy armor to use that combat ability.";
 
@@ -47,7 +45,7 @@ namespace SWLOR.Game.Server.Perk.Armor
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
             int damageBase;
-            float length = 12.0f;
+            var length = 12.0f;
             int randomDamage;
 
             switch (perkLevel)

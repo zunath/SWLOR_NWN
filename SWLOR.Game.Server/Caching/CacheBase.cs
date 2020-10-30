@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Caching
         public IEnumerable<T> GetAll()
         {
             var list = new List<T>();
-            foreach (T obj in All)
+            foreach (var obj in All)
             {
                 list.Add( (T)obj.Clone());
             }

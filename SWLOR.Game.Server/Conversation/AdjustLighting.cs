@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
@@ -17,16 +14,16 @@ namespace SWLOR.Game.Server.Conversation
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage(
+            var mainPage = new DialogPage(
                 "Adjust Area Lighting.",
                 "Main Light 1",
                 "Main Light 2",
                 "Source Light 1",
                 "Source Light 2");
 
-            DialogPage colorPage = new DialogPage("Please select a color.");
+            var colorPage = new DialogPage("Please select a color.");
 
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("ColorPage", colorPage);
@@ -57,7 +54,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void MainResponses(int responseID)
         {
-            DialogPage currentPage = GetCurrentPage();
+            var currentPage = GetCurrentPage();
             currentPage.CustomData.Clear();
             currentPage.CustomData.Add("LIGHT_TYPE", responseID);
             BuildColorPage(responseID);
@@ -66,7 +63,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void BuildColorPage(int responseID)
         {
-            List<string []> colorList = new List<string []>();            
+            var colorList = new List<string []>();            
             
             ClearPageResponses("ColorPage");
 
@@ -134,7 +131,7 @@ namespace SWLOR.Game.Server.Conversation
                 colorList.Add(new string[2] { "Pale Orange", "15" });
             }
 
-            foreach (string[] color in colorList)
+            foreach (var color in colorList)
             {
                 //Console.WriteLine("Adding Color: " + color[0] + " to page with index " + color[1]);
                 AddResponseToPage("ColorPage", color[0], true, color[1]);
@@ -143,7 +140,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void ColorPageResponses(int responseID)
         {
-            DialogPage mainPage = GetPageByName("MainPage");
+            var mainPage = GetPageByName("MainPage");
             int lightType = mainPage.CustomData.GetValueOrDefault("LIGHT_TYPE");
             var response = GetResponseByID("ColorPage", responseID);
 
@@ -157,14 +154,14 @@ namespace SWLOR.Game.Server.Conversation
             vPos.X = 0.0f;
             vPos.Y = 0.0f;
             vPos.Z = 0.0f;
-            for (int i = 0; i <= area.Height; i++)
+            for (var i = 0; i <= area.Height; i++)
             {
                 vPos.X = (float)i;
-                for (int j = 0; j <= area.Width; j++)
+                for (var j = 0; j <= area.Width; j++)
                 {
                     vPos.Y = (float)j;
                     
-                    Location location = NWScript.Location(area, vPos, 0.0f);
+                    var location = NWScript.Location(area, vPos, 0.0f);
 
                     //Console.WriteLine("Setting Tile Color: X = " + vPos.X + " Y = " + vPos.Y);
                     switch (lightType)
@@ -186,13 +183,13 @@ namespace SWLOR.Game.Server.Conversation
             }
             NWScript.RecomputeStaticLighting(area);
             var data = BaseService.GetPlayerTempData(GetPC());
-            int buildingTypeID = data.TargetArea.GetLocalInt("BUILDING_TYPE");
-            Enumeration.BuildingType buildingType = buildingTypeID <= 0 ? Enumeration.BuildingType.Exterior : (Enumeration.BuildingType)buildingTypeID;
+            var buildingTypeID = data.TargetArea.GetLocalInt("BUILDING_TYPE");
+            var buildingType = buildingTypeID <= 0 ? Enumeration.BuildingType.Exterior : (Enumeration.BuildingType)buildingTypeID;
             data.BuildingType = buildingType;
 
             if (buildingType == Enumeration.BuildingType.Apartment)
             {
-                Guid pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
+                var pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
                 var pcBase = DataService.PCBase.GetByID(pcBaseID);
 
                 switch (lightType)
@@ -215,7 +212,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (buildingType == Enumeration.BuildingType.Interior)
             {
-                Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
+                var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
                 var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
 
                 switch (lightType)
@@ -239,7 +236,7 @@ namespace SWLOR.Game.Server.Conversation
             else if (buildingType == Enumeration.BuildingType.Starship)
             {
                 // Note - starships need to record in both the base and the structure entries.
-                Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
+                var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
                 var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
                 var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
 

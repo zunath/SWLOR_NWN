@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            ChatLog entity = new ChatLog {ID = id};
+            var entity = new ChatLog {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ChatLog>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            ChatLog entity1 = new ChatLog { ID = id1};
-            ChatLog entity2 = new ChatLog { ID = id2};
+            var entity1 = new ChatLog { ID = id1};
+            var entity2 = new ChatLog { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ChatLog>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            ChatLog entity1 = new ChatLog { ID = id1};
-            ChatLog entity2 = new ChatLog { ID = id2};
+            var entity1 = new ChatLog { ID = id1};
+            var entity2 = new ChatLog { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ChatLog>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            ChatLog entity1 = new ChatLog { ID = id1};
-            ChatLog entity2 = new ChatLog { ID = id2};
+            var entity1 = new ChatLog { ID = id1};
+            var entity2 = new ChatLog { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ChatLog>(entity1));

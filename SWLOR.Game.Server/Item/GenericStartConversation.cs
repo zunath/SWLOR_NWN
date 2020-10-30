@@ -1,7 +1,6 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
@@ -20,7 +19,7 @@ namespace SWLOR.Game.Server.Item
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            string conversation = item.GetLocalString("CONVERSATION");
+            var conversation = item.GetLocalString("CONVERSATION");
             DialogService.StartConversation((NWPlayer)user, user, conversation);
         }
 

@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -42,7 +41,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
-            int duration = 60;
+            var duration = 60;
 
             var vfx = NWScript.EffectVisualEffect(VisualEffect.Dur_Blur);
             vfx = NWScript.TagEffect(vfx, "SHIELD_BOOST_VFX");

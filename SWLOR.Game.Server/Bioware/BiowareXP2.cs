@@ -2,8 +2,6 @@
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Bioware
@@ -40,7 +38,7 @@ namespace SWLOR.Game.Server.Bioware
         public static void IPSafeAddItemProperty(NWItem oItem, ItemProperty ip, float fDuration, AddItemPropertyPolicy nAddItemPropertyPolicy, bool bIgnoreDurationType, bool bIgnoreSubType)
         {
             var nType = GetItemPropertyType(ip);
-            int nSubType = GetItemPropertySubType(ip);
+            var nSubType = GetItemPropertySubType(ip);
             DurationType nDuration;
             // if duration is 0.0f, make the item property permanent
             if (fDuration == 0.0f)
@@ -146,7 +144,7 @@ namespace SWLOR.Game.Server.Bioware
         {
             var props = oItem.ItemProperties;
 
-            foreach (ItemProperty ip in props)
+            foreach (var ip in props)
             {
                 if ((GetItemPropertyType(ip) == GetItemPropertyType(ipCompareTo)))
                 {

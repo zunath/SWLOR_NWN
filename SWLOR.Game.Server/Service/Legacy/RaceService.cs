@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
@@ -20,7 +19,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = NWScript.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            RacialType race = (RacialType) player.RacialType;
+            var race = (RacialType) player.RacialType;
 
             if (race == RacialType.Wookiee)
             {
@@ -30,7 +29,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void ApplyDefaultAppearance(NWPlayer player)
         {
-            RacialType race = (RacialType)player.RacialType;
+            var race = (RacialType)player.RacialType;
             int maleHead;
             int femaleHead;
             int skinColor;
@@ -38,37 +37,37 @@ namespace SWLOR.Game.Server.Service
             var gender = player.Gender;
             var appearance = AppearanceType.Human;
 
-            int maleNeck = 1;
-            int maleTorso = 1;
-            int malePelvis = 1;
-            int maleRightBicep = 1;
-            int maleRightForearm = 1;
-            int maleRightHand = 1;
-            int maleRightThigh = 1;
-            int maleRightShin = 1;
-            int maleRightFoot = 1;
-            int maleLeftBicep = 1;
-            int maleLeftForearm = 1;
-            int maleLeftHand = 1;
-            int maleLeftThigh = 1;
-            int maleLeftShin = 1;
-            int maleLeftFoot = 1;
+            var maleNeck = 1;
+            var maleTorso = 1;
+            var malePelvis = 1;
+            var maleRightBicep = 1;
+            var maleRightForearm = 1;
+            var maleRightHand = 1;
+            var maleRightThigh = 1;
+            var maleRightShin = 1;
+            var maleRightFoot = 1;
+            var maleLeftBicep = 1;
+            var maleLeftForearm = 1;
+            var maleLeftHand = 1;
+            var maleLeftThigh = 1;
+            var maleLeftShin = 1;
+            var maleLeftFoot = 1;
 
-            int femaleNeck = 1;
-            int femaleTorso = 1;
-            int femalePelvis = 1;
-            int femaleRightBicep = 1;
-            int femaleRightForearm = 1;
-            int femaleRightHand = 1;
-            int femaleRightThigh = 1;
-            int femaleRightShin = 1;
-            int femaleRightFoot = 1;
-            int femaleLeftBicep = 1;
-            int femaleLeftForearm = 1;
-            int femaleLeftHand = 1;
-            int femaleLeftThigh = 1;
-            int femaleLeftShin = 1;
-            int femaleLeftFoot = 1;
+            var femaleNeck = 1;
+            var femaleTorso = 1;
+            var femalePelvis = 1;
+            var femaleRightBicep = 1;
+            var femaleRightForearm = 1;
+            var femaleRightHand = 1;
+            var femaleRightThigh = 1;
+            var femaleRightShin = 1;
+            var femaleRightFoot = 1;
+            var femaleLeftBicep = 1;
+            var femaleLeftForearm = 1;
+            var femaleLeftHand = 1;
+            var femaleLeftThigh = 1;
+            var femaleLeftShin = 1;
+            var femaleLeftFoot = 1;
 
 
             switch (race)

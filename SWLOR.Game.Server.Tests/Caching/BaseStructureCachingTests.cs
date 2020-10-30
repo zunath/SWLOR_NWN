@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsBaseStructure()
         {
             // Arrange
-            BaseStructure entity = new BaseStructure {ID = 1};
+            var entity = new BaseStructure {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<BaseStructure>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            BaseStructure entity1 = new BaseStructure { ID = 1};
-            BaseStructure entity2 = new BaseStructure { ID = 2};
+            var entity1 = new BaseStructure { ID = 1};
+            var entity2 = new BaseStructure { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<BaseStructure>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            BaseStructure entity1 = new BaseStructure { ID = 1};
-            BaseStructure entity2 = new BaseStructure { ID = 2};
+            var entity1 = new BaseStructure { ID = 1};
+            var entity2 = new BaseStructure { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<BaseStructure>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            BaseStructure entity1 = new BaseStructure { ID = 1};
-            BaseStructure entity2 = new BaseStructure { ID = 2};
+            var entity1 = new BaseStructure { ID = 1};
+            var entity2 = new BaseStructure { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<BaseStructure>(entity1));

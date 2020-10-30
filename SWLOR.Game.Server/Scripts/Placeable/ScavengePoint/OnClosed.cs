@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
@@ -22,7 +21,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
 
             if (!player.IsPlayer) return;
 
-            bool isFullyHarvested = point.GetLocalInt("SCAVENGE_POINT_FULLY_HARVESTED") == 1;
+            var isFullyHarvested = point.GetLocalInt("SCAVENGE_POINT_FULLY_HARVESTED") == 1;
 
             if (!point.InventoryItems.Any() && isFullyHarvested)
             {

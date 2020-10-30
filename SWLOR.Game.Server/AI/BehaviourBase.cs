@@ -2,7 +2,6 @@
 using System.Linq;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.AI.Contracts;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -65,7 +64,7 @@ namespace SWLOR.Game.Server.AI
 
         public virtual void OnConversation(NWCreature self)
         {
-            string convo = self.GetLocalString("CONVERSATION");
+            var convo = self.GetLocalString("CONVERSATION");
 
             if (!string.IsNullOrWhiteSpace(convo))
             {
@@ -183,7 +182,7 @@ namespace SWLOR.Game.Server.AI
             var table = EnmityService.GetEnmityTable(self);
             if (table.Count <= 0) return;
 
-            for(int x = table.Count-1; x >= 0; x--)
+            for(var x = table.Count-1; x >= 0; x--)
             {
                 var enmity = table.ElementAt(x);
                 var val = enmity.Value;
@@ -274,14 +273,14 @@ namespace SWLOR.Game.Server.AI
             }
 
             // Cycle through each nearby creature. Process their flags individually if necessary.
-            int nth = 1;
+            var nth = 1;
             NWCreature creature = NWScript.GetNearestObject(ObjectType.Creature, self, nth);
             while (creature.IsValid)
             {
-                float aggroRange = GetAggroRange(creature);
-                float linkRange = GetLinkRange(creature);
+                var aggroRange = GetAggroRange(creature);
+                var linkRange = GetLinkRange(creature);
 
-                float distance = NWScript.GetDistanceBetween(creature, self);                  
+                var distance = NWScript.GetDistanceBetween(creature, self);                  
                 if (distance > aggroRange && distance > linkRange) break;
 
                 if ((flags & AIFlags.AggroNearby) != 0)
@@ -300,7 +299,7 @@ namespace SWLOR.Game.Server.AI
 
         private float GetAggroRange(NWCreature creature)
         {
-            float aggroRange = creature.GetLocalFloat("AGGRO_RANGE");
+            var aggroRange = creature.GetLocalFloat("AGGRO_RANGE");
             if (aggroRange <= 0.0f) aggroRange = DefaultAggroRange;
 
             return aggroRange;
@@ -308,7 +307,7 @@ namespace SWLOR.Game.Server.AI
 
         private float GetLinkRange(NWCreature creature)
         {
-            float linkRange = creature.GetLocalFloat("LINK_RANGE");
+            var linkRange = creature.GetLocalFloat("LINK_RANGE");
             if (linkRange <= 0.0f) linkRange = DefaultLinkRange;
 
             return linkRange;
@@ -316,7 +315,7 @@ namespace SWLOR.Game.Server.AI
 
         protected void AggroTargetInRange(NWCreature self, NWCreature nearby)
         {
-            float aggroRange = GetAggroRange(self);
+            var aggroRange = GetAggroRange(self);
             // Check distance
             if (GetDistanceBetween(self, nearby) > aggroRange) return;
 
@@ -338,7 +337,7 @@ namespace SWLOR.Game.Server.AI
 
         private static void Link(NWCreature self, NWCreature nearby)
         {
-            float linkRange = self.GetLocalFloat("LINK_RANGE");
+            var linkRange = self.GetLocalFloat("LINK_RANGE");
             if (linkRange <= 0.0f) linkRange = 12.0f;
 
             // Check distance. If too far away stop processing.
@@ -398,7 +397,7 @@ namespace SWLOR.Game.Server.AI
                 NWScript.GetCurrentAction(self.Object) != ActionType.RandomWalk)
             {
                 var flags = GetAIFlags(self);
-                Location spawnLocation = self.GetLocalLocation("AI_SPAWN_POINT");
+                var spawnLocation = self.GetLocalLocation("AI_SPAWN_POINT");
                 // If creature also has the RandomWalk flag, only send them back to the spawn point
                 // if they go outside the range (15 meters)
                 if ((flags & AIFlags.RandomWalk) != 0 &&

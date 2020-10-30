@@ -1,10 +1,6 @@
-﻿using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using System;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -29,7 +25,7 @@ namespace SWLOR.Game.Server.Service
             NWPlaceable oTempStorage = (GetObjectByTag("OUTFIT_BARREL"));
             oSource.SetLocalString("TEMP_OUTFIT_UUID", oPC.GlobalID.ToString());
             
-            uint oCopy = CopyItem(oDest.Object, oTempStorage.Object, true);
+            var oCopy = CopyItem(oDest.Object, oTempStorage.Object, true);
             oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.WeaponModel, 0, (int)GetItemAppearance(oSource, ItemAppearanceType.WeaponModel, 0), true);
             oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.WeaponColor, 0, (int)GetItemAppearance(oSource, ItemAppearanceType.WeaponColor, 0), true);
 
@@ -49,12 +45,12 @@ namespace SWLOR.Game.Server.Service
             if (copyPropsAndVars)
             {
                 // strip all item props from new item
-                foreach (ItemProperty itemProp in oFinal.ItemProperties)
+                foreach (var itemProp in oFinal.ItemProperties)
                 {
                     RemoveItemProperty(oFinal, itemProp);
                 }
                 // add all item props from original item to new item
-                foreach (ItemProperty itemProp in oSource.ItemProperties)
+                foreach (var itemProp in oSource.ItemProperties)
                 {
                     AddItemProperty(DurationType.Permanent, itemProp, oFinal);
                 }
@@ -65,7 +61,7 @@ namespace SWLOR.Game.Server.Service
             DestroyObject(oCopy);
             oDest.Destroy();
 
-            foreach (NWItem item in oTempStorage.InventoryItems)
+            foreach (var item in oTempStorage.InventoryItems)
             {
                 if (item.GetLocalString("TEMP_OUTFIT_UUID") == oPC.GlobalID.ToString())
                 {
@@ -76,7 +72,7 @@ namespace SWLOR.Game.Server.Service
         }
         public static void ToggleDualPistolMode(NWPlayer oPC)
         {
-            Player pc = DataService.Player.GetByID(oPC.GlobalID);
+            var pc = DataService.Player.GetByID(oPC.GlobalID);
             pc.ModeDualPistol = !pc.ModeDualPistol;
             DataService.SubmitDataChange(pc, DatabaseActionType.Update);
             //Console.WriteLine("ToggleDualMode Changed To = " + pc.ModeDualPistol);
@@ -125,7 +121,7 @@ namespace SWLOR.Game.Server.Service
             NWItem oOriginalItem = NWScript.GetPCItemLastEquipped();
             NWItem oMainHandPistol;
 
-            Player pc = DataService.Player.GetByID(oPC.GlobalID);
+            var pc = DataService.Player.GetByID(oPC.GlobalID);
 
             if (pc.ModeDualPistol)
             {
@@ -160,7 +156,7 @@ namespace SWLOR.Game.Server.Service
 
             if (GetLocalBool(oPC, "LOGGED_IN_ONCE") == false) return;
 
-            Player pc = DataService.Player.GetByID(oPC.GlobalID);
+            var pc = DataService.Player.GetByID(oPC.GlobalID);
             //Console.WriteLine("pc.ModeDualPistol Currently = " + pc.ModeDualPistol);
 
             // if equiping single wield pistol and not usign dual wield option then exit.

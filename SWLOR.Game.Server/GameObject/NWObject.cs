@@ -4,7 +4,6 @@ using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -26,7 +25,7 @@ namespace SWLOR.Game.Server.GameObject
             {
                 if (!IsPlayer) return false;
 
-                string globalID = GetTag(Object);
+                var globalID = GetTag(Object);
                 return !string.IsNullOrWhiteSpace(globalID);
             }
         }
@@ -35,7 +34,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             if (IsInitializedAsPlayer || !IsPlayer) return;
             
-            string guid = Guid.NewGuid().ToString();
+            var guid = Guid.NewGuid().ToString();
             SetTag(Object, guid);
         }
 
@@ -311,7 +310,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                for (Effect effect = GetFirstEffect(Object); GetIsEffectValid(effect); effect = GetNextEffect(Object))
+                for (var effect = GetFirstEffect(Object); GetIsEffectValid(effect); effect = GetNextEffect(Object))
                 {
                     yield return effect;
                 }
@@ -322,7 +321,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public void RemoveEffect(EffectTypeScript effectTypeID)
         {
-            Effect effect = GetFirstEffect(Object);
+            var effect = GetFirstEffect(Object);
             while (GetIsEffectValid(effect))
             {
                 if (GetEffectType(effect) == effectTypeID)
@@ -353,8 +352,8 @@ namespace SWLOR.Game.Server.GameObject
 
         public static bool operator ==(NWObject lhs, NWObject rhs)
         {
-            bool lhsNull = lhs is null;
-            bool rhsNull = rhs is null;
+            var lhsNull = lhs is null;
+            var rhsNull = rhs is null;
             return (lhsNull && rhsNull) || (!lhsNull && !rhsNull && lhs.Object == rhs.Object);
         }
 
@@ -365,7 +364,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public override bool Equals(object o)
         {
-            NWObject other = o as NWObject;
+            var other = o as NWObject;
             return other != null && other == this;
         }
 

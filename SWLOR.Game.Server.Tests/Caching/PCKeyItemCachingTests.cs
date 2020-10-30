@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCKeyItem entity = new PCKeyItem {ID = id};
+            var entity = new PCKeyItem {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCKeyItem>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCKeyItem entity1 = new PCKeyItem { ID = id1};
-            PCKeyItem entity2 = new PCKeyItem { ID = id2};
+            var entity1 = new PCKeyItem { ID = id1};
+            var entity2 = new PCKeyItem { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCKeyItem>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCKeyItem entity1 = new PCKeyItem { ID = id1};
-            PCKeyItem entity2 = new PCKeyItem { ID = id2};
+            var entity1 = new PCKeyItem { ID = id1};
+            var entity2 = new PCKeyItem { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCKeyItem>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCKeyItem entity1 = new PCKeyItem { ID = id1};
-            PCKeyItem entity2 = new PCKeyItem { ID = id2};
+            var entity1 = new PCKeyItem { ID = id1};
+            var entity2 = new PCKeyItem { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCKeyItem>(entity1));

@@ -41,11 +41,11 @@ namespace SWLOR.Game.Server.ValueObject.Skill
 
         public List<Tuple<int, PlayerSkillPointTracker>> GetSkillRegistrationPoints()
         {
-            List<Tuple<int, PlayerSkillPointTracker>> result = new List<Tuple<int, PlayerSkillPointTracker>>();
+            var result = new List<Tuple<int, PlayerSkillPointTracker>>();
 
             foreach (var sp in SkillPoints)
             {
-                Tuple<int, PlayerSkillPointTracker> pair = new Tuple<int, PlayerSkillPointTracker>(sp.Key, sp.Value);
+                var pair = new Tuple<int, PlayerSkillPointTracker>(sp.Key, sp.Value);
                 result.Add(pair);
             }
             
@@ -54,9 +54,9 @@ namespace SWLOR.Game.Server.ValueObject.Skill
 
         public int GetTotalSkillRegistrationPoints()
         {
-            int totalPoints = 0;
+            var totalPoints = 0;
 
-            foreach (Tuple<int, PlayerSkillPointTracker> reg in GetSkillRegistrationPoints())
+            foreach (var reg in GetSkillRegistrationPoints())
             {
                 totalPoints += reg.Item2.Points;
             }

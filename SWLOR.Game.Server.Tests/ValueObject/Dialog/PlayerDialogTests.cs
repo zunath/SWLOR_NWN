@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Tests.ValueObject.Dialog
         [Test]
         public void PlayerDialog_Ctor_ShouldHaveDefaultValues()
         {
-            PlayerDialog dialog = new PlayerDialog("MyPage");
+            var dialog = new PlayerDialog("MyPage");
 
             Assert.AreEqual(string.Empty, dialog.CurrentPageName);
             Assert.AreEqual(0, dialog.PageOffset);
@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Tests.ValueObject.Dialog
         [Test]
         public void PlayerDialog_AddPage_ShouldBeSetToCurrentPage()
         {
-            PlayerDialog dialog = new PlayerDialog("TestPage");
-            DialogPage page = new DialogPage();
+            var dialog = new PlayerDialog("TestPage");
+            var page = new DialogPage();
             dialog.AddPage("TestPage", page);
 
             Assert.AreEqual("TestPage", dialog.CurrentPageName);
@@ -34,11 +34,11 @@ namespace SWLOR.Game.Server.Tests.ValueObject.Dialog
         [Test]
         public void PlayerDialog_AddPage_SecondPageShouldNotBeSetToCurrentPage()
         {
-            PlayerDialog dialog = new PlayerDialog("TestPage");
-            DialogPage page = new DialogPage();
+            var dialog = new PlayerDialog("TestPage");
+            var page = new DialogPage();
             dialog.AddPage("TestPage", page);
 
-            DialogPage page2 = new DialogPage();
+            var page2 = new DialogPage();
             dialog.AddPage("Page2", page2);
 
             Assert.AreNotEqual("Page2", dialog.CurrentPageName);
@@ -47,11 +47,11 @@ namespace SWLOR.Game.Server.Tests.ValueObject.Dialog
         [Test]
         public void PlayerDialog_CurrentPage_ShouldReturnAddedPage()
         {
-            PlayerDialog dialog = new PlayerDialog("TestPage");
-            DialogPage page = new DialogPage();
+            var dialog = new PlayerDialog("TestPage");
+            var page = new DialogPage();
             dialog.AddPage("TestPage", page);
 
-            DialogPage result = dialog.CurrentPage;
+            var result = dialog.CurrentPage;
 
             Assert.AreSame(result, page);
         }
@@ -59,25 +59,25 @@ namespace SWLOR.Game.Server.Tests.ValueObject.Dialog
         [Test]
         public void PlayerDialog_GetPageByName_ShouldReturnPage2()
         {
-            PlayerDialog dialog = new PlayerDialog("TestPage");
-            DialogPage page = new DialogPage();
+            var dialog = new PlayerDialog("TestPage");
+            var page = new DialogPage();
             dialog.AddPage("TestPage", page);
 
-            DialogPage page2 = new DialogPage();
+            var page2 = new DialogPage();
             dialog.AddPage("Page2", page2);
 
-            DialogPage result = dialog.GetPageByName("Page2");
+            var result = dialog.GetPageByName("Page2");
             Assert.AreSame(result, page2);
         }
 
         [Test]
         public void PlayerDialog_ResetPage_ShouldSetToPage1()
         {
-            PlayerDialog dialog = new PlayerDialog("TestPage");
-            DialogPage page = new DialogPage();
+            var dialog = new PlayerDialog("TestPage");
+            var page = new DialogPage();
             dialog.AddPage("TestPage", page);
 
-            DialogPage page2 = new DialogPage();
+            var page2 = new DialogPage();
             dialog.AddPage("Page2", page2);
 
             dialog.CurrentPageName = "Page2";

@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 
 using System.Collections.Generic;
 using System.Linq;
@@ -70,7 +69,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                for (ItemProperty ip = NWScript.GetFirstItemProperty(Object); NWScript.GetIsItemPropertyValid(ip) == true; ip = NWScript.GetNextItemProperty(Object))
+                for (var ip = NWScript.GetFirstItemProperty(Object); NWScript.GetIsItemPropertyValid(ip) == true; ip = NWScript.GetNextItemProperty(Object))
                 {
                     yield return ip;
                 }
@@ -86,7 +85,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int armorClass = GetItemPropertyValueAndRemove(ItemPropertyType.ArmorClass);
+                var armorClass = GetItemPropertyValueAndRemove(ItemPropertyType.ArmorClass);
                 if (armorClass <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_AC");
                 CustomAC = armorClass;
                 return armorClass;
@@ -99,8 +98,8 @@ namespace SWLOR.Game.Server.GameObject
             {
                 // Item property takes precedence, followed by local int on the item, 
                 // followed by hard-calculating it based on base item type.
-                int itemType = GetItemPropertyValueAndRemove(ItemPropertyType.ItemType);
-                CustomItemType storedItemType = (CustomItemType)NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_TYPE");
+                var itemType = GetItemPropertyValueAndRemove(ItemPropertyType.ItemType);
+                var storedItemType = (CustomItemType)NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_TYPE");
 
                 if (itemType > -1)
                 {
@@ -118,7 +117,7 @@ namespace SWLOR.Game.Server.GameObject
                 // Attempt to get the item type by base item type.
                 // Will fail for armor as there's no determining factor for light versus heavy.
                 // Need to assign the local variable or give the armor the item property in order to mark it.
-                CustomItemType type = GetCustomItemType(this);
+                var type = GetCustomItemType(this);
                 CustomItemType = type;
 
                 return type;
@@ -253,7 +252,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int recommendedLevel = GetItemPropertyValueAndRemove(ItemPropertyType.RecommendedLevel);
+                var recommendedLevel = GetItemPropertyValueAndRemove(ItemPropertyType.RecommendedLevel);
                 if (recommendedLevel <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_TYPE_RECOMMENDED_LEVEL");
                 RecommendedLevel = recommendedLevel;
                 return recommendedLevel;
@@ -265,7 +264,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int levelIncrease = GetItemPropertyValueAndRemove(ItemPropertyType.LevelIncrease);
+                var levelIncrease = GetItemPropertyValueAndRemove(ItemPropertyType.LevelIncrease);
                 if (levelIncrease <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_TYPE_LEVEL_INCREASE");
                 LevelIncrease = levelIncrease;
                 return levelIncrease;
@@ -277,7 +276,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int craftBonus = GetItemPropertyValueAndRemove(ItemPropertyType.HarvestingBonus);
+                var craftBonus = GetItemPropertyValueAndRemove(ItemPropertyType.HarvestingBonus);
                 if (craftBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_HARVESTING_BONUS");
                 HarvestingBonus = craftBonus;
                 return craftBonus;
@@ -289,7 +288,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int craftBonus = GetItemPropertyValueAndRemove(ItemPropertyType.PilotingBonus);
+                var craftBonus = GetItemPropertyValueAndRemove(ItemPropertyType.PilotingBonus);
                 if (craftBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_PILOTING_BONUS");
                 PilotingBonus = craftBonus;
                 return craftBonus;
@@ -301,7 +300,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int craftBonus = GetItemPropertyValueAndRemove(ItemPropertyType.ScanningBonus);
+                var craftBonus = GetItemPropertyValueAndRemove(ItemPropertyType.ScanningBonus);
                 if (craftBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_SCANNING_BONUS");
                 ScanningBonus = craftBonus;
                 return craftBonus;
@@ -313,7 +312,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int craftBonus = GetItemPropertyValueAndRemove(ItemPropertyType.ScavengingBonus);
+                var craftBonus = GetItemPropertyValueAndRemove(ItemPropertyType.ScavengingBonus);
                 if (craftBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_SCAVENGING_BONUS");
                 ScavengingBonus = craftBonus;
                 return craftBonus;
@@ -325,7 +324,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int cooldownRecovery = GetItemPropertyValueAndRemove(ItemPropertyType.CastingSpeed);
+                var cooldownRecovery = GetItemPropertyValueAndRemove(ItemPropertyType.CastingSpeed);
                 // Variable name is kept as-is for backwards compatibility.
                 if (cooldownRecovery <= 0) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CASTING_SPEED");
 
@@ -341,7 +340,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int craftBonus = GetItemPropertyValueAndRemove(ItemPropertyType.CraftBonusArmorsmith);
+                var craftBonus = GetItemPropertyValueAndRemove(ItemPropertyType.CraftBonusArmorsmith);
                 if (craftBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_ARMORSMITH");
                 CraftBonusArmorsmith = craftBonus;
                 return craftBonus;
@@ -352,7 +351,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int craftBonus = GetItemPropertyValueAndRemove(ItemPropertyType.CraftBonusWeaponsmith);
+                var craftBonus = GetItemPropertyValueAndRemove(ItemPropertyType.CraftBonusWeaponsmith);
                 if (craftBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_WEAPONSMITH");
                 CraftBonusWeaponsmith = craftBonus;
                 return craftBonus;
@@ -363,7 +362,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int craftBonus = GetItemPropertyValueAndRemove(ItemPropertyType.CraftBonusCooking);
+                var craftBonus = GetItemPropertyValueAndRemove(ItemPropertyType.CraftBonusCooking);
                 if (craftBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_COOKING");
                 CraftBonusCooking = craftBonus;
                 return craftBonus;
@@ -374,7 +373,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int craftBonus = GetItemPropertyValueAndRemove(ItemPropertyType.CraftBonusEngineering);
+                var craftBonus = GetItemPropertyValueAndRemove(ItemPropertyType.CraftBonusEngineering);
                 if (craftBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_ENGINEERING");
                 CraftBonusEngineering = craftBonus;
                 return craftBonus;
@@ -385,7 +384,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int craftBonus = GetItemPropertyValueAndRemove(ItemPropertyType.CraftBonusFabrication);
+                var craftBonus = GetItemPropertyValueAndRemove(ItemPropertyType.CraftBonusFabrication);
                 if (craftBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_FABRICATION");
                 CraftBonusFabrication = craftBonus;
                 return craftBonus;
@@ -396,7 +395,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int skillType = GetItemPropertyValueAndRemove(ItemPropertyType.AssociatedSkill);
+                var skillType = GetItemPropertyValueAndRemove(ItemPropertyType.AssociatedSkill);
                 if (skillType <= -1) return (SkillType)NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_ASSOCIATED_SKILL_ID");
                 AssociatedSkillType = (SkillType)skillType;
                 return (SkillType)skillType;
@@ -411,7 +410,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int craftTier = GetItemPropertyValueAndRemove(ItemPropertyType.CraftTierLevel);
+                var craftTier = GetItemPropertyValueAndRemove(ItemPropertyType.CraftTierLevel);
                 if (craftTier <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_CRAFT_TIER_LEVEL");
                 CraftTierLevel = craftTier;
                 return craftTier;
@@ -422,7 +421,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int hpBonus = GetItemPropertyValueAndRemove(ItemPropertyType.HPBonus);
+                var hpBonus = GetItemPropertyValueAndRemove(ItemPropertyType.HPBonus);
                 if (hpBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_HP_BONUS");
                 HPBonus = hpBonus;
                 return hpBonus;
@@ -433,7 +432,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int fpBonus = GetItemPropertyValueAndRemove(ItemPropertyType.FPBonus);
+                var fpBonus = GetItemPropertyValueAndRemove(ItemPropertyType.FPBonus);
                 if (fpBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FP_BONUS");
                 FPBonus = fpBonus;
                 return fpBonus;
@@ -445,7 +444,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int enmityRate = GetItemPropertyValueAndRemove(ItemPropertyType.EnmityRate);
+                var enmityRate = GetItemPropertyValueAndRemove(ItemPropertyType.EnmityRate);
                 if (enmityRate <= 0) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_ENMITY_RATE");
 
                 if (enmityRate <= 50) enmityRate = -enmityRate;
@@ -461,7 +460,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int luckBonus = GetItemPropertyValueAndRemove(ItemPropertyType.LuckBonus);
+                var luckBonus = GetItemPropertyValueAndRemove(ItemPropertyType.LuckBonus);
                 if (luckBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_LUCK_BONUS");
                 LuckBonus = luckBonus;
                 return luckBonus;
@@ -472,7 +471,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int meditateBonus = GetItemPropertyValueAndRemove(ItemPropertyType.MeditateBonus);
+                var meditateBonus = GetItemPropertyValueAndRemove(ItemPropertyType.MeditateBonus);
                 if (meditateBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MEDITATE_BONUS");
                 MeditateBonus = meditateBonus;
                 return meditateBonus;
@@ -483,7 +482,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int restBonus = GetItemPropertyValueAndRemove(ItemPropertyType.RestBonus);
+                var restBonus = GetItemPropertyValueAndRemove(ItemPropertyType.RestBonus);
                 if (restBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_REST_BONUS");
                 RestBonus = restBonus;
                 return restBonus;
@@ -494,7 +493,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int medicineBonus = GetItemPropertyValueAndRemove(ItemPropertyType.MedicineBonus);
+                var medicineBonus = GetItemPropertyValueAndRemove(ItemPropertyType.MedicineBonus);
                 if (medicineBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_MEDICINE_BONUS");
                 MedicineBonus = medicineBonus;
                 return medicineBonus;
@@ -505,7 +504,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int hpRegenBonus = GetItemPropertyValueAndRemove(ItemPropertyType.HPRegenBonus);
+                var hpRegenBonus = GetItemPropertyValueAndRemove(ItemPropertyType.HPRegenBonus);
                 if (hpRegenBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_HP_REGEN_BONUS");
                 HPRegenBonus = hpRegenBonus;
                 return hpRegenBonus;
@@ -516,7 +515,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int fpRegenBonus = GetItemPropertyValueAndRemove(ItemPropertyType.FPRegenBonus);
+                var fpRegenBonus = GetItemPropertyValueAndRemove(ItemPropertyType.FPRegenBonus);
                 if (fpRegenBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_FP_REGEN_BONUS");
                 FPRegenBonus = fpRegenBonus;
                 return fpRegenBonus;
@@ -527,7 +526,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int baseAttackBonus = GetItemPropertyValueAndRemove(ItemPropertyType.BaseAttackBonus);
+                var baseAttackBonus = GetItemPropertyValueAndRemove(ItemPropertyType.BaseAttackBonus);
                 if (baseAttackBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_BASE_ATTACK_BONUS");
                 BaseAttackBonus = baseAttackBonus;
                 return baseAttackBonus;
@@ -538,7 +537,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                int structureBonus = GetItemPropertyValueAndRemove(ItemPropertyType.StructureBonus);
+                var structureBonus = GetItemPropertyValueAndRemove(ItemPropertyType.StructureBonus);
                 if (structureBonus <= -1) return NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_STRUCTURE_BONUS");
                 StructureBonus = structureBonus;
                 return structureBonus;
@@ -596,7 +595,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual void ReduceItemStack()
         {
-            int stackSize = NWScript.GetItemStackSize(Object);
+            var stackSize = NWScript.GetItemStackSize(Object);
             if (stackSize > 1)
             {
                 NWScript.SetItemStackSize(Object, stackSize - 1);
@@ -612,7 +611,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public int GetItemPropertyValueAndRemove(ItemPropertyType itemPropertyID)
         {
-            ItemProperty ip = NWScript.GetFirstItemProperty(Object);
+            var ip = NWScript.GetFirstItemProperty(Object);
             while (NWScript.GetIsItemPropertyValid(ip) == true)
             {
                 if (NWScript.GetItemPropertyType(ip) == itemPropertyID)
@@ -634,8 +633,8 @@ namespace SWLOR.Game.Server.GameObject
 
         public static bool operator ==(NWItem lhs, NWItem rhs)
         {
-            bool lhsNull = lhs is null;
-            bool rhsNull = rhs is null;
+            var lhsNull = lhs is null;
+            var rhsNull = rhs is null;
             return (lhsNull && rhsNull) || (!lhsNull && !rhsNull && lhs.Object == rhs.Object);
         }
 
@@ -646,7 +645,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public override bool Equals(object o)
         {
-            NWItem other = o as NWItem;
+            var other = o as NWItem;
             return other != null && other == this;
         }
 

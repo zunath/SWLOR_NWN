@@ -1,5 +1,4 @@
 using System;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
@@ -16,10 +15,10 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         public PerkType PerkType => PerkType.ThrowSaber;
         public string CanCastSpell(NWCreature creature, NWObject oTarget, int spellTier)
         {
-            NWItem weapon = creature.RightHand;
-            int weaponSize = StringToInt(Get2DAString("baseitems", "WeaponSize", (int)weapon.BaseItemType));
-            int strengthMod = creature.StrengthModifier;
-            float distance = NWScript.GetDistanceBetween(creature, oTarget);
+            var weapon = creature.RightHand;
+            var weaponSize = StringToInt(Get2DAString("baseitems", "WeaponSize", (int)weapon.BaseItemType));
+            var strengthMod = creature.StrengthModifier;
+            var distance = NWScript.GetDistanceBetween(creature, oTarget);
 
             if (distance > 15)
                 return "You must be within 15 meters of your target.";
@@ -80,13 +79,13 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public void OnImpact(NWCreature player, NWObject target, int perkLevel, int spellTier)
         {
-            NWItem weapon = player.RightHand;
+            var weapon = player.RightHand;
             int iDamage;
-            int iRange = 15;
-            int iCount = 1;
+            var iRange = 15;
+            var iCount = 1;
             float fDelay = 0;
 
-            int saberDamage = player.RightHand.DamageBonus;
+            var saberDamage = player.RightHand.DamageBonus;
             if (saberDamage > 40 ) saberDamage = 40;
             
             if (weapon.CustomItemType == CustomItemType.Lightsaber ||
@@ -112,7 +111,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             player.AssignCommand(() => NWScript.ActionPlayAnimation(Animation.LoopingCustom10, 2));
 
             var result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Universal);
-            float delta = 0.01f * result.Delta;
+            var delta = 0.01f * result.Delta;
 
             /*
             // reset phenotype

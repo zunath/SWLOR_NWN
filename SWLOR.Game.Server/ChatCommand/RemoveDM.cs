@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 return "Too many arguments specified. Only provide an ID number. Example: /RemoveDM 123";
             }
 
-            string idString = args[0];
+            var idString = args[0];
             if (!int.TryParse(idString, out var _))
             {
                 return "ID must be an integer. Retrieve the ID with the /GetDMs command.";

@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Service
         // 2 days, 12 hours, 5 minutes, 45 seconds
         public static string GetTimeLongIntervals(int days, int hours, int minutes, int seconds, bool showIfZero)
         {
-            string result = "";
+            var result = "";
 
             if (showIfZero || days > 0)
                 result += days + (days == 1 ? " day, " : " days, ");
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Service
         // 2D, 12H, 5M, 45S
         public static string GetTimeShortIntervals(int days, int hours, int minutes, int seconds, bool showIfZero)
         {
-            string result = "";
+            var result = "";
 
             if (showIfZero || days > 0)
                 result += days + "D, ";

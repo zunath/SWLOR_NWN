@@ -15,8 +15,8 @@ namespace SWLOR.Game.Server.Conversation
         
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainPage = new DialogPage(
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage(
                 "Please select a reward."
             );
 
@@ -26,12 +26,12 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            int questID = GetPC().GetLocalInt("QST_REWARD_SELECTION_QUEST_ID");
+            var questID = GetPC().GetLocalInt("QST_REWARD_SELECTION_QUEST_ID");
             GetPC().DeleteLocalInt("QST_REWARD_SELECTION_QUEST_ID");
             var quest = QuestService.GetQuestByID(questID);
             var rewardItems = quest.GetRewards().Where(x => x.IsSelectable);
             
-            Model model = GetDialogCustomData<Model>();
+            var model = GetDialogCustomData<Model>();
             model.QuestID = questID;
             
             foreach (var reward in rewardItems)
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void HandleRewardSelection(int responseID)
         {
-            Model model = GetDialogCustomData<Model>();
+            var model = GetDialogCustomData<Model>();
             var reward = GetResponseByID("MainPage", responseID).CustomData as IQuestReward;
             var quest = QuestService.GetQuestByID(model.QuestID);
             quest.Complete(GetPC(), GetPC(), reward);

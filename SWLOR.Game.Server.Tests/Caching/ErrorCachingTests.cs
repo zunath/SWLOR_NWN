@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            Error entity = new Error {ID = id};
+            var entity = new Error {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Error>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            Error entity1 = new Error { ID = id1};
-            Error entity2 = new Error { ID = id2};
+            var entity1 = new Error { ID = id1};
+            var entity2 = new Error { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Error>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            Error entity1 = new Error { ID = id1};
-            Error entity2 = new Error { ID = id2};
+            var entity1 = new Error { ID = id1};
+            var entity2 = new Error { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Error>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            Error entity1 = new Error { ID = id1};
-            Error entity2 = new Error { ID = id2};
+            var entity1 = new Error { ID = id1};
+            var entity2 = new Error { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Error>(entity1));

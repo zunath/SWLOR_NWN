@@ -1,6 +1,5 @@
 ﻿using System;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -23,10 +22,10 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingDevice
             NWPlaceable device = (NWScript.OBJECT_SELF);
 
             // If a structure ID is defined, we need to make sure the building is set to Workshop mode.
-            string structureID = device.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var structureID = device.GetLocalString("PC_BASE_STRUCTURE_ID");
             if (!string.IsNullOrWhiteSpace(structureID))
             {
-                Guid structureGuid = new Guid(structureID);
+                var structureGuid = new Guid(structureID);
                 var structure = DataService.PCBaseStructure.GetByID(structureGuid);
 
                 // Workbenches and crafting devices can only be used inside 

@@ -1,6 +1,4 @@
-﻿using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Data.Entity;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Creature;
@@ -8,7 +6,6 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -77,7 +74,7 @@ namespace SWLOR.Game.Server.Service
         {
             NWPlaceable tempStorage = GetObjectByTag(TempStoragePlaceableTag);
             NWItem tempItem = CreateItemOnObject(resref, tempStorage.Object);
-            ItemVO model = new ItemVO
+            var model = new ItemVO
             {
                 Name = tempItem.Name,
                 Quantity = quantity,
@@ -99,9 +96,9 @@ namespace SWLOR.Game.Server.Service
 
             if (!oPC.IsPlayer) return;
 
-            List<PCQuestStatus> pcQuests = DataService.PCQuestStatus.GetAllByPlayerID(oPC.GlobalID).Where(x => x.CompletionDate == null).ToList();
+            var pcQuests = DataService.PCQuestStatus.GetAllByPlayerID(oPC.GlobalID).Where(x => x.CompletionDate == null).ToList();
 
-            foreach (PCQuestStatus pcQuest in pcQuests)
+            foreach (var pcQuest in pcQuests)
             {
                 var quest = _quests[pcQuest.QuestID];
                 AddJournalQuestEntry(quest.JournalTag, pcQuest.QuestState, oPC.Object, false);
@@ -116,16 +113,16 @@ namespace SWLOR.Game.Server.Service
         {
             NWCreature creature = NWScript.OBJECT_SELF;
 
-            int npcGroupID = creature.GetLocalInt("NPC_GROUP");
+            var npcGroupID = creature.GetLocalInt("NPC_GROUP");
             if (npcGroupID <= 0) return;
 
             NWObject oKiller = GetLastKiller();
 
             if (!oKiller.IsPlayer) return;
 
-            string areaResref = creature.Area.Resref;
+            var areaResref = creature.Area.Resref;
 
-            List<KeyValuePair<NWPlayer, int>> playersToAdvance = new List<KeyValuePair<NWPlayer, int>>();
+            var playersToAdvance = new List<KeyValuePair<NWPlayer, int>>();
             NWPlayer oPC = GetFirstFactionMember(oKiller);
             while (oPC.IsValid)
             {
@@ -151,9 +148,9 @@ namespace SWLOR.Game.Server.Service
                     var npcGroup = DataService.NPCGroup.GetByID(kt.NPCGroupID);
 
                     kt.RemainingToKill--;
-                    string targetGroupName = npcGroup.Name;
-                    string updateMessage = "[" + quest.Name + "] " + targetGroupName + " remaining: " + kt.RemainingToKill;
-                    DatabaseActionType action = DatabaseActionType.Update;
+                    var targetGroupName = npcGroup.Name;
+                    var updateMessage = "[" + quest.Name + "] " + targetGroupName + " remaining: " + kt.RemainingToKill;
+                    var action = DatabaseActionType.Update;
 
                     if (kt.RemainingToKill <= 0)
                     {
@@ -189,10 +186,10 @@ namespace SWLOR.Game.Server.Service
         private static void HandleTriggerAndPlaceableQuestLogic(NWPlayer player, NWObject trigger)
         {
             if (!player.IsPlayer) return;
-            string questMessage = trigger.GetLocalString("QUEST_MESSAGE");
-            int questID = trigger.GetLocalInt("QUEST_ID");
-            int questState = trigger.GetLocalInt("QUEST_STATE");
-            string visibilityObjectID = trigger.GetLocalString("VISIBILITY_OBJECT_ID");
+            var questMessage = trigger.GetLocalString("QUEST_MESSAGE");
+            var questID = trigger.GetLocalInt("QUEST_ID");
+            var questState = trigger.GetLocalInt("QUEST_STATE");
+            var visibilityObjectID = trigger.GetLocalString("VISIBILITY_OBJECT_ID");
 
             if (questID <= 0)
             {
@@ -206,7 +203,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            PCQuestStatus pcQuestStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, questID);
+            var pcQuestStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, questID);
             if (pcQuestStatus == null) return;
 
 
@@ -265,7 +262,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!oPC.IsPlayer) return;
 
-            PCQuestStatus pcStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(oPC.GlobalID, questID);
+            var pcStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(oPC.GlobalID, questID);
 
             if (pcStatus == null)
             {
@@ -286,7 +283,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Location location = oPC.Location;
+            var location = oPC.Location;
             NWPlaceable collector = CreateObject(ObjectType.Placeable, "qst_item_collect", location);
             collector.SetLocalObject("QUEST_OWNER", questOwner);
 

@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Tests.ValueObject.Dialog
         [Test]
         public void DialogResponseTests_Ctor_ShouldHaveDefaultValues()
         {
-            DialogResponse response = new DialogResponse("MyResponse");
+            var response = new DialogResponse("MyResponse");
 
             Assert.AreEqual("MyResponse", response.Text);
             Assert.AreEqual(true, response.IsActive);
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Tests.ValueObject.Dialog
         [Test]
         public void DialogResponseTests_Ctor_ShouldHaveSpecifiedValues()
         {
-            DialogResponse response = new DialogResponse(
+            var response = new DialogResponse(
                 "MyResponse", 
                 false, 
                 852);
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Tests.ValueObject.Dialog
         [Test]
         public void DialogResponseTests_CtorNullData_ShouldHaveEmptyObject()
         {
-            DialogResponse response = new DialogResponse(
+            var response = new DialogResponse(
                 "MyResponse",
                 false, 
                 null);

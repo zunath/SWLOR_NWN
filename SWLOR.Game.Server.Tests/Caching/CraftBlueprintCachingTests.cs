@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsCraftBlueprint()
         {
             // Arrange
-            CraftBlueprint entity = new CraftBlueprint {ID = 1};
+            var entity = new CraftBlueprint {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<CraftBlueprint>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            CraftBlueprint entity1 = new CraftBlueprint { ID = 1};
-            CraftBlueprint entity2 = new CraftBlueprint { ID = 2};
+            var entity1 = new CraftBlueprint { ID = 1};
+            var entity2 = new CraftBlueprint { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<CraftBlueprint>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            CraftBlueprint entity1 = new CraftBlueprint { ID = 1};
-            CraftBlueprint entity2 = new CraftBlueprint { ID = 2};
+            var entity1 = new CraftBlueprint { ID = 1};
+            var entity2 = new CraftBlueprint { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<CraftBlueprint>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            CraftBlueprint entity1 = new CraftBlueprint { ID = 1};
-            CraftBlueprint entity2 = new CraftBlueprint { ID = 2};
+            var entity1 = new CraftBlueprint { ID = 1};
+            var entity2 = new CraftBlueprint { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<CraftBlueprint>(entity1));

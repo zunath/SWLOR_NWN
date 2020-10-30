@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -14,7 +13,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
-            NWItem weapon = oPC.RightHand;
+            var weapon = oPC.RightHand;
             if (weapon.CustomItemType != CustomItemType.Baton && weapon.BaseItemType != BaseItem.Club)
                 return "You must be equipped with a baton weapon to use that ability.";
 

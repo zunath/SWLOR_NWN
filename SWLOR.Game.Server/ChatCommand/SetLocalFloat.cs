@@ -16,8 +16,8 @@ namespace SWLOR.Game.Server.ChatCommand
                 target = user.Area;
             }
 
-            string variableName = args[0];
-            float value = float.Parse(args[1]);
+            var variableName = args[0];
+            var value = float.Parse(args[1]);
 
             NWScript.SetLocalFloat(target, variableName, value);
 

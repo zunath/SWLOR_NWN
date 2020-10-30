@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -13,9 +12,9 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage();
+            var mainPage = new DialogPage();
 
             dialog.AddPage("MainPage", mainPage);
             return dialog;
@@ -24,12 +23,12 @@ namespace SWLOR.Game.Server.Conversation
         public override void Initialize()
         {
             NWPlaceable device = NWScript.OBJECT_SELF;
-            NWArea area = device.Area;
+            var area = device.Area;
 
-            int terminalColorID = device.GetLocalInt("TERMINAL_COLOR");
-            int doorStatus = area.GetLocalInt("DOOR_STATUS");
-            string openColor = GetColorString(doorStatus);
-            string terminalColor = GetColorString(terminalColorID);
+            var terminalColorID = device.GetLocalInt("TERMINAL_COLOR");
+            var doorStatus = area.GetLocalInt("DOOR_STATUS");
+            var openColor = GetColorString(doorStatus);
+            var terminalColor = GetColorString(terminalColorID);
 
             if (string.IsNullOrWhiteSpace(terminalColor))
             {
@@ -42,7 +41,7 @@ namespace SWLOR.Game.Server.Conversation
                 openColor = "no";
             }
 
-            string header = "Currently, " + openColor + " doors are unlocked.\n\n";
+            var header = "Currently, " + openColor + " doors are unlocked.\n\n";
             header += "This terminal can unlock " + terminalColor + " doors.";
 
             SetPageHeader("MainPage", header);
@@ -56,9 +55,9 @@ namespace SWLOR.Game.Server.Conversation
         public override void DoAction(NWPlayer player, string pageName, int responseID)
         {
             NWPlaceable device = NWScript.OBJECT_SELF;
-            NWArea area = device.Area;
-            int terminalColorID = device.GetLocalInt("TERMINAL_COLOR");
-            string terminalColor = GetColorString(terminalColorID);
+            var area = device.Area;
+            var terminalColorID = device.GetLocalInt("TERMINAL_COLOR");
+            var terminalColor = GetColorString(terminalColorID);
 
             area.SetLocalInt("DOOR_STATUS", terminalColorID);
 

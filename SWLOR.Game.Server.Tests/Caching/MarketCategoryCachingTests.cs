@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsMarketCategory()
         {
             // Arrange
-            MarketCategory entity = new MarketCategory {ID = 1};
+            var entity = new MarketCategory {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<MarketCategory>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            MarketCategory entity1 = new MarketCategory { ID = 1};
-            MarketCategory entity2 = new MarketCategory { ID = 2};
+            var entity1 = new MarketCategory { ID = 1};
+            var entity2 = new MarketCategory { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<MarketCategory>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            MarketCategory entity1 = new MarketCategory { ID = 1};
-            MarketCategory entity2 = new MarketCategory { ID = 2};
+            var entity1 = new MarketCategory { ID = 1};
+            var entity2 = new MarketCategory { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<MarketCategory>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            MarketCategory entity1 = new MarketCategory { ID = 1};
-            MarketCategory entity2 = new MarketCategory { ID = 2};
+            var entity1 = new MarketCategory { ID = 1};
+            var entity2 = new MarketCategory { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<MarketCategory>(entity1));

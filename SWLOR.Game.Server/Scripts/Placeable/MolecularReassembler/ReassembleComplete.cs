@@ -1,7 +1,5 @@
 ﻿using System;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
@@ -174,7 +172,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.MolecularReassembler
                     {
                         var levelIncrease = (int)(amount * levelsPerBonus);
                         bonusIP.CostTableValue = amount;
-                        ItemProperty bonusIPPacked = Core.NWNX.ItemProperty.PackIP(bonusIP);
+                        var bonusIPPacked = Core.NWNX.ItemProperty.PackIP(bonusIP);
                         NWItem item = NWScript.CreateItemOnObject(resref, _player);
                         item.RecommendedLevel = levelIncrease;
                         BiowareXP2.IPSafeAddItemProperty(item, bonusIPPacked, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);

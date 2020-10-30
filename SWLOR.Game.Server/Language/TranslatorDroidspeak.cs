@@ -6,18 +6,18 @@ namespace SWLOR.Game.Server.Language
     {
         public string Translate(string message)
         {
-            string[] words = message.Split(' ');
+            var words = message.Split(' ');
 
-            for (int i = 0; i < words.Length; ++i)
+            for (var i = 0; i < words.Length; ++i)
             {
-                string word = words[i];
+                var word = words[i];
 
-                bool isAllSpecialChars = true;
-                string specialCharsAtEndOfWord = "";
+                var isAllSpecialChars = true;
+                var specialCharsAtEndOfWord = "";
 
-                for (int j = 0; j < word.Length; ++j)
+                for (var j = 0; j < word.Length; ++j)
                 {
-                    char ch = word[j];
+                    var ch = word[j];
 
                     if (char.IsLetter(ch))
                     {
@@ -31,9 +31,9 @@ namespace SWLOR.Game.Server.Language
 
                 if (!string.IsNullOrEmpty(word) && !isAllSpecialChars)
                 {
-                    bool firstIsUpper = false;
+                    var firstIsUpper = false;
 
-                    foreach (char ch in word)
+                    foreach (var ch in word)
                     {
                         if (char.IsLetter(ch))
                         {

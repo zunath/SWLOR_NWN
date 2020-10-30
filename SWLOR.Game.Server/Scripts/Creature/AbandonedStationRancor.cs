@@ -1,6 +1,5 @@
 ﻿using System;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Events.Creature;
@@ -26,7 +25,7 @@ namespace SWLOR.Game.Server.Scripts.Creature
             NWCreature creature = NWScript.OBJECT_SELF;
             if (creature.Resref != "zomb_rancor") return;
 
-            NWArea area = creature.Area;
+            var area = creature.Area;
             NWArea restrictedArea = area.GetLocalObject("RESTRICTED_LEVEL");
             NWPlaceable elevator = NWScript.GetNearestObjectByTag("aban_ele_to_office", NWScript.GetFirstObjectInArea(restrictedArea));
             elevator.IsUseable = true;

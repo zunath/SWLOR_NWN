@@ -1,6 +1,5 @@
 ﻿using System;
 using SWLOR.Game.Server.ChatCommand.Contracts;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -18,7 +17,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 return;
             }
 
-            Player dbPlayer = DataService.Player.GetByID(target.GlobalID);
+            var dbPlayer = DataService.Player.GetByID(target.GlobalID);
             dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
             NWPlayer targetPlayer = target.Object;

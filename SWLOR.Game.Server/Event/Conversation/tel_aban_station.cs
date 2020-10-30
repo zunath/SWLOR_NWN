@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
@@ -32,7 +31,7 @@ namespace NWN.Scripts
 
         private static NWArea GetOrCreateMainLevel(NWPlayer player)
         {
-            NWArea memberArea = player
+            var memberArea = player
                 .PartyMembers
                 .FirstOrDefault(x => x.Area.Tag == "AbandonedStationDirectorsChamber" ||
                                      x.Area.Tag == "zomb_abanstation" ||
@@ -81,10 +80,10 @@ namespace NWN.Scripts
             MessageHub.Instance.Publish(new OnAreaInstanceCreated(directorsChambers));
 
             // Spawn key cards randomly on the main level.
-            List<int> spawnIDs = new List<int>{1, 2, 3, 4, 5, 6};
-            int keyCard1 = spawnIDs.ElementAt(RandomService.Random(1, 6));
+            var spawnIDs = new List<int>{1, 2, 3, 4, 5, 6};
+            var keyCard1 = spawnIDs.ElementAt(RandomService.Random(1, 6));
             spawnIDs.RemoveAt(keyCard1-1);
-            int keyCard2 = spawnIDs.ElementAt(RandomService.Random(1, 5));
+            var keyCard2 = spawnIDs.ElementAt(RandomService.Random(1, 5));
             
             NWLocation keyCardLocation1 = GetLocation(GetNearestObjectByTag("KEY_CARD_SPAWN_" + keyCard1, GetFirstObjectInArea(mainLevel)));
             NWLocation keyCardLocation2 = GetLocation(GetNearestObjectByTag("KEY_CARD_SPAWN_" + keyCard2, GetFirstObjectInArea(mainLevel)));

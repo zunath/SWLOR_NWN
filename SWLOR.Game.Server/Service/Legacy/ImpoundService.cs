@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Service
             // Processing a container, impound it's contents first.
             if (item.HasInventory)
             {
-                foreach (NWItem inventoryItem in item.InventoryItems)
+                foreach (var inventoryItem in item.InventoryItems)
                 {
                     structureImpoundedItem = new PCImpoundedItem
                     {

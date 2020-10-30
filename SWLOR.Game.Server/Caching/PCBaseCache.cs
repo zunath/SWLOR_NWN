@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Caching
         public IEnumerable<PCBase> GetAllWhereRentDue()
         {
             var list = new List<PCBase>();
-            DateTime now = DateTime.UtcNow;
+            var now = DateTime.UtcNow;
             foreach (var pcBaseID in RentDueTimes.Where(x => x.Value <= now))
             {
                 list.Add((PCBase)ByID[pcBaseID.Key].Clone());

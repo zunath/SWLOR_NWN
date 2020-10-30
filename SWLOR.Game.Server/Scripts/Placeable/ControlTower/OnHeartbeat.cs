@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Linq;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -25,17 +22,17 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
         public void Main()
         {
             NWPlaceable tower = NWScript.OBJECT_SELF;
-            Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureID);
-            int maxShieldHP = BaseService.CalculateMaxShieldHP(structure);
+            var structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            var structure = DataService.PCBaseStructure.GetByID(structureID);
+            var maxShieldHP = BaseService.CalculateMaxShieldHP(structure);
             var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
 
             // Regular fuel usage
             if (DateTime.UtcNow >= pcBase.DateFuelEnds && pcBase.Fuel > 0)
             {
                 pcBase.Fuel--;
-                BaseStructure towerStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
-                int fuelRating = towerStructure.FuelRating;
+                var towerStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
+                var fuelRating = towerStructure.FuelRating;
                 int minutes;
 
                 switch (fuelRating)
@@ -59,7 +56,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
                 NWPlaceable bay = tower.GetLocalObject("CONTROL_TOWER_FUEL_BAY");
                 if (bay.IsValid)
                 {
-                    bool isStronidium = bay.GetLocalBool("CONTROL_TOWER_FUEL_TYPE") == true;
+                    var isStronidium = bay.GetLocalBool("CONTROL_TOWER_FUEL_TYPE") == true;
                     if (!isStronidium)
                     {
                         NWItem fuel = NWScript.GetFirstItemInInventory(bay.Object);
@@ -75,7 +72,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
             // If completely out of power, show tower in red.
             if (pcBase.Fuel <= 0 && DateTime.UtcNow > pcBase.DateFuelEnds)
             {
-                bool outOfPowerHasBeenApplied = false;
+                var outOfPowerHasBeenApplied = false;
                 foreach (var effect in tower.Effects)
                 {
                     if (NWScript.GetEffectTag(effect) == "CONTROL_TOWER_OUT_OF_POWER")
@@ -87,7 +84,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
 
                 if (!outOfPowerHasBeenApplied)
                 {
-                    Effect outOfPowerEffect = NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Red);
+                    var outOfPowerEffect = NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Red);
                     outOfPowerEffect = NWScript.TagEffect(outOfPowerEffect, "CONTROL_TOWER_OUT_OF_POWER");
                     NWScript.ApplyEffectToObject(DurationType.Permanent, outOfPowerEffect, tower.Object);
 
@@ -101,7 +98,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
             }
             else
             {
-                bool outOfPowerWasRemoved = false;
+                var outOfPowerWasRemoved = false;
                 foreach (var effect in tower.Effects)
                 {
                     if (NWScript.GetEffectTag(effect) == "CONTROL_TOWER_OUT_OF_POWER")

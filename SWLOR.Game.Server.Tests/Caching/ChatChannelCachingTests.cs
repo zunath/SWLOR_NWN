@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsChatChannel()
         {
             // Arrange
-            ChatChannel entity = new ChatChannel {ID = 1};
+            var entity = new ChatChannel {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ChatChannel>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            ChatChannel entity1 = new ChatChannel { ID = 1};
-            ChatChannel entity2 = new ChatChannel { ID = 2};
+            var entity1 = new ChatChannel { ID = 1};
+            var entity2 = new ChatChannel { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ChatChannel>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            ChatChannel entity1 = new ChatChannel { ID = 1};
-            ChatChannel entity2 = new ChatChannel { ID = 2};
+            var entity1 = new ChatChannel { ID = 1};
+            var entity2 = new ChatChannel { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ChatChannel>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            ChatChannel entity1 = new ChatChannel { ID = 1};
-            ChatChannel entity2 = new ChatChannel { ID = 2};
+            var entity1 = new ChatChannel { ID = 1};
+            var entity2 = new ChatChannel { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ChatChannel>(entity1));

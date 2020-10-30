@@ -39,8 +39,8 @@ namespace SWLOR.Game.Server.Caching
 
         private void RecalculatePowerAndCPU(PCBaseStructure entity)
         {
-            double power = 0.0d;
-            double cpu = 0.0d;
+            var power = 0.0d;
+            var cpu = 0.0d;
             var entities = ByPCBaseID[entity.PCBaseID];
             foreach (var structure in entities.Values)
             {

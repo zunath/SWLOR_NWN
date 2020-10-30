@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
-            NWItem weapon = oPC.RightHand;
+            var weapon = oPC.RightHand;
             
             if (weapon.CustomItemType != CustomItemType.FinesseVibroblade)
                 return "You must be equipped with a finesse blade to use that ability";
@@ -32,8 +32,8 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
-            int perkRank = PerkService.GetCreaturePerkLevel(oPC, PerkType.SneakAttack);
-            float cooldown = baseCooldownTime;
+            var perkRank = PerkService.GetCreaturePerkLevel(oPC, PerkType.SneakAttack);
+            var cooldown = baseCooldownTime;
 
             if (perkRank == 2)
             {
@@ -54,8 +54,8 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
-            float minimum = creature.Facing - 20;
-            float maximum = creature.Facing + 20;
+            var minimum = creature.Facing - 20;
+            var maximum = creature.Facing + 20;
 
             if (target.Facing >= minimum &&
                 target.Facing <= maximum)

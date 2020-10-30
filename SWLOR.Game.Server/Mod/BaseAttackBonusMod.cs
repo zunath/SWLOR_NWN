@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Mod
             if (!ItemService.WeaponBaseItemTypes.Contains(target.BaseItemType))
                 return "This mod can only be applied to weapons.";
 
-            int existingBAB = target.BaseAttackBonus;
+            var existingBAB = target.BaseAttackBonus;
             if (existingBAB >= MaxValue) return "You cannot improve that item's base attack bonus any further.";
 
             return null;
@@ -24,15 +24,15 @@ namespace SWLOR.Game.Server.Mod
 
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
-            int value = Convert.ToInt32(args[0]);
-            int newValue = target.BaseAttackBonus + value;
+            var value = Convert.ToInt32(args[0]);
+            var newValue = target.BaseAttackBonus + value;
             if (newValue > MaxValue) newValue = MaxValue;
             target.BaseAttackBonus = newValue;
         }
 
         public string Description(NWPlayer player, NWItem target, params string[] args)
         {
-            int value = Convert.ToInt32(args[0]);
+            var value = Convert.ToInt32(args[0]);
             return "Base Attack Bonus +" + value;
         }
     }

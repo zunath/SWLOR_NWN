@@ -1,16 +1,12 @@
-﻿using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Bioware;
+﻿using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using System.Reflection;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Event.Item;
@@ -23,11 +19,9 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using Effect = SWLOR.Game.Server.Core.Effect;
 using ItemProperty = SWLOR.Game.Server.Core.ItemProperty;
 using OnHitCastSpell = SWLOR.Game.Server.Event.Feat.OnHitCastSpell;
 using Profiler = SWLOR.Game.Server.ValueObject.Profiler;
-using Skill = SWLOR.Game.Server.Data.Entity.Skill;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -66,13 +60,13 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var type in classes)
             {
-                IActionItem instance = Activator.CreateInstance(type) as IActionItem;
+                var instance = Activator.CreateInstance(type) as IActionItem;
 
                 if (instance == null)
                 {
                     throw new NullReferenceException("Unable to activate instance of type: " + type);
                 }
-                string key = type.Name;
+                var key = type.Name;
 
                 // If the class has defined a custom key, use that instead.
                 if (!string.IsNullOrWhiteSpace(instance.CustomKey))
@@ -101,7 +95,7 @@ namespace SWLOR.Game.Server.Service
                 return null;
             }
             NWItem item = (CreateItemOnObject(resref, tempStorage.Object));
-            string name = item.Name;
+            var name = item.Name;
             item.Destroy();
             return name;
         }
@@ -129,9 +123,9 @@ namespace SWLOR.Game.Server.Service
             var targetPositionY = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Y"));
             var targetPositionZ = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Z"));
             var targetPosition = Vector3(targetPositionX, targetPositionY, targetPositionZ);
-            Location targetLocation = Location(user.Area, targetPosition, 0.0f);
+            var targetLocation = Location(user.Area, targetPosition, 0.0f);
 
-            string className = oItem.GetLocalString("SCRIPT");
+            var className = oItem.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTIVATE_SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTION_SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("SCRIPT");
@@ -155,9 +149,9 @@ namespace SWLOR.Game.Server.Service
             // Remove "Item." prefix if it exists.
             if (className.StartsWith("Item."))
                 className = className.Substring(5);
-            IActionItem item = GetActionItemHandler(className);
+            var item = GetActionItemHandler(className);
 
-            string invalidTargetMessage = item.IsValidTarget(user, oItem, target, targetLocation);
+            var invalidTargetMessage = item.IsValidTarget(user, oItem, target, targetLocation);
             if (!string.IsNullOrWhiteSpace(invalidTargetMessage))
             {
                 user.SendMessage(invalidTargetMessage);
@@ -165,7 +159,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // NOTE - these checks are duplicated in FinishActionItem.  Keep both in sync.
-            float maxDistance = item.MaxDistance(user, oItem, target, targetLocation);
+            var maxDistance = item.MaxDistance(user, oItem, target, targetLocation);
             if (maxDistance > 0.0f)
             {
                 NWObject owner = GetItemPossessor(target);
@@ -195,11 +189,11 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            CustomData customData = item.StartUseItem(user, oItem, target, targetLocation);
-            float delay = item.Seconds(user, oItem, target, targetLocation, customData);
+            var customData = item.StartUseItem(user, oItem, target, targetLocation);
+            var delay = item.Seconds(user, oItem, target, targetLocation, customData);
             var animationID = item.AnimationID();
-            bool faceTarget = item.FaceTarget();
-            Vector3 userPosition = user.Position;
+            var faceTarget = item.FaceTarget();
+            var userPosition = user.Position;
 
             user.AssignCommand(() =>
             {
@@ -224,7 +218,7 @@ namespace SWLOR.Game.Server.Service
             if (examinedObject.ObjectType != ObjectType.Item) return existingDescription;
 
             NWItem examinedItem = (examinedObject.Object);
-            string description = "";
+            var description = "";
 
             if (examinedItem.RecommendedLevel > 0)
             {
@@ -241,7 +235,7 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.AssociatedSkillType > 0)
             {
-                Skill skill = DataService.Skill.GetByID((int)examinedItem.AssociatedSkillType);
+                var skill = DataService.Skill.GetByID((int)examinedItem.AssociatedSkillType);
                 description += ColorTokenService.Orange("Associated Skill: ") + skill.Name + "\n";
             }
             if (examinedItem.CustomAC > 0)
@@ -399,14 +393,14 @@ namespace SWLOR.Game.Server.Service
             }
             if (examinedItem.CustomItemType != CustomItemType.None)
             {
-                string itemTypeProper = string.Concat(examinedItem.CustomItemType.ToString().Select(x => char.IsUpper(x) ? " " + x : x.ToString())).TrimStart(' ');
+                var itemTypeProper = string.Concat(examinedItem.CustomItemType.ToString().Select(x => char.IsUpper(x) ? " " + x : x.ToString())).TrimStart(' ');
                 description += ColorTokenService.Orange("Item Type: ") + itemTypeProper + "\n";
             }
 
             // Check for properties that can only be applied to limited things, and flag them here.
             // Attack bonus, damage, base attack bonus: weapons only
             // AC - armor items only.
-            ItemProperty ip = GetFirstItemProperty(examinedItem);
+            var ip = GetFirstItemProperty(examinedItem);
             while (GetIsItemPropertyValid(ip) == true)
             {
                 if (GetItemPropertyType(ip) == ItemPropertyType.ComponentBonus)
@@ -531,8 +525,8 @@ namespace SWLOR.Game.Server.Service
         {
             NWPlayer oPC = (GetPCItemLastEquippedBy());
             NWItem oItem = (GetPCItemLastEquipped());
-            NWItem rightHand = oPC.RightHand;
-            NWItem leftHand = oPC.LeftHand;
+            var rightHand = oPC.RightHand;
+            var leftHand = oPC.LeftHand;
 
             if (!oPC.IsInCombat) return;
             if (Equals(oItem, rightHand) && Equals(oItem, leftHand)) return;
@@ -608,7 +602,7 @@ namespace SWLOR.Game.Server.Service
 
             NWItem oItem = (GetPCItemLastEquipped());
             var baseItemType = oItem.BaseItemType;
-            Effect eEffect = EffectVisualEffect(VisualEffect.LightsaberHum);
+            var eEffect = EffectVisualEffect(VisualEffect.LightsaberHum);
             eEffect = TagEffect(eEffect, "LIGHTSABER_HUM");
 
             // Handle lightsaber sounds
@@ -652,7 +646,7 @@ namespace SWLOR.Game.Server.Service
 
             if (baseItemType == BaseItem.Torch)
             {
-                int charges = oItem.ReduceCharges();
+                var charges = oItem.ReduceCharges();
                 if (charges <= 0)
                 {
                     oItem.Destroy();
@@ -664,7 +658,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void AddOnHitProperty(NWItem oItem)
         {
-            foreach (ItemProperty ip in oItem.ItemProperties)
+            foreach (var ip in oItem.ItemProperties)
             {
                 if (GetItemPropertyType(ip) == ItemPropertyType.OnHitCastSpell)
                 {
@@ -707,13 +701,13 @@ namespace SWLOR.Game.Server.Service
         public static ItemProperty GetCustomItemPropertyByItemTag(string tag)
         {
             NWPlaceable container = (GetObjectByTag("item_props"));
-            NWItem item = container.InventoryItems.SingleOrDefault(x => x.Tag == tag);
+            var item = container.InventoryItems.SingleOrDefault(x => x.Tag == tag);
             if (item == null)
             {
                 throw new Exception("Unable to find an item tagged '" + tag + "' in the item props container.");
             }
 
-            ItemProperty prop = item.ItemProperties.FirstOrDefault();
+            var prop = item.ItemProperties.FirstOrDefault();
             if (prop == null)
             {
                 throw new Exception("Unable to find an item property on item tagged '" + tag + "' in the item props container.");
@@ -876,7 +870,7 @@ namespace SWLOR.Game.Server.Service
 
             NWObject oSpellOrigin = (GetSpellCastItem());
             // Item specific
-            string script = oSpellOrigin.GetLocalString("SCRIPT");
+            var script = oSpellOrigin.GetLocalString("SCRIPT");
 
             if (!string.IsNullOrWhiteSpace(script))
             {
@@ -894,7 +888,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = Chat.GetSender();
 
             if (!CanHandleChat(player)) return;
-            string message = Chat.GetMessage();
+            var message = Chat.GetMessage();
             Chat.SkipMessage();
 
             message = message.Truncate(50);

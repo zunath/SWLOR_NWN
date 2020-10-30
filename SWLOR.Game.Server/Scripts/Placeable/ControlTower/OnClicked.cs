@@ -1,7 +1,5 @@
 ﻿using System;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -32,8 +30,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
                 clicker.SendMessage("You are too far away to interact with that control tower.");
                 return;
             }
-            Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureID);
+            var structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            var structure = DataService.PCBaseStructure.GetByID(structureID);
 
             // Does the player have permission to access the fuel bays?
             if (BasePermissionService.HasBasePermission(clicker, structure.PCBaseID, BasePermission.CanManageBaseFuel))

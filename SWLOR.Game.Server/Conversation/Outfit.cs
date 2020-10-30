@@ -1,8 +1,6 @@
 ﻿using System;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -18,43 +16,43 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage(
+            var mainPage = new DialogPage(
                 "Please select an option.",
                 "Save Options",
                 "Load Options"
             );
 
-            DialogPage savePage = new DialogPage(
+            var savePage = new DialogPage(
                 "Which type of item would you like to save?"
             );
 
-            DialogPage loadPage = new DialogPage(
+            var loadPage = new DialogPage(
                 "Which type of item would you like to load?"
             );
 
-            DialogPage saveOutfitPage = new DialogPage(
+            var saveOutfitPage = new DialogPage(
                 "Please select a slot to save the outfit in.\n\nRed slots are unused. Green slots contain stored appearances. Selecting a green slot will overwrite whatever is in that slot."
             );
 
-            DialogPage saveHelmetPage = new DialogPage(
+            var saveHelmetPage = new DialogPage(
                 "Please select a slot to save the helmet in.\n\nRed slots are unused. Green slots contain stored appearances. Selecting a green slot will overwrite whatever is in that slot."
             );
 
-            DialogPage saveWeaponPage = new DialogPage(
+            var saveWeaponPage = new DialogPage(
                 "Please select a slot to save the weapon in. (Right hand only)\n\nRed slots are unused. Green slots contain stored appearances. Selecting a green slot will overwrite whatever is in that slot."
             );
 
-            DialogPage loadOutfitPage = new DialogPage(
+            var loadOutfitPage = new DialogPage(
                 "Please select an outfit to load."
             );
 
-            DialogPage loadHelmetPage = new DialogPage(
+            var loadHelmetPage = new DialogPage(
                 "Please select a helmet to load."
             );
 
-            DialogPage loadWeaponPage = new DialogPage(
+            var loadWeaponPage = new DialogPage(
                 "Please select a weapon to load. (Right hand only)"
             );
 
@@ -200,10 +198,10 @@ namespace SWLOR.Game.Server.Conversation
         }
         private bool CanModifyClothes()
         {
-            NWPlayer oPC = GetPC();
+            var oPC = GetPC();
             NWItem oClothes = (GetItemInSlot(InventorySlot.Chest, oPC.Object));
 
-            bool canModifyArmor = oClothes.IsValid && !oClothes.IsPlot && !oClothes.IsCursed;
+            var canModifyArmor = oClothes.IsValid && !oClothes.IsPlot && !oClothes.IsCursed;
             if (!canModifyArmor)
             {
                 return false;
@@ -213,10 +211,10 @@ namespace SWLOR.Game.Server.Conversation
         }
         private bool CanModifyHelmet()
         {
-            NWPlayer oPC = GetPC();
+            var oPC = GetPC();
             NWItem oClothes = (GetItemInSlot(InventorySlot.Head, oPC.Object));
 
-            bool canModifyArmor = oClothes.IsValid && !oClothes.IsPlot && !oClothes.IsCursed;
+            var canModifyArmor = oClothes.IsValid && !oClothes.IsPlot && !oClothes.IsCursed;
             if (!canModifyArmor)
             {
                 return false;
@@ -226,10 +224,10 @@ namespace SWLOR.Game.Server.Conversation
         }
         private bool CanModifyWeapon()
         {
-            NWPlayer oPC = GetPC();
+            var oPC = GetPC();
             NWItem oClothes = (GetItemInSlot(InventorySlot.RightHand, oPC.Object));
 
-            bool canModifyArmor = oClothes.IsValid && !oClothes.IsPlot && !oClothes.IsCursed;
+            var canModifyArmor = oClothes.IsValid && !oClothes.IsPlot && !oClothes.IsCursed;
             if (!canModifyArmor)
             {
                 return false;
@@ -239,7 +237,7 @@ namespace SWLOR.Game.Server.Conversation
         }
         private void HandleSaveOutfit(int responseID)
         {
-            NWPlayer oPC = GetPC();
+            var oPC = GetPC();
             NWItem oClothes = (GetItemInSlot(InventorySlot.Chest, oPC.Object));
 
             if (!CanModifyClothes())
@@ -248,7 +246,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
             
-            PCOutfit entity = GetPlayerOutfits(oPC);
+            var entity = GetPlayerOutfits(oPC);
             var action = DatabaseActionType.Update;
 
             if (entity == null)
@@ -266,7 +264,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            string clothesData = SerializationService.Serialize(oClothes);
+            var clothesData = SerializationService.Serialize(oClothes);
             if (responseID == 1) entity.Outfit1 = clothesData;
             else if (responseID == 2) entity.Outfit2 = clothesData;
             else if (responseID == 3) entity.Outfit3 = clothesData;
@@ -283,7 +281,7 @@ namespace SWLOR.Game.Server.Conversation
         }
         private void HandleSaveHelmet(int responseID)
         {
-            NWPlayer oPC = GetPC();
+            var oPC = GetPC();
             NWItem oClothes = (GetItemInSlot(InventorySlot.Head, oPC.Object));
 
             if (!CanModifyHelmet())
@@ -292,7 +290,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            PCHelmet entity = GetPlayerHelmets(oPC);
+            var entity = GetPlayerHelmets(oPC);
             var action = DatabaseActionType.Update;
 
             if (entity == null)
@@ -310,7 +308,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            string clothesData = SerializationService.Serialize(oClothes);
+            var clothesData = SerializationService.Serialize(oClothes);
             if (responseID == 1) entity.Helmet1 = clothesData;
             else if (responseID == 2) entity.Helmet2 = clothesData;
             else if (responseID == 3) entity.Helmet3 = clothesData;
@@ -327,7 +325,7 @@ namespace SWLOR.Game.Server.Conversation
         }
         private void HandleSaveWeapon(int responseID)
         {
-            NWPlayer oPC = GetPC();
+            var oPC = GetPC();
             NWItem oClothes = (GetItemInSlot(InventorySlot.RightHand, oPC.Object));
 
             if (!CanModifyWeapon())
@@ -336,7 +334,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            PCWeapon entity = GetPlayerWeapons(oPC);
+            var entity = GetPlayerWeapons(oPC);
             var action = DatabaseActionType.Update;
 
             if (entity == null)
@@ -354,7 +352,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            string clothesData = SerializationService.Serialize(oClothes);
+            var clothesData = SerializationService.Serialize(oClothes);
             if (responseID == 1) entity.Weapon1 = clothesData;
             else if (responseID == 2) entity.Weapon2 = clothesData;
             else if (responseID == 3) entity.Weapon3 = clothesData;
@@ -371,8 +369,8 @@ namespace SWLOR.Game.Server.Conversation
         }
         private void HandleLoadOutfit(int responseID)
         {
-            DialogResponse response = GetResponseByID("LoadOutfitPage", responseID);
-            NWPlayer oPC = GetPC();
+            var response = GetResponseByID("LoadOutfitPage", responseID);
+            var oPC = GetPC();
 
             if (!CanModifyClothes())
             {
@@ -380,12 +378,12 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            int outfitID = (int)response.CustomData;
-            PCOutfit entity = GetPlayerOutfits(GetPC());
+            var outfitID = (int)response.CustomData;
+            var entity = GetPlayerOutfits(GetPC());
             if (entity == null) return;
 
             NWPlaceable oTempStorage = (GetObjectByTag("OUTFIT_BARREL"));
-            NWItem oClothes = oPC.Chest;
+            var oClothes = oPC.Chest;
             NWItem storedClothes = null;
             oClothes.SetLocalString("TEMP_OUTFIT_UUID", oPC.GlobalID.ToString());
 
@@ -402,7 +400,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (storedClothes == null) throw new Exception("Unable to locate stored clothes.");
 
-            uint oCopy = CopyItem(oClothes.Object, oTempStorage.Object, true);
+            var oCopy = CopyItem(oClothes.Object, oTempStorage.Object, true);
             oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep), true);
             oCopy = CopyItemAndModify(oCopy, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftBicep, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.ArmorColor, (int)AppearanceArmor.LeftBicep), true);
 
@@ -468,7 +466,7 @@ namespace SWLOR.Game.Server.Conversation
 
             oPC.AssignCommand(() => ActionEquipItem(oFinal.Object, InventorySlot.Chest));
 
-            foreach (NWItem item in oTempStorage.InventoryItems)
+            foreach (var item in oTempStorage.InventoryItems)
             {
                 if (item.GetLocalString("TEMP_OUTFIT_UUID") == oPC.GlobalID.ToString())
                 {
@@ -480,8 +478,8 @@ namespace SWLOR.Game.Server.Conversation
         }
         private void HandleLoadHelmet(int responseID)
         {
-            DialogResponse response = GetResponseByID("LoadHelmetPage", responseID);
-            NWPlayer oPC = GetPC();
+            var response = GetResponseByID("LoadHelmetPage", responseID);
+            var oPC = GetPC();
 
             if (!CanModifyHelmet())
             {
@@ -489,12 +487,12 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            int outfitID = (int)response.CustomData;
-            PCHelmet entity = GetPlayerHelmets(GetPC());
+            var outfitID = (int)response.CustomData;
+            var entity = GetPlayerHelmets(GetPC());
             if (entity == null) return;
 
             NWPlaceable oTempStorage = (GetObjectByTag("OUTFIT_BARREL"));
-            NWItem oClothes = oPC.Head;
+            var oClothes = oPC.Head;
             NWItem storedClothes = null;
             oClothes.SetLocalString("TEMP_OUTFIT_UUID", oPC.GlobalID.ToString());
 
@@ -511,7 +509,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (storedClothes == null) throw new Exception("Unable to locate stored helmet.");
 
-            uint oCopy = CopyItem(oClothes.Object, oTempStorage.Object, true);
+            var oCopy = CopyItem(oClothes.Object, oTempStorage.Object, true);
             oCopy = NWScript.CopyItemAndModify(oCopy, ItemAppearanceType.SimpleModel, 0, (int)GetItemAppearance(storedClothes.Object, ItemAppearanceType.SimpleModel, 0), true);
 
             NWItem oFinal = (CopyItem(oCopy, oPC.Object, true));
@@ -522,7 +520,7 @@ namespace SWLOR.Game.Server.Conversation
 
             oPC.AssignCommand(() => ActionEquipItem(oFinal.Object, InventorySlot.Head));
 
-            foreach (NWItem item in oTempStorage.InventoryItems)
+            foreach (var item in oTempStorage.InventoryItems)
             {
                 if (item.GetLocalString("TEMP_OUTFIT_UUID") == oPC.GlobalID.ToString())
                 {
@@ -534,8 +532,8 @@ namespace SWLOR.Game.Server.Conversation
         }
         private void HandleLoadWeapon(int responseID)
         {
-            DialogResponse response = GetResponseByID("LoadWeaponPage", responseID);
-            NWPlayer oPC = GetPC();
+            var response = GetResponseByID("LoadWeaponPage", responseID);
+            var oPC = GetPC();
 
             if (!CanModifyWeapon())
             {
@@ -543,12 +541,12 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            int outfitID = (int)response.CustomData;
-            PCWeapon entity = GetPlayerWeapons(GetPC());
+            var outfitID = (int)response.CustomData;
+            var entity = GetPlayerWeapons(GetPC());
             if (entity == null) return;
 
             NWPlaceable oTempStorage = (GetObjectByTag("OUTFIT_BARREL"));
-            NWItem oClothes = oPC.RightHand;
+            var oClothes = oPC.RightHand;
             NWItem storedClothes = null;
             oClothes.SetLocalString("TEMP_OUTFIT_UUID", oPC.GlobalID.ToString());
 
@@ -565,7 +563,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (storedClothes == null) throw new Exception("Unable to locate stored Weapon.");
 
-            uint oCopy = CopyItem(oClothes.Object, oTempStorage.Object, true);
+            var oCopy = CopyItem(oClothes.Object, oTempStorage.Object, true);
 
             var baseItemType = GetBaseItemType(oCopy);
 
@@ -588,7 +586,7 @@ namespace SWLOR.Game.Server.Conversation
 
             oPC.AssignCommand(() => ActionEquipItem(oFinal.Object, InventorySlot.RightHand));
 
-            foreach (NWItem item in oTempStorage.InventoryItems)
+            foreach (var item in oTempStorage.InventoryItems)
             {
                 if (item.GetLocalString("TEMP_OUTFIT_UUID") == oPC.GlobalID.ToString())
                 {
@@ -607,11 +605,11 @@ namespace SWLOR.Game.Server.Conversation
         }
         private void ShowSaveOutfitOptions()
         {
-            PCOutfit entity = GetPlayerOutfits(GetPC()) ?? new PCOutfit();
+            var entity = GetPlayerOutfits(GetPC()) ?? new PCOutfit();
 
             ClearPageResponses("SaveOutfitPage");
 
-            string responseText = entity.Outfit1 == null ? ColorTokenService.Red("Save in Slot 1") : ColorTokenService.Green("Save in Slot 1");
+            var responseText = entity.Outfit1 == null ? ColorTokenService.Red("Save in Slot 1") : ColorTokenService.Green("Save in Slot 1");
             AddResponseToPage("SaveOutfitPage", responseText);
 
             responseText = entity.Outfit2 == null ? ColorTokenService.Red("Save in Slot 2") : ColorTokenService.Green("Save in Slot 2");
@@ -643,11 +641,11 @@ namespace SWLOR.Game.Server.Conversation
         }
         private void ShowSaveHelmetOptions()
         {
-            PCHelmet entity = GetPlayerHelmets(GetPC()) ?? new PCHelmet();
+            var entity = GetPlayerHelmets(GetPC()) ?? new PCHelmet();
 
             ClearPageResponses("SaveHelmetPage");
 
-            string responseText = entity.Helmet1 == null ? ColorTokenService.Red("Save in Slot 1") : ColorTokenService.Green("Save in Slot 1");
+            var responseText = entity.Helmet1 == null ? ColorTokenService.Red("Save in Slot 1") : ColorTokenService.Green("Save in Slot 1");
             AddResponseToPage("SaveHelmetPage", responseText);
 
             responseText = entity.Helmet2 == null ? ColorTokenService.Red("Save in Slot 2") : ColorTokenService.Green("Save in Slot 2");
@@ -679,11 +677,11 @@ namespace SWLOR.Game.Server.Conversation
         }
         private void ShowSaveWeaponOptions()
         {
-            PCWeapon entity = GetPlayerWeapons(GetPC()) ?? new PCWeapon();
+            var entity = GetPlayerWeapons(GetPC()) ?? new PCWeapon();
 
             ClearPageResponses("SaveWeaponPage");
 
-            string responseText = entity.Weapon1 == null ? ColorTokenService.Red("Save in Slot 1") : ColorTokenService.Green("Save in Slot 1");
+            var responseText = entity.Weapon1 == null ? ColorTokenService.Red("Save in Slot 1") : ColorTokenService.Green("Save in Slot 1");
             AddResponseToPage("SaveWeaponPage", responseText);
 
             responseText = entity.Weapon2 == null ? ColorTokenService.Red("Save in Slot 2") : ColorTokenService.Green("Save in Slot 2");
@@ -722,7 +720,7 @@ namespace SWLOR.Game.Server.Conversation
         }
         private void ShowLoadOutfitOptions()
         {
-            PCOutfit entity = GetPlayerOutfits(GetPC()) ?? new PCOutfit();
+            var entity = GetPlayerOutfits(GetPC()) ?? new PCOutfit();
             ClearPageResponses("LoadOutfitPage");
 
             if (entity.Outfit1 != null)
@@ -748,7 +746,7 @@ namespace SWLOR.Game.Server.Conversation
         }
         private void ShowLoadHelmetOptions()
         {
-            PCHelmet entity = GetPlayerHelmets(GetPC()) ?? new PCHelmet();
+            var entity = GetPlayerHelmets(GetPC()) ?? new PCHelmet();
             ClearPageResponses("LoadHelmetPage");
 
             if (entity.Helmet1 != null)
@@ -774,7 +772,7 @@ namespace SWLOR.Game.Server.Conversation
         }
         private void ShowLoadWeaponOptions()
         {
-            PCWeapon entity = GetPlayerWeapons(GetPC()) ?? new PCWeapon();
+            var entity = GetPlayerWeapons(GetPC()) ?? new PCWeapon();
             ClearPageResponses("LoadWeaponPage");
 
             if (entity.Weapon1 != null)

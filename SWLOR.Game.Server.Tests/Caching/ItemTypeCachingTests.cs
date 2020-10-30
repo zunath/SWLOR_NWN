@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsItemType()
         {
             // Arrange
-            ItemType entity = new ItemType {ID = 1};
+            var entity = new ItemType {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ItemType>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            ItemType entity1 = new ItemType { ID = 1};
-            ItemType entity2 = new ItemType { ID = 2};
+            var entity1 = new ItemType { ID = 1};
+            var entity2 = new ItemType { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ItemType>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            ItemType entity1 = new ItemType { ID = 1};
-            ItemType entity2 = new ItemType { ID = 2};
+            var entity1 = new ItemType { ID = 1};
+            var entity2 = new ItemType { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ItemType>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            ItemType entity1 = new ItemType { ID = 1};
-            ItemType entity2 = new ItemType { ID = 2};
+            var entity1 = new ItemType { ID = 1};
+            var entity2 = new ItemType { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ItemType>(entity1));

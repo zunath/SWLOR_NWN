@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.AI;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
@@ -62,7 +61,7 @@ namespace SWLOR.Game.Server.Service
                 .Where(p => typeof(ISpawnRule).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
             foreach (var type in classes)
             {
-                ISpawnRule instance = Activator.CreateInstance(type) as ISpawnRule;
+                var instance = Activator.CreateInstance(type) as ISpawnRule;
                 if (instance == null)
                 {
                     throw new NullReferenceException("Unable to activate instance of type: " + type);
@@ -97,32 +96,32 @@ namespace SWLOR.Game.Server.Service
             NWObject obj = GetFirstObjectInArea(area.Object);
             while (obj.IsValid)
             {
-                bool isSpawn = obj.ObjectType == ObjectType.Waypoint && obj.GetLocalBool("IS_SPAWN") == true;
+                var isSpawn = obj.ObjectType == ObjectType.Waypoint && obj.GetLocalBool("IS_SPAWN") == true;
 
                 if (isSpawn)
                 {
                     var spawnType = (ObjectType)obj.GetLocalInt("SPAWN_TYPE");
                     var objectType = spawnType == 0 || spawnType == ObjectType.Creature ? ObjectType.Creature : spawnType;
-                    int spawnTableID = obj.GetLocalInt("SPAWN_TABLE_ID");
-                    int npcGroupID = obj.GetLocalInt("SPAWN_NPC_GROUP_ID");
-                    string behaviourScript = obj.GetLocalString("SPAWN_BEHAVIOUR_SCRIPT");
+                    var spawnTableID = obj.GetLocalInt("SPAWN_TABLE_ID");
+                    var npcGroupID = obj.GetLocalInt("SPAWN_NPC_GROUP_ID");
+                    var behaviourScript = obj.GetLocalString("SPAWN_BEHAVIOUR_SCRIPT");
                     if (string.IsNullOrWhiteSpace(behaviourScript))
                         behaviourScript = obj.GetLocalString("SPAWN_BEHAVIOUR");
 
-                    string spawnResref = obj.GetLocalString("SPAWN_RESREF");
-                    float respawnTime = obj.GetLocalFloat("SPAWN_RESPAWN_SECONDS");
-                    string spawnRule = obj.GetLocalString("SPAWN_RULE");
-                    int deathVFXID = obj.GetLocalInt("SPAWN_DEATH_VFX");
-                    AIFlags aiFlags = (AIFlags)obj.GetLocalInt("SPAWN_AI_FLAGS");
-                    bool useResref = true;
+                    var spawnResref = obj.GetLocalString("SPAWN_RESREF");
+                    var respawnTime = obj.GetLocalFloat("SPAWN_RESPAWN_SECONDS");
+                    var spawnRule = obj.GetLocalString("SPAWN_RULE");
+                    var deathVFXID = obj.GetLocalInt("SPAWN_DEATH_VFX");
+                    var aiFlags = (AIFlags)obj.GetLocalInt("SPAWN_AI_FLAGS");
+                    var useResref = true;
 
                     // No resref specified but a table was, look in the database for a random record.
                     if (string.IsNullOrWhiteSpace(spawnResref) && spawnTableID > 0)
                     {
                         // Pick a random record.   
                         var spawnObjects = DataService.SpawnObject.GetAllBySpawnTableID(spawnTableID).ToList();
-                        int count = spawnObjects.Count;
-                        int index = count <= 0 ? 0 : RandomService.Random(count);
+                        var count = spawnObjects.Count;
+                        var index = count <= 0 ? 0 : RandomService.Random(count);
                         var dbSpawn = spawnObjects[index];
 
                         if (dbSpawn != null)
@@ -151,8 +150,8 @@ namespace SWLOR.Game.Server.Service
                     if (!string.IsNullOrWhiteSpace(spawnResref))
                     {
                         // Delay the creation so that the iteration through the area doesn't get thrown off by new entries.
-                        Location location = obj.Location;
-                        bool isInstance = area.IsInstance;
+                        var location = obj.Location;
+                        var isInstance = area.IsInstance;
                         
                         ObjectSpawn newSpawn;
                         if (useResref)
@@ -219,15 +218,15 @@ namespace SWLOR.Game.Server.Service
 
         private static void CopyAreaSpawns(string originalResref, NWArea copyArea)
         {
-            NWArea originalArea = NWModule.Get().Areas.Single(x => x.Resref == originalResref && x.GetLocalBool("IS_AREA_INSTANCE") == false);
-            AreaSpawn copyAreaSpawn = AreaSpawns[originalArea].Clone();
+            var originalArea = NWModule.Get().Areas.Single(x => x.Resref == originalResref && x.GetLocalBool("IS_AREA_INSTANCE") == false);
+            var copyAreaSpawn = AreaSpawns[originalArea].Clone();
             AreaSpawns.Add(copyArea, copyAreaSpawn);
         }
         
         public static Location GetRandomSpawnPoint(NWArea area)
         {
             var walkmeshes = AreaService.GetAreaWalkmeshes(area);
-            int count = walkmeshes.Count;
+            var count = walkmeshes.Count;
             var index = count <= 0 ? 0 : RandomService.Random(count);
 
             var spawnPoint = walkmeshes[index];
@@ -249,9 +248,9 @@ namespace SWLOR.Game.Server.Service
             // 1024 size = 32x32
             // 256  size = 16x16
             // 64   size = 8x8
-            int size = area.Width * area.Height;
+            var size = area.Width * area.Height;
 
-            int maxSpawns = 0;
+            var maxSpawns = 0;
             if (size <= 12)
             {
                 maxSpawns = 2;
@@ -277,19 +276,19 @@ namespace SWLOR.Game.Server.Service
                 maxSpawns = 50;
             }
 
-            int[] weights = new int[possibleSpawns.Count()];
-            for (int x = 0; x < possibleSpawns.Count(); x++)
+            var weights = new int[possibleSpawns.Count()];
+            for (var x = 0; x < possibleSpawns.Count(); x++)
             {
                 weights[x] = possibleSpawns.ElementAt(x).Weight;
             }
 
-            for (int x = 1; x <= maxSpawns; x++)
+            for (var x = 1; x <= maxSpawns; x++)
             {
-                int index = RandomService.GetRandomWeightedIndex(weights);
+                var index = RandomService.GetRandomWeightedIndex(weights);
                 var dbSpawn = possibleSpawns.ElementAt(index);
-                Location location = GetRandomSpawnPoint(area);
+                var location = GetRandomSpawnPoint(area);
                 NWPlaceable plc = (CreateObject(ObjectType.Placeable, dbSpawn.Resref, location));
-                ObjectSpawn spawn = new ObjectSpawn(location, false, dbArea.ResourceSpawnTableID, 600.0f);
+                var spawn = new ObjectSpawn(location, false, dbArea.ResourceSpawnTableID, 600.0f);
                 spawn.Spawn = plc;
 
                 ObjectVisibilityService.ApplyVisibilityForObject(plc);
@@ -376,15 +375,15 @@ namespace SWLOR.Game.Server.Service
 
         private static void ToggleCreatureEvents(NWArea area)
         {
-            AreaSpawn areaSpawn = AreaSpawns[area];
-            int playerCount = Area.GetNumberOfPlayersInArea(area);
+            var areaSpawn = AreaSpawns[area];
+            var playerCount = Area.GetNumberOfPlayersInArea(area);
 
             foreach (var creature in areaSpawn.Creatures)
             {
                 if (creature.Spawn.IsValid)
                 {
-                    bool eventsDisabled = GetLocalBool(creature.Spawn, "SPAWN_EVENTS_DISABLED") == true;
-                    bool isCreature = creature.Spawn.IsCreature;
+                    var eventsDisabled = GetLocalBool(creature.Spawn, "SPAWN_EVENTS_DISABLED") == true;
+                    var isCreature = creature.Spawn.IsCreature;
 
                     if (isCreature)
                     {
@@ -414,7 +413,7 @@ namespace SWLOR.Game.Server.Service
                 // The reason for this is because we don't want lag when players enter an area. 
                 // This'll use more memory but the CPU usage will be very limited as none of the
                 // creatures will have scripts assigned.
-                bool hasRunOnce = GetLocalBool(GetModule(), "SPAWN_HAS_RUN_ONCE");
+                var hasRunOnce = GetLocalBool(GetModule(), "SPAWN_HAS_RUN_ONCE");
 
                 foreach (var spawn in AreaSpawns)
                 {
@@ -422,11 +421,11 @@ namespace SWLOR.Game.Server.Service
                     if (!spawn.Key.IsValid) continue;
 
                     // Ignore empty areas.
-                    int playerCount = Area.GetNumberOfPlayersInArea(spawn.Key);
+                    var playerCount = Area.GetNumberOfPlayersInArea(spawn.Key);
                     if (playerCount <= 0 && hasRunOnce) continue;
 
-                    AreaSpawn areaSpawn = spawn.Value;
-                    bool forceSpawn = !areaSpawn.HasSpawned;
+                    var areaSpawn = spawn.Value;
+                    var forceSpawn = !areaSpawn.HasSpawned;
 
                     foreach (var plc in areaSpawn.Placeables.Where(x => x.Respawns || !x.Respawns && !x.HasSpawnedOnce))
                     {
@@ -463,12 +462,12 @@ namespace SWLOR.Game.Server.Service
             // Time to respawn!
             if (spawn.Timer >= spawn.RespawnTime || forceSpawn)
             {
-                string resref = spawn.Resref;
-                int npcGroupID = spawn.NPCGroupID;
-                int deathVFXID = spawn.DeathVFXID;
-                string behaviour = spawn.BehaviourScript;
-                NWLocation location = spawn.IsStaticSpawnPoint ? spawn.SpawnLocation : null;
-                AIFlags aiFlags = spawn.AIFlags;
+                var resref = spawn.Resref;
+                var npcGroupID = spawn.NPCGroupID;
+                var deathVFXID = spawn.DeathVFXID;
+                var behaviour = spawn.BehaviourScript;
+                var location = spawn.IsStaticSpawnPoint ? spawn.SpawnLocation : null;
+                var aiFlags = spawn.AIFlags;
 
                 spawn.HasSpawnedOnce = true;
 

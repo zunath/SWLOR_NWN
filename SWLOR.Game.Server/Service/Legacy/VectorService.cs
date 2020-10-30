@@ -1,6 +1,5 @@
 ﻿using System.Numerics;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.NWN;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using static System.Math;
 using SWLOR.Game.Server.GameObject;
@@ -45,12 +44,12 @@ namespace SWLOR.Game.Server.Service
         public static Location MoveLocation(Location lCurrent, float fDirection, float fDistance, float fOffFacing = 0.0f, float fOffZ = 0.0f)
         {
 
-            Vector3 vThrow = VectorNormalize(AngleToVector(fDirection));
+            var vThrow = VectorNormalize(AngleToVector(fDirection));
             vThrow.X *= fDistance;
             vThrow.Y *= fDistance;
 
             vThrow.Z += fOffZ;
-            Vector3 position = GetPositionFromLocation(lCurrent);
+            var position = GetPositionFromLocation(lCurrent);
             position.X += vThrow.X;
             position.Y += vThrow.Y;
             return Location(GetAreaFromLocation(lCurrent), position, GetFacingFromLocation(lCurrent) + fOffFacing);
@@ -129,7 +128,7 @@ namespace SWLOR.Game.Server.Service
         // positive x-axis.
         public static int DetermineQuadrant(Vector3 vOrigin, Vector3 v1)
         {
-            Vector3 vNew = AtoB(vOrigin, v1);
+            var vNew = AtoB(vOrigin, v1);
             if (vNew.X > 0.0 && vNew.Y > 0.0)
             {
                 return 1;
@@ -275,7 +274,7 @@ namespace SWLOR.Game.Server.Service
         // 0 degrees is the facing of the Location, so 90.0 degrees is left of the Location.
         public static Location LocAtAngleToLoc(Location lRef, float fDist, float fAngle)
         {
-            float fFacing = GetFacingFromLocation(lRef) + fAngle;
+            var fFacing = GetFacingFromLocation(lRef) + fAngle;
             return LocAtAngleToLocFacing(lRef, fDist, fAngle, fFacing - 180.0f);
         }
 
@@ -284,10 +283,10 @@ namespace SWLOR.Game.Server.Service
         public static Location LocAtAngleToLocFacing(Location lRef, float fDist, float fAngle, float fNew)
         {
             NWObject oArea = GetAreaFromLocation(lRef);
-            Vector3 vRef = GetPositionFromLocation(lRef);
-            float fFacing = GetFacingFromLocation(lRef);
+            var vRef = GetPositionFromLocation(lRef);
+            var fFacing = GetFacingFromLocation(lRef);
 
-            Vector3 vNewPos = VAtAngleToV(vRef, fDist, fFacing + fAngle);
+            var vNewPos = VAtAngleToV(vRef, fDist, fFacing + fAngle);
             return Location(oArea, vNewPos, fNew);
         }
     }

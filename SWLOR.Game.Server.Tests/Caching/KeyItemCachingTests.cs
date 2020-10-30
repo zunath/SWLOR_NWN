@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsKeyItem()
         {
             // Arrange
-            KeyItem entity = new KeyItem {ID = 1};
+            var entity = new KeyItem {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<KeyItem>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            KeyItem entity1 = new KeyItem { ID = 1};
-            KeyItem entity2 = new KeyItem { ID = 2};
+            var entity1 = new KeyItem { ID = 1};
+            var entity2 = new KeyItem { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<KeyItem>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            KeyItem entity1 = new KeyItem { ID = 1};
-            KeyItem entity2 = new KeyItem { ID = 2};
+            var entity1 = new KeyItem { ID = 1};
+            var entity2 = new KeyItem { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<KeyItem>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            KeyItem entity1 = new KeyItem { ID = 1};
-            KeyItem entity2 = new KeyItem { ID = 2};
+            var entity1 = new KeyItem { ID = 1};
+            var entity2 = new KeyItem { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<KeyItem>(entity1));

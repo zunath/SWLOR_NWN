@@ -1,5 +1,4 @@
 ﻿using System;
-using SWLOR.Game.Server.NWN;
 using System.Globalization;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
@@ -25,8 +24,8 @@ namespace SWLOR.Game.Server.Item
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            DateTime now = DateTime.UtcNow;
-            DateTime unlockDateTime = now;
+            var now = DateTime.UtcNow;
+            var unlockDateTime = now;
             if (string.IsNullOrWhiteSpace(GetLocalString(user, "GRENADE_UNLOCKTIME")))
             {
                 unlockDateTime = unlockDateTime.AddSeconds(-1);
@@ -42,7 +41,7 @@ namespace SWLOR.Game.Server.Item
             // Check if we've passed the unlock date. Exit early if we have not.
             if (DateTime.Compare(unlockDateTime, now) > 0 || unlockDateTime > now)
             {
-                string timeToWait = TimeService.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
+                var timeToWait = TimeService.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
                 //Console.WriteLine("IsValidTarget - That ability can be used in " + timeToWait + ".");
                 SendMessageToPC(user, "That ability can be used in " + timeToWait + ".");
                 return;
@@ -51,16 +50,16 @@ namespace SWLOR.Game.Server.Item
             Effect impactEffect = null;
             var spellId = Spell.Invalid;
             string soundName = null;
-            int perkLevel = 1 + PerkService.GetCreaturePerkLevel(user, PerkType.GrenadeProficiency);
-            int skillLevel = 5 + SkillService.GetPCSkillRank((NWPlayer)user, SkillType.Throwing);
+            var perkLevel = 1 + PerkService.GetCreaturePerkLevel(user, PerkType.GrenadeProficiency);
+            var skillLevel = 5 + SkillService.GetPCSkillRank((NWPlayer)user, SkillType.Throwing);
             if (perkLevel == 0) perkLevel += 1;
 
             if (GetIsObjectValid(target) == true) targetLocation = GetLocation(target);
-            string grenadeType = item.GetLocalString("TYPE");
+            var grenadeType = item.GetLocalString("TYPE");
             //Console.WriteLine("Throwing " + grenadeType + " grenade at perk level " + perkLevel);
-            Location originalLocation = targetLocation;
+            var originalLocation = targetLocation;
 
-            int roll = RandomService.D100(1);
+            var roll = RandomService.D100(1);
             
             SendMessageToPC(user, roll + " vs. DC " + (100 - skillLevel));
             if (roll < (100 - skillLevel))
@@ -71,7 +70,7 @@ namespace SWLOR.Game.Server.Item
                     //targetLocation = VectorService.MoveLocation(targetLocation, GetFacing(user), (RandomService.D6(4) - 10) * 1.0f, 
                     targetLocation = VectorService.MoveLocation(user.Location, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) * 1.0f,
                                                                 RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
-                    int count = 0;
+                    var count = 0;
                     while ((GetSurfaceMaterial(targetLocation) == 0 ||
                            LineOfSightVector(GetPositionFromLocation(targetLocation), GetPosition(user)) == false) &&
                            count < 10)
@@ -87,7 +86,7 @@ namespace SWLOR.Game.Server.Item
                     //targetLocation = VectorService.MoveLocation(targetLocation, GetFacing(user), (RandomService.D6(4) - 10) * 1.0f, 
                     targetLocation = VectorService.MoveLocation(targetLocation, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) /*(RandomService.D6(4) - 10) */ * 1.0f,
                                                                 RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
-                    int count = 0;
+                    var count = 0;
                     while ((GetSurfaceMaterial(targetLocation) == 0 ||
                            LineOfSightVector(GetPositionFromLocation(targetLocation), GetPosition(user)) == false) &&
                            count < 10)
@@ -170,7 +169,7 @@ namespace SWLOR.Game.Server.Item
                 spellId = (Spell)(RandomService.D6(1) + 973);
             }
 
-            float delay = GetDistanceBetweenLocations(user.Location, targetLocation) / 18.0f + 0.75f;
+            var delay = GetDistanceBetweenLocations(user.Location, targetLocation) / 18.0f + 0.75f;
             delay += 0.4f; // added for animation
             user.ClearAllActions();
             //user.AssignCommand(() => NWScript.ActionPlayAnimation(32));
@@ -208,7 +207,7 @@ namespace SWLOR.Game.Server.Item
             perkLevel = PerkService.GetCreaturePerkLevel(user, PerkType.GrenadeProficiency);
 
             now = DateTime.UtcNow;
-            DateTime unlockTime = now;
+            var unlockTime = now;
 
             if (perkLevel < 5)
             {
@@ -231,9 +230,9 @@ namespace SWLOR.Game.Server.Item
 
         public void DoImpact(NWCreature user, Location targetLocation, string grenadeType, int perkLevel, float fExplosionRadius, ObjectType nObjectFilter)
         {
-            Effect damageEffect = EffectDamage(0, DamageType.Negative);
+            var damageEffect = EffectDamage(0, DamageType.Negative);
             Effect durationEffect = null;
-            int duration = perkLevel + 1;
+            var duration = perkLevel + 1;
 
             switch (grenadeType)
             {
@@ -348,8 +347,8 @@ namespace SWLOR.Game.Server.Item
         {
             if (oTarget.ObjectType != ObjectType.Creature) return;
             NWCreature user = GetAreaOfEffectCreator(NWScript.OBJECT_SELF);
-            int perkLevel = PerkService.GetCreaturePerkLevel(user, PerkType.GrenadeProficiency);
-            int duration = 1;
+            var perkLevel = PerkService.GetCreaturePerkLevel(user, PerkType.GrenadeProficiency);
+            var duration = 1;
             Effect impactEffect = null;
             Effect durationEffect = null;
 

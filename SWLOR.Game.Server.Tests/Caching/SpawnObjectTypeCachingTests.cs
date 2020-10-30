@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsSpawnObjectType()
         {
             // Arrange
-            SpawnObjectType entity = new SpawnObjectType {ID = 1};
+            var entity = new SpawnObjectType {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<SpawnObjectType>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            SpawnObjectType entity1 = new SpawnObjectType { ID = 1};
-            SpawnObjectType entity2 = new SpawnObjectType { ID = 2};
+            var entity1 = new SpawnObjectType { ID = 1};
+            var entity2 = new SpawnObjectType { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<SpawnObjectType>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            SpawnObjectType entity1 = new SpawnObjectType { ID = 1};
-            SpawnObjectType entity2 = new SpawnObjectType { ID = 2};
+            var entity1 = new SpawnObjectType { ID = 1};
+            var entity2 = new SpawnObjectType { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<SpawnObjectType>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            SpawnObjectType entity1 = new SpawnObjectType { ID = 1};
-            SpawnObjectType entity2 = new SpawnObjectType { ID = 2};
+            var entity1 = new SpawnObjectType { ID = 1};
+            var entity2 = new SpawnObjectType { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<SpawnObjectType>(entity1));

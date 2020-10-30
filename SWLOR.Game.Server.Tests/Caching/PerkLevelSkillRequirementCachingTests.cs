@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsPerkLevelSkillRequirement()
         {
             // Arrange
-            PerkLevelSkillRequirement entity = new PerkLevelSkillRequirement {ID = 1};
+            var entity = new PerkLevelSkillRequirement {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PerkLevelSkillRequirement>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            PerkLevelSkillRequirement entity1 = new PerkLevelSkillRequirement { ID = 1};
-            PerkLevelSkillRequirement entity2 = new PerkLevelSkillRequirement { ID = 2};
+            var entity1 = new PerkLevelSkillRequirement { ID = 1};
+            var entity2 = new PerkLevelSkillRequirement { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PerkLevelSkillRequirement>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            PerkLevelSkillRequirement entity1 = new PerkLevelSkillRequirement { ID = 1};
-            PerkLevelSkillRequirement entity2 = new PerkLevelSkillRequirement { ID = 2};
+            var entity1 = new PerkLevelSkillRequirement { ID = 1};
+            var entity2 = new PerkLevelSkillRequirement { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PerkLevelSkillRequirement>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            PerkLevelSkillRequirement entity1 = new PerkLevelSkillRequirement { ID = 1};
-            PerkLevelSkillRequirement entity2 = new PerkLevelSkillRequirement { ID = 2};
+            var entity1 = new PerkLevelSkillRequirement { ID = 1};
+            var entity2 = new PerkLevelSkillRequirement { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PerkLevelSkillRequirement>(entity1));

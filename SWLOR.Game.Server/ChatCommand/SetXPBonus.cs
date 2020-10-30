@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.ChatCommand
 
             NWPlayer player = target.Object;
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
-            int xpBonus = int.Parse(args[0]);
+            var xpBonus = int.Parse(args[0]);
             dbPlayer.XPBonus = xpBonus;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 return "Please enter a value. Example: /setxpbonus 5";
             }
 
-            if (!int.TryParse(args[0], out int result))
+            if (!int.TryParse(args[0], out var result))
             {
                 return "Invalid number set for command. Values should be between 0-25.";
             }

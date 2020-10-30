@@ -25,8 +25,8 @@ namespace SWLOR.Game.Server.Mod
             var maxDurability = DurabilityService.GetMaxDurability(target);
             var curDurability = DurabilityService.GetDurability(target);
 
-            int value = Convert.ToInt32(args[0]);
-            float newValue = maxDurability + value;
+            var value = Convert.ToInt32(args[0]);
+            var newValue = maxDurability + value;
             if (newValue > MaxValue) newValue = MaxValue;
             maxDurability = newValue;
             curDurability += value;
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Mod
 
         public string Description(NWPlayer player, NWItem target, params string[] args)
         {
-            int value = Convert.ToInt32(args[0]);
+            var value = Convert.ToInt32(args[0]);
             return "Durability +" + value;
         }
     }

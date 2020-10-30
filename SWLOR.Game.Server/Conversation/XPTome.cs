@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using SWLOR.Game.Server.Data.Entity;
+﻿using System.Linq;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -18,17 +16,17 @@ namespace SWLOR.Game.Server.Conversation
 
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("CategoryPage");
+            var dialog = new PlayerDialog("CategoryPage");
 
-            DialogPage categoryPage = new DialogPage(
+            var categoryPage = new DialogPage(
                 "This tome holds techniques lost to the ages. Select a skill to earn experience in that art."
             );
 
-            DialogPage skillListPage = new DialogPage(
+            var skillListPage = new DialogPage(
                 "This tome holds techniques lost to the ages. Select a skill to earn experience in that art."
             );
 
-            DialogPage confirmPage = new DialogPage(
+            var confirmPage = new DialogPage(
                 "<SET LATER>",
                 "Select this skill."
             );
@@ -42,18 +40,18 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            List<SkillCategory> categories = SkillService.GetActiveCategories().Where(x =>
+            var categories = SkillService.GetActiveCategories().Where(x =>
             {
                 var skills = DataService.Skill.GetByCategoryIDAndContributesToSkillCap(x.ID);
                 return skills.Any();
             }).ToList();
 
-            foreach (SkillCategory category in categories)
+            foreach (var category in categories)
             {
                 AddResponseToPage("CategoryPage", category.Name, true, category.ID);
             }
 
-            Model vm = GetDialogCustomData<Model>();
+            var vm = GetDialogCustomData<Model>();
             vm.Item = (GetPC().GetLocalObject("XP_TOME_OBJECT"));
             SetDialogCustomData(vm);
         }
@@ -80,15 +78,15 @@ namespace SWLOR.Game.Server.Conversation
 
         private void HandleCategoryPageResponse(int responseID)
         {
-            DialogResponse response = GetResponseByID("CategoryPage", responseID);
-            int categoryID = (int)response.CustomData;
+            var response = GetResponseByID("CategoryPage", responseID);
+            var categoryID = (int)response.CustomData;
             
-            List<PCSkill> pcSkills = SkillService.GetPCSkillsForCategory(GetPC().GlobalID, categoryID);
+            var pcSkills = SkillService.GetPCSkillsForCategory(GetPC().GlobalID, categoryID);
 
             ClearPageResponses("SkillListPage");
-            foreach (PCSkill pcSkill in pcSkills)
+            foreach (var pcSkill in pcSkills)
             {
-                Skill skill = SkillService.GetSkill(pcSkill.SkillID);
+                var skill = SkillService.GetSkill(pcSkill.SkillID);
                 AddResponseToPage("SkillListPage", skill.Name, true, pcSkill.SkillID);
             }
 
@@ -97,13 +95,13 @@ namespace SWLOR.Game.Server.Conversation
 
         private void HandleSkillListResponse(int responseID)
         {
-            DialogResponse response = GetResponseByID("SkillListPage", responseID);
-            int skillID = (int)response.CustomData;
-            Skill skill = SkillService.GetSkill(skillID);
-            string header = "Are you sure you want to improve your " + skill.Name + " skill?";
+            var response = GetResponseByID("SkillListPage", responseID);
+            var skillID = (int)response.CustomData;
+            var skill = SkillService.GetSkill(skillID);
+            var header = "Are you sure you want to improve your " + skill.Name + " skill?";
             SetPageHeader("ConfirmPage", header);
 
-            Model vm = GetDialogCustomData<Model>();
+            var vm = GetDialogCustomData<Model>();
             vm.SkillID = skillID;
             SetDialogCustomData(vm);
             ChangePage("ConfirmPage");
@@ -111,7 +109,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void HandleConfirmPageResponse()
         {
-            Model vm = GetDialogCustomData<Model>();
+            var vm = GetDialogCustomData<Model>();
 
             if (vm.Item != null && vm.Item.IsValid)
             {
@@ -122,7 +120,7 @@ namespace SWLOR.Game.Server.Conversation
                     return;
                 }
 
-                int xp = vm.Item.GetLocalInt("XP_TOME_AMOUNT");
+                var xp = vm.Item.GetLocalInt("XP_TOME_AMOUNT");
                 SkillService.GiveSkillXP(GetPC(), vm.SkillID, xp, false, false);
                 vm.Item.Destroy();
             }

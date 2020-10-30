@@ -1,6 +1,5 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -8,12 +7,12 @@ namespace SWLOR.Game.Server.Service
     {
         public static EmoteStyle GetEmoteStyle(NWObject obj)
         {
-            bool novelStyle = false;
+            var novelStyle = false;
 
             if (obj.IsPlayer)
             {
                 NWPlayer player = obj.Object;
-                Player pc = DataService.Player.GetByID(player.GlobalID);
+                var pc = DataService.Player.GetByID(player.GlobalID);
                 novelStyle = pc.IsUsingNovelEmoteStyle;
             }
 
@@ -25,7 +24,7 @@ namespace SWLOR.Game.Server.Service
             if (obj.IsPlayer)
             {
                 NWPlayer player = obj.Object;
-                Player pc = DataService.Player.GetByID(player.GlobalID);
+                var pc = DataService.Player.GetByID(player.GlobalID);
                 pc.IsUsingNovelEmoteStyle = style == EmoteStyle.Novel;
                 DataService.SubmitDataChange(pc, DatabaseActionType.Update);
             }

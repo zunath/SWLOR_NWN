@@ -1,7 +1,5 @@
 ﻿using System.Linq;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -47,9 +45,9 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
-            int massLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.MassTranquilizer);
-            int tranqLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.Tranquilizer);
-            int luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
+            var massLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.MassTranquilizer);
+            var tranqLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.Tranquilizer);
+            var luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
             float duration;
             float range = 5 * massLevel;
             
@@ -112,7 +110,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 {
                     target.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
 
-                    Effect effect = NWScript.EffectDazed();
+                    var effect = NWScript.EffectDazed();
                     effect = NWScript.EffectLinkEffects(effect, NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
                     effect = NWScript.TagEffect(effect, "TRANQUILIZER_EFFECT");
 
@@ -123,11 +121,11 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
 
             // Iterate over all nearby hostiles. Apply the effect to them if they meet the criteria.
-            int current = 1;
+            var current = 1;
             NWCreature nearest = NWScript.GetNearestCreature(CreatureType.IsAlive, 1, target, current);
             while (nearest.IsValid)
             {
-                float distance = NWScript.GetDistanceBetween(nearest, target);
+                var distance = NWScript.GetDistanceBetween(nearest, target);
                 // Check distance. Exit loop if we're too far.
                 if (distance > range) break;
 
@@ -145,7 +143,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 }
 
                 target.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
-                Effect effect = NWScript.EffectDazed();
+                var effect = NWScript.EffectDazed();
                 effect = NWScript.EffectLinkEffects(effect, NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
                 effect = NWScript.TagEffect(effect, "TRANQUILIZER_EFFECT");
                 NWScript.ApplyEffectToObject(DurationType.Temporary, effect, nearest, duration);
@@ -158,7 +156,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         private bool RemoveExistingEffect(NWObject target, float duration)
         {
-            Effect effect = target.Effects.FirstOrDefault(x => NWScript.GetEffectTag(x) == "TRANQUILIZER_EFFECT");
+            var effect = target.Effects.FirstOrDefault(x => NWScript.GetEffectTag(x) == "TRANQUILIZER_EFFECT");
             if (effect == null) return false;
 
             if (NWScript.GetEffectDurationRemaining(effect) >= duration) return true;

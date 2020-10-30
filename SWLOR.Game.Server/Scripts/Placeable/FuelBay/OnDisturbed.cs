@@ -25,9 +25,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
             NWPlaceable bay = OBJECT_SELF;
             var disturbType = GetInventoryDisturbType();
             NWItem item = GetInventoryDisturbItem();
-            bool stronidiumOnly = GetLocalBool(bay, "CONTROL_TOWER_FUEL_TYPE");
-            string allowedResref = stronidiumOnly ? "stronidium" : "fuel_cell";
-            string structureID = bay.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var stronidiumOnly = GetLocalBool(bay, "CONTROL_TOWER_FUEL_TYPE");
+            var allowedResref = stronidiumOnly ? "stronidium" : "fuel_cell";
+            var structureID = bay.GetLocalString("PC_BASE_STRUCTURE_ID");
             
             // Check for either fuel cells or stronidium when adding an item to the container.
             if (disturbType == DisturbType.Added)
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
             var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
 
             // Calculate how much fuel exists in the bay's inventory.
-            int fuelCount = 0;
+            var fuelCount = 0;
             foreach (var fuel in bay.InventoryItems)
             {
                 fuelCount += fuel.StackSize;
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
                 // Did the player put too much fuel inside? Return the excess to their inventory.
                 if (fuelCount > maxFuel)
                 {
-                    int returnAmount = fuelCount - maxFuel;
+                    var returnAmount = fuelCount - maxFuel;
                     CreateItemOnObject("stronidium", player.Object, returnAmount);
 
                     fuelCount = maxFuel;
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
                 // Did the player put too much fuel inside? Return the excess to their inventory.
                 if (fuelCount > maxFuel)
                 {
-                    int returnAmount = fuelCount - maxFuel;
+                    var returnAmount = fuelCount - maxFuel;
                     CreateItemOnObject("fuel_cell", player.Object, returnAmount);
 
                     fuelCount = maxFuel;
@@ -146,14 +146,14 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
                 return;
             }
 
-            int fuelRating = towerStructure.FuelRating;
+            var fuelRating = towerStructure.FuelRating;
             
 
             // Stronidium - Every unit lasts for 6 seconds during reinforcement mode.
             if (stronidiumOnly)
             {
-                int seconds = 6 * fuelCount;
-                TimeSpan timeSpan = TimeSpan.FromSeconds(seconds);
+                var seconds = 6 * fuelCount;
+                var timeSpan = TimeSpan.FromSeconds(seconds);
                 player.SendMessage(ColorTokenService.Gray("Reinforcement mode will last for " +
                                                TimeService.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
                                                " (" + fuelCount + " / " + maxFuel + " units"));
@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
                         throw new Exception("Invalid fuel rating value: " + fuelRating);
                 }
 
-                TimeSpan timeSpan = TimeSpan.FromMinutes(minutes * fuelCount);
+                var timeSpan = TimeSpan.FromMinutes(minutes * fuelCount);
                 player.SendMessage(ColorTokenService.Gray("Fuel will last for " +
                                                TimeService.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
                                                " (" + fuelCount + " / " + maxFuel + " units)"));

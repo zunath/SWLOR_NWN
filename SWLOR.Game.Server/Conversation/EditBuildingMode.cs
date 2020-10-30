@@ -15,15 +15,15 @@ namespace SWLOR.Game.Server.Conversation
         
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage(
+            var mainPage = new DialogPage(
                 "<SET LATER>",
                 "Set Mode: Residence",
                 "Set Mode: Workshop",
                 "Set Mode: Storefront");
 
-            DialogPage confirmSetMode = new DialogPage(
+            var confirmSetMode = new DialogPage(
                 "<SET LATER>",
                 "Confirm Set Mode");
 
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Conversation
             var mode = DataService.StructureMode.GetByID(structure.StructureModeID);
             var modeType = (StructureModeType) mode.ID;
 
-            string header = "You may change the active mode of this building here. Only one mode may be set at a time.\n\nBe aware that switching modes will remove all primary residents for the building.\n\n";
+            var header = "You may change the active mode of this building here. Only one mode may be set at a time.\n\nBe aware that switching modes will remove all primary residents for the building.\n\n";
             header += ColorTokenService.Green("Current Mode: ") + mode.Name;
 
             if (modeType == StructureModeType.Residence)

@@ -1,6 +1,5 @@
 ﻿using System;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -13,13 +12,13 @@ namespace SWLOR.Game.Server.Service
         public static void ApplyBackgroundBonuses(NWPlayer oPC)
         {
             var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
-            string pcName = oPC.Name;
+            var pcName = oPC.Name;
             var classID = oPC.Class1;
 
-            string item1Resref = "";
-            int item1Quantity = 1;
-            string item2Resref = "";
-            int item2Quantity = 1;
+            var item1Resref = "";
+            var item1Quantity = 1;
+            var item2Resref = "";
+            var item2Quantity = 1;
 
             switch ((BackgroundType)classID)
             {

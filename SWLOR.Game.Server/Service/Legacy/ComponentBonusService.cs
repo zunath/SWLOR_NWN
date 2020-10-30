@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Bioware;
+﻿using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
@@ -14,11 +13,11 @@ namespace SWLOR.Game.Server.Service
         
         public static void ApplyComponentBonus(NWItem product, ItemProperty sourceIP)
         {
-            ComponentBonusType bonusType = (ComponentBonusType)NWScript.GetItemPropertySubType(sourceIP);
-            int amount = NWScript.GetItemPropertyCostTableValue(sourceIP);
+            var bonusType = (ComponentBonusType)NWScript.GetItemPropertySubType(sourceIP);
+            var amount = NWScript.GetItemPropertyCostTableValue(sourceIP);
             ItemProperty prop = null;
-            string sourceTag = string.Empty;
-            int attackBonus = 0;
+            var sourceTag = string.Empty;
+            var attackBonus = 0;
 
             // A note about the sourceTags:
             // It's not currently possible to create custom item properties on items. To get around this,
@@ -167,7 +166,7 @@ namespace SWLOR.Game.Server.Service
             if (prop != null)
             {
                 // Item properties need to be added one per however many were listed on the component bonus property.
-                for(int x = 1; x <= amount; x++)
+                for(var x = 1; x <= amount; x++)
                 {
                     BiowareXP2.IPSafeAddItemProperty(product, prop, 0.0f, AddItemPropertyPolicy.IgnoreExisting, true, true);
                 }

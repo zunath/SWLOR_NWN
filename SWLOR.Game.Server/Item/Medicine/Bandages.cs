@@ -1,6 +1,5 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -29,16 +28,16 @@ namespace SWLOR.Game.Server.Item.Medicine
             CustomEffectService.RemovePCCustomEffect(target.Object, CustomEffectType.Bleeding);
             player.SendMessage("You finish bandaging " + target.Name + "'s wounds.");
             
-            int rank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
+            var rank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
             
-            int healAmount = 2 + effectiveStats.Medicine / 2;
+            var healAmount = 2 + effectiveStats.Medicine / 2;
             healAmount += item.MedicineBonus;
             if (rank >= item.RecommendedLevel && item.MedicineBonus > 0)
             {
                 NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectHeal(healAmount), target);
             }
             if(target.IsPlayer){
-                int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, item.RecommendedLevel, rank);
+                var xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(100, item.RecommendedLevel, rank);
                 SkillService.GiveSkillXP(player, SkillType.Medicine, xp);
             }
         }
@@ -50,8 +49,8 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return 0.1f;
             }
 
-            int rank = SkillService.GetPCSkillRank(user.Object, SkillType.Medicine);
-            float seconds = 6.0f - (rank * 0.2f);
+            var rank = SkillService.GetPCSkillRank(user.Object, SkillType.Medicine);
+            var seconds = 6.0f - (rank * 0.2f);
             if (seconds < 1.0f) seconds = 1.0f;
             return seconds;
         }
@@ -88,7 +87,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return "Bandages cannot be used on targets with more than 40 HP.";
             }
 
-            int rank = SkillService.GetPCSkillRank(user.Object, SkillType.Medicine);
+            var rank = SkillService.GetPCSkillRank(user.Object, SkillType.Medicine);
             if (rank < item.RecommendedLevel)
             {
                 return "Your skill level is too low to use this item.";

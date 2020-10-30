@@ -1,5 +1,4 @@
 ﻿using System;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -7,8 +6,6 @@ using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
@@ -20,15 +17,15 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage();
-            DialogPage purchaseTerritoryPage = new DialogPage();
-            DialogPage structureListPage = new DialogPage("Select a structure to edit it. List is ordered by nearest structure to the location you selected. A maximum of 30 structures will be displayed at a time.");
-            DialogPage manageStructureDetailsPage = new DialogPage();
-            DialogPage retrievePage = new DialogPage("If this structure contains anything inside - such as items or furniture - they will be sent to the planetary government's impound. You will need to pay a fee to retrieve the items.\n\nAre you sure you want to retrieve this structure?",
+            var mainPage = new DialogPage();
+            var purchaseTerritoryPage = new DialogPage();
+            var structureListPage = new DialogPage("Select a structure to edit it. List is ordered by nearest structure to the location you selected. A maximum of 30 structures will be displayed at a time.");
+            var manageStructureDetailsPage = new DialogPage();
+            var retrievePage = new DialogPage("If this structure contains anything inside - such as items or furniture - they will be sent to the planetary government's impound. You will need to pay a fee to retrieve the items.\n\nAre you sure you want to retrieve this structure?",
                 "Confirm Retrieve Structure");
-            DialogPage rotatePage = new DialogPage(string.Empty,
+            var rotatePage = new DialogPage(string.Empty,
                 "East",
                 "North",
                 "West",
@@ -42,9 +39,9 @@ namespace SWLOR.Game.Server.Conversation
                 "180 degrees",
                 "Move up",
                 "Move down");
-            DialogPage renamePage = new DialogPage("Type a name into the chat box. Once you are done select next.",
+            var renamePage = new DialogPage("Type a name into the chat box. Once you are done select next.",
                 "Next");
-            DialogPage confirmRenamePage = new DialogPage(
+            var confirmRenamePage = new DialogPage(
                 "<SET LATER>",
                 "Confirm Name Change"
             );
@@ -68,37 +65,37 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("MainPage");
             var data = BaseService.GetPlayerTempData(GetPC());
-            int cellX = (int)(NWScript.GetPositionFromLocation(data.TargetLocation).X / 10.0f);
-            int cellY = (int)(NWScript.GetPositionFromLocation(data.TargetLocation).Y / 10.0f);
-            string sector = BaseService.GetSectorOfLocation(data.TargetLocation);
+            var cellX = (int)(NWScript.GetPositionFromLocation(data.TargetLocation).X / 10.0f);
+            var cellY = (int)(NWScript.GetPositionFromLocation(data.TargetLocation).Y / 10.0f);
+            var sector = BaseService.GetSectorOfLocation(data.TargetLocation);
 
-            Area dbArea = DataService.Area.GetByResref(data.TargetArea.Resref);
-            bool hasUnclaimed = false;
-            Guid playerID = GetPC().GlobalID;
-            int buildingTypeID = data.TargetArea.GetLocalInt("BUILDING_TYPE");
-            Enumeration.BuildingType buildingType = buildingTypeID <= 0 ? Enumeration.BuildingType.Exterior : (Enumeration.BuildingType)buildingTypeID;
+            var dbArea = DataService.Area.GetByResref(data.TargetArea.Resref);
+            var hasUnclaimed = false;
+            var playerID = GetPC().GlobalID;
+            var buildingTypeID = data.TargetArea.GetLocalInt("BUILDING_TYPE");
+            var buildingType = buildingTypeID <= 0 ? Enumeration.BuildingType.Exterior : (Enumeration.BuildingType)buildingTypeID;
             data.BuildingType = buildingType;
-            bool canEditBasePermissions = false;
-            bool canEditBuildingPermissions = false;
-            bool canEditBuildingPublicPermissions = false;
-            bool canEditStructures = false;
-            bool canEditPrimaryResidence = false;
-            bool canRemovePrimaryResidence = false;
-            bool canRenameStructure = false;
-            bool canChangeStructureMode = false;
-            bool canEditPublicBasePermissions = false;
-            bool canAdjustLighting = false;
+            var canEditBasePermissions = false;
+            var canEditBuildingPermissions = false;
+            var canEditBuildingPublicPermissions = false;
+            var canEditStructures = false;
+            var canEditPrimaryResidence = false;
+            var canRemovePrimaryResidence = false;
+            var canRenameStructure = false;
+            var canChangeStructureMode = false;
+            var canEditPublicBasePermissions = false;
+            var canAdjustLighting = false;
 
-            string header = ColorTokenService.Green("Base Management Menu\n\n");
+            var header = ColorTokenService.Green("Base Management Menu\n\n");
             header += ColorTokenService.Green("Area: ") + data.TargetArea.Name + " (" + cellX + ", " + cellY + ")\n\n";
 
             // Are we in a starship?
             if (buildingType == Enumeration.BuildingType.Starship)
             {
-                Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
+                var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
                 var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
                 var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(structure.InteriorStyleID));
-                int itemLimit = buildingStyle.FurnitureLimit + structure.StructureBonus;
+                var itemLimit = buildingStyle.FurnitureLimit + structure.StructureBonus;
                 var childStructures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(structure.ID);
                 header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count() + " / " + itemLimit + "\n";
                 // Get all child structures contained by this building which improve atmosphere.
@@ -109,7 +106,7 @@ namespace SWLOR.Game.Server.Conversation
                 });
 
                 // Add up the total atmosphere rating, being careful not to go over the cap.
-                int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
+                var bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
                 if (bonus > 150) bonus = 150;
                 header += ColorTokenService.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
                 header += "\n";
@@ -132,10 +129,10 @@ namespace SWLOR.Game.Server.Conversation
             // Building type is an interior of a building
             else if (buildingType == Enumeration.BuildingType.Interior)
             {
-                Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
+                var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
                 var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
                 var baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
-                int itemLimit = baseStructure.Storage + structure.StructureBonus;
+                var itemLimit = baseStructure.Storage + structure.StructureBonus;
                 var childStructures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(structure.ID);
                 header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count() + " / " + itemLimit + "\n";
                 // Get all child structures contained by this building which improve atmosphere.
@@ -146,7 +143,7 @@ namespace SWLOR.Game.Server.Conversation
                 });
 
                 // Add up the total atmosphere rating, being careful not to go over the cap.
-                int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
+                var bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
                 if (bonus > 150) bonus = 150;
                 header += ColorTokenService.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
                 header += "\n";
@@ -168,14 +165,14 @@ namespace SWLOR.Game.Server.Conversation
             // Apartments may only ever be in the "Residence" mode.
             else if (buildingType == Enumeration.BuildingType.Apartment)
             {
-                Guid pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
+                var pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
                 var pcBase = DataService.PCBase.GetByID(pcBaseID);
                 var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(pcBase.BuildingStyleID));
-                int itemLimit = buildingStyle.FurnitureLimit;
+                var itemLimit = buildingStyle.FurnitureLimit;
                 var structures = DataService.PCBaseStructure.GetAllByPCBaseID(pcBase.ID);
                 header += ColorTokenService.Green("Structure Limit: ") + structures.Count() + " / " + itemLimit + "\n";
                 // Add up the total atmosphere rating, being careful not to go over the cap.
-                int bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
+                var bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
                 if (bonus > 150) bonus = 150;
                 header += ColorTokenService.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
                 header += "\n";
@@ -263,7 +260,7 @@ namespace SWLOR.Game.Server.Conversation
 
             SetPageHeader("MainPage", header);
 
-            bool showManage = DataService.PCBasePermission.GetAllByPlayerID(GetPC().GlobalID).Count(x => x.CanExtendLease) > 0;
+            var showManage = DataService.PCBasePermission.GetAllByPlayerID(GetPC().GlobalID).Count(x => x.CanExtendLease) > 0;
             AddResponseToPage("MainPage", "Manage My Leases", showManage);
             AddResponseToPage("MainPage", "Purchase Territory", hasUnclaimed && dbArea.IsBuildable);
             AddResponseToPage("MainPage", "Edit Nearby Structures", canEditStructures);
@@ -311,7 +308,7 @@ namespace SWLOR.Game.Server.Conversation
             switch(responseID)
             {
                 case 1:
-                    string newDescription = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
+                    var newDescription = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
 
                     if (string.IsNullOrWhiteSpace(newDescription))
                     {
@@ -319,7 +316,7 @@ namespace SWLOR.Game.Server.Conversation
                         return;
                     }
 
-                    string header = "Your new name follows. If you need to make a change, click 'Back', type in a new description, and then hit 'Next' again.\n\n";
+                    var header = "Your new name follows. If you need to make a change, click 'Back', type in a new description, and then hit 'Next' again.\n\n";
                     header += ColorTokenService.Green("New Description: ") + "\n\n";
                     header += newDescription;
                     SetPageHeader("ConfirmRenamePage", header);
@@ -337,15 +334,15 @@ namespace SWLOR.Game.Server.Conversation
             {
                 case 1: // Confirm Description Change
                     var data = BaseService.GetPlayerTempData(GetPC());
-                    int buildingTypeID = data.TargetArea.GetLocalInt("BUILDING_TYPE");
-                    Enumeration.BuildingType buildingType = buildingTypeID <= 0 ? Enumeration.BuildingType.Exterior : (Enumeration.BuildingType)buildingTypeID;
+                    var buildingTypeID = data.TargetArea.GetLocalInt("BUILDING_TYPE");
+                    var buildingType = buildingTypeID <= 0 ? Enumeration.BuildingType.Exterior : (Enumeration.BuildingType)buildingTypeID;
                     data.BuildingType = buildingType;
                     NWPlayer sender = NWScript.GetPCSpeaker();
 
                     if (buildingType == Enumeration.BuildingType.Apartment)
                     {
                         // Update the base name. 
-                        Guid pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
+                        var pcBaseID = new Guid(data.TargetArea.GetLocalString("PC_BASE_ID"));
                         var pcBase = DataService.PCBase.GetByID(pcBaseID);
                         pcBase.CustomName = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
                         DataService.SubmitDataChange(pcBase, DatabaseActionType.Update);
@@ -354,7 +351,7 @@ namespace SWLOR.Game.Server.Conversation
                     else if (buildingType == Enumeration.BuildingType.Interior)
                     {
                         // Update the structure name.
-                        Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
+                        var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
                         var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
                         structure.CustomName = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
                         DataService.SubmitDataChange(structure, DatabaseActionType.Update);
@@ -363,7 +360,7 @@ namespace SWLOR.Game.Server.Conversation
                     else if (buildingType == Enumeration.BuildingType.Starship)
                     {
                         // Note - starships need to record the name in both the base and the structure entries.
-                        Guid pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
+                        var pcBaseStructureID = new Guid(data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID"));
                         var structure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
                         structure.CustomName = GetPC().GetLocalString("NEW_DESCRIPTION_TO_SET");
                         DataService.SubmitDataChange(structure, DatabaseActionType.Update);
@@ -445,12 +442,12 @@ namespace SWLOR.Game.Server.Conversation
         private string BuildPurchaseTerritoryHeader()
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            Area dbArea = DataService.Area.GetByResref(data.TargetArea.Resref);
+            var dbArea = DataService.Area.GetByResref(data.TargetArea.Resref);
             var player = DataService.Player.GetByID(GetPC().GlobalID);
-            int purchasePrice = dbArea.PurchasePrice + (int)(dbArea.PurchasePrice * (player.LeaseRate * 0.01f));
-            int dailyUpkeep = dbArea.DailyUpkeep + (int) (dbArea.DailyUpkeep * (player.LeaseRate * 0.01f));
+            var purchasePrice = dbArea.PurchasePrice + (int)(dbArea.PurchasePrice * (player.LeaseRate * 0.01f));
+            var dailyUpkeep = dbArea.DailyUpkeep + (int) (dbArea.DailyUpkeep * (player.LeaseRate * 0.01f));
 
-            string header = ColorTokenService.Green("Purchase Territory Menu\n\n");
+            var header = ColorTokenService.Green("Purchase Territory Menu\n\n");
             header += "Land leases in this sector cost an initial price of " + purchasePrice + " credits.\n\n";
             header += "You will also be billed " + dailyUpkeep + " credits per day (real world time). Your initial payment covers the cost of the first week.\n\n";
             header += "Purchasing territory gives you the ability to place a control tower, drill for raw materials, construct buildings, build starships, and much more.\n\n";
@@ -463,7 +460,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("PurchaseTerritoryPage");
             var data = BaseService.GetPlayerTempData(GetPC());
-            Area dbArea = DataService.Area.GetByResref(data.TargetArea.Resref);
+            var dbArea = DataService.Area.GetByResref(data.TargetArea.Resref);
 
             AddResponseToPage("PurchaseTerritoryPage", "Purchase Northeast Sector", dbArea.NortheastOwner == null);
             AddResponseToPage("PurchaseTerritoryPage", "Purchase Northwest Sector", dbArea.NorthwestOwner == null);
@@ -543,13 +540,13 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("StructureListPage");
             var data = BaseService.GetPlayerTempData(GetPC());
-            string pcBaseStructureID = data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID");
-            bool isBuilding = !string.IsNullOrWhiteSpace(pcBaseStructureID);
+            var pcBaseStructureID = data.TargetArea.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var isBuilding = !string.IsNullOrWhiteSpace(pcBaseStructureID);
 
             IEnumerable<AreaStructure> areaStructures = data.TargetArea.Data["BASE_SERVICE_STRUCTURES"];
             if (!isBuilding)
             {
-                string targetSector = BaseService.GetSectorOfLocation(data.TargetLocation);
+                var targetSector = BaseService.GetSectorOfLocation(data.TargetLocation);
 
                 areaStructures = areaStructures
                     .Where(x => BaseService.GetSectorOfLocation(x.Structure.Location) == targetSector &&
@@ -567,8 +564,8 @@ namespace SWLOR.Game.Server.Conversation
 
         private void StructureListResponses(int responseID)
         {
-            DialogResponse response = GetResponseByID("StructureListPage", responseID);
-            AreaStructure structure = (AreaStructure)response.CustomData;
+            var response = GetResponseByID("StructureListPage", responseID);
+            var structure = (AreaStructure)response.CustomData;
             var data = BaseService.GetPlayerTempData(GetPC());
             data.ManipulatingStructure = structure;
             
@@ -582,7 +579,7 @@ namespace SWLOR.Game.Server.Conversation
             var data = BaseService.GetPlayerTempData(GetPC());
             var structure = data.ManipulatingStructure.Structure;
             var pcBaseStructureID = data.ManipulatingStructure.Structure.Area.GetLocalString("PC_BASE_STRUCTURE_ID");
-            Guid? structureID = string.IsNullOrWhiteSpace(pcBaseStructureID) ? null : (Guid?)new Guid(pcBaseStructureID);
+            var structureID = string.IsNullOrWhiteSpace(pcBaseStructureID) ? null : (Guid?)new Guid(pcBaseStructureID);
             bool canRetrieveStructures;
             bool canPlaceEditStructures;
             if (structureID != null)
@@ -597,7 +594,7 @@ namespace SWLOR.Game.Server.Conversation
             }
 
 
-            string header = ColorTokenService.Green("Structure: ") + structure.Name + "\n\n";
+            var header = ColorTokenService.Green("Structure: ") + structure.Name + "\n\n";
             header += "What would you like to do with this structure?";
 
             SetPageHeader("ManageStructureDetailsPage", header);
@@ -637,16 +634,16 @@ namespace SWLOR.Game.Server.Conversation
         private void DoRetrieveStructure()
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(data.ManipulatingStructure.PCBaseStructureID);
-            BaseStructure baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
-            PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
-            BaseStructureType structureType = (BaseStructureType)baseStructure.BaseStructureTypeID;
+            var structure = DataService.PCBaseStructure.GetByID(data.ManipulatingStructure.PCBaseStructureID);
+            var baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
+            var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
+            var structureType = (BaseStructureType)baseStructure.BaseStructureTypeID;
             var tempStorage = NWScript.GetObjectByTag("TEMP_ITEM_STORAGE");
             var pcStructureID = structure.ID;
-            int impoundedCount = 0;
+            var impoundedCount = 0;
 
             var controlTower = BaseService.GetBaseControlTower(pcBase.ID);
-            int maxShields = BaseService.CalculateMaxShieldHP(controlTower);
+            var maxShields = BaseService.CalculateMaxShieldHP(controlTower);
 
             if (structureType == BaseStructureType.Starship)
             {
@@ -705,10 +702,10 @@ namespace SWLOR.Game.Server.Conversation
             else if (structureType == BaseStructureType.Building)
             {
                 var childStructures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(structure.ID).ToList();
-                for (int x = childStructures.Count - 1; x >= 0; x--)
+                for (var x = childStructures.Count - 1; x >= 0; x--)
                 {
                     var furniture = childStructures.ElementAt(x);
-                    NWItem furnitureItem = BaseService.ConvertStructureToItem(furniture, tempStorage);
+                    var furnitureItem = BaseService.ConvertStructureToItem(furniture, tempStorage);
                     ImpoundService.Impound(GetPC().GlobalID, furnitureItem);
                     furnitureItem.Destroy();
 
@@ -744,12 +741,12 @@ namespace SWLOR.Game.Server.Conversation
             // Impound any fuel that's over the limit.
             if (structureType == BaseStructureType.StronidiumSilo || structureType == BaseStructureType.FuelSilo)
             {
-                int maxFuel = BaseService.CalculateMaxFuel(pcBase.ID);
-                int maxReinforcedFuel = BaseService.CalculateMaxReinforcedFuel(pcBase.ID);
+                var maxFuel = BaseService.CalculateMaxFuel(pcBase.ID);
+                var maxReinforcedFuel = BaseService.CalculateMaxReinforcedFuel(pcBase.ID);
 
                 if (pcBase.Fuel > maxFuel)
                 {
-                    int returnAmount = pcBase.Fuel - maxFuel;
+                    var returnAmount = pcBase.Fuel - maxFuel;
                     NWItem refund = NWScript.CreateItemOnObject("fuel_cell", tempStorage, returnAmount);
                     pcBase.Fuel = maxFuel;
                     ImpoundService.Impound(pcBase.PlayerID, refund);
@@ -759,7 +756,7 @@ namespace SWLOR.Game.Server.Conversation
 
                 if (pcBase.ReinforcedFuel > maxReinforcedFuel)
                 {
-                    int returnAmount = pcBase.ReinforcedFuel - maxReinforcedFuel;
+                    var returnAmount = pcBase.ReinforcedFuel - maxReinforcedFuel;
                     NWItem refund = NWScript.CreateItemOnObject("stronidium", tempStorage, returnAmount);
                     pcBase.ReinforcedFuel = maxReinforcedFuel;
                     ImpoundService.Impound(pcBase.PlayerID, refund);
@@ -769,7 +766,7 @@ namespace SWLOR.Game.Server.Conversation
             }
             else if (structureType == BaseStructureType.ResourceSilo)
             {
-                int maxResources = BaseService.CalculateResourceCapacity(pcBase.ID);
+                var maxResources = BaseService.CalculateResourceCapacity(pcBase.ID);
 
                 if (controlTower == null)
                 {
@@ -802,7 +799,7 @@ namespace SWLOR.Game.Server.Conversation
             // Update the cache
             List<AreaStructure> areaStructures = data.TargetArea.Data["BASE_SERVICE_STRUCTURES"];
             var records = areaStructures.Where(x => x.PCBaseStructureID == pcStructureID).ToList();
-            for (int x = records.Count() - 1; x >= 0; x--)
+            for (var x = records.Count() - 1; x >= 0; x--)
             {
                 var record = records[x];
                 record.ChildStructure?.Destroy();
@@ -865,8 +862,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = BaseService.GetPlayerTempData(GetPC());
             var structure = data.ManipulatingStructure.Structure;
-            float facing = structure.Facing;
-            string header = ColorTokenService.Green("Current Direction: ") + facing;
+            var facing = structure.Facing;
+            var header = ColorTokenService.Green("Current Direction: ") + facing;
 
             SetPageHeader("RotatePage", header);
         }
@@ -899,7 +896,7 @@ namespace SWLOR.Game.Server.Conversation
             }
 
 
-            float facing = structure.Facing;
+            var facing = structure.Facing;
             if (isSet)
             {
                 facing = degrees;
@@ -927,7 +924,7 @@ namespace SWLOR.Game.Server.Conversation
                 // Build a new location object for use with spawning the door.
                 var exteriorStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(dbStructure.ExteriorStyleID));
 
-                Location locationOverride = NWScript.Location(data.TargetArea.Object,
+                var locationOverride = NWScript.Location(data.TargetArea.Object,
                     structure.Position,
                     facing);
                 data.ManipulatingStructure.ChildStructure.Destroy();
@@ -936,7 +933,7 @@ namespace SWLOR.Game.Server.Conversation
                 // Update the cache
                 List<AreaStructure> areaStructures = data.TargetArea.Data["BASE_SERVICE_STRUCTURES"];
                 var cacheStructure = areaStructures.Single(x => x.PCBaseStructureID == data.ManipulatingStructure.PCBaseStructureID && x.ChildStructure == null);
-                int doorIndex = areaStructures.IndexOf(cacheStructure);
+                var doorIndex = areaStructures.IndexOf(cacheStructure);
                 areaStructures[doorIndex].Structure = data.ManipulatingStructure.ChildStructure;
             }
 
@@ -948,8 +945,8 @@ namespace SWLOR.Game.Server.Conversation
             var data = BaseService.GetPlayerTempData(GetPC());
             bool canPlaceEditStructures;
             var structure = data.ManipulatingStructure.Structure;
-            Vector3 position = NWScript.GetPositionFromLocation(data.TargetLocation);
-            Vector3 playerposition = NWScript.GetPositionFromLocation(GetPC().Location); 
+            var position = NWScript.GetPositionFromLocation(data.TargetLocation);
+            var playerposition = NWScript.GetPositionFromLocation(GetPC().Location); 
 
             if (data.BuildingType == Enumeration.BuildingType.Interior ||
                 data.BuildingType == Enumeration.BuildingType.Apartment ||

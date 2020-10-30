@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.SpawnRule
         public void Run(NWObject target, params object[] args)
         {
             var dbArea = DataService.Area.GetByResref(target.Area.Resref);
-            int tier = dbArea.ResourceQuality;
+            var tier = dbArea.ResourceQuality;
             
             if (tier <= 0)
             {
@@ -19,8 +19,8 @@ namespace SWLOR.Game.Server.SpawnRule
                 return;
             }
 
-            int difficulty = ((tier-1) * 5) + 1;
-            int lootTable = tier;
+            var difficulty = ((tier-1) * 5) + 1;
+            var lootTable = tier;
             
             target.SetLocalInt("SCAVENGE_POINT_LEVEL", difficulty);
             target.SetLocalInt("SCAVENGE_POINT_LOOT_TABLE_ID", lootTable);

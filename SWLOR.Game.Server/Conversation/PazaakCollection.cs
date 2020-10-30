@@ -11,11 +11,11 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage();
-            DialogPage selectCardPage = new DialogPage("Pick a card, any card...");
-            DialogPage selectDeckSlotPage = new DialogPage("Please select a slot in your deck to replace.");
+            var mainPage = new DialogPage();
+            var selectCardPage = new DialogPage("Pick a card, any card...");
+            var selectDeckSlotPage = new DialogPage("Please select a slot in your deck to replace.");
             
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("SelectCardPage", selectCardPage);
@@ -44,24 +44,24 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             NWItem collection = GetPC().GetLocalObject("ACTIVE_COLLECTION");
-            Dictionary<int, int> collectedCards = new Dictionary<int, int>();
-            Dictionary<int, int> deckCards = new Dictionary<int, int>();
+            var collectedCards = new Dictionary<int, int>();
+            var deckCards = new Dictionary<int, int>();
 
-            string mainHeader = "Cards in your deck:";
+            var mainHeader = "Cards in your deck:";
             ClearPageResponses("MainPage");
             ClearPageResponses("SelectDeckSlotPage");
 
             // allow up to 100 cards in a collection.  That should be plenty, right?
-            for (int ii = 1; ii <= 100; ii++)
+            for (var ii = 1; ii <= 100; ii++)
             {
-                int card = PazaakService.GetCardInCollection(ii, collection);
+                var card = PazaakService.GetCardInCollection(ii, collection);
 
                 if (card != 0) collectedCards.Add(ii, card);
             }
 
-            for (int jj = 1; jj<=10; jj++) 
+            for (var jj = 1; jj<=10; jj++) 
             {
-                int deckCard = PazaakService.GetCardInDeck(jj, collection);
+                var deckCard = PazaakService.GetCardInDeck(jj, collection);
                 deckCards.Add(jj, collectedCards[deckCard]);
                 mainHeader += " " + PazaakService.Display(collectedCards[deckCard]) + " ";
                 AddResponseToPage("SelectDeckSlotPage", "Slot " + jj + " (" + PazaakService.Display(collectedCards[deckCard]) + ")", true, jj);
@@ -70,9 +70,9 @@ namespace SWLOR.Game.Server.Conversation
 
             mainHeader += "\n\nCards in your sideboard:";
 
-            List<int> sideboard = collectedCards.Keys.ToList();
+            var sideboard = collectedCards.Keys.ToList();
 
-            foreach (int card in sideboard)
+            foreach (var card in sideboard)
             {
                 mainHeader += " " + PazaakService.Display(collectedCards[card]) + " ";
             }
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var response = GetResponseByID("MainPage", responseID);
             NWItem collection = GetPC().GetLocalObject("ACTIVE_COLLECTION");
-            List<int> sideboard = (List<int>)GetResponseByID("MainPage", responseID).CustomData;
+            var sideboard = (List<int>)GetResponseByID("MainPage", responseID).CustomData;
 
             if (response.Text == "Swap card from sideboard to deck")
             {
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Conversation
             // Build the responses for the select card page.
             ClearPageResponses("SelectCardPage");
 
-            foreach (int card in sideboard)
+            foreach (var card in sideboard)
             {
                 AddResponseToPage("SelectCardPage", PazaakService.Display(PazaakService.GetCardInCollection(card, collection)), true, card);
             }
@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void SelectCardPageResponses(int responseID)
         {
-            int card = Convert.ToInt32(GetResponseByID("SelectCardPage", responseID).CustomData.ToString());
+            var card = Convert.ToInt32(GetResponseByID("SelectCardPage", responseID).CustomData.ToString());
 
             if (GetPC().GetLocalInt("PAZAAK_ACTION") == 1)
             {
@@ -134,8 +134,8 @@ namespace SWLOR.Game.Server.Conversation
 
         private void SelectDeckSlotPageResponses(int responseID)
         {
-            int card = GetPC().GetLocalInt("PAZAAK_CARD_SELECTED");
-            int slot = Convert.ToInt32(GetResponseByID("SelectDeckSlotPage", responseID).CustomData.ToString());
+            var card = GetPC().GetLocalInt("PAZAAK_CARD_SELECTED");
+            var slot = Convert.ToInt32(GetResponseByID("SelectDeckSlotPage", responseID).CustomData.ToString());
             NWItem collection = GetPC().GetLocalObject("ACTIVE_COLLECTION");
 
             PazaakService.AddCardToDeck(card, collection, slot);

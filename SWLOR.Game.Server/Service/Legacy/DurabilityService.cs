@@ -28,11 +28,11 @@ namespace SWLOR.Game.Server.Service
             if (item.GetLocalInt("DURABILITY_INITIALIZE") <= 0 &&
                 item.GetLocalFloat("DURABILITY_CURRENT") <= 0.0f)
             {
-                float durability = GetMaxDurability(item) <= 0 ? DefaultDurability : GetMaxDurability(item);
+                var durability = GetMaxDurability(item) <= 0 ? DefaultDurability : GetMaxDurability(item);
                 item.SetLocalFloat("DURABILITY_CURRENT", durability);
                 if (item.GetLocalFloat("DURABILITY_MAX") <= 0.0f)
                 {
-                    float maxDurability = DefaultDurability;
+                    var maxDurability = DefaultDurability;
                     foreach (var ip in item.ItemProperties)
                     {
                         if (GetItemPropertyType(ip) == ItemPropertyType.MaxDurability)
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Service
 
         public static float GetMaxDurability(NWItem item)
         {   
-            int maxDurability = item.GetItemPropertyValueAndRemove(ItemPropertyType.MaxDurability);
+            var maxDurability = item.GetItemPropertyValueAndRemove(ItemPropertyType.MaxDurability);
             if (maxDurability <= -1) return item.GetLocalFloat("DURABILITY_MAX") <= 0 ? DefaultDurability : item.GetLocalFloat("DURABILITY_MAX");
             SetMaxDurability(item, maxDurability);
             return maxDurability;
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (item == null) throw new ArgumentNullException(nameof(item));
 
-            int durability = item.GetItemPropertyValueAndRemove(ItemPropertyType.Durability);
+            var durability = item.GetItemPropertyValueAndRemove(ItemPropertyType.Durability);
 
             if (durability <= -1)
             {
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Service
             if (GetLocalBool(oPC, "IS_CUSTOMIZING_ITEM")) return;
             
             NWItem oItem = (GetPCItemLastEquipped());
-            float durability = GetDurability(oItem);
+            var durability = GetDurability(oItem);
 
             if (durability <= 0 && durability != -1 && oItem.IsValid)
             {
@@ -121,8 +121,8 @@ namespace SWLOR.Game.Server.Service
             NWItem examinedItem = (examinedObject.Object);
             if (examinedItem.GetLocalFloat("DURABILITY_MAX") <= 0f) return existingDescription;
 
-            string description = ColorTokenService.Orange("Durability: ");
-            float durability = GetDurability(examinedItem);
+            var description = ColorTokenService.Orange("Durability: ");
+            var durability = GetDurability(examinedItem);
             if (durability <= 0.0f) description += ColorTokenService.Red(Convert.ToString(durability));
             else description += ColorTokenService.White(FormatDurability(durability));
 
@@ -150,14 +150,14 @@ namespace SWLOR.Game.Server.Service
                 item.BaseItemType == BaseItem.CreatureSlashPierceWeapon)    // Creature slashing/piercing weapon
                 return;
             
-            float durability = GetDurability(item);
-            string sItemName = item.Name;
-            int apr = Creature.GetAttacksPerRound(player, true);
+            var durability = GetDurability(item);
+            var sItemName = item.Name;
+            var apr = Creature.GetAttacksPerRound(player, true);
             // Reduce by 0.001 each time it's run. Player only receives notifications when it drops a full point.
             // I.E: Dropping from 29.001 to 29.
             // Note that players only see two decimal places in-game on purpose.
             durability -= reduceAmount / apr;
-            bool displayMessage = Math.Abs(durability % 1) < 0.05f;
+            var displayMessage = Math.Abs(durability % 1) < 0.05f;
 
             if (displayMessage)
             {
@@ -186,8 +186,8 @@ namespace SWLOR.Game.Server.Service
             // Prevent repairing for less than 0.01
             if (amount < 0.01f) return;
 
-            float maxDurability = GetMaxDurability(item) - maxReductionAmount;
-            float durability = GetDurability(item) + amount;
+            var maxDurability = GetMaxDurability(item) - maxReductionAmount;
+            var durability = GetDurability(item) + amount;
             
             if (maxDurability < 0.01f)
                 maxDurability = 0.01f;
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Service
             
             SetMaxDurability(item, maxDurability);
             SetDurability(item, durability);
-            string durMessage = FormatDurability(durability) + " / " + FormatDurability(maxDurability);
+            var durMessage = FormatDurability(durability) + " / " + FormatDurability(maxDurability);
             oPC.SendMessage(ColorTokenService.Green("You repaired your " + item.Name + ". (" + durMessage + ")"));
         }
         
@@ -206,7 +206,7 @@ namespace SWLOR.Game.Server.Service
             if (!oTarget.IsValid) return;
             NWItem oSpellOrigin = (GetSpellCastItem());
 
-            NWItem decayItem = oSpellOrigin;
+            var decayItem = oSpellOrigin;
 
             if (oSpellOrigin.BaseItemType == BaseItem.Arrow ||
                 oSpellOrigin.BaseItemType == BaseItem.Bolt ||

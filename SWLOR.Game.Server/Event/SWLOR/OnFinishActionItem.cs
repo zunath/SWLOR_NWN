@@ -1,5 +1,4 @@
 ﻿using System.Numerics;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject;
 

@@ -1,7 +1,6 @@
 ﻿
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ValueObject;
 
 // ReSharper disable once CheckNamespace
@@ -17,8 +16,8 @@ namespace NWN.Scripts
             {
                 NWPlayer oPC = NWScript.GetPCSpeaker();
                 NWObject oNPC = NWScript.OBJECT_SELF;
-                int nGold = NWScript.GetGold(oPC);
-                int reqGold = NWScript.GetLocalInt(oNPC, "gold");
+                var nGold = NWScript.GetGold(oPC);
+                var reqGold = NWScript.GetLocalInt(oNPC, "gold");
                 if (nGold > reqGold)
                 {
                     return 1;

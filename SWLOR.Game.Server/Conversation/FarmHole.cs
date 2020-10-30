@@ -1,8 +1,5 @@
-﻿using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript;
+﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.ValueObject.Dialog;
 
@@ -12,14 +9,14 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainPage = new DialogPage(
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage(
                 "There is a small hole here. What would you like to do?",
                 "Plant a seed",
                 "Cover up the hole"
             );
 
-            DialogPage coverUpConfirm = new DialogPage(
+            var coverUpConfirm = new DialogPage(
                 "Are you sure you want to cover up this hole? You'll need a shovel to dig it up again!",
                 "Yes, cover up the hole"
             );
@@ -55,7 +52,7 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1: // Plant a seed
-                    Location location = GetPC().Location;
+                    var location = GetPC().Location;
                     NWPlaceable planter = (NWScript.CreateObject(ObjectType.Placeable, "farm_plant_seed", location));
                     planter.SetLocalObject("FARM_SMALL_HOLE", GetDialogTarget().Object);
                     GetPC().AssignCommand(() => NWScript.ActionInteractObject(planter.Object));

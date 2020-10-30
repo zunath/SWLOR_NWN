@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -57,8 +56,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Scrapper
             }
             
             // Remove local variables (except the global ID)
-            int varCount = Object.GetLocalVariableCount(item);
-            for (int index = varCount-1; index >= 0; index--)
+            var varCount = Object.GetLocalVariableCount(item);
+            for (var index = varCount-1; index >= 0; index--)
             {
                 var localVar = Object.GetLocalVariable(item, index);
 

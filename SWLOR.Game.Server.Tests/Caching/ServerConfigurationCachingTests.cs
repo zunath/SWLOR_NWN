@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void Get_ReturnsServerConfiguration()
         {
             // Arrange
-            ServerConfiguration entity = new ServerConfiguration {ID = 1};
+            var entity = new ServerConfiguration {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<ServerConfiguration>(entity));

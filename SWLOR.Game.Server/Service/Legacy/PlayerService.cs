@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using Player = SWLOR.Game.Server.Data.Entity.Player;
 using Skill = SWLOR.Game.Server.Core.NWScript.Enum.Skill;
@@ -53,17 +52,17 @@ namespace SWLOR.Game.Server.Service
                 });
 
                 // Capture original stats before we level up the player.
-                int str = Creature.GetRawAbilityScore(player, AbilityType.Strength);
-                int con = Creature.GetRawAbilityScore(player, AbilityType.Constitution);
-                int dex = Creature.GetRawAbilityScore(player, AbilityType.Dexterity);
-                int @int = Creature.GetRawAbilityScore(player, AbilityType.Intelligence);
-                int wis = Creature.GetRawAbilityScore(player, AbilityType.Wisdom);
-                int cha = Creature.GetRawAbilityScore(player, AbilityType.Charisma);
+                var str = Creature.GetRawAbilityScore(player, AbilityType.Strength);
+                var con = Creature.GetRawAbilityScore(player, AbilityType.Constitution);
+                var dex = Creature.GetRawAbilityScore(player, AbilityType.Dexterity);
+                var @int = Creature.GetRawAbilityScore(player, AbilityType.Intelligence);
+                var wis = Creature.GetRawAbilityScore(player, AbilityType.Wisdom);
+                var cha = Creature.GetRawAbilityScore(player, AbilityType.Charisma);
 
                 // Take player to level 5 in NWN levels so that we have access to more HP slots
                 GiveXPToCreature(player, 10000);
 
-                for (int level = 1; level <= 5; level++)
+                for (var level = 1; level <= 5; level++)
                 {
                     LevelUpHenchman(player, player.Class1);
                 }
@@ -89,8 +88,8 @@ namespace SWLOR.Game.Server.Service
                 NWItem dyeKit = (CreateItemOnObject("tk_omnidye", player));
                 dyeKit.IsCursed = true;
                 
-                int numberOfFeats = Creature.GetFeatCount(player);
-                for (int currentFeat = numberOfFeats; currentFeat >= 0; currentFeat--)
+                var numberOfFeats = Creature.GetFeatCount(player);
+                for (var currentFeat = numberOfFeats; currentFeat >= 0; currentFeat--)
                 {
                     Creature.RemoveFeat(player, Creature.GetFeatByIndex(player, currentFeat - 1));
                 }
@@ -121,12 +120,12 @@ namespace SWLOR.Game.Server.Service
 
                 var classType = GetClassByPosition(1, player);
 
-                for (int index = 0; index <= 255; index++)
+                for (var index = 0; index <= 255; index++)
                 {
                     Creature.RemoveKnownSpell(player, classType, 0, index);
                 }
 
-                Player entity = CreateDBPCEntity(player);
+                var entity = CreateDBPCEntity(player);
                 DataService.SubmitDataChange(entity, DatabaseActionType.Insert);
 
                 var skills = DataService.Skill.GetAll();
@@ -161,7 +160,7 @@ namespace SWLOR.Game.Server.Service
         
         private static Player CreateDBPCEntity(NWPlayer player)
         {
-            RacialType race = (RacialType)player.RacialType;
+            var race = (RacialType)player.RacialType;
             AssociationType assType; 
             var goodEvil = GetAlignmentGoodEvil(player);
             var lawChaos = GetAlignmentLawChaos(player);
@@ -212,11 +211,11 @@ namespace SWLOR.Game.Server.Service
                 throw new Exception("Association type not found. GoodEvil = " + goodEvil + ", LawChaos = " + lawChaos);
             }
 
-            int sp = 5;
+            var sp = 5;
             if (race == RacialType.Human)
                 sp++;
 
-            Player entity = new Player
+            var entity = new Player
             {
                 ID = player.GlobalID,
                 CharacterName = player.Name,
@@ -291,11 +290,11 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            Player entity = GetPlayerEntity(player.GlobalID);
+            var entity = GetPlayerEntity(player.GlobalID);
 
             if (entity == null) return;
 
-            int hp = player.CurrentHP;
+            var hp = player.CurrentHP;
             int damage;
             if (entity.HitPoints < 0)
             {
@@ -312,7 +311,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Handle item stats
-            for (int itemSlot = 0; itemSlot < NumberOfInventorySlots; itemSlot++)
+            for (var itemSlot = 0; itemSlot < NumberOfInventorySlots; itemSlot++)
             {
                 NWItem item = NWScript.GetItemInSlot((InventorySlot)itemSlot, player);
                 PlayerStatService.CalculateEffectiveStats(player, item);
@@ -342,8 +341,8 @@ namespace SWLOR.Game.Server.Service
         private static void ShowMOTD()
         {
             NWPlayer player = GetEnteringObject();
-            ServerConfiguration config = DataService.ServerConfiguration.Get();
-            string message = ColorTokenService.Green("Welcome to " + config.ServerName + "!\n\nMOTD: ") + ColorTokenService.White(config.MessageOfTheDay);
+            var config = DataService.ServerConfiguration.Get();
+            var message = ColorTokenService.Green("Welcome to " + config.ServerName + "!\n\nMOTD: ") + ColorTokenService.White(config.MessageOfTheDay);
 
             DelayCommand(6.5f, () =>
             {
@@ -396,7 +395,7 @@ namespace SWLOR.Game.Server.Service
         public static void SaveCharacter(NWPlayer player)
         {
             if (!player.IsPlayer) return;
-            Player entity = GetPlayerEntity(player);
+            var entity = GetPlayerEntity(player);
             entity.CharacterName = player.Name;
             entity.HitPoints = player.CurrentHP;
 
@@ -409,11 +408,11 @@ namespace SWLOR.Game.Server.Service
             if (player.GetLocalInt("IS_SHIP") == 1) return;
             if (player.GetLocalInt("IS_GUNNER") == 1) return;
             
-            NWArea area = player.Area;
+            var area = player.Area;
             if (area.IsValid && area.Tag != "ooc_area" && area.Tag != "tutorial" && !area.IsInstance)
             {
                 LoggingService.Trace(TraceComponent.Space, "Saving location in area " + GetName(area));
-                Player entity = GetPlayerEntity(player.GlobalID);
+                var entity = GetPlayerEntity(player.GlobalID);
                 entity.LocationAreaResref = area.Resref;
                 entity.LocationX = player.Position.X;
                 entity.LocationY = player.Position.Y;
@@ -436,7 +435,7 @@ namespace SWLOR.Game.Server.Service
             else if (area.IsInstance)
             {
                 LoggingService.Trace(TraceComponent.Space, "Saving location in instance area " + GetName(area));
-                string instanceID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+                var instanceID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
                 if (string.IsNullOrWhiteSpace(instanceID))
                 {
                     instanceID = area.GetLocalString("PC_BASE_ID");
@@ -446,7 +445,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (!string.IsNullOrWhiteSpace(instanceID))
                 {
-                    Player entity = GetPlayerEntity(player.GlobalID);
+                    var entity = GetPlayerEntity(player.GlobalID);
                     entity.LocationAreaResref = area.Resref;
                     entity.LocationX = player.Position.X;
                     entity.LocationY = player.Position.Y;
@@ -475,7 +474,7 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleUseFeat()
         {
             NWPlayer pc = (OBJECT_SELF);
-            int featID = Convert.ToInt32(Events.GetEventData("FEAT_ID"));
+            var featID = Convert.ToInt32(Events.GetEventData("FEAT_ID"));
 
             if (featID != (int)Feat.OpenRestMenu) return;
             pc.ClearAllActions();
@@ -484,7 +483,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleHeartbeat()
         {
-            Guid[] playerIDs = NWModule.Get().Players.Where(x => x.IsPlayer).Select(x => x.GlobalID).ToArray();
+            var playerIDs = NWModule.Get().Players.Where(x => x.IsPlayer).Select(x => x.GlobalID).ToArray();
             var entities = DataService.Player.GetAllByIDs(playerIDs).ToList();
 
             foreach (var player in NWModule.Get().Players)
@@ -504,8 +503,8 @@ namespace SWLOR.Game.Server.Service
         private static void HandleRegenerationTick(NWPlayer oPC, Player entity)
         {
             entity.RegenerationTick = entity.RegenerationTick - 1;
-            int rate = 5;
-            int amount = entity.HPRegenerationAmount;
+            var rate = 5;
+            var amount = entity.HPRegenerationAmount;
             
 
             if (entity.RegenerationTick <= 0)
@@ -514,7 +513,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(oPC);
                     // CON bonus
-                    int con = (oPC.ConstitutionModifier / 2);
+                    var con = (oPC.ConstitutionModifier / 2);
                     if (con > 0)
                     {
                         amount += con;
@@ -523,7 +522,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (oPC.Chest.CustomItemType == CustomItemType.HeavyArmor)
                     {
-                        int sturdinessLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.Sturdiness);
+                        var sturdinessLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.Sturdiness);
                         if (sturdinessLevel > 0)
                         {
                             amount += sturdinessLevel + 1;
@@ -539,8 +538,8 @@ namespace SWLOR.Game.Server.Service
         private static void HandleFPRegenerationTick(NWPlayer oPC, Player entity)
         {
             entity.CurrentFPTick = entity.CurrentFPTick - 1;
-            int rate = 5;
-            int amount = 1;
+            var rate = 5;
+            var amount = 1;
 
             if (entity.CurrentFPTick <= 0)
             {
@@ -548,7 +547,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(oPC);
                     // CHA bonus
-                    int cha = oPC.CharismaModifier;
+                    var cha = oPC.CharismaModifier;
                     if (cha > 0)
                     {
                         amount += cha;
@@ -557,7 +556,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (oPC.Chest.CustomItemType == CustomItemType.ForceArmor)
                     {
-                        int clarityLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.Clarity);
+                        var clarityLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.Clarity);
                         if (clarityLevel > 0)
                         {
                             amount += clarityLevel + 1;
@@ -574,7 +573,7 @@ namespace SWLOR.Game.Server.Service
         // Export all characters every minute.
         private static void SaveCharacters()
         {
-            int currentTick = NWModule.Get().GetLocalInt("SAVE_CHARACTERS_TICK") + 1;
+            var currentTick = NWModule.Get().GetLocalInt("SAVE_CHARACTERS_TICK") + 1;
 
             if (currentTick >= 10)
             {

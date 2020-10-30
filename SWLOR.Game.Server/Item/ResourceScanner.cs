@@ -1,6 +1,5 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -43,7 +42,7 @@ namespace SWLOR.Game.Server.Item
 
             if (user.IsPlayer && GetLocalBool(user, target.GlobalID.ToString()) == false)
             {
-                int scanningBonus = item.ScanningBonus;
+                var scanningBonus = item.ScanningBonus;
                 SkillService.GiveSkillXP(player, SkillType.Harvesting, 150);
                 user.SetLocalInt(target.GlobalID.ToString(), 1 + scanningBonus); 
             }
@@ -58,7 +57,7 @@ namespace SWLOR.Game.Server.Item
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             const float BaseScanningTime = 16.0f;
-            float scanningTime = BaseScanningTime;
+            var scanningTime = BaseScanningTime;
 
             if (user.IsPlayer)
             {

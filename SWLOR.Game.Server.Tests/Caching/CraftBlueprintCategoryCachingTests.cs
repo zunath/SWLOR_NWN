@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsCraftBlueprintCategory()
         {
             // Arrange
-            CraftBlueprintCategory entity = new CraftBlueprintCategory {ID = 1};
+            var entity = new CraftBlueprintCategory {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<CraftBlueprintCategory>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            CraftBlueprintCategory entity1 = new CraftBlueprintCategory { ID = 1};
-            CraftBlueprintCategory entity2 = new CraftBlueprintCategory { ID = 2};
+            var entity1 = new CraftBlueprintCategory { ID = 1};
+            var entity2 = new CraftBlueprintCategory { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<CraftBlueprintCategory>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            CraftBlueprintCategory entity1 = new CraftBlueprintCategory { ID = 1};
-            CraftBlueprintCategory entity2 = new CraftBlueprintCategory { ID = 2};
+            var entity1 = new CraftBlueprintCategory { ID = 1};
+            var entity2 = new CraftBlueprintCategory { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<CraftBlueprintCategory>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            CraftBlueprintCategory entity1 = new CraftBlueprintCategory { ID = 1};
-            CraftBlueprintCategory entity2 = new CraftBlueprintCategory { ID = 2};
+            var entity1 = new CraftBlueprintCategory { ID = 1};
+            var entity2 = new CraftBlueprintCategory { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<CraftBlueprintCategory>(entity1));

@@ -101,8 +101,8 @@ namespace SWLOR.Game.Server.Service
             pcGP.Points += baseAmount;
 
             // Clamp player GP to the highest rank.
-            int maxRank = RankProgression.Keys.Max();
-            int maxGP = RankProgression[maxRank];
+            var maxRank = RankProgression.Keys.Max();
+            var maxGP = RankProgression[maxRank];
             if (pcGP.Points >= maxGP)
                 pcGP.Points = maxGP-1;
 
@@ -110,11 +110,11 @@ namespace SWLOR.Game.Server.Service
             player.SendMessage("You earned " + baseAmount + " " + dbGuild.Name + " guild points.");
 
             // Are we able to rank up?
-            bool didRankUp = false;
+            var didRankUp = false;
             if (pcGP.Rank < maxRank)
             {
                 // Is it time for a rank up?
-                int nextRank = RankProgression[pcGP.Rank];
+                var nextRank = RankProgression[pcGP.Rank];
                 if (pcGP.Points >= nextRank)
                 {
                     // Let's do a rank up.
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Service
             
             foreach(var reward in gpRewards)
             {
-                int gp = CalculateGPReward(player, reward.Guild, reward.Amount);
+                var gp = CalculateGPReward(player, reward.Guild, reward.Amount);
                 GiveGuildPoints(player, reward.Guild, gp);
             }
         }
@@ -157,10 +157,10 @@ namespace SWLOR.Game.Server.Service
         public static int CalculateGPReward(NWPlayer player, GuildType guild, int baseAmount)
         {
             var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int)guild);
-            float rankBonus = 0.25f * pcGP.Rank;
+            var rankBonus = 0.25f * pcGP.Rank;
 
             // Grant a bonus based on the player's guild relations perk rank.
-            int perkBonus = PerkService.GetCreaturePerkLevel(player, PerkType.GuildRelations);
+            var perkBonus = PerkService.GetCreaturePerkLevel(player, PerkType.GuildRelations);
             baseAmount = baseAmount + (perkBonus * baseAmount);
 
             return baseAmount + (int)(baseAmount * rankBonus);
@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.Service
         {
             // Check if we need to refresh the available guild tasks every 30 minutes
             var module = NWModule.Get();
-            int ticks = module.GetLocalInt("GUILD_REFRESH_TICKS") + 1;
+            var ticks = module.GetLocalInt("GUILD_REFRESH_TICKS") + 1;
             if (ticks >= 300)
             {
                 RefreshGuildTasks();
@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Service
                 DataService.SubmitDataChange(task, DatabaseActionType.Update);
             }
 
-            int maxRank = RankProgression.Keys.Max();
+            var maxRank = RankProgression.Keys.Max();
 
             // Active available tasks are grouped by GuildID and RequiredRank. 
             // 10 of each are randomly selected and marked as currently offered.
@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Service
             // If there are 10 or less available tasks, all of them will be enabled and no randomization will occur.
             foreach (var guild in DataService.Guild.GetAll())
             {
-                for (int rank = 0; rank < maxRank; rank++)
+                for (var rank = 0; rank < maxRank; rank++)
                 {
                     var potentialTasks = DataService.GuildTask.GetAllByGuildIDAndRequiredRank(rank, guild.ID).ToList();
                     IEnumerable<GuildTask> tasks;

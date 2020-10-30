@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
@@ -12,10 +11,10 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.AcceptQuest
         {
             using (new Profiler(nameof(QuestAccept)))
             {
-                int index = (int)args[0];
+                var index = (int)args[0];
                 NWPlayer player = NWScript.GetPCSpeaker();
                 NWObject talkTo = NWScript.OBJECT_SELF;
-                int questID = talkTo.GetLocalInt("QUEST_ID_" + index);
+                var questID = talkTo.GetLocalInt("QUEST_ID_" + index);
                 if (questID <= 0) questID = talkTo.GetLocalInt("QST_ID_" + index);
 
                 if (!QuestService.QuestExistsByID(questID))

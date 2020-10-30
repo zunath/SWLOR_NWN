@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Event.Item;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts

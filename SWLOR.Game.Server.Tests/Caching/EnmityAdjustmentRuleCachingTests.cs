@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsEnmityAdjustmentRule()
         {
             // Arrange
-            EnmityAdjustmentRule entity = new EnmityAdjustmentRule {ID = 1};
+            var entity = new EnmityAdjustmentRule {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<EnmityAdjustmentRule>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            EnmityAdjustmentRule entity1 = new EnmityAdjustmentRule { ID = 1};
-            EnmityAdjustmentRule entity2 = new EnmityAdjustmentRule { ID = 2};
+            var entity1 = new EnmityAdjustmentRule { ID = 1};
+            var entity2 = new EnmityAdjustmentRule { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<EnmityAdjustmentRule>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            EnmityAdjustmentRule entity1 = new EnmityAdjustmentRule { ID = 1};
-            EnmityAdjustmentRule entity2 = new EnmityAdjustmentRule { ID = 2};
+            var entity1 = new EnmityAdjustmentRule { ID = 1};
+            var entity2 = new EnmityAdjustmentRule { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<EnmityAdjustmentRule>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            EnmityAdjustmentRule entity1 = new EnmityAdjustmentRule { ID = 1};
-            EnmityAdjustmentRule entity2 = new EnmityAdjustmentRule { ID = 2};
+            var entity1 = new EnmityAdjustmentRule { ID = 1};
+            var entity2 = new EnmityAdjustmentRule { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<EnmityAdjustmentRule>(entity1));

@@ -1,6 +1,5 @@
 ﻿using System;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -40,7 +39,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
             int damage;
-            int mod = creature.WisdomModifier;
+            var mod = creature.WisdomModifier;
 
             switch (spellTier)
             {
@@ -66,7 +65,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             var result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Universal, true);
 
             // +/- percent change based on resistance
-            float delta = 0.01f * result.Delta;
+            var delta = 0.01f * result.Delta;
             damage = damage + (int)(damage * delta);
 
             creature.AssignCommand(() =>

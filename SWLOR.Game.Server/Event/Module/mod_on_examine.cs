@@ -3,11 +3,9 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using Object = SWLOR.Game.Server.Core.NWNX.Object;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
@@ -49,7 +47,7 @@ namespace NWN.Scripts
                 if (examinedObject.IsCreature)
                 {
                     var racialID = Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(examinedObject)));
-                    string racialtype = GetStringByStrRef(racialID);
+                    var racialtype = GetStringByStrRef(racialID);
                     if (!description.Contains(ColorTokenService.Green("Racial Type: ") + racialtype))
                     {
                         description += ColorTokenService.Green("Racial Type: ") + racialtype;

@@ -1,7 +1,5 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -13,9 +11,9 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage("Please select a song.\n\n((Music files are a separate download that must be installed manually. Refer to our website for downloading and installing these files: https://starwarsnwn.com/ ))"); // Responses dynamically generated
+            var mainPage = new DialogPage("Please select a song.\n\n((Music files are a separate download that must be installed manually. Refer to our website for downloading and installing these files: https://starwarsnwn.com/ ))"); // Responses dynamically generated
 
             dialog.AddPage("MainPage", mainPage);
             return dialog;
@@ -34,9 +32,9 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
         {
-            DialogResponse response = GetResponseByID("MainPage", responseID);
-            int jukeboxSongID = (int)response.CustomData;
-            JukeboxSong song = DataService.JukeboxSong.GetByID(jukeboxSongID);
+            var response = GetResponseByID("MainPage", responseID);
+            var jukeboxSongID = (int)response.CustomData;
+            var song = DataService.JukeboxSong.GetByID(jukeboxSongID);
 
             player.FloatingText("Song Selected: " + song.DisplayName);
 

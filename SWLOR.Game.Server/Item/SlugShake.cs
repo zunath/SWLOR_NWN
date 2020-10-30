@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -20,13 +19,13 @@ namespace SWLOR.Game.Server.Item
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            int hp = user.MaxHP;
+            var hp = user.MaxHP;
 
             // Restores HP to max
             ApplyEffectToObject(DurationType.Instant, EffectHeal(hp), user);
 
             // But reduces one random attribute by 50 for 2 minutes.
-            int stat = RandomService.D6(1)-1;
+            var stat = RandomService.D6(1)-1;
             var effect = EffectAbilityDecrease(stat, 50);
             ApplyEffectToObject(DurationType.Temporary, effect, user, 120f);
         }

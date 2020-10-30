@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsAssociation()
         {
             // Arrange
-            Association entity = new Association {ID = 1};
+            var entity = new Association {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Association>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            Association entity1 = new Association { ID = 1};
-            Association entity2 = new Association { ID = 2};
+            var entity1 = new Association { ID = 1};
+            var entity2 = new Association { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Association>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            Association entity1 = new Association { ID = 1};
-            Association entity2 = new Association { ID = 2};
+            var entity1 = new Association { ID = 1};
+            var entity2 = new Association { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Association>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            Association entity1 = new Association { ID = 1};
-            Association entity2 = new Association { ID = 2};
+            var entity1 = new Association { ID = 1};
+            var entity2 = new Association { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Association>(entity1));

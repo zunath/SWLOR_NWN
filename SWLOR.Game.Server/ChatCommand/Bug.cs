@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.ChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            string message = string.Empty;
+            var message = string.Empty;
 
             foreach (var arg in args)
             {
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.ChatCommand
 
             var position = NWScript.GetPositionFromLocation(user.Location);
             var orientation = NWScript.GetFacingFromLocation(user.Location);
-            BugReport report = new BugReport
+            var report = new BugReport
             {
                 SenderPlayerID = user.IsPlayer ? new Guid?(user.GlobalID): null,
                 CDKey = NWScript.GetPCPublicCDKey(user),

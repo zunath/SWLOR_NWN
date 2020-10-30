@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Quest.Objective
         public void Initialize(NWPlayer player, int questID)
         {
             var status = DataService.PCQuestStatus.GetByPlayerAndQuestID(player.GlobalID, questID);
-            PCQuestItemProgress itemProgress = new PCQuestItemProgress
+            var itemProgress = new PCQuestItemProgress
             {
                 Resref = _resref,
                 PlayerID = status.PlayerID,

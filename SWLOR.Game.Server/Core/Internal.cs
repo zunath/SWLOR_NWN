@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Core
         private static Stack<ScriptContext> ScriptContexts = new Stack<ScriptContext>();
         public static int OnRunScript(string script, uint oidSelf)
         {
-            int ret = 0;
+            var ret = 0;
             OBJECT_SELF = oidSelf;
             ScriptContexts.Push(new ScriptContext { OwnerObject = oidSelf, ScriptName = script });
             try
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Core
 
         public static void OnClosure(ulong eid, uint oidSelf)
         {
-            uint old = OBJECT_SELF;
+            var old = OBJECT_SELF;
             OBJECT_SELF = oidSelf;
             try
             {

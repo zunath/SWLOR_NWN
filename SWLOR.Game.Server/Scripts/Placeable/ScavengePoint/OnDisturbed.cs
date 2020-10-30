@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -35,12 +34,12 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ScavengePoint
             {
                 if (!point.InventoryItems.Any() && point.GetLocalInt("SCAVENGE_POINT_FULLY_HARVESTED") == 1)
                 {
-                    string seed = point.GetLocalString("SCAVENGE_POINT_SEED");
+                    var seed = point.GetLocalString("SCAVENGE_POINT_SEED");
                     if (!string.IsNullOrWhiteSpace(seed))
                     {
                         NWScript.CreateObject(ObjectType.Item, seed, point.Location);
 
-                        int perkLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.SeedPicker);
+                        var perkLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.SeedPicker);
                         if (RandomService.Random(100) + 1 <= perkLevel * 10)
                         {
                             NWScript.CreateObject(ObjectType.Item, seed, point.Location);

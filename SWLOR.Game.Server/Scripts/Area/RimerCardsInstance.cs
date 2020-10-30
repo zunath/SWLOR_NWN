@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
@@ -31,13 +30,13 @@ namespace SWLOR.Game.Server.Scripts.Area
 
         private void CreateInstances()
         {
-            NWArea source = NWModule.Get().Areas.SingleOrDefault(x => x.Resref == "cardgame003");
+            var source = NWModule.Get().Areas.SingleOrDefault(x => x.Resref == "cardgame003");
             if (source == null) return;
 
             // Create 20 instances of the card game area.
             const int CopyCount = 20;
 
-            for (int x = 1; x <= CopyCount; x++)
+            for (var x = 1; x <= CopyCount; x++)
             {
                 NWArea copy = NWScript.CopyArea(source);
                 copy.SetLocalBool("IS_AREA_INSTANCE", true);

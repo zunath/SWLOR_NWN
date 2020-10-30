@@ -1,8 +1,6 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 
@@ -15,7 +13,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
-            NWItem armor = oPC.Chest;
+            var armor = oPC.Chest;
             if (armor.CustomItemType != CustomItemType.LightArmor)
                 return "You must be equipped with light armor to use that ability.";
 

@@ -2,7 +2,6 @@
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
@@ -29,7 +28,7 @@ namespace SWLOR.Game.Server.Service
                 NWObject obj = NWScript.GetFirstObjectInArea(area);
                 while (obj.IsValid)
                 {
-                    string visibilityObjectID = obj.GetLocalString("VISIBILITY_OBJECT_ID");
+                    var visibilityObjectID = obj.GetLocalString("VISIBILITY_OBJECT_ID");
                     if (!string.IsNullOrWhiteSpace(visibilityObjectID))
                     {
                         AppCache.VisibilityObjects.Add(visibilityObjectID, obj);
@@ -64,7 +63,7 @@ namespace SWLOR.Game.Server.Service
             // Hide any objects which are hidden by default, as long as player doesn't have an override already.
             foreach (var visibilityObject in AppCache.VisibilityObjects)
             {
-                string visibilityObjectID = visibilityObject.Value.GetLocalString("VISIBILITY_OBJECT_ID");
+                var visibilityObjectID = visibilityObject.Value.GetLocalString("VISIBILITY_OBJECT_ID");
                 var matchingVisibility = visibilities.SingleOrDefault(x => x.PlayerID == player.GlobalID && x.VisibilityObjectID.ToString() == visibilityObjectID);
                 if (GetLocalBool(visibilityObject.Value, "VISIBILITY_HIDDEN_DEFAULT") == true && matchingVisibility == null)
                 {
@@ -76,7 +75,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void ApplyVisibilityForObject(NWObject target)
         {
-            string visibilityObjectID = target.GetLocalString("VISIBILITY_OBJECT_ID");
+            var visibilityObjectID = target.GetLocalString("VISIBILITY_OBJECT_ID");
             if (string.IsNullOrWhiteSpace(visibilityObjectID)) return;
             
             if (!AppCache.VisibilityObjects.ContainsKey(visibilityObjectID))
@@ -115,7 +114,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
             if (target.IsPlayer || target.IsDM) return;
 
-            string visibilityObjectID = target.GetLocalString("VISIBILITY_OBJECT_ID");
+            var visibilityObjectID = target.GetLocalString("VISIBILITY_OBJECT_ID");
             if (string.IsNullOrWhiteSpace(visibilityObjectID))
             {
                 target.AssignCommand(() =>
@@ -126,7 +125,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var visibility = DataService.PCObjectVisibility.GetByPlayerIDAndVisibilityObjectIDOrDefault(player.GlobalID, visibilityObjectID);
-            DatabaseActionType action = DatabaseActionType.Update;
+            var action = DatabaseActionType.Update;
 
             if (visibility == null)
             {

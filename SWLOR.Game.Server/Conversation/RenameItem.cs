@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject.Dialog;
@@ -10,8 +9,8 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainPage = new DialogPage("<SET LATER>",
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage("<SET LATER>",
                 ColorTokenService.Green("Refresh"),
                 "Change Name",
                 "Reset Name");
@@ -27,19 +26,19 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadHeader()
         {
-            NWPlayer player = GetPC();
+            var player = GetPC();
             player.SetLocalBool("ITEM_RENAMING_LISTENING", true);
 
             NWItem item = player.GetLocalObject("ITEM_BEING_RENAMED");
-            string originalName = item.GetLocalString("RENAMED_ITEM_ORIGINAL_NAME");
+            var originalName = item.GetLocalString("RENAMED_ITEM_ORIGINAL_NAME");
             if (string.IsNullOrWhiteSpace(originalName))
                 originalName = item.Name;
-            string currentName = item.Name;
-            string renamingName = player.GetLocalString("RENAMED_ITEM_NEW_NAME");
+            var currentName = item.Name;
+            var renamingName = player.GetLocalString("RENAMED_ITEM_NEW_NAME");
             if (string.IsNullOrWhiteSpace(renamingName))
                 renamingName = "{UNSPECIFIED}";
 
-            string header = "You are renaming an item.\n\n";
+            var header = "You are renaming an item.\n\n";
             header += ColorTokenService.Green("Original Name: ") + originalName + "\n";
             header += ColorTokenService.Green("Current Name: ") + currentName + "\n";
             header += ColorTokenService.Green("New Name: ") + renamingName + "\n";
@@ -73,10 +72,10 @@ namespace SWLOR.Game.Server.Conversation
 
         private void ChangeName()
         {
-            NWPlayer player = GetPC();
+            var player = GetPC();
 
             // Player hasn't specified a new name for this item.
-            string newName = player.GetLocalString("RENAMED_ITEM_NEW_NAME");
+            var newName = player.GetLocalString("RENAMED_ITEM_NEW_NAME");
             if(string.IsNullOrWhiteSpace(newName))
             {
                 player.FloatingText("Enter a new name into the chat box, select 'Refresh' then select 'Change Name'.");
@@ -103,7 +102,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void ResetName()
         {
-            NWPlayer player = GetPC();
+            var player = GetPC();
             NWItem item = player.GetLocalObject("ITEM_BEING_RENAMED");
             if (string.IsNullOrWhiteSpace(item.GetLocalString("RENAMED_ITEM_ORIGINAL_NAME")))
                 item.SetLocalString("RENAMED_ITEM_ORIGINAL_NAME", item.Name);
@@ -113,7 +112,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void EndDialog()
         {
-            NWPlayer player = GetPC();
+            var player = GetPC();
             player.DeleteLocalObject("ITEM_BEING_RENAMED");
             player.DeleteLocalInt("ITEM_RENAMING_LISTENING");
             player.DeleteLocalString("RENAMED_ITEM_NEW_NAME");

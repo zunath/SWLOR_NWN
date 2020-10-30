@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server
             ConnectedDMs = new List<NWObject>();
             PlayerEffectivePerkLevels = new Dictionary<Guid, Dictionary<int, int>>();
 
-            for (int x = 1; x <= DialogService.NumberOfDialogs; x++)
+            for (var x = 1; x <= DialogService.NumberOfDialogs; x++)
             {
                 DialogFilesInUse.Add(x, false);
             }
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server
 
         private static void Clean()
         {
-            for(int index = NPCEnmityTables.Count-1; index >= 0; index--)
+            for(var index = NPCEnmityTables.Count-1; index >= 0; index--)
             {
                 var npcTable = NPCEnmityTables.ElementAt(index);
                 if (!npcTable.Value.NPCObject.IsValid)
@@ -80,10 +80,10 @@ namespace SWLOR.Game.Server
                 }
             }
             
-            for(int index = CustomObjectData.Count-1; index >= 0; index--)
+            for(var index = CustomObjectData.Count-1; index >= 0; index--)
             {
                 var customData = CustomObjectData.ElementAt(index);
-                NWObject owner = customData.Value.Owner;
+                var owner = customData.Value.Owner;
                 if (!owner.IsValid)
                 {
                     CustomObjectData.Remove(customData.Key);

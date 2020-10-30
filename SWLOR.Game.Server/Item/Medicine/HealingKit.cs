@@ -1,6 +1,5 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -26,13 +25,13 @@ namespace SWLOR.Game.Server.Item.Medicine
             NWPlayer player = (user.Object);
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
             target.RemoveEffect(EffectTypeScript.Regenerate);
-            int rank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
-            int luck = PerkService.GetCreaturePerkLevel(player, PerkType.Lucky);
-            int perkDurationBonus = PerkService.GetCreaturePerkLevel(player, PerkType.HealingKitExpert) * 6 + (luck * 2);
-            float duration = 30.0f + (rank * 0.4f) + perkDurationBonus + item.MedicineBonus;
-            int restoreAmount = 1 + item.GetLocalInt("HEALING_BONUS") + effectiveStats.Medicine + (rank / 10);
-            int delta = item.RecommendedLevel - rank;
-            float effectivenessPercent = 1.0f;
+            var rank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
+            var luck = PerkService.GetCreaturePerkLevel(player, PerkType.Lucky);
+            var perkDurationBonus = PerkService.GetCreaturePerkLevel(player, PerkType.HealingKitExpert) * 6 + (luck * 2);
+            var duration = 30.0f + (rank * 0.4f) + perkDurationBonus + item.MedicineBonus;
+            var restoreAmount = 1 + item.GetLocalInt("HEALING_BONUS") + effectiveStats.Medicine + (rank / 10);
+            var delta = item.RecommendedLevel - rank;
+            var effectivenessPercent = 1.0f;
 
             if (delta > 0)
             {
@@ -41,10 +40,10 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             restoreAmount = (int)(restoreAmount * effectivenessPercent);
 
-            int perkBlastBonus = PerkService.GetCreaturePerkLevel(player, PerkType.ImmediateImprovement);
+            var perkBlastBonus = PerkService.GetCreaturePerkLevel(player, PerkType.ImmediateImprovement);
             if (perkBlastBonus > 0)
             {
-                int blastHeal = restoreAmount * perkBlastBonus;
+                var blastHeal = restoreAmount * perkBlastBonus;
                 if (RandomService.Random(100) + 1 <= luck / 2)
                 {
                     blastHeal *= 2;
@@ -52,21 +51,21 @@ namespace SWLOR.Game.Server.Item.Medicine
                 NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectHeal(blastHeal), target.Object);
             }
 
-            float interval = 6.0f;
-            BackgroundType background = (BackgroundType) player.Class1;
+            var interval = 6.0f;
+            var background = (BackgroundType) player.Class1;
 
             if (background == BackgroundType.Medic)
                 interval *= 0.5f;
 
             NWScript.PlaySound("use_bacta");
-            Effect regeneration = NWScript.EffectRegenerate(restoreAmount, interval);
+            var regeneration = NWScript.EffectRegenerate(restoreAmount, interval);
             NWScript.ApplyEffectToObject(DurationType.Temporary, regeneration, target.Object, duration);
             player.SendMessage("You successfully treat " + target.Name + "'s wounds. The healing kit will expire in " + duration + " seconds.");
             
             NWScript.DelayCommand(duration + 0.5f, () => { player.SendMessage("The healing kit that you applied to " + target.Name + " has expired."); });
 
             if(target.IsPlayer){
-                int xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
+                var xp = (int)SkillService.CalculateRegisteredSkillLevelAdjustedXP(300, item.RecommendedLevel, rank);
                 SkillService.GiveSkillXP(player, SkillType.Medicine, xp);
             }
         }
@@ -78,7 +77,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 return 0.1f;
             }
 
-            int rank = SkillService.GetPCSkillRank((NWPlayer)user, SkillType.Medicine);
+            var rank = SkillService.GetPCSkillRank((NWPlayer)user, SkillType.Medicine);
             return 12.0f - (rank * 0.1f);
         }
 
@@ -99,8 +98,8 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            int consumeChance = PerkService.GetCreaturePerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
-            BackgroundType background = (BackgroundType) user.Class1;
+            var consumeChance = PerkService.GetCreaturePerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
+            var background = (BackgroundType) user.Class1;
 
             if (background == BackgroundType.Medic)
             {

@@ -10,10 +10,10 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage("Holocom Main Menu:\n\n" + 
-                                                 "How may we help you?"
+            var mainPage = new DialogPage("Holocom Main Menu:\n\n" + 
+                                          "How may we help you?"
                                                 ); // Responses dynamically generated            
 
             dialog.AddPage("MainPage", mainPage);
@@ -29,10 +29,10 @@ namespace SWLOR.Game.Server.Conversation
         {            
             ClearPageResponses("MainPage");
 
-            string header = ColorTokenService.Green("HoloCom Menu\n\n");
+            var header = ColorTokenService.Green("HoloCom Menu\n\n");
             SetPageHeader("MainPage", header);
 
-            NWPlayer user = GetPC();
+            var user = GetPC();
 
             AddResponseToPage("MainPage", "End current call with " + HoloComService.GetTargetForActiveCall(user).Name, HoloComService.IsInCall(user), HoloComService.GetTargetForActiveCall(user));
             AddResponseToPage("MainPage", "Answer incoming call from " + HoloComService.GetCallSender(user).Name, HoloComService.IsCallReceiver(user) && !HoloComService.IsInCall(user), HoloComService.GetCallSender(user));
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Conversation
             foreach (var player in NWModule.Get().Players)
             {
                 if (player == user || !player.IsPlayer) continue;
-                string message = "Call " + player.Name;
+                var message = "Call " + player.Name;
                 if (HoloComService.IsInCall(player))
                 {
                     message += ColorTokenService.Red(" (LINE BUSY)");
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Conversation
             HoloComService.SetCallReceiver(sender, receiver);
             HoloComService.SetCallReceiver(receiver, receiver);
 
-            string message = "Your HoloCom buzzes as you are receiving a call.";
+            var message = "Your HoloCom buzzes as you are receiving a call.";
             if (Random(10) == 1)
             {
                 message += " " + ColorTokenService.Green("Maybe you should answer it.");
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
         {
-            DialogResponse response = GetResponseByID("MainPage", responseID);
+            var response = GetResponseByID("MainPage", responseID);
             switch (responseID)
             {
                 case 1: // End current call

@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCCraftedBlueprint entity = new PCCraftedBlueprint {ID = id};
+            var entity = new PCCraftedBlueprint {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCCraftedBlueprint>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCCraftedBlueprint entity1 = new PCCraftedBlueprint { ID = id1};
-            PCCraftedBlueprint entity2 = new PCCraftedBlueprint { ID = id2};
+            var entity1 = new PCCraftedBlueprint { ID = id1};
+            var entity2 = new PCCraftedBlueprint { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCCraftedBlueprint>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCCraftedBlueprint entity1 = new PCCraftedBlueprint { ID = id1};
-            PCCraftedBlueprint entity2 = new PCCraftedBlueprint { ID = id2};
+            var entity1 = new PCCraftedBlueprint { ID = id1};
+            var entity2 = new PCCraftedBlueprint { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCCraftedBlueprint>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCCraftedBlueprint entity1 = new PCCraftedBlueprint { ID = id1};
-            PCCraftedBlueprint entity2 = new PCCraftedBlueprint { ID = id2};
+            var entity1 = new PCCraftedBlueprint { ID = id1};
+            var entity2 = new PCCraftedBlueprint { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCCraftedBlueprint>(entity1));

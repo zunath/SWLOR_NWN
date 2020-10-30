@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.ValueObject.Skill
             }
             else
             {
-                PlayerSkillRegistration reg = new PlayerSkillRegistration(oPC);
+                var reg = new PlayerSkillRegistration(oPC);
                 Registrations[oPC.GlobalID] = reg;
                 return reg;
             }
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.ValueObject.Skill
 
         public void AddSkillRegistrationPoint(NWPlayer oPC, int skillID, int weaponLevel, int skillRank)
         {
-            PlayerSkillRegistration reg = GetRegistration(oPC);
+            var reg = GetRegistration(oPC);
             reg.AddSkillPointRegistration(skillID, weaponLevel, skillRank);
         }
 

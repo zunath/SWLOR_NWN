@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCImpoundedItem entity = new PCImpoundedItem {ID = id};
+            var entity = new PCImpoundedItem {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCImpoundedItem>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCImpoundedItem entity1 = new PCImpoundedItem { ID = id1};
-            PCImpoundedItem entity2 = new PCImpoundedItem { ID = id2};
+            var entity1 = new PCImpoundedItem { ID = id1};
+            var entity2 = new PCImpoundedItem { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCImpoundedItem>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCImpoundedItem entity1 = new PCImpoundedItem { ID = id1};
-            PCImpoundedItem entity2 = new PCImpoundedItem { ID = id2};
+            var entity1 = new PCImpoundedItem { ID = id1};
+            var entity2 = new PCImpoundedItem { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCImpoundedItem>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCImpoundedItem entity1 = new PCImpoundedItem { ID = id1};
-            PCImpoundedItem entity2 = new PCImpoundedItem { ID = id2};
+            var entity1 = new PCImpoundedItem { ID = id1};
+            var entity2 = new PCImpoundedItem { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCImpoundedItem>(entity1));

@@ -19,15 +19,15 @@ namespace SWLOR.Game.Server.Mod
 
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
-            int amount = Convert.ToInt32(args[0]);
-            int newValue = target.CraftBonusArmorsmith + amount;
+            var amount = Convert.ToInt32(args[0]);
+            var newValue = target.CraftBonusArmorsmith + amount;
             if (newValue > MaxValue) newValue = MaxValue;
             target.CraftBonusArmorsmith = newValue;
         }
 
         public string Description(NWPlayer player, NWItem target, params string[] args)
         {
-            int value = Convert.ToInt32(args[0]);
+            var value = Convert.ToInt32(args[0]);
             return "Armorsmith +" + value;
         }
     }

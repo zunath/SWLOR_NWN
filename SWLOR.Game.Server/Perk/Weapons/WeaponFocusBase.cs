@@ -2,8 +2,6 @@
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
@@ -69,12 +67,12 @@ namespace SWLOR.Game.Server.Perk.Weapons
 
         private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
         {
-            NWItem equipped = oItem ?? creature.RightHand;
+            var equipped = oItem ?? creature.RightHand;
             RemoveAllFeats(creature);
 
             // Unarmed check
-            NWItem mainHand = creature.RightHand;
-            NWItem offHand = creature.LeftHand;
+            var mainHand = creature.RightHand;
+            var offHand = creature.LeftHand;
             if (oItem != null && Equals(oItem, mainHand))
             {
                 mainHand = NWScript.OBJECT_INVALID;
@@ -86,7 +84,7 @@ namespace SWLOR.Game.Server.Perk.Weapons
 
             if (!mainHand.IsValid && !offHand.IsValid) 
             {
-                int martialArtsLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.WeaponFocusMartialArts);
+                var martialArtsLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.WeaponFocusMartialArts);
                 if (martialArtsLevel >= 1)
                 {
                     Creature.AddFeat(creature, Feat.WeaponFocus_UnarmedStrike);

@@ -1,7 +1,5 @@
 ﻿using System.Linq;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -54,7 +52,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
                 return;
             }
 
-            int luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
+            var luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
             float duration;
 
             switch (perkLevel)
@@ -106,7 +104,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
             target.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
 
-            Effect effect = NWScript.EffectDazed();
+            var effect = NWScript.EffectDazed();
             effect = NWScript.EffectLinkEffects(effect, NWScript.EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
             effect = NWScript.TagEffect(effect, "TRANQUILIZER_EFFECT");
 
@@ -115,7 +113,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         private bool RemoveExistingEffect(NWObject target, float duration)
         {
-            Effect effect = target.Effects.FirstOrDefault(x => NWScript.GetEffectTag(x) == "TRANQUILIZER_EFFECT");
+            var effect = target.Effects.FirstOrDefault(x => NWScript.GetEffectTag(x) == "TRANQUILIZER_EFFECT");
             if (effect == null) return false;
 
             if (NWScript.GetEffectDurationRemaining(effect) >= duration) return true;

@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Core.Bioware
         /// <returns></returns>
         public static Vector3 GetChangedPosition(Vector3 vOriginal, float fDistance, float fAngle)
         {
-            float changedZ = vOriginal.Z;
+            var changedZ = vOriginal.Z;
 
             var changedX = vOriginal.X + GetChangeInX(fDistance, fAngle);
             if (changedX < 0.0)
@@ -85,11 +85,11 @@ namespace SWLOR.Game.Server.Core.Bioware
         {
             var o1Position = GetPosition(o1);
             var o2Position = GetPosition(o2);
-            float diffX = o2Position.X - o1Position.X;
-            float diffY = o2Position.Y - o1Position.Y;
+            var diffX = o2Position.X - o1Position.X;
+            var diffY = o2Position.Y - o1Position.Y;
 
             // X/Y so that we're taking angle relative to the Y axis (X is opposite, Y adjacent)
-            float angle = (float)Math.Atan(diffX / diffY);
+            var angle = (float)Math.Atan(diffX / diffY);
 
             // atan returns -90 to +90.  We need to turn it into a 360 degree facing based on 
             // whether diffX and diffY are positive.  

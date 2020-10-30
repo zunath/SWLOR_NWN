@@ -1,6 +1,5 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ValueObject;
 
 // ReSharper disable once CheckNamespace
@@ -17,7 +16,7 @@ namespace NWN.Scripts
                 NWPlayer player = NWScript.GetPCSpeaker();
                 NWObject talkingTo = NWScript.OBJECT_SELF;
 
-                string waypointTag = talkingTo.GetLocalString("DESTINATION");
+                var waypointTag = talkingTo.GetLocalString("DESTINATION");
                 NWObject waypoint = NWScript.GetWaypointByTag(waypointTag);
 
                 player.AssignCommand(() => { NWScript.ActionJumpToLocation(waypoint.Location); });

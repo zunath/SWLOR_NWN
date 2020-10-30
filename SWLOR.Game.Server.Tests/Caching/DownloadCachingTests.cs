@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsDownload()
         {
             // Arrange
-            Download entity = new Download {ID = 1};
+            var entity = new Download {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Download>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            Download entity1 = new Download { ID = 1};
-            Download entity2 = new Download { ID = 2};
+            var entity1 = new Download { ID = 1};
+            var entity2 = new Download { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Download>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            Download entity1 = new Download { ID = 1};
-            Download entity2 = new Download { ID = 2};
+            var entity1 = new Download { ID = 1};
+            var entity2 = new Download { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Download>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            Download entity1 = new Download { ID = 1};
-            Download entity2 = new Download { ID = 2};
+            var entity1 = new Download { ID = 1};
+            var entity2 = new Download { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Download>(entity1));

@@ -1,8 +1,6 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
@@ -78,7 +76,7 @@ namespace SWLOR.Game.Server.Perk.Shields
             if (creature.IsPlayer)
             {
                 var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(creature.Object);
-                int luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky) + effectiveStats.Luck;
+                var luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky) + effectiveStats.Luck;
                 chance += luck;
             }
 

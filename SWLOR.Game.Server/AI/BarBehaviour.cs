@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.AI
             // 1: Smoking
             // 2: Drinking
             // 3: Sitting in a chair
-           int barActivity = self.GetLocalInt("barActivity");
+           var barActivity = self.GetLocalInt("barActivity");
             /* Random head/clothes check
             *
             * 

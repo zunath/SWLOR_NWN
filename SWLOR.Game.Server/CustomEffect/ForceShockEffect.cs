@@ -1,9 +1,7 @@
-﻿using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.CustomEffect.Contracts;
+﻿using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using System;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -22,12 +20,12 @@ namespace SWLOR.Game.Server.CustomEffect
 
         public void Tick(NWCreature oCaster, NWObject oTarget, int currentTick, int effectiveLevel, string data)
         {
-            int damage = Convert.ToInt32(data);
+            var damage = Convert.ToInt32(data);
             oTarget.SetLocalInt(AbilityService.LAST_ATTACK + oCaster.GlobalID, AbilityService.ATTACK_DOT);
 
             oCaster.AssignCommand(() =>
             {
-                Effect effect = NWScript.EffectDamage(damage, DamageType.Electrical);
+                var effect = NWScript.EffectDamage(damage, DamageType.Electrical);
                 NWScript.ApplyEffectToObject(DurationType.Instant, effect, oTarget);
             });
         }

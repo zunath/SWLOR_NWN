@@ -17,7 +17,7 @@ namespace SWLOR.Tools.Module.Packer
                 return;
             }
 
-            string mode = args[0];
+            var mode = args[0];
             var sw = new Stopwatch();
 
             if(mode == "p")
@@ -65,9 +65,9 @@ namespace SWLOR.Tools.Module.Packer
             Console.WriteLine("Packing files...");
             Parallel.ForEach(GetFileList(), (file) =>
             {
-                string fileNameNoJson = Path.GetFileNameWithoutExtension(file);
+                var fileNameNoJson = Path.GetFileNameWithoutExtension(file);
                 Console.WriteLine("Packing " + fileNameNoJson);
-                string command = $"nwn_gff -i {file} -o ./packing/{fileNameNoJson} -k gff";
+                var command = $"nwn_gff -i {file} -o ./packing/{fileNameNoJson} -k gff";
 
                 RunProcess(command);
             });
@@ -76,7 +76,7 @@ namespace SWLOR.Tools.Module.Packer
             // Copy the uncompiled (.nss) and compiled (.ncs) scripts to ./packing
             Parallel.ForEach(scriptFiles, (file) =>
             {
-                string fileName = Path.GetFileName(file);
+                var fileName = Path.GetFileName(file);
                 Console.WriteLine("Copying script file: " + fileName);
                 File.Copy(file, $"./packing/{fileName}");
             });
@@ -121,8 +121,8 @@ namespace SWLOR.Tools.Module.Packer
             Parallel.ForEach(files, (file) =>
             {
                 Console.WriteLine("Processing file: " + file);
-                string extension = Path.GetExtension(file)?.Replace(".", string.Empty);
-                string command = $"nwn_gff -i {file} -o ./{extension}/{file}.json -p";
+                var extension = Path.GetExtension(file)?.Replace(".", string.Empty);
+                var command = $"nwn_gff -i {file} -o ./{extension}/{file}.json -p";
 
                 RunProcess(command);
 
@@ -134,8 +134,8 @@ namespace SWLOR.Tools.Module.Packer
             Parallel.ForEach(files, (file) =>
             {
                 Console.WriteLine("Moving script: " + file);
-                string fileName = Path.GetFileName(file);
-                string extension = Path.GetExtension(file)?.Replace(".", string.Empty);
+                var fileName = Path.GetFileName(file);
+                var extension = Path.GetExtension(file)?.Replace(".", string.Empty);
                 File.Move(file, $"./{extension}/{fileName}");
             });
         }
@@ -166,7 +166,7 @@ namespace SWLOR.Tools.Module.Packer
 
         private static List<string> GetFileList()
         {
-            List<string> results = new List<string>();
+            var results = new List<string>();
             foreach (var folder in GetModuleFolders())
             {
                 results.AddRange(Directory.GetFiles(folder));

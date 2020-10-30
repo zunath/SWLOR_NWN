@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCGuildPoint entity = new PCGuildPoint {ID = id};
+            var entity = new PCGuildPoint {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCGuildPoint>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCGuildPoint entity1 = new PCGuildPoint { ID = id1};
-            PCGuildPoint entity2 = new PCGuildPoint { ID = id2};
+            var entity1 = new PCGuildPoint { ID = id1};
+            var entity2 = new PCGuildPoint { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCGuildPoint>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCGuildPoint entity1 = new PCGuildPoint { ID = id1};
-            PCGuildPoint entity2 = new PCGuildPoint { ID = id2};
+            var entity1 = new PCGuildPoint { ID = id1};
+            var entity2 = new PCGuildPoint { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCGuildPoint>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCGuildPoint entity1 = new PCGuildPoint { ID = id1};
-            PCGuildPoint entity2 = new PCGuildPoint { ID = id2};
+            var entity1 = new PCGuildPoint { ID = id1};
+            var entity2 = new PCGuildPoint { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCGuildPoint>(entity1));

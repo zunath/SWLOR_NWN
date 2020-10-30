@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.GameObject
 {
@@ -28,8 +27,8 @@ namespace SWLOR.Game.Server.GameObject
 
         public static bool operator ==(NWPlaceable lhs, NWPlaceable rhs)
         {
-            bool lhsNull = lhs is null;
-            bool rhsNull = rhs is null;
+            var lhsNull = lhs is null;
+            var rhsNull = rhs is null;
             return (lhsNull && rhsNull) || (!lhsNull && !rhsNull && lhs.Object == rhs.Object);
         }
 
@@ -40,7 +39,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public override bool Equals(object o)
         {
-            NWPlaceable other = o as NWPlaceable;
+            var other = o as NWPlaceable;
             return other != null && other == this;
         }
 

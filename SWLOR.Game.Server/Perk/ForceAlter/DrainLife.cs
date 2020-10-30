@@ -1,6 +1,5 @@
 ﻿using System;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -100,7 +99,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             var result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark);
 
             // +/- percent change based on resistance
-            float delta = 0.01f * result.Delta;
+            var delta = 0.01f * result.Delta;
             amount = amount + (int)(amount * delta);
 
             if (target.GetLocalInt("FORCE_DRAIN_IMMUNITY") == 1)

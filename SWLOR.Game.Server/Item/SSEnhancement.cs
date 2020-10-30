@@ -1,6 +1,5 @@
 ﻿using System;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -23,13 +22,13 @@ namespace SWLOR.Game.Server.Item
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            NWArea area = user.Area;
-            NWPlayer player = new NWPlayer(user);
-            string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
-            Guid structureGuid = new Guid(structureID);
+            var area = user.Area;
+            var player = new NWPlayer(user);
+            var structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var structureGuid = new Guid(structureID);
 
-            PCBaseStructure pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
-            BaseStructure structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
+            var pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
+            var structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
             
             var dbItem = new PCBaseStructureItem
             {
@@ -73,20 +72,20 @@ namespace SWLOR.Game.Server.Item
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            NWArea area = user.Area;
+            var area = user.Area;
 
             if (area.GetLocalInt("BUILDING_TYPE") != (int)Enumeration.BuildingType.Starship)
             {
                 return "This enhancement may only be deployed inside a starship";
             }
 
-            string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
-            Guid structureGuid = new Guid(structureID);
+            var structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var structureGuid = new Guid(structureID);
 
-            PCBaseStructure pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
-            BaseStructure structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
+            var pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
+            var structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
 
-            int count = DataService.PCBaseStructureItem.GetNumberOfItemsContainedBy(pcbs.ID) + 1;
+            var count = DataService.PCBaseStructureItem.GetNumberOfItemsContainedBy(pcbs.ID) + 1;
             if (count > (structure.ResourceStorage + pcbs.StructureBonus))
             {
                 return "Your cargo bay is full!  You cannot add any enhancements.";

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
@@ -159,7 +158,7 @@ namespace SWLOR.Game.Server.Service
         
         private static void ProcessVersion6ItemChanges(NWPlayer player)
         {
-            List<SerializedObjectData> serializedItems = new List<SerializedObjectData>();
+            var serializedItems = new List<SerializedObjectData>();
 
             // Start with equipped items.
             foreach (var item in player.EquippedItems)
@@ -194,11 +193,11 @@ namespace SWLOR.Game.Server.Service
         {
             // Start by pulling the custom AC off the item and halving it.
             // Durability is +1 for every 2 AC on the item.
-            int amount = item.CustomAC / 2;
+            var amount = item.CustomAC / 2;
             if (amount > 0)
             {
-                float newMax = DurabilityService.GetMaxDurability(item) + amount;
-                float newCurrent = DurabilityService.GetDurability(item) + amount;
+                var newMax = DurabilityService.GetMaxDurability(item) + amount;
+                var newCurrent = DurabilityService.GetDurability(item) + amount;
                 DurabilityService.SetMaxDurability(item, newMax);
                 DurabilityService.SetDurability(item, newCurrent);
             }
@@ -226,7 +225,7 @@ namespace SWLOR.Game.Server.Service
                 // +AC Component Bonus
                 if (GetItemPropertySubType(ip) == (int)ComponentBonusType.ACUp)
                 {
-                    int amount = GetItemPropertyCostTableValue(ip) / 2;
+                    var amount = GetItemPropertyCostTableValue(ip) / 2;
                     // Grant the durability up property if amount > 0
                     if (amount > 0)
                     {
@@ -298,7 +297,7 @@ namespace SWLOR.Game.Server.Service
 
             NWPlaceable storage = NWScript.GetObjectByTag("MIGRATION_STORAGE");
             NWItem newVersion = NWScript.CreateItemOnObject(item.Resref, storage);
-            List<ItemProperty> ipsToAdd = new List<ItemProperty>();
+            var ipsToAdd = new List<ItemProperty>();
             
             // There's a quirk with NWN in how it handles removing of item properties.
             // IPs don't get removed immediately - instead, they get removed after the script exits.
@@ -321,7 +320,7 @@ namespace SWLOR.Game.Server.Service
             // We return the serialized value. Be sure we do this before destroying the object.
             // The reason for this is to ensure we don't hit an infinite loop. The calling method uses a loop iterating
             // over the player's inventory. Creating an item will cause an infinite loop to happen.
-            string retVal = SerializationService.Serialize(newVersion);
+            var retVal = SerializationService.Serialize(newVersion);
 
             // Destroy the copy on the container.
             newVersion.Destroy();

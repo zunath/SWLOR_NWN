@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsAuthorizedDM()
         {
             // Arrange
-            AuthorizedDM entity = new AuthorizedDM {ID = 1};
+            var entity = new AuthorizedDM {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<AuthorizedDM>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            AuthorizedDM entity1 = new AuthorizedDM { ID = 1};
-            AuthorizedDM entity2 = new AuthorizedDM { ID = 2};
+            var entity1 = new AuthorizedDM { ID = 1};
+            var entity2 = new AuthorizedDM { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<AuthorizedDM>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            AuthorizedDM entity1 = new AuthorizedDM { ID = 1};
-            AuthorizedDM entity2 = new AuthorizedDM { ID = 2};
+            var entity1 = new AuthorizedDM { ID = 1};
+            var entity2 = new AuthorizedDM { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<AuthorizedDM>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            AuthorizedDM entity1 = new AuthorizedDM { ID = 1};
-            AuthorizedDM entity2 = new AuthorizedDM { ID = 2};
+            var entity1 = new AuthorizedDM { ID = 1};
+            var entity2 = new AuthorizedDM { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<AuthorizedDM>(entity1));

@@ -7,8 +7,8 @@ namespace SWLOR.Game.Server.Extension
     {
         public static string ToMessageAndCompleteStacktrace(this Exception exception)
         {
-            Exception e = exception;
-            StringBuilder s = new StringBuilder();
+            var e = exception;
+            var s = new StringBuilder();
             while (e != null)
             {
                 s.AppendLine("Exception type: " + e.GetType().FullName);

@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Mod
 
         public string CanApply(NWPlayer player, NWItem target, params string[] args)
         {
-            int value = Convert.ToInt32(args[0]);
+            var value = Convert.ToInt32(args[0]);
 
             if (value < 0)
             {
@@ -29,8 +29,8 @@ namespace SWLOR.Game.Server.Mod
 
         public void Apply(NWPlayer player, NWItem target, params string[] args)
         {
-            int value = Convert.ToInt32(args[0]);
-            int newValue = target.EnmityRate + value;
+            var value = Convert.ToInt32(args[0]);
+            var newValue = target.EnmityRate + value;
             if (newValue > MaxValue) newValue = MaxValue;
             else if (newValue < -MaxValue) newValue = -MaxValue;
 
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Mod
 
         public string Description(NWPlayer player, NWItem target, params string[] args)
         {
-            int value = Convert.ToInt32(args[0]);
+            var value = Convert.ToInt32(args[0]);
             return "Enmity: " + value + "%";
         }
     }

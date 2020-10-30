@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCMarketListing entity = new PCMarketListing {ID = id};
+            var entity = new PCMarketListing {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCMarketListing>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCMarketListing entity1 = new PCMarketListing { ID = id1};
-            PCMarketListing entity2 = new PCMarketListing { ID = id2};
+            var entity1 = new PCMarketListing { ID = id1};
+            var entity2 = new PCMarketListing { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCMarketListing>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCMarketListing entity1 = new PCMarketListing { ID = id1};
-            PCMarketListing entity2 = new PCMarketListing { ID = id2};
+            var entity1 = new PCMarketListing { ID = id1};
+            var entity2 = new PCMarketListing { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCMarketListing>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCMarketListing entity1 = new PCMarketListing { ID = id1};
-            PCMarketListing entity2 = new PCMarketListing { ID = id2};
+            var entity1 = new PCMarketListing { ID = id1};
+            var entity2 = new PCMarketListing { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCMarketListing>(entity1));

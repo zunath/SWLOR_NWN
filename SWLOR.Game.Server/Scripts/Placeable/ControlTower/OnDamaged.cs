@@ -2,8 +2,6 @@
 using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
@@ -28,20 +26,20 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
             NWCreature attacker = (NWScript.GetLastDamager(NWScript.OBJECT_SELF));
             NWPlaceable tower = (NWScript.OBJECT_SELF);
             NWItem weapon = (NWScript.GetLastWeaponUsed(attacker.Object));
-            int damage = NWScript.GetTotalDamageDealt();
+            var damage = NWScript.GetTotalDamageDealt();
             var structureID = tower.GetLocalString("PC_BASE_STRUCTURE_ID");
-            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(new Guid(structureID));
-            int maxShieldHP = BaseService.CalculateMaxShieldHP(structure);
-            PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
+            var structure = DataService.PCBaseStructure.GetByID(new Guid(structureID));
+            var maxShieldHP = BaseService.CalculateMaxShieldHP(structure);
+            var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
             var playerIDs = DataService.PCBasePermission.GetAllByHasPrivatePermissionToBase(structure.PCBaseID)
                                  .Select(s => s.PlayerID);
             var toNotify = NWModule.Get().Players.Where(x => playerIDs.Contains(x.GlobalID));
-            DateTime timer = DateTime.UtcNow.AddSeconds(30);
-            string clock = timer.ToString(CultureInfo.InvariantCulture);
-            string sector = BaseService.GetSectorOfLocation(attacker.Location);
+            var timer = DateTime.UtcNow.AddSeconds(30);
+            var clock = timer.ToString(CultureInfo.InvariantCulture);
+            var sector = BaseService.GetSectorOfLocation(attacker.Location);
             if (DateTime.UtcNow <= DateTime.Parse(clock))
             {
-                foreach (NWPlayer player in toNotify)
+                foreach (var player in toNotify)
                 {
                     player.SendMessage("Your base in " + attacker.Area.Name + " " + sector + " is under attack!");
                 }
@@ -53,7 +51,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.ControlTower
 
             // Calculate the amount of shield percentage remaining. If the tower is in reinforced mode, HP 
             // will always be set back to 25% of shields.
-            float hpPercentage = (float)pcBase.ShieldHP / (float)maxShieldHP * 100.0f;
+            var hpPercentage = (float)pcBase.ShieldHP / (float)maxShieldHP * 100.0f;
             if (hpPercentage <= 25.0f && pcBase.ReinforcedFuel > 0)
             {
                 pcBase.IsInReinforcedMode = true;

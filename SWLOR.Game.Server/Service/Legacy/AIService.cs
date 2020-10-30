@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Service
                 .Where(p => typeof(IAIBehaviour).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
             foreach (var type in classes)
             {
-                IAIBehaviour instance = Activator.CreateInstance(type) as IAIBehaviour;
+                var instance = Activator.CreateInstance(type) as IAIBehaviour;
                 if (instance == null)
                 {
                     throw new NullReferenceException("Unable to activate instance of type: " + type);
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Service
 
         private static string GetBehaviourScript(NWCreature self)
         {
-            string creatureScript = self.GetLocalString("BEHAVIOUR");
+            var creatureScript = self.GetLocalString("BEHAVIOUR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("BEHAVIOR");
             if (string.IsNullOrWhiteSpace(creatureScript)) creatureScript = self.GetLocalString("SCRIPT");
 
@@ -108,25 +108,25 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnCreatureBlocked()
         {
-            string script = GetBehaviourScript(OBJECT_SELF);
+            var script = GetBehaviourScript(OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
-            IAIBehaviour behaviour = GetAIBehaviour(script);
+            var behaviour = GetAIBehaviour(script);
             behaviour.OnBlocked(OBJECT_SELF);
         }
 
         private static void OnCreatureConversation()
         {
-            string script = GetBehaviourScript(OBJECT_SELF);
+            var script = GetBehaviourScript(OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
-            IAIBehaviour behaviour = GetAIBehaviour(script);
+            var behaviour = GetAIBehaviour(script);
             behaviour.OnConversation(OBJECT_SELF);
         }
 
         private static void OnCreatureDamaged()
         {
-            string script = GetBehaviourScript(OBJECT_SELF);
+            var script = GetBehaviourScript(OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
-            IAIBehaviour behaviour = GetAIBehaviour(script);
+            var behaviour = GetAIBehaviour(script);
             behaviour.OnDamaged(OBJECT_SELF);
         }
 
@@ -140,50 +140,50 @@ namespace SWLOR.Game.Server.Service
                 AppCache.CustomObjectData.Remove(self.GlobalID);
             }
 
-            string script = GetBehaviourScript(OBJECT_SELF);
+            var script = GetBehaviourScript(OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
-            IAIBehaviour behaviour = GetAIBehaviour(script);
+            var behaviour = GetAIBehaviour(script);
             behaviour.OnDeath(OBJECT_SELF);
         }
 
         private static void OnCreatureDisturbed()
         {
-            string script = GetBehaviourScript(OBJECT_SELF);
+            var script = GetBehaviourScript(OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
-            IAIBehaviour behaviour = GetAIBehaviour(script);
+            var behaviour = GetAIBehaviour(script);
             behaviour.OnDisturbed(OBJECT_SELF);
         }
 
 
         private static void OnCreatureHeartbeat()
         {
-            string script = GetBehaviourScript(OBJECT_SELF);
+            var script = GetBehaviourScript(OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
-            IAIBehaviour behaviour = GetAIBehaviour(script);
+            var behaviour = GetAIBehaviour(script);
             behaviour.OnHeartbeat(OBJECT_SELF);
         }
 
         private static void OnCreaturePerception()
         {
-            string script = GetBehaviourScript(OBJECT_SELF);
+            var script = GetBehaviourScript(OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
-            IAIBehaviour behaviour = GetAIBehaviour(script);
+            var behaviour = GetAIBehaviour(script);
             behaviour.OnPerception(OBJECT_SELF);
         }
 
         private static void OnCreaturePhysicalAttacked()
         {
-            string script = GetBehaviourScript(OBJECT_SELF);
+            var script = GetBehaviourScript(OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
-            IAIBehaviour behaviour = GetAIBehaviour(script);
+            var behaviour = GetAIBehaviour(script);
             behaviour.OnPhysicalAttacked(OBJECT_SELF);
         }
 
         private static void OnCreatureRested()
         {
-            string script = GetBehaviourScript(OBJECT_SELF);
+            var script = GetBehaviourScript(OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
-            IAIBehaviour behaviour = GetAIBehaviour(script);
+            var behaviour = GetAIBehaviour(script);
             behaviour.OnRested(OBJECT_SELF);
         }
 
@@ -192,9 +192,9 @@ namespace SWLOR.Game.Server.Service
             NWCreature self = OBJECT_SELF;
             WeatherService.OnCombatRoundEnd(self);
 
-            string script = GetBehaviourScript(OBJECT_SELF);
+            var script = GetBehaviourScript(OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
-            IAIBehaviour behaviour = GetAIBehaviour(script);
+            var behaviour = GetAIBehaviour(script);
             behaviour.OnCombatRoundEnd(OBJECT_SELF);
         }
 
@@ -205,9 +205,9 @@ namespace SWLOR.Game.Server.Service
             // Don't modify AI behaviour for DM-spawned creatures.
             if (GetLocalBool(self, "DM_SPAWNED") == true) return;
 
-            string script = GetBehaviourScript(OBJECT_SELF);
+            var script = GetBehaviourScript(OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
-            IAIBehaviour ai = GetAIBehaviour(script);
+            var ai = GetAIBehaviour(script);
 
             if (ai.IgnoreNWNEvents) self.SetLocalInt("IGNORE_NWN_EVENTS", 1);
             if (ai.IgnoreOnBlocked) self.SetLocalInt("IGNORE_NWN_ON_BLOCKED_EVENT", 1);
@@ -230,17 +230,17 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnCreatureSpellCastAt()
         {
-            string script = GetBehaviourScript(OBJECT_SELF);
+            var script = GetBehaviourScript(OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
-            IAIBehaviour behaviour = GetAIBehaviour(script);
+            var behaviour = GetAIBehaviour(script);
             behaviour.OnSpellCastAt(OBJECT_SELF);
         }
 
         private static void OnCreatureUserDefined()
         {
-            string script = GetBehaviourScript(OBJECT_SELF);
+            var script = GetBehaviourScript(OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;
-            IAIBehaviour behaviour = GetAIBehaviour(script);
+            var behaviour = GetAIBehaviour(script);
             behaviour.OnUserDefined(OBJECT_SELF);
         }
 
@@ -250,8 +250,8 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var area in NWModule.Get().Areas)
                 {
-                    int lastTickPlayerCount = area.GetLocalInt("AI_PLAYER_COUNT");
-                    int thisTickPlayerCount = Area.GetNumberOfPlayersInArea(area);
+                    var lastTickPlayerCount = area.GetLocalInt("AI_PLAYER_COUNT");
+                    var thisTickPlayerCount = Area.GetNumberOfPlayersInArea(area);
                     area.SetLocalInt("AI_PLAYER_COUNT", thisTickPlayerCount);
 
                     // AI gets processed one more time after an area becomes empty.
@@ -274,9 +274,9 @@ namespace SWLOR.Game.Server.Service
         private static void ProcessCreatureAI(NWArea area, ref HashSet<NWCreature> creatures)
         {
             // Iterate backwards so we can remove the creature if it's no longer valid.
-            for (int x = creatures.Count - 1; x >= 0; x--)
+            for (var x = creatures.Count - 1; x >= 0; x--)
             {
-                NWCreature creature = creatures.ElementAt(x);
+                var creature = creatures.ElementAt(x);
 
                 // Limbo check.
                 if (!area.IsValid) continue;
@@ -293,9 +293,9 @@ namespace SWLOR.Game.Server.Service
                 if (creature.IsPossessedFamiliar || creature.IsDMPossessed)
                     continue;
 
-                string script = GetBehaviourScript(creature);
+                var script = GetBehaviourScript(creature);
                 if (string.IsNullOrWhiteSpace(script)) continue;
-                IAIBehaviour behaviour = GetAIBehaviour(script);
+                var behaviour = GetAIBehaviour(script);
                 behaviour.OnProcessObject(creature);
             }
         }

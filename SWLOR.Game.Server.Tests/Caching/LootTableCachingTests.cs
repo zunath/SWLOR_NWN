@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsLootTable()
         {
             // Arrange
-            LootTable entity = new LootTable {ID = 1};
+            var entity = new LootTable {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<LootTable>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            LootTable entity1 = new LootTable { ID = 1};
-            LootTable entity2 = new LootTable { ID = 2};
+            var entity1 = new LootTable { ID = 1};
+            var entity2 = new LootTable { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<LootTable>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            LootTable entity1 = new LootTable { ID = 1};
-            LootTable entity2 = new LootTable { ID = 2};
+            var entity1 = new LootTable { ID = 1};
+            var entity2 = new LootTable { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<LootTable>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            LootTable entity1 = new LootTable { ID = 1};
-            LootTable entity2 = new LootTable { ID = 2};
+            var entity1 = new LootTable { ID = 1};
+            var entity2 = new LootTable { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<LootTable>(entity1));

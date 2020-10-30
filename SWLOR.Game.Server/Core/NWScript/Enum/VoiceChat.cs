@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SWLOR.Game.Server.Core.NWScript.Enum
+﻿namespace SWLOR.Game.Server.Core.NWScript.Enum
 {
     public enum VoiceChat
     {

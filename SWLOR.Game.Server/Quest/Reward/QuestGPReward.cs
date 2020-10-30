@@ -26,8 +26,8 @@ namespace SWLOR.Game.Server.Quest.Reward
         public void GiveReward(NWPlayer player)
         {
             var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, (int)Guild);
-            float rankBonus = 0.25f * pcGP.Rank;
-            int gp = Amount + (int)(Amount * rankBonus);
+            var rankBonus = 0.25f * pcGP.Rank;
+            var gp = Amount + (int)(Amount * rankBonus);
             GuildService.GiveGuildPoints(player, Guild, gp);
         }
     }

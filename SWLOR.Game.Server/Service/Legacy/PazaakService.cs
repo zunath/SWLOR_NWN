@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript;
@@ -51,10 +50,10 @@ namespace SWLOR.Game.Server.Service
         public static int AddCardToCollection(NWItem card, NWObject collection)
         {
             // Adds the card represented by card to collection, destroying the card item and returning its new index in the collection. 
-            int CardType = card.GetLocalInt("PAZAAK_CARD_TYPE");
+            var CardType = card.GetLocalInt("PAZAAK_CARD_TYPE");
 
             // Find the first available slot in the collection. 
-            int index = 1;
+            var index = 1;
             while (collection.GetLocalInt("CARD_" + index) != 0)
             {
                 index++;
@@ -70,9 +69,9 @@ namespace SWLOR.Game.Server.Service
         {
             // removes the card at index card, creating a card object with the right variable in the player's inventory. 
             // First check that the card is not in the deck.
-            for (int ii = 1; ii <= 10; ii++)
+            for (var ii = 1; ii <= 10; ii++)
             {
-                int cardInDeck = collection.GetLocalInt("DECK_" + ii);
+                var cardInDeck = collection.GetLocalInt("DECK_" + ii);
                 if (cardInDeck == index)
                 {
                     NWScript.SendMessageToPC(NWScript.GetItemPossessor(collection), "You cannot remove a card that's in your play deck.");
@@ -92,9 +91,9 @@ namespace SWLOR.Game.Server.Service
         {
             // Adds the card at position card in collection to slot in the collection's active deck.
             // First check that the card is not in the deck.
-            for (int ii = 1; ii <= 10; ii++)
+            for (var ii = 1; ii <= 10; ii++)
             {
-                int cardInDeck = collection.GetLocalInt("DECK_" + ii);
+                var cardInDeck = collection.GetLocalInt("DECK_" + ii);
                 if (cardInDeck == collectionIndex)
                 {
                     NWScript.SendMessageToPC(NWScript.GetItemPossessor(collection), "You cannot add a card that's already in your play deck.");
@@ -130,7 +129,7 @@ namespace SWLOR.Game.Server.Service
         public static PazaakGame StartGame(NWObject table, NWObject player1, NWObject player2)
         {
             // Begin a game.  player1 and player2 can be PCs or NPCs (or DMPCs).
-            PazaakGame game = new PazaakGame(player1, player2);
+            var game = new PazaakGame(player1, player2);
 
             if (ActiveGames == null) ActiveGames = new Dictionary<NWObject, PazaakGame>();
 

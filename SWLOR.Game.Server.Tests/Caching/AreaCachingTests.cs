@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            Area entity = new Area {ID = id, Name = "my area"};
+            var entity = new Area {ID = id, Name = "my area"};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Area>(entity));
@@ -46,8 +46,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            Area entity1 = new Area { ID = id1};
-            Area entity2 = new Area { ID = id2};
+            var entity1 = new Area { ID = id1};
+            var entity2 = new Area { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Area>(entity1));
@@ -64,8 +64,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            Area entity1 = new Area { ID = id1};
-            Area entity2 = new Area { ID = id2};
+            var entity1 = new Area { ID = id1};
+            var entity2 = new Area { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Area>(entity1));
@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            Area entity1 = new Area { ID = id1};
-            Area entity2 = new Area { ID = id2};
+            var entity1 = new Area { ID = id1};
+            var entity2 = new Area { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<Area>(entity1));

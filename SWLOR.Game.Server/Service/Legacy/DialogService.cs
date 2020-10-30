@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Service
                 .Where(p => typeof(IConversation).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
             foreach (var type in classes)
             {
-                IConversation instance = Activator.CreateInstance(type) as IConversation;
+                var instance = Activator.CreateInstance(type) as IConversation;
                 if (instance == null)
                 {
                     throw new NullReferenceException("Unable to activate instance of type: " + type);
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (dialog.DialogNumber <= 0)
             {
-                for (int x = 1; x <= NumberOfDialogs; x++)
+                for (var x = 1; x <= NumberOfDialogs; x++)
                 {
                     var existingDialog = AppCache.PlayerDialogs.SingleOrDefault(d => d.Value.DialogNumber == x);
                     if (!AppCache.DialogFilesInUse[x] || existingDialog.Value == null)
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (globalID == null) throw new ArgumentException(nameof(globalID), nameof(globalID) + " cannot be null, empty, or whitespace.");
 
-            PlayerDialog dialog = AppCache.PlayerDialogs[globalID];
+            var dialog = AppCache.PlayerDialogs[globalID];
             AppCache.DialogFilesInUse[dialog.DialogNumber] = false;
 
             AppCache.PlayerDialogs.Remove(globalID);
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Service
             if (dialogNumber != -1 && (dialogNumber < 1 || dialogNumber > NumberOfDialogs)) throw new ArgumentOutOfRangeException(nameof(dialogNumber), nameof(dialogNumber) + " must be between 1 and " + NumberOfDialogs);
 
             var convo = GetConversation(@class);
-            PlayerDialog dialog = convo.SetUp(player);
+            var dialog = convo.SetUp(player);
 
             if (dialog == null)
             {
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Service
             if (string.IsNullOrWhiteSpace(@class)) throw new ArgumentException(nameof(@class), nameof(@class) + " cannot be null, empty, or whitespace.");
 
             LoadConversation(player, talkTo, @class, -1);
-            PlayerDialog dialog = AppCache.PlayerDialogs[player.GlobalID];
+            var dialog = AppCache.PlayerDialogs[player.GlobalID];
 
             // NPC conversations
             if (GetObjectType(talkTo) == ObjectType.Creature &&
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void EndConversation(NWPlayer player)
         {
-            PlayerDialog playerDialog = LoadPlayerDialog(player.GlobalID);
+            var playerDialog = LoadPlayerDialog(player.GlobalID);
             playerDialog.IsEnding = true;
             StorePlayerDialog(player.GlobalID, playerDialog);
         }
@@ -182,13 +182,13 @@ namespace SWLOR.Game.Server.Service
         public static void OnActionsTaken(int nodeID)
         {
             NWPlayer player = (GetPCSpeaker());
-            PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
+            var dialog = LoadPlayerDialog(player.GlobalID);
 
             using (new Profiler(nameof(DialogService) + "." + nameof(OnActionsTaken) + "." + dialog.ActiveDialogName))
             {
-                IConversation convo = GetConversation(dialog.ActiveDialogName);
-                int selectionNumber = nodeID + 1;
-                int responseID = nodeID + (NumberOfResponsesPerPage * dialog.PageOffset);
+                var convo = GetConversation(dialog.ActiveDialogName);
+                var selectionNumber = nodeID + 1;
+                var responseID = nodeID + (NumberOfResponsesPerPage * dialog.PageOffset);
 
                 if (selectionNumber == NumberOfResponsesPerPage + 1) // Next page
                 {
@@ -200,7 +200,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 else if (selectionNumber == NumberOfResponsesPerPage + 3) // Back
                 {
-                    string currentPageName = dialog.CurrentPageName;
+                    var currentPageName = dialog.CurrentPageName;
                     var previous = dialog.NavigationStack.Pop();
 
                     // This might be a little confusing but we're passing the active page as the "old page" to the Back() method.
@@ -238,22 +238,22 @@ namespace SWLOR.Game.Server.Service
         public static bool OnAppearsWhen(int nodeType, int nodeID)
         {
             NWPlayer player = (GetPCSpeaker());
-            bool hasDialog = HasPlayerDialog(player.GlobalID);
+            var hasDialog = HasPlayerDialog(player.GlobalID);
             if (!hasDialog) return false;
-            PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
+            var dialog = LoadPlayerDialog(player.GlobalID);
 
             using (new Profiler(nameof(DialogService) + "." + nameof(OnAppearsWhen) + "." + dialog.ActiveDialogName))
             {
-                DialogPage page = dialog.CurrentPage;
+                var page = dialog.CurrentPage;
                 var convo = GetConversation(dialog.ActiveDialogName);
-                int currentSelectionNumber = nodeID + 1;
-                bool displayNode = false;
-                string newNodeText = string.Empty;
-                int dialogOffset = (NumberOfResponsesPerPage + 1) * (dialog.DialogNumber - 1);
+                var currentSelectionNumber = nodeID + 1;
+                var displayNode = false;
+                var newNodeText = string.Empty;
+                var dialogOffset = (NumberOfResponsesPerPage + 1) * (dialog.DialogNumber - 1);
 
                 if (currentSelectionNumber == NumberOfResponsesPerPage + 1) // Next page
                 {
-                    int displayCount = page.NumberOfResponses - (NumberOfResponsesPerPage * dialog.PageOffset);
+                    var displayCount = page.NumberOfResponses - (NumberOfResponsesPerPage * dialog.PageOffset);
 
                     if (displayCount > NumberOfResponsesPerPage)
                     {
@@ -276,10 +276,10 @@ namespace SWLOR.Game.Server.Service
                 }
                 else if (nodeType == 2)
                 {
-                    int responseID = (dialog.PageOffset * NumberOfResponsesPerPage) + nodeID;
+                    var responseID = (dialog.PageOffset * NumberOfResponsesPerPage) + nodeID;
                     if (responseID + 1 <= page.NumberOfResponses)
                     {
-                        DialogResponse response = page.Responses[responseID];
+                        var response = page.Responses[responseID];
 
                         if (response != null)
                         {
@@ -321,7 +321,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer pc = (GetLastUsedBy());
             if (!pc.IsValid) pc = (GetPCSpeaker());
 
-            string conversation = GetLocalString(OBJECT_SELF, "CONVERSATION");
+            var conversation = GetLocalString(OBJECT_SELF, "CONVERSATION");
 
             using (new Profiler(nameof(DialogService) + "." + nameof(OnDialogStart) + "." + conversation))
             {
@@ -352,7 +352,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = (GetPCSpeaker());
             if (!HasPlayerDialog(player.GlobalID)) return;
 
-            PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
+            var dialog = LoadPlayerDialog(player.GlobalID);
             using (new Profiler(nameof(DialogService) + "." + nameof(OnDialogEnd) + "." + dialog.ActiveDialogName))
             {
                 var convo = GetConversation(dialog.ActiveDialogName);

@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            string command = args[0].ToLower();
+            var command = args[0].ToLower();
 
             switch (command)
             {
@@ -43,8 +43,8 @@ namespace SWLOR.Game.Server.ChatCommand
                 case "d10":
                 case "d20":
                 case "d100":
-                    int sides = Convert.ToInt32(command.Substring(1));
-                    int count = 1;
+                    var sides = Convert.ToInt32(command.Substring(1));
+                    var count = 1;
                     if (args.Length > 1)
                     {
                         if (!int.TryParse(args[1], out count))
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.ChatCommand
 
             };
 
-            string message = string.Join("\n", commands);
+            var message = string.Join("\n", commands);
 
             user.SendMessage(message);
         }
@@ -123,8 +123,8 @@ namespace SWLOR.Game.Server.ChatCommand
                     break;
             }
 
-            string dieRoll = number + "d" + sides;
-            string message = ColorTokenService.SkillCheck("Dice Roll: ") + dieRoll + ": " + value;
+            var dieRoll = number + "d" + sides;
+            var message = ColorTokenService.SkillCheck("Dice Roll: ") + dieRoll + ": " + value;
             user.SpeakString(message);
         }
 

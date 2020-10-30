@@ -2,7 +2,6 @@
 using System.Linq;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
@@ -30,8 +29,8 @@ namespace SWLOR.Game.Server.Processor
         {
             if (!_isLoaded)
             {
-                string autoRebootMinutes = Environment.GetEnvironmentVariable("AUTO_REBOOT_MINUTES");
-                if(!int.TryParse(autoRebootMinutes, out int minutes))
+                var autoRebootMinutes = Environment.GetEnvironmentVariable("AUTO_REBOOT_MINUTES");
+                if(!int.TryParse(autoRebootMinutes, out var minutes))
                 {
                     minutes = DefaultRestartMinutes;
                 }
@@ -78,20 +77,20 @@ namespace SWLOR.Game.Server.Processor
                 else if (now >= _nextNotification)
                 {
                     var delta = RestartTime - now;
-                    string rebootString = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
-                    string message = "Server will automatically reboot in " + rebootString;
+                    var rebootString = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
+                    var message = "Server will automatically reboot in " + rebootString;
                     foreach (var player in NWModule.Get().Players)
                     {
                         // Send a message about the next reboot.
                         player.FloatingText(message);
 
                         // If the player has a lease which is expiring in <= 24 hours, notify them.
-                        int leasesExpiring = DataService.PCBase
+                        var leasesExpiring = DataService.PCBase
                             .GetAllByPlayerID(player.GlobalID)
                             .Count(x => x.DateRentDue.AddHours(-24) <= now);
                         if (leasesExpiring > 0)
                         {
-                            string leaseDetails = leasesExpiring == 1 ? "1 lease" : leasesExpiring + " leases";
+                            var leaseDetails = leasesExpiring == 1 ? "1 lease" : leasesExpiring + " leases";
                             player.FloatingText("You have " + leaseDetails + " expiring in less than 24 hours (real world time). Please extend the lease or your land will be forfeited.");
                         }
                     }

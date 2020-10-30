@@ -5,8 +5,6 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Feat;
@@ -46,11 +44,11 @@ namespace SWLOR.Game.Server.Service
             return DataService.CraftBlueprint.GetAll().Where(x =>
             {
                 // ReSharper disable once ReplaceWithSingleAssignment.True
-                bool found = true;
+                var found = true;
 
                 // Exclude blueprints which the player doesn't meet the required perk level for.
                 var pcPerk = pcPerks.SingleOrDefault(p => p.PerkID == x.PerkID);
-                int perkLevel = pcPerk == null ? 0 : pcPerk.PerkLevel;
+                var perkLevel = pcPerk == null ? 0 : pcPerk.PerkLevel;
                 if (x.PerkID != null && perkLevel < x.RequiredPerkLevel)
                     found = false;
 
@@ -83,13 +81,13 @@ namespace SWLOR.Game.Server.Service
         {
             var model = GetPlayerCraftingData(player);
             var bp = model.Blueprint;
-            int playerEL = CalculatePCEffectiveLevel(player, model.PlayerSkillRank, (SkillType)bp.SkillID);
+            var playerEL = CalculatePCEffectiveLevel(player, model.PlayerSkillRank, (SkillType)bp.SkillID);
             var baseStructure = bp.BaseStructureID == null ? null : DataService.BaseStructure.GetByID(Convert.ToInt32(bp.BaseStructureID));
             var mainComponent = DataService.ComponentType.GetByID(bp.MainComponentTypeID);
             var secondaryComponent = DataService.ComponentType.GetByID(bp.SecondaryComponentTypeID);
             var tertiaryComponent = DataService.ComponentType.GetByID(bp.TertiaryComponentTypeID);
 
-            string header = ColorTokenService.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
+            var header = ColorTokenService.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
             header += ColorTokenService.Green("Level: ") + (model.AdjustedLevel < 0 ? 0 : model.AdjustedLevel) + " (Base: " + (bp.BaseLevel < 0 ? 0 : bp.BaseLevel) + ")\n";
             header += ColorTokenService.Green("Difficulty: ") + CalculateDifficultyDescription(playerEL, model.AdjustedLevel) + "\n";
 
@@ -110,22 +108,22 @@ namespace SWLOR.Game.Server.Service
 
             header += ColorTokenService.Green("Required Components (Required/Maximum): ") + "\n\n";
 
-            string mainCounts = " (" + (model.MainMinimum > 0 ? Convert.ToString(model.MainMinimum) : "Optional") + "/" + model.MainMaximum + ")";
+            var mainCounts = " (" + (model.MainMinimum > 0 ? Convert.ToString(model.MainMinimum) : "Optional") + "/" + model.MainMaximum + ")";
             header += ColorTokenService.Green("Main: ") + mainComponent.Name + mainCounts + "\n";
 
             if (bp.SecondaryMinimum > 0 && bp.SecondaryComponentTypeID > 0)
             {
-                string secondaryCounts = " (" + (model.SecondaryMinimum > 0 ? Convert.ToString(model.SecondaryMinimum) : "Optional") + "/" + model.SecondaryMaximum + ")";
+                var secondaryCounts = " (" + (model.SecondaryMinimum > 0 ? Convert.ToString(model.SecondaryMinimum) : "Optional") + "/" + model.SecondaryMaximum + ")";
                 header += ColorTokenService.Green("Secondary: ") + secondaryComponent.Name + secondaryCounts + "\n";
             }
             if (bp.TertiaryMinimum > 0 && bp.TertiaryComponentTypeID > 0)
             {
-                string tertiaryCounts = " (" + (model.TertiaryMinimum > 0 ? Convert.ToString(model.TertiaryMinimum) : "Optional") + "/" + model.TertiaryMaximum + ")";
+                var tertiaryCounts = " (" + (model.TertiaryMinimum > 0 ? Convert.ToString(model.TertiaryMinimum) : "Optional") + "/" + model.TertiaryMaximum + ")";
                 header += ColorTokenService.Green("Tertiary: ") + tertiaryComponent.Name + tertiaryCounts + "\n";
             }
             if (bp.EnhancementSlots > 0)
             {
-                int nSlots = bp.EnhancementSlots;
+                var nSlots = bp.EnhancementSlots;
                 if (model.IsInitialized)
                 {
                     // We have the player's stats, so tell them how many they can actually add.
@@ -135,7 +133,7 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                string enhancementSlots = " (0/" + Convert.ToString(nSlots) + ")";
+                var enhancementSlots = " (0/" + Convert.ToString(nSlots) + ")";
                 header += ColorTokenService.Green("Enhancement slots: ") + enhancementSlots + "\n";
             }
 
@@ -188,7 +186,7 @@ namespace SWLOR.Game.Server.Service
         public static void CraftItem(NWPlayer oPC, NWPlaceable device)
         {
             var model = GetPlayerCraftingData(oPC);
-            CraftBlueprint blueprint = DataService.CraftBlueprint.GetByID(model.BlueprintID);
+            var blueprint = DataService.CraftBlueprint.GetByID(model.BlueprintID);
             if (blueprint == null) return;
 
             if (oPC.IsBusy)
@@ -205,7 +203,7 @@ namespace SWLOR.Game.Server.Service
 
             oPC.IsBusy = true;
 
-            float modifiedCraftDelay = CalculateCraftingDelay(oPC, blueprint.SkillID);
+            var modifiedCraftDelay = CalculateCraftingDelay(oPC, blueprint.SkillID);
             oPC.AssignCommand(() =>
             {
                 NWScript.ClearAllActions();
@@ -228,12 +226,12 @@ namespace SWLOR.Game.Server.Service
 
         public static float CalculateCraftingDelay(NWPlayer oPC, int skillID)
         {
-            int atmosphere = CalculateAreaAtmosphereBonus(oPC.Area);
+            var atmosphere = CalculateAreaAtmosphereBonus(oPC.Area);
             PerkType perkType;
-            float adjustedSpeed = 1.0f;
+            var adjustedSpeed = 1.0f;
             perkType = PerkType.SpeedyCrafting;
 
-            int perkLevel = PerkService.GetCreaturePerkLevel(oPC, perkType);
+            var perkLevel = PerkService.GetCreaturePerkLevel(oPC, perkType);
 
             // Each perk level reduces crafting speed by 10%.
             switch (perkLevel)
@@ -271,8 +269,8 @@ namespace SWLOR.Game.Server.Service
 
         public static string CalculateDifficultyDescription(int pcLevel, int blueprintLevel)
         {
-            int delta = pcLevel - blueprintLevel;
-            string difficulty = "";
+            var delta = pcLevel - blueprintLevel;
+            var difficulty = "";
 
             if (delta <= -5)
             {
@@ -320,8 +318,8 @@ namespace SWLOR.Game.Server.Service
 
         public static int CalculatePCEffectiveLevel(NWPlayer player, int skillRank, SkillType skill)
         {
-            int effectiveLevel = skillRank;
-            BackgroundType background = (BackgroundType)player.Class1;
+            var effectiveLevel = skillRank;
+            var background = (BackgroundType)player.Class1;
 
             switch (skill)
             {
@@ -541,7 +539,7 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleNWNXChat()
         {
             NWPlayer pc = Chat.GetSender();
-            string newName = Chat.GetMessage();
+            var newName = Chat.GetMessage();
 
             if (!CanHandleChat(pc))
             {
@@ -574,12 +572,12 @@ namespace SWLOR.Game.Server.Service
         private static void OnModuleUseFeat()
         {
             NWPlayer pc = NWScript.OBJECT_SELF;
-            int featID = Convert.ToInt32(Events.GetEventData("FEAT_ID"));
+            var featID = Convert.ToInt32(Events.GetEventData("FEAT_ID"));
 
             if (featID != (int)Feat.RenameCraftedItem) return;
             pc.ClearAllActions();
 
-            bool isSetting = GetLocalBool(pc, "CRAFT_RENAMING_ITEM") == true;
+            var isSetting = GetLocalBool(pc, "CRAFT_RENAMING_ITEM") == true;
             NWItem renameItem = StringToObject(Events.GetEventData("TARGET_OBJECT_ID"));
 
             if (isSetting)
@@ -590,7 +588,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            string crafterPlayerID = renameItem.GetLocalString("CRAFTER_PLAYER_ID");
+            var crafterPlayerID = renameItem.GetLocalString("CRAFTER_PLAYER_ID");
             if (string.IsNullOrWhiteSpace(crafterPlayerID) || new Guid(crafterPlayerID) != pc.GlobalID)
             {
                 pc.SendMessage("You may only rename items which you have personally crafted.");
@@ -605,11 +603,11 @@ namespace SWLOR.Game.Server.Service
         public static int CalculateAreaAtmosphereBonus(NWArea area)
         {
             // Building IDs are stored on the instanced area's local variables.
-            string pcStructureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var pcStructureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
             if (string.IsNullOrWhiteSpace(pcStructureID)) return 0;
 
             // Pull the building structure from the database.
-            Guid buildingID = new Guid(pcStructureID);
+            var buildingID = new Guid(pcStructureID);
             var building = DataService.PCBaseStructure.GetByID(buildingID);
 
             // Building must be in "Workshop" mode in order for the atmosphere bonuses to take effect.
@@ -624,7 +622,7 @@ namespace SWLOR.Game.Server.Service
                     });
 
             // Add up the total atmosphere rating, being careful not to go over the cap.
-            int bonus = structures.Sum(x => 1 + x.StructureBonus);
+            var bonus = structures.Sum(x => 1 + x.StructureBonus);
             if (bonus > 75) bonus = 75;
 
             return bonus;
@@ -632,11 +630,11 @@ namespace SWLOR.Game.Server.Service
 
         public static string GetAreaAtmosphereBonusText(NWArea area)
         {
-            int bonus = CalculateAreaAtmosphereBonus(area);
+            var bonus = CalculateAreaAtmosphereBonus(area);
 
-            string craftingSpeedBonus = string.Empty;
-            string propertyTransferBonus = string.Empty;
-            string equipmentBonus = string.Empty;
+            var craftingSpeedBonus = string.Empty;
+            var propertyTransferBonus = string.Empty;
+            var equipmentBonus = string.Empty;
 
             if (bonus >= 5)
             {
@@ -682,7 +680,7 @@ namespace SWLOR.Game.Server.Service
         private static void OnAreaEnter()
         {
             NWArea area = NWScript.OBJECT_SELF;
-            string bonuses = GetAreaAtmosphereBonusText(area);
+            var bonuses = GetAreaAtmosphereBonusText(area);
 
             if (string.IsNullOrWhiteSpace(bonuses)) return;
             NWCreature entering = NWScript.GetEnteringObject();
@@ -693,12 +691,12 @@ namespace SWLOR.Game.Server.Service
         public static int CalculateReassemblyChance(NWPlayer player, int penalty)
         {
             const int BaseChance = 70;
-            int harvesting = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
+            var harvesting = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
             var itemBonuses = PlayerStatService.GetPlayerItemEffectiveStats(player);
-            int perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.MolecularReassemblyProficiency);
+            var perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.MolecularReassemblyProficiency);
 
             // Calculate the base chance after factoring in skills, perks, and items.
-            int categoryChance = (int)(BaseChance + (harvesting / 2.5f) + perkLevel * 10 + itemBonuses.Harvesting / 3f);
+            var categoryChance = (int)(BaseChance + (harvesting / 2.5f) + perkLevel * 10 + itemBonuses.Harvesting / 3f);
 
             // Reduce the chance by the penalty. This penalty is generally determined by how many properties were already
             // applied during this batch.

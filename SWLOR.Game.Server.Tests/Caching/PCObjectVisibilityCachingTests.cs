@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         {
             // Arrange
             var id = Guid.NewGuid();
-            PCObjectVisibility entity = new PCObjectVisibility {ID = id};
+            var entity = new PCObjectVisibility {ID = id};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCObjectVisibility>(entity));
@@ -45,8 +45,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCObjectVisibility entity1 = new PCObjectVisibility { ID = id1};
-            PCObjectVisibility entity2 = new PCObjectVisibility { ID = id2};
+            var entity1 = new PCObjectVisibility { ID = id1};
+            var entity2 = new PCObjectVisibility { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCObjectVisibility>(entity1));
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCObjectVisibility entity1 = new PCObjectVisibility { ID = id1};
-            PCObjectVisibility entity2 = new PCObjectVisibility { ID = id2};
+            var entity1 = new PCObjectVisibility { ID = id1};
+            var entity2 = new PCObjectVisibility { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCObjectVisibility>(entity1));
@@ -82,8 +82,8 @@ namespace SWLOR.Game.Server.Tests.Caching
             // Arrange
             var id1 = Guid.NewGuid();
             var id2 = Guid.NewGuid();
-            PCObjectVisibility entity1 = new PCObjectVisibility { ID = id1};
-            PCObjectVisibility entity2 = new PCObjectVisibility { ID = id2};
+            var entity1 = new PCObjectVisibility { ID = id1};
+            var entity2 = new PCObjectVisibility { ID = id2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<PCObjectVisibility>(entity1));

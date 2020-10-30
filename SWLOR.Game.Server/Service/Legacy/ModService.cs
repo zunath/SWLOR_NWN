@@ -6,8 +6,6 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Mod.Contracts;
@@ -44,7 +42,7 @@ namespace SWLOR.Game.Server.Service
                 .Where(p => typeof(IModHandler).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
             foreach (var type in classes)
             {
-                IModHandler instance = Activator.CreateInstance(type) as IModHandler;
+                var instance = Activator.CreateInstance(type) as IModHandler;
                 if (instance == null)
                 {
                     throw new NullReferenceException("Unable to activate instance of type: " + type);
@@ -70,7 +68,7 @@ namespace SWLOR.Game.Server.Service
 
         public static ItemPropertyType GetModType(NWItem item)
         {
-            ItemPropertyType ipType = ItemPropertyType.Invalid;
+            var ipType = ItemPropertyType.Invalid;
             foreach (var ip in item.ItemProperties)
             {
                 var type = NWScript.GetItemPropertyType(ip);
@@ -89,7 +87,7 @@ namespace SWLOR.Game.Server.Service
 
         public static ModSlots GetModSlots(NWItem item)
         {
-            ModSlots modSlots = new ModSlots();
+            var modSlots = new ModSlots();
             foreach (var ip in item.ItemProperties)
             {
                 var type = NWScript.GetItemPropertyType(ip);
@@ -113,33 +111,33 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            for (int red = 1; red <= modSlots.RedSlots; red++)
+            for (var red = 1; red <= modSlots.RedSlots; red++)
             {
-                int modID = item.GetLocalInt("MOD_SLOT_RED_" + red);
+                var modID = item.GetLocalInt("MOD_SLOT_RED_" + red);
                 if (modID > 0)
                     modSlots.FilledRedSlots++;
             }
-            for (int blue = 1; blue <= modSlots.BlueSlots; blue++)
+            for (var blue = 1; blue <= modSlots.BlueSlots; blue++)
             {
-                int modID = item.GetLocalInt("MOD_SLOT_BLUE_" + blue);
+                var modID = item.GetLocalInt("MOD_SLOT_BLUE_" + blue);
                 if (modID > 0)
                     modSlots.FilledBlueSlots++;
             }
-            for (int green = 1; green <= modSlots.GreenSlots; green++)
+            for (var green = 1; green <= modSlots.GreenSlots; green++)
             {
-                int modID = item.GetLocalInt("MOD_SLOT_GREEN_" + green);
+                var modID = item.GetLocalInt("MOD_SLOT_GREEN_" + green);
                 if (modID > 0)
                     modSlots.FilledGreenSlots++;
             }
-            for (int yellow = 1; yellow <= modSlots.YellowSlots; yellow++)
+            for (var yellow = 1; yellow <= modSlots.YellowSlots; yellow++)
             {
-                int modID = item.GetLocalInt("MOD_SLOT_YELLOW_" + yellow);
+                var modID = item.GetLocalInt("MOD_SLOT_YELLOW_" + yellow);
                 if (modID > 0)
                     modSlots.FilledYellowSlots++;
             }
-            for (int prismatic = 1; prismatic <= modSlots.PrismaticSlots; prismatic++)
+            for (var prismatic = 1; prismatic <= modSlots.PrismaticSlots; prismatic++)
             {
-                int modID = item.GetLocalInt("MOD_SLOT_PRISMATIC_" + prismatic);
+                var modID = item.GetLocalInt("MOD_SLOT_PRISMATIC_" + prismatic);
                 if (modID > 0)
                     modSlots.FilledPrismaticSlots++;
             }
@@ -162,26 +160,26 @@ namespace SWLOR.Game.Server.Service
         {
             if (examinedObject.ObjectType != ObjectType.Item) return existingDescription;
             NWItem examinedItem = (examinedObject.Object);
-            string description = string.Empty;
-            ModSlots slot = GetModSlots(examinedItem);
+            var description = string.Empty;
+            var slot = GetModSlots(examinedItem);
             
-            for (int red = 1; red <= slot.FilledRedSlots; red++)
+            for (var red = 1; red <= slot.FilledRedSlots; red++)
             {
                 description += ColorTokenService.Red("Red Slot #" + red + ": ") + examinedItem.GetLocalString("MOD_SLOT_RED_DESC_" + red) + "\n";
             }
-            for (int blue = 1; blue <= slot.FilledBlueSlots; blue++)
+            for (var blue = 1; blue <= slot.FilledBlueSlots; blue++)
             {
                 description += ColorTokenService.Red("Blue Slot #" + blue + ": ") + examinedItem.GetLocalString("MOD_SLOT_BLUE_DESC_" + blue) + "\n";
             }
-            for (int green = 1; green <= slot.FilledGreenSlots; green++)
+            for (var green = 1; green <= slot.FilledGreenSlots; green++)
             {
                 description += ColorTokenService.Red("Green Slot #" + green + ": ") + examinedItem.GetLocalString("MOD_SLOT_GREEN_DESC_" + green) + "\n";
             }
-            for (int yellow = 1; yellow <= slot.FilledYellowSlots; yellow++)
+            for (var yellow = 1; yellow <= slot.FilledYellowSlots; yellow++)
             {
                 description += ColorTokenService.Red("Yellow Slot #" + yellow + ": ") + examinedItem.GetLocalString("MOD_SLOT_YELLOW_DESC_" + yellow) + "\n";
             }
-            for (int prismatic = 1; prismatic <= slot.FilledPrismaticSlots; prismatic++)
+            for (var prismatic = 1; prismatic <= slot.FilledPrismaticSlots; prismatic++)
             {
                 description += PrismaticString() + " Slot #" + prismatic + ": " + examinedItem.GetLocalString("MOD_SLOT_PRISMATIC_DESC_" + prismatic) + "\n";
             }
@@ -202,15 +200,15 @@ namespace SWLOR.Game.Server.Service
             if (target.GetLocalInt(AbilityService.LAST_ATTACK + damager.GlobalID) != AbilityService.ATTACK_PHYSICAL) return;
 
             NWItem weapon = (NWScript.GetLastWeaponUsed(damager.Object));
-            int damageBonus = weapon.DamageBonus;
+            var damageBonus = weapon.DamageBonus;
 
             NWPlayer player = (damager.Object);
-            int itemLevel = weapon.RecommendedLevel;
-            SkillType skill = ItemService.GetSkillTypeForItem(weapon);
+            var itemLevel = weapon.RecommendedLevel;
+            var skill = ItemService.GetSkillTypeForItem(weapon);
             if (skill == SkillType.Unknown) return;
 
-            int rank = SkillService.GetPCSkillRank(player, skill);
-            int delta = itemLevel - rank;
+            var rank = SkillService.GetPCSkillRank(player, skill);
+            var delta = itemLevel - rank;
             if (delta >= 1) damageBonus--;
             damageBonus = damageBonus - delta / 5;
 

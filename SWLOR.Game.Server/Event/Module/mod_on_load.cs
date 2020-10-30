@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
@@ -25,7 +24,7 @@ namespace NWN.Scripts
         // ReSharper disable once UnusedMember.Local
         public static void Main()
         {
-            string nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
+            var nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             Console.WriteLine(nowString + ": Module OnLoad executing...");
 
             using (new Profiler(nameof(mod_on_load) + ":DatabaseMigrator"))
@@ -85,7 +84,7 @@ namespace NWN.Scripts
 
         private static void SetAreaEventScripts()
         {
-            uint area = NWScript.GetFirstArea();
+            var area = NWScript.GetFirstArea();
             while (NWScript.GetIsObjectValid(area) == true)
             {
                 NWScript.SetEventScript(area, EventScript.Area_OnEnter, "area_on_enter");

@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Quest.Prerequisite
         public bool MeetsPrerequisite(NWPlayer player)
         {
             var fame = DataService.PCRegionalFame.GetByPlayerIDAndFameRegionIDOrDefault(player.GlobalID, _fameRegionID);
-            int fameAmount = fame?.Amount ?? 0;
+            var fameAmount = fame?.Amount ?? 0;
 
             return fameAmount >= _amount;
         }

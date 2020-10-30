@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_OneItem_ReturnsGameTopicCategory()
         {
             // Arrange
-            GameTopicCategory entity = new GameTopicCategory {ID = 1};
+            var entity = new GameTopicCategory {ID = 1};
             
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<GameTopicCategory>(entity));
@@ -41,8 +41,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_TwoItems_ReturnsCorrectObject()
         {
             // Arrange
-            GameTopicCategory entity1 = new GameTopicCategory { ID = 1};
-            GameTopicCategory entity2 = new GameTopicCategory { ID = 2};
+            var entity1 = new GameTopicCategory { ID = 1};
+            var entity2 = new GameTopicCategory { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<GameTopicCategory>(entity1));
@@ -57,8 +57,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_RemovedItem_ReturnsCorrectObject()
         {
             // Arrange
-            GameTopicCategory entity1 = new GameTopicCategory { ID = 1};
-            GameTopicCategory entity2 = new GameTopicCategory { ID = 2};
+            var entity1 = new GameTopicCategory { ID = 1};
+            var entity2 = new GameTopicCategory { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<GameTopicCategory>(entity1));
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Tests.Caching
         public void GetByID_NoItems_ThrowsKeyNotFoundException()
         {
             // Arrange
-            GameTopicCategory entity1 = new GameTopicCategory { ID = 1};
-            GameTopicCategory entity2 = new GameTopicCategory { ID = 2};
+            var entity1 = new GameTopicCategory { ID = 1};
+            var entity2 = new GameTopicCategory { ID = 2};
 
             // Act
             MessageHub.Instance.Publish(new OnCacheObjectSet<GameTopicCategory>(entity1));

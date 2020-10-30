@@ -159,7 +159,7 @@ namespace SWLOR.Tools.Hak.Builder
             if (outputHakName == string.Empty)
                 outputHakName = folder;
 
-            string command = $"nwn_erf -f \"{OutputFolder}{outputHakName}.hak\" -e HAK -c ./{folder}";
+            var command = $"nwn_erf -f \"{OutputFolder}{outputHakName}.hak\" -e HAK -c ./{folder}";
             Console.WriteLine($"Building hak: {outputHakName}.hak");
 
             using (var process = CreateProcess(command))
@@ -169,7 +169,7 @@ namespace SWLOR.Tools.Hak.Builder
                 process.StandardInput.Flush();
                 process.StandardInput.Close();
 
-                string output = process.StandardOutput.ReadToEnd();
+                var output = process.StandardOutput.ReadToEnd();
 
                 process.WaitForExit();
             }
@@ -177,7 +177,7 @@ namespace SWLOR.Tools.Hak.Builder
 
         private static void CompileModels(string folder)
         {
-            string command = $"nwnmdlcomp ./{folder}/* ./{OutputFolder}compiled_models/ -e";
+            var command = $"nwnmdlcomp ./{folder}/* ./{OutputFolder}compiled_models/ -e";
 
             Console.WriteLine($"Compiling models in folder: {folder}");
 
@@ -188,7 +188,7 @@ namespace SWLOR.Tools.Hak.Builder
                 process.StandardInput.Flush();
                 process.StandardInput.Close();
 
-                string output = process.StandardOutput.ReadToEnd();
+                var output = process.StandardOutput.ReadToEnd();
 
                 process.WaitForExit();
             }

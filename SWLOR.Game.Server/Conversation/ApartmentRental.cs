@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
@@ -18,18 +17,18 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainPage = new DialogPage();
-            DialogPage leasePage = new DialogPage();
-            DialogPage purchaseDetailsPage = new DialogPage(string.Empty,
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage();
+            var leasePage = new DialogPage();
+            var purchaseDetailsPage = new DialogPage(string.Empty,
                 "Purchase",
                 "Preview");
-            DialogPage detailsPage = new DialogPage(string.Empty,
+            var detailsPage = new DialogPage(string.Empty,
                 "Extend Lease (+1 day)",
                 "Extend Lease (+7 days)",
                 "Cancel Lease");
 
-            DialogPage cancelLeasePage = new DialogPage(
+            var cancelLeasePage = new DialogPage(
                 "Cancelling your lease will remove your right to access this apartment. All furniture you've placed will be sent to the impound. You'll need to go talk to a planetary representative to recover your impounded furniture.\n\n" +
                 "Any remaining time on your lease will be forfeit. You will not receive a refund.\n\n" +
                 "Are you sure you want to cancel your lease?",
@@ -113,7 +112,7 @@ namespace SWLOR.Game.Server.Conversation
                 .OrderBy(o => o.DateInitialPurchase)
                 .ToList();
 
-            string header = ColorTokenService.Green("Apartment Rental Terminal") + "\n\n";
+            var header = ColorTokenService.Green("Apartment Rental Terminal") + "\n\n";
             header += "Apartments you are currently renting can be found in the list below. You may also rent an apartment here.";
             SetPageHeader("MainPage", header);
 
@@ -123,10 +122,10 @@ namespace SWLOR.Game.Server.Conversation
             if (player.IsDM || player.IsDMPossessed) { return; }
             
             AddResponseToPage("MainPage", ColorTokenService.Green("Lease New Apartment"));
-            int count = 1;
+            var count = 1;
             foreach (var apartment in bases)
             {
-                string name = "Apartment #" + count;
+                var name = "Apartment #" + count;
 
                 if (!string.IsNullOrWhiteSpace(apartment.CustomName))
                 {
@@ -149,7 +148,7 @@ namespace SWLOR.Game.Server.Conversation
             else
             {
                 var data = BaseService.GetPlayerTempData(GetPC());
-                DialogResponse response = GetResponseByID("MainPage", responseID);
+                var response = GetResponseByID("MainPage", responseID);
                 data.PCBaseID = (Guid)response.CustomData;
 
                 LoadDetailsPage();
@@ -167,7 +166,7 @@ namespace SWLOR.Game.Server.Conversation
                 .Where(x => x.BuildingTypeID == (int)Enumeration.BuildingType.Apartment && 
                             x.IsActive).ToList();
 
-            string header = ColorTokenService.Green(apartmentBuilding.Name) + "\n\n";
+            var header = ColorTokenService.Green(apartmentBuilding.Name) + "\n\n";
 
             header += "You may rent an apartment here. Select a layout style from the list below to learn more about pricing details.";
             SetPageHeader("LeasePage", header);
@@ -181,9 +180,9 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LeaseResponses(int responseID)
         {
-            DialogResponse response = GetResponseByID("LeasePage", responseID);
+            var response = GetResponseByID("LeasePage", responseID);
             var data = BaseService.GetPlayerTempData(GetPC());
-            int styleID = (int)response.CustomData;
+            var styleID = (int)response.CustomData;
             data.BuildingStyleID = styleID;
             
             LoadPurchaseDetailsPage();
@@ -196,10 +195,10 @@ namespace SWLOR.Game.Server.Conversation
             var data = BaseService.GetPlayerTempData(GetPC());
             var style = DataService.BuildingStyle.GetByID(data.BuildingStyleID);
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
-            int purchasePrice = style.PurchasePrice + (int) (style.PurchasePrice * (dbPlayer.LeaseRate * 0.01f));
-            int dailyUpkeep = style.DailyUpkeep + (int) (style.DailyUpkeep * (dbPlayer.LeaseRate * 0.01f));
+            var purchasePrice = style.PurchasePrice + (int) (style.PurchasePrice * (dbPlayer.LeaseRate * 0.01f));
+            var dailyUpkeep = style.DailyUpkeep + (int) (style.DailyUpkeep * (dbPlayer.LeaseRate * 0.01f));
 
-            string header = ColorTokenService.Green("Style: ") + style.Name + "\n\n";
+            var header = ColorTokenService.Green("Style: ") + style.Name + "\n\n";
             header += ColorTokenService.Green("Purchase Price: ") + purchasePrice + " credits\n";
             header += ColorTokenService.Green("Daily Upkeep: ") + dailyUpkeep + " credits\n\n";
             header += "Purchasing an apartment will grant you 7 days on your lease. Leases can be extended for up to 30 days (real world time) in advance.";
@@ -239,7 +238,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void DoPreview()
         {
-            NWPlayer player = GetPC();
+            var player = GetPC();
             var data = BaseService.GetPlayerTempData(GetPC());
             var style = DataService.BuildingStyle.GetByID(data.BuildingStyleID);
             var area = AreaService.CreateAreaInstance(player, style.Resref, "APARTMENT PREVIEW: " + style.Name, "PLAYER_HOME_ENTRANCE");
@@ -253,7 +252,7 @@ namespace SWLOR.Game.Server.Conversation
             var data = BaseService.GetPlayerTempData(GetPC());
             var style = DataService.BuildingStyle.GetByID(data.BuildingStyleID);
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
-            int purchasePrice = style.PurchasePrice + (int)(style.PurchasePrice * (dbPlayer.LeaseRate * 0.01f));
+            var purchasePrice = style.PurchasePrice + (int)(style.PurchasePrice * (dbPlayer.LeaseRate * 0.01f));
 
             if (player.Gold < purchasePrice)
             {
@@ -261,7 +260,7 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            PCBase pcApartment = new PCBase
+            var pcApartment = new PCBase
             {
                 PlayerID = player.GlobalID,
                 BuildingStyleID = style.ID,
@@ -276,7 +275,7 @@ namespace SWLOR.Game.Server.Conversation
             };
             DataService.SubmitDataChange(pcApartment, DatabaseActionType.Insert);
             
-            PCBasePermission permission = new PCBasePermission
+            var permission = new PCBasePermission
             {
                 PCBaseID = pcApartment.ID,
                 PlayerID = player.GlobalID
@@ -304,7 +303,7 @@ namespace SWLOR.Game.Server.Conversation
             var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(pcApartment.BuildingStyleID));
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             var name = player.Name + "'s Apartment";
-            int dailyUpkeep = buildingStyle.DailyUpkeep + (int)(buildingStyle.DailyUpkeep * (dbPlayer.LeaseRate * 0.01f));
+            var dailyUpkeep = buildingStyle.DailyUpkeep + (int)(buildingStyle.DailyUpkeep * (dbPlayer.LeaseRate * 0.01f));
 
 
             if (!string.IsNullOrWhiteSpace(pcApartment.CustomName))
@@ -312,7 +311,7 @@ namespace SWLOR.Game.Server.Conversation
                 name = pcApartment.CustomName;
             }
 
-            string header = ColorTokenService.Green(name) + "\n\n";
+            var header = ColorTokenService.Green(name) + "\n\n";
             header += ColorTokenService.Green("Purchased: ") + pcApartment.DateInitialPurchase + "\n";
             header += ColorTokenService.Green("Rent Due: ") + pcApartment.DateRentDue + "\n";
             header += ColorTokenService.Green("Daily Upkeep: ") + dailyUpkeep + " credits\n\n";
@@ -321,9 +320,9 @@ namespace SWLOR.Game.Server.Conversation
             SetPageHeader("DetailsPage", header);
 
             const int MaxAdvancePay = 30;
-            DateTime newRentDate = pcApartment.DateRentDue.AddDays(1);
-            TimeSpan ts = newRentDate - DateTime.UtcNow;
-            bool canPayRent = ts.TotalDays < MaxAdvancePay;
+            var newRentDate = pcApartment.DateRentDue.AddDays(1);
+            var ts = newRentDate - DateTime.UtcNow;
+            var canPayRent = ts.TotalDays < MaxAdvancePay;
             SetResponseVisible("DetailsPage", 1, canPayRent);
 
             newRentDate = pcApartment.DateRentDue.AddDays(7);
@@ -356,7 +355,7 @@ namespace SWLOR.Game.Server.Conversation
             var pcApartment = DataService.PCBase.GetByID(data.PCBaseID);
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             var style = DataService.BuildingStyle.GetByID(Convert.ToInt32(pcApartment.BuildingStyleID));
-            int dailyUpkeep = style.DailyUpkeep + (int)(style.DailyUpkeep * (dbPlayer.LeaseRate * 0.01f));
+            var dailyUpkeep = style.DailyUpkeep + (int)(style.DailyUpkeep * (dbPlayer.LeaseRate * 0.01f));
 
             if (data.ExtensionDays != days)
             {
@@ -410,7 +409,7 @@ namespace SWLOR.Game.Server.Conversation
             {
                 data.IsConfirming = false;
 
-                PCBase pcBase = DataService.PCBase.GetByID(data.PCBaseID);
+                var pcBase = DataService.PCBase.GetByID(data.PCBaseID);
                 BaseService.ClearPCBaseByID(data.PCBaseID);
                 MessageHub.Instance.Publish(new OnBaseLeaseCancelled(pcBase));
 

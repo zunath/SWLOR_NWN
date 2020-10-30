@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -33,8 +31,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.OverflowStorage
                 return;
             }
             
-            Guid overflowItemID = new Guid(oItem.GetLocalString("TEMP_OVERFLOW_ITEM_ID"));
-            PCOverflowItem overflowItem = DataService.PCOverflowItem.GetByID(overflowItemID);
+            var overflowItemID = new Guid(oItem.GetLocalString("TEMP_OVERFLOW_ITEM_ID"));
+            var overflowItem = DataService.PCOverflowItem.GetByID(overflowItemID);
             DataService.SubmitDataChange(overflowItem, DatabaseActionType.Delete);
             oItem.DeleteLocalInt("TEMP_OVERFLOW_ITEM_ID");
 

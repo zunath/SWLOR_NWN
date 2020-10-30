@@ -1,6 +1,5 @@
 ﻿using System;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -21,7 +20,7 @@ namespace SWLOR.Game.Server.Scripts.Trigger
             NWCreature oPC = (NWScript.GetEnteringObject());
             if (!oPC.IsPlayer) return;
 
-            string triggerID = NWScript.GetLocalString(NWScript.OBJECT_SELF, "TRIGGER_ID");
+            var triggerID = NWScript.GetLocalString(NWScript.OBJECT_SELF, "TRIGGER_ID");
             if (string.IsNullOrWhiteSpace(triggerID))
             {
                 triggerID = Guid.NewGuid().ToString();
@@ -30,7 +29,7 @@ namespace SWLOR.Game.Server.Scripts.Trigger
 
             if (NWScript.GetLocalInt(oPC.Object, triggerID) == 1) return;
 
-            string message = NWScript.GetLocalString(NWScript.OBJECT_SELF, "DISPLAY_TEXT");
+            var message = NWScript.GetLocalString(NWScript.OBJECT_SELF, "DISPLAY_TEXT");
             NWScript.SendMessageToPC(oPC.Object, ColorTokenService.Cyan(message));
             NWScript.SetLocalInt(oPC.Object, triggerID, 1);
 

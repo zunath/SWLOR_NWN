@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
@@ -18,9 +17,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
         public void Main()
         {
             NWPlaceable keyCard = NWScript.OBJECT_SELF;
-            NWArea area = keyCard.Area;
+            var area = keyCard.Area;
             NWPlayer player = NWScript.GetLastUsedBy();
-            int remaining = area.GetLocalInt("KEY_CARDS_REMAINING") - 1;
+            var remaining = area.GetLocalInt("KEY_CARDS_REMAINING") - 1;
             area.SetLocalInt("KEY_CARDS_REMAINING", remaining);
             
             var members = player.PartyMembers.Where(x => x.Area == area);

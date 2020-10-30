@@ -14,13 +14,13 @@ namespace SWLOR.Game.Server.ChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            string command = args[0].ToLower();
-            RacialType race = (RacialType)user.RacialType;
+            var command = args[0].ToLower();
+            var race = (RacialType)user.RacialType;
             var languages = LanguageService.Languages;
 
             if (command == "help")
             {
-                List<string> commands = new List<string>
+                var commands = new List<string>
                 {
                     "help: Displays this help text."
                 };
@@ -28,9 +28,9 @@ namespace SWLOR.Game.Server.ChatCommand
                 foreach (var language in languages)
                 {
                     var chatText = language.ChatNames.ElementAt(0);
-                    int count = language.ChatNames.Count();
+                    var count = language.ChatNames.Count();
 
-                    for (int x = 1; x < count; x++)
+                    for (var x = 1; x < count; x++)
                     {
                         chatText += ", " + language.ChatNames.ElementAt(x);
                     }

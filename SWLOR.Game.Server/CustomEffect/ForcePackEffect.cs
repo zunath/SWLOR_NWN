@@ -19,9 +19,9 @@ namespace SWLOR.Game.Server.CustomEffect
 
         public void Tick(NWCreature oCaster, NWObject oTarget, int currentTick, int effectiveLevel, string data)
         {
-            string[] split = data.Split(',');
-            int interval = Convert.ToInt32(split[0]);
-            int amount = Convert.ToInt32(split[1]);
+            var split = data.Split(',');
+            var interval = Convert.ToInt32(split[0]);
+            var amount = Convert.ToInt32(split[1]);
 
             if (currentTick % interval != 0) return;
 

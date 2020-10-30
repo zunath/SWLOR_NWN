@@ -1,10 +1,7 @@
 ﻿using System;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
@@ -24,17 +21,17 @@ namespace SWLOR.Game.Server.CustomEffect
 
         public void Tick(NWCreature oCaster, NWObject oTarget, int currentTick, int effectiveLevel, string data)
         {
-            Random random = new Random();
-            int amount = random.Next(3, 7);
+            var random = new Random();
+            var amount = random.Next(3, 7);
             oTarget.SetLocalInt(AbilityService.LAST_ATTACK + oCaster.GlobalID, AbilityService.ATTACK_DOT);
 
             oCaster.AssignCommand(() =>
             {
-                Effect damage = NWScript.EffectDamage(amount);
+                var damage = NWScript.EffectDamage(amount);
                 NWScript.ApplyEffectToObject(DurationType.Instant, damage, oTarget.Object);
             });
             
-            Effect decreaseAC = NWScript.EffectACDecrease(2);
+            var decreaseAC = NWScript.EffectACDecrease(2);
             oCaster.AssignCommand(() =>
             {
                 NWScript.ApplyEffectToObject(DurationType.Temporary, decreaseAC, oTarget.Object, 1.0f);

@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 return;
             }
 
-            string name = string.Empty;
+            var name = string.Empty;
             foreach (var arg in args)
             {
                 name += " " + arg;

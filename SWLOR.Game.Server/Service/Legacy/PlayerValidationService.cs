@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Service
@@ -13,7 +12,7 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = NWScript.GetEnteringObject();
             if (!player.IsPlayer) return;
 
-            string error = ValidateBackground(player);
+            var error = ValidateBackground(player);
 
             if (string.IsNullOrWhiteSpace(error))
             {
@@ -29,9 +28,9 @@ namespace SWLOR.Game.Server.Service
 
         private static string ValidateName(NWPlayer player)
         {
-            string error = string.Empty;
-            string name = player.Name.ToLower();
-            string[] words = name.Split(null);
+            var error = string.Empty;
+            var name = player.Name.ToLower();
+            var words = name.Split(null);
 
             foreach (var word in words)
             {
@@ -48,9 +47,9 @@ namespace SWLOR.Game.Server.Service
         private static string ValidateBackground(NWPlayer player)
         {
             var classID = NWScript.GetClassByPosition(1, player);
-            bool isPlayerClass = Convert.ToInt32(NWScript.Get2DAString("classes", "PlayerClass", (int)classID)) == 1;
-            bool isValid = isPlayerClass;
-            string error = string.Empty;
+            var isPlayerClass = Convert.ToInt32(NWScript.Get2DAString("classes", "PlayerClass", (int)classID)) == 1;
+            var isValid = isPlayerClass;
+            var error = string.Empty;
 
             if (!isValid)
             {

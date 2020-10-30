@@ -1,7 +1,5 @@
 ﻿using System;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -23,16 +21,16 @@ namespace SWLOR.Game.Server.Item
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            NWArea area = user.Area;
-            NWPlayer player = new NWPlayer(user);
-            string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
-            Guid structureGuid = new Guid(structureID);
+            var area = user.Area;
+            var player = new NWPlayer(user);
+            var structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var structureGuid = new Guid(structureID);
 
-            PCBaseStructure pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
-            BaseStructure structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
+            var pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
+            var structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
 
-            int repair = SkillService.GetPCSkillRank(player, SkillType.Piloting);
-            int maxRepair = (int)structure.Durability - (int)pcbs.Durability;
+            var repair = SkillService.GetPCSkillRank(player, SkillType.Piloting);
+            var maxRepair = (int)structure.Durability - (int)pcbs.Durability;
 
             if (maxRepair < repair) repair = maxRepair;
 
@@ -85,26 +83,26 @@ namespace SWLOR.Game.Server.Item
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
-            NWArea area = user.Area;
+            var area = user.Area;
 
             if (area.GetLocalInt("BUILDING_TYPE") != (int)Enumeration.BuildingType.Starship)
             {
                 return "This repair kit may only be used inside a starship";
             }
 
-            string structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
-            Guid structureGuid = new Guid(structureID);
+            var structureID = area.GetLocalString("PC_BASE_STRUCTURE_ID");
+            var structureGuid = new Guid(structureID);
 
-            PCBaseStructure pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
-            BaseStructure structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
+            var pcbs = DataService.PCBaseStructure.GetByID(structureGuid);
+            var structure = DataService.BaseStructure.GetByID(pcbs.BaseStructureID);
 
             if (structure.Durability == pcbs.Durability)
             {
                 return "This starship is already fully repaired.";
             }
 
-            bool canRepair = (PerkService.GetCreaturePerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 1);
-            PCBase pcBase = DataService.PCBase.GetByID(pcbs.PCBaseID);
+            var canRepair = (PerkService.GetCreaturePerkLevel(new NWPlayer(user), PerkType.CombatRepair) >= 1);
+            var pcBase = DataService.PCBase.GetByID(pcbs.PCBaseID);
 
             if (!canRepair && SpaceService.IsLocationSpace(pcBase.ShipLocation))
             {

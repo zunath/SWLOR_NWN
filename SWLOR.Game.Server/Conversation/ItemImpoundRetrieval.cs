@@ -1,6 +1,5 @@
 ﻿using System;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -13,8 +12,8 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
-            DialogPage mainPage = new DialogPage("Welcome to the planetary impound. Any items which were seized by our government may be retrieved here... for a price, of course!\n\nEach item may be retrieved for 50 credits.\n\nHow may I help you?");
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage("Welcome to the planetary impound. Any items which were seized by our government may be retrieved here... for a price, of course!\n\nEach item may be retrieved for 50 credits.\n\nHow may I help you?");
             
             dialog.AddPage("MainPage", mainPage);
             return dialog;
@@ -46,7 +45,7 @@ namespace SWLOR.Game.Server.Conversation
             }
 
             var response = GetResponseByID("MainPage", responseID);
-            Guid pcImpoundedItemID = (Guid)response.CustomData;
+            var pcImpoundedItemID = (Guid)response.CustomData;
             var item = DataService.PCImpoundedItem.GetByID(pcImpoundedItemID);
 
             if (item.DateRetrieved != null)

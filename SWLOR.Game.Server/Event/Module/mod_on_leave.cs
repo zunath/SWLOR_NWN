@@ -3,7 +3,6 @@ using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ValueObject;
 
 

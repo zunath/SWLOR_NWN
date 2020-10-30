@@ -1,8 +1,5 @@
 ﻿using System;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -16,9 +13,9 @@ namespace SWLOR.Game.Server.Conversation
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage(
+            var mainPage = new DialogPage(
                 "",
                 "Access Fuel Bay",
                 "Access Stronidium Bay",
@@ -30,27 +27,27 @@ namespace SWLOR.Game.Server.Conversation
         
         public override void Initialize()
         {
-            Guid structureID = new Guid(GetDialogTarget().GetLocalString("PC_BASE_STRUCTURE_ID"));
-            PCBaseStructure structure = DataService.PCBaseStructure.GetByID(structureID);
-            Guid pcBaseID = structure.PCBaseID;
-            PCBase pcBase = DataService.PCBase.GetByID(pcBaseID);
+            var structureID = new Guid(GetDialogTarget().GetLocalString("PC_BASE_STRUCTURE_ID"));
+            var structure = DataService.PCBaseStructure.GetByID(structureID);
+            var pcBaseID = structure.PCBaseID;
+            var pcBase = DataService.PCBase.GetByID(pcBaseID);
 
-            double currentCPU = BaseService.GetCPUInUse(pcBaseID);
-            double currentPower = BaseService.GetPowerInUse(pcBaseID);
-            double maxCPU = BaseService.GetMaxBaseCPU(pcBaseID);
-            double maxPower = BaseService.GetMaxBasePower(pcBaseID);
+            var currentCPU = BaseService.GetCPUInUse(pcBaseID);
+            var currentPower = BaseService.GetPowerInUse(pcBaseID);
+            var maxCPU = BaseService.GetMaxBaseCPU(pcBaseID);
+            var maxPower = BaseService.GetMaxBasePower(pcBaseID);
 
-            int currentReinforcedFuel = pcBase.ReinforcedFuel;
-            int currentFuel = pcBase.Fuel;
-            int currentResources = DataService.PCBaseStructureItem.GetNumberOfItemsContainedBy(structure.ID);
-            int maxReinforcedFuel = BaseService.CalculateMaxReinforcedFuel(pcBaseID);
-            int maxFuel = BaseService.CalculateMaxFuel(pcBaseID);
-            int maxResources = BaseService.CalculateResourceCapacity(pcBaseID);
+            var currentReinforcedFuel = pcBase.ReinforcedFuel;
+            var currentFuel = pcBase.Fuel;
+            var currentResources = DataService.PCBaseStructureItem.GetNumberOfItemsContainedBy(structure.ID);
+            var maxReinforcedFuel = BaseService.CalculateMaxReinforcedFuel(pcBaseID);
+            var maxFuel = BaseService.CalculateMaxFuel(pcBaseID);
+            var maxResources = BaseService.CalculateResourceCapacity(pcBaseID);
 
             string time;
             if (pcBase.DateFuelEnds > DateTime.UtcNow)
             {
-                TimeSpan deltaTime = pcBase.DateFuelEnds - DateTime.UtcNow;
+                var deltaTime = pcBase.DateFuelEnds - DateTime.UtcNow;
 
                 var tower = BaseService.GetBaseControlTower(pcBaseID);
 
@@ -61,7 +58,7 @@ namespace SWLOR.Game.Server.Conversation
                 }
 
                 var towerStructure = DataService.BaseStructure.GetByID(tower.BaseStructureID);
-                int fuelRating = towerStructure.FuelRating;
+                var fuelRating = towerStructure.FuelRating;
                 int minutes;
 
                 switch (fuelRating)
@@ -79,7 +76,7 @@ namespace SWLOR.Game.Server.Conversation
                         throw new Exception("Invalid fuel rating value: " + fuelRating);
                 }
                 
-                TimeSpan timeSpan = TimeSpan.FromMinutes(minutes * currentFuel) + deltaTime;
+                var timeSpan = TimeSpan.FromMinutes(minutes * currentFuel) + deltaTime;
                 time = TimeService.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false);
 
                 time = "Fuel will expire in " + time;
@@ -91,7 +88,7 @@ namespace SWLOR.Game.Server.Conversation
 
              
 
-            string header = ColorTokenService.Green("Power: ") + currentPower + " / " + maxPower + "\n";
+            var header = ColorTokenService.Green("Power: ") + currentPower + " / " + maxPower + "\n";
             header += ColorTokenService.Green("CPU: ") + currentCPU + " / " + maxCPU + "\n";
             header += ColorTokenService.Green("Fuel: ") + currentFuel + " / " + maxFuel + "\n";
             header += ColorTokenService.Green("Reinforced Fuel: ") + currentReinforcedFuel + " / " + maxReinforcedFuel + "\n";
@@ -141,8 +138,8 @@ namespace SWLOR.Game.Server.Conversation
 
         private void OpenFuelBay(bool isStronidium)
         {
-            NWPlaceable tower = (NWPlaceable)GetDialogTarget();
-            NWPlayer oPC = GetPC();
+            var tower = (NWPlaceable)GetDialogTarget();
+            var oPC = GetPC();
 
             NWPlaceable bay = tower.GetLocalObject("CONTROL_TOWER_FUEL_BAY");
             if (bay.IsValid)
@@ -162,7 +159,7 @@ namespace SWLOR.Game.Server.Conversation
             var structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structure = DataService.PCBaseStructure.GetByID(structureID);
             var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
-            Location location = oPC.Location;
+            var location = oPC.Location;
             bay = NWScript.CreateObject(ObjectType.Placeable, "fuel_bay", location);
             bay.AssignCommand(() => NWScript.SetFacingPoint(oPC.Position));
 
@@ -188,8 +185,8 @@ namespace SWLOR.Game.Server.Conversation
 
         private void OpenResourceBay()
         {
-            NWPlaceable tower = (NWPlaceable)GetDialogTarget();
-            NWPlayer oPC = GetPC();
+            var tower = (NWPlaceable)GetDialogTarget();
+            var oPC = GetPC();
 
 
             NWPlaceable bay = tower.GetLocalObject("CONTROL_TOWER_RESOURCE_BAY");
@@ -207,9 +204,9 @@ namespace SWLOR.Game.Server.Conversation
                 }
             }
             
-            Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
+            var structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structureItems = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structureID);
-            Location location = oPC.Location;
+            var location = oPC.Location;
             bay = NWScript.CreateObject(ObjectType.Placeable, "resource_bay", location);
 
             tower.SetLocalObject("CONTROL_TOWER_RESOURCE_BAY", bay.Object);

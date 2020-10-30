@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -14,9 +13,9 @@ namespace SWLOR.Game.Server.Conversation
         
         public override PlayerDialog SetUp(NWPlayer player)
         {
-            PlayerDialog dialog = new PlayerDialog("MainPage");
+            var dialog = new PlayerDialog("MainPage");
 
-            DialogPage mainPage = new DialogPage("Please select which apartment you would like to enter from the list below. If you do not have an apartment but would like to rent one please use the nearby Apartment Terminal.");
+            var mainPage = new DialogPage("Please select which apartment you would like to enter from the list below. If you do not have an apartment but would like to rent one please use the nearby Apartment Terminal.");
 
             dialog.AddPage("MainPage", mainPage);
             return dialog;
@@ -46,7 +45,7 @@ namespace SWLOR.Game.Server.Conversation
         private void LoadMainPage()
         {
             NWPlaceable door = NWScript.OBJECT_SELF;
-            int apartmentBuildingID = door.GetLocalInt("APARTMENT_BUILDING_ID");
+            var apartmentBuildingID = door.GetLocalInt("APARTMENT_BUILDING_ID");
 
             if (apartmentBuildingID <= 0)
             {
@@ -79,10 +78,10 @@ namespace SWLOR.Game.Server.Conversation
                 .OrderBy(o => o.DateInitialPurchase)
                 .ToList();
 
-            int count = 1;
+            var count = 1;
             foreach (var apartment in apartments)
             {
-                string name = "Apartment #" + count;
+                var name = "Apartment #" + count;
 
                 if (!string.IsNullOrWhiteSpace(apartment.CustomName))
                 {
@@ -97,7 +96,7 @@ namespace SWLOR.Game.Server.Conversation
             foreach (var apartment in permissionedApartments)
             {
                 var owner = DataService.Player.GetByID(apartment.PlayerID);
-                string name = owner.CharacterName + "'s Apartment [" + owner.CharacterName + "]";
+                var name = owner.CharacterName + "'s Apartment [" + owner.CharacterName + "]";
 
                 if (!string.IsNullOrWhiteSpace(apartment.CustomName))
                 {
@@ -112,16 +111,16 @@ namespace SWLOR.Game.Server.Conversation
         private void MainPageResponses(int responseID)
         {
             var response = GetResponseByID("MainPage", responseID);
-            Guid pcApartmentID = (Guid)response.CustomData;
+            var pcApartmentID = (Guid)response.CustomData;
             EnterApartment(pcApartmentID);
         }
 
         private void EnterApartment(Guid pcBaseID)
         {
             NWPlaceable door = NWScript.OBJECT_SELF;
-            NWPlayer oPC = GetPC();
+            var oPC = GetPC();
 
-            int apartmentBuildingID = door.GetLocalInt("APARTMENT_BUILDING_ID");
+            var apartmentBuildingID = door.GetLocalInt("APARTMENT_BUILDING_ID");
             var permission = DataService.PCBasePermission.GetPlayerPrivatePermissionOrDefault(oPC.GlobalID, pcBaseID);
 
             if (permission == null || !permission.CanEnterBuildings)
@@ -147,7 +146,7 @@ namespace SWLOR.Game.Server.Conversation
 
 
             // Get or create the new apartment instance.
-            NWArea instance = BaseService.GetAreaInstance(pcBaseID, true);
+            var instance = BaseService.GetAreaInstance(pcBaseID, true);
             if (instance == null)
             {
                 instance = BaseService.CreateAreaInstance(oPC, pcBaseID, true);

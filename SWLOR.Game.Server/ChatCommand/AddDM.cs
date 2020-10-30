@@ -12,8 +12,8 @@ namespace SWLOR.Game.Server.ChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
-            string name = args[0];
-            string cdKey = args[1].ToUpper();
+            var name = args[0];
+            var cdKey = args[1].ToUpper();
 
             var record = DataService.AuthorizedDM.GetByCDKeyAndActiveOrDefault(cdKey);
             var method = DatabaseActionType.Update;
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.ChatCommand
             if(record == null)
             {
                 method = DatabaseActionType.Insert;
-                int id = DataService.AuthorizedDM.GetAll().Max(x => x.ID) + 1;
+                var id = DataService.AuthorizedDM.GetAll().Max(x => x.ID) + 1;
                 record = new AuthorizedDM
                 {
                     ID = id, 
@@ -51,8 +51,8 @@ namespace SWLOR.Game.Server.ChatCommand
                 return "Too many arguments specified. Names cannot have spaces.";
             }
 
-            string name = args[0];
-            string cdKey = args[1].ToUpper();
+            var name = args[0];
+            var cdKey = args[1].ToUpper();
 
             if (name.Length > 255)
             {

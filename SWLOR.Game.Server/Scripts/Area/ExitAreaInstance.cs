@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -27,7 +26,7 @@ namespace SWLOR.Game.Server.Scripts.Area
 
             NWScript.DelayCommand(6.0f, () =>
             {
-                int playerCount = NWModule.Get().Players.Count(x => !Equals(x, player) && Equals(x.Area, door.Area));
+                var playerCount = NWModule.Get().Players.Count(x => !Equals(x, player) && Equals(x.Area, door.Area));
                 if (playerCount <= 0)
                 {
                     AreaService.DestroyAreaInstance(door.Area);

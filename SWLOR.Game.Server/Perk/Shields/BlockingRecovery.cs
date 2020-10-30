@@ -1,9 +1,6 @@
-﻿using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript;
+﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 
@@ -73,13 +70,13 @@ namespace SWLOR.Game.Server.Perk.Shields
             if (creature.IsPlayer)
             {
                 var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(creature.Object);
-                int luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky) + effectiveStats.Luck;
+                var luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky) + effectiveStats.Luck;
                 chance += luck;
             }
 
             if (RandomService.Random(100) + 1 <= chance)
             {
-                Effect heal = NWScript.EffectHeal(amount);
+                var heal = NWScript.EffectHeal(amount);
                 NWScript.ApplyEffectToObject(DurationType.Instant, heal, creature.Object);
             }
         }

@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.ChatCommand
 
             NWPlayer player = target.Object;
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
-            int leaseRate = int.Parse(args[0]);
+            var leaseRate = int.Parse(args[0]);
             dbPlayer.LeaseRate = leaseRate;
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 return "Please enter a value. Example: /setleaserate 5";
             }
 
-            if (!int.TryParse(args[0], out int result))
+            if (!int.TryParse(args[0], out var result))
             {
                 return "Invalid number set for command. Values should be between -99 and 500.";
             }

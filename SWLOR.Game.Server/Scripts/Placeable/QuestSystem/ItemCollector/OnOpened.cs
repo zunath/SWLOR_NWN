@@ -1,9 +1,6 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem.ItemCollector
 {
@@ -16,17 +13,17 @@ namespace SWLOR.Game.Server.Scripts.Placeable.QuestSystem.ItemCollector
             container.IsUseable = false;
 
             NWPlayer oPC = (NWScript.GetLastOpenedBy());
-            int questID = container.GetLocalInt("QUEST_ID");
-            PCQuestStatus status = DataService.PCQuestStatus.GetByPlayerAndQuestID(oPC.GlobalID, questID);
+            var questID = container.GetLocalInt("QUEST_ID");
+            var status = DataService.PCQuestStatus.GetByPlayerAndQuestID(oPC.GlobalID, questID);
 
             oPC.FloatingText("Please place the items you would like to turn in for this quest into the container. If you want to cancel this process, move away from the container.");
 
-            string text = "Required Items: \n\n";
+            var text = "Required Items: \n\n";
 
             var itemProgress = DataService.PCQuestItemProgress.GetAllByPCQuestStatusID(status.ID);
-            foreach (PCQuestItemProgress item in itemProgress)
+            foreach (var item in itemProgress)
             {
-                ItemVO tempItemModel = QuestService.GetTempItemInformation(item.Resref, item.Remaining);
+                var tempItemModel = QuestService.GetTempItemInformation(item.Resref, item.Remaining);
                 text += tempItemModel.Quantity + "x " + tempItemModel.Name + "\n";
             }
 

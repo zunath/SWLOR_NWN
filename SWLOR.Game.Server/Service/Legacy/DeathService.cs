@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.Numerics;
-using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.GameObject;
-
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
@@ -45,7 +41,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyDurabilityLoss(NWPlayer player)
         {
-            for (int index = 0; index < NumberOfInventorySlots; index++)
+            for (var index = 0; index < NumberOfInventorySlots; index++)
             {
                 NWItem equipped = NWScript.GetItemInSlot((InventorySlot)index, player);
                 DurabilityService.RunItemDecay(player, equipped, RandomService.RandomFloat(0.15f, 0.50f));
@@ -62,18 +58,18 @@ namespace SWLOR.Game.Server.Service
             NWPlayer oPC = NWScript.GetLastRespawnButtonPresser();
             ApplyDurabilityLoss(oPC);
 
-            int amount = oPC.MaxHP / 2;
+            var amount = oPC.MaxHP / 2;
             NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectResurrection(), oPC.Object);
             NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectHeal(amount), oPC.Object);
 
-            NWArea area = oPC.Area;
+            var area = oPC.Area;
             
             TeleportPlayerToBindPoint(oPC);
 
             // If player is the last person in an instance, destroy the instance.
             if (area.IsInstance)
             {
-                int playersInArea = NWModule.Get().Players.Count(x => x.Area == oPC.Area && x != oPC);
+                var playersInArea = NWModule.Get().Players.Count(x => x.Area == oPC.Area && x != oPC);
 
                 if (playersInArea <= 0)
                 {
@@ -90,7 +86,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (player == null) throw new ArgumentNullException(nameof(player), nameof(player) + " cannot be null.");
 
-            Player pc = DataService.Player.GetByID(player.GlobalID);
+            var pc = DataService.Player.GetByID(player.GlobalID);
             pc.RespawnLocationX = player.Position.X;
             pc.RespawnLocationY = player.Position.Y;
             pc.RespawnLocationZ = player.Position.Z;
@@ -103,7 +99,7 @@ namespace SWLOR.Game.Server.Service
 
         public static void TeleportPlayerToBindPoint(NWPlayer pc)
         {
-            Player entity = DataService.Player.GetByID(pc.GlobalID);
+            var entity = DataService.Player.GetByID(pc.GlobalID);
             TeleportPlayerToBindPoint(pc, entity);
         }
 
@@ -123,7 +119,7 @@ namespace SWLOR.Game.Server.Service
             else if (string.IsNullOrWhiteSpace(entity.RespawnAreaResref))
             {
                 NWObject defaultRespawn = NWScript.GetWaypointByTag("DEFAULT_RESPAWN_POINT");
-                Location location = defaultRespawn.Location;
+                var location = defaultRespawn.Location;
 
                 pc.AssignCommand(() =>
                 {
@@ -133,9 +129,9 @@ namespace SWLOR.Game.Server.Service
             // Send player to their stored bind point.
             else
             {
-                NWArea area = NWModule.Get().Areas.Single(x => x.Resref == entity.RespawnAreaResref);
-                Vector3 position = NWScript.Vector3((float)entity.RespawnLocationX, (float)entity.RespawnLocationY, (float)entity.RespawnLocationZ);
-                Location location = NWScript.Location(area.Object, position, (float)entity.RespawnLocationOrientation);
+                var area = NWModule.Get().Areas.Single(x => x.Resref == entity.RespawnAreaResref);
+                var position = NWScript.Vector3((float)entity.RespawnLocationX, (float)entity.RespawnLocationY, (float)entity.RespawnLocationZ);
+                var location = NWScript.Location(area.Object, position, (float)entity.RespawnLocationOrientation);
                 pc.AssignCommand(() =>
                 {
                     NWScript.ActionJumpToLocation(location);

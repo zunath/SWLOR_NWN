@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.ChatCommand
                 target = user.Area;
             }
 
-            string variableName = args[0];
-            int value = Convert.ToInt32(args[1]);
+            var variableName = args[0];
+            var value = Convert.ToInt32(args[1]);
 
             NWScript.SetLocalInt(target, variableName, value);
 

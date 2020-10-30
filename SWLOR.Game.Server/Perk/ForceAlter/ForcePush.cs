@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -15,7 +14,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             var size = NWScript.GetCreatureSize(oTarget);
-            CreatureSize maxSize = CreatureSize.Invalid;
+            var maxSize = CreatureSize.Invalid;
             switch (spellTier)
             {
                 case 1:
@@ -68,7 +67,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public void OnImpact(NWCreature creature, NWObject target, int perkLevel, int spellTier)
         {
-            float duration = 0.0f;
+            var duration = 0.0f;
 
             switch (spellTier)
             {
@@ -99,7 +98,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             else
             {
                 // Check lucky chance.
-                int luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
+                var luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
                 if (RandomService.D100(1) <= luck)
                 {
                     duration *= 2;

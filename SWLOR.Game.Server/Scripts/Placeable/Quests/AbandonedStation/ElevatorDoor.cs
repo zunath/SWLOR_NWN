@@ -1,5 +1,4 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -18,12 +17,12 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
         public void Main()
         {
             NWObject door = NWScript.OBJECT_SELF;
-            NWArea area = door.Area;
+            var area = door.Area;
             NWPlayer player = GetClickingObject();
             if (!player.IsValid)
                 player = GetLastUsedBy();
 
-            int remainingKeyCards = area.GetLocalInt("KEY_CARDS_REMAINING");
+            var remainingKeyCards = area.GetLocalInt("KEY_CARDS_REMAINING");
 
             if (remainingKeyCards > 0)
             {
@@ -32,8 +31,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
             else
             {
                 player.FloatingText("You access the elevator with the found key cards.");
-                string destinationWPTag = door.GetLocalString("DESTINATION_WAYPOINT");
-                string destinationAreaTag = door.GetLocalString("DESTINATION_AREA_TAG");
+                var destinationWPTag = door.GetLocalString("DESTINATION_WAYPOINT");
+                var destinationAreaTag = door.GetLocalString("DESTINATION_AREA_TAG");
                 NWArea destinationArea = area.GetLocalObject(destinationAreaTag);
                 NWLocation destinationLocation = GetLocation(GetNearestObjectByTag(destinationWPTag, GetFirstObjectInArea(destinationArea)));
                 

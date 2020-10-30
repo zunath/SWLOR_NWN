@@ -57,12 +57,12 @@ namespace SWLOR.Game.Server.Service
             
             if (weapon.CustomItemType == CustomItemType.BlasterPistol)
             {
-                int statBonus = (int)(player.DexterityModifier * 0.75f);
+                int statBonus = (int)(player.DexterityModifier * 0.5f);
                 data.Base += statBonus;
             }
             else if (weapon.CustomItemType == CustomItemType.BlasterRifle)
             {
-                int statbonus = (int)(player.DexterityModifier * 1.0f);
+                int statbonus = (int)(player.DexterityModifier * 0.6f);
                 data.Base += statbonus;
             }
             else if (weapon.CustomItemType == CustomItemType.Lightsaber ||

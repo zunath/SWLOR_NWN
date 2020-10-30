@@ -118,23 +118,7 @@ namespace SWLOR.Game.Server.Item
             NWItem targetItem = (target.Object);
             float perkBonus = 0.0f;
 
-            if(GetLocalBool(targetItem, "LIGHTSABER") == true)
-            {
-                perkBonus = PerkService.GetCreaturePerkLevel(userPlayer, PerkType.SpeedyCrafting) * 0.1f;
-            }
-            else if (ArmorBaseItemTypes.Contains(targetItem.BaseItemType))
-            {
-                perkBonus = PerkService.GetCreaturePerkLevel(userPlayer, PerkType.SpeedyCrafting) * 0.1f;
-            }
-            else if (WeaponsmithBaseItemTypes.Contains(targetItem.BaseItemType))
-            {
-                perkBonus = PerkService.GetCreaturePerkLevel(userPlayer, PerkType.SpeedyCrafting) * 0.1f;
-            }
-            else if (EngineeringBaseItemTypes.Contains(targetItem.BaseItemType))
-            {
-                perkBonus = PerkService.GetCreaturePerkLevel(userPlayer, PerkType.SpeedyCrafting) * 0.1f;
-            }
-
+            perkBonus = PerkService.GetCreaturePerkLevel(userPlayer, PerkType.SpeedyCrafting) * 0.1f;
 
             float seconds = 18.0f - (18.0f * perkBonus);
             if (seconds <= 0.1f) seconds = 0.1f;

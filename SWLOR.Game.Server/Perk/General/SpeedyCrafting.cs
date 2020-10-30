@@ -1,11 +1,12 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
-namespace SWLOR.Game.Server.Perk.ForceSense
+namespace SWLOR.Game.Server.Perk.General
 {
-    public class AnimalBond: IPerkHandler
+    public class SpeedyCrafting: IPerkHandler
     {
-        public PerkType PerkType => PerkType.AnimalBond;
+        public PerkType PerkType => PerkType.SpeedyCrafting;
+
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             return string.Empty;

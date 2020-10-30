@@ -11,6 +11,10 @@
     <None Remove="Data\Migrations\2020-07-02.1.sql" />
     <None Remove="Data\Migrations\2020-07-02.2.sql" />
     <None Remove="Data\Migrations\2020-07-02.3.sql" />
+    <None Remove="Data\Migrations\2020-09-29.2.sql" />
+    <None Remove="Data\Migrations\2020-10-22.1.sql" />
+    <None Remove="Data\Migrations\2020-10-26.1.sql" />
+    <None Remove="Data\Migrations\2020-10-29.1.sql" />
     <None Remove="Data\Migrations\Initialization.sql" />
   </ItemGroup>
 
@@ -19,6 +23,10 @@
     <EmbeddedResource Include="Data\Migrations\2020-07-02.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2020-07-02.2.sql" />
     <EmbeddedResource Include="Data\Migrations\2020-07-02.3.sql" />
+    <EmbeddedResource Include="Data\Migrations\2020-09-29.2.sql" />
+    <EmbeddedResource Include="Data\Migrations\2020-10-22.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2020-10-26.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2020-10-29.1.sql" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
   </ItemGroup>
 
@@ -39,6 +47,6 @@
   </Target>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;$(OutDir)&quot; &quot;%25USERPROFILE%25/Documents/Neverwinter Nights/dotnet&quot; /Y /E" />
+    <Exec Command="$(SolutionDir)NWN.Python\deployBuild.exe -b $(ProjectDir)$(OutDir)" />
   </Target>
 </Project>

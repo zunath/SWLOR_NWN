@@ -255,7 +255,11 @@ namespace SWLOR.Game.Server.Scripts.Delayed
             float multiplier = 0.5f;
             int atmosphere = CraftService.CalculateAreaAtmosphereBonus(player.Area);
 
-            if (atmosphere >= 75)
+            if (atmosphere >= 150)
+            {
+                multiplier = 0.8f;
+            }
+            else if (atmosphere >= 75)
             {
                 multiplier = 0.7f;
             }
@@ -274,7 +278,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                 case SkillType.Medicine: equipmentBonus = effectiveStats.Medicine; break;
             }
 
-            return equipmentBonus * multiplier; // +0.5%, +0.6%, or +0.7% per equipment bonus
+            return equipmentBonus * multiplier; // +0.5%, +0.6%, +0.7%, or 0.8% per equipment bonus
         }
 
         private float CalculateBaseChanceToAddProperty(int pcLevel, int blueprintLevel, int atmosphereBonus)

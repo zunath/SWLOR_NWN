@@ -1324,7 +1324,7 @@ namespace SWLOR.Game.Server.Service
 
             var fuelMax = towerStructure.Storage;
 
-            return (int)(fuelMax + fuelMax * siloBonus);
+            return (int)(fuelMax + fuelMax * (siloBonus * 2));
         }
 
         public static int CalculateMaxReinforcedFuel(Guid pcBaseID)
@@ -1357,7 +1357,7 @@ namespace SWLOR.Game.Server.Service
 
             var fuelMax = towerBaseStructure.ReinforcedStorage;
 
-            return (int)(fuelMax + fuelMax * siloBonus);
+            return (int)(fuelMax + fuelMax * (siloBonus * 2));
         }
 
         public static int CalculateResourceCapacity(Guid pcBaseID)
@@ -1391,7 +1391,7 @@ namespace SWLOR.Game.Server.Service
 
             var resourceMax = towerBaseStructure.ResourceStorage;
 
-            return (int)(resourceMax + resourceMax * siloBonus);
+            return (int)(resourceMax + resourceMax * (siloBonus * 2));
         }
 
         public static string UpgradeControlTower(NWCreature user, NWItem item, NWObject target)

@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             successEffect = TagEffect(successEffect, "TRANQUILIZER_EFFECT");
 
             // AC & AB decrease effect - Occurs on failing the DC check.
-            Effect failureEffect = EffectLinkEffects(EffectAttackDecrease(5), EffectACDecrease(5));
+            Effect failureEffect = (EffectAttackDecrease(5));
 
 
             if (!result.IsResisted)

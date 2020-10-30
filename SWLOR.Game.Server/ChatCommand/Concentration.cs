@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Tells you what concentration ability you have active. Follow with 'end' (no quotes) to turn your concentration ability off.", CommandPermissionType.Player)]
+    [CommandDetails("Tells you what concentration ability you have active. Follow with 'end' (no quotes) to turn your concentration ability off.", CommandPermissionType.Player | CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class Concentration: IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)

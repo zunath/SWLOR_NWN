@@ -84,15 +84,18 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             int iRange = 15;
             int iCount = 1;
             float fDelay = 0;
+
+            int saberDamage = player.RightHand.DamageBonus;
+            if (saberDamage > 40 ) saberDamage = 40;
             
             if (weapon.CustomItemType == CustomItemType.Lightsaber ||
                 weapon.CustomItemType == CustomItemType.Saberstaff)
             {
-                iDamage = player.RightHand.DamageBonus + RandomService.D6(2) + player.IntelligenceModifier + player.StrengthModifier;
+                iDamage = saberDamage + RandomService.D6(2) + player.IntelligenceModifier + player.StrengthModifier;
             }
             else
             {
-                iDamage = (int)weapon.Weight + player.StrengthModifier;
+                iDamage = (int)weapon.Weight + player.StrengthModifier + (saberDamage / 2);
             }
 
             NWObject oObject;
@@ -106,6 +109,9 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             BiowarePosition.TurnToFaceObject(target, player);
 
             player.AssignCommand(() => _.ActionPlayAnimation(Animation.LoopingCustom10, 2));
+
+            var result = CombatService.CalculateAbilityResistance(player, target.Object, SkillType.ForceAlter, ForceBalanceType.Universal);
+            float delta = 0.01f * result.Delta;
 
             /*
             // reset phenotype
@@ -125,6 +131,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             {
                 case 1:
                     iDamage = (int)(iDamage * 1.0);
+                    iDamage = iDamage + (int)(iDamage * delta);
 
                     fDelay = _.GetDistanceBetween(player, target) / 10.0f;
 
@@ -141,6 +148,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     break;
                 case 2:
                     iDamage = (int)(iDamage * 1.25);
+                    iDamage = iDamage + (int)(iDamage * delta);
 
                     fDelay = _.GetDistanceBetween(player, target) / 10.0f;
 
@@ -157,6 +165,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     break;
                 case 3:
                     iDamage = (int)(iDamage * 1.6);
+                    iDamage = iDamage + (int)(iDamage * delta);
 
                     fDelay = _.GetDistanceBetween(player, target) / 10.0f;
 
@@ -173,6 +182,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     break;
                 case 4:
                     iDamage = (int)(iDamage * 2.0);
+                    iDamage = iDamage + (int)(iDamage * delta);
 
                     // apply to target
                     fDelay = _.GetDistanceBetween(player, target) / 10.0f;
@@ -213,6 +223,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     break;
                 case 5:
                     iDamage = (int)(iDamage * 2.5);
+                    iDamage = iDamage + (int)(iDamage * delta);
 
                     // apply to target
                     fDelay = _.GetDistanceBetween(player, target) / 10.0f;

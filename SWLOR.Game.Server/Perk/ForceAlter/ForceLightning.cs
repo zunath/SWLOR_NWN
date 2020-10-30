@@ -72,19 +72,19 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             switch (spellTier)
             {
                 case 1:
-                    amount = 10;
+                    amount = 2 + (int)(creature.IntelligenceModifier);
                     break;
                 case 2:
-                    amount = 12;
+                    amount = 4 + (int)(creature.IntelligenceModifier * 1.15);
                     break;
                 case 3:
-                    amount = 14;
+                    amount = 6 + (int)(creature.IntelligenceModifier * 1.25);
                     break;
                 case 4:
-                    amount = 16;
+                    amount = 8 + (int)(creature.IntelligenceModifier * 1.5);
                     break;
                 case 5:
-                    amount = 20;
+                    amount = 10 + (int)(creature.IntelligenceModifier * 2);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(spellTier));

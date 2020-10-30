@@ -295,12 +295,7 @@ namespace SWLOR.Game.Server.Service
 
             // Shield Oath and Precision Targeting affect a percentage of the TOTAL armor class on a creature.
             var stance = CustomEffectService.GetCurrentStanceType(player);
-            if (stance == CustomEffectType.ShieldOath)
-            {
-                int bonus = (int)(totalAC * 0.2f);
-                baseAC += bonus;
-            }
-            else if (stance == CustomEffectType.PrecisionTargeting)
+            if (stance == CustomEffectType.PrecisionTargeting)
             {
                 int penalty = (int)(totalAC * 0.3f);
                 baseAC -= penalty;
@@ -476,21 +471,25 @@ namespace SWLOR.Game.Server.Service
 
 
                 // Calculate AC
-                if (ItemService.ArmorBaseItemTypes.Contains(item.BaseItemType) ||
-                    ItemService.ShieldBaseItemTypes.Contains(item.BaseItemType))
+                if (ItemService.ArmorBaseItemTypes.Contains(item.BaseItemType))
                 {
                     int skillRankToUse;
+                    int maxAC = 0;
+
                     if (item.CustomItemType == CustomItemType.HeavyArmor)
                     {
                         skillRankToUse = heavyRank;
+                        maxAC = 10;
                     }
                     else if (item.CustomItemType == CustomItemType.LightArmor)
                     {
                         skillRankToUse = lightRank;
+                        maxAC = 13;
                     }
                     else if (item.CustomItemType == CustomItemType.ForceArmor)
                     {
                         skillRankToUse = forceRank;
+                        maxAC = 11;
                     }
                     else if (item.CustomItemType == CustomItemType.MartialArtWeapon)
                     {
@@ -500,6 +499,10 @@ namespace SWLOR.Game.Server.Service
 
                     int itemAC = item.CustomAC;
                     itemAC = CalculateAdjustedValue(itemAC, item.RecommendedLevel, skillRankToUse, 0);
+                    if (itemAC > maxAC)
+                    {
+                        item.CustomAC = maxAC;
+                    }
                     stats.AC += itemAC;
 
                 }

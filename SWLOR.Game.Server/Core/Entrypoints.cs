@@ -92,10 +92,6 @@ namespace SWLOR.Game.Server.Core
                 Console.WriteLine("Registering scripts...");
                 LoadHandlersFromAssembly();
                 Console.WriteLine("Scripts registered successfully.");
-
-                Console.WriteLine("Registering legacy scripts...");
-                LoadLegacyScripts();
-                Console.WriteLine("Legacy scripts registered successfully.");
             }
         }
 
@@ -122,10 +118,8 @@ namespace SWLOR.Game.Server.Core
 
         private static int RunScripts(string script)
         {
-            if (_conditionalScripts.ContainsKey(script) || _legacyConditionalScripts.ContainsKey(script))
+            if (_conditionalScripts.ContainsKey(script) )
             {
-                Console.WriteLine($"Run conditional: {script}");
-
                 // Always default conditional scripts to true. If one or more of the actions return a false,
                 // we will return a false (even if others are true).
                 // This ensures all actions get fired when the script is called.
@@ -143,18 +137,9 @@ namespace SWLOR.Game.Server.Core
                     }
                 }
 
-                if (_legacyConditionalScripts.ContainsKey(script))
-                {
-                    using (new Profiler($"LEGACY:{script}"))
-                    {
-                        var actionResult = _legacyConditionalScripts[script].Invoke();
-                        if (result) result = actionResult;
-                    }
-                }
-
                 return result ? 1 : 0;
             }
-            else if (_scripts.ContainsKey(script) || _legacyScripts.ContainsKey(script))
+            else if (_scripts.ContainsKey(script) )
             {
                 if (_scripts.ContainsKey(script))
                 {
@@ -172,23 +157,6 @@ namespace SWLOR.Game.Server.Core
                             var details = ex.ToMessageAndCompleteStacktrace();
                             Console.WriteLine($"C# Script '{script}' threw an exception. Details: {Environment.NewLine}{Environment.NewLine}{details}");
                         }
-                    }
-                }
-
-                if (_legacyConditionalScripts.ContainsKey(script))
-                {
-                    try
-                    {
-                        using (new Profiler($"LEGACY:{script}"))
-                        {
-                            Console.WriteLine($"Run legacy script: {script}");
-                            _legacyScripts[script].Invoke();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        var details = ex.ToMessageAndCompleteStacktrace();
-                        Console.WriteLine($"Legacy C# Script '{script}' threw an exception. Details: {Environment.NewLine}{Environment.NewLine}{details}");
                     }
                 }
 
@@ -276,45 +244,5 @@ namespace SWLOR.Game.Server.Core
                 }
             }
         }
-
-
-        // Legacy section.
-        private delegate bool LegacyConditionalScriptDelegate();
-        private static readonly Dictionary<string, Action> _legacyScripts = new Dictionary<string, Action>();
-        private static readonly Dictionary<string, LegacyConditionalScriptDelegate> _legacyConditionalScripts = new Dictionary<string, LegacyConditionalScriptDelegate>();
-
-        /// <summary>
-        /// Loads references to the legacy scripts.
-        /// This should be removed once those have all been migrated.
-        /// </summary>
-        private static void LoadLegacyScripts()
-        {
-            const string Namespace = "NWN.Scripts";
-
-            var types = from t in Assembly.GetExecutingAssembly().GetTypes()
-                where t.IsClass && t.Namespace == Namespace
-                select t;
-
-            foreach (var type in types)
-            {
-                var method = type.GetMethod("Main");
-                if (method != null)
-                {
-                    if (method.ReturnType == typeof(int))
-                    {
-                        _legacyConditionalScripts[type.Name] = () =>
-                        {
-                            var result = (int)method.Invoke(null, null);
-                            return result == 1;
-                        };
-                    }
-                    else
-                    {
-                        _legacyScripts[type.Name] = () => method.Invoke(null, null);
-                    }
-                }
-            }
-        }
-
     }
 }

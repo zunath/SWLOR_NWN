@@ -5,6 +5,7 @@ using Dapper;
 using Dapper.Contrib.Extensions;
 using MySqlConnector;
 using SWLOR.Game.Server.Caching;
+using SWLOR.Game.Server.Data;
 using SWLOR.Game.Server.Data.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -113,6 +114,9 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         static DataService()
         {
+            SqlMapper.AddTypeHandler(new MySqlGuidTypeHandler());
+            SqlMapper.RemoveTypeMap(typeof(Guid));
+            SqlMapper.RemoveTypeMap(typeof(Guid?));
             DataQueue = new ConcurrentQueue<DatabaseAction>();
 
             var ip = Environment.GetEnvironmentVariable("MYSQL_SERVER_IP_ADDRESS") ?? string.Empty;

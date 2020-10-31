@@ -55,12 +55,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 {
     public static class WeatherService
     {
-        private static Dictionary<uint, List<uint>> _areaWeatherPlaceables = new Dictionary<uint, List<uint>>();
-        public static void SubscribeEvents()
-        {
-            MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
-            MessageHub.Instance.Subscribe<OnModuleHeartbeat>(message => OnModuleHeartbeat());
-        }
+        private static readonly Dictionary<uint, List<uint>> _areaWeatherPlaceables = new Dictionary<uint, List<uint>>();
 
         // Feedback texts.
         private const string FB_T_WEATHER_LIGHTNING = "You were hit by the bolt of lightning!";
@@ -809,6 +804,7 @@ namespace SWLOR.Game.Server.Service.Legacy
             }
         }
 
+        [NWNEventHandler("area_enter")]
         private static void OnAreaEnter()
         {
             using (new Profiler("WeatherService.OnAreaEnter"))
@@ -879,6 +875,7 @@ namespace SWLOR.Game.Server.Service.Legacy
             }
         }
 
+        [NWNEventHandler("mod_heartbeat")]
         private static void OnModuleHeartbeat()
         {
             NWObject oMod = GetModule();

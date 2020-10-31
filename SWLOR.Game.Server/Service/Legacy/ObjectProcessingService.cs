@@ -1,4 +1,5 @@
 ﻿using System;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
@@ -21,12 +22,7 @@ namespace SWLOR.Game.Server.Service.Legacy
 
         private static void OnModuleLoad()
         {
-            Entrypoints.MainLoopTick += (sender, frame) => Events_MainLoopTick(frame);
-        }
-        
-        private static void Events_MainLoopTick(ulong frame)
-        {
-            RunProcessor();
+            Scheduler.ScheduleRepeating(RunProcessor, TimeSpan.FromSeconds(1));
         }
 
         public static float ProcessingTickInterval => 1f;

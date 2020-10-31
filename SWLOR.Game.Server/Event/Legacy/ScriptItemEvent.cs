@@ -14,20 +14,17 @@ namespace SWLOR.Game.Server.Event.Legacy
                 script = "Item." + script;
             }
 
-            using (new Profiler(nameof(ScriptEvent) + "." + script))
-            {
-                var rootNamespace = Assembly.GetExecutingAssembly().GetName().Name;
-                var scriptNamespace = rootNamespace + ".Scripts." + script;
+            var rootNamespace = Assembly.GetExecutingAssembly().GetName().Name;
+            var scriptNamespace = rootNamespace + ".Scripts." + script;
 
-                // Check the script cache first. If it exists, we run it.
-                if (ScriptService.IsScriptRegisteredByNamespace(scriptNamespace))
-                {
-                    ScriptService.RunScriptByNamespace(scriptNamespace);
-                }
-                else
-                {
-                    Console.WriteLine("Unable to locate item script: " + script);
-                }
+            // Check the script cache first. If it exists, we run it.
+            if (ScriptService.IsScriptRegisteredByNamespace(scriptNamespace))
+            {
+                ScriptService.RunScriptByNamespace(scriptNamespace);
+            }
+            else
+            {
+                Console.WriteLine("Unable to locate item script: " + script);
             }
         }
     }

@@ -15,6 +15,78 @@ namespace SWLOR.Game.Server.Item
 {
     public class Grenade : IActionItem
     {
+        [NWNEventHandler("grenade_bbomb_en")]
+        public static void BactaBomb()
+        {
+            GrenadeAOE(GetEnteringObject(), "BACTABOMB");
+        }
+
+        [NWNEventHandler("grenade_bbomb_hb")]
+        public static void BactaBombHeartbeat()
+        {
+            NWObject oTarget = GetFirstInPersistentObject(OBJECT_SELF);
+            while (GetIsObjectValid(oTarget))
+            {
+                GrenadeAOE(oTarget, "BACTABOMB");
+                //Get the next target in the AOE
+                oTarget = GetNextInPersistentObject(OBJECT_SELF);
+            }
+        }
+
+        [NWNEventHandler("grenade_gas_en")]
+        public static void GasBomb()
+        {
+            GrenadeAOE(GetEnteringObject(), "GAS");
+        }
+
+        [NWNEventHandler("grenade_gas_hb")]
+        public static void GasBombHeartbeat()
+        {
+            NWObject oTarget = GetFirstInPersistentObject(OBJECT_SELF);
+            while (GetIsObjectValid(oTarget) == true)
+            {
+                GrenadeAOE(oTarget, "GAS");
+                //Get the next target in the AOE
+                oTarget = GetNextInPersistentObject(OBJECT_SELF);
+            }
+        }
+
+        [NWNEventHandler("grenade_incen_en")]
+        public static void IncendiaryGrenade()
+        {
+            GrenadeAOE(GetEnteringObject(), "INCENDIARY");
+        }
+
+        [NWNEventHandler("grenade_incen_hb")]
+        public static void IncendiaryGrenadeHeartbeat()
+        {
+            NWObject oTarget = GetFirstInPersistentObject(OBJECT_SELF);
+            while (GetIsObjectValid(oTarget) == true)
+            {
+                GrenadeAOE(oTarget, "INCENDIARY");
+                //Get the next target in the AOE
+                oTarget = GetNextInPersistentObject(OBJECT_SELF);
+            }
+        }
+
+        [NWNEventHandler("grenade_smoke_en")]
+        public static void SmokeGrenade()
+        {
+            GrenadeAOE(GetEnteringObject(), "SMOKE");
+        }
+
+        [NWNEventHandler("grenade_smoke_hb")]
+        public static void SmokeGrenadeHeartbeat()
+        {
+            NWObject oTarget = GetFirstInPersistentObject(OBJECT_SELF);
+            while (GetIsObjectValid(oTarget) == true)
+            {
+                GrenadeAOE(oTarget, "SMOKE");
+                //Get the next target in the AOE
+                oTarget = GetNextInPersistentObject(OBJECT_SELF);
+            }
+        }
+
         public string CustomKey => null;
 
         public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -343,7 +415,7 @@ namespace SWLOR.Game.Server.Item
             }
         }
 
-        public static void grenadeAoe(NWObject oTarget, string grenadeType)
+        public static void GrenadeAOE(NWObject oTarget, string grenadeType)
         {
             if (oTarget.ObjectType != ObjectType.Creature) return;
             NWCreature user = GetAreaOfEffectCreator(OBJECT_SELF);
@@ -352,7 +424,7 @@ namespace SWLOR.Game.Server.Item
             Effect impactEffect = null;
             Effect durationEffect = null;
 
-            //Console.WriteLine("In grenadeAoe for grenade type " + grenadeType + " on " + GetName(oTarget));
+            //Console.WriteLine("In GrenadeAOE for grenade type " + grenadeType + " on " + GetName(oTarget));
 
             switch (grenadeType)
             {

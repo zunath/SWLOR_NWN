@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
@@ -81,7 +82,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             if (dbPlayer.DatePerkRefundAvailable != null && dbPlayer.DatePerkRefundAvailable > DateTime.UtcNow)
             {
                 var delta = (DateTime)dbPlayer.DatePerkRefundAvailable - DateTime.UtcNow;
-                var time = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
+                var time = Time.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
                 header += "You can refund another perk in " + time;   
             }
             else
@@ -167,7 +168,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             if (canRefund) return true;
             
             var delta = refundDate - DateTime.UtcNow;
-            var time = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
+            var time = Time.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
             GetPC().FloatingText("You can refund another perk in " + time);
     
             return false;

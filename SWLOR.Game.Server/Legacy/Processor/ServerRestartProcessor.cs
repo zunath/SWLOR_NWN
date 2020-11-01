@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Processor
 {
@@ -76,7 +77,7 @@ namespace SWLOR.Game.Server.Legacy.Processor
                 else if (now >= _nextNotification)
                 {
                     var delta = RestartTime - now;
-                    var rebootString = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
+                    var rebootString = Time.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
                     var message = "Server will automatically reboot in " + rebootString;
                     foreach (var player in NWModule.Get().Players)
                     {

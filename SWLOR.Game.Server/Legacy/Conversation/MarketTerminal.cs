@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -837,7 +838,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             {
                 var now = DateTime.UtcNow;
                 var delta = model.ListingExpirationDate - now;
-                var expirationTime = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
+                var expirationTime = Time.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
                 header += ColorTokenService.Green("This listing expires in " + expirationTime + ".");
                 SetResponseVisible("MarketListingDetailsPage", 1, true);
             }

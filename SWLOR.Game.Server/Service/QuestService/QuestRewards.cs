@@ -1,4 +1,5 @@
 ﻿
+using SWLOR.Game.Server.Enumeration;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.QuestService
@@ -66,6 +67,33 @@ namespace SWLOR.Game.Server.Service.QuestService
                 MenuName = _quantity + "x " + name;
             else
                 MenuName = name;
+        }
+
+        public class KeyItemReward : IQuestReward
+        {
+            public bool IsSelectable { get; }
+
+            public string MenuName
+            {
+                get
+                {
+                    var detail = KeyItem.GetKeyItem(KeyItemType);
+                    return detail.Name;
+                }
+            }
+
+            public KeyItemType KeyItemType { get; }
+
+            public KeyItemReward(KeyItemType keyItemType, bool isSelectable)
+            {
+                KeyItemType = keyItemType;
+                IsSelectable = isSelectable;
+            }
+
+            public void GiveReward(uint player)
+            {
+                KeyItem.GiveKeyItem(player, KeyItemType);
+            }
         }
 
 

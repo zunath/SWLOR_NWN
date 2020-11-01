@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Legacy.ChatCommand
             {
                 var now = DateTime.UtcNow;
                 var delta = ServerRestartProcessor.RestartTime - now;
-                var rebootString = TimeService.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
+                var rebootString = Server.Service.Time.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
                 var message = "Server will automatically reboot in " + rebootString;
                 user.FloatingText(message);
             }

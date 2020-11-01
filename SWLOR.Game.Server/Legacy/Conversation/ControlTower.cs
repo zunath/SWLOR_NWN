@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -76,7 +77,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 }
                 
                 var timeSpan = TimeSpan.FromMinutes(minutes * currentFuel) + deltaTime;
-                time = TimeService.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false);
+                time = Time.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false);
 
                 time = "Fuel will expire in " + time;
             }

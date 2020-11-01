@@ -12,9 +12,9 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         /// <summary>
         /// Snippet which checks whether a player has completed a quest.
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="args"></param>
-        /// <returns></returns>
+        /// <param name="player">The player to check</param>
+        /// <param name="args">Arguments provided by conversation builder</param>
+        /// <returns>true if player has completed quest, false otherwise</returns>
         [Snippet("condition-completed-quest")]
         public static bool ConditionHasCompletedQuest(uint player, string[] args)
         {

@@ -16,7 +16,6 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="questId">The quest Id to assign this quest.</param>
         /// <param name="name">The name of the quest.</param>
-        /// <param name="journalTag">The tag used by the journal entry.</param>
         /// <returns>A QuestBuilder with the configured options.</returns>
         public QuestBuilder Create(string questId, string name)
         {
@@ -91,6 +90,20 @@ namespace SWLOR.Game.Server.Service.QuestService
         }
 
         /// <summary>
+        /// Adds a key item reward for completing this quest.
+        /// </summary>
+        /// <param name="keyItemType">The type of key item to award.</param>
+        /// <param name="isSelectable">If true, player will have the option to select the key item as a reward. If false, they will receive it no matter what. If IsRepeatable() has not been called, this argument is ignored and all gold is given to the player.</param>
+        /// <returns>A QuestBuilder with the configured options.</returns>
+        public QuestBuilder AddKeyItemReward(KeyItemType keyItemType, bool isSelectable = true)
+        {
+            var reward = new ItemReward.KeyItemReward(keyItemType, isSelectable);
+            _activeQuest.Rewards.Add(reward);
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds a prerequisite to the quest. If the player has not completed this prerequisite quest, they will be unable to accept it.
         /// </summary>
         /// <param name="prerequisiteQuestId">The unique Id of the prerequisite quest. If this Id has not been registered, an exception will be thrown.</param>
@@ -98,6 +111,19 @@ namespace SWLOR.Game.Server.Service.QuestService
         public QuestBuilder PrerequisiteQuest(string prerequisiteQuestId)
         {
             var prereq = new RequiredQuestPrerequisite(prerequisiteQuestId);
+            _activeQuest.Prerequisites.Add(prereq);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a prerequisite to the quest. If the player has not acquired this key item, they will be unable to accept it.
+        /// </summary>
+        /// <param name="keyItemType">The type of key item to require.</param>
+        /// <returns>A QuestBuilder with the configured options.</returns>
+        public QuestBuilder PrerequisiteKeyItem(KeyItemType keyItemType)
+        {
+            var prereq = new RequiredKeyItemPrerequisite(keyItemType);
             _activeQuest.Prerequisites.Add(prereq);
 
             return this;

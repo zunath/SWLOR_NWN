@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using BaseStructureType = SWLOR.Game.Server.Legacy.Enumeration.BaseStructureType;
 
@@ -155,7 +156,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.FuelBay
                 var seconds = 6 * fuelCount;
                 var timeSpan = TimeSpan.FromSeconds(seconds);
                 player.SendMessage(ColorTokenService.Gray("Reinforcement mode will last for " +
-                                               TimeService.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
+                                               Time.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
                                                " (" + fuelCount + " / " + maxFuel + " units"));
             }
             // Regular fuel cells - Every unit lasts for 45, 15, or 5 minutes depending on the size of the tower.
@@ -179,7 +180,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.FuelBay
 
                 var timeSpan = TimeSpan.FromMinutes(minutes * fuelCount);
                 player.SendMessage(ColorTokenService.Gray("Fuel will last for " +
-                                               TimeService.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
+                                               Time.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
                                                " (" + fuelCount + " / " + maxFuel + " units)"));
             }
 

@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Item.Contracts;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
 using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
@@ -115,7 +116,7 @@ namespace SWLOR.Game.Server.Legacy.Item
             // Check if we've passed the unlock date. Exit early if we have not.
             if (DateTime.Compare(unlockDateTime, now) > 0 || unlockDateTime > now)
             {
-                var timeToWait = TimeService.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
+                var timeToWait = Time.GetTimeToWaitLongIntervals(now, unlockDateTime, false);
                 //Console.WriteLine("IsValidTarget - That ability can be used in " + timeToWait + ".");
                 SendMessageToPC(user, "That ability can be used in " + timeToWait + ".");
                 return;

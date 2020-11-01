@@ -39,6 +39,7 @@ namespace SWLOR.Game.Server.Entity
             UnlockedPerks = new Dictionary<PerkType, DateTime>();
             UnlockedRecipes = new Dictionary<RecipeType, DateTime>();
             IsForceSensitive = false;
+            KeyItems = new Dictionary<KeyItemType, DateTime>();
         }
 
         public override string KeyPrefix => "Player";
@@ -83,6 +84,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<string, PlayerQuest> Quests { get; set; }
         public Dictionary<PerkType, DateTime> UnlockedPerks { get; set; }
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
+        public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
     }
 
     public class MapPin

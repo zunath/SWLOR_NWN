@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.Scripts;
 using SWLOR.Game.Server.Legacy.Service;
-using SWLOR.Game.Server.Legacy.Threading;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Profiler = SWLOR.Game.Server.Legacy.ValueObject.Profiler;
 
@@ -162,12 +161,6 @@ namespace SWLOR.Game.Server.Legacy.Event.Module
             using (new Profiler(nameof(OnModuleLoad) + ":DatabaseMigrator"))
             {
                 DatabaseMigrationRunner.Start();
-            }
-
-            using (new Profiler(nameof(OnModuleLoad) + ":DBBackgroundThread"))
-            {
-                Console.WriteLine("Starting background thread manager...");
-                BackgroundThreadManager.Start();
             }
 
             using (new Profiler(nameof(OnModuleLoad) + ":SetEventScripts"))

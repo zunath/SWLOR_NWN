@@ -1,0 +1,45 @@
+﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Legacy.GameObject;
+using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+
+namespace SWLOR.Game.Server.Legacy.Conversation
+{
+    public class DestroySurvivalKnife: ConversationBase
+    {
+        public override PlayerDialog SetUp(NWPlayer player)
+        {
+            var dialog = new PlayerDialog("MainPage");
+            var mainPage = new DialogPage(
+                "Are you sure you want to destroy your survival knife? This action is irreversible!",
+                "Destroy Survival Knife"
+            );
+
+            dialog.AddPage("MainPage", mainPage);
+            return dialog;
+        }
+
+        public override void Initialize()
+        {
+        }
+
+        public override void DoAction(NWPlayer player, string pageName, int responseID)
+        {
+            switch (responseID)
+            {
+                case 1:
+                    NWItem item = (NWScript.GetItemPossessedBy(player.Object, "survival_knife"));
+                    NWScript.DestroyObject(item.Object);
+                    EndConversation();
+                    break;
+            }
+        }
+
+        public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
+        {
+        }
+
+        public override void EndDialog()
+        {
+        }
+    }
+}

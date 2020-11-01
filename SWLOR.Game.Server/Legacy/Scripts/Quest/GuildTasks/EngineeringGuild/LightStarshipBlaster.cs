@@ -1,0 +1,19 @@
+using SWLOR.Game.Server.Legacy.Enumeration;
+using SWLOR.Game.Server.Legacy.Quest;
+
+namespace SWLOR.Game.Server.Legacy.Scripts.Quest.GuildTasks.EngineeringGuild
+{
+    public class LightStarshipBlaster: AbstractQuest
+    {
+        public LightStarshipBlaster()
+        {
+            CreateQuest(536, "Engineering Guild Task: 1x Light Starship Blaster", "eng_tsk_536")
+                .IsRepeatable()
+
+                .AddObjectiveCollectItem(1, "ship_blaster_1", 1, true)
+
+                .AddRewardGold(470)
+                .AddRewardGuildPoints(GuildType.EngineeringGuild, 101);
+        }
+    }
+}

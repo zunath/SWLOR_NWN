@@ -1,0 +1,149 @@
+﻿using System;
+using System.Globalization;
+using System.Linq;
+using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Legacy.Enumeration;
+using SWLOR.Game.Server.Legacy.Event.Module;
+using SWLOR.Game.Server.Legacy.Event.SWLOR;
+using SWLOR.Game.Server.Legacy.GameObject;
+using SWLOR.Game.Server.Legacy.Messaging;
+
+namespace SWLOR.Game.Server.Legacy.Service
+{
+    public static class RoleplayService
+    {
+        private static readonly ChatChannel[] ValidChannels =
+        {
+            ChatChannel.PlayerParty,
+            ChatChannel.PlayerShout,
+            ChatChannel.PlayerTalk,
+            ChatChannel.PlayerWhisper
+        };
+
+        public static void SubscribeEvents()
+        {
+            MessageHub.Instance.Subscribe<OnChatProcessed>(OnChatProcessed);
+            MessageHub.Instance.Subscribe<OnModuleHeartbeat>(message => OnModuleHeartbeat());
+        }
+
+        private static void OnChatProcessed(OnChatProcessed message)
+        {
+            var sender = message.Sender;
+            var channel = message.Channel;
+
+            // Must be one of the valid channels
+            if (!ValidChannels.Contains(message.Channel)) return;
+
+            // Must be a player
+            if (!message.Sender.IsPlayer) return;
+
+            // Must not be an OOC message
+            if (message.IsOutOfCharacter) return;
+            
+            // Grab the current timestamp
+            var timestampString = sender.GetLocalString("RP_SYSTEM_LAST_MESSAGE_TIMESTAMP");
+
+            // Regardless if the message makes it through spam prevention, we want to update the latest timestamp.
+            var now = DateTime.UtcNow;
+            sender.SetLocalString("RP_SYSTEM_LAST_MESSAGE_TIMESTAMP", now.ToString(CultureInfo.InvariantCulture));
+
+            // If there was a timestamp then we'll check for spam and prevent it from counting towards
+            // the RP XP points.
+            if (!string.IsNullOrWhiteSpace(timestampString))
+            {
+                var lastSend = DateTime.Parse(timestampString);
+                if (now <= lastSend.AddSeconds(1))
+                {
+                    Console.WriteLine("Spam preventing firing");
+                    return;
+                }
+            }
+            
+            // Validate whether player should receive an RP Point
+            var canReceivePoint = CanReceiveRPPoint(sender.Object, channel);
+            if (!canReceivePoint) return;
+            
+            // Player was allowed to gain this RP point.
+            var dbPlayer = DataService.Player.GetByID(sender.GlobalID);
+            dbPlayer.RoleplayPoints++;
+            DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+        }
+
+        private static void OnModuleHeartbeat()
+        {
+            var module = NWModule.Get();
+            var ticks = module.GetLocalInt("RP_SYSTEM_TICKS") + 1;
+
+            // Is it time to process RP points?
+            if (ticks >= 300) // 300 ticks * 6 seconds per HB = 1800 seconds = 30 minutes
+            {
+                foreach (var player in module.Players)
+                {
+                    ProcessPlayerRoleplayXP(player);
+                }
+
+                ticks = 0;
+            }
+
+            module.SetLocalInt("RP_SYSTEM_TICKS", ticks);
+        }
+
+        private static void ProcessPlayerRoleplayXP(NWPlayer player)
+        {
+            // Only fire for players, not DMs.
+            if (!player.IsPlayer) return;
+
+            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
+            if (dbPlayer.RoleplayPoints >= 50)
+            {
+                const int BaseXP = 1000;
+                var residencyBonus = PlayerStatService.EffectiveResidencyBonus(player);
+                var xp = (int)(BaseXP + BaseXP * residencyBonus);
+                var dmBonusModifier = dbPlayer.XPBonus * 0.01f;
+                if (dmBonusModifier > 0.25f)
+                    dmBonusModifier = 0.25f;
+                xp += (int)(xp * dmBonusModifier + ((dbPlayer.RoleplayPoints - 50) * 50));
+
+                dbPlayer.RoleplayXP += xp;
+                dbPlayer.RoleplayPoints = 0;
+                DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
+
+                player.SendMessage("You gained " + xp + " roleplay XP.");
+            }
+        }
+
+        private static bool CanReceiveRPPoint(NWPlayer player, ChatChannel channel)
+        {
+            // Party - Must be in a party with another PC.
+            if (channel == ChatChannel.PlayerParty)
+            {
+                return player.PartyMembers.Any(x => x.GlobalID != player.GlobalID);
+            }
+
+            // Shout (Holonet) - Another player must be online.
+            else if (channel == ChatChannel.PlayerShout)
+            {
+                return NWModule.Get().Players.Count() > 1;
+            }
+
+            // Talk - Another player must be nearby. (20.0 units)
+            else if(channel == ChatChannel.PlayerTalk)
+            {
+                return NWModule.Get().Players.Any(nearby => 
+                    player.GlobalID != nearby.GlobalID &&
+                    NWScript.GetDistanceBetween(player, nearby) <= 20.0f);
+            }
+            
+            // Whisper - Another player must be nearby. (4.0 units)
+            else if (channel == ChatChannel.PlayerWhisper)
+            {
+                return NWModule.Get().Players.Any(nearby => 
+                    player.GlobalID != nearby.GlobalID &&
+                    NWScript.GetDistanceBetween(player, nearby) <= 4.0f);
+            }
+
+            return false;
+        }
+    }
+}

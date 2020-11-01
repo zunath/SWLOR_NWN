@@ -1,0 +1,86 @@
+﻿using System;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Legacy.Enumeration;
+using SWLOR.Game.Server.Legacy.GameObject;
+using SWLOR.Game.Server.Legacy.Item.Contracts;
+using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Legacy.ValueObject;
+
+namespace SWLOR.Game.Server.Legacy.Item
+{
+    public class StarchartDisk: IActionItem
+    {
+        public string CustomKey => null;
+
+        public CustomData StartUseItem(NWCreature user, NWItem item, NWObject target, Location targetLocation)
+        {
+            return null;
+        }
+
+        public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
+        {
+            NWPlayer player = (user.Object);
+
+            var starcharts = item.GetLocalInt("Starcharts");
+
+            if (starcharts == 0)
+            {
+                player.SendMessage("This disk is empty.");
+                return;
+            }
+
+            // Get the base.
+            var starshipID = NWScript.GetLocalString(NWScript.GetArea(target), "PC_BASE_STRUCTURE_ID");
+            var starshipGuid = new Guid(starshipID);
+            var starship = DataService.PCBaseStructure.GetByID(starshipGuid);
+            var starkillerBase = DataService.PCBase.GetByID(starship.PCBaseID);
+
+            starkillerBase.Starcharts |= starcharts;
+            DataService.SubmitDataChange(starkillerBase, DatabaseActionType.Update);
+
+            NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S), target);
+            NWScript.FloatingTextStringOnCreature("Starcharts loaded!", player);
+            item.Destroy();
+        }
+
+        public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
+        {
+            return 3.0f;
+        }
+
+        public bool FaceTarget()
+        {
+            return true;
+        }
+
+        public Animation AnimationID()
+        {
+            return Animation.LoopingGetMid;
+        }
+
+        public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
+        {
+            return 5.0f;
+        }
+
+        public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
+        {
+            return false;
+        }
+
+        public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
+        {
+            if (!target.IsValid || target.Tag != "ShipComputer") 
+                return "You can only use this on a starship's navigational computer.";
+            return null;
+        }
+
+        public bool AllowLocationTarget()
+        {
+            return false;
+        }
+    }
+}

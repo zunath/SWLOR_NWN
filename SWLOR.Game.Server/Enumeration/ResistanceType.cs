@@ -2,10 +2,10 @@
 {
     public enum ResistanceType
     {
-        Zero = 1,
-        Half = 2,
-        Fourth = 3,
-        Eighth = 4,
-        Full = 5
+        Fire = 1,
+        Ice = 2,
+        Thunder = 3,
+        Sleep = 4,
+        Earth = 5,
     }
 }

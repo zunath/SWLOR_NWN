@@ -2,7 +2,6 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -90,6 +89,7 @@ namespace SWLOR.Game.Server.Feature
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
+                Console.WriteLine("adding events to area: " + GetName(area));
                 SetEventScript(area, EventScript.Area_OnEnter, "area_enter");
                 SetEventScript(area, EventScript.Area_OnExit, "area_exit");
                 SetEventScript(area, EventScript.Area_OnHeartbeat, "area_heartbeat");

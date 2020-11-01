@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Event.SWLOR;
-using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Service.Legacy;
-using SWLOR.Game.Server.ValueObject;
-using SWLOR.Game.Server.ValueObject.Dialog;
-using SWLOR.Game.Server.ValueObject.Skill;
+using SWLOR.Game.Server.Legacy.Event.SWLOR;
+using SWLOR.Game.Server.Legacy.GameObject;
+using SWLOR.Game.Server.Legacy.Messaging;
+using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Legacy.ValueObject;
+using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Legacy.ValueObject.Skill;
 
 namespace SWLOR.Game.Server
 {

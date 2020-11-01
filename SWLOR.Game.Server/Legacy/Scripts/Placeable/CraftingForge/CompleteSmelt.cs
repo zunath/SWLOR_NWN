@@ -1,6 +1,5 @@
-﻿using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.Legacy.Bioware;
-using SWLOR.Game.Server.Legacy.Enumeration;
+﻿using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Legacy.Event.SWLOR;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.Service;

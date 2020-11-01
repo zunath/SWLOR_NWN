@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Legacy.Enumeration;
@@ -141,7 +142,7 @@ namespace SWLOR.Game.Server.Legacy.Item
                 {
                     SendMessageToPC(user, "You threw... poorly.");
                     //targetLocation = VectorService.MoveLocation(targetLocation, GetFacing(user), (RandomService.D6(4) - 10) * 1.0f, 
-                    targetLocation = VectorService.MoveLocation(user.Location, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) * 1.0f,
+                    targetLocation = BiowareVector.MoveLocation(user.Location, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) * 1.0f,
                                                                 RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
                     var count = 0;
                     while ((GetSurfaceMaterial(targetLocation) == 0 ||
@@ -149,7 +150,7 @@ namespace SWLOR.Game.Server.Legacy.Item
                            count < 10)
                     {
                         count += 1;
-                        targetLocation = VectorService.MoveLocation(user.Location, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) * 1.0f,
+                        targetLocation = BiowareVector.MoveLocation(user.Location, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) * 1.0f,
                                                                     RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
                     }
                 }
@@ -157,7 +158,7 @@ namespace SWLOR.Game.Server.Legacy.Item
                 {
                     SendMessageToPC(user, "Your throw was a bit off the mark.");
                     //targetLocation = VectorService.MoveLocation(targetLocation, GetFacing(user), (RandomService.D6(4) - 10) * 1.0f, 
-                    targetLocation = VectorService.MoveLocation(targetLocation, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) /*(RandomService.D6(4) - 10) */ * 1.0f,
+                    targetLocation = BiowareVector.MoveLocation(targetLocation, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) /*(RandomService.D6(4) - 10) */ * 1.0f,
                                                                 RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
                     var count = 0;
                     while ((GetSurfaceMaterial(targetLocation) == 0 ||
@@ -165,7 +166,7 @@ namespace SWLOR.Game.Server.Legacy.Item
                            count < 10)
                     {
                         count += 1;
-                        targetLocation = VectorService.MoveLocation(targetLocation, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) /*(RandomService.D6(4) - 10) */ * 1.0f,
+                        targetLocation = BiowareVector.MoveLocation(targetLocation, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) /*(RandomService.D6(4) - 10) */ * 1.0f,
                                                                     RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
                     }
                 }

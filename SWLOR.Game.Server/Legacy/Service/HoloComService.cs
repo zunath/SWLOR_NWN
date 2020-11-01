@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Core.NWScript.Enum;
+﻿using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Legacy.Event.Module;
 using SWLOR.Game.Server.Legacy.GameObject;
@@ -108,8 +109,8 @@ namespace SWLOR.Game.Server.Legacy.Service
                 ApplyEffectToObject(DurationType.Permanent, effectImmobilized, sender);
                 ApplyEffectToObject(DurationType.Permanent, effectImmobilized, receiver);
 
-                var holosender = CopyObject(sender, VectorService.MoveLocation(receiver.Location, GetFacing(receiver), 2.0f, 180));
-                var holoreceiver = CopyObject(receiver, VectorService.MoveLocation(sender.Location, GetFacing(sender), 2.0f, 180));
+                var holosender = CopyObject(sender, BiowareVector.MoveLocation(receiver.Location, GetFacing(receiver), 2.0f, 180));
+                var holoreceiver = CopyObject(receiver, BiowareVector.MoveLocation(sender.Location, GetFacing(sender), 2.0f, 180));
 
                 ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Dur_Ghostly_Visage_No_Sound, false), holosender);
                 ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Dur_Ghostly_Visage_No_Sound, false), holoreceiver);

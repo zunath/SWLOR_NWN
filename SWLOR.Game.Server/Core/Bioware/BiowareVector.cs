@@ -1,40 +1,10 @@
 ﻿using System.Numerics;
-using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Legacy.GameObject;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using static System.Math;
 
-/*
-        // inc_Vectors
-        // ************************************************
-        // Author: Clement Poh
-        // Date: 29/11/06
-        // Version: 1.02
-        // Ported to C# by givemedeath - 20190901
-        // Description : Basic 3 dimensional Vector3 library.
-        // Uses the Vectors learnt in late high school 
-        // and first year uni maths.
-        //
-        // If you want anything added to this library,
-        // please don't hesitate to contact me at any time.
-        //
-        // Update History:
-        // 30/11/06 - Added function: LocAtAngleToLocFacing.
-        // 01/12/06 - More abstraction: VAtAngleToV.
-        // 03/12/06 - Added function: DetermineQuadrant.
-        // 04/12/06 - Changed important Loc functions, changes are in comments
-        //
-        // Notes: 
-        // - The functions don't handle the third dimension
-        // very thoroughly at all, but it seems to work as
-        // it is.
-        // - soh cah and toa return angles not lengths.
-        // They do not currently work well determining
-        // quadrants.
-*/
-namespace SWLOR.Game.Server.Legacy.Service
+namespace SWLOR.Game.Server.Core.Bioware
 {
-    public static class VectorService
+    public static class BiowareVector
     {
         // givemedeath - had to add this one to the Service as it wasn't in the ported script and I needed it for HoloComs.
         public static Location MoveLocation(Location lCurrent, float fDirection, float fDistance, float fOffFacing = 0.0f, float fOffZ = 0.0f)
@@ -50,21 +20,21 @@ namespace SWLOR.Game.Server.Legacy.Service
             position.Y += vThrow.Y;
             return Location(GetAreaFromLocation(lCurrent), position, GetFacingFromLocation(lCurrent) + fOffFacing);
         }
-        
+
         // Returns the Vector3 from vA to vB.
         public static Vector3 AtoB(Vector3 vA, Vector3 vB)
         {
             //return vB - vA;
-            return new Vector3(vB.X - vA.X, vB.Y - vA.Y, vB.Z - vA.Z);            
+            return new Vector3(vB.X - vA.X, vB.Y - vA.Y, vB.Z - vA.Z);
         }
 
 
         // Returns a Vector3 fDist away from vRef at fAngle.
         public static Vector3 VAtAngleToV(Vector3 vRef, float fDist, float fAngle)
         {
-            return new Vector3(vRef.X + fDist * (float) Cos(fAngle), vRef.Y + fDist * (float) Sin(fAngle), vRef.Z);
+            return new Vector3(vRef.X + fDist * (float)Cos(fAngle), vRef.Y + fDist * (float)Sin(fAngle), vRef.Z);
         }
-        
+
         /*
         // Returns the projection of v2 onto v1. The Vector3 component of v2
         // in the direction of, or along v1.
@@ -157,7 +127,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             }
             else
             {
-                return (float) Asin(fOppositeLength / fHypotenuseLength);
+                return (float)Asin(fOppositeLength / fHypotenuseLength);
             }
         }
 
@@ -171,7 +141,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             }
             else
             {
-                return (float) Acos(fAdjacentLength / fHypotenuseLength);
+                return (float)Acos(fAdjacentLength / fHypotenuseLength);
             }
         }
 
@@ -211,33 +181,33 @@ namespace SWLOR.Game.Server.Legacy.Service
         // ** Locations relative to a Point functions
 
         // Returns a Location fDist in front of oObj, facing oObj.
-        
-        public static Location LocInFrontOfObj(NWObject oObj, float fDist)
+
+        public static Location LocInFrontOfObj(uint oObj, float fDist)
         {
             return LocAtAngleToLoc(GetLocation(oObj), fDist, 0.0f);
         }
 
         // Returns a Location fDist behind oObj, facing oObj.
-        public static Location LocBehindObj(NWObject oObj, float fDist)
+        public static Location LocBehindObj(uint oObj, float fDist)
         {
             return LocAtAngleToLoc(GetLocation(oObj), fDist, 180.0f);
         }
 
         // Returns a Location fDist to the right of oObj, facing oObj.
-        public static Location LocRSideOfObj(NWObject oObj, float fDist)
+        public static Location LocRSideOfObj(uint oObj, float fDist)
         {
             return LocAtAngleToLoc(GetLocation(oObj), fDist, -90.0f);
         }
 
         // Returns a Location fDist to the left of oObj, facing oObj.
-        public static Location LocLSideOfObj(NWObject oObj, float fDist)
+        public static Location LocLSideOfObj(uint oObj, float fDist)
         {
             return LocAtAngleToLoc(GetLocation(oObj), fDist, 90.0f);
         }
 
         // Returns a Location fDist at angle fAngle around oObj, facing oObj.
         // 0 degrees is the facing of oObj, so 90.0 degrees is left of the oObj.
-        public static Location LocAtAngleToObj(NWObject oObj, float fDist, float fAngle)
+        public static Location LocAtAngleToObj(uint oObj, float fDist, float fAngle)
         {
             return LocAtAngleToLoc(GetLocation(oObj), fDist, fAngle);
         }
@@ -278,7 +248,7 @@ namespace SWLOR.Game.Server.Legacy.Service
         // 0 degrees is the facing of the Location, so 90.0 degrees is left of the Location.
         public static Location LocAtAngleToLocFacing(Location lRef, float fDist, float fAngle, float fNew)
         {
-            NWObject oArea = GetAreaFromLocation(lRef);
+            var oArea = GetAreaFromLocation(lRef);
             var vRef = GetPositionFromLocation(lRef);
             var fFacing = GetFacingFromLocation(lRef);
 

@@ -161,5 +161,79 @@ namespace SWLOR.Game.Server.Feature
                 AssignCommand(player, () => ActionStartConversation(owner, string.Empty, true, false));
             }
         }
+
+        /// <summary>
+        /// When a player uses a quest placeable, handle the progression.
+        /// </summary>
+        [NWNEventHandler("quest_placeable")]
+        public static void UseQuestPlaceable()
+        {
+            var player = GetLastUsedBy();
+            if (!GetIsPC(player) || GetIsDM(player)) return;
+
+            TriggerAndPlaceableProgression(player, OBJECT_SELF);
+        }
+
+        /// <summary>
+        /// When a player enters a quest trigger, handle the progression.
+        /// </summary>
+        [NWNEventHandler("quest_trigger")]
+        public static void EnterQuestTrigger()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player)) return;
+
+            TriggerAndPlaceableProgression(player, OBJECT_SELF);
+        }
+
+
+        /// <summary>
+        /// Handles advancing a player's quest when they enter a trigger or click a quest placeable.
+        /// Trigger or placeable must have both QUEST_ID (string) and QUEST_STATE (int) set in order for this to work, otherwise an error will be raised.
+        /// </summary>
+        /// <param name="player">The player who entered the trigger or clicked a placeable.</param>
+        /// <param name="triggerOrPlaceable">The trigger or placeable</param>
+        public static void TriggerAndPlaceableProgression(uint player, uint triggerOrPlaceable)
+        {
+            if (!GetIsPC(player) || GetIsDM(player)) return;
+            var questMessage = GetLocalString(triggerOrPlaceable, "QUEST_MESSAGE");
+            var questId = GetLocalString(triggerOrPlaceable, "QUEST_ID");
+            var questState = GetLocalInt(triggerOrPlaceable, "QUEST_STATE");
+
+            if (string.IsNullOrWhiteSpace(questId))
+            {
+                SendMessageToPC(player, "QUEST_ID variable not set on object. Please inform admin this quest is bugged. (QuestID: " + questId + ")");
+                return;
+            }
+
+            if (questState <= 0)
+            {
+                SendMessageToPC(player, "QUEST_STATE variable not set on object. Please inform admin this quest is bugged. (QuestID: " + questId + ")");
+                return;
+            }
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (!dbPlayer.Quests.ContainsKey(questId)) return;
+
+            var dbQuest = dbPlayer.Quests[questId];
+
+            if (dbQuest.CurrentState != questState)
+            {
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(questMessage))
+            {
+                DelayCommand(1.0f, () =>
+                {
+                    SendMessageToPC(player, questMessage);
+                });
+            }
+
+            var quest = Quest.GetQuestById(questId);
+            quest.Advance(player, triggerOrPlaceable);
+        }
     }
 }

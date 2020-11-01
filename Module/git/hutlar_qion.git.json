@@ -3818,7 +3818,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "quest_placeable"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -3887,21 +3887,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.QuestSystem.OnUsed"
-              }
-            },
             {
               "__struct_id": 0,
               "Name": {
@@ -4138,7 +4123,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "quest_placeable"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -4207,21 +4192,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.QuestSystem.OnUsed"
-              }
-            },
             {
               "__struct_id": 0,
               "Name": {
@@ -4458,7 +4428,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "quest_placeable"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -4527,21 +4497,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.QuestSystem.OnUsed"
-              }
-            },
             {
               "__struct_id": 0,
               "Name": {
@@ -4778,7 +4733,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "quest_placeable"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -4847,21 +4802,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.QuestSystem.OnUsed"
-              }
-            },
             {
               "__struct_id": 0,
               "Name": {
@@ -5098,7 +5038,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "quest_placeable"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -5167,21 +5107,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.QuestSystem.OnUsed"
-              }
-            },
             {
               "__struct_id": 0,
               "Name": {
@@ -5418,7 +5343,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "quest_placeable"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -5487,21 +5412,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.QuestSystem.OnUsed"
-              }
-            },
             {
               "__struct_id": 0,
               "Name": {

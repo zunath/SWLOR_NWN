@@ -72,7 +72,7 @@
   },
   "ScriptOnEnter": {
     "type": "resref",
-    "value": "script_1"
+    "value": "quest_trigger"
   },
   "ScriptOnExit": {
     "type": "resref",
@@ -125,7 +125,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "SCRIPT_1"
+          "value": "QUEST_ID"
         },
         "Type": {
           "type": "dword",
@@ -133,22 +133,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "Trigger.QuestTrigger"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "QUEST_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 0
+          "value": ""
         }
       },
       {

@@ -885,7 +885,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "quest_trigger"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -3442,7 +3442,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "quest_placeable"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -3524,21 +3524,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "A61BB617B2D34E2F863C6301A4A04143"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.QuestSystem.OnUsed"
               }
             },
             {
@@ -5361,21 +5346,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.QuestTrigger"
-              }
-            },
             {
               "__struct_id": 0,
               "Name": {

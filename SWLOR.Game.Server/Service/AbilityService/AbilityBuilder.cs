@@ -168,13 +168,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
-        /// Adds an MP requirement to use the ability at this level.
+        /// Adds an FP requirement to use the ability at this level.
         /// </summary>
-        /// <param name="requiredMP">The amount of MP needed to use this ability at this level.</param>
+        /// <param name="requiredMP">The amount of FP needed to use this ability at this level.</param>
         /// <returns>An ability builder with the configured options</returns>
         public AbilityBuilder RequirementMP(int requiredMP)
         {
-            var requirement = new PerkMPRequirement(requiredMP);
+            var requirement = new PerkFPRequirement(requiredMP);
             _activeAbility.Requirements.Add(requirement);
 
             return this;

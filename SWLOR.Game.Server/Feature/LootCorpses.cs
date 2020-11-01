@@ -1,5 +1,7 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Service;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -18,7 +20,7 @@ namespace SWLOR.Game.Server.Feature
             var area = GetArea(self);
             var position = GetPosition(self);
             var facing = GetFacing(self);
-            var lootPosition = Vector(position.X, position.Y, position.Z - 0.11f);
+            var lootPosition = Vector3(position.X, position.Y, position.Z - 0.11f);
             Location spawnLocation = Location(area, lootPosition, facing);
 
             var container = CreateObject(ObjectType.Placeable, "npc_corpse", spawnLocation);

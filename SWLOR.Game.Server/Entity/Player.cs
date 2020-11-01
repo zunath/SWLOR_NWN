@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Entity
             Quests = new Dictionary<string, PlayerQuest>();
             UnlockedPerks = new Dictionary<PerkType, DateTime>();
             UnlockedRecipes = new Dictionary<RecipeType, DateTime>();
-            SeedProgress = new SeedProgress();
+            IsForceSensitive = false;
         }
 
         public override string KeyPrefix => "Player";
@@ -46,10 +46,10 @@ namespace SWLOR.Game.Server.Entity
         public int Version { get; set; }
         public string Name { get; set; }
         public int MaxHP { get; set; }
-        public int MaxMP { get; set; }
+        public int MaxFP { get; set; }
         public int MaxStamina { get; set; }
         public int HP { get; set; }
-        public int MP { get; set; }
+        public int FP { get; set; }
         public int Stamina { get; set; }
         public int BAB { get; set; }
         public string LocationAreaResref { get; set; }
@@ -69,6 +69,7 @@ namespace SWLOR.Game.Server.Entity
         public int XPDebt { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime? DatePerkRefundAvailable { get; set; }
+        public bool IsForceSensitive { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }
@@ -82,7 +83,6 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<string, PlayerQuest> Quests { get; set; }
         public Dictionary<PerkType, DateTime> UnlockedPerks { get; set; }
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
-        public SeedProgress SeedProgress { get; set; }
     }
 
     public class MapPin
@@ -126,11 +126,5 @@ namespace SWLOR.Game.Server.Entity
         {
             DisplayAchievementNotification = true;
         }
-    }
-
-    public class SeedProgress
-    {
-        public int Rank { get; set; }
-        public int Points { get; set; }
     }
 }

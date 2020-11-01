@@ -5,6 +5,6 @@
         Invalid = 0,
         Heavy = 1,
         Light = 2,
-        Mystic = 3
+        Force = 3
     }
 }

@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LootService;
-using Random = System.Random;
+using Random = SWLOR.Game.Server.Service.Random;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -212,7 +214,7 @@ namespace SWLOR.Game.Server.Feature
             var currentGilfinder = GetLocalInt(target, "GILFINDER_LEVEL");
             var currentTreasureHunter = GetLocalInt(target, "TREASURE_HUNTER_LEVEL");
 
-            var effectiveGilfinderLevel = Perk.GetEffectivePerkLevel(player, PerkType.Gilfinder);
+            var effectiveGilfinderLevel = Perk.GetEffectivePerkLevel(player, PerkType.CreditFinder);
             var effectiveTreasureHunterLevel = Perk.GetEffectivePerkLevel(player, PerkType.TreasureHunter);
 
             if (effectiveGilfinderLevel > currentGilfinder)

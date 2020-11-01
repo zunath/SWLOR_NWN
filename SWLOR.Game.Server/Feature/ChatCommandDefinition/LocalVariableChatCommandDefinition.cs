@@ -1,5 +1,6 @@
 ﻿using System;
 using SWLOR.Game.Server.Core;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {

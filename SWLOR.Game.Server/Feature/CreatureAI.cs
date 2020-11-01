@@ -3,6 +3,8 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Feature.AIDefinition;
+using SWLOR.Game.Server.Service;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -269,7 +271,7 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// When a creature spawns, store their STM and MP as local variables.
+        /// When a creature spawns, store their STM and FP as local variables.
         /// </summary>
         private static void LoadCreatureStats()
         {
@@ -284,7 +286,7 @@ namespace SWLOR.Game.Server.Feature
 
             SetLocalInt(self, "MAX_MP", mp);
             SetLocalInt(self, "MAX_STAMINA", stm);
-            SetLocalInt(self, "MP", mp);
+            SetLocalInt(self, "FP", mp);
             SetLocalInt(self, "STAMINA", stm);
         }
 
@@ -299,7 +301,7 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// When a creature's heartbeat fires, restore their STM and MP.
+        /// When a creature's heartbeat fires, restore their STM and FP.
         /// </summary>
         [NWNEventHandler("crea_heartbeat")]
         public static void RestoreCreatureStats()
@@ -307,7 +309,7 @@ namespace SWLOR.Game.Server.Feature
             var self = OBJECT_SELF;
             var maxMP = GetLocalInt(self, "MAX_MP");
             var maxSTM = GetLocalInt(self, "MAX_STAMINA");
-            var mp = GetLocalInt(self, "MP") + 1;
+            var mp = GetLocalInt(self, "FP") + 1;
             var stm = GetLocalInt(self, "STAMINA") + 1;
 
             if (mp > maxMP)
@@ -315,7 +317,7 @@ namespace SWLOR.Game.Server.Feature
             if (stm > maxSTM)
                 stm = maxSTM;
 
-            SetLocalInt(self, "MP", mp);
+            SetLocalInt(self, "FP", mp);
             SetLocalInt(self, "STAMINA", stm);
         }
 

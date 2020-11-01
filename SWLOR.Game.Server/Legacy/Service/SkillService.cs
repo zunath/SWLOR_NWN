@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             MessageHub.Instance.Subscribe<OnCreatureDeath>(message => OnCreatureDeath());
 
             // Feat Events
-            MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
+            MessageHub.Instance.Subscribe<SWLOR.Game.Server.Legacy.Event.Feat.OnHitCastSpell>(message => OnHitCastSpell());
 
             // Module Events
             MessageHub.Instance.Subscribe<OnModuleEquipItem>(message => OnModuleEquipItem());

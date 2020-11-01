@@ -3,7 +3,8 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
-using ItemProperty = NWN.FinalFantasy.Core.ItemProperty;
+using ItemProperty = SWLOR.Game.Server.Core.ItemProperty;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -19,7 +20,7 @@ namespace SWLOR.Game.Server.Feature
         public static void RegisterStatActions()
         {
             _statChangeActions[ItemPropertyType.HPBonus] = ApplyHPBonus;
-            _statChangeActions[ItemPropertyType.MPBonus] = ApplyMPBonus;
+            _statChangeActions[ItemPropertyType.FPBonus] = ApplyFPBonus;
             _statChangeActions[ItemPropertyType.STMBonus] = ApplySTMBonus;
         }
 
@@ -88,13 +89,13 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// Applies or removes an MP bonus on a player.
+        /// Applies or removes an FP bonus on a player.
         /// </summary>
         /// <param name="player">The player to adjust</param>
         /// <param name="item">The item being equipped or unequipped</param>
         /// <param name="ip">The item property associated with this change</param>
-        /// <param name="isAdding">If true, we're adding the MP, if false we're removing it</param>
-        private static void ApplyMPBonus(uint player, uint item, ItemProperty ip, bool isAdding)
+        /// <param name="isAdding">If true, we're adding the FP, if false we're removing it</param>
+        private static void ApplyFPBonus(uint player, uint item, ItemProperty ip, bool isAdding)
         {
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
@@ -118,7 +119,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player to adjust</param>
         /// <param name="item">The item being equipped or unequipped</param>
         /// <param name="ip">The item property associated with this change</param>
-        /// <param name="isAdding">If true, we're adding the MP, if false we're removing it</param>
+        /// <param name="isAdding">If true, we're adding the FP, if false we're removing it</param>
         private static void ApplySTMBonus(uint player, uint item, ItemProperty ip, bool isAdding)
         {
             var amount = GetItemPropertyCostTableValue(ip);

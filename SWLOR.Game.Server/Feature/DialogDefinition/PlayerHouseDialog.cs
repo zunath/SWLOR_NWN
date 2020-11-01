@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -91,18 +92,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var player = GetPC();
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var seedRank = dbPlayer.SeedProgress.Rank;
             var availableLayouts = Housing.GetActiveHouseTypes();
             var model = GetDataModel<Model>();
 
-            page.Header = "You can purchase any of the following layouts. Please note that this list is restricted based on your current SeeD rank. Complete missions to raise your SeeD rank and unlock new layouts.\n\n" +
-                ColorToken.Green("Your SeeD Rank: ") + seedRank;
+            page.Header = "You can purchase any of the following layouts.";
 
             foreach (var layout in availableLayouts)
             {
-                // Player's SeeD rank isn't high enough to purchase this layout.
-                if (seedRank < layout.Value.RequiredSeedRank) continue;
-
                 page.AddResponse(layout.Value.Name, () =>
                 {
                     model.SelectedHouseType = layout.Key;
@@ -150,7 +146,6 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             }
 
             page.Header = ColorToken.Green("Layout: ") + layoutDetail.Name + "\n" +
-                ColorToken.Green("Required SeeD Rank: ") + layoutDetail.RequiredSeedRank + "\n" +
                 ColorToken.Green("Price: ") + layoutDetail.Price + " gil\n" +
                 ColorToken.Green("Furniture Limit: ") + layoutDetail.FurnitureLimit + " items";
 

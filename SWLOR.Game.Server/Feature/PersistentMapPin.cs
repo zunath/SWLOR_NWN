@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using Player = NWN.FinalFantasy.Entity.Player;
+using Player = SWLOR.Game.Server.Entity.Player;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -38,7 +41,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("mappin_add_bef")]
         public static void AddMapPin()
         {
-            var player = Core.Internal.OBJECT_SELF;
+            var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var mapPin = LoadMapPin(false);
@@ -63,7 +66,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("mappin_rem_bef")]
         public static void DeleteMapPin()
         {
-            var player = Core.Internal.OBJECT_SELF;
+            var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var mapPin = LoadMapPin(true, true);
@@ -95,7 +98,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("mappin_chg_bef")]
         public static void ChangeMapPin()
         {
-            var player = Core.Internal.OBJECT_SELF;
+            var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var mapPin = LoadMapPin();

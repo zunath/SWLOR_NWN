@@ -1,8 +1,10 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -48,7 +50,7 @@ namespace SWLOR.Game.Server.Feature
                     BaseItem.Grenade,
                     BaseItem.Halberd,
                     BaseItem.HandAxe,
-                    BaseItem.Rifle,
+                    BaseItem.HeavyCrossbow,
                     BaseItem.HeavyFlail,
                     BaseItem.Helmet,
                     BaseItem.Kama,
@@ -115,7 +117,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 if (GetItemPropertyType(ip) == ItemPropertyType.OnHitCastSpell)
                 {
-                    if (GetItemPropertySubType(ip) == (int)OnHitCastSpellType.ONHIT_UNIQUEPOWER)
+                    if (GetItemPropertySubType(ip) == (int)OnHitCastSpell.ONHIT_UNIQUEPOWER)
                     {
                         return;
                     }

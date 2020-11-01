@@ -4,8 +4,10 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
-using Player = NWN.FinalFantasy.Entity.Player;
+using Player = SWLOR.Game.Server.Entity.Player;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {

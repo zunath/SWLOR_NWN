@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.CraftService;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -96,10 +98,11 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void CacheCraftSkillToAbilities()
         {
-            _craftSkillToAbility[SkillType.Blacksmithing] = new Tuple<AbilityType, AbilityType>(AbilityType.Constitution, AbilityType.Dexterity);
-            _craftSkillToAbility[SkillType.Leathercraft] = new Tuple<AbilityType, AbilityType>(AbilityType.Dexterity, AbilityType.Strength);
-            _craftSkillToAbility[SkillType.Alchemy] = new Tuple<AbilityType, AbilityType>(AbilityType.Intelligence, AbilityType.Wisdom);
-            _craftSkillToAbility[SkillType.Cooking] = new Tuple<AbilityType, AbilityType>(AbilityType.Wisdom, AbilityType.Charisma);
+            _craftSkillToAbility[SkillType.Weaponsmith] = new Tuple<AbilityType, AbilityType>(AbilityType.Dexterity, AbilityType.Intelligence);
+            _craftSkillToAbility[SkillType.Armorsmith] = new Tuple<AbilityType, AbilityType>(AbilityType.Constitution, AbilityType.Intelligence);
+            _craftSkillToAbility[SkillType.Fabrication] = new Tuple<AbilityType, AbilityType>(AbilityType.Intelligence, AbilityType.Constitution);
+            _craftSkillToAbility[SkillType.Medicine] = new Tuple<AbilityType, AbilityType>(AbilityType.Intelligence, AbilityType.Wisdom);
+            _craftSkillToAbility[SkillType.Engineering] = new Tuple<AbilityType, AbilityType>(AbilityType.Dexterity, AbilityType.Wisdom);
         }
 
         /// <summary>

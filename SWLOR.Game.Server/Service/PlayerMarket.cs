@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
-using Object = System.Object;
-using Player = NWN.FinalFantasy.Entity.Player;
+using Object = SWLOR.Game.Server.Core.NWNX.Object;
+using Player = SWLOR.Game.Server.Entity.Player;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -161,7 +163,7 @@ namespace SWLOR.Game.Server.Service
             var item = GetInventoryDisturbItem();
             var itemId = GetObjectUUID(item);
             var serialized = Object.Serialize(item);
-            var listingLimit = 5 + dbPlayer.SeedProgress.Rank * 5;
+            var listingLimit = 20;
 
             if (dbPlayerStore.ItemsForSale.Count >= listingLimit || // Listing limit reached.
                 GetBaseItemType(item) == BaseItem.Gold ||           // Gold can't be listed.
@@ -182,9 +184,9 @@ namespace SWLOR.Game.Server.Service
             });
 
             DB.Set(playerId, dbPlayerStore);
-            DestroyObject(item);
+            NWScript.DestroyObject(item);
 
-            SendMessageToPC(player, $"Listing limit: {dbPlayerStore.ItemsForSale.Count} / {5 + dbPlayer.SeedProgress.Rank * 5}");
+            SendMessageToPC(player, $"Listing limit: {dbPlayerStore.ItemsForSale.Count} / {listingLimit}");
         }
 
         /// <summary>
@@ -246,7 +248,7 @@ namespace SWLOR.Game.Server.Service
                 StoreMerchants.Remove(sellerPlayerId);
                 StoresOpen.Remove(sellerPlayerId);
 
-                DestroyObject(store);
+                NWScript.DestroyObject(store);
             }
         }
 

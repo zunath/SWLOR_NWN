@@ -1,6 +1,8 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -34,7 +36,7 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// Handles setting player's HP, MP, and STM to half of maximum,
+        /// Handles setting player's HP, FP, and STM to half of maximum,
         /// applies penalties for death, and teleports him or her to their home point.
         /// </summary>
         [NWNEventHandler("mod_respawn")]
@@ -111,7 +113,7 @@ namespace SWLOR.Game.Server.Feature
             var playerID = GetObjectUUID(player);
             var entity = DB.Get<Player>(playerID);
             var area = Cache.GetAreaByResref(entity.RespawnAreaResref);
-            var position = Vector(
+            var position = Vector3(
                 entity.RespawnLocationX,
                 entity.RespawnLocationY,
                 entity.RespawnLocationZ);

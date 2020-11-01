@@ -144,6 +144,16 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         ElectricalDefenseBonus = 146, // Deprecated
         MindDefenseBonus = 147,       // Deprecated
         LightDefenseBonus = 148,      // Deprecated
-        DarkDefenseBonus = 149        // Deprecated
+        DarkDefenseBonus = 149,        // Deprecated
+
+
+        // TODO: Replace these FFO specific item property types
+
+        UseLimitationPerk = 100,
+        ArmorType = 101,
+        STMBonus = 104,
+        Resistance = 105,
+        MagicBonus = 106
+
     }
 }

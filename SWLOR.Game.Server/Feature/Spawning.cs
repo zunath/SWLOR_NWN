@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SpawnService;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Object = System.Object;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -107,7 +111,7 @@ namespace SWLOR.Game.Server.Feature
                     {
                         _spawns.Add(id, new SpawnDetail
                         {
-                            SerializedObject = Object.Serialize(obj),
+                            SerializedObject = Core.NWNX.Object.Serialize(obj),
                             X = position.X,
                             Y = position.Y,
                             Z = position.Z,
@@ -359,9 +363,9 @@ namespace SWLOR.Game.Server.Feature
             // Deserialize and add it to the area.
             if (!string.IsNullOrWhiteSpace(detail.SerializedObject))
             {
-                var deserialized = Object.Deserialize(detail.SerializedObject);
+                var deserialized = Core.NWNX.Object.Deserialize(detail.SerializedObject);
                 var position = new Vector3(detail.X, detail.Y, detail.Z);
-                Object.AddToArea(deserialized, detail.Area, position);
+                Core.NWNX.Object.AddToArea(deserialized, detail.Area, position);
 
                 AssignCommand(deserialized, () => SetFacing(detail.Facing));
                 SetLocalString(deserialized, "SPAWN_ID", spawnId.ToString());

@@ -9,8 +9,9 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.ChatCommandDefinition;
 using SWLOR.Game.Server.Service;
-using Dialog = SWLOR.Game.Server.Core.NWNX.Dialog;
+using Dialog = SWLOR.Game.Server.Service.Dialog;
 using Player = SWLOR.Game.Server.Core.NWNX.Player;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -532,7 +533,7 @@ namespace SWLOR.Game.Server.Feature
                 false);
 
             ChatCommands["rez"] = new ChatCommandDefinition(
-                "Revives you, heals you to full, and restores all MP.",
+                "Revives you, heals you to full, and restores all FP.",
                 CommandPermissionType.DM | CommandPermissionType.Admin,
                 (user, target, location, args) =>
                 {

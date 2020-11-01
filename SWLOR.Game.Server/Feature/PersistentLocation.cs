@@ -1,6 +1,8 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -102,7 +104,7 @@ namespace SWLOR.Game.Server.Feature
             if (dbPlayer == null) return;
 
             var locationArea = Cache.GetAreaByResref(dbPlayer.LocationAreaResref);
-            var position = Vector(dbPlayer.LocationX, dbPlayer.LocationY, dbPlayer.LocationZ);
+            var position = Vector3(dbPlayer.LocationX, dbPlayer.LocationY, dbPlayer.LocationZ);
 
             var location = Location(locationArea, position, dbPlayer.LocationOrientation);
 

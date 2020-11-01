@@ -1,9 +1,10 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service;
 using Dialog = SWLOR.Game.Server.Service.Dialog;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -18,13 +19,6 @@ namespace SWLOR.Game.Server.Feature
             SetLocalInt(spawn, "QUEST_NPC_GROUP_ID", 1);
         }
 
-        [NWNEventHandler("test4")]
-        public static void DebugGiveXP()
-        {
-            var player = GetLastUsedBy();
-            Skill.GiveSkillXP(player, SkillType.Longsword, 5000);
-        }
-
         [NWNEventHandler("test6")]
         public static void IncreaseEnmityOnBoy()
         {
@@ -35,19 +29,12 @@ namespace SWLOR.Game.Server.Feature
             Enmity.ModifyEnmity(boy, lastAttacker, 999);
         }
 
-        [NWNEventHandler("test7")]
-        public static void GiveEffect()
-        {
-            var player = GetLastUsedBy();
-            StatusEffect.Apply(player, player, StatusEffectType.Invincible, 30.0f);
-        }
-
         [NWNEventHandler("test9")]
         public static void OpenHomePurchaseMenu()
         {
             var player = GetLastUsedBy();
 
-            Creature.AddFeatByLevel(player, Feat.PropertyTool, 1);
+            Creature.AddFeatByLevel(player, Feat.StructureManagementTool, 1);
 
             Dialog.StartConversation(player, OBJECT_SELF, nameof(PlayerHouseDialog));
         }

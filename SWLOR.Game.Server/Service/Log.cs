@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var settings = ApplicationSettings.Get();
 
-                var path = settings.LogDirectory + group + "/" + group + "NWScript.log";
+                var path = settings.LogDirectory + group + "/" + group + "_.log";
                 var logger = new LoggerConfiguration()
                     .WriteTo.Async(a => a.File(path, rollingInterval: RollingInterval.Day));
 

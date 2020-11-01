@@ -10,7 +10,8 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
-using Object = System.Object;
+using Object = SWLOR.Game.Server.Core.NWNX.Object;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -269,7 +270,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var areaHeight = GetAreaSize(Dimension.Height, area);
             var model = GetDataModel<Model>();
 
-            var position = Vector(5.0f, 0.0f, 0.1f);
+            var position = Vector3(5.0f, 0.0f, 0.1f);
 
             for (var i = 0; i <= areaHeight; i++)
             {

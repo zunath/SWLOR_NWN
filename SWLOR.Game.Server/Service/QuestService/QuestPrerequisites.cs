@@ -1,4 +1,5 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Entity;
 
 namespace SWLOR.Game.Server.Service.QuestService
 {

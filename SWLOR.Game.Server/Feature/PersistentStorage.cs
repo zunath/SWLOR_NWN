@@ -6,8 +6,9 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using Item = SWLOR.Game.Server.Core.NWNX.Item;
-using Object = System.Object;
+using Item = SWLOR.Game.Server.Service.Item;
+using Object = SWLOR.Game.Server.Core.NWNX.Object;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {

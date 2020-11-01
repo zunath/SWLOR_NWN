@@ -1,6 +1,8 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -85,27 +87,33 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.Header = "Please select a skill.";
 
-            page.AddResponse(Skill.GetSkillDetails(SkillType.Blacksmithing).Name, () =>
+            page.AddResponse(Skill.GetSkillDetails(SkillType.Weaponsmith).Name, () =>
             {
-                model.SelectedSkill = SkillType.Blacksmithing;
+                model.SelectedSkill = SkillType.Weaponsmith;
                 ChangePage(CategoryPageId);
             });
 
-            page.AddResponse(Skill.GetSkillDetails(SkillType.Leathercraft).Name, () =>
+            page.AddResponse(Skill.GetSkillDetails(SkillType.Armorsmith).Name, () =>
             {
-                model.SelectedSkill = SkillType.Leathercraft;
+                model.SelectedSkill = SkillType.Armorsmith;
                 ChangePage(CategoryPageId);
             });
 
-            page.AddResponse(Skill.GetSkillDetails(SkillType.Alchemy).Name, () =>
+            page.AddResponse(Skill.GetSkillDetails(SkillType.Fabrication).Name, () =>
             {
-                model.SelectedSkill = SkillType.Alchemy;
+                model.SelectedSkill = SkillType.Fabrication;
                 ChangePage(CategoryPageId);
             });
 
-            page.AddResponse(Skill.GetSkillDetails(SkillType.Cooking).Name, () =>
+            page.AddResponse(Skill.GetSkillDetails(SkillType.Medicine).Name, () =>
             {
-                model.SelectedSkill = SkillType.Cooking;
+                model.SelectedSkill = SkillType.Medicine;
+                ChangePage(CategoryPageId);
+            });
+
+            page.AddResponse(Skill.GetSkillDetails(SkillType.Engineering).Name, () =>
+            {
+                model.SelectedSkill = SkillType.Engineering;
                 ChangePage(CategoryPageId);
             });
         }

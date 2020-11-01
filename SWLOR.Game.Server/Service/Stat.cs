@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using Player = NWN.FinalFantasy.Entity.Player;
+using Player = SWLOR.Game.Server.Entity.Player;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -18,26 +19,26 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves the maximum MP on a player.
+        /// Retrieves the maximum FP on a player.
         /// INT and WIS modifiers will be checked. The higher one is used for calculations.
-        /// Each modifier grants +2 to max MP.
+        /// Each modifier grants +2 to max FP.
         /// </summary>
         /// <param name="player">The player object</param>
         /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made.</param>
-        /// <returns>The max amount of MP</returns>
-        public static int GetMaxMP(uint player, Player dbPlayer = null)
+        /// <returns>The max amount of FP</returns>
+        public static int GetMaxFP(uint player, Player dbPlayer = null)
         {
             if (dbPlayer == null)
             {
                 var playerId = GetObjectUUID(player);
                 dbPlayer = DB.Get<Player>(playerId);
             }
-            var baseMP = dbPlayer.MaxMP;
+            var baseFP = dbPlayer.MaxFP;
             var intModifier = GetAbilityModifier(AbilityType.Intelligence, player);
             var wisModifier = GetAbilityModifier(AbilityType.Wisdom, player);
             var modifier = intModifier > wisModifier ? intModifier : wisModifier;
 
-            return baseMP + (modifier * 2);
+            return baseFP + (modifier * 2);
         }
 
         /// <summary>
@@ -62,38 +63,38 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Restores an entity's MP by a specified amount.
+        /// Restores an entity's FP by a specified amount.
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>
         /// <param name="player">The player to modify.</param>
         /// <param name="entity">The entity to modify.</param>
-        /// <param name="amount">The amount of MP to restore.</param>
+        /// <param name="amount">The amount of FP to restore.</param>
         public static void RestoreMP(uint player, Player entity, int amount)
         {
             if (amount <= 0) return;
 
-            var maxMP = GetMaxMP(player);
-            entity.MP += amount;
+            var maxMP = GetMaxFP(player);
+            entity.FP += amount;
 
-            if (entity.MP > maxMP)
-                entity.MP = maxMP;
+            if (entity.FP > maxMP)
+                entity.FP = maxMP;
         }
 
         /// <summary>
-        /// Reduces an entity's MP by a specified amount.
-        /// If player would fall below 0 MP, they will be reduced to 0 instead.
+        /// Reduces an entity's FP by a specified amount.
+        /// If player would fall below 0 FP, they will be reduced to 0 instead.
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>
-        /// <param name="reduceBy">The amount of MP to reduce by.</param>
+        /// <param name="reduceBy">The amount of FP to reduce by.</param>
         public static void ReduceMP(Player entity, int reduceBy)
         {
             if (reduceBy <= 0) return;
 
-            entity.MP -= reduceBy;
+            entity.FP -= reduceBy;
 
-            if (entity.MP < 0)
-                entity.MP = 0;
+            if (entity.FP < 0)
+                entity.FP = 0;
         }
 
         /// <summary>
@@ -189,23 +190,23 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Modifies a player's maximum MP by a certain amount.
+        /// Modifies a player's maximum FP by a certain amount.
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
         public static void AdjustMaxMP(Player entity, int adjustBy)
         {
-            // Note: It's possible for Max MP to drop to a negative number. This is expected to ensure calculations stay in sync.
+            // Note: It's possible for Max FP to drop to a negative number. This is expected to ensure calculations stay in sync.
             // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
-            entity.MaxMP += adjustBy;
+            entity.MaxFP += adjustBy;
 
-            if (entity.MP > entity.MaxMP)
-                entity.MP = entity.MaxMP;
+            if (entity.FP > entity.MaxFP)
+                entity.FP = entity.MaxFP;
 
-            // Current MP, however, should never drop below zero.
-            if (entity.MP < 0)
-                entity.MP = 0;
+            // Current FP, however, should never drop below zero.
+            if (entity.FP < 0)
+                entity.FP = 0;
         }
 
         /// <summary>

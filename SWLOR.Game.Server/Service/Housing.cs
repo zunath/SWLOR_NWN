@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -149,7 +152,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player who will jump.</param>
         public static void JumpToOriginalLocation(uint player)
         {
-            var position = Vector(
+            var position = Vector3(
                 GetLocalFloat(player, "HOUSING_STORED_LOCATION_X"),
                 GetLocalFloat(player, "HOUSING_STORED_LOCATION_Y"),
                 GetLocalFloat(player, "HOUSING_STORED_LOCATION_Z"));

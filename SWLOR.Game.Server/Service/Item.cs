@@ -1,4 +1,7 @@
-﻿namespace SWLOR.Game.Server.Service
+﻿
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
+
+namespace SWLOR.Game.Server.Service
 {
     public static class Item
     {

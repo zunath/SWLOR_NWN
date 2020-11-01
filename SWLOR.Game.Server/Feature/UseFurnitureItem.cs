@@ -3,7 +3,8 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service;
-using Dialog = SWLOR.Game.Server.Core.NWNX.Dialog;
+using Dialog = SWLOR.Game.Server.Service.Dialog;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -28,7 +29,7 @@ namespace SWLOR.Game.Server.Feature
 
             var furnitureTypeId = (int)Housing.GetFurnitureTypeFromItem(item);
             var targetLocation = Location(area,
-                Vector(
+                Vector3(
                     (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_X")),
                     (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Y")),
                     (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Z"))),

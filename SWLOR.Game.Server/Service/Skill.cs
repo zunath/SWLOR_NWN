@@ -1,7 +1,9 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using Player = NWN.FinalFantasy.Entity.Player;
+using SWLOR.Game.Server.Enumeration;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -75,7 +77,7 @@ namespace SWLOR.Game.Server.Service
 
             // Skill is at cap and player would level up.
             // Reduce XP to required amount minus 1 XP.
-            if (pcSkill.Rank >= details.MaxRank && pcSkill.XP > requiredXP)
+            if (pcSkill.Rank >= details.MaxRankStandard && pcSkill.XP > requiredXP)
             {
                 pcSkill.XP = requiredXP - 1;
             }
@@ -106,7 +108,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 requiredXP = GetRequiredXP(pcSkill.Rank);
-                if (pcSkill.Rank >= details.MaxRank && pcSkill.XP >= requiredXP)
+                if (pcSkill.Rank >= details.MaxRankStandard && pcSkill.XP >= requiredXP)
                 {
                     pcSkill.XP = requiredXP - 1;
                 }
@@ -166,7 +168,7 @@ namespace SWLOR.Game.Server.Service
 
             while (xp > 0)
             {
-                var index = Random.Next(skillsPossibleToDecay.Count);
+                var index = Random.Next(skillsPossibleToDecay.Count());
                 var decaySkill = skillsPossibleToDecay[index];
                 int totalDecayXP = GetTotalXP(decaySkill.Value.Rank) + decaySkill.Value.XP;
 

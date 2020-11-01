@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
@@ -8,6 +9,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -78,7 +80,7 @@ namespace SWLOR.Game.Server.Feature
 
         /// <summary>
         /// Handles casting abilities. These can be combat-related or casting-related and may or may not have a casting delay.
-        /// Requirement reductions (MP, STM, etc) are applied after the casting has completed.
+        /// Requirement reductions (FP, STM, etc) are applied after the casting has completed.
         /// In the event there is no casting delay, the reductions are applied immediately.
         /// </summary>
         /// <param name="activator">The creature activating the ability.</param>
@@ -218,7 +220,7 @@ namespace SWLOR.Game.Server.Feature
         /// Handles queuing a weapon ability for the activator's next attack.
         /// Local variables are set on the activator which are picked up the next time the activator's weapon hits a target.
         /// If the activator does not hit a target within 30 seconds, the queued ability wears off automatically.
-        /// Requirement reductions (MP, STM, etc) are applied as soon as the ability is queued.
+        /// Requirement reductions (FP, STM, etc) are applied as soon as the ability is queued.
         /// </summary>
         /// <param name="activator">The creature activating the ability.</param>
         /// <param name="ability">The ability details</param>

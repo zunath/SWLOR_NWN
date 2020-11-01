@@ -1,4 +1,7 @@
-﻿namespace SWLOR.Game.Server.Service.PerkService
+﻿using SWLOR.Game.Server.Entity;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
+
+namespace SWLOR.Game.Server.Service.PerkService
 {
     public class PerkQuestRequirement : IPerkRequirement
     {

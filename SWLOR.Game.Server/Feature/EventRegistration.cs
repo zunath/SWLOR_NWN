@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -117,10 +118,10 @@ namespace SWLOR.Game.Server.Feature
             Events.SubscribeEvent("NWNX_ON_REMOVE_ASSOCIATE_AFTER", "asso_rem_aft");
 
             // Stealth events
-            Events.SubscribeEvent("NWNX_ON_ENTER_STEALTH_BEFORE", "stlent_ent_bef");
-            Events.SubscribeEvent("NWNX_ON_ENTER_STEALTH_AFTER", "stlent_ent_aft");
-            Events.SubscribeEvent("NWNX_ON_EXIT_STEALTH_BEFORE", "stlex_ex_bef");
-            Events.SubscribeEvent("NWNX_ON_EXIT_STEALTH_AFTER", "stlex_ex_aft");
+            Events.SubscribeEvent("NWNX_ON_ENTER_STEALTH_BEFORE", "stlent_add_bef");
+            Events.SubscribeEvent("NWNX_ON_ENTER_STEALTH_AFTER", "stlent_add_aft");
+            Events.SubscribeEvent("NWNX_ON_EXIT_STEALTH_BEFORE", "stlex_add_bef");
+            Events.SubscribeEvent("NWNX_ON_EXIT_STEALTH_AFTER", "stlex_add_aft");
 
             // Examine events
             Events.SubscribeEvent("NWNX_ON_EXAMINE_OBJECT_BEFORE", "examine_bef");

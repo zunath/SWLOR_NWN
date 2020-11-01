@@ -1,10 +1,13 @@
 ﻿using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
-using Dialog = SWLOR.Game.Server.Core.NWNX.Dialog;
-using Player = NWN.FinalFantasy.Entity.Player;
+using Dialog = SWLOR.Game.Server.Service.Dialog;
+using Player = SWLOR.Game.Server.Entity.Player;
+using Skill = SWLOR.Game.Server.Service.Skill;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -58,7 +61,6 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             page.AddResponse("View Perks", () => SwitchConversation(nameof(ViewPerksDialog)));
             page.AddResponse("View Achievements", () => SwitchConversation(nameof(ViewAchievementsDialog)));
             page.AddResponse("View Recipes", () => SwitchConversation(nameof(RecipeDialog)));
-            page.AddResponse("View Cards", () => SwitchConversation(nameof(TripleTriadPlayerDialog)));
             //page.AddResponse("Modify Item Appearance", () => SwitchConversation(nameof(ModifyItemAppearanceDialog)));
             page.AddResponse("Player Settings", () => SwitchConversation(nameof(PlayerSettingsDialog)));
             page.AddResponse("Open Trash Can (Destroy Items)", () =>

@@ -1,10 +1,12 @@
 ﻿using System;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service;
-using Dialog = SWLOR.Game.Server.Core.NWNX.Dialog;
+using Dialog = SWLOR.Game.Server.Service.Dialog;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -19,7 +21,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var feat = (Feat)Convert.ToInt32(Events.GetEventData("FEAT_ID"));
 
-            if (feat != Feat.PropertyTool) return;
+            if (feat != Feat.StructureManagementTool) return;
 
             var player = OBJECT_SELF;
             var playerId = GetObjectUUID(player);
@@ -52,7 +54,7 @@ namespace SWLOR.Game.Server.Feature
             var targetPositionY = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Y"));
             var targetPositionZ = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Z"));
 
-            var location = Location(area, Vector(targetPositionX, targetPositionY, targetPositionZ), 0.0f);
+            var location = Location(area, Vector3(targetPositionX, targetPositionY, targetPositionZ), 0.0f);
 
             SetLocalObject(player, "TEMP_PROPERTY_TOOL_OBJECT", target);
             SetLocalLocation(player, "TEMP_PROPERTY_TOOL_LOCATION", location);

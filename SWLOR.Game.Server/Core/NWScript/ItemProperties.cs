@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using Alignment = SWLOR.Game.Server.Core.NWScript.Enum.Item.Property.Alignment;
 using AlignmentGroup = SWLOR.Game.Server.Core.NWScript.Enum.Item.Property.AlignmentGroup;
 using DamageType = SWLOR.Game.Server.Core.NWScript.Enum.Item.Property.DamageType;
-using Feat = SWLOR.Game.Server.Core.NWScript.Enum.Item.Property.Feat;
 using RacialType = SWLOR.Game.Server.Core.NWScript.Enum.Item.Property.RacialType;
 using SpellSchool = SWLOR.Game.Server.Core.NWScript.Enum.SpellSchool;
 
@@ -255,7 +254,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Returns Item property Bonus Feat.  You need to specify the the feat
         ///   constant(IP_CONST_FEAT_*).
         /// </summary>
-        public static ItemProperty ItemPropertyBonusFeat(Feat nFeat)
+        public static ItemProperty ItemPropertyBonusFeat(ItemPropertyFeat nFeat)
         {
             Internal.NativeFunctions.StackPushInteger((int)nFeat);
             Internal.NativeFunctions.CallBuiltIn(628);

@@ -1,5 +1,7 @@
 ﻿using SWLOR.Game.Server.Entity;
-using Player = NWN.FinalFantasy.Entity.Player;
+using SWLOR.Game.Server.Enumeration;
+using Player = SWLOR.Game.Server.Entity.Player;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.QuestService
 {

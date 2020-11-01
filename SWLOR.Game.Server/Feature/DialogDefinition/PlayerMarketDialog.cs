@@ -5,8 +5,8 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
-using Object = System.Object;
-using Player = NWN.FinalFantasy.Entity.Player;
+using Player = SWLOR.Game.Server.Entity.Player;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -215,10 +215,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var dbPlayer = DB.Get<Player>(playerId);
             var dbPlayerStore = DB.Get<PlayerStore>(playerId);
             var model = GetDataModel<Model>();
-            var itemLimit = 5 + dbPlayer.SeedProgress.Rank * 5;
+            var itemLimit = 20;
 
             page.Header = ColorToken.Green("Listing Limit: ") + dbPlayerStore.ItemsForSale.Count + " / " + itemLimit + "\n" +
-                          ColorToken.Green("SeeD Rank: ") + dbPlayer.SeedProgress.Rank + "\n\n" + 
                           "Please select the 'List Items' option to add an item to your store. Otherwise select any other option to edit that listing.";
 
             page.AddResponse($"{ColorToken.Green("List Items")}", () =>
@@ -287,8 +286,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 page.AddResponse(ColorToken.Red("CONFIRM REMOVE ITEM"), () =>
                 {
-                    var inWorldItem = Object.Deserialize(item.Data);
-                    Object.AcquireItem(player, inWorldItem);
+                    var inWorldItem = Core.NWNX.Object.Deserialize(item.Data);
+                    Core.NWNX.Object.AcquireItem(player, inWorldItem);
                     dbPlayerStore.ItemsForSale.Remove(model.SelectedItemId);
 
                     DB.Set(playerId, dbPlayerStore);

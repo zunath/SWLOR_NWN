@@ -1,4 +1,7 @@
-﻿namespace SWLOR.Game.Server.Service.QuestService
+﻿
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
+
+namespace SWLOR.Game.Server.Service.QuestService
 {
     public interface IQuestReward
     {

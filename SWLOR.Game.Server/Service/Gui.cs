@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {

@@ -1,6 +1,9 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -12,7 +15,7 @@ namespace SWLOR.Game.Server.Feature
         private const int NumberRequiredTicks = 5; // 5 ticks * 6 seconds = 30 seconds
 
         /// <summary>
-        /// Handles processing natural HP, MP, and Stamina regeneration.
+        /// Handles processing natural HP, FP, and Stamina regeneration.
         /// </summary>
         [NWNEventHandler("interval_pc_6s")]
         public static void HandleNaturalRegeneration()
@@ -54,10 +57,10 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// Calculates the amount of MP to regenerate for a player.
+        /// Calculates the amount of FP to regenerate for a player.
         /// </summary>
         /// <param name="player">The player</param>
-        /// <returns>Amount of MP to restore.</returns>
+        /// <returns>Amount of FP to restore.</returns>
         private static int CalculateMPRegenAmount(uint player)
         {
             var clearMindBonus = Perk.GetEffectivePerkLevel(player, PerkType.ClearMind) * 2;

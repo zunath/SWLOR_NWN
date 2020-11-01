@@ -1,7 +1,11 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
-using Player = NWN.FinalFantasy.Entity.Player;
+using SWLOR.Game.Server.Service.QuestService;
+using Player = SWLOR.Game.Server.Entity.Player;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {

@@ -1,10 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service;
+using Dialog = SWLOR.Game.Server.Service.Dialog;
+using Item = SWLOR.Game.Server.Service.Item;
+using Random = SWLOR.Game.Server.Service.Random;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -28,10 +34,11 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         private static readonly Dictionary<SkillType, PerkType> _autoCraftPerk = new Dictionary<SkillType, PerkType>
         {
-            {SkillType.Blacksmithing, PerkType.AutoCraftBlacksmithing},
-            {SkillType.Leathercraft, PerkType.AutoCraftLeathercrafting},
-            {SkillType.Alchemy, PerkType.AutoCraftAlchemy},
-            {SkillType.Cooking, PerkType.AutoCraftCooking}
+            {SkillType.Weaponsmith, PerkType.AutoCraftWeaponsmith},
+            {SkillType.Armorsmith, PerkType.AutoCraftArmorsmith},
+            {SkillType.Fabrication, PerkType.AutoCraftFabrication},
+            {SkillType.Medicine, PerkType.AutoCraftMedicine},
+            {SkillType.Engineering, PerkType.AutoCraftEngineering}
         };
 
         /// <summary>
@@ -228,7 +235,7 @@ namespace SWLOR.Game.Server.Feature
                     else if (quantity <= remainingComponents[resref])
                     {
                         remainingComponents[resref] -= quantity;
-                        DestroyObject(component);
+                        NWScript.DestroyObject(component);
                     }
 
                     if (remainingComponents[resref] <= 0)

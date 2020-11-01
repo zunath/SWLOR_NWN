@@ -1,4 +1,5 @@
 ﻿using System;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {

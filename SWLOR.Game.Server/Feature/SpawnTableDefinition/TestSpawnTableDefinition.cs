@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.SpawnService;
 
 namespace SWLOR.Game.Server.Feature.SpawnTableDefinition

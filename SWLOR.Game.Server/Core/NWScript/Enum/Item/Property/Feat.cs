@@ -1,6 +1,6 @@
 namespace SWLOR.Game.Server.Core.NWScript.Enum.Item.Property
 {
-    public enum Feat
+    public enum ItemPropertyFeat
     {
         Alertness = 0,
         Ambidextrous = 1,

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Feature;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.SpawnService
 {

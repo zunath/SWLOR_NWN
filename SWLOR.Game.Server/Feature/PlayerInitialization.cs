@@ -2,8 +2,9 @@
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
-using Player = NWN.FinalFantasy.Entity.Player;
-using Skill = NWN.FinalFantasy.Core.NWScript.Enum.Skill;
+using Player = SWLOR.Game.Server.Entity.Player;
+using Skill = SWLOR.Game.Server.Core.NWScript.Enum.Skill;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -145,7 +146,7 @@ namespace SWLOR.Game.Server.Feature
             Creature.AddFeatByLevel(player, Feat.UncannyDodge1, 1);
             Creature.AddFeatByLevel(player, Feat.OpenRestMenu, 1);
             Creature.AddFeatByLevel(player, Feat.ChatCommandTargeter, 1);
-            Creature.AddFeatByLevel(player, Feat.PropertyTool, 1);
+            Creature.AddFeatByLevel(player, Feat.StructureManagementTool, 1);
         }
 
 
@@ -172,7 +173,7 @@ namespace SWLOR.Game.Server.Feature
             Stat.AdjustMaxSTM(dbPlayer, 10);
             Stat.AdjustBAB(dbPlayer, player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);
-            dbPlayer.MP = Stat.GetMaxMP(player, dbPlayer);
+            dbPlayer.FP = Stat.GetMaxFP(player, dbPlayer);
             dbPlayer.Stamina = Stat.GetMaxStamina(player, dbPlayer);
 
             dbPlayer.BaseStats[AbilityType.Strength] = Creature.GetRawAbilityScore(player, AbilityType.Strength);

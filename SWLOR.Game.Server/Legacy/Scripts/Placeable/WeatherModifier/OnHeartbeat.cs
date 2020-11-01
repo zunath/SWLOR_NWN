@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Weather = SWLOR.Game.Server.Service.Weather;
 
 namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.WeatherModifier
 {
@@ -26,10 +27,10 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.WeatherModifier
             var nSand = oSelf.GetLocalInt("WEATHER_SAND_STORM");
 
             var oArea = GetArea(oSelf);
-            WeatherService.SetAreaHeatModifier(oArea, nHeat);
-            WeatherService.SetAreaHumidityModifier(oArea, nWet);
-            WeatherService.SetAreaWindModifier(oArea, nWind);
-            WeatherService.SetAreaAcidRain(oArea, nAcid);
+            Weather.SetAreaHeatModifier(oArea, nHeat);
+            Weather.SetAreaHumidityModifier(oArea, nWet);
+            Weather.SetAreaWindModifier(oArea, nWind);
+            Weather.SetAreaAcidRain(oArea, nAcid);
 
             if (nDust > 0)
             {
@@ -42,7 +43,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.WeatherModifier
 
                 for(var player = GetFirstObjectInArea(oArea); GetIsObjectValid(player); player = GetNextObjectInArea(oArea))
                 {
-                    if (GetIsPC(player)) WeatherService.DoWeatherEffects(player);
+                    if (GetIsPC(player)) Weather.DoWeatherEffects(player);
                 }
             }
 
@@ -57,7 +58,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.WeatherModifier
 
                 for (var player = GetFirstObjectInArea(oArea); GetIsObjectValid(player); player = GetNextObjectInArea(oArea))
                 {
-                    if (GetIsPC(player)) WeatherService.DoWeatherEffects(player);
+                    if (GetIsPC(player)) Weather.DoWeatherEffects(player);
                 }
             }
             DestroyObject(oSelf);

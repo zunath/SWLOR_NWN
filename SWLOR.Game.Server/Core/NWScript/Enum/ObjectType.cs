@@ -1,5 +1,8 @@
+using System;
+
 namespace SWLOR.Game.Server.Core.NWScript.Enum
 {
+    [Flags]
     public enum ObjectType
     {
         Creature = 1,

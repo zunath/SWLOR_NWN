@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Legacy.Event.SWLOR;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.ValueObject;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Legacy.Service
@@ -189,7 +190,7 @@ namespace SWLOR.Game.Server.Legacy.Service
         private static void OnCreatureCombatRoundEnd()
         {
             NWCreature self = OBJECT_SELF;
-            WeatherService.OnCombatRoundEnd(self);
+            Weather.OnCombatRoundEnd(self);
 
             var script = GetBehaviourScript(OBJECT_SELF);
             if (string.IsNullOrWhiteSpace(script)) return;

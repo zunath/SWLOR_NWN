@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Legacy.Event.Conversation.RimerCards
         [NWNEventHandler("rimer_cpu_1")]
         public static int RimerCPU1()
         {
-            var deck = RandomService.Random(4) <= 3 ? RimerDeckType.Goblins : RimerDeckType.Wolves;
+            var deck = Server.Service.Random.Next(4) <= 3 ? RimerDeckType.Goblins : RimerDeckType.Wolves;
             RimerCPU.ConfigureGameSettings(OBJECT_SELF, deck, RimerAIDifficulty.Training);
             return 0;
         }
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Legacy.Event.Conversation.RimerCards
         [NWNEventHandler("rimer_cpu_2")]
         public static int RimerCPU2()
         {
-            var deck = RandomService.Random(4) <= 3 ? RimerDeckType.Goblins : RimerDeckType.Wolves;
+            var deck = Server.Service.Random.Next(4) <= 3 ? RimerDeckType.Goblins : RimerDeckType.Wolves;
             RimerCPU.ConfigureGameSettings(NWScript.OBJECT_SELF, deck, RimerAIDifficulty.Easy);
             return 0;
         }
@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Legacy.Event.Conversation.RimerCards
         [NWNEventHandler("rimer_cpu_3")]
         public static int RimerCPU3()
         {
-            var deck = RandomService.Random(4) <= 3 ? RimerDeckType.Goblins : RimerDeckType.Random;
+            var deck = Server.Service.Random.Next(4) <= 3 ? RimerDeckType.Goblins : RimerDeckType.Random;
             RimerCPU.ConfigureGameSettings(NWScript.OBJECT_SELF, deck, RimerAIDifficulty.Easy);
             return 0;
         }
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Legacy.Event.Conversation.RimerCards
         [NWNEventHandler("rimer_cpu_4")]
         public static int RimerCPU4()
         {
-            var deck = RandomService.Random(4) <= 3 ? RimerDeckType.FastCreatures : RimerDeckType.BigCreatures;
+            var deck = Server.Service.Random.Next(4) <= 3 ? RimerDeckType.FastCreatures : RimerDeckType.BigCreatures;
             RimerCPU.ConfigureGameSettings(NWScript.OBJECT_SELF, deck, RimerAIDifficulty.Normal);
             return 0;
         }
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Legacy.Event.Conversation.RimerCards
         [NWNEventHandler("rimer_cpu_6")]
         public static int RimerCPU6()
         {
-            var deck = RandomService.Random(4) <= 3 ? RimerDeckType.Spells : RimerDeckType.Angels;
+            var deck = Server.Service.Random.Next(4) <= 3 ? RimerDeckType.Spells : RimerDeckType.Angels;
             RimerCPU.ConfigureGameSettings(NWScript.OBJECT_SELF, deck, RimerAIDifficulty.Normal);
             return 0;
         }
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Legacy.Event.Conversation.RimerCards
         [NWNEventHandler("rimer_cpu_7")]
         public static int RimerCPU7()
         {
-            var deck = RandomService.Random(4) <= 3 ? RimerDeckType.Undead : RimerDeckType.Random;
+            var deck = Server.Service.Random.Next(4) <= 3 ? RimerDeckType.Undead : RimerDeckType.Random;
             RimerCPU.ConfigureGameSettings(NWScript.OBJECT_SELF, deck, RimerAIDifficulty.Hard);
             return 0;
         }
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Legacy.Event.Conversation.RimerCards
         [NWNEventHandler("rimer_cpu_8")]
         public static int RimerCPU8()
         {
-            var deck = RandomService.Random(4) <= 3 ? RimerDeckType.Angels : RimerDeckType.Animals;
+            var deck = Server.Service.Random.Next(4) <= 3 ? RimerDeckType.Angels : RimerDeckType.Animals;
             RimerCPU.ConfigureGameSettings(NWScript.OBJECT_SELF, deck, RimerAIDifficulty.Hard);
             return 0;
         }

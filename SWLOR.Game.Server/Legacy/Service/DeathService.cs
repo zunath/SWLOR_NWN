@@ -43,12 +43,12 @@ namespace SWLOR.Game.Server.Legacy.Service
             for (var index = 0; index < NumberOfInventorySlots; index++)
             {
                 NWItem equipped = GetItemInSlot((InventorySlot)index, player);
-                DurabilityService.RunItemDecay(player, equipped, RandomService.RandomFloat(0.15f, 0.50f));
+                DurabilityService.RunItemDecay(player, equipped, SWLOR.Game.Server.Service.Random.NextFloat(0.15f, 0.50f));
             }
 
             foreach (var item in player.InventoryItems)
             {
-                DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(0.10f, 0.25f));
+                DurabilityService.RunItemDecay(player, item, SWLOR.Game.Server.Service.Random.NextFloat(0.10f, 0.25f));
             }
         }
 

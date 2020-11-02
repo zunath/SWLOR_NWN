@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Legacy.Item
             }
             var minReduction = 0.05f * tech;
             var maxReduction = 0.15f * tech;
-            var reductionAmount = RandomService.RandomFloat(minReduction, maxReduction);
+            var reductionAmount = SWLOR.Game.Server.Service.Random.NextFloat(minReduction, maxReduction);
             if (delta >= 6) baseXP = 400;
             else if (delta == 5) baseXP = 350;
             else if (delta == 4) baseXP = 325;

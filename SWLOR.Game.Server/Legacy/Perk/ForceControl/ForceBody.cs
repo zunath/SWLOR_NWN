@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Legacy.Perk.ForceControl
             
             // Check lucky chance.
             var luck = PerkService.GetCreaturePerkLevel(creature, PerkType.Lucky);
-            if (RandomService.D100(1) <= luck)
+            if (SWLOR.Game.Server.Service.Random.D100(1) <= luck)
             {
                 recovery *= 2;
                 creature.SendMessage("Lucky Force Body!");

@@ -49,27 +49,27 @@ namespace SWLOR.Game.Server.Legacy.Perk.OneHanded
             switch (perkLevel)
             {
                 case 1:
-                    damage = RandomService.D4(1);
+                    damage = SWLOR.Game.Server.Service.Random.D4(1);
                     length = 6.0f;
                     break;
                 case 2:
-                    damage = RandomService.D4(2);
+                    damage = SWLOR.Game.Server.Service.Random.D4(2);
                     length = 6.0f;
                     break;
                 case 3:
-                    damage = RandomService.D6(2);
+                    damage = SWLOR.Game.Server.Service.Random.D6(2);
                     length = 6.0f;
                     break;
                 case 4:
-                    damage = RandomService.D6(2);
+                    damage = SWLOR.Game.Server.Service.Random.D6(2);
                     length = 9.0f;
                     break;
                 case 5:
-                    damage = RandomService.D6(3);
+                    damage = SWLOR.Game.Server.Service.Random.D6(3);
                     length = 9.0f;
                     break;
                 case 6:
-                    damage = RandomService.D8(3);
+                    damage = SWLOR.Game.Server.Service.Random.D8(3);
                     length = 9.0f;
                     break;
                 default: return;

@@ -96,50 +96,50 @@ namespace SWLOR.Game.Server.Legacy.ValueObject
             {
                 // This is an NPC.  Give them a deck with 6 random + cards, 3-4 random - cards and 0-1 random wild card.
                 // See PazaakCard.cs for values.
-                if (RandomService.D6(1) == 6)
+                if (SWLOR.Game.Server.Service.Random.D6(1) == 6)
                 {
-                    playerDeck.Add(RandomService.D6(1));
-                    playerDeck.Add(RandomService.D6(1));
-                    playerDeck.Add(RandomService.D6(1));
-                    playerDeck.Add(RandomService.D6(1));
-                    playerDeck.Add(RandomService.D6(1));
-                    playerDeck.Add(RandomService.D6(1));
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1));
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1));
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1));
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1));
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1));
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1));
 
-                    playerDeck.Add(RandomService.D6(1) * -1);
-                    playerDeck.Add(RandomService.D6(1) * -1);
-                    playerDeck.Add(RandomService.D6(1) * -1);
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1) * -1);
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1) * -1);
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1) * -1);
 
-                    playerDeck.Add(RandomService.D6(1) + 100);
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1) + 100);
                 }
                 else
                 {
-                    playerDeck.Add(RandomService.D6(1));
-                    playerDeck.Add(RandomService.D6(1));
-                    playerDeck.Add(RandomService.D6(1));
-                    playerDeck.Add(RandomService.D6(1));
-                    playerDeck.Add(RandomService.D6(1));
-                    playerDeck.Add(RandomService.D6(1));
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1));
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1));
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1));
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1));
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1));
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1));
 
-                    playerDeck.Add(RandomService.D6(1) * -1);
-                    playerDeck.Add(RandomService.D6(1) * -1);
-                    playerDeck.Add(RandomService.D6(1) * -1);
-                    playerDeck.Add(RandomService.D6(1) * -1);
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1) * -1);
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1) * -1);
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1) * -1);
+                    playerDeck.Add(SWLOR.Game.Server.Service.Random.D6(1) * -1);
                 }
             }
 
-            random = RandomService.Random(10);
+            random = SWLOR.Game.Server.Service.Random.Next(10);
             deckToBuild.Add(playerDeck[random]);
             playerDeck.Remove(random);
 
-            random = RandomService.Random(9);
+            random = SWLOR.Game.Server.Service.Random.Next(9);
             deckToBuild.Add(playerDeck[random]);
             playerDeck.Remove(random);
 
-            random = RandomService.Random(8);
+            random = SWLOR.Game.Server.Service.Random.Next(8);
             deckToBuild.Add(playerDeck[random]);
             playerDeck.Remove(random);
 
-            random = RandomService.Random(7);
+            random = SWLOR.Game.Server.Service.Random.Next(7);
             deckToBuild.Add(playerDeck[random]);
             playerDeck.Remove(random);
 
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Legacy.ValueObject
                 SpeakString("Deck empty! Reshuffling.");
             }
 
-            var card = RandomService.Random(deck.Count);
+            var card = SWLOR.Game.Server.Service.Random.Next(deck.Count);
             var retVal = deck.ElementAt(card);
             deck.RemoveAt(card);
             return retVal;            

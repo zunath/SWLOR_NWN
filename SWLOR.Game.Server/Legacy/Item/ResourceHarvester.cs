@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Legacy.Item
             var remaining = target.GetLocalInt("RESOURCE_COUNT") - 1;
             var itemResref = target.GetLocalString("RESOURCE_RESREF");
             var gemChance = ResourceService.CalculateChanceForComponentBonus(player, tier, quality);
-            var roll = RandomService.Random(1, 100);
+            var roll = SWLOR.Game.Server.Service.Random.Next(1, 100);
             var rank = SkillService.GetPCSkillRank(player, SkillType.Harvesting);
             if (item.RecommendedLevel < rank)
                 rank = item.RecommendedLevel;
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Legacy.Item
                 decayMaximum += delta * 0.1f;
             }
 
-            DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(decayMinimum, decayMaximum));
+            DurabilityService.RunItemDecay(player, item, SWLOR.Game.Server.Service.Random.NextFloat(decayMinimum, decayMaximum));
             var xp = baseXP;
             SkillService.GiveSkillXP(player, SkillType.Harvesting, xp);
 

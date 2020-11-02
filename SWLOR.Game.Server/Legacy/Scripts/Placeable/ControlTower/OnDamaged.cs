@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.ControlTower
 
             if(attacker.IsPlayer)
             {
-                DurabilityService.RunItemDecay(attacker.Object, weapon, RandomService.RandomFloat(0.01f, 0.03f));
+                DurabilityService.RunItemDecay(attacker.Object, weapon, SWLOR.Game.Server.Service.Random.NextFloat(0.01f, 0.03f));
             }
 
             // If the shields have fallen to zero, the tower will begin to take structure damage.
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.ControlTower
             {
                 pcBase.ShieldHP = 0;
 
-                structure.Durability -= RandomService.RandomFloat(0.5f, 2.0f);
+                structure.Durability -= SWLOR.Game.Server.Service.Random.NextFloat(0.5f, 2.0f);
                 if (structure.Durability < 0.0f) structure.Durability = 0.0f;
                 attacker.SendMessage("Structure Durability: " + structure.Durability.ToString("0.00"));
 

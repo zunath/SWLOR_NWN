@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Legacy.Item
             ApplyEffectToObject(DurationType.Instant, EffectHeal(hp), user);
 
             // But reduces one random attribute by 50 for 2 minutes.
-            var stat = RandomService.D6(1)-1;
+            var stat = SWLOR.Game.Server.Service.Random.D6(1)-1;
             var effect = EffectAbilityDecrease(stat, 50);
             ApplyEffectToObject(DurationType.Temporary, effect, user, 120f);
         }

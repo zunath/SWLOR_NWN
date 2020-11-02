@@ -381,7 +381,7 @@ namespace SWLOR.Game.Server.Legacy.AI
                 IsInConversation(self.Object) == false &&
                 GetCurrentAction(self.Object) != ActionType.RandomWalk &&
                 GetCurrentAction(self.Object) != ActionType.MoveToPoint &&
-                RandomService.Random(100) <= 25)
+                SWLOR.Game.Server.Service.Random.Next(100) <= 25)
             {
                 self.AssignCommand(ActionRandomWalk);
             }
@@ -443,7 +443,7 @@ namespace SWLOR.Game.Server.Legacy.AI
             var randomizedFeatIDs = concentration.Type == PerkType.Unknown 
                 ? cache.Values // No concentration exclusions
                 : cache.Values.Where(x => x.ExecutionType != PerkExecutionType.ConcentrationAbility); // Exclude concentration abilities
-            randomizedFeatIDs = randomizedFeatIDs.OrderBy(o => RandomService.Random());
+            randomizedFeatIDs = randomizedFeatIDs.OrderBy(o => SWLOR.Game.Server.Service.Random.Next());
 
             foreach (var perkDetails in randomizedFeatIDs)
             {

@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.ScavengePoint
                         NWScript.CreateObject(ObjectType.Item, seed, point.Location);
 
                         var perkLevel = PerkService.GetCreaturePerkLevel(oPC, PerkType.SeedPicker);
-                        if (RandomService.Random(100) + 1 <= perkLevel * 10)
+                        if (SWLOR.Game.Server.Service.Random.Next(100) + 1 <= perkLevel * 10)
                         {
                             NWScript.CreateObject(ObjectType.Item, seed, point.Location);
                         }

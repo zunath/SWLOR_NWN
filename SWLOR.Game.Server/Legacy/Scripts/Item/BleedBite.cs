@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Item
         {
             NWCreature oTarget = NWScript.GetSpellTargetObject();
 
-            if (RandomService.D100(1) > 5) return;
+            if (SWLOR.Game.Server.Service.Random.D100(1) > 5) return;
 
             CustomEffectService.ApplyCustomEffect(NWScript.OBJECT_SELF, oTarget, CustomEffectType.Bleeding, 12, 1, null);
         }

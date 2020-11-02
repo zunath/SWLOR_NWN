@@ -47,43 +47,43 @@ namespace SWLOR.Game.Server.Legacy.Perk.MartialArts
             switch (perkLevel)
             {
                 case 1:
-                    damage = RandomService.D8(1);
+                    damage = SWLOR.Game.Server.Service.Random.D8(1);
                     duration = 3;
                     break;
                 case 2:
-                    damage = RandomService.D8(2);
+                    damage = SWLOR.Game.Server.Service.Random.D8(2);
                     duration = 3;
                     break;
                 case 3:
-                    damage = RandomService.D8(3);
+                    damage = SWLOR.Game.Server.Service.Random.D8(3);
                     duration = 3;
                     break;
                 case 4:
-                    damage = RandomService.D8(3);
+                    damage = SWLOR.Game.Server.Service.Random.D8(3);
                     duration = 6;
                     break;
                 case 5:
-                    damage = RandomService.D8(4);
+                    damage = SWLOR.Game.Server.Service.Random.D8(4);
                     duration = 6;
                     break;
                 case 6:
-                    damage = RandomService.D8(5);
+                    damage = SWLOR.Game.Server.Service.Random.D8(5);
                     duration = 6;
                     break;
                 case 7:
-                    damage = RandomService.D8(6);
+                    damage = SWLOR.Game.Server.Service.Random.D8(6);
                     duration = 6;
                     break;
                 case 8:
-                    damage = RandomService.D8(7);
+                    damage = SWLOR.Game.Server.Service.Random.D8(7);
                     duration = 6;
                     break;
                 case 9:
-                    damage = RandomService.D8(7);
+                    damage = SWLOR.Game.Server.Service.Random.D8(7);
                     duration = 9;
                     break;
                 case 10:
-                    damage = RandomService.D8(8);
+                    damage = SWLOR.Game.Server.Service.Random.D8(8);
                     duration = 9;
                     break;
                 default: return;

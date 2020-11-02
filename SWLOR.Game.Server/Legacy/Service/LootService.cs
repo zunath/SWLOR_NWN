@@ -27,9 +27,9 @@ namespace SWLOR.Game.Server.Legacy.Service
                 weights[x] = lootTableItems.ElementAt(x).Weight;
             }
 
-            var randomIndex = RandomService.GetRandomWeightedIndex(weights);
+            var randomIndex = SWLOR.Game.Server.Service.Random.GetRandomWeightedIndex(weights);
             var itemEntity = lootTableItems.ElementAt(randomIndex);
-            var quantity = RandomService.Random(itemEntity.MaxQuantity) + 1;
+            var quantity = SWLOR.Game.Server.Service.Random.Next(itemEntity.MaxQuantity) + 1;
             var result = new ItemVO
             {
                 Quantity = quantity,
@@ -86,12 +86,12 @@ namespace SWLOR.Game.Server.Legacy.Service
 
             for (var a = 1; a <= attempts; a++)
             {
-                if (RandomService.Random(100) + 1 <= chance)
+                if (SWLOR.Game.Server.Service.Random.Next(100) + 1 <= chance)
                 {
                     var model = PickRandomItemFromLootTable(lootTableID);
                     if (model == null) continue;
 
-                    var spawnQuantity = model.Quantity > 1 ? RandomService.Random(1, model.Quantity) : 1;
+                    var spawnQuantity = model.Quantity > 1 ? SWLOR.Game.Server.Service.Random.Next(1, model.Quantity) : 1;
 
                     for (var x = 1; x <= spawnQuantity; x++)
                     {

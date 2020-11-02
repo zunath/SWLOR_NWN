@@ -85,9 +85,9 @@ namespace SWLOR.Game.Server.Legacy.Event.Conversation
 
                 // Spawn key cards randomly on the main level.
                 var spawnIDs = new List<int> { 1, 2, 3, 4, 5, 6 };
-                var keyCard1 = spawnIDs.ElementAt(RandomService.Random(1, 6));
+                var keyCard1 = spawnIDs.ElementAt(Server.Service.Random.Next(1, 6));
                 spawnIDs.RemoveAt(keyCard1 - 1);
-                var keyCard2 = spawnIDs.ElementAt(RandomService.Random(1, 5));
+                var keyCard2 = spawnIDs.ElementAt(Server.Service.Random.Next(1, 5));
 
                 NWLocation keyCardLocation1 = GetLocation(GetNearestObjectByTag("KEY_CARD_SPAWN_" + keyCard1, GetFirstObjectInArea(mainLevel)));
                 NWLocation keyCardLocation2 = GetLocation(GetNearestObjectByTag("KEY_CARD_SPAWN_" + keyCard2, GetFirstObjectInArea(mainLevel)));
@@ -99,9 +99,9 @@ namespace SWLOR.Game.Server.Legacy.Event.Conversation
 
                 // Now do the same thing on the restricted level.
                 spawnIDs = new List<int> { 1, 2, 3, 4, 5, 6, 7 };
-                keyCard1 = spawnIDs.ElementAt(RandomService.Random(1, 7));
+                keyCard1 = spawnIDs.ElementAt(Server.Service.Random.Next(1, 7));
                 spawnIDs.RemoveAt(keyCard1 - 1);
-                keyCard2 = spawnIDs.ElementAt(RandomService.Random(1, 6));
+                keyCard2 = spawnIDs.ElementAt(Server.Service.Random.Next(1, 6));
 
                 keyCardLocation1 = GetLocation(GetNearestObjectByTag("KEY_CARD_SPAWN_" + keyCard1, GetFirstObjectInArea(restrictedLevel)));
                 keyCardLocation2 = GetLocation(GetNearestObjectByTag("KEY_CARD_SPAWN_" + keyCard2, GetFirstObjectInArea(restrictedLevel)));

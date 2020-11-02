@@ -134,41 +134,41 @@ namespace SWLOR.Game.Server.Legacy.Item
             //Console.WriteLine("Throwing " + grenadeType + " grenade at perk level " + perkLevel);
             var originalLocation = targetLocation;
 
-            var roll = RandomService.D100(1);
+            var roll = SWLOR.Game.Server.Service.Random.D100(1);
             
             SendMessageToPC(user, roll + " vs. DC " + (100 - skillLevel));
             if (roll < (100 - skillLevel))
             {
-                if (RandomService.D20(1) == 1)
+                if (SWLOR.Game.Server.Service.Random.D20(1) == 1)
                 {
                     SendMessageToPC(user, "You threw... poorly.");
-                    //targetLocation = VectorService.MoveLocation(targetLocation, GetFacing(user), (RandomService.D6(4) - 10) * 1.0f, 
-                    targetLocation = BiowareVector.MoveLocation(user.Location, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) * 1.0f,
-                                                                RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
+                    //targetLocation = VectorService.MoveLocation(targetLocation, GetFacing(user), (SWLOR.Game.Server.Service.Random.D6(4) - 10) * 1.0f, 
+                    targetLocation = BiowareVector.MoveLocation(user.Location, SWLOR.Game.Server.Service.Random.D100(1) + SWLOR.Game.Server.Service.Random.D100(1) + SWLOR.Game.Server.Service.Random.D100(1) + 60, SWLOR.Game.Server.Service.Random.D4(2) * 1.0f,
+                                                                SWLOR.Game.Server.Service.Random.D100(1) + SWLOR.Game.Server.Service.Random.D100(1) + SWLOR.Game.Server.Service.Random.D100(1));
                     var count = 0;
                     while ((GetSurfaceMaterial(targetLocation) == 0 ||
                            LineOfSightVector(GetPositionFromLocation(targetLocation), GetPosition(user)) == false) &&
                            count < 10)
                     {
                         count += 1;
-                        targetLocation = BiowareVector.MoveLocation(user.Location, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) * 1.0f,
-                                                                    RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
+                        targetLocation = BiowareVector.MoveLocation(user.Location, SWLOR.Game.Server.Service.Random.D100(1) + SWLOR.Game.Server.Service.Random.D100(1) + SWLOR.Game.Server.Service.Random.D100(1) + 60, SWLOR.Game.Server.Service.Random.D4(2) * 1.0f,
+                                                                    SWLOR.Game.Server.Service.Random.D100(1) + SWLOR.Game.Server.Service.Random.D100(1) + SWLOR.Game.Server.Service.Random.D100(1));
                     }
                 }
                 else
                 {
                     SendMessageToPC(user, "Your throw was a bit off the mark.");
-                    //targetLocation = VectorService.MoveLocation(targetLocation, GetFacing(user), (RandomService.D6(4) - 10) * 1.0f, 
-                    targetLocation = BiowareVector.MoveLocation(targetLocation, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) /*(RandomService.D6(4) - 10) */ * 1.0f,
-                                                                RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
+                    //targetLocation = VectorService.MoveLocation(targetLocation, GetFacing(user), (SWLOR.Game.Server.Service.Random.D6(4) - 10) * 1.0f, 
+                    targetLocation = BiowareVector.MoveLocation(targetLocation, SWLOR.Game.Server.Service.Random.D100(1) + SWLOR.Game.Server.Service.Random.D100(1) + SWLOR.Game.Server.Service.Random.D100(1) + 60, SWLOR.Game.Server.Service.Random.D4(2) /*(SWLOR.Game.Server.Service.Random.D6(4) - 10) */ * 1.0f,
+                                                                SWLOR.Game.Server.Service.Random.D100(1) + SWLOR.Game.Server.Service.Random.D100(1) + SWLOR.Game.Server.Service.Random.D100(1));
                     var count = 0;
                     while ((GetSurfaceMaterial(targetLocation) == 0 ||
                            LineOfSightVector(GetPositionFromLocation(targetLocation), GetPosition(user)) == false) &&
                            count < 10)
                     {
                         count += 1;
-                        targetLocation = BiowareVector.MoveLocation(targetLocation, RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1) + 60, RandomService.D4(2) /*(RandomService.D6(4) - 10) */ * 1.0f,
-                                                                    RandomService.D100(1) + RandomService.D100(1) + RandomService.D100(1));
+                        targetLocation = BiowareVector.MoveLocation(targetLocation, SWLOR.Game.Server.Service.Random.D100(1) + SWLOR.Game.Server.Service.Random.D100(1) + SWLOR.Game.Server.Service.Random.D100(1) + 60, SWLOR.Game.Server.Service.Random.D4(2) /*(SWLOR.Game.Server.Service.Random.D6(4) - 10) */ * 1.0f,
+                                                                    SWLOR.Game.Server.Service.Random.D100(1) + SWLOR.Game.Server.Service.Random.D100(1) + SWLOR.Game.Server.Service.Random.D100(1));
                     }
                 }
 
@@ -241,7 +241,7 @@ namespace SWLOR.Game.Server.Legacy.Item
             {
                 // start 974 through 979 in spells.2da for grenades
                 // lets randomly assign a projectile appearance for flavor?
-                spellId = (Spell)(RandomService.D6(1) + 973);
+                spellId = (Spell)(SWLOR.Game.Server.Service.Random.D6(1) + 973);
             }
 
             var delay = GetDistanceBetweenLocations(user.Location, targetLocation) / 18.0f + 0.75f;
@@ -345,14 +345,14 @@ namespace SWLOR.Game.Server.Legacy.Item
                     switch (grenadeType)
                     {
                         case "FRAG":
-                            damageEffect = EffectDamage(RandomService.D6(perkLevel), DamageType.Fire);
-                            damageEffect = EffectLinkEffects(EffectDamage(RandomService.D6(perkLevel), DamageType.Piercing), damageEffect);
-                            if (RandomService.D6(1) > 4)
+                            damageEffect = EffectDamage(SWLOR.Game.Server.Service.Random.D6(perkLevel), DamageType.Fire);
+                            damageEffect = EffectLinkEffects(EffectDamage(SWLOR.Game.Server.Service.Random.D6(perkLevel), DamageType.Piercing), damageEffect);
+                            if (SWLOR.Game.Server.Service.Random.D6(1) > 4)
                             {
                                 //Console.WriteLine("grenade effect bleeding - frag");
                                 CustomEffectService.ApplyCustomEffect(user, targetCreature.Object, CustomEffectType.Bleeding, duration * 6, perkLevel, Convert.ToString(perkLevel));
                             }
-                            if (RandomService.D6(1) > 4)
+                            if (SWLOR.Game.Server.Service.Random.D6(1) > 4)
                             {
                                 //Console.WriteLine("grenade effects burning - frag");
                                 CustomEffectService.ApplyCustomEffect(user, targetCreature.Object, CustomEffectType.Burning, duration * 6, perkLevel, Convert.ToString(perkLevel));
@@ -360,28 +360,28 @@ namespace SWLOR.Game.Server.Legacy.Item
                             //Console.WriteLine("grenade effects set - frag");
                             break;
                         case "CONCUSSION":
-                            damageEffect = EffectDamage(RandomService.D12(perkLevel), DamageType.Sonic);
+                            damageEffect = EffectDamage(SWLOR.Game.Server.Service.Random.D12(perkLevel), DamageType.Sonic);
                             durationEffect = EffectDeaf();
-                            if (RandomService.D6(1) > 4)
+                            if (SWLOR.Game.Server.Service.Random.D6(1) > 4)
                             {
                                 FloatingTextStringOnCreature("Your ears ring and your body shakes.", targetCreature);
                                 durationEffect = EffectLinkEffects(AbilityService.EffectKnockdown(targetCreature, duration), durationEffect);
                             }
                             break;
                         case "FLASHBANG":
-                            duration = RandomService.D4(1);
+                            duration = SWLOR.Game.Server.Service.Random.D4(1);
                             durationEffect = EffectDeaf();
-                            if (RandomService.D6(1) > 4)
+                            if (SWLOR.Game.Server.Service.Random.D6(1) > 4)
                             {
                                 FloatingTextStringOnCreature("Your vision blurs and blacks out.", targetCreature);
                                 durationEffect = EffectLinkEffects(EffectBlindness(), durationEffect);
                             }
                             break;
                         case "ION":
-                            duration = RandomService.D4(1);
-                            damageEffect = EffectDamage(RandomService.D6(perkLevel), DamageType.Electrical);
+                            duration = SWLOR.Game.Server.Service.Random.D4(1);
+                            damageEffect = EffectDamage(SWLOR.Game.Server.Service.Random.D6(perkLevel), DamageType.Electrical);
                             if (GetRacialType(targetCreature) == RacialType.Robot ||
-                                (RandomService.D6(1) > 4 && GetRacialType(targetCreature) == RacialType.Cyborg))
+                                (SWLOR.Game.Server.Service.Random.D6(1) > 4 && GetRacialType(targetCreature) == RacialType.Cyborg))
                             {
                                 FloatingTextStringOnCreature("Your circuits are overloaded.", targetCreature);
                                 durationEffect = EffectStunned();
@@ -393,7 +393,7 @@ namespace SWLOR.Game.Server.Legacy.Item
                             break;
                         case "ADHESIVE":
                             durationEffect = EffectSlow();
-                            if (RandomService.D6(1) > 4)
+                            if (SWLOR.Game.Server.Service.Random.D6(1) > 4)
                             {
                                 FloatingTextStringOnCreature("You are slowed by the adhesive explosion.", targetCreature);
                                 durationEffect = EffectLinkEffects(EffectCutsceneImmobilize(), durationEffect);
@@ -438,17 +438,17 @@ namespace SWLOR.Game.Server.Legacy.Item
                     durationEffect = EffectRegenerate(perkLevel*2, 6.0f);
                     break;
                 case "INCENDIARY":
-                    impactEffect = EffectDamage(RandomService.D6(perkLevel), DamageType.Fire);
-                    duration = RandomService.D6(1);
-                    if (RandomService.D6(1) > 4)
+                    impactEffect = EffectDamage(SWLOR.Game.Server.Service.Random.D6(perkLevel), DamageType.Fire);
+                    duration = SWLOR.Game.Server.Service.Random.D6(1);
+                    if (SWLOR.Game.Server.Service.Random.D6(1) > 4)
                     {
                         CustomEffectService.ApplyCustomEffect(user, (NWCreature)oTarget, CustomEffectType.Burning, duration * 6, perkLevel, Convert.ToString(perkLevel));
                     }
                     break;
                 case "GAS":
-                    impactEffect = EffectDamage(RandomService.D6(perkLevel), DamageType.Acid);
-                    duration = RandomService.D6(1);
-                    if (RandomService.D6(1) > 4 && GetIsImmune(oTarget, ImmunityType.Poison) == false)
+                    impactEffect = EffectDamage(SWLOR.Game.Server.Service.Random.D6(perkLevel), DamageType.Acid);
+                    duration = SWLOR.Game.Server.Service.Random.D6(1);
+                    if (SWLOR.Game.Server.Service.Random.D6(1) > 4 && GetIsImmune(oTarget, ImmunityType.Poison) == false)
                     {
                         durationEffect = EffectPoison(Poison.Arsenic);
                     }

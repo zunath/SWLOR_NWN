@@ -706,7 +706,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 
             while (xp > 0)
             {
-                var skillIndex = RandomService.Random(skillsPossibleToDecay.Count);
+                var skillIndex = SWLOR.Game.Server.Service.Random.Next(skillsPossibleToDecay.Count);
                 var decaySkill = skillsPossibleToDecay[skillIndex];
                 var totalDecaySkillXP = totalXPs.Find(x => x.SkillID == decaySkill.SkillID).TotalSkillXP;
                 var oldRank = decaySkill.Rank;

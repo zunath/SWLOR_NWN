@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Legacy.SpawnRule
     {
         public void Run(NWObject target, params object[] args)
         {
-            var roll = RandomService.Random(0, 100);
+            var roll = SWLOR.Game.Server.Service.Random.Next(0, 100);
             var quality = ResourceQuality.Low;
             var qualityName = "Sparse";
 
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Legacy.SpawnRule
                 qualityName = "Thick";
             }
 
-            roll = RandomService.Random(0, 100);
+            roll = SWLOR.Game.Server.Service.Random.Next(0, 100);
             if (roll <= 3)
             {
                 tier++;
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Legacy.SpawnRule
             if (tier > maxTier)
                 tier = maxTier;
 
-            var quantity = RandomService.Random(1, 3);
+            var quantity = SWLOR.Game.Server.Service.Random.Next(1, 3);
 
             target.SetLocalInt("RESOURCE_QUALITY", (int)quality);
             target.SetLocalInt("RESOURCE_TIER", tier);

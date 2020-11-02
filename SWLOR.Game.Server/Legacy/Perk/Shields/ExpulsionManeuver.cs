@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Legacy.Perk.Shields
                 chance += luck;
             }
 
-            if (RandomService.Random(100) + 1 <= chance)
+            if (SWLOR.Game.Server.Service.Random.Next(100) + 1 <= chance)
             {
                 NWScript.ApplyEffectToObject(DurationType.Temporary, NWScript.EffectAttackIncrease(ab), creature.Object, length);
                 creature.SendMessage(ColorTokenService.Combat("You perform a defensive maneuver."));

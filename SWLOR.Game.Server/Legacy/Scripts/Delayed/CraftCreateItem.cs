@@ -106,9 +106,9 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Delayed
                 BaseService.ApplyCraftedItemLocalVariables(item, baseStructure);
             }
 
-            if(RandomService.Random(1, 100) <= luckyBonus)
+            if(SWLOR.Game.Server.Service.Random.Next(1, 100) <= luckyBonus)
             {
-                chance += RandomService.Random(1, luckyBonus);
+                chance += SWLOR.Game.Server.Service.Random.Next(1, luckyBonus);
             }
             
             var successAmount = 0;
@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Delayed
             }
             
             player.SendMessage("You created " + blueprint.Quantity + "x " + blueprint.ItemName + "!");
-            var baseXP = 750 + successAmount * RandomService.Random(1, 50);
+            var baseXP = 750 + successAmount * SWLOR.Game.Server.Service.Random.Next(1, 50);
             var xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(baseXP, model.AdjustedLevel, pcSkill.Rank);
 
             var exists = DataService.PCCraftedBlueprint.ExistsByPlayerIDAndCraftedBlueprintID(player.GlobalID, blueprint.ID);
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Delayed
                 var tlkID = Convert.ToInt32(NWScript.Get2DAString("iprp_compbon", "Name", bonusTypeID));
                 var amount = NWScript.GetItemPropertyCostTableValue(ip);
                 var bonusName = NWScript.GetStringByStrRef(tlkID) + " " + amount;
-                var random = RandomService.RandomFloat() * 100.0f;
+                var random = SWLOR.Game.Server.Service.Random.NextFloat() * 100.0f;
                 var modifiedEquipmentBonus = equipmentBonus * 0.25f;
 
                 if (random <= chance + modifiedEquipmentBonus)
@@ -219,19 +219,19 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Delayed
                         switch (componentLevel)
                         {
                             case 1:
-                                penalty = RandomService.Random(1, 19);
+                                penalty = SWLOR.Game.Server.Service.Random.Next(1, 19);
                                 break;
                             case 2:
-                                penalty = RandomService.Random(1, 9);
+                                penalty = SWLOR.Game.Server.Service.Random.Next(1, 9);
                                 break;
                             case 3:
-                                penalty = RandomService.Random(1, 6);
+                                penalty = SWLOR.Game.Server.Service.Random.Next(1, 6);
                                 break;
                             case 4:
-                                penalty = RandomService.Random(1, 4);
+                                penalty = SWLOR.Game.Server.Service.Random.Next(1, 4);
                                 break;
                             default:
-                                penalty = RandomService.Random(1, 3);
+                                penalty = SWLOR.Game.Server.Service.Random.Next(1, 3);
                                 break;
                         }
                         chance -=  penalty;

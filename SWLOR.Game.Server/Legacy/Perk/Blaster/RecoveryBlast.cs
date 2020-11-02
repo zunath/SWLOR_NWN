@@ -63,27 +63,27 @@ namespace SWLOR.Game.Server.Legacy.Perk.Blaster
             switch (level)
             {
                 case 1:
-                    amount = RandomService.D12(1);
+                    amount = SWLOR.Game.Server.Service.Random.D12(1);
                     break;
                 case 2:
-                    amount = RandomService.D8(2);
+                    amount = SWLOR.Game.Server.Service.Random.D8(2);
                     break;
                 case 3:
-                    amount = RandomService.D8(3);
+                    amount = SWLOR.Game.Server.Service.Random.D8(3);
                     break;
                 case 4:
-                    amount = RandomService.D8(4);
+                    amount = SWLOR.Game.Server.Service.Random.D8(4);
                     break;
                 case 5:
-                    amount = RandomService.D8(5);
+                    amount = SWLOR.Game.Server.Service.Random.D8(5);
                     break;
                 case 6:
-                    amount = RandomService.D8(6);
+                    amount = SWLOR.Game.Server.Service.Random.D8(6);
                     break;
                 default: return;
             }
 
-            if (RandomService.D100(1) <= luck)
+            if (SWLOR.Game.Server.Service.Random.D100(1) <= luck)
             {
                 amount *= 2;
             }

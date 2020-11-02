@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Legacy.Perk.Blaster
                 default: return;
             }
 
-            if (RandomService.D100(1) <= luck)
+            if (SWLOR.Game.Server.Service.Random.D100(1) <= luck)
             {
                 duration *= 2;
                 creature.SendMessage("Lucky shot!");

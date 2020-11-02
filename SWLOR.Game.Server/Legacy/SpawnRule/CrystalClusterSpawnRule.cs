@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Legacy.SpawnRule
             var area = GetArea(target);
             var areaName = GetName(area);
             var areaResref = GetResRef(area);
-            var roll = RandomService.Random(0, 100);
+            var roll = SWLOR.Game.Server.Service.Random.Next(0, 100);
             var quality = ResourceQuality.Low;
             var qualityName = "Sparse";
 
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Legacy.SpawnRule
                 qualityName = "Thick";
             }
 
-            roll = RandomService.Random(0, 100);
+            roll = SWLOR.Game.Server.Service.Random.Next(0, 100);
             if (roll <= 3)
             {
                 tier++;
@@ -60,15 +60,15 @@ namespace SWLOR.Game.Server.Legacy.SpawnRule
                 tier = maxTier;
 
             var resref = GetResourceResref(tier);
-            var quantity = RandomService.Random(3, 10);
+            var quantity = SWLOR.Game.Server.Service.Random.Next(3, 10);
 
-            roll = RandomService.Random(0, 100);
+            roll = SWLOR.Game.Server.Service.Random.Next(0, 100);
 
             if (roll <= 2)
             {
                 string[] coloredResrefs = {"p_crystal_red", "p_crystal_green", "p_crystal_blue", "p_crystal_yellow"};
 
-                roll = RandomService.Random(0, 3);
+                roll = SWLOR.Game.Server.Service.Random.Next(0, 3);
                 resref = coloredResrefs[roll];
             }
             

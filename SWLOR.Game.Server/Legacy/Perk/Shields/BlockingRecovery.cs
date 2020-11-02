@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Legacy.Perk.Shields
                 chance += luck;
             }
 
-            if (RandomService.Random(100) + 1 <= chance)
+            if (SWLOR.Game.Server.Service.Random.Next(100) + 1 <= chance)
             {
                 var heal = NWScript.EffectHeal(amount);
                 NWScript.ApplyEffectToObject(DurationType.Instant, heal, creature.Object);

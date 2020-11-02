@@ -348,7 +348,7 @@ namespace SWLOR.Game.Server.Legacy.Service
                     throw new ArgumentOutOfRangeException(nameof(quality), quality, null);
             }
             
-            var index = RandomService.Random(0, setToUse.Length - 1);
+            var index = SWLOR.Game.Server.Service.Random.Next(0, setToUse.Length - 1);
             var itemTag = setToUse[index];
 
             return new Tuple<ItemProperty, int>(ItemService.GetCustomItemPropertyByItemTag(itemTag), Colorize(itemTag)); 

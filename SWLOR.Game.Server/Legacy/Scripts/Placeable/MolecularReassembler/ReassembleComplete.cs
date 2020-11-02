@@ -136,10 +136,10 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.MolecularReassembler
             {
                 var chanceToTransfer = CraftService.CalculateReassemblyChance(_player, penalty);
                 // Roll to see if the item can be created.
-                var success = RandomService.Random(0, 100) <= chanceToTransfer;
+                var success = SWLOR.Game.Server.Service.Random.Next(0, 100) <= chanceToTransfer;
 
                 // Do a lucky roll if we failed the first time.
-                if (!success && luck > 0 && RandomService.Random(0, 100) <= luck)
+                if (!success && luck > 0 && SWLOR.Game.Server.Service.Random.Next(0, 100) <= luck)
                 {
                     _player.SendMessage("Lucky reassemble!");
                     success = true;
@@ -157,12 +157,12 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.MolecularReassembler
                         item.RecommendedLevel = levelIncrease;
                         BiowareXP2.IPSafeAddItemProperty(item, bonusIPPacked, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
 
-                        xp += (150 * maxBonuses + RandomService.Random(0, 5));
+                        xp += (150 * maxBonuses + SWLOR.Game.Server.Service.Random.Next(0, 5));
                     }
                     else
                     {
                         _player.SendMessage(ColorTokenService.Red("You failed to create a component. (+" + maxBonuses + ")"));
-                        xp += (50 + RandomService.Random(0, 5));
+                        xp += (50 + SWLOR.Game.Server.Service.Random.Next(0, 5));
                     }
                     // Penalty to chance increases regardless if item was created or not.
                     penalty += (maxBonuses * 5);
@@ -179,12 +179,12 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.MolecularReassembler
                         item.RecommendedLevel = levelIncrease;
                         BiowareXP2.IPSafeAddItemProperty(item, bonusIPPacked, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
 
-                        xp += (150 * amount + RandomService.Random(0, 5));
+                        xp += (150 * amount + SWLOR.Game.Server.Service.Random.Next(0, 5));
                     }
                     else
                     {
                         _player.SendMessage(ColorTokenService.Red("You failed to create a component. (+" + amount + ")"));
-                        xp += (50 + RandomService.Random(0, 5));
+                        xp += (50 + SWLOR.Game.Server.Service.Random.Next(0, 5));
                     }
                     break;
                 }

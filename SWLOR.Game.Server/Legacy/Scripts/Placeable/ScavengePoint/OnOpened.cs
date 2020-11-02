@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.ScavengePoint
             var searchAttempts = 1 + CalculateSearchAttempts(oPC);
 
             var luck = PerkService.GetCreaturePerkLevel(oPC, PerkType.Lucky) + effectiveStats.Luck;
-            if (RandomService.Random(100) + 1 <= luck / 2)
+            if (SWLOR.Game.Server.Service.Random.Next(100) + 1 <= luck / 2)
             {
                 dc--;
             }
@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.ScavengePoint
 
             for (var attempt = 1; attempt <= searchAttempts; attempt++)
             {
-                var roll = RandomService.Random(20) + 1;
+                var roll = SWLOR.Game.Server.Service.Random.Next(20) + 1;
                 if (roll >= dc)
                 {
                     oPC.FloatingText(ColorTokenService.SkillCheck("Search: *success*: (" + roll + " vs. DC: " + dc + ")"));
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.ScavengePoint
                     var xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(50, level, rank);
                     SkillService.GiveSkillXP(oPC, SkillType.Scavenging, (int)xp);
                 }
-                dc += RandomService.Random(3) + 1;
+                dc += SWLOR.Game.Server.Service.Random.Next(3) + 1;
             }
             
             // Chance to destroy the scavenge point.
@@ -141,11 +141,11 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.ScavengePoint
                     break;
             }
 
-            if (RandomService.Random(100) + 1 <= attempt1Chance)
+            if (SWLOR.Game.Server.Service.Random.Next(100) + 1 <= attempt1Chance)
             {
                 numberOfSearches++;
             }
-            if (RandomService.Random(100) + 1 <= attempt2Chance)
+            if (SWLOR.Game.Server.Service.Random.Next(100) + 1 <= attempt2Chance)
             {
                 numberOfSearches++;
             }

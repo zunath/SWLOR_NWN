@@ -48,39 +48,39 @@ namespace SWLOR.Game.Server.Legacy.Perk.Blaster
             switch (level)
             {
                 case 1:
-                    damage = RandomService.D4(1);
+                    damage = SWLOR.Game.Server.Service.Random.D4(1);
                     duration = 6;
                     break;
                 case 2:
-                    damage = RandomService.D8(1);
+                    damage = SWLOR.Game.Server.Service.Random.D8(1);
                     duration = 6;
                     break;
                 case 3:
-                    damage = RandomService.D8(2);
+                    damage = SWLOR.Game.Server.Service.Random.D8(2);
                     duration = 6;
                     break;
                 case 4:
-                    damage = RandomService.D8(2);
+                    damage = SWLOR.Game.Server.Service.Random.D8(2);
                     duration = 12;
                     break;
                 case 5:
-                    damage = RandomService.D8(3);
+                    damage = SWLOR.Game.Server.Service.Random.D8(3);
                     duration = 12;
                     break;
                 case 6:
-                    damage = RandomService.D8(4);
+                    damage = SWLOR.Game.Server.Service.Random.D8(4);
                     duration = 12;
                     break;
                 case 7:
-                    damage = RandomService.D8(5);
+                    damage = SWLOR.Game.Server.Service.Random.D8(5);
                     duration = 12;
                     break;
                 case 8:
-                    damage = RandomService.D8(5);
+                    damage = SWLOR.Game.Server.Service.Random.D8(5);
                     duration = 18;
                     break;
                 case 9:
-                    damage = RandomService.D8(6);
+                    damage = SWLOR.Game.Server.Service.Random.D8(6);
                     duration = 24;
                     break;
                 default: return;

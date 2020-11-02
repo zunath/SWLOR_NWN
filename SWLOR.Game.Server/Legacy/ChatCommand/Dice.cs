@@ -98,25 +98,25 @@ namespace SWLOR.Game.Server.Legacy.ChatCommand
             switch (sides)
             {
                 case 2:
-                    value = RandomService.D2(number);
+                    value = SWLOR.Game.Server.Service.Random.D2(number);
                     break;
                 case 4:
-                    value = RandomService.D4(number);
+                    value = SWLOR.Game.Server.Service.Random.D4(number);
                     break;
                 case 6:
-                    value = RandomService.D6(number);
+                    value = SWLOR.Game.Server.Service.Random.D6(number);
                     break;
                 case 8:
-                    value = RandomService.D8(number);
+                    value = SWLOR.Game.Server.Service.Random.D8(number);
                     break;
                 case 10:
-                    value = RandomService.D10(number);
+                    value = SWLOR.Game.Server.Service.Random.D10(number);
                     break;
                 case 20:
-                    value = RandomService.D20(number);
+                    value = SWLOR.Game.Server.Service.Random.D20(number);
                     break;
                 case 100:
-                    value = RandomService.D100(number);
+                    value = SWLOR.Game.Server.Service.Random.D100(number);
                     break;
                 default:
                     value = 0;

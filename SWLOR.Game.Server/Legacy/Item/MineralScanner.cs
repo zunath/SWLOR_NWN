@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Legacy.Item
                 user.SendMessage(name + " [Density: " + lti.Weight + "]");
             }
             
-            DurabilityService.RunItemDecay(user.Object, item, RandomService.RandomFloat(0.02f, 0.08f));
+            DurabilityService.RunItemDecay(user.Object, item, SWLOR.Game.Server.Service.Random.NextFloat(0.02f, 0.08f));
         }
         
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)

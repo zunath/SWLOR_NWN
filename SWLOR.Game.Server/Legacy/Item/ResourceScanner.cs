@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Legacy.Item
             if(!string.IsNullOrWhiteSpace(target.GetLocalString("RESOURCE_RESREF")))
             {
                 ScanResource(user, target);
-                DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(0.05f, 0.1f));
+                DurabilityService.RunItemDecay(player, item, SWLOR.Game.Server.Service.Random.NextFloat(0.05f, 0.1f));
                 effectLocation = target.Location;
             }
             else

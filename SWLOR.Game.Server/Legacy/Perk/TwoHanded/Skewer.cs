@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Legacy.Perk.TwoHanded
             var chance = perkLevel * 25;
 
             // Failed to interrupt.
-            if(RandomService.D100(1) > chance)
+            if(SWLOR.Game.Server.Service.Random.D100(1) > chance)
             {
                 creature.SendMessage("You fail to interrupt your target's concentration.");
                 return;

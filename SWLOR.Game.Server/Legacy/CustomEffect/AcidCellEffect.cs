@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Legacy.CustomEffect
         public void Tick(NWCreature oCaster, NWObject oTarget, int currentTick, int effectiveLevel, string data)
         {
             if (currentTick % 2 != 0) return;
-            var damage = RandomService.D4(1) + (oCaster.RightHand.DamageBonus / 8);
+            var damage = SWLOR.Game.Server.Service.Random.D4(1) + (oCaster.RightHand.DamageBonus / 8);
             oTarget.SetLocalInt(AbilityService.LAST_ATTACK + oCaster.GlobalID, AbilityService.ATTACK_DOT);
             oCaster.AssignCommand(() =>
             {

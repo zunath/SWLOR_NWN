@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Legacy.Perk.ForceAlter
             if (weapon.CustomItemType == CustomItemType.Lightsaber ||
                 weapon.CustomItemType == CustomItemType.Saberstaff)
             {
-                iDamage = saberDamage + RandomService.D6(2) + player.IntelligenceModifier + player.StrengthModifier;
+                iDamage = saberDamage + SWLOR.Game.Server.Service.Random.D6(2) + player.IntelligenceModifier + player.StrengthModifier;
             }
             else
             {

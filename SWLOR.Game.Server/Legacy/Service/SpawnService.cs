@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Legacy.Service
                         // Pick a random record.   
                         var spawnObjects = DataService.SpawnObject.GetAllBySpawnTableID(spawnTableID).ToList();
                         var count = spawnObjects.Count;
-                        var index = count <= 0 ? 0 : RandomService.Random(count);
+                        var index = count <= 0 ? 0 : SWLOR.Game.Server.Service.Random.Next(count);
                         var dbSpawn = spawnObjects[index];
 
                         if (dbSpawn != null)
@@ -227,13 +227,13 @@ namespace SWLOR.Game.Server.Legacy.Service
         {
             var walkmeshes = AreaService.GetAreaWalkmeshes(area);
             var count = walkmeshes.Count;
-            var index = count <= 0 ? 0 : RandomService.Random(count);
+            var index = count <= 0 ? 0 : SWLOR.Game.Server.Service.Random.Next(count);
 
             var spawnPoint = walkmeshes[index];
             
             return Location(area,
                 Vector3((float)spawnPoint.LocationX, (float)spawnPoint.LocationY, (float)spawnPoint.LocationZ),
-                RandomService.RandomFloat(0, 360));
+                SWLOR.Game.Server.Service.Random.NextFloat(0, 360));
 
         }
 
@@ -287,7 +287,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 
             for (var x = 1; x <= maxSpawns; x++)
             {
-                var index = RandomService.GetRandomWeightedIndex(weights);
+                var index = SWLOR.Game.Server.Service.Random.GetRandomWeightedIndex(weights);
                 var dbSpawn = possibleSpawns.ElementAt(index);
                 var location = GetRandomSpawnPoint(area);
                 NWPlaceable plc = (CreateObject(ObjectType.Placeable, dbSpawn.Resref, location));

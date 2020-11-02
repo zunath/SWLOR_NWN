@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Legacy.Perk.MartialArts
             var percentage = perkLevel * 0.10f;
             var heal = (int)(target.MaxHP * percentage);
 
-            heal = RandomService.Random(minimum, heal);
+            heal = SWLOR.Game.Server.Service.Random.Next(minimum, heal);
 
             NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectHeal(heal), target);
             NWScript.ApplyEffectToObject(DurationType.Instant, NWScript.EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_G), target);

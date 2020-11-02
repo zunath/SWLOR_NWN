@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Legacy.Item.Medicine
             NWPlayer player = (user.Object);
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
 
-            if (RandomService.Random(100) + 1 <= PerkService.GetCreaturePerkLevel(player, PerkType.SpeedyFirstAid) * 10)
+            if (SWLOR.Game.Server.Service.Random.Next(100) + 1 <= PerkService.GetCreaturePerkLevel(player, PerkType.SpeedyFirstAid) * 10)
             {
                 return 0.1f;
             }
@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Legacy.Item.Medicine
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             var consumeChance = PerkService.GetCreaturePerkLevel(user.Object, PerkType.FrugalMedic) * 10;
-            return RandomService.Random(100) + 1 > consumeChance;
+            return SWLOR.Game.Server.Service.Random.Next(100) + 1 > consumeChance;
         }
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)

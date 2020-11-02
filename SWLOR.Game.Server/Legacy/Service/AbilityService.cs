@@ -908,9 +908,9 @@ namespace SWLOR.Game.Server.Legacy.Service
 
             foreach (var effect in damageTypes)
             {
-                if (RandomService.D100(1) <= chance)
+                if (SWLOR.Game.Server.Service.Random.D100(1) <= chance)
                 {
-                    CustomEffectService.ApplyCustomEffect(player, target.Object, effect, RandomService.D6(1), perkLevel, null);
+                    CustomEffectService.ApplyCustomEffect(player, target.Object, effect, SWLOR.Game.Server.Service.Random.D6(1), perkLevel, null);
                 }
             }
 
@@ -944,7 +944,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             }
 
 
-            if (RandomService.D100(1) <= chance)
+            if (SWLOR.Game.Server.Service.Random.D100(1) <= chance)
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(target, duration), target, duration);
             }

@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             cooldown = DateTime.UtcNow.AddSeconds(delay);
             target.SetLocalString("EVADE_OR_DEFLECT_BLASTER_FIRE_COOLDOWN", cooldown.ToString(CultureInfo.InvariantCulture));
 
-            var roll = RandomService.D100(1);
+            var roll = SWLOR.Game.Server.Service.Random.D100(1);
 
             if (roll <= chanceToDeflect)
             {
@@ -472,7 +472,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             //Console.WriteLine("divisor = " + divisor);
 
             result.DC = (int) (defenderTotal / divisor * 100);
-            result.Roll = RandomService.D100(1);
+            result.Roll = SWLOR.Game.Server.Service.Random.D100(1);
 
             if (sendRollMessage)
             {

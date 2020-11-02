@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Legacy.Event.SWLOR;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.ValueObject;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
 using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
@@ -88,39 +89,39 @@ namespace SWLOR.Game.Server.Legacy.Service
             var secondaryComponent = DataService.ComponentType.GetByID(bp.SecondaryComponentTypeID);
             var tertiaryComponent = DataService.ComponentType.GetByID(bp.TertiaryComponentTypeID);
 
-            var header = ColorTokenService.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
-            header += ColorTokenService.Green("Level: ") + (model.AdjustedLevel < 0 ? 0 : model.AdjustedLevel) + " (Base: " + (bp.BaseLevel < 0 ? 0 : bp.BaseLevel) + ")\n";
-            header += ColorTokenService.Green("Difficulty: ") + CalculateDifficultyDescription(playerEL, model.AdjustedLevel) + "\n";
+            var header = ColorToken.Green("Blueprint: ") + bp.Quantity + "x " + bp.ItemName + "\n";
+            header += ColorToken.Green("Level: ") + (model.AdjustedLevel < 0 ? 0 : model.AdjustedLevel) + " (Base: " + (bp.BaseLevel < 0 ? 0 : bp.BaseLevel) + ")\n";
+            header += ColorToken.Green("Difficulty: ") + CalculateDifficultyDescription(playerEL, model.AdjustedLevel) + "\n";
 
             if (baseStructure != null)
             {
-                header += ColorTokenService.Green("Raises Atmosphere: ");
+                header += ColorToken.Green("Raises Atmosphere: ");
                 if (baseStructure.HasAtmosphere)
                 {
-                    header += ColorTokenService.Green("Yes");
+                    header += ColorToken.Green("Yes");
                 }
                 else
                 {
-                    header += ColorTokenService.Red("No");
+                    header += ColorToken.Red("No");
                 }
 
                 header += "\n";
             }
 
-            header += ColorTokenService.Green("Required Components (Required/Maximum): ") + "\n\n";
+            header += ColorToken.Green("Required Components (Required/Maximum): ") + "\n\n";
 
             var mainCounts = " (" + (model.MainMinimum > 0 ? Convert.ToString(model.MainMinimum) : "Optional") + "/" + model.MainMaximum + ")";
-            header += ColorTokenService.Green("Main: ") + mainComponent.Name + mainCounts + "\n";
+            header += ColorToken.Green("Main: ") + mainComponent.Name + mainCounts + "\n";
 
             if (bp.SecondaryMinimum > 0 && bp.SecondaryComponentTypeID > 0)
             {
                 var secondaryCounts = " (" + (model.SecondaryMinimum > 0 ? Convert.ToString(model.SecondaryMinimum) : "Optional") + "/" + model.SecondaryMaximum + ")";
-                header += ColorTokenService.Green("Secondary: ") + secondaryComponent.Name + secondaryCounts + "\n";
+                header += ColorToken.Green("Secondary: ") + secondaryComponent.Name + secondaryCounts + "\n";
             }
             if (bp.TertiaryMinimum > 0 && bp.TertiaryComponentTypeID > 0)
             {
                 var tertiaryCounts = " (" + (model.TertiaryMinimum > 0 ? Convert.ToString(model.TertiaryMinimum) : "Optional") + "/" + model.TertiaryMaximum + ")";
-                header += ColorTokenService.Green("Tertiary: ") + tertiaryComponent.Name + tertiaryCounts + "\n";
+                header += ColorToken.Green("Tertiary: ") + tertiaryComponent.Name + tertiaryCounts + "\n";
             }
             if (bp.EnhancementSlots > 0)
             {
@@ -135,12 +136,12 @@ namespace SWLOR.Game.Server.Legacy.Service
                 }
 
                 var enhancementSlots = " (0/" + Convert.ToString(nSlots) + ")";
-                header += ColorTokenService.Green("Enhancement slots: ") + enhancementSlots + "\n";
+                header += ColorToken.Green("Enhancement slots: ") + enhancementSlots + "\n";
             }
 
             if (showAddedComponentList)
             {
-                header += "\n" + ColorTokenService.Green("Your components:") + "\n\n";
+                header += "\n" + ColorToken.Green("Your components:") + "\n\n";
                 if (!model.HasPlayerComponents) header += "No components selected yet!";
                 else
                 {
@@ -275,39 +276,39 @@ namespace SWLOR.Game.Server.Legacy.Service
 
             if (delta <= -5)
             {
-                difficulty = ColorTokenService.Custom("Impossible", 255, 62, 150);
+                difficulty = ColorToken.Custom("Impossible", 255, 62, 150);
             }
             else if (delta >= 4)
             {
-                difficulty = ColorTokenService.Custom("Trivial", 102, 255, 102);
+                difficulty = ColorToken.Custom("Trivial", 102, 255, 102);
             }
             else
             {
                 switch (delta)
                 {
                     case -4:
-                        difficulty = ColorTokenService.Custom("Extremely Difficult", 220, 20, 60);
+                        difficulty = ColorToken.Custom("Extremely Difficult", 220, 20, 60);
                         break;
                     case -3:
-                        difficulty = ColorTokenService.Custom("Very Difficult", 255, 69, 0);
+                        difficulty = ColorToken.Custom("Very Difficult", 255, 69, 0);
                         break;
                     case -2:
-                        difficulty = ColorTokenService.Custom("Difficult", 255, 165, 0);
+                        difficulty = ColorToken.Custom("Difficult", 255, 165, 0);
                         break;
                     case -1:
-                        difficulty = ColorTokenService.Custom("Challenging", 238, 238, 0);
+                        difficulty = ColorToken.Custom("Challenging", 238, 238, 0);
                         break;
                     case 0:
-                        difficulty = ColorTokenService.Custom("Moderate", 255, 255, 255);
+                        difficulty = ColorToken.Custom("Moderate", 255, 255, 255);
                         break;
                     case 1:
-                        difficulty = ColorTokenService.Custom("Easy", 65, 105, 225);
+                        difficulty = ColorToken.Custom("Easy", 65, 105, 225);
                         break;
                     case 2:
-                        difficulty = ColorTokenService.Custom("Very Easy", 113, 113, 198);
+                        difficulty = ColorToken.Custom("Very Easy", 113, 113, 198);
                         break;
                     case 3:
-                        difficulty = ColorTokenService.Custom("Extremely Easy", 153, 255, 255);
+                        difficulty = ColorToken.Custom("Extremely Easy", 153, 255, 255);
                         break;
                 }
             }

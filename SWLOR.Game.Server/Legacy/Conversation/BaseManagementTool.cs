@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using BaseStructureType = SWLOR.Game.Server.Legacy.Enumeration.BaseStructureType;
 using BuildingType = SWLOR.Game.Server.Legacy.Enumeration.BuildingType;
@@ -88,8 +89,8 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var canEditPublicBasePermissions = false;
             var canAdjustLighting = false;
 
-            var header = ColorTokenService.Green("Base Management Menu\n\n");
-            header += ColorTokenService.Green("Area: ") + GetName(data.TargetArea) + " (" + cellX + ", " + cellY + ")\n\n";
+            var header = ColorToken.Green("Base Management Menu\n\n");
+            header += ColorToken.Green("Area: ") + GetName(data.TargetArea) + " (" + cellX + ", " + cellY + ")\n\n";
 
             // Are we in a starship?
             if (buildingType == BuildingType.Starship)
@@ -99,7 +100,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(structure.InteriorStyleID));
                 var itemLimit = buildingStyle.FurnitureLimit + structure.StructureBonus;
                 var childStructures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(structure.ID);
-                header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count() + " / " + itemLimit + "\n";
+                header += ColorToken.Green("Structure Limit: ") + childStructures.Count() + " / " + itemLimit + "\n";
                 // Get all child structures contained by this building which improve atmosphere.
                 var structures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(pcBaseStructureID).Where(x =>
                 {
@@ -110,7 +111,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 // Add up the total atmosphere rating, being careful not to go over the cap.
                 var bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
                 if (bonus > 150) bonus = 150;
-                header += ColorTokenService.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
+                header += ColorToken.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
                 header += "\n";
 
                 canEditPrimaryResidence = BasePermissionService.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanEditPrimaryResidence);
@@ -136,7 +137,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 var baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
                 var itemLimit = baseStructure.Storage + structure.StructureBonus;
                 var childStructures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(structure.ID);
-                header += ColorTokenService.Green("Structure Limit: ") + childStructures.Count() + " / " + itemLimit + "\n";
+                header += ColorToken.Green("Structure Limit: ") + childStructures.Count() + " / " + itemLimit + "\n";
                 // Get all child structures contained by this building which improve atmosphere.
                 var structures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID(pcBaseStructureID).Where(x =>
                 {
@@ -147,7 +148,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 // Add up the total atmosphere rating, being careful not to go over the cap.
                 var bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
                 if (bonus > 150) bonus = 150;
-                header += ColorTokenService.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
+                header += ColorToken.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
                 header += "\n";
                 // The building must be set to the "Residence" mode in order for a primary resident to be selected.
                 if (structure.StructureModeID == (int)StructureModeType.Residence)
@@ -172,11 +173,11 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 var buildingStyle = DataService.BuildingStyle.GetByID(Convert.ToInt32(pcBase.BuildingStyleID));
                 var itemLimit = buildingStyle.FurnitureLimit;
                 var structures = DataService.PCBaseStructure.GetAllByPCBaseID(pcBase.ID);
-                header += ColorTokenService.Green("Structure Limit: ") + structures.Count() + " / " + itemLimit + "\n";
+                header += ColorToken.Green("Structure Limit: ") + structures.Count() + " / " + itemLimit + "\n";
                 // Add up the total atmosphere rating, being careful not to go over the cap.
                 var bonus = structures.Sum(x => 1 + x.StructureBonus) * 2;
                 if (bonus > 150) bonus = 150;
-                header += ColorTokenService.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
+                header += ColorToken.Green("Atmosphere Bonus: ") + bonus + "% / " + "150%";
                 header += "\n";
                 canEditStructures = BasePermissionService.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanPlaceEditStructures);
                 canEditBasePermissions = BasePermissionService.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanAdjustPermissions);
@@ -198,53 +199,53 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
                 if (northeastOwner != null)
                 {
-                    header += ColorTokenService.Green("Northeast Owner: ") + "Claimed";
+                    header += ColorToken.Green("Northeast Owner: ") + "Claimed";
                     if (dbArea.NortheastOwner == playerID)
                         header += " (" + northeastOwner.CharacterName + ")";
                     header += "\n";
                 }
                 else
                 {
-                    header += ColorTokenService.Green("Northeast Owner: ") + "Unclaimed\n";
+                    header += ColorToken.Green("Northeast Owner: ") + "Unclaimed\n";
                     hasUnclaimed = true;
                 }
 
                 if (northwestOwner != null)
                 {
-                    header += ColorTokenService.Green("Northwest Owner: ") + "Claimed";
+                    header += ColorToken.Green("Northwest Owner: ") + "Claimed";
                     if (dbArea.NorthwestOwner == playerID)
                         header += " (" + northwestOwner.CharacterName + ")";
                     header += "\n";
                 }
                 else
                 {
-                    header += ColorTokenService.Green("Northwest Owner: ") + "Unclaimed\n";
+                    header += ColorToken.Green("Northwest Owner: ") + "Unclaimed\n";
                     hasUnclaimed = true;
                 }
 
                 if (southeastOwner != null)
                 {
-                    header += ColorTokenService.Green("Southeast Owner: ") + "Claimed";
+                    header += ColorToken.Green("Southeast Owner: ") + "Claimed";
                     if (dbArea.SoutheastOwner == playerID)
                         header += " (" + southeastOwner.CharacterName + ")";
                     header += "\n";
                 }
                 else
                 {
-                    header += ColorTokenService.Green("Southeast Owner: ") + "Unclaimed\n";
+                    header += ColorToken.Green("Southeast Owner: ") + "Unclaimed\n";
                     hasUnclaimed = true;
                 }
 
                 if (southwestOwner != null)
                 {
-                    header += ColorTokenService.Green("Southwest Owner: ") + "Claimed";
+                    header += ColorToken.Green("Southwest Owner: ") + "Claimed";
                     if (dbArea.SouthwestOwner == playerID)
                         header += " (" + southwestOwner.CharacterName + ")";
                     header += "\n";
                 }
                 else
                 {
-                    header += ColorTokenService.Green("Southwest Owner: ") + "Unclaimed\n";
+                    header += ColorToken.Green("Southwest Owner: ") + "Unclaimed\n";
                     hasUnclaimed = true;
                 }
 
@@ -318,7 +319,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                     }
 
                     var header = "Your new name follows. If you need to make a change, click 'Back', type in a new description, and then hit 'Next' again.\n\n";
-                    header += ColorTokenService.Green("New Description: ") + "\n\n";
+                    header += ColorToken.Green("New Description: ") + "\n\n";
                     header += newDescription;
                     SetPageHeader("ConfirmRenamePage", header);
                     ChangePage("ConfirmRenamePage");
@@ -449,7 +450,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var purchasePrice = dbArea.PurchasePrice + (int)(dbArea.PurchasePrice * (player.LeaseRate * 0.01f));
             var dailyUpkeep = dbArea.DailyUpkeep + (int) (dbArea.DailyUpkeep * (player.LeaseRate * 0.01f));
 
-            var header = ColorTokenService.Green("Purchase Territory Menu\n\n");
+            var header = ColorToken.Green("Purchase Territory Menu\n\n");
             header += "Land leases in this sector cost an initial price of " + purchasePrice + " credits.\n\n";
             header += "You will also be billed " + dailyUpkeep + " credits per day (real world time). Your initial payment covers the cost of the first week.\n\n";
             header += "Purchasing territory gives you the ability to place a control tower, drill for raw materials, construct buildings, build starships, and much more.\n\n";
@@ -597,7 +598,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             }
 
 
-            var header = ColorTokenService.Green("Structure: ") + structure.Name + "\n\n";
+            var header = ColorToken.Green("Structure: ") + structure.Name + "\n\n";
             header += "What would you like to do with this structure?";
 
             SetPageHeader("ManageStructureDetailsPage", header);
@@ -866,7 +867,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var data = BaseService.GetPlayerTempData(GetPC());
             var structure = data.ManipulatingStructure.Structure;
             var facing = structure.Facing;
-            var header = ColorTokenService.Green("Current Direction: ") + facing;
+            var header = ColorToken.Green("Current Direction: ") + facing;
 
             SetPageHeader("RotatePage", header);
         }

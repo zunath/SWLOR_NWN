@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Legacy.Event.SWLOR;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.StructureStorage
@@ -42,19 +43,19 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.StructureStorage
                 {
                     SetLocalBool(item, "RETURNING_ITEM", true);
                     ItemService.ReturnItem(oPC, item);
-                    oPC.SendMessage(ColorTokenService.Red("Containers cannot currently be stored inside banks."));
+                    oPC.SendMessage(ColorToken.Red("Containers cannot currently be stored inside banks."));
                     return;
                 }
                 
                 if (itemCount > itemLimit)
                 {
                     ItemService.ReturnItem(oPC, item);
-                    oPC.SendMessage(ColorTokenService.Red("No more items can be placed inside."));
+                    oPC.SendMessage(ColorToken.Red("No more items can be placed inside."));
                 }
                 else if (item.BaseItemType == BaseItem.Gold)
                 {
                     ItemService.ReturnItem(oPC, item);
-                    oPC.SendMessage(ColorTokenService.Red("Credits cannot be placed inside."));
+                    oPC.SendMessage(ColorToken.Red("Credits cannot be placed inside."));
                 }
                 else
                 {
@@ -85,7 +86,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.StructureStorage
                 }
             }
 
-            oPC.SendMessage(ColorTokenService.White("Item Limit: " + itemCount + " / ") + ColorTokenService.Red(itemLimit.ToString()));
+            oPC.SendMessage(ColorToken.White("Item Limit: " + itemCount + " / ") + ColorToken.Red(itemLimit.ToString()));
         }
     }
 }

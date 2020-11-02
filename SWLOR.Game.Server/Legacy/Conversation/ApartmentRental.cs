@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using BuildingType = SWLOR.Game.Server.Legacy.Enumeration.BuildingType;
 using PCBaseType = SWLOR.Game.Server.Legacy.Enumeration.PCBaseType;
@@ -112,7 +113,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 .OrderBy(o => o.DateInitialPurchase)
                 .ToList();
 
-            var header = ColorTokenService.Green("Apartment Rental Terminal") + "\n\n";
+            var header = ColorToken.Green("Apartment Rental Terminal") + "\n\n";
             header += "Apartments you are currently renting can be found in the list below. You may also rent an apartment here.";
             SetPageHeader("MainPage", header);
 
@@ -121,7 +122,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             // Issue#895: GAME: DMs purchasing apartments can crash the server
             if (player.IsDM || player.IsDMPossessed) { return; }
             
-            AddResponseToPage("MainPage", ColorTokenService.Green("Lease New Apartment"));
+            AddResponseToPage("MainPage", ColorToken.Green("Lease New Apartment"));
             var count = 1;
             foreach (var apartment in bases)
             {
@@ -166,7 +167,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 .Where(x => x.BuildingTypeID == (int)BuildingType.Apartment && 
                             x.IsActive).ToList();
 
-            var header = ColorTokenService.Green(apartmentBuilding.Name) + "\n\n";
+            var header = ColorToken.Green(apartmentBuilding.Name) + "\n\n";
 
             header += "You may rent an apartment here. Select a layout style from the list below to learn more about pricing details.";
             SetPageHeader("LeasePage", header);
@@ -198,9 +199,9 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var purchasePrice = style.PurchasePrice + (int) (style.PurchasePrice * (dbPlayer.LeaseRate * 0.01f));
             var dailyUpkeep = style.DailyUpkeep + (int) (style.DailyUpkeep * (dbPlayer.LeaseRate * 0.01f));
 
-            var header = ColorTokenService.Green("Style: ") + style.Name + "\n\n";
-            header += ColorTokenService.Green("Purchase Price: ") + purchasePrice + " credits\n";
-            header += ColorTokenService.Green("Daily Upkeep: ") + dailyUpkeep + " credits\n\n";
+            var header = ColorToken.Green("Style: ") + style.Name + "\n\n";
+            header += ColorToken.Green("Purchase Price: ") + purchasePrice + " credits\n";
+            header += ColorToken.Green("Daily Upkeep: ") + dailyUpkeep + " credits\n\n";
             header += "Purchasing an apartment will grant you 7 days on your lease. Leases can be extended for up to 30 days (real world time) in advance.";
 
             SetPageHeader("PurchaseDetailsPage", header);
@@ -311,10 +312,10 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 name = pcApartment.CustomName;
             }
 
-            var header = ColorTokenService.Green(name) + "\n\n";
-            header += ColorTokenService.Green("Purchased: ") + pcApartment.DateInitialPurchase + "\n";
-            header += ColorTokenService.Green("Rent Due: ") + pcApartment.DateRentDue + "\n";
-            header += ColorTokenService.Green("Daily Upkeep: ") + dailyUpkeep + " credits\n\n";
+            var header = ColorToken.Green(name) + "\n\n";
+            header += ColorToken.Green("Purchased: ") + pcApartment.DateInitialPurchase + "\n";
+            header += ColorToken.Green("Rent Due: ") + pcApartment.DateRentDue + "\n";
+            header += ColorToken.Green("Daily Upkeep: ") + dailyUpkeep + " credits\n\n";
             header += "Daily upkeep may be paid up to 30 days in advance.\n";
 
             SetPageHeader("DetailsPage", header);

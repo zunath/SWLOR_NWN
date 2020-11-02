@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.Mod.Contracts;
 using SWLOR.Game.Server.Legacy.ValueObject;
+using SWLOR.Game.Server.Service;
 using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
 
 namespace SWLOR.Game.Server.Legacy.Service
@@ -152,8 +153,8 @@ namespace SWLOR.Game.Server.Legacy.Service
 
         public static string PrismaticString()
         {
-            return ColorTokenService.Red("p") + ColorTokenService.Orange("r") + ColorTokenService.Yellow("i") + ColorTokenService.Green("s") + ColorTokenService.Blue("m") +
-                                   ColorTokenService.LightPurple("a") + ColorTokenService.Purple("t") + ColorTokenService.White("i") + ColorTokenService.Black("c");
+            return ColorToken.Red("p") + ColorToken.Orange("r") + ColorToken.Yellow("i") + ColorToken.Green("s") + ColorToken.Blue("m") +
+                                   ColorToken.LightPurple("a") + ColorToken.Purple("t") + ColorToken.White("i") + ColorToken.Black("c");
         }
 
         public static string OnModuleExamine(string existingDescription, NWPlayer examiner, NWObject examinedObject)
@@ -165,19 +166,19 @@ namespace SWLOR.Game.Server.Legacy.Service
             
             for (var red = 1; red <= slot.FilledRedSlots; red++)
             {
-                description += ColorTokenService.Red("Red Slot #" + red + ": ") + examinedItem.GetLocalString("MOD_SLOT_RED_DESC_" + red) + "\n";
+                description += ColorToken.Red("Red Slot #" + red + ": ") + examinedItem.GetLocalString("MOD_SLOT_RED_DESC_" + red) + "\n";
             }
             for (var blue = 1; blue <= slot.FilledBlueSlots; blue++)
             {
-                description += ColorTokenService.Red("Blue Slot #" + blue + ": ") + examinedItem.GetLocalString("MOD_SLOT_BLUE_DESC_" + blue) + "\n";
+                description += ColorToken.Red("Blue Slot #" + blue + ": ") + examinedItem.GetLocalString("MOD_SLOT_BLUE_DESC_" + blue) + "\n";
             }
             for (var green = 1; green <= slot.FilledGreenSlots; green++)
             {
-                description += ColorTokenService.Red("Green Slot #" + green + ": ") + examinedItem.GetLocalString("MOD_SLOT_GREEN_DESC_" + green) + "\n";
+                description += ColorToken.Red("Green Slot #" + green + ": ") + examinedItem.GetLocalString("MOD_SLOT_GREEN_DESC_" + green) + "\n";
             }
             for (var yellow = 1; yellow <= slot.FilledYellowSlots; yellow++)
             {
-                description += ColorTokenService.Red("Yellow Slot #" + yellow + ": ") + examinedItem.GetLocalString("MOD_SLOT_YELLOW_DESC_" + yellow) + "\n";
+                description += ColorToken.Red("Yellow Slot #" + yellow + ": ") + examinedItem.GetLocalString("MOD_SLOT_YELLOW_DESC_" + yellow) + "\n";
             }
             for (var prismatic = 1; prismatic <= slot.FilledPrismaticSlots; prismatic++)
             {

@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
         public override void Initialize()
         {
             var header = "Please type the new description for your character into the chat box. Then press the 'Next' button.\n\n";
-            header += ColorTokenService.Green("Current Description: ") + "\n\n";
+            header += ColorToken.Green("Current Description: ") + "\n\n";
             header += NWScript.GetDescription(GetPC().Object);
             SetPageHeader("MainPage", header);
             GetPC().SetLocalInt("LISTENING_FOR_DESCRIPTION", 1);
@@ -67,7 +68,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                     }
 
                     var header = "Your new description follows. If you need to make a change, click 'Back', type in a new description, and then hit 'Next' again.\n\n";
-                    header += ColorTokenService.Green("New Description: ") + "\n\n";
+                    header += ColorToken.Green("New Description: ") + "\n\n";
                     header += newDescription;
                     SetPageHeader("ConfirmSetPage", header);
                     ChangePage("ConfirmSetPage");

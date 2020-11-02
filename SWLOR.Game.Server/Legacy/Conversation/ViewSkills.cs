@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -66,7 +67,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
             // If player has skill levels to distribute, display the option to distribute them.
             var showDistribution = DataService.PCSkillPool.GetByPlayerIDWithLevelsUndistributed(GetPC().GlobalID).Any();
-            AddResponseToPage("CategoryPage", ColorTokenService.Green("Distribute Skill Ranks"), showDistribution);
+            AddResponseToPage("CategoryPage", ColorToken.Green("Distribute Skill Ranks"), showDistribution);
             
             foreach (var category in categories)
             {
@@ -120,10 +121,10 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
             title += " (" + pcSkill.Rank + ")";
 
-            var decayLock = ColorTokenService.Green("Decay Lock: ") + ColorTokenService.White("Unlocked");
+            var decayLock = ColorToken.Green("Decay Lock: ") + ColorToken.White("Unlocked");
             if (pcSkill.IsLocked)
             {
-                decayLock = ColorTokenService.Green("Decay Lock: ") + ColorTokenService.Red("Locked");
+                decayLock = ColorToken.Green("Decay Lock: ") + ColorToken.Red("Locked");
             }
             
             // Skills which don't contribute to the cap cannot be locked (there's no reason for it.)
@@ -132,29 +133,29 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             if (!skill.ContributesToSkillCap)
             {
                 decayLock = string.Empty;
-                noContributeMessage = ColorTokenService.Green("This skill does not contribute to your cumulative skill cap.") + "\n\n";
+                noContributeMessage = ColorToken.Green("This skill does not contribute to your cumulative skill cap.") + "\n\n";
             }
 
-            var rpXP = ColorTokenService.Green("Roleplay XP: ") + player.RoleplayXP + "\n";
+            var rpXP = ColorToken.Green("Roleplay XP: ") + player.RoleplayXP + "\n";
 
             var primaryAttribute = DataService.Attribute.GetByID(skill.Primary);
             var secondaryAttribute = DataService.Attribute.GetByID(skill.Secondary);
             var tertiaryAttribute = DataService.Attribute.GetByID(skill.Tertiary);
-            var primary = ColorTokenService.Green("Primary (+" + PlayerStatService.PrimaryIncrease + "): ") + primaryAttribute.Name + "\n";
-            var secondary = ColorTokenService.Green("Secondary (+" + PlayerStatService.SecondaryIncrease + "): ") + secondaryAttribute.Name + "\n";
-            var tertiary = ColorTokenService.Green("Tertiary (+" + PlayerStatService.TertiaryIncrease + "): ") + tertiaryAttribute.Name + "\n";
+            var primary = ColorToken.Green("Primary (+" + PlayerStatService.PrimaryIncrease + "): ") + primaryAttribute.Name + "\n";
+            var secondary = ColorToken.Green("Secondary (+" + PlayerStatService.SecondaryIncrease + "): ") + secondaryAttribute.Name + "\n";
+            var tertiary = ColorToken.Green("Tertiary (+" + PlayerStatService.TertiaryIncrease + "): ") + tertiaryAttribute.Name + "\n";
 
             return
-                    ColorTokenService.Green("Skill: ") + skill.Name + "\n" +
-                    ColorTokenService.Green("Rank: ") + title + "\n" +
-                    ColorTokenService.Green("Exp: ") + MenuService.BuildBar(pcSkill.XP, req, 100, ColorTokenService.TokenStart(255, 127, 0)) + "\n" +
+                    ColorToken.Green("Skill: ") + skill.Name + "\n" +
+                    ColorToken.Green("Rank: ") + title + "\n" +
+                    ColorToken.Green("Exp: ") + MenuService.BuildBar(pcSkill.XP, req, 100, ColorToken.TokenStart(255, 127, 0)) + "\n" +
                     rpXP +
                     primary +
                     secondary +
                     tertiary +
                     noContributeMessage +
                     decayLock + "\n\n" +
-                    ColorTokenService.Green("Description: ") + skill.Description + "\n";
+                    ColorToken.Green("Description: ") + skill.Description + "\n";
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
@@ -235,10 +236,10 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var vm = GetDialogCustomData<Model>();
             var skill = SkillService.GetSkill(vm.SelectedSkillID);
 
-            var header = ColorTokenService.Green("Roleplay XP Distribution") + "\n\n";
-            header += ColorTokenService.Green("Skill: ") + skill.Name + "\n";
-            header += ColorTokenService.Green("Available RP XP: ") + dbPlayer.RoleplayXP + "\n";
-            header += ColorTokenService.Green("Currently Distributing: ") + vm.RPXPDistributing + " RP XP\n";
+            var header = ColorToken.Green("Roleplay XP Distribution") + "\n\n";
+            header += ColorToken.Green("Skill: ") + skill.Name + "\n";
+            header += ColorToken.Green("Available RP XP: ") + dbPlayer.RoleplayXP + "\n";
+            header += ColorToken.Green("Currently Distributing: ") + vm.RPXPDistributing + " RP XP\n";
 
             if(vm.IsConfirming)
             {

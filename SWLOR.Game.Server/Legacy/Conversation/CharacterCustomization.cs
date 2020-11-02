@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -274,39 +275,39 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             switch (responseID)
             {
                 case 1: // Jedi Order
-                    header = ColorTokenService.Green("Jedi Order\n\n");
+                    header = ColorToken.Green("Jedi Order\n\n");
                     header += "The Guardians of peace and justice in the Republic, the Jedi Order is a large group of Light Side Force users led by the Jedi Council. Wishing to uphold the ideals of peace and bring balance to the Force they are stalwart defenders of the Galaxy. Association to the Jedi Order is held by Jedi of all positions as well as their closest allies.";
                     break;
                 case 2: // Mandalorian
-                    header = ColorTokenService.Green("Mandalorian\n\n");
+                    header = ColorToken.Green("Mandalorian\n\n");
                     header += "Mandalorians are one of the supreme fighting cultures on the Galaxy. Ruled by the Mand’alor of that period, they are a fractured group consisting of Clans grouped together under a House by the racially inclusive population. Though there is currently no Mand’alor to lead them their culture lives on through each member. Association with Mandalorians is held by members or hopefuls, Military figures, and Mercenaries.";
                     break;
                 case 3: // Sith Empire
-                    header = ColorTokenService.Green("Sith Empire\n\n");
+                    header = ColorToken.Green("Sith Empire\n\n");
                     header += "Founded by exiled members of the Jedi Order, the Sith Order consists of those who utilize a focus on the Dark Side of the Force. Unlike the Jedi, the Sith Order wishes to impose their power and will onto others by show of force. Seeing themselves as the true powers of the Galaxy, they seek to rule it above all things. Association to the Sith Order is held by Sith of all positions as well as some of their underlings and aspiring hopefuls.";
                     break;
                 case 4: // Smugglers
-                    header = ColorTokenService.Green("Smugglers\n\n");
+                    header = ColorToken.Green("Smugglers\n\n");
                     header += "Smugglers, though not a specific organization, are prevalent throughout the Galaxy. Though they can come from anywhere they generally look out for themselves, selling their services to any willing to pay and almost always for the largest coin. With monetary gain as their primary motivator Smugglers do not hurt for work. Association with the likes of Smugglers is held by any willing to move products or transition supplies from one set of hands to another.";
                     break;
                 case 5: // Unaligned
-                    header = ColorTokenService.Green("Unaligned\n\n");
+                    header = ColorToken.Green("Unaligned\n\n");
                     header += "The Unaligned are any who seek out a future for themselves without the strings of being associated with one of the organizations on the main galactic stage. Looking out for their own interests and striving for a better future for themselves, being unaligned is most off the frequent outlook for those in the farther reaches of the galaxy.";
                     break;
                 case 6: // Hutt Cartel
-                    header = ColorTokenService.Green("Hutt Cartel\n\n");
+                    header = ColorToken.Green("Hutt Cartel\n\n");
                     header += "One of the largest criminal organizations both in reach and numbers, the Hutt Cartel is a powerful group of Hutts that place their slimy tails in everything they can get their hands on. Dealing in everything from weapons to drugs and assassinations to slavery, the Hutt Cartel knows no bounds to the type of crime they will deal in so long as it is profitable. Association with the Hutt Cartel is held by the likes of assassins, thieves, and gang members, as well as those that aspire to cheat their way through life.";
                     break;
                 case 7: // Republic
-                    header = ColorTokenService.Green("Republic\n\n");
+                    header = ColorToken.Green("Republic\n\n");
                     header += "For a little over 20 thousand years the Republic has been the ruling force throughout the Galaxy. It’s ruling body is comprised of Senators representing planets and systems. The Jedi Order works with the Republic as their primary peacekeepers with a large Galactic Republic Military Force consisting of individuals from all walks of life. Association to the Republic is held by Military and Political figures throughout the Galaxy, as well as Jedi seeking to hold back the tides of chaos that wish to tear it down.";
                     break;
                 case 8: // Czerka
-                    header = ColorTokenService.Green("Czerka Corporation\n\n");
+                    header = ColorToken.Green("Czerka Corporation\n\n");
                     header += "The Czerka Corporation is a galaxy spanning organization that works to make a profit no matter the cost. Though previously unaligned it has recent allied itself with the Sith Empire for exclusive trade benefits throughout their conquered worlds. Dealing in mining resources, weapons, and droids, Czerka are some of the galaxies current forerunners in technology and trade. Association with Czerka can be held by nearly anyone with the ability and drive to create and trade for a profit.";
                     break;
                 case 9: // Sith Order
-                    header = ColorTokenService.Green("Sith Order\n\n");
+                    header = ColorToken.Green("Sith Order\n\n");
                     header += "Founded by exiled members of the Jedi Order, the Sith Order consists of those who utilize a focus on the Dark Side of the Force. Unlike the Jedi, the Sith Order wishes to impose their power and will onto others by show of force. Seeing themselves as the true powers of the Galaxy, they seek to rule it above all things. Association to the Sith Order is held by Sith of all positions as well as some of their underlings and aspiring hopefuls.";
                     break;
                 default: return;
@@ -799,7 +800,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 AddResponseToPage("EditPartPage", model.PartName + " #" + modelID, true, modelID);
             }
             
-            var header = ColorTokenService.Green("Body Part: ") + model.PartName + "\n\n";
+            var header = ColorToken.Green("Body Part: ") + model.PartName + "\n\n";
             header += "You may need to unequip any clothes or armor you are wearing to see changes made to your body parts.\n\nPlease be aware that many armors override your selection here. This is a limitation in NWN that we can't work around.";
 
             SetPageHeader("EditPartPage", header);

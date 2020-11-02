@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Legacy.Event.Module;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.ValueObject;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
 using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
@@ -160,13 +161,13 @@ namespace SWLOR.Game.Server.Legacy.Service
 
             if (roll <= chanceToDeflect)
             {
-                target.SendMessage(ColorTokenService.Gray("You " + action + " a blaster shot."));
+                target.SendMessage(ColorToken.Gray("You " + action + " a blaster shot."));
                 data.AdjustAllByPercent(-1);
                 Damage.SetDamageEventData(data);
             }
             else
             {
-                target.SendMessage(ColorTokenService.Gray("You fail to " + action + " a blaster shot. (" + roll + " vs " + chanceToDeflect + ")"));
+                target.SendMessage(ColorToken.Gray("You fail to " + action + " a blaster shot. (" + roll + " vs " + chanceToDeflect + ")"));
             }
         }
         
@@ -476,8 +477,8 @@ namespace SWLOR.Game.Server.Legacy.Service
 
             if (sendRollMessage)
             {
-                var resisted = result.IsResisted ? ColorTokenService.Red(" [RESISTED " + Math.Abs(result.Delta) + "%]") : string.Empty;
-                var message = ColorTokenService.SavingThrow("Roll: " + result.Roll + " VS " + result.DC + " DC") + resisted;
+                var resisted = result.IsResisted ? ColorToken.Red(" [RESISTED " + Math.Abs(result.Delta) + "%]") : string.Empty;
+                var message = ColorToken.SavingThrow("Roll: " + result.Roll + " VS " + result.DC + " DC") + resisted;
                 attacker.SendMessage(message);
                 defender.SendMessage(message);
             }

@@ -1,4 +1,5 @@
 ﻿using System;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Service
 {
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             if (numberOfBars <= 0) throw new ArgumentOutOfRangeException(nameof(numberOfBars), "Must be one or greater");
 
             if (colorToken == null)
-                colorToken = ColorTokenService.TokenStart(255, 127, 0); // Orange
+                colorToken = ColorToken.TokenStart(255, 127, 0); // Orange
 
             var xpBar = string.Empty;
             var highlightedBars = (int)(currentValue / (float)requiredValue * numberOfBars);
@@ -20,11 +21,11 @@ namespace SWLOR.Game.Server.Legacy.Service
             {
                 if (bar <= highlightedBars)
                 {
-                    xpBar += colorToken + "|" + ColorTokenService.TokenEnd();
+                    xpBar += colorToken + "|" + ColorToken.TokenEnd();
                 }
                 else
                 {
-                    xpBar += ColorTokenService.TokenStart(255, 255, 255) + "|" + ColorTokenService.TokenEnd(); // White
+                    xpBar += ColorToken.TokenStart(255, 255, 255) + "|" + ColorToken.TokenEnd(); // White
                 }
             }
             

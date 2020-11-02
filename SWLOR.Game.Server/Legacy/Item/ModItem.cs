@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Item.Contracts;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
 using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
@@ -44,7 +45,7 @@ namespace SWLOR.Game.Server.Legacy.Item
                     {
                         targetItem.SetLocalInt("MOD_SLOT_RED_" + (slots.FilledRedSlots + 1), modID);
                         targetItem.SetLocalString("MOD_SLOT_RED_DESC_" + (slots.FilledRedSlots + 1), description);
-                        player.SendMessage("Mod installed into " + ColorTokenService.Red("red") + " slot #" + (slots.FilledRedSlots + 1));
+                        player.SendMessage("Mod installed into " + ColorToken.Red("red") + " slot #" + (slots.FilledRedSlots + 1));
                     }
                     else usePrismatic = true;
                     break;
@@ -53,7 +54,7 @@ namespace SWLOR.Game.Server.Legacy.Item
                     {
                         targetItem.SetLocalInt("MOD_SLOT_BLUE_" + (slots.FilledBlueSlots + 1), modID);
                         targetItem.SetLocalString("MOD_SLOT_BLUE_DESC_" + (slots.FilledBlueSlots + 1), description);
-                        player.SendMessage("Mod installed into " + ColorTokenService.Blue("blue") + " slot #" + (slots.FilledBlueSlots + 1));
+                        player.SendMessage("Mod installed into " + ColorToken.Blue("blue") + " slot #" + (slots.FilledBlueSlots + 1));
                     }
                     else usePrismatic = true;
                     break;
@@ -62,7 +63,7 @@ namespace SWLOR.Game.Server.Legacy.Item
                     {
                         targetItem.SetLocalInt("MOD_SLOT_GREEN_" + (slots.FilledGreenSlots + 1), modID);
                         targetItem.SetLocalString("MOD_SLOT_GREEN_DESC_" + (slots.FilledGreenSlots + 1), description);
-                        player.SendMessage("Mod installed into " + ColorTokenService.Green("green") + " slot #" + (slots.FilledGreenSlots + 1));
+                        player.SendMessage("Mod installed into " + ColorToken.Green("green") + " slot #" + (slots.FilledGreenSlots + 1));
                     }
                     else usePrismatic = true;
                     break;
@@ -71,7 +72,7 @@ namespace SWLOR.Game.Server.Legacy.Item
                     {
                         targetItem.SetLocalInt("MOD_SLOT_YELLOW_" + (slots.FilledYellowSlots + 1), modID);
                         targetItem.SetLocalString("MOD_SLOT_YELLOW_DESC_" + (slots.FilledYellowSlots + 1), description);
-                        player.SendMessage("Mod installed into " + ColorTokenService.Yellow("yellow") + " slot #" + (slots.FilledYellowSlots + 1));
+                        player.SendMessage("Mod installed into " + ColorToken.Yellow("yellow") + " slot #" + (slots.FilledYellowSlots + 1));
                     }
                     else usePrismatic = true;
                     break;

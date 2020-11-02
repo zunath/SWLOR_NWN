@@ -343,7 +343,7 @@ namespace SWLOR.Game.Server.Legacy.Service
         {
             NWPlayer player = GetEnteringObject();
             var config = DataService.ServerConfiguration.Get();
-            var message = ColorTokenService.Green("Welcome to " + config.ServerName + "!\n\nMOTD: ") + ColorTokenService.White(config.MessageOfTheDay);
+            var message = ColorToken.Green("Welcome to " + config.ServerName + "!\n\nMOTD: ") + ColorToken.White(config.MessageOfTheDay);
 
             DelayCommand(6.5f, () =>
             {

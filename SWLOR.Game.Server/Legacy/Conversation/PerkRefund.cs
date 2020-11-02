@@ -117,10 +117,10 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 x.Level <= pcPerk.PerkLevel &&
                 x.Level >= minimumLevel).Sum(x => x.Price);
 
-            var header = ColorTokenService.Green("Perk: ") + perk.Name + "\n";
-            header += ColorTokenService.Green("Level: ") + pcPerk.PerkLevel + "\n\n";
+            var header = ColorToken.Green("Perk: ") + perk.Name + "\n";
+            header += ColorToken.Green("Level: ") + pcPerk.PerkLevel + "\n\n";
 
-            header += "You will receive " + ColorTokenService.Green(refundAmount.ToString()) + " SP if you refund this perk. Are you sure you want to refund it?";
+            header += "You will receive " + ColorToken.Green(refundAmount.ToString()) + " SP if you refund this perk. Are you sure you want to refund it?";
 
             SetPageHeader("ConfirmPage", header);
             

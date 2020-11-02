@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Scripts.Trigger
 {
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Trigger
             if (NWScript.GetLocalInt(oPC.Object, triggerID) == 1) return;
 
             var message = NWScript.GetLocalString(NWScript.OBJECT_SELF, "DISPLAY_TEXT");
-            NWScript.SendMessageToPC(oPC.Object, ColorTokenService.Cyan(message));
+            NWScript.SendMessageToPC(oPC.Object, ColorToken.Cyan(message));
             NWScript.SetLocalInt(oPC.Object, triggerID, 1);
 
             NWScript.AssignCommand(oPC.Object, () => NWScript.PlaySound("gui_prompt"));

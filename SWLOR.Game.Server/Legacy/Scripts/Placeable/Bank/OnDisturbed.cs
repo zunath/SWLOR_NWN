@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Legacy.Event.SWLOR;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.Bank
@@ -40,14 +41,14 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.Bank
                 {
                     SetLocalBool(item, "RETURNING_ITEM", true);
                     ItemService.ReturnItem(player, item);
-                    player.SendMessage(ColorTokenService.Red("Containers cannot currently be stored inside banks."));
+                    player.SendMessage(ColorToken.Red("Containers cannot currently be stored inside banks."));
                     return;
                 }
 
                 if (itemCount > itemLimit)
                 {
                     ItemService.ReturnItem(player, item);
-                    player.SendMessage(ColorTokenService.Red("No more items can be placed inside."));
+                    player.SendMessage(ColorToken.Red("No more items can be placed inside."));
                 }
                 else
                 {
@@ -81,7 +82,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.Bank
                 }
             }
 
-            player.SendMessage(ColorTokenService.White("Item Limit: " + (itemCount > itemLimit ? itemLimit : itemCount) + " / ") + ColorTokenService.Red("" + itemLimit));
+            player.SendMessage(ColorToken.White("Item Limit: " + (itemCount > itemLimit ? itemLimit : itemCount) + " / ") + ColorToken.Red("" + itemLimit));
         }
     }
 }

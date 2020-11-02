@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Legacy.ChatCommand.Contracts;
 using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Legacy.ChatCommand
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Legacy.ChatCommand
         {
             if (args.Length < 1)
             {
-                return ColorTokenService.Red("Enter the ID from visualeffects.2da");
+                return ColorToken.Red("Enter the ID from visualeffects.2da");
             }
 
             try
@@ -32,7 +33,7 @@ namespace SWLOR.Game.Server.Legacy.ChatCommand
             }
             catch (FormatException)
             {
-                return ColorTokenService.Red("Enter the ID from visualeffects.2da");
+                return ColorToken.Red("Enter the ID from visualeffects.2da");
             }
 
             return string.Empty;

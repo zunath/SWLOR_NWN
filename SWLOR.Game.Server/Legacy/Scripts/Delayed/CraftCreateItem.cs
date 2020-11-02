@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject;
+using SWLOR.Game.Server.Service;
 using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
 using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
 
@@ -74,7 +75,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Delayed
 
             if (chance <= 1.0f)
             {
-                player.FloatingText(ColorTokenService.Red("Critical failure! You don't have enough skill to create that item. All components were lost."));
+                player.FloatingText(ColorToken.Red("Critical failure! You don't have enough skill to create that item. All components were lost."));
                 CraftService.ClearPlayerCraftingData(player, true);
                 return;
             }
@@ -208,7 +209,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Delayed
                             BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
 
                     }
-                    player.SendMessage(ColorTokenService.Green("Successfully applied component property: " + bonusName));
+                    player.SendMessage(ColorToken.Green("Successfully applied component property: " + bonusName));
 
                     var bonusType = (ComponentBonusType)NWScript.GetItemPropertySubType(ip);
                     if (bonusType != ComponentBonusType.DurabilityUp)
@@ -242,7 +243,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Delayed
                 }
                 else
                 {
-                    player.SendMessage(ColorTokenService.Red("Failed to apply component property: " + bonusName));
+                    player.SendMessage(ColorToken.Red("Failed to apply component property: " + bonusName));
                 }
             }
 

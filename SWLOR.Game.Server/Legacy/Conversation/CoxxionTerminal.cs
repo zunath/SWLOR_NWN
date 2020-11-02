@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
@@ -126,13 +127,13 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             switch (colorID)
             {
                 case 1: // Blue
-                    colorText = ColorTokenService.Blue("BLUE");
+                    colorText = ColorToken.Blue("BLUE");
                     break;
                 case 2: // Green
-                    colorText = ColorTokenService.Green("GREEN");
+                    colorText = ColorToken.Green("GREEN");
                     break;
                 case 3: // Red
-                    colorText = ColorTokenService.Red("RED");
+                    colorText = ColorToken.Red("RED");
                     break;
                 default: return string.Empty;
             }

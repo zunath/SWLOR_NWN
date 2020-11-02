@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.ChatCommand
 {
@@ -17,8 +18,8 @@ namespace SWLOR.Game.Server.Legacy.ChatCommand
             {
                 var role = member.DMRole == 1 ? "DM" : "Admin";
                 var active = member.IsActive ? 
-                    ColorTokenService.Green(" [ACTIVE]") :
-                    ColorTokenService.Red(" [INACTIVE]");
+                    ColorToken.Green(" [ACTIVE]") :
+                    ColorToken.Red(" [INACTIVE]");
 
                 message += member.ID + ": " + member.Name + " (" + member.CDKey + ") / " + role + active + "\n";
             }

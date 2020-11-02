@@ -1,6 +1,7 @@
 ﻿using System;
 using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Service
 {
@@ -33,14 +34,14 @@ namespace SWLOR.Game.Server.Legacy.Service
                 // Either the attacker or target has sanctuary - prevent combat from happening
                 if (PlayerHasPVPSanctuary(attacker))
                 {
-                    attacker.FloatingText(ColorTokenService.Red("You are under the effects of PVP sanctuary and cannot engage in PVP. To disable this feature permanently refer to the 'Disable PVP Sanctuary' option in your rest menu."));
+                    attacker.FloatingText(ColorToken.Red("You are under the effects of PVP sanctuary and cannot engage in PVP. To disable this feature permanently refer to the 'Disable PVP Sanctuary' option in your rest menu."));
                     attacker.DelayAssignCommand(() => attacker.ClearAllActions(), 0.0f);
                     
                     return false;
                 }
                 else if (PlayerHasPVPSanctuary(target))
                 {
-                    attacker.FloatingText(ColorTokenService.Red("Your target is under the effects of PVP sanctuary and cannot engage in PVP combat."));
+                    attacker.FloatingText(ColorToken.Red("Your target is under the effects of PVP sanctuary and cannot engage in PVP combat."));
                     attacker.DelayAssignCommand(() => attacker.ClearAllActions(), 0.0f);
                     return false;
                 }

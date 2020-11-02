@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
@@ -258,7 +259,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
             if (!oClothes.IsValid)
             {
-                oPC.FloatingText(ColorTokenService.Red("You do not have clothes equipped"));
+                oPC.FloatingText(ColorToken.Red("You do not have clothes equipped"));
                 return;
             }
 
@@ -302,7 +303,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
             if (!oClothes.IsValid)
             {
-                oPC.FloatingText(ColorTokenService.Red("You do not have a helmet equipped"));
+                oPC.FloatingText(ColorToken.Red("You do not have a helmet equipped"));
                 return;
             }
 
@@ -346,7 +347,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
             if (!oClothes.IsValid)
             {
-                oPC.FloatingText(ColorTokenService.Red("You do not have a Weapon equipped"));
+                oPC.FloatingText(ColorToken.Red("You do not have a Weapon equipped"));
                 return;
             }
 
@@ -607,34 +608,34 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
             ClearPageResponses("SaveOutfitPage");
 
-            var responseText = entity.Outfit1 == null ? ColorTokenService.Red("Save in Slot 1") : ColorTokenService.Green("Save in Slot 1");
+            var responseText = entity.Outfit1 == null ? ColorToken.Red("Save in Slot 1") : ColorToken.Green("Save in Slot 1");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit2 == null ? ColorTokenService.Red("Save in Slot 2") : ColorTokenService.Green("Save in Slot 2");
+            responseText = entity.Outfit2 == null ? ColorToken.Red("Save in Slot 2") : ColorToken.Green("Save in Slot 2");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit3 == null ? ColorTokenService.Red("Save in Slot 3") : ColorTokenService.Green("Save in Slot 3");
+            responseText = entity.Outfit3 == null ? ColorToken.Red("Save in Slot 3") : ColorToken.Green("Save in Slot 3");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit4 == null ? ColorTokenService.Red("Save in Slot 4") : ColorTokenService.Green("Save in Slot 4");
+            responseText = entity.Outfit4 == null ? ColorToken.Red("Save in Slot 4") : ColorToken.Green("Save in Slot 4");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit5 == null ? ColorTokenService.Red("Save in Slot 5") : ColorTokenService.Green("Save in Slot 5");
+            responseText = entity.Outfit5 == null ? ColorToken.Red("Save in Slot 5") : ColorToken.Green("Save in Slot 5");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit6 == null ? ColorTokenService.Red("Save in Slot 6") : ColorTokenService.Green("Save in Slot 6");
+            responseText = entity.Outfit6 == null ? ColorToken.Red("Save in Slot 6") : ColorToken.Green("Save in Slot 6");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit7 == null ? ColorTokenService.Red("Save in Slot 7") : ColorTokenService.Green("Save in Slot 7");
+            responseText = entity.Outfit7 == null ? ColorToken.Red("Save in Slot 7") : ColorToken.Green("Save in Slot 7");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit8 == null ? ColorTokenService.Red("Save in Slot 8") : ColorTokenService.Green("Save in Slot 8");
+            responseText = entity.Outfit8 == null ? ColorToken.Red("Save in Slot 8") : ColorToken.Green("Save in Slot 8");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit9 == null ? ColorTokenService.Red("Save in Slot 9") : ColorTokenService.Green("Save in Slot 9");
+            responseText = entity.Outfit9 == null ? ColorToken.Red("Save in Slot 9") : ColorToken.Green("Save in Slot 9");
             AddResponseToPage("SaveOutfitPage", responseText);
 
-            responseText = entity.Outfit10 == null ? ColorTokenService.Red("Save in Slot 10") : ColorTokenService.Green("Save in Slot 10");
+            responseText = entity.Outfit10 == null ? ColorToken.Red("Save in Slot 10") : ColorToken.Green("Save in Slot 10");
             AddResponseToPage("SaveOutfitPage", responseText);
         }
         private void ShowSaveHelmetOptions()
@@ -643,34 +644,34 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
             ClearPageResponses("SaveHelmetPage");
 
-            var responseText = entity.Helmet1 == null ? ColorTokenService.Red("Save in Slot 1") : ColorTokenService.Green("Save in Slot 1");
+            var responseText = entity.Helmet1 == null ? ColorToken.Red("Save in Slot 1") : ColorToken.Green("Save in Slot 1");
             AddResponseToPage("SaveHelmetPage", responseText);
 
-            responseText = entity.Helmet2 == null ? ColorTokenService.Red("Save in Slot 2") : ColorTokenService.Green("Save in Slot 2");
+            responseText = entity.Helmet2 == null ? ColorToken.Red("Save in Slot 2") : ColorToken.Green("Save in Slot 2");
             AddResponseToPage("SaveHelmetPage", responseText);
 
-            responseText = entity.Helmet3 == null ? ColorTokenService.Red("Save in Slot 3") : ColorTokenService.Green("Save in Slot 3");
+            responseText = entity.Helmet3 == null ? ColorToken.Red("Save in Slot 3") : ColorToken.Green("Save in Slot 3");
             AddResponseToPage("SaveHelmetPage", responseText);
 
-            responseText = entity.Helmet4 == null ? ColorTokenService.Red("Save in Slot 4") : ColorTokenService.Green("Save in Slot 4");
+            responseText = entity.Helmet4 == null ? ColorToken.Red("Save in Slot 4") : ColorToken.Green("Save in Slot 4");
             AddResponseToPage("SaveHelmetPage", responseText);
 
-            responseText = entity.Helmet5 == null ? ColorTokenService.Red("Save in Slot 5") : ColorTokenService.Green("Save in Slot 5");
+            responseText = entity.Helmet5 == null ? ColorToken.Red("Save in Slot 5") : ColorToken.Green("Save in Slot 5");
             AddResponseToPage("SaveHelmetPage", responseText);
 
-            responseText = entity.Helmet6 == null ? ColorTokenService.Red("Save in Slot 6") : ColorTokenService.Green("Save in Slot 6");
+            responseText = entity.Helmet6 == null ? ColorToken.Red("Save in Slot 6") : ColorToken.Green("Save in Slot 6");
             AddResponseToPage("SaveHelmetPage", responseText);
 
-            responseText = entity.Helmet7 == null ? ColorTokenService.Red("Save in Slot 7") : ColorTokenService.Green("Save in Slot 7");
+            responseText = entity.Helmet7 == null ? ColorToken.Red("Save in Slot 7") : ColorToken.Green("Save in Slot 7");
             AddResponseToPage("SaveHelmetPage", responseText);
 
-            responseText = entity.Helmet8 == null ? ColorTokenService.Red("Save in Slot 8") : ColorTokenService.Green("Save in Slot 8");
+            responseText = entity.Helmet8 == null ? ColorToken.Red("Save in Slot 8") : ColorToken.Green("Save in Slot 8");
             AddResponseToPage("SaveHelmetPage", responseText);
 
-            responseText = entity.Helmet9 == null ? ColorTokenService.Red("Save in Slot 9") : ColorTokenService.Green("Save in Slot 9");
+            responseText = entity.Helmet9 == null ? ColorToken.Red("Save in Slot 9") : ColorToken.Green("Save in Slot 9");
             AddResponseToPage("SaveHelmetPage", responseText);
 
-            responseText = entity.Helmet10 == null ? ColorTokenService.Red("Save in Slot 10") : ColorTokenService.Green("Save in Slot 10");
+            responseText = entity.Helmet10 == null ? ColorToken.Red("Save in Slot 10") : ColorToken.Green("Save in Slot 10");
             AddResponseToPage("SaveHelmetPage", responseText);
         }
         private void ShowSaveWeaponOptions()
@@ -679,34 +680,34 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
             ClearPageResponses("SaveWeaponPage");
 
-            var responseText = entity.Weapon1 == null ? ColorTokenService.Red("Save in Slot 1") : ColorTokenService.Green("Save in Slot 1");
+            var responseText = entity.Weapon1 == null ? ColorToken.Red("Save in Slot 1") : ColorToken.Green("Save in Slot 1");
             AddResponseToPage("SaveWeaponPage", responseText);
 
-            responseText = entity.Weapon2 == null ? ColorTokenService.Red("Save in Slot 2") : ColorTokenService.Green("Save in Slot 2");
+            responseText = entity.Weapon2 == null ? ColorToken.Red("Save in Slot 2") : ColorToken.Green("Save in Slot 2");
             AddResponseToPage("SaveWeaponPage", responseText);
 
-            responseText = entity.Weapon3 == null ? ColorTokenService.Red("Save in Slot 3") : ColorTokenService.Green("Save in Slot 3");
+            responseText = entity.Weapon3 == null ? ColorToken.Red("Save in Slot 3") : ColorToken.Green("Save in Slot 3");
             AddResponseToPage("SaveWeaponPage", responseText);
 
-            responseText = entity.Weapon4 == null ? ColorTokenService.Red("Save in Slot 4") : ColorTokenService.Green("Save in Slot 4");
+            responseText = entity.Weapon4 == null ? ColorToken.Red("Save in Slot 4") : ColorToken.Green("Save in Slot 4");
             AddResponseToPage("SaveWeaponPage", responseText);
 
-            responseText = entity.Weapon5 == null ? ColorTokenService.Red("Save in Slot 5") : ColorTokenService.Green("Save in Slot 5");
+            responseText = entity.Weapon5 == null ? ColorToken.Red("Save in Slot 5") : ColorToken.Green("Save in Slot 5");
             AddResponseToPage("SaveWeaponPage", responseText);
 
-            responseText = entity.Weapon6 == null ? ColorTokenService.Red("Save in Slot 6") : ColorTokenService.Green("Save in Slot 6");
+            responseText = entity.Weapon6 == null ? ColorToken.Red("Save in Slot 6") : ColorToken.Green("Save in Slot 6");
             AddResponseToPage("SaveWeaponPage", responseText);
 
-            responseText = entity.Weapon7 == null ? ColorTokenService.Red("Save in Slot 7") : ColorTokenService.Green("Save in Slot 7");
+            responseText = entity.Weapon7 == null ? ColorToken.Red("Save in Slot 7") : ColorToken.Green("Save in Slot 7");
             AddResponseToPage("SaveWeaponPage", responseText);
 
-            responseText = entity.Weapon8 == null ? ColorTokenService.Red("Save in Slot 8") : ColorTokenService.Green("Save in Slot 8");
+            responseText = entity.Weapon8 == null ? ColorToken.Red("Save in Slot 8") : ColorToken.Green("Save in Slot 8");
             AddResponseToPage("SaveWeaponPage", responseText);
 
-            responseText = entity.Weapon9 == null ? ColorTokenService.Red("Save in Slot 9") : ColorTokenService.Green("Save in Slot 9");
+            responseText = entity.Weapon9 == null ? ColorToken.Red("Save in Slot 9") : ColorToken.Green("Save in Slot 9");
             AddResponseToPage("SaveWeaponPage", responseText);
 
-            responseText = entity.Weapon10 == null ? ColorTokenService.Red("Save in Slot 10") : ColorTokenService.Green("Save in Slot 10");
+            responseText = entity.Weapon10 == null ? ColorToken.Red("Save in Slot 10") : ColorToken.Green("Save in Slot 10");
             AddResponseToPage("SaveWeaponPage", responseText);
         }
         private void ShowLoadOptions()

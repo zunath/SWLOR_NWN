@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.FuelBay
             {
                 var seconds = 6 * fuelCount;
                 var timeSpan = TimeSpan.FromSeconds(seconds);
-                player.SendMessage(ColorTokenService.Gray("Reinforcement mode will last for " +
+                player.SendMessage(ColorToken.Gray("Reinforcement mode will last for " +
                                                Time.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
                                                " (" + fuelCount + " / " + maxFuel + " units"));
             }
@@ -179,7 +179,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.FuelBay
                 }
 
                 var timeSpan = TimeSpan.FromMinutes(minutes * fuelCount);
-                player.SendMessage(ColorTokenService.Gray("Fuel will last for " +
+                player.SendMessage(ColorToken.Gray("Fuel will last for " +
                                                Time.GetTimeLongIntervals(timeSpan.Days, timeSpan.Hours, timeSpan.Minutes, timeSpan.Seconds, false) +
                                                " (" + fuelCount + " / " + maxFuel + " units)"));
             }

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Item.Contracts;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
 using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
@@ -85,28 +86,28 @@ namespace SWLOR.Game.Server.Legacy.Item
                 switch (ip.Item2)
                 {
                     case 0:
-                        resource.Name = ColorTokenService.Green(resource.Name);
+                        resource.Name = ColorToken.Green(resource.Name);
                         break;
                     case 1:
-                        resource.Name = ColorTokenService.Blue(resource.Name);
+                        resource.Name = ColorToken.Blue(resource.Name);
                         break;
                     case 2:
-                        resource.Name = ColorTokenService.Purple(resource.Name);
+                        resource.Name = ColorToken.Purple(resource.Name);
                         break;
                     case 3:
-                        resource.Name = ColorTokenService.Orange(resource.Name);
+                        resource.Name = ColorToken.Orange(resource.Name);
                         break;
                     case 4:
-                        resource.Name = ColorTokenService.LightPurple(resource.Name);
+                        resource.Name = ColorToken.LightPurple(resource.Name);
                         break;
                     case 5:
-                        resource.Name = ColorTokenService.Yellow(resource.Name);
+                        resource.Name = ColorToken.Yellow(resource.Name);
                         break;
                     case 6:
-                        resource.Name = ColorTokenService.Red(resource.Name);
+                        resource.Name = ColorToken.Red(resource.Name);
                         break;
                     case 7:
-                        resource.Name = ColorTokenService.Cyan(resource.Name);
+                        resource.Name = ColorToken.Cyan(resource.Name);
                         break;
                 }
 

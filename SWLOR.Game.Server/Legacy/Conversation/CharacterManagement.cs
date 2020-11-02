@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -81,13 +82,13 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             {
                 PVPSanctuaryService.SetPlayerPVPSanctuaryOverride(GetPC(), true);
                 dto.IsConfirmingDisableSanctuary = false;
-                NWScript.FloatingTextStringOnCreature(ColorTokenService.Red("PVP protection has been disabled. You may now attack and be attacked by other players."), GetPC().Object, false);
+                NWScript.FloatingTextStringOnCreature(ColorToken.Red("PVP protection has been disabled. You may now attack and be attacked by other players."), GetPC().Object, false);
                 SetResponseText("MainPage", 1, "Disable PVP Protection");
             }
             else
             {
                 dto.IsConfirmingDisableSanctuary = true;
-                NWScript.FloatingTextStringOnCreature(ColorTokenService.Red("WARNING: PVP protection prevents other players from attacking you. If you disable this, players will immediately be able to attack you anywhere. Click again to confirm."), GetPC().Object, false);
+                NWScript.FloatingTextStringOnCreature(ColorToken.Red("WARNING: PVP protection prevents other players from attacking you. If you disable this, players will immediately be able to attack you anywhere. Click again to confirm."), GetPC().Object, false);
                 SetResponseText("MainPage", 1, "CONFIRM DISABLE PVP PROTECTION");
             }
 

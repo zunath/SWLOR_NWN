@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -14,13 +15,13 @@ namespace SWLOR.Game.Server.Legacy.Conversation
         {
             var dialog = new PlayerDialog("MainPage");
             var mainPage = new DialogPage(
-                ColorTokenService.Green("Persistent Storage Menu") + "\n\nPlease select an option.",
+                ColorToken.Green("Persistent Storage Menu") + "\n\nPlease select an option.",
                 "Open Storage",
                 "Change Container Name"
             );
 
             var changeNamePage = new DialogPage(
-                ColorTokenService.Green("Change Container Name") + "\n\nPlease type a name for the container into your chat bar and then press enter. After that's done click the 'Next' button on this conversation window.",
+                ColorToken.Green("Change Container Name") + "\n\nPlease type a name for the container into your chat bar and then press enter. After that's done click the 'Next' button on this conversation window.",
                 "Next"
             );
 
@@ -105,8 +106,8 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                         return;
                     }
 
-                    var header = ColorTokenService.Green("Change Container Name") + "\n\n";
-                    header += ColorTokenService.Green("New Container Name: ") + name + "\n\n";
+                    var header = ColorToken.Green("Change Container Name") + "\n\n";
+                    header += ColorToken.Green("New Container Name: ") + name + "\n\n";
                     header += "Are you sure you want to change your container to this name?";
 
                     SetPageHeader("ConfirmChangeNamePage", header);

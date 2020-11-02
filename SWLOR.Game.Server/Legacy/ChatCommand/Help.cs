@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Legacy.Event.Module;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.ChatCommand
 {
@@ -32,17 +33,17 @@ namespace SWLOR.Game.Server.Legacy.ChatCommand
 
                     if (attribute.Permissions.HasFlag(CommandPermissionType.Player))
                     {
-                        _helpTextPlayer += ColorTokenService.Green("/" + @class.Name.ToLower()) + ColorTokenService.White(": " + attribute.Description) + "\n";
+                        _helpTextPlayer += ColorToken.Green("/" + @class.Name.ToLower()) + ColorToken.White(": " + attribute.Description) + "\n";
                     }
 
                     if (attribute.Permissions.HasFlag(CommandPermissionType.DM))
                     {
-                        _helpTextDM += ColorTokenService.Green("/" + @class.Name.ToLower()) + ColorTokenService.White(": " + attribute.Description) + "\n";
+                        _helpTextDM += ColorToken.Green("/" + @class.Name.ToLower()) + ColorToken.White(": " + attribute.Description) + "\n";
                     }
                     
                     if(attribute.Permissions.HasFlag(CommandPermissionType.Admin))
                     {
-                        _helpTextAdmin += ColorTokenService.Green("/" + @class.Name.ToLower() + ColorTokenService.White(": " + attribute.Description) + "\n");
+                        _helpTextAdmin += ColorToken.Green("/" + @class.Name.ToLower() + ColorToken.White(": " + attribute.Description) + "\n");
                     }
                 }
             });

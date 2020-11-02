@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
@@ -61,7 +62,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var modeType = (StructureModeType) mode.ID;
 
             var header = "You may change the active mode of this building here. Only one mode may be set at a time.\n\nBe aware that switching modes will remove all primary residents for the building.\n\n";
-            header += ColorTokenService.Green("Current Mode: ") + mode.Name;
+            header += ColorToken.Green("Current Mode: ") + mode.Name;
 
             if (modeType == StructureModeType.Residence)
                 SetResponseVisible("MainPage", 1, false);
@@ -117,7 +118,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                     throw new ArgumentOutOfRangeException();
             }
 
-            header += ColorTokenService.Red("\n\nWARNING:\n\n");
+            header += ColorToken.Red("\n\nWARNING:\n\n");
             header += GetWarning();
 
             SetPageHeader("ConfirmSetMode", header);

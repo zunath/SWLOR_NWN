@@ -459,7 +459,7 @@ namespace SWLOR.Game.Server.Legacy.Service
                 // Send a FP status message if the effect ended or it's been six seconds since the last one.
                 if (ended || tick % 6 == 0)
                 {
-                    creature.SendMessage(ColorTokenService.Custom("FP: " + currentFP + " / " + maxFP, 32, 223, 219));
+                    creature.SendMessage(ColorToken.Custom("FP: " + currentFP + " / " + maxFP, 32, 223, 219));
                 }
                 
                 // Run this individual perk's concentration tick method if it didn't end this tick.
@@ -790,7 +790,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             if (entity.CurrentFP > entity.MaxFP)
                 entity.CurrentFP = entity.MaxFP;
 
-            oPC.SendMessage(ColorTokenService.Custom("FP: " + entity.CurrentFP + " / " + entity.MaxFP, 32, 223, 219));
+            oPC.SendMessage(ColorToken.Custom("FP: " + entity.CurrentFP + " / " + entity.MaxFP, 32, 223, 219));
 
             return entity;
         }

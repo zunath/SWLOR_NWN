@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
         {
             var dialog = new PlayerDialog("MainPage");
             var mainPage = new DialogPage("<SET LATER>",
-                ColorTokenService.Green("Refresh"),
+                ColorToken.Green("Refresh"),
                 "Change Name",
                 "Reset Name");
 
@@ -39,9 +40,9 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 renamingName = "{UNSPECIFIED}";
 
             var header = "You are renaming an item.\n\n";
-            header += ColorTokenService.Green("Original Name: ") + originalName + "\n";
-            header += ColorTokenService.Green("Current Name: ") + currentName + "\n";
-            header += ColorTokenService.Green("New Name: ") + renamingName + "\n";
+            header += ColorToken.Green("Original Name: ") + originalName + "\n";
+            header += ColorToken.Green("Current Name: ") + currentName + "\n";
+            header += ColorToken.Green("New Name: ") + renamingName + "\n";
             header += "Type in a new name, click 'Refresh', and then select 'Change Name' to make the changes. Click 'Reset Name' to switch back to the item's original name.";
 
             SetPageHeader("MainPage", header);

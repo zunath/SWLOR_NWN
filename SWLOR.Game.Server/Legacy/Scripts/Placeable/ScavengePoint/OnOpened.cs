@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Service;
 using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
 using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
 
@@ -65,7 +66,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.ScavengePoint
                 var roll = SWLOR.Game.Server.Service.Random.Next(20) + 1;
                 if (roll >= dc)
                 {
-                    oPC.FloatingText(ColorTokenService.SkillCheck("Search: *success*: (" + roll + " vs. DC: " + dc + ")"));
+                    oPC.FloatingText(ColorToken.SkillCheck("Search: *success*: (" + roll + " vs. DC: " + dc + ")"));
                     var spawnItem = LootService.PickRandomItemFromLootTable(lootTableID);
 
                     if (spawnItem == null)
@@ -83,7 +84,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.ScavengePoint
                 }
                 else
                 {
-                    oPC.FloatingText(ColorTokenService.SkillCheck("Search: *failure*: (" + roll + " vs. DC: " + dc + ")"));
+                    oPC.FloatingText(ColorToken.SkillCheck("Search: *failure*: (" + roll + " vs. DC: " + dc + ")"));
 
                     var xp = SkillService.CalculateRegisteredSkillLevelAdjustedXP(50, level, rank);
                     SkillService.GiveSkillXP(oPC, SkillType.Scavenging, (int)xp);

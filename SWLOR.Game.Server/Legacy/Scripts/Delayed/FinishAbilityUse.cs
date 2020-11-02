@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Legacy.Event.SWLOR;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject;
+using SWLOR.Game.Server.Service;
 using PerkExecutionType = SWLOR.Game.Server.Legacy.Enumeration.PerkExecutionType;
 using Skill = SWLOR.Game.Server.Core.NWScript.Enum.Skill;
 
@@ -97,7 +98,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Delayed
                     var maxFP = AbilityService.GetMaxFP(activator);
                     currentFP -= fpCost;
                     AbilityService.SetCurrentFP(activator, currentFP);
-                    activator.SendMessage(ColorTokenService.Custom("FP: " + currentFP + " / " + maxFP, 32, 223, 219));
+                    activator.SendMessage(ColorToken.Custom("FP: " + currentFP + " / " + maxFP, 32, 223, 219));
                 }
 
                 // Notify activator of concentration ability change and also update it in the DB.

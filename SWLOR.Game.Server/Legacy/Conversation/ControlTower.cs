@@ -83,16 +83,16 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             }
             else
             {
-                time = ColorTokenService.Red("Fuel has expired.");
+                time = ColorToken.Red("Fuel has expired.");
             }
 
              
 
-            var header = ColorTokenService.Green("Power: ") + currentPower + " / " + maxPower + "\n";
-            header += ColorTokenService.Green("CPU: ") + currentCPU + " / " + maxCPU + "\n";
-            header += ColorTokenService.Green("Fuel: ") + currentFuel + " / " + maxFuel + "\n";
-            header += ColorTokenService.Green("Reinforced Fuel: ") + currentReinforcedFuel + " / " + maxReinforcedFuel + "\n";
-            header += ColorTokenService.Green("Resource Bay: ") + currentResources + " / " + maxResources + "\n";
+            var header = ColorToken.Green("Power: ") + currentPower + " / " + maxPower + "\n";
+            header += ColorToken.Green("CPU: ") + currentCPU + " / " + maxCPU + "\n";
+            header += ColorToken.Green("Fuel: ") + currentFuel + " / " + maxFuel + "\n";
+            header += ColorToken.Green("Reinforced Fuel: ") + currentReinforcedFuel + " / " + maxReinforcedFuel + "\n";
+            header += ColorToken.Green("Resource Bay: ") + currentResources + " / " + maxResources + "\n";
             header += time + "\n";
             header += "What would you like to do with this control tower?";
 

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Legacy.GameObject;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Legacy.Service
@@ -25,12 +26,12 @@ namespace SWLOR.Game.Server.Legacy.Service
 
             var description =
                 new StringBuilder(
-                    ColorTokenService.Green("ID: ") + target.GlobalID + "\n" +
-                    ColorTokenService.Green("Character Name: ") + target.Name + "\n" +
-                    ColorTokenService.Green("Respawn Area: ") + respawnAreaName + "\n" +
-                    ColorTokenService.Green("Skill Points: ") + playerEntity.TotalSPAcquired + " (Unallocated: " + playerEntity.UnallocatedSP + ")" + "\n" +
-                    ColorTokenService.Green("FP: ") + playerEntity.CurrentFP + " / " + playerEntity.MaxFP + "\n" +
-                    ColorTokenService.Green("Skill Levels: ") + "\n\n");
+                    ColorToken.Green("ID: ") + target.GlobalID + "\n" +
+                    ColorToken.Green("Character Name: ") + target.Name + "\n" +
+                    ColorToken.Green("Respawn Area: ") + respawnAreaName + "\n" +
+                    ColorToken.Green("Skill Points: ") + playerEntity.TotalSPAcquired + " (Unallocated: " + playerEntity.UnallocatedSP + ")" + "\n" +
+                    ColorToken.Green("FP: ") + playerEntity.CurrentFP + " / " + playerEntity.MaxFP + "\n" +
+                    ColorToken.Green("Skill Levels: ") + "\n\n");
 
             var pcSkills = SkillService.GetAllPCSkills(target.Object);
 
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Legacy.Service
                 description.Append(skill.Name).Append(" rank ").Append(pcSkill.Rank).AppendLine();
             }
 
-            description.Append("\n\n").Append(ColorTokenService.Green("Perks: ")).Append("\n\n");
+            description.Append("\n\n").Append(ColorToken.Green("Perks: ")).Append("\n\n");
 
             var pcPerks = DataService.PCPerk.GetAllByPlayerID(target.GlobalID);
             
@@ -50,7 +51,7 @@ namespace SWLOR.Game.Server.Legacy.Service
                 description.Append(perk.Name).Append(" Lvl. ").Append(pcPerk.PerkLevel).AppendLine();
             }
             
-            description.Append("\n\n").Append(ColorTokenService.Green("Description: \n\n")).Append(backupDescription).AppendLine();
+            description.Append("\n\n").Append(ColorToken.Green("Description: \n\n")).Append(backupDescription).AppendLine();
             target.UnidentifiedDescription = description.ToString();            
             DelayCommand(0.1f, () => { SetDescription(target, backupDescription, false); });
             return true;

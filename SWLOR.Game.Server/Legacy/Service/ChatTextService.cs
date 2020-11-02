@@ -275,7 +275,7 @@ namespace SWLOR.Game.Server.Legacy.Service
                 if (language != SkillType.Basic)
                 {
                     var languageName = Language.GetName(language);
-                    finalMessage.Append(ColorTokenService.Custom($"[{languageName}] ", r, g, b));
+                    finalMessage.Append(ColorToken.Custom($"[{languageName}] ", r, g, b));
                 }
 
                 foreach (var component in chatComponents)
@@ -288,13 +288,13 @@ namespace SWLOR.Game.Server.Legacy.Service
 
                         if (colour != 0)
                         {
-                            text = ColorTokenService.Custom(text, r, g, b);
+                            text = ColorToken.Custom(text, r, g, b);
                         }
                     }
 
                     if (component.m_CustomColour)
                     {
-                        text = ColorTokenService.Custom(text, component.m_ColourRed, component.m_ColourGreen, component.m_ColourBlue);
+                        text = ColorToken.Custom(text, component.m_ColourRed, component.m_ColourGreen, component.m_ColourBlue);
                     }
 
                     finalMessage.Append(text);
@@ -321,11 +321,11 @@ namespace SWLOR.Game.Server.Legacy.Service
 
                 if (channel == ChatChannel.PlayerShout)
                 {
-                    finalMessageColoured = ColorTokenService.Custom(finalMessageColoured, 0, 180, 255);
+                    finalMessageColoured = ColorToken.Custom(finalMessageColoured, 0, 180, 255);
                 }
                 else if (channel == ChatChannel.PlayerParty)
                 {
-                    finalMessageColoured = ColorTokenService.Orange(finalMessageColoured);
+                    finalMessageColoured = ColorToken.Orange(finalMessageColoured);
                 }
 
                 // set back to original sender, if it was changed by holocom connection

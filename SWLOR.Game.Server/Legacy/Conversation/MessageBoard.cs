@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -72,12 +73,12 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 .OrderByDescending(o => o.DatePosted);
 
             ClearPageResponses("MainPage");
-            AddResponseToPage("MainPage", ColorTokenService.Green("Create New Post"), !isDM);
+            AddResponseToPage("MainPage", ColorToken.Green("Create New Post"), !isDM);
             foreach (var message in messages)
             {
                 var title = message.Title;
                 if (message.PlayerID == player.GlobalID)
-                    title = ColorTokenService.Cyan(title);
+                    title = ColorToken.Cyan(title);
                 AddResponseToPage("MainPage", title, true, message.ID);
             }
         }
@@ -104,9 +105,9 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var model = GetDialogCustomData<Model>();
             var message = DataService.Message.GetByID(model.MessageID);
             var poster = DataService.Player.GetByID(message.PlayerID);
-            var header = ColorTokenService.Green("Title: ") + message.Title + "\n";
-            header += ColorTokenService.Green("Posted By: ") + poster.CharacterName + "\n";
-            header += ColorTokenService.Green("Date: ") + message.DatePosted + "\n\n";
+            var header = ColorToken.Green("Title: ") + message.Title + "\n";
+            header += ColorToken.Green("Posted By: ") + poster.CharacterName + "\n";
+            header += ColorToken.Green("Date: ") + message.DatePosted + "\n\n";
             header += message.Text;
 
             SetPageHeader("PostDetailsPage", header);
@@ -150,8 +151,8 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var price = terminal.GetLocalInt("PRICE");
             var header = "Please enter text and then click the 'Set Title' or 'Set Message' buttons. Titles must be 256 characters or less. Messages must be 4000 characters or less.\n\n";
             header += "Posting a message costs " + price + " credits. Posts last for 30 days (real world time) before they will expire.\n\n";
-            header += ColorTokenService.Green("Title: ") + model.Title + "\n";
-            header += ColorTokenService.Green("Message: ") + model.Message + "\n";
+            header += ColorToken.Green("Title: ") + model.Title + "\n";
+            header += ColorToken.Green("Message: ") + model.Message + "\n";
 
             SetPageHeader("CreatePostPage", header);
 

@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Legacy.ChatCommand.Contracts;
 using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.ChatCommand
 {
@@ -33,7 +34,7 @@ namespace SWLOR.Game.Server.Legacy.ChatCommand
 
             if (!item.IsValid)
             {
-                user.SendMessage(ColorTokenService.Red("Item not found! Did you enter the correct ResRef?"));
+                user.SendMessage(ColorToken.Red("Item not found! Did you enter the correct ResRef?"));
                 return;
             }
 
@@ -44,7 +45,7 @@ namespace SWLOR.Game.Server.Legacy.ChatCommand
         {
             if (args.Length <= 0)
             {
-                return ColorTokenService.Red("Please specify a resref and optionally a quantity. Example: /" + nameof(SpawnItem) + " my_resref 20");
+                return ColorToken.Red("Please specify a resref and optionally a quantity. Example: /" + nameof(SpawnItem) + " my_resref 20");
             }
 
             return string.Empty;

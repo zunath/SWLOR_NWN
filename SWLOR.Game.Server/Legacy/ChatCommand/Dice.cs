@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Legacy.ChatCommand.Contracts;
 using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.ChatCommand
 {
@@ -24,7 +25,7 @@ namespace SWLOR.Game.Server.Legacy.ChatCommand
             
             
 
-            GenericError = ColorTokenService.Red("Please enter /dice help for more information on how to use this command.");
+            GenericError = ColorToken.Red("Please enter /dice help for more information on how to use this command.");
         }
 
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
@@ -124,7 +125,7 @@ namespace SWLOR.Game.Server.Legacy.ChatCommand
             }
 
             var dieRoll = number + "d" + sides;
-            var message = ColorTokenService.SkillCheck("Dice Roll: ") + dieRoll + ": " + value;
+            var message = ColorToken.SkillCheck("Dice Roll: ") + dieRoll + ": " + value;
             user.SpeakString(message);
         }
 

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -62,16 +63,16 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var totalSP = SkillService.GetPCTotalSkillCount(GetPC());
             var totalPerks = PerkService.GetPCTotalPerkCount(GetPC().GlobalID);
 
-            return ColorTokenService.Green("Total SP: ") + totalSP + " / " + SkillService.SkillCap + "\n" +
-                    ColorTokenService.Green("Available SP: ") + pcEntity.UnallocatedSP + "\n" +
-                    ColorTokenService.Green("Total Perks: ") + totalPerks + "\n";
+            return ColorToken.Green("Total SP: ") + totalSP + " / " + SkillService.SkillCap + "\n" +
+                    ColorToken.Green("Available SP: ") + pcEntity.UnallocatedSP + "\n" +
+                    ColorToken.Green("Total Perks: ") + totalPerks + "\n";
         }
 
         private void BuildViewMyPerks()
         {
             var perks = DataService.PCPerk.GetAllByPlayerID(GetPC().GlobalID).ToList();
 
-            var header = ColorTokenService.Green("Perks purchased:") + "\n\n";
+            var header = ColorToken.Green("Perks purchased:") + "\n\n";
             foreach (var pcPerk in perks)
             {
                 var perk = DataService.Perk.GetByID(pcPerk.PerkID);
@@ -140,12 +141,12 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 // Not every perk is going to have a perk feat. Don't display this information if not necessary.
                 if (currentPerkFeat != null)
                 {
-                    currentFPCost = currentPerkFeat.BaseFPCost > 0 ? (ColorTokenService.Green("Current FP: ") + currentPerkFeat.BaseFPCost + "\n") : string.Empty;
+                    currentFPCost = currentPerkFeat.BaseFPCost > 0 ? (ColorToken.Green("Current FP: ") + currentPerkFeat.BaseFPCost + "\n") : string.Empty;
 
                     // If this perk level has a concentration cost and interval, display it on the menu.
                     if (currentPerkFeat.ConcentrationFPCost > 0 && currentPerkFeat.ConcentrationTickInterval > 0)
                     {
-                        currentConcentrationCost = ColorTokenService.Green("Current Concentration FP: ") + currentPerkFeat.ConcentrationFPCost + " / " + currentPerkFeat.ConcentrationTickInterval + "s\n";
+                        currentConcentrationCost = ColorToken.Green("Current Concentration FP: ") + currentPerkFeat.ConcentrationFPCost + " / " + currentPerkFeat.ConcentrationTickInterval + "s\n";
                     }
                 }
 
@@ -167,12 +168,12 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
                 if (nextPerkFeat != null)
                 {
-                    nextFPCost = nextPerkFeat.BaseFPCost > 0 ? (ColorTokenService.Green("Next FP: ") + nextPerkFeat.BaseFPCost + "\n") : string.Empty;
+                    nextFPCost = nextPerkFeat.BaseFPCost > 0 ? (ColorToken.Green("Next FP: ") + nextPerkFeat.BaseFPCost + "\n") : string.Empty;
 
                     // If this perk level has a concentration cost and interval, display it on the menu.
                     if (nextPerkFeat.ConcentrationFPCost > 0 && nextPerkFeat.ConcentrationTickInterval > 0)
                     {
-                        nextConcentrationCost = ColorTokenService.Green("Next Concentration FP: ") + nextPerkFeat.ConcentrationFPCost + " / " + nextPerkFeat.ConcentrationTickInterval + "s\n";
+                        nextConcentrationCost = ColorToken.Green("Next Concentration FP: ") + nextPerkFeat.ConcentrationFPCost + " / " + nextPerkFeat.ConcentrationTickInterval + "s\n";
                     }
                 }
 
@@ -186,20 +187,20 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 null :
                 DataService.CooldownCategory.GetByID(Convert.ToInt32(perk.CooldownCategoryID));
 
-            var header = ColorTokenService.Green("Name: ") + perk.Name + "\n" +
-                         ColorTokenService.Green("Category: ") + perkCategory.Name + "\n" +
-                         ColorTokenService.Green("Rank: ") + rank + " / " + maxRank + "\n" +
-                         ColorTokenService.Green("Price: ") + price + "\n" +
+            var header = ColorToken.Green("Name: ") + perk.Name + "\n" +
+                         ColorToken.Green("Category: ") + perkCategory.Name + "\n" +
+                         ColorToken.Green("Rank: ") + rank + " / " + maxRank + "\n" +
+                         ColorToken.Green("Price: ") + price + "\n" +
                          currentFPCost +
                          currentConcentrationCost +
-                         (cooldownCategory != null && cooldownCategory.BaseCooldownTime > 0 ? ColorTokenService.Green("Cooldown: ") + cooldownCategory.BaseCooldownTime + "s" : "") + "\n" +
-                         ColorTokenService.Green("Description: ") + perk.Description + "\n" +
-                         ColorTokenService.Green("Current Bonus: ") + currentBonus + "\n" +
-                         ColorTokenService.Green("Requires Specialization: ") + currentSpecializationRequired + "\n" +
+                         (cooldownCategory != null && cooldownCategory.BaseCooldownTime > 0 ? ColorToken.Green("Cooldown: ") + cooldownCategory.BaseCooldownTime + "s" : "") + "\n" +
+                         ColorToken.Green("Description: ") + perk.Description + "\n" +
+                         ColorToken.Green("Current Bonus: ") + currentBonus + "\n" +
+                         ColorToken.Green("Requires Specialization: ") + currentSpecializationRequired + "\n" +
                          nextFPCost +
                          nextConcentrationCost +
-                         ColorTokenService.Green("Next Bonus: ") + nextBonus + "\n" +
-                         ColorTokenService.Green("Requires Specialization: ") + nextSpecializationRequired + "\n";
+                         ColorToken.Green("Next Bonus: ") + nextBonus + "\n" +
+                         ColorToken.Green("Requires Specialization: ") + nextSpecializationRequired + "\n";
                 
 
             if (nextPerkLevel != null)
@@ -207,7 +208,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 var requirements = DataService.PerkLevelSkillRequirement.GetAllByPerkLevelID(nextPerkLevel.ID).ToList();
                 if (requirements.Count > 0)
                 {
-                    header += "\n" + ColorTokenService.Green("Next Upgrade Skill Requirements:\n\n");
+                    header += "\n" + ColorToken.Green("Next Upgrade Skill Requirements:\n\n");
 
                     var hasRequirement = false;
                     foreach (var req in requirements)
@@ -221,11 +222,11 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
                             if (pcSkill.Rank >= req.RequiredRank)
                             {
-                                header += ColorTokenService.Green(detailLine) + "\n";
+                                header += ColorToken.Green(detailLine) + "\n";
                             }
                             else
                             {
-                                header += ColorTokenService.Red(detailLine) + "\n";
+                                header += ColorToken.Red(detailLine) + "\n";
                             }
 
                             hasRequirement = true;

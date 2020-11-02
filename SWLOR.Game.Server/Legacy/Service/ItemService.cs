@@ -17,6 +17,7 @@ using SWLOR.Game.Server.Legacy.Event.SWLOR;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Item.Contracts;
 using SWLOR.Game.Server.Legacy.Messaging;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using ItemProperty = SWLOR.Game.Server.Core.ItemProperty;
 using OnHitCastSpell = SWLOR.Game.Server.Legacy.Event.Feat.OnHitCastSpell;
@@ -226,7 +227,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 
             if (examinedItem.RecommendedLevel > 0)
             {
-                description += ColorTokenService.Orange("Recommended Level: ") + examinedItem.RecommendedLevel;
+                description += ColorToken.Orange("Recommended Level: ") + examinedItem.RecommendedLevel;
 
                 if (examinedItem.BaseItemType == BaseItem.Ring || examinedItem.BaseItemType == BaseItem.Amulet)
                     description += " (Uses your highest armor skill)";
@@ -235,170 +236,170 @@ namespace SWLOR.Game.Server.Legacy.Service
             }
             if (examinedItem.LevelIncrease > 0)
             {
-                description += ColorTokenService.Orange("Level Increase: ") + examinedItem.LevelIncrease + "\n";
+                description += ColorToken.Orange("Level Increase: ") + examinedItem.LevelIncrease + "\n";
             }
             if (examinedItem.AssociatedSkillType > 0)
             {
                 var skill = DataService.Skill.GetByID((int)examinedItem.AssociatedSkillType);
-                description += ColorTokenService.Orange("Associated Skill: ") + skill.Name + "\n";
+                description += ColorToken.Orange("Associated Skill: ") + skill.Name + "\n";
             }
             if (examinedItem.CustomAC > 0)
             {
                 if (ShieldBaseItemTypes.Contains(examinedItem.BaseItemType))
                 {
-                    description += ColorTokenService.Orange("Damage Immunity: " ) + (10 + examinedItem.CustomAC / 3) + "\n";
+                    description += ColorToken.Orange("Damage Immunity: " ) + (10 + examinedItem.CustomAC / 3) + "\n";
                 }
                 else if (ArmorBaseItemTypes.Contains(examinedItem.BaseItemType))
                 {
-                    description += ColorTokenService.Orange("AC: ") + examinedItem.CustomAC + "\n";
+                    description += ColorToken.Orange("AC: ") + examinedItem.CustomAC + "\n";
                 }
                 else
                 {
-                    description += ColorTokenService.Red("AC (ignored due to item type): ") + examinedItem.CustomAC + "\n";
+                    description += ColorToken.Red("AC (ignored due to item type): ") + examinedItem.CustomAC + "\n";
                 }
             }
             if (examinedItem.HPBonus > 0)
             {
-                description += ColorTokenService.Orange("HP Bonus: ") + examinedItem.HPBonus + "\n";
+                description += ColorToken.Orange("HP Bonus: ") + examinedItem.HPBonus + "\n";
             }
             if (examinedItem.FPBonus > 0)
             {
-                description += ColorTokenService.Orange("FP Bonus: ") + examinedItem.FPBonus + "\n";
+                description += ColorToken.Orange("FP Bonus: ") + examinedItem.FPBonus + "\n";
             }
             if (examinedItem.StructureBonus > 0)
             {
-                description += ColorTokenService.Orange("Structure Bonus: ") + examinedItem.StructureBonus + "\n";
+                description += ColorToken.Orange("Structure Bonus: ") + examinedItem.StructureBonus + "\n";
             }
             if (examinedItem.StrengthBonus > 0)
             {
-                description += ColorTokenService.Orange("Strength Bonus: ") + examinedItem.StrengthBonus + "\n";
+                description += ColorToken.Orange("Strength Bonus: ") + examinedItem.StrengthBonus + "\n";
             }
             if (examinedItem.DexterityBonus > 0)
             {
-                description += ColorTokenService.Orange("Dexterity Bonus: ") + examinedItem.DexterityBonus + "\n";
+                description += ColorToken.Orange("Dexterity Bonus: ") + examinedItem.DexterityBonus + "\n";
             }
             if (examinedItem.ConstitutionBonus > 0)
             {
-                description += ColorTokenService.Orange("Constitution Bonus: ") + examinedItem.ConstitutionBonus + "\n";
+                description += ColorToken.Orange("Constitution Bonus: ") + examinedItem.ConstitutionBonus + "\n";
             }
             if (examinedItem.WisdomBonus > 0)
             {
-                description += ColorTokenService.Orange("Wisdom Bonus: ") + examinedItem.WisdomBonus + "\n";
+                description += ColorToken.Orange("Wisdom Bonus: ") + examinedItem.WisdomBonus + "\n";
             }
             if (examinedItem.IntelligenceBonus > 0)
             {
-                description += ColorTokenService.Orange("Intelligence Bonus: ") + examinedItem.IntelligenceBonus + "\n";
+                description += ColorToken.Orange("Intelligence Bonus: ") + examinedItem.IntelligenceBonus + "\n";
             }
             if (examinedItem.CharismaBonus > 0)
             {
-                description += ColorTokenService.Orange("Charisma Bonus: ") + examinedItem.CharismaBonus + "\n";
+                description += ColorToken.Orange("Charisma Bonus: ") + examinedItem.CharismaBonus + "\n";
             }
             if (examinedItem.CooldownRecovery > 0)
             {
-                description += ColorTokenService.Orange("Cooldown Recovery: +") + examinedItem.CooldownRecovery + "%\n";
+                description += ColorToken.Orange("Cooldown Recovery: +") + examinedItem.CooldownRecovery + "%\n";
             }
             else if (examinedItem.CooldownRecovery < 0)
             {
-                description += ColorTokenService.Orange("Cooldown Recovery: -") + examinedItem.CooldownRecovery + "%\n";
+                description += ColorToken.Orange("Cooldown Recovery: -") + examinedItem.CooldownRecovery + "%\n";
             }
             if (examinedItem.HarvestingBonus > 0)
             {
-                description += ColorTokenService.Orange("Harvesting Bonus: ") + examinedItem.HarvestingBonus + "\n";
+                description += ColorToken.Orange("Harvesting Bonus: ") + examinedItem.HarvestingBonus + "\n";
             }
             if (examinedItem.CraftBonusArmorsmith > 0)
             {
-                description += ColorTokenService.Orange("Armorsmith Bonus: ") + examinedItem.CraftBonusArmorsmith + "\n";
+                description += ColorToken.Orange("Armorsmith Bonus: ") + examinedItem.CraftBonusArmorsmith + "\n";
             }
             if (examinedItem.CraftBonusEngineering > 0)
             {
-                description += ColorTokenService.Orange("Engineering Bonus: ") + examinedItem.CraftBonusEngineering + "\n";
+                description += ColorToken.Orange("Engineering Bonus: ") + examinedItem.CraftBonusEngineering + "\n";
             }
             if (examinedItem.CraftBonusFabrication > 0)
             {
-                description += ColorTokenService.Orange("Fabrication Bonus: ") + examinedItem.CraftBonusFabrication + "\n";
+                description += ColorToken.Orange("Fabrication Bonus: ") + examinedItem.CraftBonusFabrication + "\n";
             }
             if (examinedItem.CraftBonusWeaponsmith > 0)
             {
-                description += ColorTokenService.Orange("Weaponsmith Bonus: ") + examinedItem.CraftBonusWeaponsmith + "\n";
+                description += ColorToken.Orange("Weaponsmith Bonus: ") + examinedItem.CraftBonusWeaponsmith + "\n";
             }
             if (examinedItem.CraftBonusCooking > 0)
             {
-                description += ColorTokenService.Orange("Cooking Bonus: ") + examinedItem.CraftBonusCooking + "\n";
+                description += ColorToken.Orange("Cooking Bonus: ") + examinedItem.CraftBonusCooking + "\n";
             }
             if (examinedItem.CraftTierLevel > 0)
             {
-                description += ColorTokenService.Orange("Tool Level: ") + examinedItem.CraftTierLevel + "\n";
+                description += ColorToken.Orange("Tool Level: ") + examinedItem.CraftTierLevel + "\n";
             }
             if (examinedItem.EnmityRate != 0)
             {
-                description += ColorTokenService.Orange("Enmity: ") + examinedItem.EnmityRate + "%\n";
+                description += ColorToken.Orange("Enmity: ") + examinedItem.EnmityRate + "%\n";
             }
             if (examinedItem.LuckBonus > 0)
             {
-                description += ColorTokenService.Orange("Luck Bonus: ") + examinedItem.LuckBonus + "\n";
+                description += ColorToken.Orange("Luck Bonus: ") + examinedItem.LuckBonus + "\n";
             }
             if (examinedItem.MeditateBonus > 0)
             {
-                description += ColorTokenService.Orange("Meditate Bonus: ") + examinedItem.MeditateBonus + "\n";
+                description += ColorToken.Orange("Meditate Bonus: ") + examinedItem.MeditateBonus + "\n";
             }
             if (examinedItem.RestBonus > 0)
             {
-                description += ColorTokenService.Orange("Rest Bonus: ") + examinedItem.RestBonus + "\n";
+                description += ColorToken.Orange("Rest Bonus: ") + examinedItem.RestBonus + "\n";
             }
             if (examinedItem.ScanningBonus > 0)
             {
-                description += ColorTokenService.Orange("Scanning Bonus: ") + examinedItem.ScanningBonus + "\n";
+                description += ColorToken.Orange("Scanning Bonus: ") + examinedItem.ScanningBonus + "\n";
             }
             if (examinedItem.ScavengingBonus > 0)
             {
-                description += ColorTokenService.Orange("Scavenging Bonus: ") + examinedItem.ScavengingBonus + "\n";
+                description += ColorToken.Orange("Scavenging Bonus: ") + examinedItem.ScavengingBonus + "\n";
             }
             if (examinedItem.MedicineBonus > 0)
             {
-                description += ColorTokenService.Orange("Medicine Bonus: ") + examinedItem.MedicineBonus + "\n";
+                description += ColorToken.Orange("Medicine Bonus: ") + examinedItem.MedicineBonus + "\n";
             }
             if (examinedItem.HPRegenBonus > 0)
             {
-                description += ColorTokenService.Orange("HP Regen Bonus: ") + examinedItem.HPRegenBonus + "\n";
+                description += ColorToken.Orange("HP Regen Bonus: ") + examinedItem.HPRegenBonus + "\n";
             }
             if (examinedItem.FPRegenBonus > 0)
             {
-                description += ColorTokenService.Orange("FP Regen Bonus: ") + examinedItem.FPRegenBonus + "\n";
+                description += ColorToken.Orange("FP Regen Bonus: ") + examinedItem.FPRegenBonus + "\n";
             }
             if (examinedItem.PilotingBonus > 0)
             {
-                description += ColorTokenService.Orange("Piloting Bonus: ") + examinedItem.PilotingBonus + "\n";
+                description += ColorToken.Orange("Piloting Bonus: ") + examinedItem.PilotingBonus + "\n";
             }
             if (examinedItem.BaseAttackBonus > 0)
             {
                 if (WeaponBaseItemTypes.Contains(examinedItem.BaseItemType))
                 {
-                    description += ColorTokenService.Orange("Base Attack Bonus: ") + examinedItem.BaseAttackBonus + "\n";
+                    description += ColorToken.Orange("Base Attack Bonus: ") + examinedItem.BaseAttackBonus + "\n";
                 }
                 else
                 {
-                    description += ColorTokenService.Red("Base Attack Bonus (ignored due to item type): ") + examinedItem.BaseAttackBonus + "\n";
+                    description += ColorToken.Red("Base Attack Bonus (ignored due to item type): ") + examinedItem.BaseAttackBonus + "\n";
                 }
             }
             if (examinedItem.SneakAttackBonus > 0)
             {
-                description += ColorTokenService.Orange("Sneak Attack Bonus: ") + examinedItem.SneakAttackBonus + "\n";
+                description += ColorToken.Orange("Sneak Attack Bonus: ") + examinedItem.SneakAttackBonus + "\n";
             }
             if (examinedItem.DamageBonus > 0)
             {
                 if (WeaponBaseItemTypes.Contains(examinedItem.BaseItemType))
                 {
-                    description += ColorTokenService.Orange("Damage Bonus: ") + examinedItem.DamageBonus + "\n";
+                    description += ColorToken.Orange("Damage Bonus: ") + examinedItem.DamageBonus + "\n";
                 }
                 else
                 {
-                    description += ColorTokenService.Red("Damage Bonus (ignored due to item type): ") + examinedItem.DamageBonus + "\n";
+                    description += ColorToken.Red("Damage Bonus (ignored due to item type): ") + examinedItem.DamageBonus + "\n";
                 }
             }
             if (examinedItem.CustomItemType != CustomItemType.None)
             {
                 var itemTypeProper = string.Concat(examinedItem.CustomItemType.ToString().Select(x => char.IsUpper(x) ? " " + x : x.ToString())).TrimStart(' ');
-                description += ColorTokenService.Orange("Item Type: ") + itemTypeProper + "\n";
+                description += ColorToken.Orange("Item Type: ") + itemTypeProper + "\n";
             }
 
             // Check for properties that can only be applied to limited things, and flag them here.
@@ -413,14 +414,14 @@ namespace SWLOR.Game.Server.Legacy.Service
                     {
                         case (int)ComponentBonusType.ACUp:
                         {
-                            description += ColorTokenService.Cyan("AC can only be applied to Shields, Armor and Helmets.  On other items, it will be ignored.\n");
+                            description += ColorToken.Cyan("AC can only be applied to Shields, Armor and Helmets.  On other items, it will be ignored.\n");
                             break;
                         }
                         case (int)ComponentBonusType.DamageUp:
                         case (int)ComponentBonusType.AttackBonusUp:
                         case (int)ComponentBonusType.BaseAttackBonusUp:
                         {
-                            description += ColorTokenService.Cyan("Damage Up, Attack Bonus Up and Base Attack Bonus Up can only be applied to weapons (including gloves).  On other items, it will be ignored.\n");
+                            description += ColorToken.Cyan("Damage Up, Attack Bonus Up and Base Attack Bonus Up can only be applied to weapons (including gloves).  On other items, it will be ignored.\n");
                             break;
                         }
                     }

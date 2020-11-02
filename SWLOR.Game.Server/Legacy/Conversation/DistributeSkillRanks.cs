@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -72,8 +73,8 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var pool = DataService.PCSkillPool.GetByPlayerIDAndSkillCategoryID(GetPC().GlobalID, model.SkillCategoryID);
             var skills = DataService.Skill.GetAllBySkillCategoryIDAndActive(model.SkillCategoryID);
 
-            var header = ColorTokenService.Green("Category: ") + category.Name + "\n";
-            header += ColorTokenService.Green("Ranks to Distribute: ") + pool.Levels + "\n\n";
+            var header = ColorToken.Green("Category: ") + category.Name + "\n";
+            header += ColorToken.Green("Ranks to Distribute: ") + pool.Levels + "\n\n";
             header += "You may distribute ranks to any of the following skills. Note that you may only increase a rank to a maximum level of 40. You will not gain any new experience towards any of the following skills until *ALL* ranks have been distributed.";
 
             SetPageHeader("SkillListPage", header);
@@ -114,17 +115,17 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var pool = DataService.PCSkillPool.GetByPlayerIDAndSkillCategoryID(GetPC().GlobalID, model.SkillCategoryID);
             
             // Build the page header
-            var header = ColorTokenService.Green("Skill: ") + skill.Name + "\n";
-            header += ColorTokenService.Green("Current Rank: ") + pcSkill.Rank + "\n";
-            header += ColorTokenService.Green("Ranks to Distribute: ") + pool.Levels + "\n\n";
+            var header = ColorToken.Green("Skill: ") + skill.Name + "\n";
+            header += ColorToken.Green("Current Rank: ") + pcSkill.Rank + "\n";
+            header += ColorToken.Green("Ranks to Distribute: ") + pool.Levels + "\n\n";
 
             if (pcSkill.Rank >= MaxRankForDistribution || pcSkill.Rank >= skill.MaxRank)
             {
-                header += ColorTokenService.Red("You cannot distribute any more ranks into this skill.");
+                header += ColorToken.Red("You cannot distribute any more ranks into this skill.");
             }
             else
             {
-                header += ColorTokenService.Green("You may distribute a skill rank into this skill.");
+                header += ColorToken.Green("You may distribute a skill rank into this skill.");
             }
 
             SetPageHeader("SkillPage", header);

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Legacy.Event.SWLOR;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
@@ -45,7 +46,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
         private void LoadMainPage()
         {
-            var header = ColorTokenService.Green("Molecular Reassembler") + "\n\n";
+            var header = ColorToken.Green("Molecular Reassembler") + "\n\n";
             header += "This device can be used to salvage equipment and reassemble them into components.\n\n";
             header += "Please select the type of item you wish to create. The new item(s) created will have a chance to receive property bonuses from the salvaged item.\n";
             header += "A 'Reassembly Power Unit' must be in your inventory in order to reassemble an item. This will be consumed when you start the process.\n\n";
@@ -78,8 +79,8 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             NWPlaceable tempStorage = NWScript.GetObjectByTag("TEMP_ITEM_STORAGE");
             var item = SerializationService.DeserializeItem(model.SerializedSalvageItem, tempStorage);
             var componentType = DataService.ComponentType.GetByID(model.SalvageComponentTypeID);
-            var header = ColorTokenService.Green("Item: ") + item.Name + "\n\n";
-            header += "Reassembling this item will create the following " + ColorTokenService.Green(componentType.Name) + " component(s). Chance to create depends on your perks, skills, and harvesting bonus on items.\n\n";
+            var header = ColorToken.Green("Item: ") + item.Name + "\n\n";
+            header += "Reassembling this item will create the following " + ColorToken.Green(componentType.Name) + " component(s). Chance to create depends on your perks, skills, and harvesting bonus on items.\n\n";
 
             // Always create one item with zero bonuses.
             header += componentType.Name + " (No Bonuses) [RL: 0] " + GetChanceColor(100) + "\n";
@@ -138,10 +139,10 @@ namespace SWLOR.Game.Server.Legacy.Conversation
         {
             var message = "-" + chance + "%-";
             if (chance <= 50)
-                return ColorTokenService.Red(message);
+                return ColorToken.Red(message);
             else if (chance <= 80)
-                return ColorTokenService.Yellow(message);
-            else return ColorTokenService.Green(message);
+                return ColorToken.Yellow(message);
+            else return ColorToken.Green(message);
         }
 
         private string ProcessPropertyDetails(int amount, string componentName, string propertyName, int maxBonuses, float levelsPerBonus = 1.0f)
@@ -184,7 +185,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                     // Look for reassembly fuel in the player's inventory.
                     if (!fuel.IsValid)
                     {
-                        player.SendMessage(ColorTokenService.Red("You must have a 'Reassembly Fuel Cell' in your inventory in order to start this process."));
+                        player.SendMessage(ColorToken.Red("You must have a 'Reassembly Fuel Cell' in your inventory in order to start this process."));
                         return;
                     }
 

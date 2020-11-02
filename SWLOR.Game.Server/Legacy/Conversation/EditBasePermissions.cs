@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -113,7 +114,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             {
                 if (player == speakingPC || !player.IsPlayer) continue;
                 playerIdList.Add(player.GlobalID);
-                AddResponseToPage("PlayerListPage", player.Name + ColorTokenService.Green(" online"), true, DataService.Player.GetByID(player.GlobalID));
+                AddResponseToPage("PlayerListPage", player.Name + ColorToken.Green(" online"), true, DataService.Player.GetByID(player.GlobalID));
             }
 
             // Offline players with existing permissions
@@ -127,7 +128,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 if (player.ID == speakingPC.GlobalID || playerIdList.Contains(player.ID)) continue;
 
                 playerIdList.Add(player.ID);
-                AddResponseToPage("PlayerListPage", player.CharacterName + ColorTokenService.Red(" offline"), true, player);
+                AddResponseToPage("PlayerListPage", player.CharacterName + ColorToken.Red(" offline"), true, player);
             }            
         }
 
@@ -160,21 +161,21 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var canDockShip = permission?.CanDockStarship ?? false;
             var canAdjustPublicPermissions = permission?.CanAdjustPublicPermissions ?? false;
 
-            var header = ColorTokenService.Green("Name: ") + player.CharacterName + "\n\n";
+            var header = ColorToken.Green("Name: ") + player.CharacterName + "\n\n";
             
-            header += ColorTokenService.Green("Permissions:\n\n");
-            header += "Can Place/Edit Structures: " + (canPlaceEditStructures ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
-            header += "Can Access Structure Inventory: " + (canAccessStructureInventory ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
-            header += "Can Manage Base Fuel: " + (canManageBaseFuel ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
-            header += "Can Extend Lease: " + (canExtendLease ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
-            header += "Can Enter Buildings: " + (canEnterBuildings ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
-            header += "Can Retrieve Structures: " + (canRetrieveStructures ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
-            header += "Can Rename Structures: " + (canRenameStructures ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
-            header += "Can Edit Primary Residence: " + (canEditPrimaryResidence ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
-            header += "Can Remove Primary Residence: " + (canRemovePrimaryResidence ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
-            header += "Can Change Structure Mode: " + (canChangeStructureMode ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
-            header += "Can Dock Starships: " + (canDockShip ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
-            header += "Can Adjust PUBLIC Permissions: " + (canAdjustPublicPermissions ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
+            header += ColorToken.Green("Permissions:\n\n");
+            header += "Can Place/Edit Structures: " + (canPlaceEditStructures ? ColorToken.Green("YES") : ColorToken.Red("NO")) + "\n";
+            header += "Can Access Structure Inventory: " + (canAccessStructureInventory ? ColorToken.Green("YES") : ColorToken.Red("NO")) + "\n";
+            header += "Can Manage Base Fuel: " + (canManageBaseFuel ? ColorToken.Green("YES") : ColorToken.Red("NO")) + "\n";
+            header += "Can Extend Lease: " + (canExtendLease ? ColorToken.Green("YES") : ColorToken.Red("NO")) + "\n";
+            header += "Can Enter Buildings: " + (canEnterBuildings ? ColorToken.Green("YES") : ColorToken.Red("NO")) + "\n";
+            header += "Can Retrieve Structures: " + (canRetrieveStructures ? ColorToken.Green("YES") : ColorToken.Red("NO")) + "\n";
+            header += "Can Rename Structures: " + (canRenameStructures ? ColorToken.Green("YES") : ColorToken.Red("NO")) + "\n";
+            header += "Can Edit Primary Residence: " + (canEditPrimaryResidence ? ColorToken.Green("YES") : ColorToken.Red("NO")) + "\n";
+            header += "Can Remove Primary Residence: " + (canRemovePrimaryResidence ? ColorToken.Green("YES") : ColorToken.Red("NO")) + "\n";
+            header += "Can Change Structure Mode: " + (canChangeStructureMode ? ColorToken.Green("YES") : ColorToken.Red("NO")) + "\n";
+            header += "Can Dock Starships: " + (canDockShip ? ColorToken.Green("YES") : ColorToken.Red("NO")) + "\n";
+            header += "Can Adjust PUBLIC Permissions: " + (canAdjustPublicPermissions ? ColorToken.Green("YES") : ColorToken.Red("NO")) + "\n";
 
             SetPageHeader("PlayerDetailsPage", header);
 
@@ -189,7 +190,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Change Structure Mode", true, player);
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Dock Starships", true, player);
             AddResponseToPage("PlayerDetailsPage", "Toggle: Can Adjust PUBLIC Permissions", true, player);
-            AddResponseToPage("PlayerDetailsPage", ColorTokenService.Red("WARNING") + ": Delete Player Permissions", true, player);
+            AddResponseToPage("PlayerDetailsPage", ColorToken.Red("WARNING") + ": Delete Player Permissions", true, player);
         }
 
         private void PlayerDetailsResponses(int responseID)
@@ -330,9 +331,9 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var canEnterBuildings = permission?.CanEnterBuildings ?? false;
             var canDockStarship = permission?.CanDockStarship ?? false;
 
-            var header = ColorTokenService.Green("Public Permissions: ") + "\n\n";
-            header += "Can Enter Buildings: " + (canEnterBuildings ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
-            header += "Can Dock Starships: " + (canDockStarship ? ColorTokenService.Green("YES") : ColorTokenService.Red("NO")) + "\n";
+            var header = ColorToken.Green("Public Permissions: ") + "\n\n";
+            header += "Can Enter Buildings: " + (canEnterBuildings ? ColorToken.Green("YES") : ColorToken.Red("NO")) + "\n";
+            header += "Can Dock Starships: " + (canDockStarship ? ColorToken.Green("YES") : ColorToken.Red("NO")) + "\n";
 
             SetPageHeader("PublicPermissionsPage", header);
 

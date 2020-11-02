@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Legacy.ChatCommand.Contracts;
 using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.ChatCommand
 {
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.Legacy.ChatCommand
         {
             if (args.Length <= 0)
             {
-                return ColorTokenService.Red("Please specify a quantity. Example: /" + nameof(SpawnGold) + " 34");
+                return ColorToken.Red("Please specify a quantity. Example: /" + nameof(SpawnGold) + " 34");
             }
             return string.Empty;
         }

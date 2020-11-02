@@ -21,14 +21,14 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
             // Entry point into conversation for selecting Buy or Sell
             var mainPage = new DialogPage(
-                ColorTokenService.Green("Galactic Trade Network"),
+                ColorToken.Green("Galactic Trade Network"),
                 "Buy",
                 "Sell",
                 "Manage Market Listings");
 
             // Page for selecting browse method - either by category or by seller
             var buyPage = new DialogPage(
-                ColorTokenService.Green("Galactic Trade Network - Buy"),
+                ColorToken.Green("Galactic Trade Network - Buy"),
                 "Browse by Category",
                 "Browse by Seller");
 
@@ -50,14 +50,14 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             
             // Page for selling an item.
             var sellItemPage = new DialogPage(
-                ColorTokenService.Green("Galactic Trade Network - Sell Item"),
-                ColorTokenService.Green("Refresh"),
+                ColorToken.Green("Galactic Trade Network - Sell Item"),
+                ColorToken.Green("Refresh"),
                 "Pick an Item",
                 "Change Price",
                 "Change Seller Note",
                 "Remove Seller Note",
                 "Change Listing Length",
-                ColorTokenService.Green("List the Item"));
+                ColorToken.Green("List the Item"));
 
             // Page for setting a price on an item.
             var changePricePage = new DialogPage(
@@ -86,13 +86,13 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
             // Page for viewing items currently being sold by the player.
             var marketListingsPage = new DialogPage(
-                ColorTokenService.Green("Galactic Trade Market - Manage Market Listings"));
+                ColorToken.Green("Galactic Trade Market - Manage Market Listings"));
 
             // Page for viewing detailed information about a market listing.
             var marketListingDetailsPage = new DialogPage(
                 "<SET LATER>",
-                ColorTokenService.Green("Refresh"),
-                ColorTokenService.Red("Remove Listing"));
+                ColorToken.Green("Refresh"),
+                ColorToken.Red("Remove Listing"));
 
             dialog.AddPage("MainPage", mainPage);
             dialog.AddPage("BuyPage", buyPage);
@@ -220,7 +220,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
         private void LoadBrowseByCategoryPage()
         {
-            var header = ColorTokenService.Green("Galactic Trade Network - Browse by Category") + "\n\n";
+            var header = ColorToken.Green("Galactic Trade Network - Browse by Category") + "\n\n";
             header += "Please select a category.";
             SetPageHeader("BrowseByCategoryPage", header);
 
@@ -237,7 +237,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 .OrderBy(o => o.Name);
 
             ClearPageResponses("BrowseByCategoryPage");
-            AddResponseToPage("BrowseByCategoryPage", ColorTokenService.Green("Refresh"), true, -1);
+            AddResponseToPage("BrowseByCategoryPage", ColorToken.Green("Refresh"), true, -1);
             foreach (var category in categories)
             {
                 AddResponseToPage("BrowseByCategoryPage", category.Name, true, category.ID);
@@ -265,7 +265,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
         private void LoadBrowseBySellerPage()
         {
-            var header = ColorTokenService.Green("Galactic Trade Network - Browse by Seller") + "\n\n";
+            var header = ColorToken.Green("Galactic Trade Network - Browse by Seller") + "\n\n";
             header += "Please select a seller.";
             SetPageHeader("BrowseBySellerPage", header);
 
@@ -281,7 +281,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 .OrderBy(o => o.CharacterName);
 
             ClearPageResponses("BrowseBySellerPage");
-            AddResponseToPage("BrowseBySellerPage", ColorTokenService.Green("Refresh"), true, Guid.Empty);
+            AddResponseToPage("BrowseBySellerPage", ColorToken.Green("Refresh"), true, Guid.Empty);
             foreach (var player in players)
             {
                 AddResponseToPage("BrowseBySellerPage", player.CharacterName, true, player.ID);
@@ -337,7 +337,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
             // Build the response list.
             ClearPageResponses("ItemListPage");
-            AddResponseToPage("ItemListPage", ColorTokenService.Green("Refresh"), true, Guid.Empty);
+            AddResponseToPage("ItemListPage", ColorToken.Green("Refresh"), true, Guid.Empty);
             foreach (var listing in listings)
             {
                 var listingName = BuildItemName(listing);
@@ -394,14 +394,14 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             if (string.IsNullOrWhiteSpace(listing.Note))
                 sellerNote = "[UNSPECIFIED]";
 
-            var header = ColorTokenService.Green("Galactic Trade Network") + "\n\n";
-            header += ColorTokenService.Green("Name: ") + listing.ItemStackSize + "x " + listing.ItemName + "\n";
+            var header = ColorToken.Green("Galactic Trade Network") + "\n\n";
+            header += ColorToken.Green("Name: ") + listing.ItemStackSize + "x " + listing.ItemName + "\n";
 
             if(listing.ItemRecommendedLevel > 0)
-                header += ColorTokenService.Green("Recommended Level: ") + listing.ItemRecommendedLevel + "\n";
+                header += ColorToken.Green("Recommended Level: ") + listing.ItemRecommendedLevel + "\n";
 
-            header += ColorTokenService.Green("Price: ") + listing.Price + " credits\n";
-            header += ColorTokenService.Green("Seller Note: ") + sellerNote + "\n";
+            header += ColorToken.Green("Price: ") + listing.Price + " credits\n";
+            header += ColorToken.Green("Seller Note: ") + sellerNote + "\n";
 
             SetPageHeader("ItemDetailsPage", header);
 
@@ -502,8 +502,8 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                     .Count(x => x.DateRemoved == null &&
                                 x.DateSold == null);
                 var canSellAnotherItem = numberItemsSelling < MarketService.NumberOfItemsAllowedToBeSoldAtATime;
-                header = ColorTokenService.Green("Galactic Trade Network - Sell Item") + "\n\n";
-                header += ColorTokenService.Green("Items Selling: ") + numberItemsSelling + " / " + MarketService.NumberOfItemsAllowedToBeSoldAtATime + "\n\n";
+                header = ColorToken.Green("Galactic Trade Network - Sell Item") + "\n\n";
+                header += ColorToken.Green("Items Selling: ") + numberItemsSelling + " / " + MarketService.NumberOfItemsAllowedToBeSoldAtATime + "\n\n";
 
                 if (canSellAnotherItem)
                 {
@@ -534,25 +534,25 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 if (string.IsNullOrWhiteSpace(sellerNote))
                     sellerNote = "[NOT SPECIFIED]";
                 
-                header = ColorTokenService.Green("Galactic Trade Network - Sell Item") + "\n\n";
-                header += ColorTokenService.Green("Item: ") + model.ItemStackSize + "x " + model.ItemName + "\n";
-                header += ColorTokenService.Green("Category: ") + category.Name + "\n";
+                header = ColorToken.Green("Galactic Trade Network - Sell Item") + "\n\n";
+                header += ColorToken.Green("Item: ") + model.ItemStackSize + "x " + model.ItemName + "\n";
+                header += ColorToken.Green("Category: ") + category.Name + "\n";
 
                 if(model.ItemRecommendedLevel > 0)
-                    header += ColorTokenService.Green("Recommended Level: ") + model.ItemRecommendedLevel + "\n";
+                    header += ColorToken.Green("Recommended Level: ") + model.ItemRecommendedLevel + "\n";
 
-                header += ColorTokenService.Green("Sell Price: ") + model.SellPrice + " credits\n";
-                header += ColorTokenService.Green("Fees: ") + fees + " credits\n";
-                header += ColorTokenService.Green("Listing Length: ") + model.LengthDays + " days\n";
-                header += ColorTokenService.Green("Seller Note: ") + sellerNote + "\n\n";
+                header += ColorToken.Green("Sell Price: ") + model.SellPrice + " credits\n";
+                header += ColorToken.Green("Fees: ") + fees + " credits\n";
+                header += ColorToken.Green("Listing Length: ") + model.LengthDays + " days\n";
+                header += ColorToken.Green("Seller Note: ") + sellerNote + "\n\n";
 
                 if (canListItem)
                 {
-                    header += ColorTokenService.Green("This item can be listed now.");
+                    header += ColorToken.Green("This item can be listed now.");
                 }
                 else
                 {
-                    header += ColorTokenService.Red("This item cannot be listed yet. Please confirm all details - such as pricing - have been set.");
+                    header += ColorToken.Red("This item cannot be listed yet. Please confirm all details - such as pricing - have been set.");
                 }
 
                 SetResponseVisible("SellItemPage", 1, true);  // Refresh
@@ -607,8 +607,8 @@ namespace SWLOR.Game.Server.Legacy.Conversation
         {
             var player = GetPC();
             var model = MarketService.GetPlayerMarketData(player);
-            var header = ColorTokenService.Green("Galactic Trade Network - Change Sell Price") + "\n\n";
-            header += ColorTokenService.Green("Current Price: ") + model.SellPrice;
+            var header = ColorToken.Green("Galactic Trade Network - Change Sell Price") + "\n\n";
+            header += ColorToken.Green("Current Price: ") + model.SellPrice;
 
             SetPageHeader("ChangePricePage", header);
         }
@@ -672,10 +672,10 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var model = MarketService.GetPlayerMarketData(player);
             var feePercentage = MarketService.CalculateFeePercentage(model.LengthDays) * 100;
             
-            var header = ColorTokenService.Green("Galactic Trade Network - Change Listing Length") + "\n\n";
+            var header = ColorToken.Green("Galactic Trade Network - Change Listing Length") + "\n\n";
             header += "Items will be listed, by default, for 7 days (real world time). You may increase or decrease this length as you see fit. A fee of 0.1% per day will be applied to the listing. (7 days = 0.7% fee).\n\n";
-            header += ColorTokenService.Green("Days to List: ") + model.LengthDays + "\n";
-            header += ColorTokenService.Green("Fees: ") + feePercentage.ToString("0.0") + "%";
+            header += ColorToken.Green("Days to List: ") + model.LengthDays + "\n";
+            header += ColorToken.Green("Fees: ") + feePercentage.ToString("0.0") + "%";
 
             SetPageHeader("ChangeListingLengthPage", header);
         }
@@ -762,7 +762,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
         private void LoadManageMarketListingsPage()
         {
-            var header = ColorTokenService.Green("Galactic Trade Market - Manage Market Listings") + "\n\n";
+            var header = ColorToken.Green("Galactic Trade Market - Manage Market Listings") + "\n\n";
             header += "The following is a list of items you are currently selling. Pick one to edit or remove the listing.";
             SetPageHeader("MarketListingsPage", header);
 
@@ -780,7 +780,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
                 // Display an EXPIRED tag on the item name if the listing has expired.
                 if (listing.DateExpires < DateTime.UtcNow)
-                    itemName += ColorTokenService.Red(" [EXPIRED]");
+                    itemName += ColorToken.Red(" [EXPIRED]");
 
                 AddResponseToPage("MarketListingsPage", itemName, true, listing.ID);
             }
@@ -819,19 +819,19 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var category = DataService.MarketCategory.GetByID(model.ItemMarketCategoryID);
 
             // Build the header
-            var header = ColorTokenService.Green("Galactic Trade Market - Manage Market Listing") + "\n\n";
-            header += ColorTokenService.Green("Item: ") + model.ItemStackSize + "x " + model.ItemName + "\n";
-            header += ColorTokenService.Green("Category: ") + category.Name + "\n";
+            var header = ColorToken.Green("Galactic Trade Market - Manage Market Listing") + "\n\n";
+            header += ColorToken.Green("Item: ") + model.ItemStackSize + "x " + model.ItemName + "\n";
+            header += ColorToken.Green("Category: ") + category.Name + "\n";
 
             if (model.ItemRecommendedLevel > 0)
-                header += ColorTokenService.Green("Recommended Level: ") + model.ItemRecommendedLevel + "\n";
+                header += ColorToken.Green("Recommended Level: ") + model.ItemRecommendedLevel + "\n";
 
-            header += ColorTokenService.Green("Sell Price: ") + model.SellPrice + " credits\n";
-            header += ColorTokenService.Green("Seller Note: ") + model.SellerNote + "\n\n";
+            header += ColorToken.Green("Sell Price: ") + model.SellPrice + " credits\n";
+            header += ColorToken.Green("Seller Note: ") + model.SellerNote + "\n\n";
 
             if (model.IsListingExpired)
             {
-                header += ColorTokenService.Red("This listing has expired.");
+                header += ColorToken.Red("This listing has expired.");
                 SetResponseVisible("MarketListingDetailsPage", 1, false);
             }
             else
@@ -839,7 +839,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 var now = DateTime.UtcNow;
                 var delta = model.ListingExpirationDate - now;
                 var expirationTime = Time.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
-                header += ColorTokenService.Green("This listing expires in " + expirationTime + ".");
+                header += ColorToken.Green("This listing expires in " + expirationTime + ".");
                 SetResponseVisible("MarketListingDetailsPage", 1, true);
             }
 
@@ -875,7 +875,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
                     if (model.IsConfirming)
                     {
-                        SetResponseText("MarketListingDetailsPage", 2, ColorTokenService.Red("Remove Listing"));
+                        SetResponseText("MarketListingDetailsPage", 2, ColorToken.Red("Remove Listing"));
                         model.IsConfirming = false;
                         
                         SerializationService.DeserializeItem(listing.ItemObject, player);
@@ -889,7 +889,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                     }
                     else
                     {
-                        SetResponseText("MarketListingDetailsPage", 2, ColorTokenService.Red("CONFIRM REMOVE LISTING"));
+                        SetResponseText("MarketListingDetailsPage", 2, ColorToken.Red("CONFIRM REMOVE LISTING"));
                         model.IsConfirming = true;
                     }
 
@@ -916,7 +916,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             else if (beforeMovePage == "MarketListingDetailsPage")
             {
                 ClearModelData();
-                SetResponseText("MarketListingDetailsPage", 2, ColorTokenService.Red("Remove Listing"));
+                SetResponseText("MarketListingDetailsPage", 2, ColorToken.Red("Remove Listing"));
             }
             // Returning to the Sell Item page.
             else if (afterMovePage == "SellItemPage")

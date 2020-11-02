@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -93,14 +94,14 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 default: return;
             }
 
-            var header = ColorTokenService.Green("Selected Destination: ") + planet + "\n";
-            header += ColorTokenService.Green("Price: ") + price + "\n\n";
+            var header = ColorToken.Green("Selected Destination: ") + planet + "\n";
+            header += ColorToken.Green("Price: ") + price + "\n\n";
             header += "This trip is one-way and non-refundable. Are you sure you want to take this flight?";
 
             // Check if player has enough money
             if (player.Gold < price)
             {
-                header += "\n\n" + ColorTokenService.Red("You do not have enough credits to purchase this flight!");
+                header += "\n\n" + ColorToken.Red("You do not have enough credits to purchase this flight!");
                 SetResponseVisible("ConfirmPage", 1, false);
             }
             else
@@ -128,7 +129,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                     // Check gold again.
                     if (player.Gold < model.Price)
                     {
-                        player.SendMessage(ColorTokenService.Red("You do not have enough credits to purchase this flight."));
+                        player.SendMessage(ColorToken.Red("You do not have enough credits to purchase this flight."));
                         return;
                     }
 

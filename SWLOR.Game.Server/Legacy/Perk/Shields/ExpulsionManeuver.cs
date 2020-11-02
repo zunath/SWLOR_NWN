@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Service;
 using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
 
 
@@ -83,7 +84,7 @@ namespace SWLOR.Game.Server.Legacy.Perk.Shields
             if (SWLOR.Game.Server.Service.Random.Next(100) + 1 <= chance)
             {
                 NWScript.ApplyEffectToObject(DurationType.Temporary, NWScript.EffectAttackIncrease(ab), creature.Object, length);
-                creature.SendMessage(ColorTokenService.Combat("You perform a defensive maneuver."));
+                creature.SendMessage(ColorToken.Combat("You perform a defensive maneuver."));
             }
         }
 

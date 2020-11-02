@@ -15,6 +15,7 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.Perk;
 using SWLOR.Game.Server.Legacy.ValueObject;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using PerkExecutionType = SWLOR.Game.Server.Legacy.Enumeration.PerkExecutionType;
 using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
@@ -495,7 +496,7 @@ namespace SWLOR.Game.Server.Legacy.Service
                         Player.SetQuickBarSlot(oPC, 10, qbs);
                 }
 
-                oPC.SendMessage(ColorTokenService.Green("Perk Purchased: " + perk.Name + " (Lvl. " + pcPerk.PerkLevel + ")"));
+                oPC.SendMessage(ColorToken.Green("Perk Purchased: " + perk.Name + " (Lvl. " + pcPerk.PerkLevel + ")"));
 
                 MessageHub.Instance.Publish(new OnPerkUpgraded(oPC, perkID));
 
@@ -504,7 +505,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             }
             else
             {
-                oPC.FloatingText(ColorTokenService.Red("You cannot purchase the perk at this time."));
+                oPC.FloatingText(ColorToken.Red("You cannot purchase the perk at this time."));
             }
         }
         /// <summary>

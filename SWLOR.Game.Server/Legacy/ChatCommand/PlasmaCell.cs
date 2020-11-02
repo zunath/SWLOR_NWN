@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Legacy.ChatCommand.Contracts;
 using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.ChatCommand
 {
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Legacy.ChatCommand
             //Checks if the player has Plasma Cell
             if (!NWScript.GetHasFeat(Feat.PlasmaCell, user))
             {
-                user.SendMessage(ColorTokenService.Red("You do not have the perk: Plasma Cell."));
+                user.SendMessage(ColorToken.Red("You do not have the perk: Plasma Cell."));
                 return;
             }
 
@@ -31,7 +32,7 @@ namespace SWLOR.Game.Server.Legacy.ChatCommand
             if (user.GetLocalBool("PLASMA_CELL_TOGGLE_OFF") == false)
             {
                 user.SetLocalInt("PLASMA_CELL_TOGGLE_OFF", 1);
-                user.SendMessage(ColorTokenService.Red("Plasma Cell is now toggled off."));
+                user.SendMessage(ColorToken.Red("Plasma Cell is now toggled off."));
                 return;
             }
 
@@ -39,14 +40,14 @@ namespace SWLOR.Game.Server.Legacy.ChatCommand
             else if (user.GetLocalInt("PLASMA_CELL_TOGGLE_OFF") > 0)
             {
                 user.DeleteLocalInt("PLASMA_CELL_TOGGLE_OFF");
-                user.SendMessage(ColorTokenService.Green("Plasma Cell is now toggled on!"));
+                user.SendMessage(ColorToken.Green("Plasma Cell is now toggled on!"));
                 return;
             }
 
             //If the above aren't working, this should appear and debugging required
             else
             {
-                user.SendMessage(ColorTokenService.Red("Something's wrong, contact a code contributor!"));
+                user.SendMessage(ColorToken.Red("Something's wrong, contact a code contributor!"));
                 return;
             }
             

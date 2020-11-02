@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var dialog = new PlayerDialog("MainPage");
             var mainPage = new DialogPage(
                 "If you die, you will return to the last medical facility you registered at. Would you like to register to this medical facility?",
-                ColorTokenService.Green("Register")
+                ColorToken.Green("Register")
             );
 
             dialog.AddPage("MainPage", mainPage);

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 using BuildingType = SWLOR.Game.Server.Legacy.Enumeration.BuildingType;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
@@ -64,7 +65,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var header = "Selecting a primary residence grants your character benefits such as increased XP gain and bonuses. These are modified based on the structures you place inside your primary residence.\n\n" +
                          "You may only have one primary residence at a time. A building or starship may only have one primary resident at a time.\n\n" +
                          "Your primary residence may be revoked by the base owner or any player with permission to do so.\n\n";
-            header += ColorTokenService.Green("Primary Resident: ") + residentName + "\n";
+            header += ColorToken.Green("Primary Resident: ") + residentName + "\n";
 
             SetPageHeader("MainPage", header);
         }

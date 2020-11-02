@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
@@ -28,7 +29,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
         {            
             ClearPageResponses("MainPage");
 
-            var header = ColorTokenService.Green("HoloCom Menu\n\n");
+            var header = ColorToken.Green("HoloCom Menu\n\n");
             SetPageHeader("MainPage", header);
 
             var user = GetPC();
@@ -45,7 +46,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 var message = "Call " + player.Name;
                 if (HoloComService.IsInCall(player))
                 {
-                    message += ColorTokenService.Red(" (LINE BUSY)");
+                    message += ColorToken.Red(" (LINE BUSY)");
                 }
                 AddResponseToPage("MainPage", message, true, player);
             }            
@@ -71,7 +72,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var message = "Your HoloCom buzzes as you are receiving a call.";
             if (Random(10) == 1)
             {
-                message += " " + ColorTokenService.Green("Maybe you should answer it.");
+                message += " " + ColorToken.Green("Maybe you should answer it.");
             }            
             SendMessageToPC(receiver, message);
             if (HoloComService.GetCallAttempt(sender) % 5 == 0)

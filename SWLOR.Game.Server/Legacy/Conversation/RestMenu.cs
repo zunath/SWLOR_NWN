@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var dialog = new PlayerDialog("MainPage");
             var mainPage = new DialogPage(
                 BuildMainPageHeader(player),
-                ColorTokenService.Green("Open Overflow Inventory"),
+                ColorToken.Green("Open Overflow Inventory"),
                 "View Skills",
                 "View Perks",
                 "View Blueprints",
@@ -114,12 +115,12 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 .Where(x => DataService.Skill.GetByID(x.SkillID).ContributesToSkillCap)
                 .Sum(s => s.Rank);
 
-            var header = ColorTokenService.Green("Name: ") + player.Name + "\n";
-            header += ColorTokenService.Green("Association: ") + association.Name + "\n\n";
-            header += ColorTokenService.Green("Skill Points: ") + totalSkillCount + " / " + SkillService.SkillCap + "\n";
-            header += ColorTokenService.Green("Unallocated SP: ") + playerEntity.UnallocatedSP + "\n";
-            header += ColorTokenService.Green("Roleplay XP: ") + playerEntity.RoleplayXP + "\n";
-            header += ColorTokenService.Green("FP: ")  + (playerEntity.MaxFP > 0 ? MenuService.BuildBar(playerEntity.CurrentFP, playerEntity.MaxFP, 100, ColorTokenService.TokenStart(32, 223, 219)) : "N/A") + "\n";
+            var header = ColorToken.Green("Name: ") + player.Name + "\n";
+            header += ColorToken.Green("Association: ") + association.Name + "\n\n";
+            header += ColorToken.Green("Skill Points: ") + totalSkillCount + " / " + SkillService.SkillCap + "\n";
+            header += ColorToken.Green("Unallocated SP: ") + playerEntity.UnallocatedSP + "\n";
+            header += ColorToken.Green("Roleplay XP: ") + playerEntity.RoleplayXP + "\n";
+            header += ColorToken.Green("FP: ")  + (playerEntity.MaxFP > 0 ? MenuService.BuildBar(playerEntity.CurrentFP, playerEntity.MaxFP, 100, ColorToken.TokenStart(32, 223, 219)) : "N/A") + "\n";
 
             return header;
         }

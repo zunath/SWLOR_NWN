@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -18,7 +19,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var dialog = new PlayerDialog("MainPage");
 
             var mainPage = new DialogPage(
-                ColorTokenService.Green("Manage Territory Menu") + "\n\nPlease select a territory.");
+                ColorToken.Green("Manage Territory Menu") + "\n\nPlease select a territory.");
 
             var baseDetailsPage = new DialogPage(string.Empty,
                 "Extend Lease (+1 day)",
@@ -124,11 +125,11 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
             var dailyUpkeep = dbArea.DailyUpkeep + (int)(dbArea.DailyUpkeep * (owner.LeaseRate * 0.01f));
 
-            var header = ColorTokenService.Green("Location: ") + dbArea.Name + " (" + pcBase.Sector + ")\n\n";
-            header += ColorTokenService.Green("Owned By: ") + owner.CharacterName + "\n";
-            header += ColorTokenService.Green("Purchased: ") + pcBase.DateInitialPurchase + "\n";
-            header += ColorTokenService.Green("Rent Due: ") + pcBase.DateRentDue + "\n";
-            header += ColorTokenService.Green("Daily Upkeep: ") + dailyUpkeep + " credits\n\n";
+            var header = ColorToken.Green("Location: ") + dbArea.Name + " (" + pcBase.Sector + ")\n\n";
+            header += ColorToken.Green("Owned By: ") + owner.CharacterName + "\n";
+            header += ColorToken.Green("Purchased: ") + pcBase.DateInitialPurchase + "\n";
+            header += ColorToken.Green("Rent Due: ") + pcBase.DateRentDue + "\n";
+            header += ColorToken.Green("Daily Upkeep: ") + dailyUpkeep + " credits\n\n";
             header += "Daily upkeep may be paid up to 30 days in advance.\n";
 
             // Starships have slightly different setups.  They only pay rent when in a public starport and
@@ -141,9 +142,9 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 {
                     var shipLocationGuid = new Guid(pcBase.ShipLocation);
                     var starport = DataService.Starport.GetByStarportID(shipLocationGuid);
-                    header = ColorTokenService.Green("Location: ") + starport.Name + " (" + starport.PlanetName + ")\n";
-                    header += ColorTokenService.Green("Rent Due: ") + pcBase.DateRentDue + "\n";
-                    header += ColorTokenService.Green("Daily Upkeep: ") + starport.Cost + " credits\n\n";
+                    header = ColorToken.Green("Location: ") + starport.Name + " (" + starport.PlanetName + ")\n";
+                    header += ColorToken.Green("Rent Due: ") + pcBase.DateRentDue + "\n";
+                    header += ColorToken.Green("Daily Upkeep: ") + starport.Cost + " credits\n\n";
                 }
                 else
                 {

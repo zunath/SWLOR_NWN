@@ -98,9 +98,9 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, guild.ID);
             var requiredPoints = Guild.GetGPRequiredForRank(pcGP.Rank);
 
-            var header = ColorTokenService.Green("Guild: ") + guild.Name + "\n";
-            header += ColorTokenService.Green("Rank: ") + pcGP.Rank + " (" + pcGP.Points + " / " + requiredPoints + " GP)\n"; 
-            header += ColorTokenService.Green("Description: ") + guild.Description + "\n\n";
+            var header = ColorToken.Green("Guild: ") + guild.Name + "\n";
+            header += ColorToken.Green("Rank: ") + pcGP.Rank + " (" + pcGP.Points + " / " + requiredPoints + " GP)\n"; 
+            header += ColorToken.Green("Description: ") + guild.Description + "\n\n";
             header += "Welcome to my guild, " + player.Name + ". What can I help you with?";
 
             SetPageHeader("MainPage", header);
@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
             foreach (var guild in guilds)
             {
-                header += ColorTokenService.Green(guild.Name) + ": " + guild.Description + "\n\n";
+                header += ColorToken.Green(guild.Name) + ": " + guild.Description + "\n\n";
             }
 
             SetPageHeader("TellMePage", header);
@@ -229,8 +229,8 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             foreach (var task in expiredTasks)
             {
                 var quest = Quest.GetQuestById(task.QuestID.ToString()); // todo need to update this to new system
-                var status = ColorTokenService.Green("{ACCEPTED}");
-                AddResponseToPage("TaskListPage", quest.Name + " [Rank " + (task.RequiredRank+1) + "] " + status + ColorTokenService.Red(" [EXPIRED]"), true, task.ID);
+                var status = ColorToken.Green("{ACCEPTED}");
+                AddResponseToPage("TaskListPage", quest.Name + " [Rank " + (task.RequiredRank+1) + "] " + status + ColorToken.Red(" [EXPIRED]"), true, task.ID);
             }
 
             // Pull back all currently available tasks. This list rotates after 24 hours and a reboot occurs.
@@ -248,11 +248,11 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 // The reason for this is to prevent players from repeating the same tasks over and over without impunity.
                 if (questStatus != null && questStatus.CompletionDate >= lastUpdate) continue;
 
-                var status = ColorTokenService.Green("{ACCEPTED}");
+                var status = ColorToken.Green("{ACCEPTED}");
                 // Player has never accepted the quest, or they've already completed it at least once and can accept it again.
                 if (questStatus == null || questStatus.CompletionDate != null)
                 {
-                    status = ColorTokenService.Yellow("{Available}");
+                    status = ColorToken.Yellow("{Available}");
                 }
 
                 AddResponseToPage("TaskListPage", quest.Name + " [Rank " + (task.RequiredRank+1) + "] " + status, true, task.ID);
@@ -295,11 +295,11 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 goldAmount += goldReward.Amount;
             }
 
-            var header = ColorTokenService.Green("Task: ") + quest.Name + "\n\n";
+            var header = ColorToken.Green("Task: ") + quest.Name + "\n\n";
 
             header += "Rewards:\n\n";
-            header += ColorTokenService.Green("Credits: ") + goldAmount + "\n";
-            header += ColorTokenService.Green("Guild Points: ") + gpAmount;
+            header += ColorToken.Green("Credits: ") + goldAmount + "\n";
+            header += ColorToken.Green("Guild Points: ") + gpAmount;
             
             SetPageHeader("TaskDetailsPage", header);
             
@@ -351,7 +351,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             //// Missing a requirement.
             //else
             //{
-            //    player.SendMessage(ColorTokenService.Red("One or more task is incomplete. Refer to your journal for more information."));
+            //    player.SendMessage(ColorToken.Red("One or more task is incomplete. Refer to your journal for more information."));
             //}
 
         }

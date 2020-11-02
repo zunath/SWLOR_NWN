@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.ChatCommand
 {
@@ -18,11 +19,11 @@ namespace SWLOR.Game.Server.Legacy.ChatCommand
 
             if (player.DisplayHolonet)
             {
-                user.SendMessage("Holonet chat: " + ColorTokenService.Green("ENABLED"));
+                user.SendMessage("Holonet chat: " + ColorToken.Green("ENABLED"));
             }
             else
             {
-                user.SendMessage("Holonet chat: " + ColorTokenService.Red("DISABLED"));
+                user.SendMessage("Holonet chat: " + ColorToken.Red("DISABLED"));
             }
         }
 

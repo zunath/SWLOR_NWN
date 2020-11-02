@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject;
+using SWLOR.Game.Server.Service;
 using ComponentType = SWLOR.Game.Server.Legacy.Data.Entity.ComponentType;
 using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
 using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.MolecularReassembler
             NWItem fuel = NWScript.GetItemPossessedBy(_player, "ass_power");
             if (!fuel.IsValid)
             {
-                _player.SendMessage(ColorTokenService.Red("A 'Reassembly Fuel Cell' was not found in your inventory. Reassembly failed."));
+                _player.SendMessage(ColorToken.Red("A 'Reassembly Fuel Cell' was not found in your inventory. Reassembly failed."));
                 return;
             }
 
@@ -161,7 +162,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.MolecularReassembler
                     }
                     else
                     {
-                        _player.SendMessage(ColorTokenService.Red("You failed to create a component. (+" + maxBonuses + ")"));
+                        _player.SendMessage(ColorToken.Red("You failed to create a component. (+" + maxBonuses + ")"));
                         xp += (50 + SWLOR.Game.Server.Service.Random.Next(0, 5));
                     }
                     // Penalty to chance increases regardless if item was created or not.
@@ -183,7 +184,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.MolecularReassembler
                     }
                     else
                     {
-                        _player.SendMessage(ColorTokenService.Red("You failed to create a component. (+" + amount + ")"));
+                        _player.SendMessage(ColorToken.Red("You failed to create a component. (+" + amount + ")"));
                         xp += (50 + SWLOR.Game.Server.Service.Random.Next(0, 5));
                     }
                     break;

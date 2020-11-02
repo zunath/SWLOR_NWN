@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Legacy.Event.Module
@@ -42,9 +43,9 @@ namespace SWLOR.Game.Server.Legacy.Event.Module
             {
                 var racialID = Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(examinedObject)));
                 var racialtype = GetStringByStrRef(racialID);
-                if (!description.Contains(ColorTokenService.Green("Racial Type: ") + racialtype))
+                if (!description.Contains(ColorToken.Green("Racial Type: ") + racialtype))
                 {
-                    description += ColorTokenService.Green("Racial Type: ") + racialtype;
+                    description += ColorToken.Green("Racial Type: ") + racialtype;
                 }
             }
 

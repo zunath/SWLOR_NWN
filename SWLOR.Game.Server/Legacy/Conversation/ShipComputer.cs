@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
 
@@ -109,22 +110,22 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
             if (SpaceService.IsLocationSpace(pcBase.ShipLocation))
             {
-                locationDescription = "Ship is in orbit around " + ColorTokenService.Cyan(SpaceService.GetPlanetFromLocation(pcBase.ShipLocation)) + ".\n";
+                locationDescription = "Ship is in orbit around " + ColorToken.Cyan(SpaceService.GetPlanetFromLocation(pcBase.ShipLocation)) + ".\n";
             }
             else if (SpaceService.IsLocationPublicStarport(pcBase.ShipLocation))
             {
-                locationDescription = "Ship is docked in the public starport on " + ColorTokenService.Cyan(SpaceService.GetPlanetFromLocation(pcBase.ShipLocation)) + ".\n";
+                locationDescription = "Ship is docked in the public starport on " + ColorToken.Cyan(SpaceService.GetPlanetFromLocation(pcBase.ShipLocation)) + ".\n";
             }
             else
             {
-                locationDescription = "Ship is docked on " + ColorTokenService.Cyan(SpaceService.GetPlanetFromLocation(pcBase.ShipLocation)) + ".\n";
+                locationDescription = "Ship is docked on " + ColorToken.Cyan(SpaceService.GetPlanetFromLocation(pcBase.ShipLocation)) + ".\n";
             }
 
             var header = locationDescription;
-            header += ColorTokenService.Green("Fuel: ") + currentFuel + " / " + maxFuel + "\n";
-            header += ColorTokenService.Green("Reinforced Fuel: ") + currentReinforcedFuel + " / " + maxReinforcedFuel + "\n";
-            header += ColorTokenService.Green("Resource Bay: ") + currentResources + " / " + maxResources + "\n";
-            header += ColorTokenService.Green("Hull integrity: ") + structure.Durability + " / " + baseStructure.Durability + "\n";
+            header += ColorToken.Green("Fuel: ") + currentFuel + " / " + maxFuel + "\n";
+            header += ColorToken.Green("Reinforced Fuel: ") + currentReinforcedFuel + " / " + maxReinforcedFuel + "\n";
+            header += ColorToken.Green("Resource Bay: ") + currentResources + " / " + maxResources + "\n";
+            header += ColorToken.Green("Hull integrity: ") + structure.Durability + " / " + baseStructure.Durability + "\n";
 
             header += "The computer awaits your orders.";
 

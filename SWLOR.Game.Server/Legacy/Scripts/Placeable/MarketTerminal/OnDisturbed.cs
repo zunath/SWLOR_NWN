@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.MarketTerminal
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.MarketTerminal
             if (GetHasInventory(item) == true)
             {
                 ItemService.ReturnItem(player, item);
-                player.SendMessage(ColorTokenService.Red("Containers cannot be sold on the market."));
+                player.SendMessage(ColorToken.Red("Containers cannot be sold on the market."));
                 return;
             }
             

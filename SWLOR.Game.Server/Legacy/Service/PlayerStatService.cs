@@ -611,41 +611,8 @@ namespace SWLOR.Game.Server.Legacy.Service
             if (skill == null) return 0;
             var skillBAB = skill.Rank / 10;
             var perkBAB = 0;
-            var backgroundBAB = 0;
-            var background = (BackgroundType)oPC.Class1;
-            var receivesBackgroundBonus = false;
 
-            switch (weapon.CustomItemType)
-            {
-                case CustomItemType.FinesseVibroblade:
-                    receivesBackgroundBonus = background == BackgroundType.Duelist;
-                    break;
-                case CustomItemType.Baton:
-                    receivesBackgroundBonus = background == BackgroundType.SecurityOfficer;
-                    break;
-                case CustomItemType.HeavyVibroblade:
-                    receivesBackgroundBonus = background == BackgroundType.Soldier;
-                    break;
-                case CustomItemType.TwinBlade:
-                    receivesBackgroundBonus = background == BackgroundType.Berserker;
-                    break;
-                case CustomItemType.MartialArtWeapon:
-                    receivesBackgroundBonus = background == BackgroundType.TerasKasi;
-                    break;
-                case CustomItemType.BlasterPistol:
-                    receivesBackgroundBonus = background == BackgroundType.Smuggler;
-                    break;
-                case CustomItemType.BlasterRifle:
-                    receivesBackgroundBonus = background == BackgroundType.Sharpshooter || background == BackgroundType.Mandalorian;
-                    break;
-            }
-
-            if (receivesBackgroundBonus)
-            {
-                backgroundBAB = background == BackgroundType.Mandalorian ? 1 : 2;
-            }
-
-            return 1 + skillBAB + perkBAB + stats.BAB + backgroundBAB; // Note: Always add 1 to BAB. 0 will cause a crash in NWNX.
+            return 1 + skillBAB + perkBAB + stats.BAB; // Note: Always add 1 to BAB. 0 will cause a crash in NWNX.
         }
     }
 }

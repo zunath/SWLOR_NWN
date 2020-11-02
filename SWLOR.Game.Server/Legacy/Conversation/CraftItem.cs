@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                         return;
                     }
 
-                    var effectiveLevel = CraftService.CalculatePCEffectiveLevel(GetPC(), model.PlayerSkillRank, (SkillType)model.Blueprint.SkillID);
+                    var effectiveLevel = model.PlayerSkillRank;
                     var difficulty = effectiveLevel - model.AdjustedLevel;
 
                     if(difficulty <= -5)

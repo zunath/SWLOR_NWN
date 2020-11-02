@@ -5,6 +5,7 @@ using System.Reflection;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Legacy.ChatCommand;
 using SWLOR.Game.Server.Legacy.ChatCommand.Contracts;
 using SWLOR.Game.Server.Legacy.Enumeration;
@@ -13,6 +14,7 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Player = SWLOR.Game.Server.Core.NWNX.Player;
 
 namespace SWLOR.Game.Server.Legacy.Service
 {
@@ -193,12 +195,12 @@ namespace SWLOR.Game.Server.Legacy.Service
             }
 
             var attribute = command.GetType().GetCustomAttribute<CommandDetailsAttribute>();
-            var authorization = AuthorizationService.GetDMAuthorizationType(sender);
+            var authorization = Authorization.GetAuthorizationLevel(sender);
 
             if (attribute != null &&
-                (attribute.Permissions.HasFlag(CommandPermissionType.Player) && authorization == DMAuthorizationType.None ||
-                 attribute.Permissions.HasFlag(CommandPermissionType.DM) && authorization == DMAuthorizationType.DM ||
-                 attribute.Permissions.HasFlag(CommandPermissionType.Admin) && authorization == DMAuthorizationType.Admin))
+                (attribute.Permissions.HasFlag(CommandPermissionType.Player) && authorization == AuthorizationLevel.Player ||
+                 attribute.Permissions.HasFlag(CommandPermissionType.DM) && authorization == AuthorizationLevel.DM ||
+                 attribute.Permissions.HasFlag(CommandPermissionType.Admin) && authorization == AuthorizationLevel.Admin))
             {
                 var argsArr = string.IsNullOrWhiteSpace(args) ? new string[0] : args.Split(' ').ToArray();
                 var error = command.ValidateArguments(sender, argsArr);

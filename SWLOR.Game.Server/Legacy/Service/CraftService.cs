@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Legacy.Service
         {
             var model = GetPlayerCraftingData(player);
             var bp = model.Blueprint;
-            var playerEL = CalculatePCEffectiveLevel(player, model.PlayerSkillRank, (SkillType)bp.SkillID);
+            var playerEL = model.PlayerSkillRank;
             var baseStructure = bp.BaseStructureID == null ? null : DataService.BaseStructure.GetByID(Convert.ToInt32(bp.BaseStructureID));
             var mainComponent = DataService.ComponentType.GetByID(bp.MainComponentTypeID);
             var secondaryComponent = DataService.ComponentType.GetByID(bp.SecondaryComponentTypeID);
@@ -316,40 +316,6 @@ namespace SWLOR.Game.Server.Legacy.Service
 
             return difficulty;
         }
-
-
-        public static int CalculatePCEffectiveLevel(NWPlayer player, int skillRank, SkillType skill)
-        {
-            var effectiveLevel = skillRank;
-            var background = (BackgroundType)player.Class1;
-
-            switch (skill)
-            {
-                case SkillType.Armorsmith:
-                    if (background == BackgroundType.Armorsmith)
-                        effectiveLevel++;
-                    break;
-                case SkillType.Cooking:
-                    if (background == BackgroundType.Chef)
-                        effectiveLevel++;
-                    break;
-                case SkillType.Weaponsmith:
-                    if (background == BackgroundType.Weaponsmith)
-                        effectiveLevel++;
-                    break;
-                case SkillType.Engineering:
-                    if (background == BackgroundType.Engineer)
-                        effectiveLevel++;
-                    break;
-                case SkillType.Fabrication:
-                    if (background == BackgroundType.Fabricator)
-                        effectiveLevel++;
-                    break;
-            }
-
-            return effectiveLevel;
-        }
-
 
         public static string GetIngotResref(string oreResref)
         {

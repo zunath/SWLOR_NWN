@@ -158,11 +158,6 @@ namespace SWLOR.Game.Server.Legacy.Event.Module
             var nowString = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
             Console.WriteLine(nowString + ": Module OnLoad executing...");
 
-            using (new Profiler(nameof(OnModuleLoad) + ":DatabaseMigrator"))
-            {
-                DatabaseMigrationRunner.Start();
-            }
-
             using (new Profiler(nameof(OnModuleLoad) + ":SetEventScripts"))
             {
                 Chat.RegisterChatScript("on_nwnx_chat");

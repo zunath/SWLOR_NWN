@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature
                     BootPC(player, "The server is automatically restarting.");
                 }
 
-                Log.Write(LogGroup.Server, "Server shutting down for automated restart.");
+                Log.Write(LogGroup.Server, "Server shutting down for automated restart.", true);
                 Administration.ShutdownServer();
             }
         }

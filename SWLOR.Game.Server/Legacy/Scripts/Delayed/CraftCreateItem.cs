@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Delayed
             var baseStructure = blueprint.BaseStructureID == null ? null : DataService.BaseStructure.GetByID(Convert.ToInt32(blueprint.BaseStructureID));
             var pcSkill = SkillService.GetPCSkill(player, blueprint.SkillID);
 
-            var pcEffectiveLevel = CraftService.CalculatePCEffectiveLevel(player, pcSkill.Rank, (SkillType)blueprint.SkillID);
+            var pcEffectiveLevel = pcSkill.Rank;
             var itemLevel = model.AdjustedLevel;
             var atmosphereBonus = CraftService.CalculateAreaAtmosphereBonus(player.Area);
             var chance = CalculateBaseChanceToAddProperty(pcEffectiveLevel, itemLevel, atmosphereBonus);

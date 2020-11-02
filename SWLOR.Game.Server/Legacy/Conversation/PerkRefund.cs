@@ -110,9 +110,6 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var perk = DataService.Perk.GetByID(pcPerk.PerkID);
             var minimumLevel = 1;
 
-            if (IsGrantedByBackground((PerkType) perk.ID))
-                minimumLevel = 2;
-
             var refundAmount = DataService.PerkLevel.GetAllByPerkID(perk.ID).Where(x => 
                 x.Level <= pcPerk.PerkLevel &&
                 x.Level >= minimumLevel).Sum(x => x.Price);
@@ -187,9 +184,6 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var perk = DataService.Perk.GetByID(pcPerk.PerkID);
             var minimumLevel = 1;
 
-            if (IsGrantedByBackground((PerkType) perk.ID))
-                minimumLevel = 2;
-
             var refundAmount = DataService.PerkLevel.GetAllByPerkID(perk.ID)
                 .Where(x => x.Level <= pcPerk.PerkLevel && 
                             x.Level >= minimumLevel).Sum(x => x.Price);
@@ -217,44 +211,12 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             DataService.SubmitDataChange(pcPerk, DatabaseActionType.Delete);
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 
-            // If perk refunded was one granted by a background bonus, we need to reapply it.
-            ReapplyBackgroundBonus((PerkType)pcPerk.PerkID);
-
             GetPC().FloatingText("Perk refunded! You reclaimed " + refundAmount + " SP.");
             model.TomeItem.Destroy();
 
             var handler = PerkService.GetPerkHandler(perk.ID);
             handler.OnRemoved(player);
             MessageHub.Instance.Publish(new OnPerkRefunded(player, pcPerk.PerkID));
-        }
-
-        private bool IsGrantedByBackground(PerkType perkType)
-        {
-            var player = GetPC();
-            var background = (BackgroundType)player.Class1;
-
-            if (
-                (background == BackgroundType.Armorsmith && perkType == PerkType.ArmorBlueprints) ||
-                (background == BackgroundType.Weaponsmith && perkType == PerkType.WeaponBlueprints) ||
-                (background == BackgroundType.Chef && perkType == PerkType.FoodRecipes) ||
-                (background == BackgroundType.Engineer && perkType == PerkType.EngineeringBlueprints) ||
-                (background == BackgroundType.Fabricator && perkType == PerkType.FabricationBlueprints) ||
-                (background == BackgroundType.Scavenger && perkType == PerkType.ScavengingExpert) ||
-                (background == BackgroundType.Medic && perkType == PerkType.ImmediateImprovement))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private void ReapplyBackgroundBonus(PerkType perkType)
-        {
-            var player = GetPC();
-            if (IsGrantedByBackground(perkType))
-            {
-                BackgroundService.ApplyBackgroundBonuses(player);
-            }
         }
 
         private void RemovePerkItem(Data.Entity.Perk perk)

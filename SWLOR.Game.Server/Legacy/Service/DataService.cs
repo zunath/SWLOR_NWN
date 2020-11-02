@@ -114,7 +114,6 @@ namespace SWLOR.Game.Server.Legacy.Service
 
         static DataService()
         {
-            SqlMapper.AddTypeHandler(new MySqlGuidTypeHandler());
             SqlMapper.RemoveTypeMap(typeof(Guid));
             SqlMapper.RemoveTypeMap(typeof(Guid?));
             DataQueue = new ConcurrentQueue<DatabaseAction>();

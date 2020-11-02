@@ -53,11 +53,6 @@ namespace SWLOR.Game.Server.Legacy.Item.Medicine
             }
 
             var interval = 6.0f;
-            var background = (BackgroundType) player.Class1;
-
-            if (background == BackgroundType.Medic)
-                interval *= 0.5f;
-
             var data = (int)interval + ", " + restoreAmount;
             CustomEffectService.ApplyCustomEffect(user, target.Object, CustomEffectType.ForcePack, (int)duration, restoreAmount, data);
 
@@ -98,14 +93,6 @@ namespace SWLOR.Game.Server.Legacy.Item.Medicine
         public bool ReducesItemCharge(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             var consumeChance = PerkService.GetCreaturePerkLevel((NWPlayer)user, PerkType.FrugalMedic) * 10;
-            var background = (BackgroundType) user.Class1;
-
-            if (background == BackgroundType.Medic)
-            {
-                consumeChance += 5;
-            }
-
-
             return SWLOR.Game.Server.Service.Random.Next(100) + 1 > consumeChance;
         }
 

@@ -147,7 +147,6 @@ namespace SWLOR.Game.Server.Legacy.Service
                 RaceService.ApplyDefaultAppearance(player);
                 Creature.SetAlignmentLawChaos(player, 50);
                 Creature.SetAlignmentGoodEvil(player, 50);
-                BackgroundService.ApplyBackgroundBonuses(player);
 
                 PlayerStatService.ApplyStatChanges(player, null, true);
                 Language.InitializePlayerLanguages(player);

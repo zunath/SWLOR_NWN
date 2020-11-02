@@ -14,6 +14,7 @@
         TreasureHunter = 8,
         ClearMind = 9,
         Clarity = 10,
-        GuildRelations = 11
+        GuildRelations = 11,
+        ComprehendSpeech
     }
 }

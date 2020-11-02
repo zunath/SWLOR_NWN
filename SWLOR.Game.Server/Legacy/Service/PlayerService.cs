@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Legacy.Event.Area;
 using SWLOR.Game.Server.Legacy.Event.Module;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
 using Player = SWLOR.Game.Server.Legacy.Data.Entity.Player;
@@ -149,7 +150,7 @@ namespace SWLOR.Game.Server.Legacy.Service
                 BackgroundService.ApplyBackgroundBonuses(player);
 
                 PlayerStatService.ApplyStatChanges(player, null, true);
-                LanguageService.InitializePlayerLanguages(player);
+                Language.InitializePlayerLanguages(player);
 
                 DelayCommand(1.0f, () => ApplyEffectToObject(DurationType.Instant, EffectHeal(999), player));
 

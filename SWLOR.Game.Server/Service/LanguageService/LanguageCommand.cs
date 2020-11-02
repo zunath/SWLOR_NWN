@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
+using SWLOR.Game.Server.Enumeration;
 
-namespace SWLOR.Game.Server.Legacy.Language
+namespace SWLOR.Game.Server.Service.LanguageService
 {
     public class LanguageCommand
     {

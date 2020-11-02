@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace SWLOR.Game.Server.Legacy.Language
+namespace SWLOR.Game.Server.Service.LanguageService
 {
     public class TranslatorZabraki : ITranslator
     {

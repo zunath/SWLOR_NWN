@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Legacy.Language
+﻿namespace SWLOR.Game.Server.Service.LanguageService
 {
     public class TranslatorGeneric : ITranslator
     {

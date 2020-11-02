@@ -2,57 +2,71 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Legacy.Enumeration;
-using SWLOR.Game.Server.Legacy.GameObject;
-using SWLOR.Game.Server.Legacy.Language;
-using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
-using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.LanguageService;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using SkillType = SWLOR.Game.Server.Enumeration.SkillType;
 
-namespace SWLOR.Game.Server.Legacy.Service
+namespace SWLOR.Game.Server.Service
 {
-    public static class LanguageService
+    public static class Language
     {
-        public static string TranslateSnippetForListener(NWObject speaker, NWObject listener, SkillType language, string snippet)
+        private static Dictionary<SkillType, ITranslator> _translators = new Dictionary<SkillType, ITranslator>();
+        private static readonly TranslatorGeneric _genericTranslator = new TranslatorGeneric();
+
+        /// <summary>
+        /// When the module loads, create translators for every language and store them into cache.
+        /// </summary>
+        [NWNEventHandler("mod_load")]
+        public static void LoadTranslators()
         {
-            var map = new Dictionary<SkillType, Type>
+            _translators = new Dictionary<SkillType, ITranslator>
             {
-                { SkillType.Bothese, typeof(TranslatorBothese) },
-                { SkillType.Catharese, typeof(TranslatorCatharese) },
-                { SkillType.Cheunh, typeof(TranslatorCheunh) },
-                { SkillType.Dosh, typeof(TranslatorDosh) },
-                { SkillType.Droidspeak, typeof(TranslatorDroidspeak) },
-                { SkillType.Huttese, typeof(TranslatorHuttese) },
-                { SkillType.Mandoa, typeof(TranslatorMandoa) },
-                { SkillType.Shyriiwook, typeof(TranslatorShyriiwook) },
-                { SkillType.Twileki, typeof(TranslatorTwileki) },
-                { SkillType.Zabraki, typeof(TranslatorZabraki) },
-                { SkillType.Mirialan, typeof(TranslatorMirialan) },
-                { SkillType.MonCalamarian, typeof(TranslatorMonCalamarian) },
-                { SkillType.Ugnaught, typeof(TranslatorUgnaught) }
+                { SkillType.Bothese, new TranslatorBothese() },
+                { SkillType.Catharese, new TranslatorCatharese() },
+                { SkillType.Cheunh, new TranslatorCheunh() },
+                { SkillType.Dosh, new TranslatorDosh() },
+                { SkillType.Droidspeak, new TranslatorDroidspeak() },
+                { SkillType.Huttese, new TranslatorHuttese() },
+                { SkillType.Mandoa,  new TranslatorMandoa() },
+                { SkillType.Shyriiwook, new TranslatorShyriiwook() },
+                { SkillType.Twileki, new TranslatorTwileki() },
+                { SkillType.Zabraki, new TranslatorZabraki() },
+                { SkillType.Mirialan, new TranslatorMirialan() },
+                { SkillType.MonCalamarian, new TranslatorMonCalamarian() },
+                { SkillType.Ugnaught, new TranslatorUgnaught() }
             };
+        }
 
-            var type = typeof(TranslatorGeneric);
-            map.TryGetValue(language, out type);
-            var translator = (ITranslator)Activator.CreateInstance(type);
+        public static string TranslateSnippetForListener(uint speaker, uint listener, SkillType language, string snippet)
+        {
+            var translator = _translators.ContainsKey(language) ? _translators[language] : _genericTranslator;
+            var languageSkill = Skill.GetSkillDetails(language);
 
-            if (speaker.IsPC && !speaker.IsDM)
+            if (GetIsPC(speaker) && !GetIsDM(speaker))
             {
+                var playerId = GetObjectUUID(speaker);
+                var dbSpeaker = DB.Get<Player>(playerId);
+
                 // Get the rank and max rank for the speaker, and garble their English text based on it.
-                NWPlayer speakerAsPlayer = speaker.Object;
-                var speakerSkillRank = SkillService.GetPCSkillRank(speakerAsPlayer, language);
-                var speakerSkillMaxRank = SkillService.GetSkill(language).MaxRank;
+                var speakerSkillRank = dbSpeaker.Skills[language].Rank;
+                var speakerSkillMaxRank = dbSpeaker.IsForceSensitive
+                    ? languageSkill.MaxRankForceSensitive
+                    : languageSkill.MaxRankStandard;
 
                 if (speakerSkillRank != speakerSkillMaxRank)
                 {
-                    var garbledChance = 100 - (int)(((float)speakerSkillRank / (float)speakerSkillMaxRank) * 100);
+                    var garbledChance = 100 - (int)((speakerSkillRank / (float)speakerSkillMaxRank) * 100);
 
                     var split = snippet.Split(' ');
                     for (var i = 0; i < split.Length; ++i)
                     {
-                        if (RandomService.Random(100) <= garbledChance)
+                        if (Random.Next(100) <= garbledChance)
                         {
-                            split[i] = new string(split[i].ToCharArray().OrderBy(s => (RandomService.Random(2) % 2) == 0).ToArray());
+                            split[i] = new string(split[i].ToCharArray().OrderBy(s => (Random.Next(2) % 2) == 0).ToArray());
                         }
                     }
 
@@ -60,24 +74,35 @@ namespace SWLOR.Game.Server.Legacy.Service
                 }
             }
 
-            if (!listener.IsPC || listener.IsDM)
+            if (!GetIsPC(listener) || GetIsDM(listener))
             {
                 // Short circuit for a DM or NPC - they will always understand the text.
                 return snippet;
             }
 
             // Let's grab the max rank for the listener skill, and then we roll for a successful translate based on that.
-            NWPlayer listenerAsPlayer = listener.Object;
-            var rank = SkillService.GetPCSkillRank(listenerAsPlayer, language);
-            var maxRank = SkillService.GetSkill(language).MaxRank;
+            var listenerId = GetObjectUUID(listener);
+            var dbListener = DB.Get<Player>(listenerId);
+            var rank = dbListener.Skills[language].Rank;
+            var maxRank = dbListener.IsForceSensitive
+                ? languageSkill.MaxRankForceSensitive
+                : languageSkill.MaxRankStandard;
 
             // Check for the Comprehend Speech concentration ability.
-            var dbPlayer = DataService.Player.GetByID(listenerAsPlayer.GlobalID);
             var grantSenseXP = false;
-            if (dbPlayer.ActiveConcentrationPerkID == (int)PerkType.ComprehendSpeech)
+            var statusEffectBonus = 0;
+            if (StatusEffect.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech1))
+                statusEffectBonus = 5;
+            else if (StatusEffect.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech2))
+                statusEffectBonus = 10;
+            else if (StatusEffect.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech3))
+                statusEffectBonus = 15;
+            else if (StatusEffect.HasStatusEffect(listener, StatusEffectType.ComprehendSpeech4))
+                statusEffectBonus = 20;
+
+            if (statusEffectBonus > 0)
             {
-                var bonus = 5 * dbPlayer.ActiveConcentrationTier;
-                rank += bonus;
+                rank += statusEffectBonus;
                 grantSenseXP = true;
             }
 
@@ -95,7 +120,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 
             if (rank != 0)
             {
-                var englishChance = (int)(((float)rank / (float)maxRank) * 100);
+                var englishChance = (int)((rank / (float)maxRank) * 100);
 
                 var originalSplit = snippet.Split(' ');
                 var foreignSplit = textAsForeignLanguage.Split(' ');
@@ -106,7 +131,7 @@ namespace SWLOR.Game.Server.Legacy.Service
                 // If this assumption changes, the below logic needs to change too.
                 for (var i = 0; i < originalSplit.Length; ++i)
                 {
-                    if (RandomService.Random(100) <= englishChance)
+                    if (Random.Next(100) <= englishChance)
                     {
                         endResult.Append(originalSplit[i]);
                     }
@@ -122,8 +147,8 @@ namespace SWLOR.Game.Server.Legacy.Service
             }
 
             var now = DateTime.Now.Ticks;
-            var lastSkillUpLow = listenerAsPlayer.GetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_LOW");
-            var lastSkillUpHigh = listenerAsPlayer.GetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_HIGH");
+            var lastSkillUpLow = GetLocalInt(listener, "LAST_LANGUAGE_SKILL_INCREASE_LOW");
+            var lastSkillUpHigh = GetLocalInt(listener, "LAST_LANGUAGE_SKILL_INCREASE_HIGH");
             long lastSkillUp = lastSkillUpHigh;
             lastSkillUp = (lastSkillUp << 32) | (uint)lastSkillUpLow;
             var differenceInSeconds = (now - lastSkillUp) / 10000000;
@@ -132,14 +157,14 @@ namespace SWLOR.Game.Server.Legacy.Service
             {
                 var amount = Math.Max(10, Math.Min(150, snippet.Length) / 3);
                 // Reward exp towards the language - we scale this with character count, maxing at 50 exp for 150 characters.
-                SkillService.GiveSkillXP(listenerAsPlayer, language, amount);
+                Skill.GiveSkillXP(listener, language, amount);
 
                 // Grant Sense XP if player is concentrating Comprehend Speech.
                 if (grantSenseXP)
-                    SkillService.GiveSkillXP(listenerAsPlayer, SkillType.ForceSense, amount * 10);
+                    Skill.GiveSkillXP(listener, SkillType.ForceSense, amount * 10);
 
-                listenerAsPlayer.SetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_LOW", (int)(now & 0xFFFFFFFF));
-                listenerAsPlayer.SetLocalInt("LAST_LANGUAGE_SKILL_INCREASE_HIGH", (int)((now >> 32) & 0xFFFFFFFF));
+                SetLocalInt(listener, "LAST_LANGUAGE_SKILL_INCREASE_LOW", (int)(now & 0xFFFFFFFF));
+                SetLocalInt(listener, "LAST_LANGUAGE_SKILL_INCREASE_HIGH", (int)((now >> 32) & 0xFFFFFFFF));
             }
 
             return textAsForeignLanguage;
@@ -193,10 +218,9 @@ namespace SWLOR.Game.Server.Legacy.Service
             return "Basic";
         }
 
-        public static void InitializePlayerLanguages(NWPlayer player)
+        public static void InitializePlayerLanguages(uint player)
         {
-            var race = (RacialType)player.RacialType;
-            var background = (BackgroundType)player.Class1;
+            var race = GetRacialType(player);
             var languages = new List<SkillType>(new[] { SkillType.Basic });
 
             switch (race)
@@ -236,37 +260,32 @@ namespace SWLOR.Game.Server.Legacy.Service
                     break;
             }
 
-            switch (background)
-            {
-                case BackgroundType.Mandalorian:
-                    languages.Add(SkillType.Mandoa);
-                    break;
-            }
-
             // Fair warning: We're short-circuiting the skill system here.
             // Languages don't level up like normal skills (no stat increases, SP, etc.)
             // So it's safe to simply set the player's rank in the skill to max.
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
 
-            var languageSkillIDs = languages.ConvertAll(x => (int) x);
-            var pcSkills = DataService.PCSkill.GetAllByPlayerIDAndSkillIDs(player.GlobalID, languageSkillIDs).ToList();
-
-            foreach (var pcSkill in pcSkills)
+            foreach (var language in languages)
             {
-                var skill = DataService.Skill.GetByID(pcSkill.SkillID);
-                var maxRank = skill.MaxRank;
-                var maxRankXP = SkillService.SkillXPRequirements[maxRank];
+                var skill = Skill.GetSkillDetails(language);
+                if (!dbPlayer.Skills.ContainsKey(language))
+                    dbPlayer.Skills[language] = new PlayerSkill();
 
-                pcSkill.Rank = maxRank;
-                pcSkill.XP = maxRankXP - 1;
+                var level = dbPlayer.IsForceSensitive ?
+                    skill.MaxRankForceSensitive :
+                    skill.MaxRankStandard;
+                dbPlayer.Skills[language].Rank = level;
 
-                DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
+                dbPlayer.Skills[language].XP = Skill.GetRequiredXP(level) - 1;
             }
 
+            DB.Set(playerId, dbPlayer);
         }
 
-        public static SkillType GetActiveLanguage(NWObject obj)
+        public static SkillType GetActiveLanguage(uint obj)
         {
-            var ret = obj.GetLocalInt("ACTIVE_LANGUAGE");
+            var ret = GetLocalInt(obj, "ACTIVE_LANGUAGE");
 
             if (ret == 0)
             {
@@ -276,15 +295,15 @@ namespace SWLOR.Game.Server.Legacy.Service
             return (SkillType)ret;
         }
 
-        public static void SetActiveLanguage(NWObject obj, SkillType language)
+        public static void SetActiveLanguage(uint obj, SkillType language)
         {
             if (language == SkillType.Basic)
             {
-                obj.DeleteLocalInt("ACTIVE_LANGUAGE");
+                DeleteLocalInt(obj, "ACTIVE_LANGUAGE");
             }
             else
             {
-                obj.SetLocalInt("ACTIVE_LANGUAGE", (int)language);
+                SetLocalInt(obj, "ACTIVE_LANGUAGE", (int)language);
             }
         }
 

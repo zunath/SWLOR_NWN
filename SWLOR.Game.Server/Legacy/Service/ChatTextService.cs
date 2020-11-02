@@ -9,9 +9,10 @@ using SWLOR.Game.Server.Legacy.Event.Module;
 using SWLOR.Game.Server.Legacy.Event.SWLOR;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
-using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
+using SkillType = SWLOR.Game.Server.Enumeration.SkillType;
 
 namespace SWLOR.Game.Server.Legacy.Service
 {
@@ -255,25 +256,25 @@ namespace SWLOR.Game.Server.Legacy.Service
                     sender = HoloComService.GetHoloGramOwner(sender);
                 }
 
-                var language = LanguageService.GetActiveLanguage(sender);
+                var language = Language.GetActiveLanguage(sender);
                 
                 // Wookiees cannot speak any other language (but they can understand them).
                 // Swap their language if they attempt to speak in any other language.
                 var race = (RacialType) GetRacialType(sender);                
                 if (race == RacialType.Wookiee && language != SkillType.Shyriiwook)
                 {
-                    LanguageService.SetActiveLanguage(sender, SkillType.Shyriiwook);
+                    Language.SetActiveLanguage(sender, SkillType.Shyriiwook);
                     language = SkillType.Shyriiwook;
                 }
 
-                var colour = LanguageService.GetColour(language);
+                var colour = Language.GetColour(language);
                 var r = (byte)(colour >> 24 & 0xFF);
                 var g = (byte)(colour >> 16 & 0xFF);
                 var b = (byte)(colour >> 8 & 0xFF);
 
                 if (language != SkillType.Basic)
                 {
-                    var languageName = LanguageService.GetName(language);
+                    var languageName = Language.GetName(language);
                     finalMessage.Append(ColorTokenService.Custom($"[{languageName}] ", r, g, b));
                 }
 
@@ -283,7 +284,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 
                     if (component.m_Translatable && language != SkillType.Basic)
                     {
-                        text = LanguageService.TranslateSnippetForListener(sender, obj.Object, language, component.m_Text);
+                        text = Language.TranslateSnippetForListener(sender, obj.Object, language, component.m_Text);
 
                         if (colour != 0)
                         {

@@ -1,11 +1,11 @@
 ﻿using System.Linq;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.Legacy.Enumeration;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
-using SWLOR.Game.Server.Legacy.Quest.Objective;
-using SWLOR.Game.Server.Legacy.Quest.Reward;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.QuestService;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var model = GetDialogCustomData<Model>();
             var guild = DataService.Guild.GetByID((int) model.Guild);
             var pcGP = DataService.PCGuildPoint.GetByPlayerIDAndGuildID(player.GlobalID, guild.ID);
-            var requiredPoints = GuildService.RankProgression[pcGP.Rank];
+            var requiredPoints = Guild.GetGPRequiredForRank(pcGP.Rank);
 
             var header = ColorTokenService.Green("Guild: ") + guild.Name + "\n";
             header += ColorTokenService.Green("Rank: ") + pcGP.Rank + " (" + pcGP.Points + " / " + requiredPoints + " GP)\n"; 
@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 .OrderByDescending(o => o.RequiredRank);
             foreach (var task in expiredTasks)
             {
-                var quest = QuestService.GetQuestByID(task.QuestID);
+                var quest = Quest.GetQuestById(task.QuestID.ToString()); // todo need to update this to new system
                 var status = ColorTokenService.Green("{ACCEPTED}");
                 AddResponseToPage("TaskListPage", quest.Name + " [Rank " + (task.RequiredRank+1) + "] " + status + ColorTokenService.Red(" [EXPIRED]"), true, task.ID);
             }
@@ -241,7 +241,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 .OrderByDescending(o => o.RequiredRank);
             foreach (var task in tasks)
             {
-                var quest = QuestService.GetQuestByID(task.QuestID);
+                var quest = Quest.GetQuestById(task.QuestID.ToString()); // todo need to update this to new system
                 var questStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, task.QuestID);
 
                 // If the player has completed the task during this task cycle, it will be excluded from this list.
@@ -275,19 +275,19 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var player = GetPC();
             var model = GetDialogCustomData<Model>();
             var task = DataService.GuildTask.GetByID(model.TaskID);
-            var quest = QuestService.GetQuestByID(task.QuestID);
+            var quest = Quest.GetQuestById(task.QuestID.ToString()); // todo need to update this to new system
             var status = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, task.QuestID);
             var showQuestAccept = status == null || status.CompletionDate != null; // Never accepted, or has already been completed once.
             var showGiveReport = status != null && status.CompletionDate == null; // Accepted, but not completed.
-            var gpRewards = quest.GetRewards().Where(x => x.GetType() == typeof(QuestGPReward)).Cast<QuestGPReward>();
-            var goldRewards = quest.GetRewards().Where(x => x.GetType() == typeof(QuestGoldReward)).Cast<QuestGoldReward>();
+            var gpRewards = quest.GetRewards().Where(x => x.GetType() == typeof(GPReward)).Cast<GPReward>();
+            var goldRewards = quest.GetRewards().Where(x => x.GetType() == typeof(GoldReward)).Cast<GoldReward>();
 
             var gpAmount = 0;
             var goldAmount = 0;
 
             foreach (var gpReward in gpRewards)
             {
-                gpAmount += GuildService.CalculateGPReward(player, gpReward.Guild, gpReward.Amount);
+                gpAmount += Guild.CalculateGPReward(player, gpReward.Guild, gpReward.Amount);
             }
 
             foreach (var goldReward in goldRewards)
@@ -312,7 +312,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var player = GetPC();
             var model = GetDialogCustomData<Model>();
             var task = DataService.GuildTask.GetByID(model.TaskID);
-            var quest = QuestService.GetQuestByID(task.QuestID);
+            var quest = Quest.GetQuestById(task.QuestID.ToString()); // todo need to update this to new system
 
             switch (responseID)
             {
@@ -331,26 +331,28 @@ namespace SWLOR.Game.Server.Legacy.Conversation
         {
             var pcStatus = DataService.PCQuestStatus.GetByPlayerAndQuestIDOrDefault(player.GlobalID, questID);
             if (pcStatus == null) return;
-            var quest = QuestService.GetQuestByID(questID);
-            var state = quest.GetState(pcStatus.QuestState);
+            var quest = Quest.GetQuestById(questID.ToString()); // todo need to update this to new system
+            var state = quest.States[pcStatus.QuestState];
             var hasItemObjective = state.GetObjectives().FirstOrDefault(x => x.GetType() == typeof(CollectItemObjective)) != null;
 
+            // todo need to update this entire section to new system
+
             // Quest has at least one "collect item" objective.
-            if (hasItemObjective)
-            {
-                QuestService.RequestItemsFromPC(player, GetDialogTarget(), questID);
-            }
-            // All other quest types
-            else if(quest.CanComplete(player))
-            {
-                quest.Complete(player, NWScript.OBJECT_SELF, null);
-                EndConversation();
-            }
-            // Missing a requirement.
-            else
-            {
-                player.SendMessage(ColorTokenService.Red("One or more task is incomplete. Refer to your journal for more information."));
-            }
+            //if (hasItemObjective)
+            //{
+            //    Quest.RequestItemsFromPC(player, GetDialogTarget(), questID);
+            //}
+            //// All other quest types
+            //else if(quest.CanComplete(player))
+            //{
+            //    quest.Complete(player, NWScript.OBJECT_SELF, null);
+            //    EndConversation();
+            //}
+            //// Missing a requirement.
+            //else
+            //{
+            //    player.SendMessage(ColorTokenService.Red("One or more task is incomplete. Refer to your journal for more information."));
+            //}
 
         }
 

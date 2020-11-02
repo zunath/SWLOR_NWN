@@ -14,5 +14,6 @@
         TreasureHunter = 8,
         ClearMind = 9,
         Clarity = 10,
+        GuildRelations = 11
     }
 }

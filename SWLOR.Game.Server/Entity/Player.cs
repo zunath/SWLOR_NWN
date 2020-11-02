@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Entity
             UnlockedRecipes = new Dictionary<RecipeType, DateTime>();
             IsForceSensitive = false;
             KeyItems = new Dictionary<KeyItemType, DateTime>();
+            Guilds = new Dictionary<GuildType, PlayerGuild>();
         }
 
         public override string KeyPrefix => "Player";
@@ -85,6 +86,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<PerkType, DateTime> UnlockedPerks { get; set; }
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
         public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
+        public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
     }
 
     public class MapPin
@@ -128,5 +130,11 @@ namespace SWLOR.Game.Server.Entity
         {
             DisplayAchievementNotification = true;
         }
+    }
+
+    public class PlayerGuild
+    {
+        public int Rank { get; set; }
+        public int Points { get; set; }
     }
 }

@@ -46,7 +46,6 @@
   <ItemGroup>
     <Folder Include="Feature\AbilityDefinition\" />
     <Folder Include="Feature\StatusEffectDefinition\" />
-    <Folder Include="Service\KeyItemService\" />
   </ItemGroup>
 
   <Target Name="NWN" AfterTargets="Build">

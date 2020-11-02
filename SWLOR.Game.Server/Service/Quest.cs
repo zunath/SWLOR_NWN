@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<string, QuestDetail> _quests = new Dictionary<string, QuestDetail>();
         private static readonly Dictionary<NPCGroupType, NPCGroupAttribute> _npcGroups = new Dictionary<NPCGroupType, NPCGroupAttribute>();
         private static readonly Dictionary<NPCGroupType, List<string>> _npcsWithKillQuests = new Dictionary<NPCGroupType, List<string>>();
+        private static readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _questsByGuildType = new Dictionary<GuildType, Dictionary<int, List<QuestDetail>>>();
 
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.
@@ -61,8 +62,32 @@ namespace SWLOR.Game.Server.Service
                             }
                         }
                     }
+
+                    // If the quest is associated with a guild, add it to that guild's list.
+                    if (quest.GuildType != GuildType.Invalid &&
+                        quest.GuildRank >= 0)
+                    {
+                        if(!_questsByGuildType.ContainsKey(quest.GuildType))
+                            _questsByGuildType[quest.GuildType] = new Dictionary<int, List<QuestDetail>>();
+
+                        _questsByGuildType[quest.GuildType][quest.GuildRank].Add(quest);
+                    }
                 }
             }
+        }
+
+        /// <summary>
+        /// Retrieves all quests associated with a guild.
+        /// </summary>
+        /// <param name="guild">The guild to search for</param>
+        /// <param name="rank">The rank to search for</param>
+        /// <returns>A list of quests associated with the guild.</returns>
+        public static List<QuestDetail> GetQuestsByGuild(GuildType guild, int rank)
+        {
+            if(!_questsByGuildType.ContainsKey(guild))
+                return new List<QuestDetail>();
+
+            return _questsByGuildType[guild][rank].ToList();
         }
 
         /// <summary>

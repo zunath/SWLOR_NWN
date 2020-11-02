@@ -1,7 +1,9 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -47,7 +49,8 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 return;
             }
 
-            KeyItemService.GivePlayerKeyItem(GetPC(), keyItemID);
+            var keyItemType = (KeyItemType) keyItemID;
+            KeyItem.GiveKeyItem(GetPC(), keyItemType);
 
             var visibilityObjectID = self.GetLocalString("VISIBILITY_OBJECT_ID");
 

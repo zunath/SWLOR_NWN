@@ -48,6 +48,18 @@ namespace SWLOR.Game.Server.Service.QuestService
         }
 
         /// <summary>
+        /// Marks the quest as a guild task.
+        /// </summary>
+        /// <returns>A QuestBuilder with the configured options.</returns>
+        public QuestBuilder IsGuildTask(GuildType guild, int rank)
+        {
+            _activeQuest.GuildType = guild;
+            _activeQuest.GuildRank = rank;
+
+            return this;
+        }
+
+        /// <summary>
         /// Marks that the quest allows the player to select a reward when completed.
         /// </summary>
         /// <returns>A QuestBuilder with the configured options.</returns>
@@ -97,7 +109,22 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <returns>A QuestBuilder with the configured options.</returns>
         public QuestBuilder AddKeyItemReward(KeyItemType keyItemType, bool isSelectable = true)
         {
-            var reward = new ItemReward.KeyItemReward(keyItemType, isSelectable);
+            var reward = new KeyItemReward(keyItemType, isSelectable);
+            _activeQuest.Rewards.Add(reward);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a guild GP reward for completing this quest.
+        /// </summary>
+        /// <param name="guild">The type of guild GP to reward.</param>
+        /// <param name="amount">The amount of GP to award</param>
+        /// <param name="isSelectable">If true, player will have the option to select the GP as a reward. If false, they will receive it no matter what. If IsRepeatable() has not been called, this argument is ignored and all GP is given to the player.</param>
+        /// <returns></returns>
+        public QuestBuilder AddGPReward(GuildType guild, int amount, bool isSelectable = true)
+        {
+            var reward = new GPReward(guild, amount, isSelectable);
             _activeQuest.Rewards.Add(reward);
 
             return this;

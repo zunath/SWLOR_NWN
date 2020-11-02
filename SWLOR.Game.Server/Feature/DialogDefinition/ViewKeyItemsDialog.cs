@@ -80,7 +80,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var acquiredDate = dbPlayer.KeyItems[model.SelectedKeyItem];
 
             page.Header = $"{ColorToken.Green("Name:")} {detail.Name}\n" +
-                          $"{ColorToken.Green("Acquired Date:")} {acquiredDate:yyyy-MM-dd hh:mm:ss}";
+                          $"{ColorToken.Green("Acquired Date:")} {acquiredDate:yyyy-MM-dd hh:mm:ss}\n\n" +
+                $"{ColorToken.Green("Description:")} {detail.Description}";
         }
     }
 }

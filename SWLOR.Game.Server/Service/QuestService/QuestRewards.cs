@@ -69,37 +69,60 @@ namespace SWLOR.Game.Server.Service.QuestService
                 MenuName = name;
         }
 
-        public class KeyItemReward : IQuestReward
-        {
-            public bool IsSelectable { get; }
-
-            public string MenuName
-            {
-                get
-                {
-                    var detail = KeyItem.GetKeyItem(KeyItemType);
-                    return detail.Name;
-                }
-            }
-
-            public KeyItemType KeyItemType { get; }
-
-            public KeyItemReward(KeyItemType keyItemType, bool isSelectable)
-            {
-                KeyItemType = keyItemType;
-                IsSelectable = isSelectable;
-            }
-
-            public void GiveReward(uint player)
-            {
-                KeyItem.GiveKeyItem(player, KeyItemType);
-            }
-        }
-
-
         public void GiveReward(uint player)
         {
             CreateItemOnObject(_resref, player, _quantity);
+        }
+    }
+
+    public class KeyItemReward : IQuestReward
+    {
+        public bool IsSelectable { get; }
+
+        public string MenuName
+        {
+            get
+            {
+                var detail = KeyItem.GetKeyItem(KeyItemType);
+                return detail.Name;
+            }
+        }
+
+        public KeyItemType KeyItemType { get; }
+
+        public KeyItemReward(KeyItemType keyItemType, bool isSelectable)
+        {
+            KeyItemType = keyItemType;
+            IsSelectable = isSelectable;
+        }
+
+        public void GiveReward(uint player)
+        {
+            KeyItem.GiveKeyItem(player, KeyItemType);
+        }
+    }
+
+    public class GPReward: IQuestReward
+    {
+        public bool IsSelectable { get; }
+        public string MenuName { get; }
+        public GuildType Guild { get; }
+        public int Amount { get; }
+
+        public GPReward(GuildType guild, int amount, bool isSelectable)
+        {
+            IsSelectable = isSelectable;
+            Guild = guild;
+            Amount = amount;
+
+            var guildDetail = Service.Guild.GetGuild(guild);
+            MenuName = amount + " " + guildDetail.Name + " GP";
+        }
+
+        public void GiveReward(uint player)
+        {
+            var reward = Service.Guild.CalculateGPReward(player, Guild, Amount);
+            Service.Guild.GiveGuildPoints(player, Guild, reward);
         }
     }
 }

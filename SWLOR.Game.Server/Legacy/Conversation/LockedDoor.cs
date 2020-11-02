@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {
@@ -35,8 +37,19 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 count++;
                 keyItemID = door.GetLocalInt("REQUIRED_KEY_ITEM_ID_" + count);
             }
-            
-            var hasKeyItems = KeyItemService.PlayerHasAllKeyItems(player, keyItemIDs.ToArray());
+
+            var hasKeyItems = true;
+
+            foreach (var keyItemId in keyItemIDs)
+            {
+                var keyItemType = (KeyItemType) keyItemId;
+                if (!KeyItem.HasKeyItem(player, keyItemType))
+                {
+                    hasKeyItems = false;
+                    break;
+                }
+            }
+
             var doorDialogue = door.GetLocalString("DOOR_DIALOGUE");
 
             if (!string.IsNullOrWhiteSpace(doorDialogue))

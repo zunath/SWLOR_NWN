@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.Quests.AbandonedStation
@@ -33,7 +34,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.Quests.AbandonedStation
             NWPlaceable teleportObject = GetNearestObjectByTag("aban_shuttle_exit", mainLevel);
             teleportObject.IsUseable = true;
 
-            var quest = QuestService.GetQuestByID(questID);
+            var quest = Quest.GetQuestById(questID.ToString()); // todo need to update this to new system
             // Advance each party member's quest progression if they are in one of these three instance areas.
             foreach (var member in player.PartyMembers)
             {

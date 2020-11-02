@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.Quests
 {
@@ -45,7 +46,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.Quests
 
             NWScript.CreateItemOnObject(cluster, player);
 
-            var quest = QuestService.GetQuestByID(QuestID);
+            var quest = Quest.GetQuestById(QuestID.ToString()); // todo need to update this to new system
             quest.Advance(player, crystal);
 
             // Hide the "Source of Power?" placeable so the player can't use it again.

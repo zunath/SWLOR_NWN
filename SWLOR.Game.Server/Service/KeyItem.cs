@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Legacy.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -194,6 +196,38 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Player>(playerId);
 
             return dbPlayer.KeyItems.ContainsKey(keyItem);
+        }
+
+        /// <summary>
+        /// When a placeable with a key item defined is used by a player, give it to them.
+        /// </summary>
+        [NWNEventHandler("get_key_item")]
+        public static void ObtainKeyItem()
+        {
+
+            var player = GetLastUsedBy();
+
+            if (!GetIsPC(player) || GetIsDM(player)) return;
+
+            var placeable = OBJECT_SELF;
+            var keyItemID = GetLocalInt(placeable, "KEY_ITEM_ID");
+
+            if (keyItemID <= 0) return;
+
+            var keyItem = (KeyItemType) keyItemID;
+            if (HasKeyItem(player, keyItem))
+            {
+                SendMessageToPC(player, "You already have this key item.");
+                return;
+            }
+
+            GiveKeyItem(player, keyItem);
+
+            var visibilityGUID = GetLocalString(placeable, "VISIBILITY_OBJECT_ID");
+            if (!string.IsNullOrWhiteSpace(visibilityGUID))
+            {
+                ObjectVisibilityService.AdjustVisibility(player, placeable, false);
+            }
         }
 
     }

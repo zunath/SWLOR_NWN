@@ -70,6 +70,9 @@ namespace SWLOR.Game.Server.Service
                         if(!_questsByGuildType.ContainsKey(quest.GuildType))
                             _questsByGuildType[quest.GuildType] = new Dictionary<int, List<QuestDetail>>();
 
+                        if(!_questsByGuildType[quest.GuildType].ContainsKey(quest.GuildRank))
+                            _questsByGuildType[quest.GuildType][quest.GuildRank] = new List<QuestDetail>();
+
                         _questsByGuildType[quest.GuildType][quest.GuildRank].Add(quest);
                     }
                 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -201,11 +202,9 @@ namespace SWLOR.Game.Server.Core
                             Action = del,
                             Name = del.Method.DeclaringType?.Name + "." + del.Method.Name
                         });
-
-                        Console.WriteLine($"Registered method '{del.Method.Name}' to conditional script: {script}");
                     }
                     // Otherwise it's a normal script.
-                    else
+                    else if(mi.ReturnType == typeof(void))
                     {
                         var del = (Action)mi.CreateDelegate(typeof(Action));
 
@@ -217,8 +216,10 @@ namespace SWLOR.Game.Server.Core
                             Action = del,
                             Name = del.Method.DeclaringType?.Name + "." + del.Method.Name
                         });
-
-                        Console.WriteLine($"Registered method '{del.Method.Name}' to script: {script}");
+                    }
+                    else
+                    {
+                        Log.Write(LogGroup.Error, $"Method '{mi.Name}' tied to script '{script}' has an invalid return type. This script was NOT loaded.", true);
                     }
 
                 }

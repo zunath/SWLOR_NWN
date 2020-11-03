@@ -43,7 +43,6 @@ namespace SWLOR.Game.Server.Legacy.Service
             MessageHub.Instance.Subscribe<OnSkillGained>(message => CachePerkIDsRequiringSkill(message.Player, message.SkillID));
             MessageHub.Instance.Subscribe<OnPerkUpgraded>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
             MessageHub.Instance.Subscribe<OnPerkRefunded>(message => CacheEffectivePerkLevel(message.Player, message.PerkID));
-            MessageHub.Instance.Subscribe<OnQuestCompleted>(message => CachePerkIDsRequiringQuest(message.Player, message.QuestID));
 
             // Feat Events
             MessageHub.Instance.Subscribe<OnHitCastSpell>(message => OnHitCastSpell());
@@ -173,14 +172,6 @@ namespace SWLOR.Game.Server.Legacy.Service
         private static void CachePerkIDsRequiringSkill(NWPlayer player, int skillID)
         {
             if (_perkRequirementsBySkill.TryGetValue(skillID, out var perkIDs))
-            {
-                CacheEffectivePerkLevels(player, perkIDs);
-            }
-        }
-
-        private static void CachePerkIDsRequiringQuest(NWPlayer player, int questID)
-        {
-            if (_perkRequirementsByQuest.TryGetValue(questID, out var perkIDs))
             {
                 CacheEffectivePerkLevels(player, perkIDs);
             }

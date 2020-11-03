@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature
                 var mpAmount = CalculateMPRegenAmount(player);
                 var staminaAmount = CalculateStaminaRegenAmount(player);
 
-                Stat.RestoreMP(player, dbPlayer, mpAmount);
+                Stat.RestoreFP(player, dbPlayer, mpAmount);
                 Stat.RestoreStamina(player, dbPlayer, staminaAmount);
 
                 if (hpAmount > 0 && GetCurrentHitPoints(player) < GetMaxHitPoints(player))

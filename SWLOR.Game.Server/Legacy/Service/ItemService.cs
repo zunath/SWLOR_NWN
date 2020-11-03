@@ -11,7 +11,6 @@ using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.Event.Item;
-using SWLOR.Game.Server.Legacy.Event.Legacy;
 using SWLOR.Game.Server.Legacy.Event.Module;
 using SWLOR.Game.Server.Legacy.Event.SWLOR;
 using SWLOR.Game.Server.Legacy.GameObject;
@@ -879,7 +878,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 
             if (!string.IsNullOrWhiteSpace(script))
             {
-                ScriptItemEvent.Run(script);
+                //ScriptItemEvent.Run(script);
             }
         }
 

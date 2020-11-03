@@ -143,6 +143,9 @@ namespace SWLOR.Game.Server.Service
                             .ToList();
                     }
 
+                    if(!_activeGuildTasks.ContainsKey(type))
+                        _activeGuildTasks[type] = new Dictionary<int, List<QuestDetail>>();
+
                     _activeGuildTasks[type][rank] = tasks;
                 }
             }

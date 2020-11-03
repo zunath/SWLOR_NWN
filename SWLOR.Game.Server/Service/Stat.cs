@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to modify.</param>
         /// <param name="entity">The entity to modify.</param>
         /// <param name="amount">The amount of FP to restore.</param>
-        public static void RestoreMP(uint player, Player entity, int amount)
+        public static void RestoreFP(uint player, Player entity, int amount)
         {
             if (amount <= 0) return;
 

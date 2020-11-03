@@ -6,21 +6,21 @@ namespace SWLOR.Game.Server.Enumeration
     {
         [SkillCategory("Invalid", false, 0)]
         Invalid = 0,
-        [PerkCategory("Melee Combat", true)]
+        [SkillCategory("Melee Combat", true, 1)]
         MeleeCombat = 1,
-        [PerkCategory("Ranged Combat", true)]
+        [SkillCategory("Ranged Combat", true, 2)]
         RangedCombat = 2,
-        [PerkCategory("Defense", true)]
+        [SkillCategory("Defense", true, 3)]
         Defense = 3,
-        [PerkCategory("Crafting", true)]
+        [SkillCategory("Crafting", true, 4)]
         Crafting = 4,
-        [PerkCategory("Gathering", true)]
+        [SkillCategory("Gathering", true, 5)]
         Gathering = 5,
-        [PerkCategory("Utility", true)]
+        [SkillCategory("Utility", true, 6)]
         Utility = 6,
-        [PerkCategory("Force", true)]
+        [SkillCategory("Force", true, 7)]
         Force = 7,
-        [PerkCategory("Languages", true)]
+        [SkillCategory("Languages", true, 8)]
         Languages = 8,
     }
 

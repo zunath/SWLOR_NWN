@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.QuestService;
 
@@ -172,7 +172,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .OnAcceptAction((player, sourceObject) =>
                 {
-                    ObjectVisibilityService.AdjustVisibility(player, sourceObject, false);
+                    ObjectVisibility.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
                 });
         }
 

@@ -9,13 +9,12 @@ using SWLOR.Game.Server.Legacy.ValueObject;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
 using SWLOR.Game.Server.Legacy.ValueObject.Skill;
 
-namespace SWLOR.Game.Server
+namespace SWLOR.Game.Server.Legacy
 {
     public static class AppCache
     {
         public static Dictionary<Guid, PlayerDialog> PlayerDialogs { get; }
         public static Dictionary<int, bool> DialogFilesInUse { get; }
-        public static Dictionary<string, int> EffectTicks { get; }
         public static Dictionary<Guid, CreatureSkillRegistration> CreatureSkillRegistrations;
         public static Dictionary<CasterSpellVO, int> NPCEffects { get; }
         public static Queue<string> UnregisterProcessingEvents { get; set; }
@@ -30,7 +29,6 @@ namespace SWLOR.Game.Server
         {
             PlayerDialogs = new Dictionary<Guid, PlayerDialog>();
             DialogFilesInUse = new Dictionary<int, bool>();
-            EffectTicks = new Dictionary<string, int>();
             CreatureSkillRegistrations = new Dictionary<Guid, CreatureSkillRegistration>();
             NPCEffects = new Dictionary<CasterSpellVO, int>();
             UnregisterProcessingEvents = new Queue<string>();
@@ -57,7 +55,6 @@ namespace SWLOR.Game.Server
         {
             player.SendMessage("PlayerDialogs: " + PlayerDialogs.Count);
             player.SendMessage("DialogFilesInUse: " + DialogFilesInUse.Count);
-            player.SendMessage("EffectTicks: " + EffectTicks.Count);
             player.SendMessage("CreatureSkillRegistrations: " + CreatureSkillRegistrations.Count);
             player.SendMessage("NPCEffects: " + NPCEffects.Count);
             player.SendMessage("UnregisterProcessingEvents: " + UnregisterProcessingEvents.Count);

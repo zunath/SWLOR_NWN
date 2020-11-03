@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Legacy;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.QuestService;
 
@@ -67,18 +66,18 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .OnAcceptAction((player, sourceObject) =>
                 {
                     var obj = AppCache.VisibilityObjects.Single(x => x.Key == "FF65A192706B40A6A97474B935796B82").Value;
-                    ObjectVisibilityService.AdjustVisibility(player, obj, true);
+                    ObjectVisibility.AdjustVisibility(player, obj, VisibilityType.Visible);
                 })
                 
                 .OnAdvanceAction((player, sourceObject, state) =>
                 {
-                    ObjectVisibilityService.AdjustVisibility(player, sourceObject, false);
+                    ObjectVisibility.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
                 })
                 
                 .OnCompleteAction((player, sourceObject) =>
                 {
                     var obj = AppCache.VisibilityObjects.Single(x => x.Key == "D4C44145731048F1B7DA23D974E59FCE").Value;
-                    ObjectVisibilityService.AdjustVisibility(player, obj, true);
+                    ObjectVisibility.AdjustVisibility(player, obj, VisibilityType.Visible);
                 });
         }
 
@@ -112,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .OnAcceptAction((player, sourceObject) =>
                 {
                     var obj = AppCache.VisibilityObjects.Single(x => x.Key == "A61BB617B2D34E2F863C6301A4A04143").Value;
-                    ObjectVisibilityService.AdjustVisibility(player, obj, true);
+                    ObjectVisibility.AdjustVisibility(player, obj, VisibilityType.Visible);
                 });
         }
 
@@ -131,12 +130,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .OnAcceptAction((player, sourceObject) =>
                 {
                     var obj = AppCache.VisibilityObjects.Single(x => x.Key == "81533EBB-2084-4C97-B004-8E1D8C395F56").Value;
-                    ObjectVisibilityService.AdjustVisibility(player, obj, true);
+                    ObjectVisibility.AdjustVisibility(player, obj, VisibilityType.Visible);
                 })
                 
                 .OnAdvanceAction((player, sourceObject, state) =>
                 {
-                    ObjectVisibilityService.AdjustVisibility(player, sourceObject, false);
+                    ObjectVisibility.AdjustVisibility(player, sourceObject, VisibilityType.Hidden);
                 });
         }
 
@@ -245,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                     foreach (var objID in visibilityObjectIDs)
                     {
                         var obj = AppCache.VisibilityObjects.Single(x => x.Key == objID).Value;
-                        ObjectVisibilityService.AdjustVisibility(player, obj, true);
+                        ObjectVisibility.AdjustVisibility(player, obj, VisibilityType.Visible);
                     }
                 })
                 

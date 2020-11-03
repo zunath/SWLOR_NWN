@@ -2,7 +2,6 @@
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Legacy.GameObject;
-using SWLOR.Game.Server.Legacy.Service;
 using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
 
 namespace SWLOR.Game.Server.Legacy.Perk.MartialArts

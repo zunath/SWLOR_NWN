@@ -3,7 +3,6 @@ using System.Linq;
 using SWLOR.Game.Server.Legacy.Event.Module;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
-using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
 using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;

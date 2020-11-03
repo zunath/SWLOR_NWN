@@ -1,6 +1,5 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
-using SWLOR.Game.Server.Legacy.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Legacy.Event.Conversation.RimerCards

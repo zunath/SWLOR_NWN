@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SWLOR.Game.Server.Service.WeatherService
+﻿namespace SWLOR.Game.Server.Service.WeatherService
 {
     public class WeatherClimate
     {

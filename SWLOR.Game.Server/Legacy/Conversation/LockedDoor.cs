@@ -2,7 +2,6 @@
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
-using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
 using SWLOR.Game.Server.Service;
 

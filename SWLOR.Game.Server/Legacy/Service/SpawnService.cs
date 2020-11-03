@@ -294,8 +294,6 @@ namespace SWLOR.Game.Server.Legacy.Service
                 var spawn = new ObjectSpawn(location, false, dbArea.ResourceSpawnTableID, 600.0f);
                 spawn.Spawn = plc;
 
-                ObjectVisibilityService.ApplyVisibilityForObject(plc);
-                
                 if (dbSpawn.NPCGroupID != null && dbSpawn.NPCGroupID > 0)
                 {
                     plc.SetLocalInt("NPC_GROUP", Convert.ToInt32(dbSpawn.NPCGroupID));
@@ -530,8 +528,6 @@ namespace SWLOR.Game.Server.Legacy.Service
                     var rule = GetSpawnRule(spawn.SpawnRule);
                     rule.Run(spawn.Spawn);
                 }
-
-                ObjectVisibilityService.ApplyVisibilityForObject(spawn.Spawn);
 
                 spawn.Timer = 0.0f;
             }

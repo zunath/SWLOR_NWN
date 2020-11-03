@@ -5,7 +5,6 @@ using Dapper;
 using Dapper.Contrib.Extensions;
 using MySqlConnector;
 using SWLOR.Game.Server.Legacy.Caching;
-using SWLOR.Game.Server.Legacy.Data;
 using SWLOR.Game.Server.Legacy.Data.Contracts;
 using SWLOR.Game.Server.Legacy.Data.Entity;
 using SWLOR.Game.Server.Legacy.Enumeration;

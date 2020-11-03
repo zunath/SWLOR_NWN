@@ -1,4 +1,5 @@
 ﻿using System;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
@@ -50,7 +51,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.Quests
             quest.Advance(player, crystal);
 
             // Hide the "Source of Power?" placeable so the player can't use it again.
-            ObjectVisibilityService.AdjustVisibility(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", false);
+            ObjectVisibility.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Hidden);
 
             NWObject tpWP = NWScript.GetObjectByTag("FORCE_QUEST_LANDING");
             player.AssignCommand(() => NWScript.ActionJumpToLocation(tpWP.Location));

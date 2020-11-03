@@ -2,7 +2,6 @@
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Item.Contracts;
-using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 

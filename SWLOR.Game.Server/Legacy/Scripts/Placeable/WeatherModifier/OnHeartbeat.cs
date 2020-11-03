@@ -1,6 +1,5 @@
 ﻿using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Legacy.GameObject;
-using SWLOR.Game.Server.Legacy.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Weather = SWLOR.Game.Server.Service.Weather;
 

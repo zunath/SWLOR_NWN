@@ -1,7 +1,7 @@
-﻿using SWLOR.Game.Server.Core.NWScript;
+﻿using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
-using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
 using SWLOR.Game.Server.Service;
 
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
             if (!string.IsNullOrWhiteSpace(visibilityObjectID))
             {
-                ObjectVisibilityService.AdjustVisibility(GetPC(), self, false);
+                ObjectVisibility.AdjustVisibility(GetPC(), self, VisibilityType.Hidden);
             }
 
             EndConversation();

@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SpawnService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using Object = System.Object;
 
 namespace SWLOR.Game.Server.Feature
 {

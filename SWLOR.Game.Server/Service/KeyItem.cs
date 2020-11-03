@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Legacy.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -226,7 +225,7 @@ namespace SWLOR.Game.Server.Service
             var visibilityGUID = GetLocalString(placeable, "VISIBILITY_OBJECT_ID");
             if (!string.IsNullOrWhiteSpace(visibilityGUID))
             {
-                ObjectVisibilityService.AdjustVisibility(player, placeable, false);
+                ObjectVisibility.AdjustVisibility(player, placeable, VisibilityType.Hidden);
             }
         }
 

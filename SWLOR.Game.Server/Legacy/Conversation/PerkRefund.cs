@@ -11,7 +11,6 @@ using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
 using SWLOR.Game.Server.Service;
-using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
 
 namespace SWLOR.Game.Server.Legacy.Conversation
 {

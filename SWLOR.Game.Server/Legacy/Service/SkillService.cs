@@ -11,7 +11,6 @@ using SWLOR.Game.Server.Legacy.Data.Entity;
 using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.Event.Area;
 using SWLOR.Game.Server.Legacy.Event.Creature;
-using SWLOR.Game.Server.Legacy.Event.Feat;
 using SWLOR.Game.Server.Legacy.Event.Module;
 using SWLOR.Game.Server.Legacy.Event.SWLOR;
 using SWLOR.Game.Server.Legacy.GameObject;

@@ -20,7 +20,6 @@ namespace SWLOR.Game.Server.Legacy
         public static Queue<string> UnregisterProcessingEvents { get; set; }
         public static Dictionary<Guid, EnmityTable> NPCEnmityTables { get; set; }
         public static Dictionary<Guid, CustomData> CustomObjectData { get; set; } 
-        public static Dictionary<string, NWObject> VisibilityObjects { get; set; }
         public static List<Guid> PCEffectsForRemoval { get; set; }
         public static List<NWObject> ConnectedDMs { get; set; }
         public static Dictionary<Guid, Dictionary<int, int>> PlayerEffectivePerkLevels { get; set; }
@@ -34,7 +33,6 @@ namespace SWLOR.Game.Server.Legacy
             UnregisterProcessingEvents = new Queue<string>();
             NPCEnmityTables = new Dictionary<Guid, EnmityTable>();
             CustomObjectData = new Dictionary<Guid, CustomData>();
-            VisibilityObjects = new Dictionary<string, NWObject>();
             PCEffectsForRemoval = new List<Guid>();
             ConnectedDMs = new List<NWObject>();
             PlayerEffectivePerkLevels = new Dictionary<Guid, Dictionary<int, int>>();
@@ -60,7 +58,6 @@ namespace SWLOR.Game.Server.Legacy
             player.SendMessage("UnregisterProcessingEvents: " + UnregisterProcessingEvents.Count);
             player.SendMessage("NPCEnmityTables: " + NPCEnmityTables.Count);
             player.SendMessage("CustomObjectData: " + CustomObjectData.Count);
-            player.SendMessage("VisibilityObjects: " + VisibilityObjects.Count);
             player.SendMessage("PCEffectsForRemoval: " + PCEffectsForRemoval.Count);
             player.SendMessage("ConnectedDMs: " + ConnectedDMs.Count);
             player.SendMessage("PlayerEffectivePerkLevels: " + PlayerEffectivePerkLevels.Count);

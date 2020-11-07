@@ -44,6 +44,8 @@ namespace SWLOR.Game.Server.Service
             _itemToSkillMapping[BaseItem.ShortSword] = SkillType.OneHanded;
             _itemToSkillMapping[BaseItem.Sickle] = SkillType.OneHanded;
             _itemToSkillMapping[BaseItem.Whip] = SkillType.OneHanded;
+            _itemToSkillMapping[BaseItem.Lightsaber] = SkillType.OneHanded;
+            _itemToSkillMapping[BaseItem.Saberstaff] = SkillType.OneHanded;
 
             // Two-Handed Skills
             _itemToSkillMapping[BaseItem.DireMace] = SkillType.TwoHanded;
@@ -56,9 +58,8 @@ namespace SWLOR.Game.Server.Service
             _itemToSkillMapping[BaseItem.Trident] = SkillType.TwoHanded;
             _itemToSkillMapping[BaseItem.WarHammer] = SkillType.TwoHanded;
             _itemToSkillMapping[BaseItem.ShortSpear] = SkillType.TwoHanded;
-            // Twin Blades Skills
-            _itemToSkillMapping[BaseItem.TwoBladedSword] = SkillType.TwinBlades;
-            _itemToSkillMapping[BaseItem.DoubleAxe] = SkillType.TwinBlades;
+            _itemToSkillMapping[BaseItem.TwoBladedSword] = SkillType.TwoHanded;
+            _itemToSkillMapping[BaseItem.DoubleAxe] = SkillType.TwoHanded;
             // Martial Arts Skills
             _itemToSkillMapping[BaseItem.Club] = SkillType.MartialArts;
             _itemToSkillMapping[BaseItem.Bracer] = SkillType.MartialArts;
@@ -82,9 +83,6 @@ namespace SWLOR.Game.Server.Service
             _itemToSkillMapping[BaseItem.SmallShield] = SkillType.LightArmor;
             _itemToSkillMapping[BaseItem.LargeShield] = SkillType.HeavyArmor;
             _itemToSkillMapping[BaseItem.TowerShield] = SkillType.HeavyArmor;
-            // Lightsabers
-            _itemToSkillMapping[BaseItem.Lightsaber] = SkillType.Lightsabers;
-            _itemToSkillMapping[BaseItem.Saberstaff] = SkillType.Lightsabers;
 
             Console.WriteLine("Completed item to skill mappings successfully.");
         }

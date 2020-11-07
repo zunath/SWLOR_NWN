@@ -121,13 +121,26 @@ namespace SWLOR.Game.Server.Service.PerkService
         }
 
         /// <summary>
-        /// Adds a quest requirement to purchase the perk.
+        /// Adds a quest requirement to purchase and use the perk.
         /// </summary>
         /// <param name="questId">The quest Id to require.</param>
         /// <returns>A perk builder with the configured options.</returns>
         public PerkBuilder RequirementQuest(string questId)
         {
             var requirement = new PerkQuestRequirement(questId);
+            _activeLevel.Requirements.Add(requirement);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a character type requirement to purchase and use the perk.
+        /// </summary>
+        /// <param name="characterType"></param>
+        /// <returns></returns>
+        public PerkBuilder RequirementCharacterType(CharacterType characterType)
+        {
+            var requirement = new PerkCharacterTypeRequirement(characterType);
             _activeLevel.Requirements.Add(requirement);
 
             return this;

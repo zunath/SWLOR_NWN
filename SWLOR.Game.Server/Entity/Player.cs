@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Entity
             Quests = new Dictionary<string, PlayerQuest>();
             UnlockedPerks = new Dictionary<PerkType, DateTime>();
             UnlockedRecipes = new Dictionary<RecipeType, DateTime>();
-            IsForceSensitive = false;
+            CharacterType = CharacterType.Invalid;
             KeyItems = new Dictionary<KeyItemType, DateTime>();
             Guilds = new Dictionary<GuildType, PlayerGuild>();
         }
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Entity
         public int XPDebt { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime? DatePerkRefundAvailable { get; set; }
-        public bool IsForceSensitive { get; set; }
+        public CharacterType CharacterType { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }

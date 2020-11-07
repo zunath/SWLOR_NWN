@@ -1108,6 +1108,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         DeprecatedForcePush = 1145,
 
         DeprecatedDrainLife = 1152,
+        Dash = 1153,
 
         PlasmaCell = 1155,
         RenameCraftedItem = 1160,

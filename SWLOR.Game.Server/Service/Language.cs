@@ -53,13 +53,10 @@ namespace SWLOR.Game.Server.Service
 
                 // Get the rank and max rank for the speaker, and garble their English text based on it.
                 var speakerSkillRank = dbSpeaker.Skills[language].Rank;
-                var speakerSkillMaxRank = dbSpeaker.IsForceSensitive
-                    ? languageSkill.MaxRankForceSensitive
-                    : languageSkill.MaxRankStandard;
 
-                if (speakerSkillRank != speakerSkillMaxRank)
+                if (speakerSkillRank != languageSkill.MaxRank)
                 {
-                    var garbledChance = 100 - (int)((speakerSkillRank / (float)speakerSkillMaxRank) * 100);
+                    var garbledChance = 100 - (int)((speakerSkillRank / (float)languageSkill.MaxRank) * 100);
 
                     var split = snippet.Split(' ');
                     for (var i = 0; i < split.Length; ++i)
@@ -84,9 +81,7 @@ namespace SWLOR.Game.Server.Service
             var listenerId = GetObjectUUID(listener);
             var dbListener = DB.Get<Player>(listenerId);
             var rank = dbListener.Skills[language].Rank;
-            var maxRank = dbListener.IsForceSensitive
-                ? languageSkill.MaxRankForceSensitive
-                : languageSkill.MaxRankStandard;
+            var maxRank = languageSkill.MaxRank;
 
             // Check for the Comprehend Speech concentration ability.
             var grantSenseXP = false;
@@ -272,9 +267,7 @@ namespace SWLOR.Game.Server.Service
                 if (!dbPlayer.Skills.ContainsKey(language))
                     dbPlayer.Skills[language] = new PlayerSkill();
 
-                var level = dbPlayer.IsForceSensitive ?
-                    skill.MaxRankForceSensitive :
-                    skill.MaxRankStandard;
+                var level = skill.MaxRank;
                 dbPlayer.Skills[language].Rank = level;
 
                 dbPlayer.Skills[language].XP = Skill.GetRequiredXP(level) - 1;

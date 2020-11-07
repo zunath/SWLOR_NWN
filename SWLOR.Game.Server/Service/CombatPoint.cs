@@ -84,11 +84,10 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // Calculates the number of armor points based on what the player currently has equipped.
-                static (int, int, int) CalculateArmorPoints(uint player)
+                static (int, int) CalculateArmorPoints(uint player)
                 {
                     var lightArmorPoints = 0;
                     var heavyArmorPoints = 0;
-                    var mysticArmorPoints = 0;
                     for (int slot = 0; slot < NumberOfInventorySlots; slot++)
                     {
                         var item = GetItemInSlot((InventorySlot)slot, player);
@@ -102,12 +101,10 @@ namespace SWLOR.Game.Server.Service
                                 lightArmorPoints++;
                             else if (armorType == ArmorType.Heavy)
                                 heavyArmorPoints++;
-                            else if (armorType == ArmorType.Force)
-                                mysticArmorPoints++;
                         }
                     }
 
-                    return (lightArmorPoints, heavyArmorPoints, mysticArmorPoints);
+                    return (lightArmorPoints, heavyArmorPoints);
                 }
 
                 // Applies an individual armor skill's XP portion.
@@ -161,8 +158,8 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     // Each armor skill receives a static portion of XP based on how many pieces of each category are equipped.
-                    var (lightArmorPoints, heavyArmorPoints, mysticArmorPoints) = CalculateArmorPoints(player);
-                    totalPoints = lightArmorPoints + heavyArmorPoints + mysticArmorPoints;
+                    var (lightArmorPoints, heavyArmorPoints) = CalculateArmorPoints(player);
+                    totalPoints = lightArmorPoints + heavyArmorPoints;
                     if (totalPoints <= 0) continue;
 
                     var xp = CalculateAdjustedXP(highestRank, baseXP, SkillType.HeavyArmor, totalPoints, heavyArmorPoints, dbPlayer.Skills);
@@ -170,10 +167,6 @@ namespace SWLOR.Game.Server.Service
 
                     xp = CalculateAdjustedXP(highestRank, baseXP, SkillType.LightArmor, totalPoints, lightArmorPoints, dbPlayer.Skills);
                     Skill.GiveSkillXP(player, SkillType.LightArmor, xp);
-
-                    xp = CalculateAdjustedXP(highestRank, baseXP, SkillType.ForceArmor, totalPoints, mysticArmorPoints, dbPlayer.Skills);
-                    Skill.GiveSkillXP(player, SkillType.ForceArmor, xp);
-
                 }
 
             }

@@ -8,34 +8,32 @@ namespace SWLOR.Game.Server.Enumeration
         Invalid = 0,
         [PerkCategory("General", true)]
         General = 1,
-        [PerkCategory("Knight", true)]
-        Knight = 2,
-        [PerkCategory("Monk", true)]
-        Monk = 3,
-        [PerkCategory("Thief", true)]
-        Thief = 4,
-        [PerkCategory("Black Mage", true)]
-        BlackMage = 5,
-        [PerkCategory("White Mage", true)]
-        WhiteMage = 6,
-        [PerkCategory("Red Mage", true)]
-        RedMage = 7,
-        [PerkCategory("Ninja", true)]
-        Ninja = 8,
-        [PerkCategory("Specialist", true)]
-        Specialist = 9,
-        [PerkCategory("Sniper", true)]
-        Sniper = 10,
-        [PerkCategory("Dark Knight", true)]
-        DarkKnight = 11,
-        [PerkCategory("Blacksmith", true)]
-        Blacksmith = 12,
-        [PerkCategory("Leatherworker", true)]
-        Leatherworker = 13,
-        [PerkCategory("Alchemist", true)]
-        Alchemist = 14,
-        [PerkCategory("Culinarian", true)]
-        Culinarian = 15
+        [PerkCategory("Armor", true)] // light/heavy/force/shields
+        Armor = 2,
+        [PerkCategory("Crafting", true)]
+        Crafting = 3,
+        [PerkCategory("Gathering", true)] // harvesting
+        Gathering = 4,
+        [PerkCategory("Force Alter", true)]
+        ForceAlter = 6,
+        [PerkCategory("Force Control", true)]
+        ForceControl = 7,
+        [PerkCategory("Force Sense", true)]
+        ForceSense = 8,
+        [PerkCategory("Medicine", true)]
+        Medicine = 5,
+        [PerkCategory("Piloting", true)]
+        Piloting = 5,
+        [PerkCategory("Weapon - Blaster", true)]
+        Blaster = 5,
+        [PerkCategory("Weapon - Lightsaber", true)]
+        Lightsaber = 5,
+        [PerkCategory("Weapon - Martial Arts", true)]
+        MartialArts = 5,
+        [PerkCategory("Weapon - One Handed", true)]
+        OneHanded = 5,
+        [PerkCategory("Weapon - Throwing", true)]
+        Throwing = 5,
 
     }
 

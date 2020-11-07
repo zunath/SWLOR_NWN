@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Enumeration
         Leather = 18,
         [RecipeCategory("Potion", true)]
         Potion = 19,
-        [RecipeCategory("Medicine", true)]
+        [RecipeCategory("FirstAid", true)]
         Medicine = 20,
         [RecipeCategory("Staff", true)]
         Staff = 21,

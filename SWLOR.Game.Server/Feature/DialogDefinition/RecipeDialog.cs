@@ -105,15 +105,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 ChangePage(CategoryPageId);
             });
 
-            page.AddResponse(Skill.GetSkillDetails(SkillType.Medicine).Name, () =>
+            page.AddResponse(Skill.GetSkillDetails(SkillType.FirstAid).Name, () =>
             {
-                model.SelectedSkill = SkillType.Medicine;
+                model.SelectedSkill = SkillType.FirstAid;
                 ChangePage(CategoryPageId);
             });
 
-            page.AddResponse(Skill.GetSkillDetails(SkillType.Engineering).Name, () =>
+            page.AddResponse(Skill.GetSkillDetails(SkillType.Cybertech).Name, () =>
             {
-                model.SelectedSkill = SkillType.Engineering;
+                model.SelectedSkill = SkillType.Cybertech;
                 ChangePage(CategoryPageId);
             });
         }

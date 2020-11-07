@@ -30,18 +30,6 @@ namespace SWLOR.Game.Server.Feature
         };
 
         /// <summary>
-        /// Contains a mapping from a skill type to the associated auto-craft perk type.
-        /// </summary>
-        private static readonly Dictionary<SkillType, PerkType> _autoCraftPerk = new Dictionary<SkillType, PerkType>
-        {
-            {SkillType.Weaponsmith, PerkType.AutoCraftWeaponsmith},
-            {SkillType.Armorsmith, PerkType.AutoCraftArmorsmith},
-            {SkillType.Fabrication, PerkType.AutoCraftFabrication},
-            {SkillType.Medicine, PerkType.AutoCraftMedicine},
-            {SkillType.Engineering, PerkType.AutoCraftEngineering}
-        };
-
-        /// <summary>
         /// When the crafting device is opened,
         ///     1.) Open the recipe menu if a recipe hasn't been selected yet for this session.
         ///     or
@@ -193,18 +181,7 @@ namespace SWLOR.Game.Server.Feature
 
             float CalculateAutoCraftingDelay()
             {
-                var baseDelay = 20f;
-                var perk = _autoCraftPerk[state.DeviceSkillType];
-
-                switch (Perk.GetEffectivePerkLevel(player, perk))
-                {
-                    case 2: baseDelay -= 4; break;
-                    case 3: baseDelay -= 8; break;
-                    case 4: baseDelay -= 12; break;
-                    case 5: baseDelay -= 16; break;
-                }
-
-                return baseDelay;
+                return 20f;
             }
 
             void CraftItem(bool isSuccessful)

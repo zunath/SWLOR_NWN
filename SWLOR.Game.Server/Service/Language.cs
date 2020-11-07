@@ -154,9 +154,9 @@ namespace SWLOR.Game.Server.Service
                 // Reward exp towards the language - we scale this with character count, maxing at 50 exp for 150 characters.
                 Skill.GiveSkillXP(listener, language, amount);
 
-                // Grant Sense XP if player is concentrating Comprehend Speech.
+                // Grant Force XP if player is concentrating Comprehend Speech.
                 if (grantSenseXP)
-                    Skill.GiveSkillXP(listener, SkillType.ForceSense, amount * 10);
+                    Skill.GiveSkillXP(listener, SkillType.Force, amount * 10);
 
                 SetLocalInt(listener, "LAST_LANGUAGE_SKILL_INCREASE_LOW", (int)(now & 0xFFFFFFFF));
                 SetLocalInt(listener, "LAST_LANGUAGE_SKILL_INCREASE_HIGH", (int)((now >> 32) & 0xFFFFFFFF));

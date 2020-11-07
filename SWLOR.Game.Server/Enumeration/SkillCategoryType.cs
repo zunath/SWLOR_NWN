@@ -6,22 +6,14 @@ namespace SWLOR.Game.Server.Enumeration
     {
         [SkillCategory("Invalid", false, 0)]
         Invalid = 0,
-        [SkillCategory("Melee Combat", true, 1)]
-        MeleeCombat = 1,
-        [SkillCategory("Ranged Combat", true, 2)]
-        RangedCombat = 2,
-        [SkillCategory("Defense", true, 3)]
-        Defense = 3,
+        [SkillCategory("Combat", true, 1)]
+        Combat = 1,
         [SkillCategory("Crafting", true, 4)]
-        Crafting = 4,
-        [SkillCategory("Gathering", true, 5)]
-        Gathering = 5,
+        Crafting = 2,
         [SkillCategory("Utility", true, 6)]
-        Utility = 6,
-        [SkillCategory("Force", true, 7)]
-        Force = 7,
+        Utility = 3,
         [SkillCategory("Languages", true, 8)]
-        Languages = 8,
+        Languages = 4,
     }
 
     public class SkillCategoryAttribute : Attribute

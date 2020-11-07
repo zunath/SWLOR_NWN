@@ -6,35 +6,90 @@ namespace SWLOR.Game.Server.Enumeration
     {
         [PerkCategory("Invalid", false)]
         Invalid = 0,
-        [PerkCategory("General", true)]
-        General = 1,
-        [PerkCategory("Armor", true)] // light/heavy/force/shields
-        Armor = 2,
-        [PerkCategory("Crafting", true)]
-        Crafting = 3,
-        [PerkCategory("Gathering", true)] // harvesting
-        Gathering = 4,
-        [PerkCategory("Force Alter", true)]
-        ForceAlter = 6,
-        [PerkCategory("Force Control", true)]
-        ForceControl = 7,
-        [PerkCategory("Force Sense", true)]
-        ForceSense = 8,
-        [PerkCategory("Medicine", true)]
-        Medicine = 5,
-        [PerkCategory("Piloting", true)]
-        Piloting = 5,
-        [PerkCategory("Weapon - Blaster", true)]
-        Blaster = 5,
-        [PerkCategory("Weapon - Lightsaber", true)]
-        Lightsaber = 5,
-        [PerkCategory("Weapon - Martial Arts", true)]
-        MartialArts = 5,
-        [PerkCategory("Weapon - One Handed", true)]
-        OneHanded = 5,
-        [PerkCategory("Weapon - Throwing", true)]
-        Throwing = 5,
 
+        [PerkCategory("One Handed - General", true)]
+        OneHandedGeneral = 1,
+
+        [PerkCategory("One Handed - Vibroblade", true)]
+        OneHandedVibroblade = 2,
+
+        [PerkCategory("One Handed - Finesse Vibroblade", true)]
+        OneHandedFinesseVibroblade = 3,
+
+        [PerkCategory("One Handed - Lightsaber", true)]
+        OneHandedLightsaber = 4,
+
+        [PerkCategory("Two Handed - General", true)]
+        TwoHandedGeneral = 5,
+
+        [PerkCategory("Two Handed - Heavy Vibroblade", true)]
+        TwoHandedHeavyVibroblade = 6,
+
+        [PerkCategory("Two Handed - Polearm", true)]
+        TwoHandedPolearm = 7,
+
+        [PerkCategory("Two Handed - Twin Blade", true)]
+        TwoHandedTwinBlade = 8,
+
+        [PerkCategory("Two Handed - Saberstaff", true)]
+        TwoHandedSaberstaff = 9,
+
+        [PerkCategory("Martial Arts - General", true)]
+        MartialArtsGeneral = 10,
+
+        [PerkCategory("Martial Arts - Unarmed", true)]
+        MartialArtsUnarmed = 11,
+
+        [PerkCategory("Martial Arts - Staff", true)]
+        MartialArtsStaff = 12,
+
+        [PerkCategory("Ranged - General", true)]
+        RangedGeneral = 13,
+
+        [PerkCategory("Ranged - Pistol", true)]
+        RangedPistol = 14,
+
+        [PerkCategory("Ranged - Throwing", true)]
+        RangedThrowing = 15,
+
+        [PerkCategory("Ranged - Cannon", true)]
+        RangedCannon = 16,
+
+        [PerkCategory("Ranged - Rifle", true)]
+        RangedRifle = 17,
+
+        [PerkCategory("Force - Universal", true)]
+        ForceUniversal = 18,
+
+        [PerkCategory("Armor - General", true)]
+        ArmorGeneral = 19,
+
+        [PerkCategory("Armor - Heavy", true)]
+        ArmorHeavy = 20,
+
+        [PerkCategory("Armor - Light", true)]
+        ArmorLight = 21,
+
+        [PerkCategory("Piloting", true)]
+        Piloting = 22,
+
+        [PerkCategory("First Aid", true)]
+        FirstAid = 23,
+
+        [PerkCategory("Weaponsmith", true)]
+        Weaponsmith = 24,
+
+        [PerkCategory("Armorsmith", true)]
+        Armorsmith = 25,
+
+        [PerkCategory("Cybertech", true)]
+        Cybertech = 26,
+
+        [PerkCategory("Fabrication", true)]
+        Fabrication = 27,
+
+        [PerkCategory("Gathering", true)]
+        Gathering = 28
     }
 
     public class PerkCategoryAttribute : Attribute

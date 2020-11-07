@@ -84,27 +84,21 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // Calculates the number of armor points based on what the player currently has equipped.
-                static (int, int) CalculateArmorPoints(uint player)
+                static int CalculateArmorPoints(uint player)
                 {
-                    var lightArmorPoints = 0;
-                    var heavyArmorPoints = 0;
-                    for (int slot = 0; slot < NumberOfInventorySlots; slot++)
-                    {
-                        var item = GetItemInSlot((InventorySlot)slot, player);
+                    var armorPoints = 0;
 
-                        for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-                        {
-                            if (GetItemPropertyType(ip) != ItemPropertyType.ArmorType) continue;
+                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Head, player))) armorPoints++;
+                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Chest, player))) armorPoints++;
+                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Boots, player))) armorPoints++;
+                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Arms, player))) armorPoints++;
+                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Cloak, player))) armorPoints++;
+                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.LeftRing, player))) armorPoints++;
+                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.RightRing, player))) armorPoints++;
+                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Neck, player))) armorPoints++;
+                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Belt, player))) armorPoints++;
 
-                            var armorType = (ArmorType)GetItemPropertySubType(ip);
-                            if (armorType == ArmorType.Light)
-                                lightArmorPoints++;
-                            else if (armorType == ArmorType.Heavy)
-                                heavyArmorPoints++;
-                        }
-                    }
-
-                    return (lightArmorPoints, heavyArmorPoints);
+                    return armorPoints;
                 }
 
                 // Applies an individual armor skill's XP portion.
@@ -158,15 +152,11 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     // Each armor skill receives a static portion of XP based on how many pieces of each category are equipped.
-                    var (lightArmorPoints, heavyArmorPoints) = CalculateArmorPoints(player);
-                    totalPoints = lightArmorPoints + heavyArmorPoints;
-                    if (totalPoints <= 0) continue;
+                    var armorPoints = CalculateArmorPoints(player);
+                    if (armorPoints <= 0) return;
 
-                    var xp = CalculateAdjustedXP(highestRank, baseXP, SkillType.HeavyArmor, totalPoints, heavyArmorPoints, dbPlayer.Skills);
-                    Skill.GiveSkillXP(player, SkillType.HeavyArmor, xp);
-
-                    xp = CalculateAdjustedXP(highestRank, baseXP, SkillType.LightArmor, totalPoints, lightArmorPoints, dbPlayer.Skills);
-                    Skill.GiveSkillXP(player, SkillType.LightArmor, xp);
+                    var xp = CalculateAdjustedXP(highestRank, baseXP, SkillType.Armor, totalPoints, armorPoints, dbPlayer.Skills);
+                    Skill.GiveSkillXP(player, SkillType.Armor, xp);
                 }
 
             }

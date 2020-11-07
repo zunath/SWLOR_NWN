@@ -60,29 +60,31 @@ namespace SWLOR.Game.Server.Service
             _itemToSkillMapping[BaseItem.ShortSpear] = SkillType.TwoHanded;
             _itemToSkillMapping[BaseItem.TwoBladedSword] = SkillType.TwoHanded;
             _itemToSkillMapping[BaseItem.DoubleAxe] = SkillType.TwoHanded;
+
             // Martial Arts Skills
             _itemToSkillMapping[BaseItem.Club] = SkillType.MartialArts;
             _itemToSkillMapping[BaseItem.Bracer] = SkillType.MartialArts;
             _itemToSkillMapping[BaseItem.Gloves] = SkillType.MartialArts;
             _itemToSkillMapping[BaseItem.QuarterStaff] = SkillType.MartialArts;
-            // Firearms Skills
-            _itemToSkillMapping[BaseItem.HeavyCrossbow] = SkillType.Blasters;
-            _itemToSkillMapping[BaseItem.LightCrossbow] = SkillType.Blasters;
-            _itemToSkillMapping[BaseItem.Longbow] = SkillType.Blasters;
-            _itemToSkillMapping[BaseItem.ShortBow] = SkillType.Blasters;
-            _itemToSkillMapping[BaseItem.Arrow] = SkillType.Blasters;
-            _itemToSkillMapping[BaseItem.Bolt] = SkillType.Blasters;
-            _itemToSkillMapping[BaseItem.Bullet] = SkillType.Blasters;
-            _itemToSkillMapping[BaseItem.Sling] = SkillType.Blasters;
-            // Throwing Skills
-            _itemToSkillMapping[BaseItem.Grenade] = SkillType.Throwing;
-            _itemToSkillMapping[BaseItem.Shuriken] = SkillType.Throwing;
-            _itemToSkillMapping[BaseItem.ThrowingAxe] = SkillType.Throwing;
-            _itemToSkillMapping[BaseItem.Dart] = SkillType.Throwing;
-            // Shield Skills
-            _itemToSkillMapping[BaseItem.SmallShield] = SkillType.LightArmor;
-            _itemToSkillMapping[BaseItem.LargeShield] = SkillType.HeavyArmor;
-            _itemToSkillMapping[BaseItem.TowerShield] = SkillType.HeavyArmor;
+
+            // Ranged Skills
+            _itemToSkillMapping[BaseItem.HeavyCrossbow] = SkillType.Ranged;
+            _itemToSkillMapping[BaseItem.LightCrossbow] = SkillType.Ranged;
+            _itemToSkillMapping[BaseItem.Longbow] = SkillType.Ranged;
+            _itemToSkillMapping[BaseItem.ShortBow] = SkillType.Ranged;
+            _itemToSkillMapping[BaseItem.Arrow] = SkillType.Ranged;
+            _itemToSkillMapping[BaseItem.Bolt] = SkillType.Ranged;
+            _itemToSkillMapping[BaseItem.Bullet] = SkillType.Ranged;
+            _itemToSkillMapping[BaseItem.Sling] = SkillType.Ranged;
+            _itemToSkillMapping[BaseItem.Grenade] = SkillType.Ranged;
+            _itemToSkillMapping[BaseItem.Shuriken] = SkillType.Ranged;
+            _itemToSkillMapping[BaseItem.ThrowingAxe] = SkillType.Ranged;
+            _itemToSkillMapping[BaseItem.Dart] = SkillType.Ranged;
+
+            // Armor Skills
+            _itemToSkillMapping[BaseItem.SmallShield] = SkillType.Armor;
+            _itemToSkillMapping[BaseItem.LargeShield] = SkillType.Armor;
+            _itemToSkillMapping[BaseItem.TowerShield] = SkillType.Armor;
 
             Console.WriteLine("Completed item to skill mappings successfully.");
         }

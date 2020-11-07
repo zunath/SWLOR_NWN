@@ -101,8 +101,8 @@ namespace SWLOR.Game.Server.Service
             _craftSkillToAbility[SkillType.Weaponsmith] = new Tuple<AbilityType, AbilityType>(AbilityType.Dexterity, AbilityType.Intelligence);
             _craftSkillToAbility[SkillType.Armorsmith] = new Tuple<AbilityType, AbilityType>(AbilityType.Constitution, AbilityType.Intelligence);
             _craftSkillToAbility[SkillType.Fabrication] = new Tuple<AbilityType, AbilityType>(AbilityType.Intelligence, AbilityType.Constitution);
-            _craftSkillToAbility[SkillType.Medicine] = new Tuple<AbilityType, AbilityType>(AbilityType.Intelligence, AbilityType.Wisdom);
-            _craftSkillToAbility[SkillType.Engineering] = new Tuple<AbilityType, AbilityType>(AbilityType.Dexterity, AbilityType.Wisdom);
+            _craftSkillToAbility[SkillType.FirstAid] = new Tuple<AbilityType, AbilityType>(AbilityType.Intelligence, AbilityType.Wisdom);
+            _craftSkillToAbility[SkillType.Cybertech] = new Tuple<AbilityType, AbilityType>(AbilityType.Dexterity, AbilityType.Wisdom);
         }
 
         /// <summary>

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var feat = (Feat)Convert.ToInt32(Events.GetEventData("FEAT_ID"));
 
-            if (feat != Feat.StructureManagementTool) return;
+            if (feat != Feat.StructureTool) return;
 
             var player = OBJECT_SELF;
             var playerId = GetObjectUUID(player);

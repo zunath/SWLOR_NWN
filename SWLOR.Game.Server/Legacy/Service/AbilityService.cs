@@ -818,7 +818,6 @@ namespace SWLOR.Game.Server.Legacy.Service
             oTarget.SetLocalInt(LAST_ATTACK + oPC.GlobalID, ATTACK_PHYSICAL);
 
             HandleGrenadeProficiency(oPC, oTarget);
-            HandlePlasmaCellPerk(oPC, oTarget);
             var activeWeaponSkillID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL");
             if (activeWeaponSkillID <= 0) return;
             var activeWeaponSkillFeatID = oPC.GetLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID");
@@ -844,75 +843,6 @@ namespace SWLOR.Game.Server.Legacy.Service
             oPC.DeleteLocalString("ACTIVE_WEAPON_SKILL_UUID");
             oPC.DeleteLocalInt("ACTIVE_WEAPON_SKILL");
             oPC.DeleteLocalInt("ACTIVE_WEAPON_SKILL_FEAT_ID");
-
-        }
-
-        public static void HandlePlasmaCellPerk(NWPlayer player, NWObject target)
-        {
-            if (!player.IsPlayer) return;
-            if (!GetHasFeat(Feat.PlasmaCell, player)) return;  // Check if player has the perk
-            if (player.RightHand.CustomItemType != CustomItemType.BlasterPistol &&
-                player.RightHand.CustomItemType != CustomItemType.BlasterRifle) return; // Check if player has the right weapons
-            if (GetLocalBool(target, "TRANQUILIZER_EFFECT_FIRST_RUN") == true) return;   // Check if Tranquilizer is on to avoid conflict
-            if (GetLocalBool(player, "PLASMA_CELL_TOGGLE_OFF") == true) return;  // Check if Plasma Cell toggle is on or off
-            if (GetLocalBool(target, "TRANQUILIZER_EFFECT_FIRST_RUN") == true) return;
-
-            var perkLevel = PerkService.GetCreaturePerkLevel(player, PerkType.PlasmaCell);
-            int chance;
-            CustomEffectType[] damageTypes;
-            switch (perkLevel)
-            {
-                case 1:
-                    chance = 10;
-                    damageTypes = new[] { CustomEffectType.FireCell };
-                    break;
-                case 2:
-                    chance = 10;
-                    damageTypes = new[] { CustomEffectType.FireCell, CustomEffectType.ElectricCell };
-                    break;
-                case 3:
-                    chance = 20;
-                    damageTypes = new[] { CustomEffectType.FireCell, CustomEffectType.ElectricCell };
-                    break;
-                case 4:
-                    chance = 20;
-                    damageTypes = new[] { CustomEffectType.FireCell, CustomEffectType.ElectricCell, CustomEffectType.SonicCell };
-                    break;
-                case 5:
-                    chance = 30;
-                    damageTypes = new[] { CustomEffectType.FireCell, CustomEffectType.ElectricCell, CustomEffectType.SonicCell };
-                    break;
-                case 6:
-                    chance = 30;
-                    damageTypes = new[] { CustomEffectType.FireCell, CustomEffectType.ElectricCell, CustomEffectType.SonicCell, CustomEffectType.AcidCell };
-                    break;
-                case 7:
-                    chance = 40;
-                    damageTypes = new[] { CustomEffectType.FireCell, CustomEffectType.ElectricCell, CustomEffectType.SonicCell, CustomEffectType.AcidCell };
-                    break;
-                case 8:
-                    chance = 40;
-                    damageTypes = new[] { CustomEffectType.FireCell, CustomEffectType.ElectricCell, CustomEffectType.SonicCell, CustomEffectType.AcidCell, CustomEffectType.IceCell };
-                    break;
-                case 9:
-                    chance = 50;
-                    damageTypes = new[] { CustomEffectType.FireCell, CustomEffectType.ElectricCell, CustomEffectType.SonicCell, CustomEffectType.AcidCell, CustomEffectType.IceCell };
-                    break;
-                case 10:
-                    chance = 50;
-                    damageTypes = new[] { CustomEffectType.FireCell, CustomEffectType.ElectricCell, CustomEffectType.SonicCell, CustomEffectType.AcidCell, CustomEffectType.IceCell, CustomEffectType.DivineCell };
-                    break;
-
-                default: return;
-            }
-
-            foreach (var effect in damageTypes)
-            {
-                if (SWLOR.Game.Server.Service.Random.D100(1) <= chance)
-                {
-                    CustomEffectService.ApplyCustomEffect(player, target.Object, effect, SWLOR.Game.Server.Service.Random.D6(1), perkLevel, null);
-                }
-            }
 
         }
 

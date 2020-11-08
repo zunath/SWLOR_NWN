@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 
             var targetLocation = Location(area, vector, 0.0f);
 
-            if (featID != (int)Feat.StructureManagementTool) return;
+            if (featID != (int)Feat.StructureTool) return;
 
             var data = GetPlayerTempData(player);
             data.TargetArea = area;

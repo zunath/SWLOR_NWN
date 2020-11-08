@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature
             Creature.AddFeatByLevel(player, Feat.UncannyDodge1, 1);
             Creature.AddFeatByLevel(player, Feat.OpenRestMenu, 1);
             Creature.AddFeatByLevel(player, Feat.ChatCommandTargeter, 1);
-            Creature.AddFeatByLevel(player, Feat.StructureManagementTool, 1);
+            Creature.AddFeatByLevel(player, Feat.StructureTool, 1);
         }
 
 

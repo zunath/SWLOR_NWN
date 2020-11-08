@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Legacy.Service
                 Creature.AddFeatByLevel(player, Feat.WeaponProficiencyMartial, 1);
                 Creature.AddFeatByLevel(player, Feat.WeaponProficiencySimple, 1);
                 Creature.AddFeatByLevel(player, Feat.UncannyDodge1, 1);
-                Creature.AddFeatByLevel(player, Feat.StructureManagementTool, 1);
+                Creature.AddFeatByLevel(player, Feat.StructureTool, 1);
                 Creature.AddFeatByLevel(player, Feat.OpenRestMenu, 1);
                 Creature.AddFeatByLevel(player, Feat.RenameCraftedItem, 1);
                 Creature.AddFeatByLevel(player, Feat.ChatCommandTargeter, 1);
@@ -464,7 +464,7 @@ namespace SWLOR.Game.Server.Legacy.Service
         private static void InitializeHotBar(NWPlayer player)
         {
             var openRestMenu = PlayerQuickBarSlot.UseFeat(Feat.OpenRestMenu);
-            var structure = PlayerQuickBarSlot.UseFeat(Feat.StructureManagementTool);
+            var structure = PlayerQuickBarSlot.UseFeat(Feat.StructureTool);
             var renameCraftedItem = PlayerQuickBarSlot.UseFeat(Feat.RenameCraftedItem);
             var chatCommandTargeter = PlayerQuickBarSlot.UseFeat(Feat.ChatCommandTargeter);
 

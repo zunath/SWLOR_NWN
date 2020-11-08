@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var player = GetLastUsedBy();
 
-            Creature.AddFeatByLevel(player, Feat.StructureManagementTool, 1);
+            Creature.AddFeatByLevel(player, Feat.StructureTool, 1);
 
             Dialog.StartConversation(player, OBJECT_SELF, nameof(PlayerHouseDialog));
         }

@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void Cloaks(PerkBuilder builder)
         {
             builder.Create(PerkCategoryType.ArmorGeneral, PerkType.Cloaks)
+                .Name("Cloaks")
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 1 Cloaks")
@@ -59,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void Belts(PerkBuilder builder)
         {
             builder.Create(PerkCategoryType.ArmorGeneral, PerkType.Belts)
+                .Name("Belts")
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 1 Belts")
@@ -88,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void Rings(PerkBuilder builder)
         {
             builder.Create(PerkCategoryType.ArmorGeneral, PerkType.Rings)
+                .Name("Rings")
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 1 Rings")
@@ -117,6 +120,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void Necklaces(PerkBuilder builder)
         {
             builder.Create(PerkCategoryType.ArmorGeneral, PerkType.Necklaces)
+                .Name("Necklaces")
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 1 Necklaces")
@@ -146,6 +150,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void Breastplates(PerkBuilder builder)
         {
             builder.Create(PerkCategoryType.ArmorHeavy, PerkType.Breastplates)
+                .Name("Breastplates")
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 1 Breastplates")
@@ -175,6 +180,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void Helmets(PerkBuilder builder)
         {
             builder.Create(PerkCategoryType.ArmorHeavy, PerkType.Helmets)
+                .Name("Helmets")
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 1 Helmets")
@@ -204,6 +210,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void Bracers(PerkBuilder builder)
         {
             builder.Create(PerkCategoryType.ArmorHeavy, PerkType.Bracers)
+                .Name("Bracers")
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 1 Bracers")
@@ -233,6 +240,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void Leggings(PerkBuilder builder)
         {
             builder.Create(PerkCategoryType.ArmorHeavy, PerkType.Leggings)
+                .Name("Leggings")
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 1 Leggings")
@@ -262,6 +270,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void HeavyShields(PerkBuilder builder)
         {
             builder.Create(PerkCategoryType.ArmorHeavy, PerkType.HeavyShields)
+                .Name("Heavy Shields")
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 1 Heavy Shields")
@@ -291,6 +300,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void Tunics(PerkBuilder builder)
         {
             builder.Create(PerkCategoryType.ArmorLight, PerkType.Tunics)
+                .Name("Tunics")
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 1 Tunics")
@@ -320,6 +330,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void Caps(PerkBuilder builder)
         {
             builder.Create(PerkCategoryType.ArmorLight, PerkType.Caps)
+                .Name("Caps")
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 1 Caps")
@@ -349,6 +360,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void Gloves(PerkBuilder builder)
         {
             builder.Create(PerkCategoryType.ArmorLight, PerkType.Gloves)
+                .Name("Gloves")
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 1 Gloves")
@@ -378,6 +390,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void Boots(PerkBuilder builder)
         {
             builder.Create(PerkCategoryType.ArmorLight, PerkType.Boots)
+                .Name("Boots")
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 1 Boots")
@@ -407,6 +420,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void LightShields(PerkBuilder builder)
         {
             builder.Create(PerkCategoryType.ArmorLight, PerkType.LightShields)
+                .Name("Light Shields")
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 1 Light Shields")

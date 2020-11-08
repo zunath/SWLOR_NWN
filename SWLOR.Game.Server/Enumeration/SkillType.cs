@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Enumeration
             true, 
             AbilityType.Invalid, 
             AbilityType.Invalid)]
-        Harvesting = 13,
+        Gathering = 13,
 
 
         // Languages

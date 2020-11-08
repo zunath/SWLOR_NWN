@@ -150,7 +150,7 @@
         ImplantInstallation = 144,
         NeckImplantBlueprints = 145,
         HeadImplantBlueprints = 146,
-        ArmorImplantBlueprints = 147,
+        ArmImplantBlueprints = 147,
         LegImplantBlueprints = 148,
         FootImplantBlueprints = 149,
         ChestImplantBlueprints = 150,

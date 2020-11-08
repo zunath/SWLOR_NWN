@@ -1,4 +1,6 @@
 ﻿
+using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -42,5 +44,128 @@ namespace SWLOR.Game.Server.Service
 
             return count;
         }
+
+        /// <summary>
+        /// Retrieves the list of Vibroblade base item types.
+        /// </summary>
+        public static List<BaseItem> VibrobladeBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.BastardSword,
+            BaseItem.Longsword,
+            BaseItem.Katana,
+            BaseItem.Scimitar,
+            BaseItem.BattleAxe
+        };
+
+        /// <summary>
+        /// Retrieves the list of Finesse Vibroblade base item types.
+        /// </summary>
+        public static List<BaseItem> FinesseVibrobladeBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.Dagger,
+            BaseItem.Rapier,
+            BaseItem.ShortSword,
+            BaseItem.Kukri,
+            BaseItem.Sickle,
+            BaseItem.Whip,
+            BaseItem.HandAxe,
+        };
+
+        /// <summary>
+        /// Retrieves the list of Lightsaber base item types.
+        /// </summary>
+        public static List<BaseItem> LightsaberBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.Lightsaber
+        };
+
+        /// <summary>
+        /// Retrieves the list of Heavy Vibroblade base item types.
+        /// </summary>
+        public static List<BaseItem> HeavyVibrobladeBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.GreatAxe,
+            BaseItem.GreatSword,
+            BaseItem.DwarvenWarAxe
+        };
+
+        /// <summary>
+        /// Retrieves the list of Polearm base item types.
+        /// </summary>
+        public static List<BaseItem> PolearmBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.Halberd,
+            BaseItem.Scythe,
+            BaseItem.ShortSpear,
+            BaseItem.Trident
+        };
+
+        /// <summary>
+        /// Retrieves the list of Twin Blade base item types.
+        /// </summary>
+        public static List<BaseItem> TwinBladeBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.DoubleAxe,
+            BaseItem.TwoBladedSword
+        };
+
+        /// <summary>
+        /// Retrieves the list of Saberstaff base item types.
+        /// </summary>
+        public static List<BaseItem> SaberstaffBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.Saberstaff,
+        };
+
+        /// <summary>
+        /// Retrieves the list of Knuckles base item types.
+        /// </summary>
+        public static List<BaseItem> KnucklesBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.Knuckles
+        };
+
+        /// <summary>
+        /// Retrieves the list of Staff base item types.
+        /// </summary>
+        public static List<BaseItem> StaffBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.QuarterStaff,
+            BaseItem.LightMace
+        };
+
+        /// <summary>
+        /// Retrieves the list of Pistol base item types.
+        /// </summary>
+        public static List<BaseItem> PistolBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.ShortBow
+        };
+
+        /// <summary>
+        /// Retrieves the list of Throwing Weapon base item types.
+        /// </summary>
+        public static List<BaseItem> ThrowingWeaponBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.ThrowingAxe,
+            BaseItem.Shuriken,
+            BaseItem.Dart
+        };
+
+        /// <summary>
+        /// Retrieves the list of Cannon base item types.
+        /// </summary>
+        public static List<BaseItem> CannonBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.HeavyCrossbow
+        };
+
+        /// <summary>
+        /// Retrieves the list of Rifle base item types.
+        /// </summary>
+        public static List<BaseItem> RifleBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.Longbow
+        };
     }
 }

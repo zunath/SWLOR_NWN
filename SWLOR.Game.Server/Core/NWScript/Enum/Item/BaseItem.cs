@@ -101,5 +101,6 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
 
         Saberstaff = 511,
         Lightsaber = 512,
+        Knuckles = 513,
     }
 }

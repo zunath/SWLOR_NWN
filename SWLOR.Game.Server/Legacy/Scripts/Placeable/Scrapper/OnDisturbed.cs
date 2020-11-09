@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.Scrapper
             NWPlaceable device = NWScript.OBJECT_SELF;
             NWPlayer player = NWScript.GetLastDisturbed();
             NWItem item = NWScript.GetInventoryDisturbItem();
-            var componentIP = item.ItemProperties.FirstOrDefault(x => NWScript.GetItemPropertyType(x) == ItemPropertyType.ComponentType);
+            var componentIP = item.ItemProperties.FirstOrDefault(x => NWScript.GetItemPropertyType(x) == ItemPropertyType.Invalid);
 
             // Not a component. Return the item.
             if (componentIP == null)
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.Scrapper
             foreach (var ip in item.ItemProperties)
             {
                 var ipType = NWScript.GetItemPropertyType(ip);
-                if (ipType != ItemPropertyType.ComponentType)
+                if (ipType != ItemPropertyType.Invalid)
                 {
                     NWScript.RemoveItemProperty(item, ip);
                 }

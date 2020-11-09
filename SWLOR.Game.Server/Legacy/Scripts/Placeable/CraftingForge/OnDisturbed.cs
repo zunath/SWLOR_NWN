@@ -126,8 +126,8 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.CraftingForge
 
             // Any component bonuses on the ore get applied to the end product.
             var itemProperties = item.ItemProperties.Where(x =>
-                NWScript.GetItemPropertyType(x) == ItemPropertyType.ComponentBonus ||
-                NWScript.GetItemPropertyType(x) == ItemPropertyType.RecommendedLevel).ToList();
+                NWScript.GetItemPropertyType(x) == ItemPropertyType.Invalid ||
+                NWScript.GetItemPropertyType(x) == ItemPropertyType.Invalid).ToList();
 
             var itemResref = item.Resref;
 
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.CraftingForge
             var durability = 0;
             foreach (var ip in item.ItemProperties)
             {
-                if (NWScript.GetItemPropertyType(ip) == ItemPropertyType.ComponentBonus)
+                if (NWScript.GetItemPropertyType(ip) == ItemPropertyType.Invalid)
                 {
                     var bonusTypeID = NWScript.GetItemPropertySubType(ip);
                     if (bonusTypeID == (int) ComponentBonusType.DurabilityUp)

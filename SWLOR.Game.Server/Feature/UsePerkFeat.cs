@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -93,30 +94,17 @@ namespace SWLOR.Game.Server.Feature
             float CalculateActivationDelay()
             {
                 const float HeavyArmorPenalty = 2.0f;
-                const float LightArmorPenalty = 1.5f;
 
                 var armorPenalty = 1.0f;
                 var penaltyMessage = string.Empty;
                 for (var slot = 0; slot < NumberOfInventorySlots; slot++)
                 {
                     var item = GetItemInSlot((InventorySlot) slot, activator);
-
-                    for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                    var armorType = Item.GetArmorType(item);
+                    if (armorType == ArmorType.Heavy)
                     {
-                        if (GetItemPropertyType(ip) != ItemPropertyType.ArmorType) continue;
-
-                        var armorType = (ArmorType)GetItemPropertySubType(ip);
-                        if (armorType == ArmorType.Heavy)
-                        {
-                            armorPenalty = HeavyArmorPenalty;
-                            penaltyMessage = "Heavy armor slows your casting speed by 100%.";
-                            break;
-                        }
-                        else if (armorType == ArmorType.Light)
-                        {
-                            armorPenalty = LightArmorPenalty;
-                            penaltyMessage = "Light armor slows your casting speed by 50%.";
-                        }
+                        armorPenalty = HeavyArmorPenalty;
+                        penaltyMessage = "Heavy armor slows your activation speed by 100%.";
                     }
 
                     // If we found heavy armor, we can exit early. Anything else requires us to iterate over the rest of the items.

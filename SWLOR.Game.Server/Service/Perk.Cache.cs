@@ -35,6 +35,16 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<PerkType, int> _perkMaxLevels = new Dictionary<PerkType, int>();
 
+        /// <summary>
+        /// Gets the list of heavy armor perks
+        /// </summary>
+        public static List<PerkType> HeavyArmorPerks { get; } = new List<PerkType>();
+
+        /// <summary>
+        /// Gets the list of light armor perks
+        /// </summary>
+        public static List<PerkType> LightArmorPerks { get; } = new List<PerkType>();
+
         [NWNEventHandler("mod_load")]
         public static void CacheData()
         {
@@ -80,6 +90,15 @@ namespace SWLOR.Game.Server.Service
                             _activePerksByCategory[perkDetail.Category] = new List<PerkType>();
 
                         _activePerksByCategory[perkDetail.Category].Add(perkType);
+
+                        if (perkDetail.Category == PerkCategoryType.ArmorHeavy)
+                        {
+                            HeavyArmorPerks.Add(perkType);
+                        }
+                        else if (perkDetail.Category == PerkCategoryType.ArmorLight)
+                        {
+                            LightArmorPerks.Add(perkType);
+                        }
 
                         // Add appropriate trigger entries if this perk is active and has them.
                         CacheTriggers(perkDetail);

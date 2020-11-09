@@ -1,6 +1,7 @@
 ﻿
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Enumeration;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -43,6 +44,33 @@ namespace SWLOR.Game.Server.Service
             }
 
             return count;
+        }
+
+        /// <summary>
+        /// Retrieves the armor type of an item.
+        /// This is based on the Use Limitation: Perk property.
+        /// If it's not specified, ArmorType.Invalid will be returned.
+        /// </summary>
+        /// <param name="item">The item to be checked.</param>
+        /// <returns>The ArmorType value of the item. Returns ArmorType.Invalid if neither Light or Heavy are found.</returns>
+        public static ArmorType GetArmorType(uint item)
+        {
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) != ItemPropertyType.UseLimitationPerk) continue;
+
+                var perkType = (PerkType) GetItemPropertySubType(ip);
+                if (Perk.HeavyArmorPerks.Contains(perkType))
+                {
+                    return ArmorType.Heavy;
+                }
+                else if (Perk.LightArmorPerks.Contains(perkType))
+                {
+                    return ArmorType.Light;
+                }
+            }
+
+            return ArmorType.Invalid;
         }
 
         /// <summary>

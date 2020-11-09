@@ -407,7 +407,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             var ip = GetFirstItemProperty(examinedItem);
             while (GetIsItemPropertyValid(ip) == true)
             {
-                if (GetItemPropertyType(ip) == ItemPropertyType.ComponentBonus)
+                if (GetItemPropertyType(ip) == ItemPropertyType.Invalid)
                 {
                     switch (GetItemPropertySubType(ip))
                     {

@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 
             foreach (var ip in tempItem.ItemProperties)
             {
-                if (NWScript.GetItemPropertyType(ip) == ItemPropertyType.ComponentType)
+                if (NWScript.GetItemPropertyType(ip) == ItemPropertyType.Invalid)
                 {
                     typeID = NWScript.GetItemPropertyCostTableValue(ip);
                     break;

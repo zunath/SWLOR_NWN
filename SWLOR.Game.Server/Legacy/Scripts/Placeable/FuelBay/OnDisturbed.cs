@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.FuelBay
                 // For starships only: Add the ship's cargo bonus to the max stronidium amount.
                 if (GetLocalInt(bay.Area, "BUILDING_TYPE") == (int)BuildingType.Starship)
                 {
-                    maxFuel += 25 * SpaceService.GetCargoBonus(SpaceService.GetCargoBay(player.Area, OBJECT_INVALID), ItemPropertyType.StarshipStronidiumBonus);
+                    maxFuel += 25 * SpaceService.GetCargoBonus(SpaceService.GetCargoBay(player.Area, OBJECT_INVALID), ItemPropertyType.Invalid);
                 }
 
                 // Did the player put too much fuel inside? Return the excess to their inventory.
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.FuelBay
                 // For starships only: Add the ship's cargo bonus to the max fuel amount.
                 if (GetLocalInt(bay.Area, "BUILDING_TYPE") == (int)BuildingType.Starship)
                 {
-                    maxFuel += 25 * SpaceService.GetCargoBonus(SpaceService.GetCargoBay(player.Area, OBJECT_INVALID), ItemPropertyType.StarshipFuelBonus);
+                    maxFuel += 25 * SpaceService.GetCargoBonus(SpaceService.GetCargoBay(player.Area, OBJECT_INVALID), ItemPropertyType.Invalid);
                 }
 
                 // Did the player put too much fuel inside? Return the excess to their inventory.

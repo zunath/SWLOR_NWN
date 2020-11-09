@@ -4,7 +4,6 @@
     {
         Invalid = 0,
         Heavy = 1,
-        Light = 2,
-        Force = 3
+        Light = 2
     }
 }

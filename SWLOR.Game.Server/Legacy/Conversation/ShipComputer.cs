@@ -102,8 +102,8 @@ namespace SWLOR.Game.Server.Legacy.Conversation
             var currentReinforcedFuel = pcBase.ReinforcedFuel;
             var currentFuel = pcBase.Fuel;
             var currentResources = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structure.ID).Count();
-            var maxReinforcedFuel = BaseService.CalculateMaxReinforcedFuel(pcBase.ID) + 25 * SpaceService.GetCargoBonus(bay, ItemPropertyType.StarshipStronidiumBonus);
-            var maxFuel = BaseService.CalculateMaxFuel(pcBase.ID) + 25 * SpaceService.GetCargoBonus(bay, ItemPropertyType.StarshipFuelBonus);
+            var maxReinforcedFuel = BaseService.CalculateMaxReinforcedFuel(pcBase.ID) + 25 * SpaceService.GetCargoBonus(bay, ItemPropertyType.Invalid);
+            var maxFuel = BaseService.CalculateMaxFuel(pcBase.ID) + 25 * SpaceService.GetCargoBonus(bay, ItemPropertyType.Invalid);
             var maxResources = BaseService.CalculateResourceCapacity(pcBase.ID);
 
             string locationDescription;

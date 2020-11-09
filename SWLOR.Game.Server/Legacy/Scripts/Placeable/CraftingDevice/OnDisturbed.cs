@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.CraftingDevice
 
             foreach (var ip in props)
             {
-                if (NWScript.GetItemPropertyType(ip) == ItemPropertyType.ComponentItemTypeRestriction)
+                if (NWScript.GetItemPropertyType(ip) == ItemPropertyType.Invalid)
                 {
                     var restrictionType = NWScript.GetItemPropertyCostTableValue(ip);
                     allowedItemTypes.Add((CustomItemType)restrictionType);
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.CraftingDevice
 
             foreach (var ip in props)
             {
-                if (NWScript.GetItemPropertyType(ip) == ItemPropertyType.ComponentType)
+                if (NWScript.GetItemPropertyType(ip) == ItemPropertyType.Invalid)
                 {
                     var compType = NWScript.GetItemPropertyCostTableValue(ip);
                     if (compType == (int) allowedType)

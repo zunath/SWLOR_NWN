@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Service
 
             for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
             {
-                if (GetItemPropertyType(ip) != ItemPropertyType.Resistance) continue;
+                if (GetItemPropertyType(ip) != ItemPropertyType.Invalid) continue;
                 var ipResistanceType = (ResistanceType) GetItemPropertySubType(ip);
                 if (ipResistanceType != type) continue;
 

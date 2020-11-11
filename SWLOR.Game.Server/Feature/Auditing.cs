@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature
             var account = GetPCPlayerName(player);
             var pcName = GetName(player);
 
-            var log = $"{pcName} - {account} - {cdKey} - {ipAddress}: Connected to server";
+            var log = $"{pcName} - {account} - {cdKey} - {ipAddress}: Disconnected from server";
             Log.Write(LogGroup.Connection, log, true);
         }
 

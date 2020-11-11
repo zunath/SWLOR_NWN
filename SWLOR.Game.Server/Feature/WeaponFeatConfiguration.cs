@@ -1,11 +1,12 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using Item = SWLOR.Game.Server.Service.Item;
 
-namespace SWLOR.Game.Server.Feature.TraitDefinition
+namespace SWLOR.Game.Server.Feature
 {
-    public class WeaponTraitDefinition
+    public class WeaponFeatConfiguration
     {
         /// <summary>
         /// When the module loads, set all of the weapon-related feat and item configurations.
@@ -13,22 +14,33 @@ namespace SWLOR.Game.Server.Feature.TraitDefinition
         [NWNEventHandler("mod_load")]
         public static void ConfigureWeaponFeats()
         {
-            Vibroblades();
-            FinesseVibroblades();
-            Lightsabers();
-            HeavyVibroblades();
-            Polearms();
-            TwinBlades();
-            Saberstaffs();
-            Knuckles();
-            Staves();
-            Pistols();
-            ThrowingWeapons();
-            Cannons();
-            Rifles();
+            ConfigureMartialArts();
+
+            // Weapon Focus, Specialization, Improved Critical
+            ConfigureVibroblades();
+            ConfigureFinesseVibroblades();
+            ConfigureLightsabers();
+            ConfigureHeavyVibroblades();
+            ConfigurePolearms();
+            ConfigureTwinBlades();
+            ConfigureSaberstaffs();
+            ConfigureKnuckles();
+            ConfigureStaves();
+            ConfigurePistols();
+            ConfigureThrowingWeapons();
+            ConfigureCannons();
+            ConfigureRifles();
         }
 
-        private static void Vibroblades()
+        private static void ConfigureMartialArts()
+        {
+            Weapon.SetWeaponIsMonkWeapon(BaseItem.Club);
+            Weapon.SetWeaponIsMonkWeapon(BaseItem.QuarterStaff);
+            Weapon.SetWeaponIsMonkWeapon(BaseItem.Knuckles);
+            Weapon.SetWeaponIsMonkWeapon(BaseItem.LightMace);
+        }
+
+        private static void ConfigureVibroblades()
         {
             foreach (var itemType in Item.VibrobladeBaseItemTypes)
             {
@@ -38,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.TraitDefinition
             }
         }
 
-        private static void FinesseVibroblades()
+        private static void ConfigureFinesseVibroblades()
         {
             foreach (var itemType in Item.FinesseVibrobladeBaseItemTypes)
             {
@@ -48,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.TraitDefinition
             }
         }
 
-        private static void Lightsabers()
+        private static void ConfigureLightsabers()
         {
             foreach (var itemType in Item.LightsaberBaseItemTypes)
             {
@@ -58,17 +70,17 @@ namespace SWLOR.Game.Server.Feature.TraitDefinition
             }
         }
 
-        private static void HeavyVibroblades()
+        private static void ConfigureHeavyVibroblades()
         {
             foreach (var itemType in Item.HeavyVibrobladeBaseItemTypes)
             {
-                Weapon.SetWeaponFocusFeat(itemType, Feat.WeaponFocusFinesseVibroblades);
-                Weapon.SetWeaponSpecializationFeat(itemType, Feat.WeaponSpecializationFinesseVibroblades);
-                Weapon.SetWeaponImprovedCriticalFeat(itemType, Feat.ImprovedCriticalFinesseVibroblades);
+                Weapon.SetWeaponFocusFeat(itemType, Feat.WeaponFocusHeavyVibroblades);
+                Weapon.SetWeaponSpecializationFeat(itemType, Feat.WeaponSpecializationHeavyVibroblades);
+                Weapon.SetWeaponImprovedCriticalFeat(itemType, Feat.ImprovedCriticalHeavyVibroblades);
             }
         }
 
-        private static void Polearms()
+        private static void ConfigurePolearms()
         {
             foreach (var itemType in Item.PolearmBaseItemTypes)
             {
@@ -78,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.TraitDefinition
             }
         }
 
-        private static void TwinBlades()
+        private static void ConfigureTwinBlades()
         {
             foreach (var itemType in Item.TwinBladeBaseItemTypes)
             {
@@ -88,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.TraitDefinition
             }
         }
 
-        private static void Saberstaffs()
+        private static void ConfigureSaberstaffs()
         {
             foreach (var itemType in Item.SaberstaffBaseItemTypes)
             {
@@ -98,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.TraitDefinition
             }
         }
 
-        private static void Knuckles()
+        private static void ConfigureKnuckles()
         {
             foreach (var itemType in Item.KnucklesBaseItemTypes)
             {
@@ -108,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.TraitDefinition
             }
         }
 
-        private static void Staves()
+        private static void ConfigureStaves()
         {
             foreach (var itemType in Item.StaffBaseItemTypes)
             {
@@ -117,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.TraitDefinition
                 Weapon.SetWeaponImprovedCriticalFeat(itemType, Feat.ImprovedCriticalStaff);
             }
         }
-        private static void Pistols()
+        private static void ConfigurePistols()
         {
             foreach (var itemType in Item.PistolBaseItemTypes)
             {
@@ -127,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.TraitDefinition
             }
         }
 
-        private static void ThrowingWeapons()
+        private static void ConfigureThrowingWeapons()
         {
             foreach (var itemType in Item.ThrowingWeaponBaseItemTypes)
             {
@@ -137,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.TraitDefinition
             }
         }
 
-        private static void Cannons()
+        private static void ConfigureCannons()
         {
             foreach (var itemType in Item.CannonBaseItemTypes)
             {
@@ -147,7 +159,7 @@ namespace SWLOR.Game.Server.Feature.TraitDefinition
             }
         }
 
-        private static void Rifles()
+        private static void ConfigureRifles()
         {
             foreach (var itemType in Item.RifleBaseItemTypes)
             {

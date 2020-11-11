@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature
             var playerID = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerID);
 
-            if (dbPlayer == null) return;
+            if (dbPlayer == null || string.IsNullOrWhiteSpace(dbPlayer.LocationAreaResref)) return;
 
             var locationArea = Cache.GetAreaByResref(dbPlayer.LocationAreaResref);
             var position = Vector3(dbPlayer.LocationX, dbPlayer.LocationY, dbPlayer.LocationZ);

@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static List<BaseItem> PistolBaseItemTypes { get; } = new List<BaseItem>
         {
-            BaseItem.ShortBow
+            BaseItem.Pistol
         };
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static List<BaseItem> CannonBaseItemTypes { get; } = new List<BaseItem>
         {
-            BaseItem.HeavyCrossbow
+            BaseItem.Cannon
         };
 
         /// <summary>

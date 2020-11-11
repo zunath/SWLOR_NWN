@@ -8,12 +8,12 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         BastardSword = 3,
         LightFlail = 4,
         WarHammer = 5,
-        HeavyCrossbow = 6, // Heavy Crossbow replaced with Rifle
-        LightCrossbow = 7,
+        Cannon = 6, 
+        Rifle = 7,
         Longbow = 8,
         LightMace = 9,
         Halberd = 10,
-        ShortBow = 11,
+        Pistol = 11,
         TwoBladedSword = 12,
         GreatSword = 13,
         SmallShield = 14,
@@ -101,6 +101,6 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
 
         Saberstaff = 511,
         Lightsaber = 512,
-        Knuckles = 513,
+        Knuckles = 524,
     }
 }

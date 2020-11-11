@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 
             NWItem oItem = GetItemInSlot(InventorySlot.RightHand);
 
-            if (oItem.BaseItemType == BaseItem.ShortBow ||
+            if (oItem.BaseItemType == BaseItem.Pistol ||
                 oItem.BaseItemType == BaseItem.Sling)
             {
                 oPC.ClearAllActions();
@@ -159,9 +159,9 @@ namespace SWLOR.Game.Server.Legacy.Service
             //Console.WriteLine("pc.ModeDualPistol Currently = " + pc.ModeDualPistol);
 
             // if equiping single wield pistol and not usign dual wield option then exit.
-            if (oItem.BaseItemType == BaseItem.ShortBow && !pc.ModeDualPistol) { return; }
+            if (oItem.BaseItemType == BaseItem.Pistol && !pc.ModeDualPistol) { return; }
             
-            if (oItem.BaseItemType == BaseItem.ShortBow && pc.ModeDualPistol)
+            if (oItem.BaseItemType == BaseItem.Pistol && pc.ModeDualPistol)
             {
                 ToggleDualModeWeapon(oPC);
             }

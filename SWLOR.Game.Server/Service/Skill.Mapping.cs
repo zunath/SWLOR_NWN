@@ -68,10 +68,10 @@ namespace SWLOR.Game.Server.Service
             _itemToSkillMapping[BaseItem.QuarterStaff] = SkillType.MartialArts;
 
             // Ranged Skills
-            _itemToSkillMapping[BaseItem.HeavyCrossbow] = SkillType.Ranged;
-            _itemToSkillMapping[BaseItem.LightCrossbow] = SkillType.Ranged;
+            _itemToSkillMapping[BaseItem.Cannon] = SkillType.Ranged;
+            _itemToSkillMapping[BaseItem.Rifle] = SkillType.Ranged;
             _itemToSkillMapping[BaseItem.Longbow] = SkillType.Ranged;
-            _itemToSkillMapping[BaseItem.ShortBow] = SkillType.Ranged;
+            _itemToSkillMapping[BaseItem.Pistol] = SkillType.Ranged;
             _itemToSkillMapping[BaseItem.Arrow] = SkillType.Ranged;
             _itemToSkillMapping[BaseItem.Bolt] = SkillType.Ranged;
             _itemToSkillMapping[BaseItem.Bullet] = SkillType.Ranged;

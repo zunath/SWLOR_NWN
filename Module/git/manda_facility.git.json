@@ -1406,7 +1406,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "get_key_item"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -1503,6 +1503,21 @@
               "Value": {
                 "type": "int",
                 "value": 8
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.ObtainKeyItem"
               }
             }
           ]
@@ -1668,7 +1683,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "get_key_item"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -1765,6 +1780,21 @@
               "Value": {
                 "type": "int",
                 "value": 9
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.ObtainKeyItem"
               }
             }
           ]
@@ -1930,7 +1960,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "get_key_item"
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -2027,6 +2057,21 @@
               "Value": {
                 "type": "int",
                 "value": 10
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.ObtainKeyItem"
               }
             }
           ]

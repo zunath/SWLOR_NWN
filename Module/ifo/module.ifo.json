@@ -1139,15 +1139,15 @@
   },
   "Mod_Entry_X": {
     "type": "float",
-    "value": 18.97829627990723
+    "value": 18.0
   },
   "Mod_Entry_Y": {
     "type": "float",
-    "value": 5.520429611206055
+    "value": 5.0
   },
   "Mod_Entry_Z": {
     "type": "float",
-    "value": -5.7220458984375e-006
+    "value": 0.0
   },
   "Mod_Expan_List": {
     "type": "list",
@@ -1213,13 +1213,6 @@
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_mdl_p"
-        }
-      },
-      {
-        "__struct_id": 8,
-        "Mod_Hak": {
-          "type": "cexostring",
           "value": "swlor_mtr"
         }
       },
@@ -1277,13 +1270,6 @@
         "Mod_Hak": {
           "type": "cexostring",
           "value": "swlor_tga"
-        }
-      },
-      {
-        "__struct_id": 8,
-        "Mod_Hak": {
-          "type": "cexostring",
-          "value": "swlor_tga_ip"
         }
       },
       {

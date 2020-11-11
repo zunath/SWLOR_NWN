@@ -279,7 +279,7 @@
               "__struct_id": 2,
               "Orientation": {
                 "type": "float",
-                "value": -2.331648349761963
+                "value": -2.331648111343384
               },
               "X": {
                 "type": "float",
@@ -3584,7 +3584,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.0980173721909523
+          "value": 0.09801749140024185
         },
         "YPosition": {
           "type": "float",
@@ -3734,7 +3734,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.9987954497337341
+          "value": 0.9987955093383789
         },
         "XPosition": {
           "type": "float",
@@ -3742,7 +3742,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.04906726256012917
+          "value": -0.04906714335083962
         },
         "YPosition": {
           "type": "float",

@@ -17927,199 +17927,7 @@
                     "__struct_id": 0,
                     "ID": {
                       "type": "byte",
-                      "value": 43
-                    },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Blaster Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Blaster Rifle I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Blaster Rifle II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Blaster Rifle III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Blaster Rifle IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Carabine blaster"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "blast_carabine"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Coxxion Blaster Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_cox"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Enforcer Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_enforcer"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "NPC Blaster Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_npc"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "NPC Mando Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "npc_man_rifle"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Republic Blaster"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "republicblaster"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Republic Trooper Blaster"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "f_trooperblaster"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Sharpshooter Blaster Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_s"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Sith Trooper Blaster"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "sith_tblaster"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Telford's Blaster"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "zomb_telgun"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Trandoshan Blaster Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_tran"
-                          }
-                        }
-                      ]
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 6774
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 126
+                      "value": 44
                     },
                     "LIST": {
                       "type": "list",
@@ -18145,56 +17953,72 @@
                             "type": "resref",
                             "value": "republicheavybla"
                           }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Republic Sniper Blaster Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "republicsniperbl"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Republic Trooper Blaster"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "republictrooperb"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Tusken Blaster Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "tuskenblasterrif"
-                          }
                         }
                       ]
                     },
                     "STRREF": {
                       "type": "dword",
-                      "value": 16778269
+                      "value": 16872211
                     }
                   },
                   {
                     "__struct_id": 0,
                     "ID": {
                       "type": "byte",
-                      "value": 44
+                      "value": 62
+                    },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Dual Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dualpistolmain"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Dual Pistol (Offhand)"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "offhandpistol"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Pistolet Blaster Jawa"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "blast_jawa_d"
+                          }
+                        }
+                      ]
                     },
                     "STRREF": {
                       "type": "dword",
-                      "value": 6819
+                      "value": 16872213
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 126
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 16778269
                     }
                   },
                   {
@@ -18331,14 +18155,14 @@
                     },
                     "STRREF": {
                       "type": "dword",
-                      "value": 6820
+                      "value": 16872210
                     }
                   },
                   {
                     "__struct_id": 0,
                     "ID": {
                       "type": "byte",
-                      "value": 62
+                      "value": 200
                     },
                     "LIST": {
                       "type": "list",
@@ -18347,40 +18171,95 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Dual Pistol"
+                            "value": "Basic Blaster Rifle"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "dualpistolmain"
+                            "value": "rifle_b"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Dual Pistol (Offhand)"
+                            "value": "Blaster Rifle I"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "offhandpistol"
+                            "value": "rifle_1"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Pistolet Blaster Jawa"
+                            "value": "Blaster Rifle II"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "blast_jawa_d"
+                            "value": "rifle_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blaster Rifle III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "rifle_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Blaster Rifle IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "rifle_4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Republic Sniper Blaster Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "republicsniperbl"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Republic Trooper Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "republictrooperb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Tusken Blaster Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tuskenblasterrif"
                           }
                         }
                       ]
                     },
                     "STRREF": {
                       "type": "dword",
-                      "value": 6821
+                      "value": 16872212
                     }
                   }
                 ]

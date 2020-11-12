@@ -1145,7 +1145,7 @@ namespace SWLOR.Game.Server.Legacy.Service
                                 return;
                             }
 
-                            var itemDetails = LootService.PickRandomItemFromLootTable(encounter.LootTable);
+                            ItemVO itemDetails = null; // LootService.PickRandomItemFromLootTable(encounter.LootTable);
 
                             if(itemDetails != null)
                             {

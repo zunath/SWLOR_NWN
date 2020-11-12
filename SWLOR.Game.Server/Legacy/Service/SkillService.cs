@@ -1096,11 +1096,9 @@ namespace SWLOR.Game.Server.Legacy.Service
 
                     // We have the amount but we need to find the corresponding ID in the 2DA.
                     // Check our cached 2DA data for this value.
-                    var costTableID = Cached2DAService.ImmunityCosts.Single(x => x.Value == newImmunity).Key;
 
                     // Unpack the IP and adjust its value.
                     var unpacked = Core.NWNX.ItemProperty.UnpackIP(ip);
-                    unpacked.CostTableValue = costTableID;
 
                     // Add it to the list for later application. We don't want to do this right now, for fear of an infinite loop.
                     var packed = Core.NWNX.ItemProperty.PackIP(unpacked);

@@ -1,5 +1,4 @@
 using Dapper.Contrib.Extensions;
-using SWLOR.Game.Server.Legacy.AI;
 using SWLOR.Game.Server.Legacy.Data.Contracts;
 
 namespace SWLOR.Game.Server.Legacy.Data.Entity
@@ -22,7 +21,6 @@ namespace SWLOR.Game.Server.Legacy.Data.Entity
         public int? NPCGroupID { get; set; }
         public string BehaviourScript { get; set; }
         public int DeathVFXID { get; set; }
-        public AIFlags AIFlags { get; set; }
 
         public IEntity Clone()
         {
@@ -36,7 +34,6 @@ namespace SWLOR.Game.Server.Legacy.Data.Entity
                 NPCGroupID = NPCGroupID,
                 BehaviourScript = BehaviourScript,
                 DeathVFXID = DeathVFXID,
-                AIFlags = AIFlags
             };
         }
     }

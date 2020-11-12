@@ -46,7 +46,6 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                             HandleDisablePVPProtection();
                             break;
                         case 2: // Toggle Helmet Display
-                            HelmetToggleService.ToggleHelmetDisplay(GetPC());
                             break;
                         case 3: // Toggle Dual Pistol Display
                             DualPistolService.ToggleDualPistolMode(GetPC());

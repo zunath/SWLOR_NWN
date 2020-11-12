@@ -6,7 +6,6 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Area;
-using SWLOR.Game.Server.Legacy.AI;
 using SWLOR.Game.Server.Legacy.Event.Area;
 using SWLOR.Game.Server.Legacy.Event.Module;
 using SWLOR.Game.Server.Legacy.Event.SWLOR;
@@ -112,7 +111,6 @@ namespace SWLOR.Game.Server.Legacy.Service
                     var respawnTime = obj.GetLocalFloat("SPAWN_RESPAWN_SECONDS");
                     var spawnRule = obj.GetLocalString("SPAWN_RULE");
                     var deathVFXID = obj.GetLocalInt("SPAWN_DEATH_VFX");
-                    var aiFlags = (AIFlags)obj.GetLocalInt("SPAWN_AI_FLAGS");
                     var useResref = true;
 
                     // No resref specified but a table was, look in the database for a random record.
@@ -140,9 +138,6 @@ namespace SWLOR.Game.Server.Legacy.Service
 
                             if (deathVFXID <= 0)
                                 deathVFXID = dbSpawn.DeathVFXID;
-
-                            if (aiFlags == AIFlags.None)
-                                aiFlags = dbSpawn.AIFlags;
                         }
                     }
 
@@ -181,11 +176,6 @@ namespace SWLOR.Game.Server.Legacy.Service
                         if (!string.IsNullOrWhiteSpace(spawnRule))
                         {
                             newSpawn.SpawnRule = spawnRule;
-                        }
-
-                        if (aiFlags == AIFlags.None)
-                        {
-                            newSpawn.AIFlags = aiFlags;
                         }
 
                         // Instance spawns are one-shot.
@@ -468,7 +458,6 @@ namespace SWLOR.Game.Server.Legacy.Service
                 var deathVFXID = spawn.DeathVFXID;
                 var behaviour = spawn.BehaviourScript;
                 var location = spawn.IsStaticSpawnPoint ? spawn.SpawnLocation : null;
-                var aiFlags = spawn.AIFlags;
 
                 spawn.HasSpawnedOnce = true;
 
@@ -482,7 +471,6 @@ namespace SWLOR.Game.Server.Legacy.Service
                     npcGroupID = dbSpawn.NPCGroupID ?? 0;
                     deathVFXID = dbSpawn.DeathVFXID;
                     behaviour = dbSpawn.BehaviourScript;
-                    aiFlags = dbSpawn.AIFlags;
 
                     if (!string.IsNullOrWhiteSpace(dbSpawn.SpawnRule))
                     {
@@ -517,8 +505,6 @@ namespace SWLOR.Game.Server.Legacy.Service
                 if (!string.IsNullOrWhiteSpace(behaviour) &&
                     string.IsNullOrWhiteSpace(spawn.Spawn.GetLocalString("BEHAVIOUR")))
                     spawn.Spawn.SetLocalString("BEHAVIOUR", behaviour);
-
-                spawn.Spawn.SetLocalInt("AI_FLAGS", (int) aiFlags);
 
                 if (objectType == ObjectType.Creature)
                     AssignScriptEvents(spawn.Spawn.Object);

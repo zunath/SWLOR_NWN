@@ -182,7 +182,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void BuildHelpText()
         {
-            foreach (var command in _chatCommands)
+            var orderedCommands = _chatCommands.OrderBy(o => o.Key);
+
+            foreach (var command in orderedCommands)
             {
                 var text = command.Key;
                 var definition = command.Value;

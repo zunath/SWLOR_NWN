@@ -20,7 +20,6 @@ namespace SWLOR.Game.Server.Legacy.Service
     {
         public static Player GetPlayerEntity(Guid playerID)
         {
-            if (playerID == null) throw new ArgumentException("Invalid player ID.", nameof(playerID));
             return DataService.Player.GetByID(playerID);
         }
 

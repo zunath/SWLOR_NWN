@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Entity
                 {AbilityType.Intelligence, 0f},
                 {AbilityType.Wisdom, 0f}
             };
+            ShowHelmet = true;
             MapPins = new Dictionary<string, List<MapPin>>();
             MapProgressions = new Dictionary<string, string>();
             RoleplayProgress = new RoleplayProgress();
@@ -70,6 +71,7 @@ namespace SWLOR.Game.Server.Entity
         public int RegenerationTick { get; set; }
         public int XPDebt { get; set; }
         public bool IsDeleted { get; set; }
+        public bool ShowHelmet { get; set; }
         public DateTime? DatePerkRefundAvailable { get; set; }
         public CharacterType CharacterType { get; set; }
 

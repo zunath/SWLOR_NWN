@@ -1,8 +1,12 @@
 ﻿using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Legacy.Data.Entity;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Legacy.ValueObject;
 using SWLOR.Game.Server.Service;
+using LootTableItem = SWLOR.Game.Server.Service.LootService.LootTableItem;
 using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
 using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
 
@@ -66,7 +70,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.ScavengePoint
                 if (roll >= dc)
                 {
                     oPC.FloatingText(ColorToken.SkillCheck("Search: *success*: (" + roll + " vs. DC: " + dc + ")"));
-                    var spawnItem = LootService.PickRandomItemFromLootTable(lootTableID);
+                    ItemVO spawnItem = null; // LootService.PickRandomItemFromLootTable(lootTableID);
 
                     if (spawnItem == null)
                     {

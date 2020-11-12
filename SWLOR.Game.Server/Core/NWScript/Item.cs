@@ -120,9 +120,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   e.g.: armour, helm, cloak, left hand, and right hand.
         ///   - nValue should be TRUE or FALSE.
         /// </summary>
-        public static void SetHiddenWhenEquipped(uint oItem, int nValue)
+        public static void SetHiddenWhenEquipped(uint oItem, bool nValue)
         {
-            Internal.NativeFunctions.StackPushInteger(nValue);
+            Internal.NativeFunctions.StackPushInteger(nValue ? 1 : 0);
             Internal.NativeFunctions.StackPushObject(oItem);
             Internal.NativeFunctions.CallBuiltIn(864);
         }

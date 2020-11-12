@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
@@ -59,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             DeleteCommand(builder);
             LanguageCommand(builder);
             CustomizeCommand(builder);
+            ToggleHelmet(builder);
 
             return builder.Build();
         }
@@ -212,6 +214,33 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     Dialog.StartConversation(user, user, nameof(CharacterCustomization));
                 });
         }
+
+        private static void ToggleHelmet(ChatCommandBuilder builder)
+        {
+            builder.Create("togglehelmet")
+                .Description("Toggles whether your helmet will be shown when equipped.")
+                .Permissions(AuthorizationLevel.Player)
+                .Action((user, target, location, args) =>
+                {
+                    var playerId = GetObjectUUID(user);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    dbPlayer.ShowHelmet = !dbPlayer.ShowHelmet;
+                    
+                    DB.Set(playerId, dbPlayer);
+
+                    FloatingTextStringOnCreature(
+                        dbPlayer.ShowHelmet ? "Now showing equipped helmet." : "Now hiding equipped helmet.",
+                        user,
+                        false);
+
+                    var helmet = GetItemInSlot(InventorySlot.Head, user);
+                    if (GetIsObjectValid(helmet))
+                    {
+                        SetHiddenWhenEquipped(helmet, !dbPlayer.ShowHelmet);
+                    }
+                });
+        }
+
 
     }
 }

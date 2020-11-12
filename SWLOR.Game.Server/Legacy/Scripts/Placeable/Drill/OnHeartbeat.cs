@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Legacy.Data.Entity;
 using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Service;
+using SWLOR.Game.Server.Legacy.ValueObject;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.Drill
@@ -110,7 +111,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.Drill
                 return;
             }
 
-            var itemDetails = LootService.PickRandomItemFromLootTable(lootTableID);
+            ItemVO itemDetails = null; // LootService.PickRandomItemFromLootTable(lootTableID);
 
             var tempStorage = GetObjectByTag("TEMP_ITEM_STORAGE");
             NWItem item = CreateItemOnObject(itemDetails.Resref, tempStorage, itemDetails.Quantity);

@@ -11,7 +11,6 @@ using SWLOR.Game.Server.Legacy.Event.Module;
 using SWLOR.Game.Server.Legacy.Event.SWLOR;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
-using SWLOR.Game.Server.Legacy.SpawnRule.Contracts;
 using SWLOR.Game.Server.Legacy.ValueObject;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Profiler = SWLOR.Game.Server.Legacy.ValueObject.Profiler;
@@ -20,13 +19,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 {
     public static class SpawnService
     {
-        private static readonly Dictionary<string, ISpawnRule> _spawnRules;
         private static Dictionary<uint, AreaSpawn> AreaSpawns { get; } = new Dictionary<uint, AreaSpawn>();
-
-        static SpawnService()
-        {
-            _spawnRules = new Dictionary<string, ISpawnRule>();
-        }
 
         public static void SubscribeEvents()
         {
@@ -49,34 +42,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 
         private static void OnModuleLoad()
         {
-            RegisterSpawnRules();
             InitializeSpawns();
-        }
-
-        private static void RegisterSpawnRules()
-        {
-            // Use reflection to get all of SpawnRule implementations.
-            var classes = Assembly.GetCallingAssembly().GetTypes()
-                .Where(p => typeof(ISpawnRule).IsAssignableFrom(p) && p.IsClass && !p.IsAbstract).ToArray();
-            foreach (var type in classes)
-            {
-                var instance = Activator.CreateInstance(type) as ISpawnRule;
-                if (instance == null)
-                {
-                    throw new NullReferenceException("Unable to activate instance of type: " + type);
-                }
-                _spawnRules.Add(type.Name, instance);
-            }
-        }
-
-        public static ISpawnRule GetSpawnRule(string key)
-        {
-            if (!_spawnRules.ContainsKey(key))
-            {
-                throw new KeyNotFoundException("Spawn rule '" + key + "' is not registered. Did you create a class for it?");
-            }
-
-            return _spawnRules[key];
         }
 
         private static void InitializeSpawns()
@@ -297,12 +263,6 @@ namespace SWLOR.Game.Server.Legacy.Service
                     spawn.BehaviourScript = dbSpawn.BehaviourScript;
                 }
 
-                if (!string.IsNullOrWhiteSpace(dbSpawn.SpawnRule))
-                {
-                    var rule = GetSpawnRule(dbSpawn.SpawnRule);
-                    rule.Run(plc);
-                }
-
                 areaSpawn.Placeables.Add(spawn);
             }
         }
@@ -508,12 +468,6 @@ namespace SWLOR.Game.Server.Legacy.Service
 
                 if (objectType == ObjectType.Creature)
                     AssignScriptEvents(spawn.Spawn.Object);
-
-                if (!string.IsNullOrWhiteSpace(spawn.SpawnRule))
-                {
-                    var rule = GetSpawnRule(spawn.SpawnRule);
-                    rule.Run(spawn.Spawn);
-                }
 
                 spawn.Timer = 0.0f;
             }

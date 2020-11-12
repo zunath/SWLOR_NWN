@@ -31,7 +31,7 @@
 
 void main()
 {
-    ExecuteScript("onhit_castspell", OBJECT_SELF);
+    ExecuteScript("item_on_hit", OBJECT_SELF);
 
 
    object oItem;        // The item casting triggering this spellscript

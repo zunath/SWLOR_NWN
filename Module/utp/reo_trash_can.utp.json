@@ -94,7 +94,7 @@
   },
   "OnClosed": {
     "type": "resref",
-    "value": "script_3"
+    "value": "trash_closed"
   },
   "OnDamaged": {
     "type": "resref",
@@ -114,7 +114,7 @@
   },
   "OnInvDisturbed": {
     "type": "resref",
-    "value": "script_2"
+    "value": "trash_disturbed"
   },
   "OnLock": {
     "type": "resref",
@@ -126,7 +126,7 @@
   },
   "OnOpen": {
     "type": "resref",
-    "value": "script_1"
+    "value": "trash_opened"
   },
   "OnSpellCastAt": {
     "type": "resref",
@@ -211,56 +211,6 @@
   "Useable": {
     "type": "byte",
     "value": 1
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Placeable.TrashCan.OnOpened"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Placeable.TrashCan.OnDisturbed"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT_3"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Placeable.TrashCan.OnClosed"
-        }
-      }
-    ]
   },
   "Will": {
     "type": "byte",

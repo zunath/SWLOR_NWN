@@ -123,12 +123,6 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.Drill
                 return;
             }
 
-            if (!string.IsNullOrWhiteSpace(itemDetails.SpawnRule))
-            {
-                var rule = SpawnService.GetSpawnRule(itemDetails.SpawnRule);
-                rule.Run(item, retrievalRating);
-            }
-
             var dbItem = new PCBaseStructureItem
             {
                 PCBaseStructureID = controlTower.ID,

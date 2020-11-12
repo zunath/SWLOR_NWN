@@ -1159,12 +1159,6 @@ namespace SWLOR.Game.Server.Legacy.Service
                                     return;
                                 }
 
-                                if (!string.IsNullOrWhiteSpace(itemDetails.SpawnRule))
-                                {
-                                    var rule = SpawnService.GetSpawnRule(itemDetails.SpawnRule);
-                                    rule.Run(item);
-                                }
-
                                 var dbItem = new PCBaseStructureItem
                                 {
                                     PCBaseStructureID = shipStructure.ID,

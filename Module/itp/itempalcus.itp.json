@@ -17732,6 +17732,22 @@
                 "type": "byte",
                 "value": 106
               },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Knuckles"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "knuckles_b"
+                    }
+                  }
+                ]
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 16807290

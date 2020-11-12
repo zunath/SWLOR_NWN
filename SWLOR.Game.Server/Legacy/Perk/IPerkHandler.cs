@@ -18,6 +18,5 @@ namespace SWLOR.Game.Server.Legacy.Perk
         void OnItemEquipped(NWCreature creature, NWItem oItem);
         void OnItemUnequipped(NWCreature creature, NWItem oItem);
         void OnCustomEnmityRule(NWCreature creature, int amount);
-        bool IsHostile();
     }
 }

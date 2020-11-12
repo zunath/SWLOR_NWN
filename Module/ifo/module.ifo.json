@@ -32,13 +32,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "tutorial001"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "house_int_1"
         }
       },

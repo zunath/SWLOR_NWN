@@ -67946,17 +67946,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Molecular Reassembly Terminal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "atom_reass"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Obstacle"
                     },
                     "RESREF": {
@@ -67984,17 +67973,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ore_vein"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Overflow Storage"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "overflow_storage"
                     }
                   },
                   {
@@ -75089,17 +75067,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Item Scrapper"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cft_scrapper"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Medical Terminal"
                     },
                     "RESREF": {
@@ -75231,28 +75198,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "dmfi_rest003"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Enter Tutorial"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tut_enter"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Exit Tutorial"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tut_exit"
                     }
                   },
                   {

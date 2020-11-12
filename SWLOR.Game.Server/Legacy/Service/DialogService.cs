@@ -364,199 +364,166 @@ namespace SWLOR.Game.Server.Legacy.Service
         }
 
 
-        [NWNEventHandler("dialog_action_0")]
         public static void NodeAction0()
         {
             ActionsTaken(0);
         }
 
-        [NWNEventHandler("dialog_action_1")]
         public static void NodeAction1()
         {
             ActionsTaken(1);
         }
 
-        [NWNEventHandler("dialog_action_2")]
         public static void NodeAction2()
         {
             ActionsTaken(2);
         }
 
-        [NWNEventHandler("dialog_action_3")]
         public static void NodeAction3()
         {
             ActionsTaken(3);
         }
 
-        [NWNEventHandler("dialog_action_4")]
         public static void NodeAction4()
         {
             ActionsTaken(4);
         }
 
-        [NWNEventHandler("dialog_action_5")]
         public static void NodeAction5()
         {
             ActionsTaken(5);
         }
 
-        [NWNEventHandler("dialog_action_6")]
         public static void NodeAction6()
         {
             ActionsTaken(6);
         }
 
-        [NWNEventHandler("dialog_action_7")]
         public static void NodeAction7()
         {
             ActionsTaken(7);
         }
 
-        [NWNEventHandler("dialog_action_8")]
         public static void NodeAction8()
         {
             ActionsTaken(8);
         }
 
-        [NWNEventHandler("dialog_action_9")]
         public static void NodeAction9()
         {
             ActionsTaken(9);
         }
 
-        [NWNEventHandler("dialog_action_10")]
         public static void NodeAction10()
         {
             ActionsTaken(10);
         }
 
-        [NWNEventHandler("dialog_action_11")]
         public static void NodeAction11()
         {
             ActionsTaken(11);
         }
 
-        [NWNEventHandler("dialog_appears_0")]
         public static bool NodeAppears0()
         {
             return AppearsWhen(2, 0);
         }
 
-        [NWNEventHandler("dialog_appears_1")]
         public static bool NodeAppears1()
         {
             return AppearsWhen(2, 1);
         }
 
-        [NWNEventHandler("dialog_appears_2")]
         public static bool NodeAppears2()
         {
             return AppearsWhen(2, 2);
         }
 
-        [NWNEventHandler("dialog_appears_3")]
         public static bool NodeAppears3()
         {
             return AppearsWhen(2, 3);
         }
 
-        [NWNEventHandler("dialog_appears_4")]
         public static bool NodeAppears4()
         {
             return AppearsWhen(2, 4);
         }
 
-        [NWNEventHandler("dialog_appears_5")]
         public static bool NodeAppears5()
         {
             return AppearsWhen(2, 5);
         }
 
-        [NWNEventHandler("dialog_appears_6")]
         public static bool NodeAppears6()
         {
             return AppearsWhen(2, 6);
         }
 
-        [NWNEventHandler("dialog_appears_7")]
         public static bool NodeAppears7()
         {
             return AppearsWhen(2, 7);
         }
 
-        [NWNEventHandler("dialog_appears_8")]
         public static bool NodeAppears8()
         {
             return AppearsWhen(2, 8);
         }
 
-        [NWNEventHandler("dialog_appears_9")]
         public static bool NodeAppears9()
         {
             return AppearsWhen(2, 9);
         }
 
-        [NWNEventHandler("dialog_appears10")]
         public static bool NodeAppears10()
         {
             return AppearsWhen(2, 10);
         }
 
-        [NWNEventHandler("dialog_appears11")]
         public static bool NodeAppears11()
         {
             return AppearsWhen(2, 11);
         }
 
-        [NWNEventHandler("dialog_appears_h")]
         public static bool HeaderAppearsWhen()
         {
             return AppearsWhen(1, 0);
         }
 
-        [NWNEventHandler("dialog_appears_n")]
         public static bool NextAppearsWhen()
         {
             return AppearsWhen(3, 12);
         }
 
-        [NWNEventHandler("dialog_action_n")]
         public static void NextAction()
         {
             ActionsTaken(12);
         }
 
-        [NWNEventHandler("dialog_appears_p")]
         public static bool PreviousAppearsWhen()
         {
             return AppearsWhen(4, 13);
         }
 
-        [NWNEventHandler("dialog_action_p")]
         public static void PreviousAction()
         {
             ActionsTaken(13);
         }
 
-        [NWNEventHandler("dialog_appears_b")]
         public static bool BackAppearsWhen()
         {
             return AppearsWhen(5, 14);
         }
 
-        [NWNEventHandler("dialog_action_b")]
         public static void BackAction()
         {
             ActionsTaken(14);
         }
 
-        [NWNEventHandler("dialog_end")]
         public static void EndAction()
         {
             OnDialogEnd();
         }
 
-        [NWNEventHandler("dialog_start")]
         public static void StartDialog()
         {
             OnDialogStart();

@@ -213,69 +213,6 @@ namespace SWLOR.Game.Server.Service
             return "Basic";
         }
 
-        public static void InitializePlayerLanguages(uint player)
-        {
-            var race = GetRacialType(player);
-            var languages = new List<SkillType>(new[] { SkillType.Basic });
-
-            switch (race)
-            {
-                case RacialType.Bothan:
-                    languages.Add(SkillType.Bothese);
-                    break;
-                case RacialType.Chiss:
-                    languages.Add(SkillType.Cheunh);
-                    break;
-                case RacialType.Zabrak:
-                    languages.Add(SkillType.Zabraki);
-                    break;
-                case RacialType.Wookiee:
-                    languages.Add(SkillType.Shyriiwook);
-                    break;
-                case RacialType.Twilek:
-                    languages.Add(SkillType.Twileki);
-                    break;
-                case RacialType.Cathar:
-                    languages.Add(SkillType.Catharese);
-                    break;
-                case RacialType.Trandoshan:
-                    languages.Add(SkillType.Dosh);
-                    break;
-                case RacialType.Cyborg:
-                    languages.Add(SkillType.Droidspeak);
-                    break;
-                case RacialType.Mirialan:
-                    languages.Add(SkillType.Mirialan);
-                    break;
-                case RacialType.MonCalamari:
-                    languages.Add(SkillType.MonCalamarian);
-                    break;
-                case RacialType.Ugnaught:
-                    languages.Add(SkillType.Ugnaught);
-                    break;
-            }
-
-            // Fair warning: We're short-circuiting the skill system here.
-            // Languages don't level up like normal skills (no stat increases, SP, etc.)
-            // So it's safe to simply set the player's rank in the skill to max.
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            foreach (var language in languages)
-            {
-                var skill = Skill.GetSkillDetails(language);
-                if (!dbPlayer.Skills.ContainsKey(language))
-                    dbPlayer.Skills[language] = new PlayerSkill();
-
-                var level = skill.MaxRank;
-                dbPlayer.Skills[language].Rank = level;
-
-                dbPlayer.Skills[language].XP = Skill.GetRequiredXP(level) - 1;
-            }
-
-            DB.Set(playerId, dbPlayer);
-        }
-
         public static SkillType GetActiveLanguage(uint obj)
         {
             var ret = GetLocalInt(obj, "ACTIVE_LANGUAGE");

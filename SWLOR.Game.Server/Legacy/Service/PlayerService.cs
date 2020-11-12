@@ -144,12 +144,7 @@ namespace SWLOR.Game.Server.Legacy.Service
                     DataService.SubmitDataChange(pcSkill, DatabaseActionType.Insert);
                 }
 
-                RaceService.ApplyDefaultAppearance(player);
-                Creature.SetAlignmentLawChaos(player, 50);
-                Creature.SetAlignmentGoodEvil(player, 50);
-
                 PlayerStatService.ApplyStatChanges(player, null, true);
-                Language.InitializePlayerLanguages(player);
 
                 DelayCommand(1.0f, () => ApplyEffectToObject(DurationType.Instant, EffectHeal(999), player));
 

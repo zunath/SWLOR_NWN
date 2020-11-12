@@ -1,10 +1,14 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using Player = SWLOR.Game.Server.Entity.Player;
 using Skill = SWLOR.Game.Server.Core.NWScript.Enum.Skill;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Race = SWLOR.Game.Server.Service.Race;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -35,6 +39,9 @@ namespace SWLOR.Game.Server.Feature
             GrantBasicFeats(player);
             InitializeHotBar(player);
             AdjustStats(player, dbPlayer);
+            AdjustAlignment(player);
+            InitializeLanguages(player, dbPlayer);
+            Race.SetDefaultRaceAppearance(player);
 
             DB.Set(playerId, dbPlayer);
         }
@@ -147,6 +154,7 @@ namespace SWLOR.Game.Server.Feature
             Creature.AddFeatByLevel(player, Feat.OpenRestMenu, 1);
             Creature.AddFeatByLevel(player, Feat.ChatCommandTargeter, 1);
             Creature.AddFeatByLevel(player, Feat.StructureTool, 1);
+            Creature.AddFeatByLevel(player, Feat.Rest, 1);
         }
 
 
@@ -182,6 +190,79 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.BaseStats[AbilityType.Wisdom] = Creature.GetRawAbilityScore(player, AbilityType.Wisdom);
             dbPlayer.BaseStats[AbilityType.Intelligence] = Creature.GetRawAbilityScore(player, AbilityType.Intelligence);
             dbPlayer.BaseStats[AbilityType.Charisma] = Creature.GetRawAbilityScore(player, AbilityType.Charisma);
+        }
+
+        /// <summary>
+        /// Modifies the player's alignment to Neutral/Neutral since we don't use alignment at all here.
+        /// </summary>
+        /// <param name="player">The player to object.</param>
+        private static void AdjustAlignment(uint player)
+        {
+            Creature.SetAlignmentLawChaos(player, 50);
+            Creature.SetAlignmentGoodEvil(player, 50);
+        }
+
+        /// <summary>
+        /// Initializes all of the languages for a player based on their racial type.
+        /// </summary>
+        /// <param name="player">The player object.</param>
+        /// <param name="dbPlayer">The player entity.</param>
+        private static void InitializeLanguages(uint player, Player dbPlayer)
+        {
+            var race = GetRacialType(player);
+            var languages = new List<SkillType>(new[] { SkillType.Basic });
+
+            switch (race)
+            {
+                case RacialType.Bothan:
+                    languages.Add(SkillType.Bothese);
+                    break;
+                case RacialType.Chiss:
+                    languages.Add(SkillType.Cheunh);
+                    break;
+                case RacialType.Zabrak:
+                    languages.Add(SkillType.Zabraki);
+                    break;
+                case RacialType.Wookiee:
+                    languages.Add(SkillType.Shyriiwook);
+                    break;
+                case RacialType.Twilek:
+                    languages.Add(SkillType.Twileki);
+                    break;
+                case RacialType.Cathar:
+                    languages.Add(SkillType.Catharese);
+                    break;
+                case RacialType.Trandoshan:
+                    languages.Add(SkillType.Dosh);
+                    break;
+                case RacialType.Cyborg:
+                    languages.Add(SkillType.Droidspeak);
+                    break;
+                case RacialType.Mirialan:
+                    languages.Add(SkillType.Mirialan);
+                    break;
+                case RacialType.MonCalamari:
+                    languages.Add(SkillType.MonCalamarian);
+                    break;
+                case RacialType.Ugnaught:
+                    languages.Add(SkillType.Ugnaught);
+                    break;
+            }
+
+            // Fair warning: We're short-circuiting the skill system here.
+            // Languages don't level up like normal skills (no stat increases, SP, etc.)
+            // So it's safe to simply set the player's rank in the skill to max.
+            foreach (var language in languages)
+            {
+                var skill = Service.Skill.GetSkillDetails(language);
+                if (!dbPlayer.Skills.ContainsKey(language))
+                    dbPlayer.Skills[language] = new PlayerSkill();
+
+                var level = skill.MaxRank;
+                dbPlayer.Skills[language].Rank = level;
+
+                dbPlayer.Skills[language].XP = Service.Skill.GetRequiredXP(level) - 1;
+            }
         }
     }
 }

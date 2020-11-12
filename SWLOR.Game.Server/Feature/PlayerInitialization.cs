@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Feature
             AdjustAlignment(player);
             InitializeLanguages(player, dbPlayer);
             Race.SetDefaultRaceAppearance(player);
+            GiveStartingItems(player);
 
             DB.Set(playerId, dbPlayer);
         }
@@ -93,6 +94,8 @@ namespace SWLOR.Game.Server.Feature
                 DestroyObject(inventory);
                 inventory = GetNextItemInInventory(player);
             }
+
+            TakeGoldFromCreature(GetGold(player), player, true);
         }
 
         /// <summary>
@@ -264,5 +267,22 @@ namespace SWLOR.Game.Server.Feature
                 dbPlayer.Skills[language].XP = Service.Skill.GetRequiredXP(level) - 1;
             }
         }
+
+        /// <summary>
+        /// Gives the starting items to the player.
+        /// </summary>
+        /// <param name="player">The player to receive the starting items.</param>
+        private static void GiveStartingItems(uint player)
+        {
+            var item = CreateItemOnObject("survival_knife", player);
+            SetName(item, GetName(player) + "'s Survival Knife");
+            SetItemCursedFlag(item, true);
+
+            item = CreateItemOnObject("tk_omnidye", player);
+            SetItemCursedFlag(item, true);
+
+            GiveGoldToCreature(player, 100);
+        }
+
     }
 }

@@ -448,7 +448,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             // Don't process anything that's valid.
             if (spawn.Spawn.IsValid) return;
 
-            spawn.Timer += ObjectProcessingService.ProcessingTickInterval;
+            spawn.Timer += 1.0f; // ObjectProcessingService.ProcessingTickInterval;
 
             // Time to respawn!
             if (spawn.Timer >= spawn.RespawnTime || forceSpawn)

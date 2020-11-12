@@ -31,7 +31,6 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
         public override void Initialize()
         {
-            ToggleDisablePVPProtectionOption();
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
@@ -43,7 +42,6 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                     switch (responseID)
                     {
                         case 1: // Disable PVP Protection
-                            HandleDisablePVPProtection();
                             break;
                         case 2: // Toggle Helmet Display
                             break;
@@ -61,39 +59,6 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
         public override void Back(NWPlayer player, string beforeMovePage, string afterMovePage)
         {
-        }
-
-        private void ToggleDisablePVPProtectionOption()
-        {
-            SetResponseVisible("MainPage", 1, PVPSanctuaryService.PlayerHasPVPSanctuary(GetPC()));
-        }
-
-        private void HandleDisablePVPProtection()
-        {
-            var dto = GetDialogCustomData<Model>();
-            
-            if (!PVPSanctuaryService.PlayerHasPVPSanctuary(GetPC()))
-            {
-                return;
-            }
-
-            if (dto.IsConfirmingDisableSanctuary)
-            {
-                PVPSanctuaryService.SetPlayerPVPSanctuaryOverride(GetPC(), true);
-                dto.IsConfirmingDisableSanctuary = false;
-                NWScript.FloatingTextStringOnCreature(ColorToken.Red("PVP protection has been disabled. You may now attack and be attacked by other players."), GetPC().Object, false);
-                SetResponseText("MainPage", 1, "Disable PVP Protection");
-            }
-            else
-            {
-                dto.IsConfirmingDisableSanctuary = true;
-                NWScript.FloatingTextStringOnCreature(ColorToken.Red("WARNING: PVP protection prevents other players from attacking you. If you disable this, players will immediately be able to attack you anywhere. Click again to confirm."), GetPC().Object, false);
-                SetResponseText("MainPage", 1, "CONFIRM DISABLE PVP PROTECTION");
-            }
-
-            SetDialogCustomData(dto);
-
-            ToggleDisablePVPProtectionOption();
         }
 
         public override void EndDialog()

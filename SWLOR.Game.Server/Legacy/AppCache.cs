@@ -30,7 +30,6 @@ namespace SWLOR.Game.Server.Legacy
             DialogFilesInUse = new Dictionary<int, bool>();
             CreatureSkillRegistrations = new Dictionary<Guid, CreatureSkillRegistration>();
             NPCEffects = new Dictionary<CasterSpellVO, int>();
-            UnregisterProcessingEvents = new Queue<string>();
             NPCEnmityTables = new Dictionary<Guid, EnmityTable>();
             CustomObjectData = new Dictionary<Guid, CustomData>();
             PCEffectsForRemoval = new List<Guid>();
@@ -55,7 +54,6 @@ namespace SWLOR.Game.Server.Legacy
             player.SendMessage("DialogFilesInUse: " + DialogFilesInUse.Count);
             player.SendMessage("CreatureSkillRegistrations: " + CreatureSkillRegistrations.Count);
             player.SendMessage("NPCEffects: " + NPCEffects.Count);
-            player.SendMessage("UnregisterProcessingEvents: " + UnregisterProcessingEvents.Count);
             player.SendMessage("NPCEnmityTables: " + NPCEnmityTables.Count);
             player.SendMessage("CustomObjectData: " + CustomObjectData.Count);
             player.SendMessage("PCEffectsForRemoval: " + PCEffectsForRemoval.Count);

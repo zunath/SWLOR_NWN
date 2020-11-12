@@ -141,12 +141,6 @@ namespace SWLOR.Game.Server.Legacy.Service
                 return false;
             }
 
-            // Verify that this hostile action meets PVP sanctuary restriction rules. 
-            if (handler.IsHostile() && target.IsPlayer)
-            {
-                if (!PVPSanctuaryService.IsPVPAttackAllowed(activator.Object, target.Object)) return false;
-            }
-
             // Activator and target must be in the same area and within line of sight.
             if (GetResRef(activator.Area) != GetResRef(target.Area) ||
                 LineOfSightObject(activator.Object, target.Object) == false)

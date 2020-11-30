@@ -20,16 +20,7 @@ BEGIN
     SET p.UnallocatedSP = p.UnallocatedSP + sum_pl_price
     WHERE p.ID = sp.PlayerID;
     
-    CREATE TEMPORARY TABLE IF NOT EXISTS ToRemove (
-        SELECT ID
-		FROM PCPerk pcp
-        JOIN PlayerSPRefunds pspr ON pspr.PlayerID = pcp.PlayerID
-		WHERE pcp.PerkID = perkID
-    );
-    
-    DELETE pcp.*
-    FROM PCPerk pcp
-    WHERE pcp.ID IN (
-		SELECT ID FROM ToRemove
-    );
+	DELETE pcp.*
+	FROM PCPerk pcp
+	WHERE pcp.PerkID = @PerkID;
 END

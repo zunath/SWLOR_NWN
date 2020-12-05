@@ -86,35 +86,35 @@ namespace SWLOR.Game.Server.Perk.ForceControl
                 case 1:
                     strBonus = 2;
                     conBonus = 2;
-                    acPenalty = 0;
+                    acPenalty = 2;
                     hpPenalty = 2;
                     attacks = 0;
                     break;
                 case 2:
                     strBonus = 4;
                     conBonus = 4;
-                    acPenalty = 0;
+                    acPenalty = 2;
                     hpPenalty = 4;
                     attacks = 0;
                     break;
                 case 3:
                     strBonus = 6;
                     conBonus = 6;
-                    acPenalty = 0;
+                    acPenalty = 4;
                     hpPenalty = 6;
                     attacks = 1;
                     break;
                 case 4:
                     strBonus = 8;
                     conBonus = 8;
-                    acPenalty = 0;
+                    acPenalty = 4;
                     hpPenalty = 8;
                     attacks = 1;
                     break;
                 case 5:
                     strBonus = 10;
                     conBonus = 10;
-                    acPenalty = 0;
+                    acPenalty = 6;
                     hpPenalty = 10;
                     attacks = 2;
                     break;
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             Effect visualEffect = _.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Red);
             Effect strEffect = _.EffectAbilityIncrease(AbilityType.Strength, strBonus);
             Effect conEffect = _.EffectAbilityIncrease(AbilityType.Constitution, conBonus);
-            Effect acEffect = _.EffectACDecrease(0);
+            Effect acEffect = _.EffectACDecrease(acPenalty);
             Effect attackEffect = _.EffectModifyAttacks(attacks);
             Effect finalEffect = _.EffectLinkEffects(strEffect, conEffect);
             finalEffect = _.EffectLinkEffects(finalEffect, acEffect);

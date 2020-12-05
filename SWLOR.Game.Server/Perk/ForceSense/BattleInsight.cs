@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             }
 
             // Penalize the caster
-            Effect effect = _.EffectACDecrease(0);
+            Effect effect = _.EffectACDecrease(amount);
             effect = _.EffectLinkEffects(effect, _.EffectAttackDecrease(amount));
             ApplyEffectToObject(DurationType.Temporary, effect, creature, 6.1f);
 
@@ -133,12 +133,12 @@ namespace SWLOR.Game.Server.Perk.ForceSense
 
                 if (_.GetIsReactionTypeHostile(targetCreature, creature) == true)
                 {
-                    effect = _.EffectACDecrease(0);
+                    effect = _.EffectACDecrease(amount);
                     effect = _.EffectLinkEffects(effect, _.EffectAttackDecrease(amount));
                 }
                 else
                 {
-                    effect = _.EffectACIncrease(0);
+                    effect = _.EffectACIncrease(amount);
                     effect = _.EffectLinkEffects(effect, _.EffectAttackIncrease(amount));
                 }
 

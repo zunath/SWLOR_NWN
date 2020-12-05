@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             if (weapon.CustomItemType == CustomItemType.Lightsaber ||
                 weapon.CustomItemType == CustomItemType.Saberstaff)
             {
-                iDamage = saberDamage + RandomService.D6(2) + player.IntelligenceModifier + player.StrengthModifier;
+                iDamage = saberDamage + RandomService.D6(2) + player.StrengthModifier;
             }
             else
             {
@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     break;
                 case 3:
-                    iDamage = (int)(iDamage * 1.6);
+                    iDamage = (int)(iDamage * 1.5);
                     iDamage = iDamage + (int)(iDamage * delta);
 
                     fDelay = _.GetDistanceBetween(player, target) / 10.0f;
@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     break;
                 case 4:
-                    iDamage = (int)(iDamage * 2.0);
+                    iDamage = (int)(iDamage * 1.6);
                     iDamage = iDamage + (int)(iDamage * delta);
 
                     // apply to target
@@ -222,7 +222,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     }
                     break;
                 case 5:
-                    iDamage = (int)(iDamage * 2.5);
+                    iDamage = (int)(iDamage * 1.75);
                     iDamage = iDamage + (int)(iDamage * delta);
 
                     // apply to target

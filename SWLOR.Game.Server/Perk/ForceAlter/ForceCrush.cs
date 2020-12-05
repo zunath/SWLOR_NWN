@@ -13,12 +13,6 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         public PerkType PerkType => PerkType.ForceCrush;
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
-            if (!oTarget.IsCreature)
-                return "This ability can only be used on living creatures.";
-            NWCreature targetCreature = oTarget.Object;
-            if (targetCreature.RacialType == RacialType.Robot)
-                return "This ability cannot be used on droids.";
-
             return string.Empty;
         }
 

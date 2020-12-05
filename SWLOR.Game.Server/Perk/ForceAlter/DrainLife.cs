@@ -78,19 +78,19 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             switch (spellTier)
             {
                 case 1:
-                    amount = 5;
+                    amount = 5 + ((int)ForceBalanceType.Dark - (int)ForceBalanceType.Light);
                     break;
                 case 2:
-                    amount = 6;
+                    amount = 6 + ((int)ForceBalanceType.Dark - (int)ForceBalanceType.Light);
                     break;
                 case 3:
-                    amount = 7;
+                    amount = 7 + ((int)ForceBalanceType.Dark - (int)ForceBalanceType.Light);
                     break;
                 case 4:
-                    amount = 8;
+                    amount = 8 + ((int)ForceBalanceType.Dark - (int)ForceBalanceType.Light);
                     break;
                 case 5:
-                    amount = 10;
+                    amount = 10 + ((int)ForceBalanceType.Dark - (int)ForceBalanceType.Light);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(spellTier));

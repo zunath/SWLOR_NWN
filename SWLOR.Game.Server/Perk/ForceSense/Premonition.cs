@@ -105,7 +105,10 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             {
                 if (creature.IsPlayer)
                 {
-                    SkillService.GiveSkillXP(creature.Object, SkillType.ForceSense, (perkLevel * 50));
+                    NWPlayer player = creature.Object;
+                    int skillLevel = SkillService.GetPCSkillRank(player, SkillType.ForceSense);
+                    int xp = skillLevel * 10 + 10;
+                    SkillService.GiveSkillXP(player, SkillType.ForceSense, xp);
                 }
             }
         }

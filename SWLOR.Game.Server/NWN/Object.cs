@@ -1,3 +1,4 @@
+using System.Numerics;
 using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.NWN
@@ -125,8 +126,8 @@ namespace SWLOR.Game.Server.NWN
         ///   Can be a creature, item, placeable, door, trigger or module object.
         ///   - bOriginalDescription:  if set to true any new description specified via a SetDescription scripting command
         ///   is ignored and the original object's description is returned instead.
-        ///   - bIdentified: If oObject is an item, setting this to true will return the identified description,
-        ///   setting this to false will return the unidentified description. This flag has no
+        ///   - bIdentified: If oObject is an item, setting this to TRUE will return the identified description,
+        ///   setting this to FALSE will return the unidentified description. This flag has no
         ///   effect on objects other than items.
         /// </summary>
         public static string GetDescription(uint oObject, bool bOriginalDescription = false,
@@ -144,8 +145,8 @@ namespace SWLOR.Game.Server.NWN
         ///   - oObject: the object for which you are changing the description
         ///   Can be a creature, placeable, item, door, or trigger.
         ///   - sNewDescription: the new description that the object will use.
-        ///   - bIdentified: If oObject is an item, setting this to true will set the identified description,
-        ///   setting this to false will set the unidentified description. This flag has no
+        ///   - bIdentified: If oObject is an item, setting this to TRUE will set the identified description,
+        ///   setting this to FALSE will set the unidentified description. This flag has no
         ///   effect on objects other than items.
         ///   Note: Setting an object's description to "" will make the object
         ///   revert to using the description it originally had before any
@@ -230,7 +231,7 @@ namespace SWLOR.Game.Server.NWN
         ///   or unlocks the player's camera pitch.
         ///   Stops the player from tilting their camera angle.
         ///   - oPlayer: A player object.
-        ///   - bLocked: true/false.
+        ///   - bLocked: TRUE/FALSE.
         /// </summary>
         public static void LockCameraPitch(uint oPlayer, bool bLocked = true)
         {
@@ -244,7 +245,7 @@ namespace SWLOR.Game.Server.NWN
         ///   or unlocks the player's camera distance.
         ///   Stops the player from being able to zoom in/out the camera.
         ///   - oPlayer: A player object.
-        ///   - bLocked: true/false.
+        ///   - bLocked: TRUE/FALSE.
         /// </summary>
         public static void LockCameraDistance(uint oPlayer, bool bLocked = true)
         {
@@ -259,7 +260,7 @@ namespace SWLOR.Game.Server.NWN
         ///   freely again.
         ///   Stops the player from being able to rotate the camera direction.
         ///   - oPlayer: A player object.
-        ///   - bLocked: true/false.
+        ///   - bLocked: TRUE/FALSE.
         /// </summary>
         public static void LockCameraDirection(uint oPlayer, bool bLocked = true)
         {
@@ -301,7 +302,7 @@ namespace SWLOR.Game.Server.NWN
         ///   can be specified either in the toolset, or by using
         ///   the SetLockKeyTag() scripting command.
         ///   - oObject: a door, or placeable.
-        ///   - nKeyRequired: true/false
+        ///   - nKeyRequired: TRUE/FALSE
         /// </summary>
         public static void SetLockKeyRequired(uint oObject, bool nKeyRequired = true)
         {
@@ -328,7 +329,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Sets whether or not the object can be locked.
         ///   - oObject: a door or placeable.
-        ///   - nLockable: true/false
+        ///   - nLockable: TRUE/FALSE
         /// </summary>
         public static void SetLockLockable(uint oObject, bool nLockable = true)
         {
@@ -443,7 +444,7 @@ namespace SWLOR.Game.Server.NWN
         {
             Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
             Internal.NativeFunctions.StackPushObject(oOwner);
-            Internal.NativeFunctions.StackPushLocation(locLocation.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, locLocation);
             Internal.NativeFunctions.StackPushObject(oSource);
             Internal.NativeFunctions.CallBuiltIn(600);
             return Internal.NativeFunctions.StackPopObject();
@@ -462,8 +463,8 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Determine whether oObject has an inventory.
-        ///   * Returns true for creatures and stores, and checks to see if an item or placeable object is a container.
-        ///   * Returns false for all other object types.
+        ///   * Returns TRUE for creatures and stores, and checks to see if an item or placeable object is a container.
+        ///   * Returns FALSE for all other object types.
         /// </summary>
         public static bool GetHasInventory(uint oObject)
         {
@@ -639,9 +640,9 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Set the position of oSound.
         /// </summary>
-        public static void SoundObjectSetPosition(uint oSound, Vector? vPosition)
+        public static void SoundObjectSetPosition(uint oSound, Vector3 vPosition)
         {
-            Internal.NativeFunctions.StackPushVector(vPosition.HasValue ? vPosition.Value : new Vector());
+            Internal.NativeFunctions.StackPushVector(vPosition);
             Internal.NativeFunctions.StackPushObject(oSound);
             Internal.NativeFunctions.CallBuiltIn(416);
         }
@@ -661,10 +662,10 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Set the destroyable status of the caller.
-        ///   - bDestroyable: If this is false, the caller does not fade out on death, but
+        ///   - bDestroyable: If this is FALSE, the caller does not fade out on death, but
         ///   sticks around as a corpse.
-        ///   - bRaiseable: If this is true, the caller can be raised via resurrection.
-        ///   - bSelectableWhenDead: If this is true, the caller is selectable after death.
+        ///   - bRaiseable: If this is TRUE, the caller can be raised via resurrection.
+        ///   - bSelectableWhenDead: If this is TRUE, the caller is selectable after death.
         /// </summary>
         public static void SetIsDestroyable(bool bDestroyable = true, bool bRaiseable = true,
             bool bSelectableWhenDead = false)
@@ -697,7 +698,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Create an object of the specified type at lLocation.
-        ///   - nObjectType: ObjectType.Item, ObjectType.Creature, ObjectType.Placeable,
+        ///   - nObjectType: OBJECT_TYPE_ITEM, OBJECT_TYPE_CREATURE, OBJECT_TYPE_PLACEABLE,
         ///   OBJECT_TYPE_STORE, OBJECT_TYPE_WAYPOINT
         ///   - sTemplate
         ///   - lLocation
@@ -709,7 +710,7 @@ namespace SWLOR.Game.Server.NWN
         {
             Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
             Internal.NativeFunctions.StackPushInteger(nUseAppearAnimation ? 1 : 0);
-            Internal.NativeFunctions.StackPushLocation(lLocation.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lLocation);
             Internal.NativeFunctions.StackPushStringUTF8(sTemplate);
             Internal.NativeFunctions.StackPushInteger((int)nObjectType);
             Internal.NativeFunctions.CallBuiltIn(243);
@@ -723,8 +724,7 @@ namespace SWLOR.Game.Server.NWN
         ///   - nNth
         ///   * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetNearestObject(uint oTarget = OBJECT_INVALID, ObjectType nObjectType = ObjectType.All,
-            int nNth = 1)
+        public static uint GetNearestObject(uint oTarget = OBJECT_INVALID, ObjectType nObjectType = ObjectType.All, int nNth = 1)
         {
             Internal.NativeFunctions.StackPushInteger(nNth);
             Internal.NativeFunctions.StackPushObject(oTarget);
@@ -744,7 +744,7 @@ namespace SWLOR.Game.Server.NWN
             int nNth = 1)
         {
             Internal.NativeFunctions.StackPushInteger(nNth);
-            Internal.NativeFunctions.StackPushLocation(lLocation.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lLocation);
             Internal.NativeFunctions.StackPushInteger((int)nObjectType);
             Internal.NativeFunctions.CallBuiltIn(228);
             return Internal.NativeFunctions.StackPopObject();
@@ -783,6 +783,7 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static ObjectType GetObjectType(uint oTarget)
         {
+            if (GetIsPC(oTarget)) return ObjectType.Player;
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(106);
             return (ObjectType)Internal.NativeFunctions.StackPopInteger();
@@ -811,13 +812,39 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns true if oObject is a valid object.
+        ///   * Returns TRUE if oObject is a valid object.
         /// </summary>
         public static bool GetIsObjectValid(uint oObject)
         {
             Internal.NativeFunctions.StackPushObject(oObject);
             Internal.NativeFunctions.CallBuiltIn(42);
             return Internal.NativeFunctions.StackPopInteger() != 0;
+        }
+
+        /// <summary>
+        /// Convert sHex, a string containing a hexadecimal object id,
+        /// into a object reference. Counterpart to StringToObject().
+        /// </summary>
+        public static uint StringToObject(string sHex)
+        {
+            Internal.NativeFunctions.StackPushString(sHex);
+            Internal.NativeFunctions.CallBuiltIn(936);
+            return Internal.NativeFunctions.StackPopObject();
+        }
+
+
+        /// <summary>
+        /// Replace's oObject's texture sOld with sNew.
+        /// Specifying sNew = "" will restore the original texture.
+        /// If sNew cannot be found, the original texture will be restored.
+        /// sNew must refer to a simple texture, not PLT
+        /// </summary>
+        public static void ReplaceObjectTexture(uint oObject, string sOld, string sNew = "")
+        {
+            Internal.NativeFunctions.StackPushString(sNew);
+            Internal.NativeFunctions.StackPushString(sOld);
+            Internal.NativeFunctions.StackPushObject(oObject);
+            Internal.NativeFunctions.CallBuiltIn(920);
         }
     }
 }

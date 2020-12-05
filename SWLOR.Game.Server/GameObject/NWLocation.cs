@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using System.Numerics;
+using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.GameObject
 {
@@ -18,7 +19,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public NWArea Area => _.GetAreaFromLocation(Location);
 
-        public Vector Position => _.GetPositionFromLocation(Location);
+        public Vector3 Position => _.GetPositionFromLocation(Location);
 
         public static implicit operator Location(NWLocation l)
         {

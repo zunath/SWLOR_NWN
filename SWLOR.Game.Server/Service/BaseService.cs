@@ -9,6 +9,7 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
@@ -72,7 +73,7 @@ namespace SWLOR.Game.Server.Service
             var positionY = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Y"));
             var positionZ = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Z"));
             var area = (NWArea)NWNXObject.StringToObject(NWNXEvents.GetEventData("AREA_OBJECT_ID"));
-            var vector = Vector(positionX, positionY, positionZ);
+            var vector = Vector3(positionX, positionY, positionZ);
 
             var targetLocation = Location(area, vector, 0.0f);
 
@@ -147,7 +148,7 @@ namespace SWLOR.Game.Server.Service
             PCBaseStructure pcStructure = DataService.PCBaseStructure.GetByID(pcBaseStructureID);
 
             NWLocation location = _.Location(area.Object,
-                _.Vector((float)pcStructure.LocationX, (float)pcStructure.LocationY, (float)pcStructure.LocationZ),
+                _.Vector3((float)pcStructure.LocationX, (float)pcStructure.LocationY, (float)pcStructure.LocationZ),
                 (float)pcStructure.LocationOrientation);
 
             BaseStructure baseStructure = DataService.BaseStructure.GetByID(pcStructure.BaseStructureID);
@@ -1572,7 +1573,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Set lighting if changed
-            Vector vPos;
+            Vector3 vPos;
             vPos.X = 0.0f;
             vPos.Y = 0.0f;
             vPos.Z = 0.0f;
@@ -1669,7 +1670,7 @@ namespace SWLOR.Game.Server.Service
                 if (area == null) area = NWModule.Get().Areas.SingleOrDefault(x => x.Resref == entity.LocationAreaResref);
                 if (area == null) return;
 
-                Vector position = _.Vector((float)entity.LocationX, (float)entity.LocationY, (float)entity.LocationZ);
+                Vector3 position = _.Vector3((float)entity.LocationX, (float)entity.LocationY, (float)entity.LocationZ);
                 Location location = _.Location(area.Object,
                     position,
                     (float)entity.LocationOrientation);

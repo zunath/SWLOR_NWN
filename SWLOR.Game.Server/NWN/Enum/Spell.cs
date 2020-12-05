@@ -1,6 +1,6 @@
 namespace SWLOR.Game.Server.NWN.Enum
 {
-    public enum Spell : short
+    public enum Spell
     {
         Invalid = -2,
         AllSpells = -1,

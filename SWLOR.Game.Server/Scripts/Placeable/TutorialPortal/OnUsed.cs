@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Numerics;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.TutorialPortal
             {
                 Player entity = PlayerService.GetPlayerEntity(player.GlobalID);
                 NWArea area = NWModule.Get().Areas.Single(x => x.Resref == entity.LocationAreaResref);
-                Vector position = _.Vector((float) entity.LocationX, (float) entity.LocationY, (float) entity.LocationZ);
+                Vector3 position = _.Vector3((float) entity.LocationX, (float) entity.LocationY, (float) entity.LocationZ);
                 Location location = _.Location(area.Object,
                     position,
                     (float) entity.LocationOrientation);

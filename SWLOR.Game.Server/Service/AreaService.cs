@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Service
             {
                 for (int y = 0; y < arraySizeY; y++)
                 {
-                    Location checkLocation = _.Location(area.Object, _.Vector(x * AreaBakeStep, y * AreaBakeStep), 0.0f);
+                    Location checkLocation = _.Location(area.Object, _.Vector3(x * AreaBakeStep, y * AreaBakeStep), 0.0f);
                     int material = _.GetSurfaceMaterial(checkLocation);
                     bool isWalkable = Convert.ToInt32(_.Get2DAString("surfacemat", "Walk", material)) == 1;
 

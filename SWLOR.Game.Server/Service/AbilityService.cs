@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Numerics;
 using SWLOR.Game.Server.Event.Creature;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
@@ -639,11 +640,11 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void CheckForSpellInterruption(NWCreature activator, string spellUUID, Vector position)
+        private static void CheckForSpellInterruption(NWCreature activator, string spellUUID, Vector3 position)
         {
             if (activator.GetLocalInt(spellUUID) == (int)SpellStatusType.Completed) return;
 
-            Vector currentPosition = activator.Position;
+            Vector3 currentPosition = activator.Position;
 
             if (currentPosition.X != position.X ||
                 currentPosition.Y != position.Y ||

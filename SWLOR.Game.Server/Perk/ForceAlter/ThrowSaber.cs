@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     player.DelayAssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BASE_WEAPON)), target);
+                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BaseWeapon)), target);
                     }, fDelay);
 
                     if (player.IsPlayer)
@@ -154,7 +154,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     player.DelayAssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BASE_WEAPON)), target);
+                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BaseWeapon)), target);
                     }, fDelay);
 
                     if (player.IsPlayer)
@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     player.DelayAssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BASE_WEAPON)), target);
+                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BaseWeapon)), target);
                     }, fDelay);
 
                     if (player.IsPlayer)
@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     player.DelayAssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BASE_WEAPON)), target);
+                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BaseWeapon)), target);
                     }, fDelay);
 
                     if (player.IsPlayer)
@@ -209,7 +209,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             var creature = oObject;
                             player.DelayAssignCommand(() =>
                             {
-                                _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BASE_WEAPON)), creature);
+                                _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BaseWeapon)), creature);
                             }, fDelay);
 
                             if (player.IsPlayer)
@@ -230,7 +230,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
                     player.DelayAssignCommand(() =>
                     {
-                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BASE_WEAPON)), target);
+                        _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BaseWeapon)), target);
                     }, fDelay);
 
                     if (player.IsPlayer)
@@ -249,7 +249,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             var creature = oObject;
                             player.DelayAssignCommand(() =>
                             {
-                                _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BASE_WEAPON)), creature);
+                                _.ApplyEffectToObject(DurationType.Instant, _.EffectLinkEffects(_.EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), _.EffectDamage(iDamage, DamageType.BaseWeapon)), creature);
                             }, fDelay);
 
                             if (player.IsPlayer)

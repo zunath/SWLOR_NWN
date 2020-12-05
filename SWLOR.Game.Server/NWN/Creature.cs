@@ -1,3 +1,4 @@
+using System;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Enum.Creature;
 
@@ -123,12 +124,12 @@ namespace SWLOR.Game.Server.NWN
         ///   CREATURE_PART_LEFT_HAND
         ///   CREATURE_PART_HEAD
         /// </summary>
-        public static CreaturePart GetCreatureBodyPart(CreaturePart nPart, uint oCreature = OBJECT_INVALID)
+        public static int GetCreatureBodyPart(CreaturePart nPart, uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger((int)nPart);
             Internal.NativeFunctions.CallBuiltIn(792);
-            return (CreaturePart)Internal.NativeFunctions.StackPopInteger();
+            return Internal.NativeFunctions.StackPopInteger();
         }
 
         /// <summary>
@@ -397,9 +398,9 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   Returns true if the creature oCreature is currently possessed by a DM character.
-        ///   Returns false otherwise.
-        ///   Note: GetIsDMPossessed() will return false if oCreature is the DM character.
+        ///   Returns TRUE if the creature oCreature is currently possessed by a DM character.
+        ///   Returns FALSE otherwise.
+        ///   Note: GetIsDMPossessed() will return FALSE if oCreature is the DM character.
         ///   To determine if oCreature is a DM character use GetIsDM()
         /// </summary>
         public static bool GetIsDMPossessed(uint oCreature)
@@ -458,9 +459,9 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   This will return true if the creature running the script is a familiar currently
+        ///   This will return TRUE if the creature running the script is a familiar currently
         ///   possessed by his master.
-        ///   returns false if not or if the creature object is invalid
+        ///   returns FALSE if not or if the creature object is invalid
         /// </summary>
         public static bool GetIsPossessedFamiliar(uint oCreature)
         {
@@ -497,9 +498,9 @@ namespace SWLOR.Game.Server.NWN
         ///   ** NOTE ** This is meant to be called inside the spell script for whirlwind
         ///   attack, it is not meant to be used to queue up a new whirlwind attack.  To do
         ///   that you need to call ActionUseFeat(FEAT_WHIRLWIND_ATTACK, oEnemy)
-        ///   - int bDisplayFeedback: true or false, whether or not feedback should be
+        ///   - int bDisplayFeedback: TRUE or FALSE, whether or not feedback should be
         ///   displayed
-        ///   - int bImproved: If true, the improved version of whirlwind is used
+        ///   - int bImproved: If TRUE, the improved version of whirlwind is used
         /// </summary>
         public static void DoWhirlwindAttack(bool bDisplayFeedback = true, bool bImproved = false)
         {
@@ -521,8 +522,8 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Set a creature's immortality flag.
         ///   -oCreature: creature affected
-        ///   -bImmortal: true = creature is immortal and cannot be killed (but still takes damage)
-        ///   false = creature is not immortal and is damaged normally.
+        ///   -bImmortal: TRUE = creature is immortal and cannot be killed (but still takes damage)
+        ///   FALSE = creature is not immortal and is damaged normally.
         ///   This scripting command only works on Creature objects.
         /// </summary>
         public static void SetImmortal(uint oCreature, bool bImmortal)
@@ -544,7 +545,7 @@ namespace SWLOR.Game.Server.NWN
             Internal.NativeFunctions.StackPushInteger((int)nSkill);
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(689);
-            return Internal.NativeFunctions.StackPopInteger() == 1;
+            return Convert.ToBoolean(Internal.NativeFunctions.StackPopInteger());
         }
 
         /// <summary>
@@ -677,7 +678,7 @@ namespace SWLOR.Game.Server.NWN
         ///   oSource's Like/Dislike setting for oTarget.
         ///   Note: If you just want to know how two objects feel about each other in terms
         ///   of faction and personal reputation, use GetIsFriend() instead.
-        ///   * Returns true if oSource has a friendly reaction towards oTarget
+        ///   * Returns TRUE if oSource has a friendly reaction towards oTarget
         /// </summary>
         public static int GetIsReactionTypeFriendly(uint oTarget, uint oSource = OBJECT_INVALID)
         {
@@ -693,7 +694,7 @@ namespace SWLOR.Game.Server.NWN
         ///   oSource's Like/Dislike setting for oTarget.
         ///   Note: If you just want to know how two objects feel about each other in terms
         ///   of faction and personal reputation, use GetIsNeutral() instead.
-        ///   * Returns true if oSource has a neutral reaction towards oTarget
+        ///   * Returns TRUE if oSource has a neutral reaction towards oTarget
         /// </summary>
         public static int GetIsReactionTypeNeutral(uint oTarget, uint oSource = OBJECT_INVALID)
         {
@@ -709,7 +710,7 @@ namespace SWLOR.Game.Server.NWN
         ///   oSource's Like/Dislike setting for oTarget.
         ///   Note: If you just want to know how two objects feel about each other in terms
         ///   of faction and personal reputation, use GetIsEnemy() instead.
-        ///   * Returns true if oSource has a hostile reaction towards oTarget
+        ///   * Returns TRUE if oSource has a hostile reaction towards oTarget
         /// </summary>
         public static bool GetIsReactionTypeHostile(uint oTarget, uint oSource = OBJECT_INVALID)
         {
@@ -723,7 +724,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Take nAmount of gold from oCreatureToTakeFrom.
         ///   - nAmount
         ///   - oCreatureToTakeFrom: If this is not a valid creature, nothing will happen.
-        ///   - bDestroy: If this is true, the caller will not get the gold.  Instead, the
+        ///   - bDestroy: If this is TRUE, the caller will not get the gold.  Instead, the
         ///   gold will be destroyed and will vanish from the game.
         /// </summary>
         public static void TakeGoldFromCreature(int nAmount, uint oCreatureToTakeFrom, bool bDestroy = false)
@@ -744,8 +745,8 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns true if oCreature is the Dungeon Master.
-        ///   Note: This will return false if oCreature is a DM Possessed creature.
+        ///   * Returns TRUE if oCreature is the Dungeon Master.
+        ///   Note: This will return FALSE if oCreature is a DM Possessed creature.
         ///   To determine if oCreature is a DM Possessed creature, use GetIsDMPossessed()
         /// </summary>
         public static bool GetIsDM(uint oCreature)
@@ -775,7 +776,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns true if oCreature was spawned from an encounter.
+        ///   * Returns TRUE if oCreature was spawned from an encounter.
         /// </summary>
         public static int GetIsEncounterCreature(uint oCreature = OBJECT_INVALID)
         {
@@ -850,7 +851,7 @@ namespace SWLOR.Game.Server.NWN
         {
             Internal.NativeFunctions.StackPushFloat(fTimeout);
             Internal.NativeFunctions.StackPushInteger(bRun ? 1 : 0);
-            Internal.NativeFunctions.StackPushLocation(lDestination.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lDestination);
             Internal.NativeFunctions.CallBuiltIn(382);
         }
 
@@ -983,7 +984,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns true if oCreature is in combat.
+        ///   * Returns TRUE if oCreature is in combat.
         /// </summary>
         public static bool GetIsInCombat(uint oCreature = OBJECT_INVALID)
         {
@@ -1009,7 +1010,7 @@ namespace SWLOR.Game.Server.NWN
         ///   -> CLASS_TYPE_* if nFirstCriteriaType was CREATURE_TYPE_CLASS
         ///   -> SPELL_* if nFirstCriteriaType was CREATURE_TYPE_DOES_NOT_HAVE_SPELL_EFFECT
         ///   or CREATURE_TYPE_HAS_SPELL_EFFECT
-        ///   -> true or false if nFirstCriteriaType was CREATURE_TYPE_IS_ALIVE
+        ///   -> TRUE or FALSE if nFirstCriteriaType was CREATURE_TYPE_IS_ALIVE
         ///   -> PERCEPTION_* if nFirstCriteriaType was CREATURE_TYPE_PERCEPTION
         ///   -> PLAYER_CHAR_IS_PC or PLAYER_CHAR_NOT_PC if nFirstCriteriaType was
         ///   CREATURE_TYPE_PLAYER_CHAR
@@ -1039,7 +1040,7 @@ namespace SWLOR.Game.Server.NWN
             Internal.NativeFunctions.StackPushInteger(nSecondCriteriaValue);
             Internal.NativeFunctions.StackPushInteger(nSecondCriteriaType);
             Internal.NativeFunctions.StackPushInteger(nNth);
-            Internal.NativeFunctions.StackPushLocation(lLocation.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lLocation);
             Internal.NativeFunctions.StackPushInteger(nFirstCriteriaValue ? 1 : 0);
             Internal.NativeFunctions.StackPushInteger((int)nFirstCriteriaType);
             Internal.NativeFunctions.CallBuiltIn(226);

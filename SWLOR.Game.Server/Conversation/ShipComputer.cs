@@ -8,6 +8,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using System.Collections.Generic;
 using System.Collections;
+using System.Numerics;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWN.Enum.VisualEffect;
@@ -493,13 +494,13 @@ namespace SWLOR.Game.Server.Conversation
         {
             // Utility method to throw some dust clouds up around a landing ship.
             float x, y;
-            Vector v;
+            Vector3 v;
 
             for (int i=0; i < 6; i++)
             {
                 x = loc.X + (5 - _.d10());
                 y = loc.Y + (5 - _.d10());
-                v = new Vector(x, y, loc.Z);
+                v = new Vector3(x, y, loc.Z);
 
                 NWPlaceable cloud = _.CreateObject(ObjectType.Placeable, "plc_dustplume", _.Location(loc.Area, v, loc.Orientation));
 

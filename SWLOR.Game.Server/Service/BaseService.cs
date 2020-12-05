@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Service
             var positionX = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_X"));
             var positionY = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Y"));
             var positionZ = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Z"));
-            var area = (NWArea)NWNXObject.StringToObject(NWNXEvents.GetEventData("AREA_OBJECT_ID"));
+            var area = (NWArea)_.StringToObject(NWNXEvents.GetEventData("AREA_OBJECT_ID"));
             var vector = Vector3(positionX, positionY, positionZ);
 
             var targetLocation = Location(area, vector, 0.0f);
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Service
             var data = GetPlayerTempData(player);
             data.TargetArea = area;
             data.TargetLocation = targetLocation;
-            data.TargetObject = NWNXObject.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
+            data.TargetObject = _.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
 
             player.ClearAllActions();
             DialogService.StartConversation(player, player, "BaseManagementTool");

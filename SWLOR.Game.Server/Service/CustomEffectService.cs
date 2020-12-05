@@ -452,7 +452,7 @@ namespace SWLOR.Game.Server.Service
             NWCreature caster = oPC;
             if (!string.IsNullOrWhiteSpace(effect.CasterNWNObjectID))
             {
-                var obj = NWNXObject.StringToObject(effect.CasterNWNObjectID);
+                var obj = _.StringToObject(effect.CasterNWNObjectID);
                 if (_.GetIsObjectValid(obj))
                 {
                     caster = obj;

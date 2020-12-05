@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Creature;
 using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.NWNX
@@ -88,7 +89,7 @@ namespace SWLOR.Game.Server.NWNX
             return (Feat)Internal.NativeFunctions.nwnxPopInt();
         }
 
-        // Returns true if creature meets all requirements to take given feat
+        // Returns TRUE if creature meets all requirements to take given feat
         public static bool GetMeetsFeatRequirements(uint creature, Feat feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMeetsFeatRequirements");
@@ -411,44 +412,6 @@ namespace SWLOR.Game.Server.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        // Gets one of creature's cleric domains (either 1 or 2).
-        public static ClericDomain GetClericDomain(uint creature, int index)
-        {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetClericDomain");
-            Internal.NativeFunctions.nwnxPushInt(index);
-            Internal.NativeFunctions.nwnxPushObject(creature);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return (ClericDomain)Internal.NativeFunctions.nwnxPopInt();
-        }
-
-        // Sets one of creature's cleric domains (either 1 or 2).
-        public static void SetClericDomain(uint creature, int index, ClericDomain domain)
-        {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetClericDomain");
-            Internal.NativeFunctions.nwnxPushInt((int)domain);
-            Internal.NativeFunctions.nwnxPushInt(index);
-            Internal.NativeFunctions.nwnxPushObject(creature);
-            Internal.NativeFunctions.nwnxCallFunction();
-        }
-
-        // Gets whether or not creature has a specialist school of wizardry.
-        public static int GetWizardSpecialization(uint creature)
-        {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetWizardSpecialization");
-            Internal.NativeFunctions.nwnxPushObject(creature);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
-        }
-
-        // Sets creature's wizard specialist school.
-        public static void SetWizardSpecialization(uint creature, int school)
-        {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetWizardSpecialization");
-            Internal.NativeFunctions.nwnxPushInt(school);
-            Internal.NativeFunctions.nwnxPushObject(creature);
-            Internal.NativeFunctions.nwnxCallFunction();
-        }
-
         // Get the soundset index for creature.
         public static int GetSoundset(uint creature)
         {
@@ -562,10 +525,10 @@ namespace SWLOR.Game.Server.NWNX
         }
 
         // Sets the creature size. Use CREATURE_SIZE_* constants
-        public static void SetSize(uint creature, NWN.Enum.Creature.CreatureSize size)
+        public static void SetSize(uint creature, CreatureSize creatureSize)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSize");
-            Internal.NativeFunctions.nwnxPushInt((int)size);
+            Internal.NativeFunctions.nwnxPushInt((int)creatureSize);
             Internal.NativeFunctions.nwnxPushObject(creature);
             Internal.NativeFunctions.nwnxCallFunction();
         }
@@ -691,8 +654,8 @@ namespace SWLOR.Game.Server.NWNX
         // NOTE: AB vs. <Type> and +AB on Gauntlets are excluded
         //
         // int isMelee values:
-        //   true: Get Melee/Unarmed Attack Bonus
-        //   false: Get Ranged Attack Bonus
+        //   TRUE: Get Melee/Unarmed Attack Bonus
+        //   FALSE: Get Ranged Attack Bonus
         public static int GetAttackBonus(uint creature, bool isMelee = true, bool isTouchAttack = false,
             bool isOffhand = false, bool includeBaseAttackBonus = true)
         {
@@ -748,7 +711,7 @@ namespace SWLOR.Game.Server.NWNX
 
         // Get total effect bonus
         public static int GetTotalEffectBonus(uint creature, BonusType bonusType = BonusType.Attack,
-            uint target = OBJECT_INVALID, bool isElemental = false,
+            uint target = _.OBJECT_INVALID, bool isElemental = false,
             bool isForceMax = false, int saveType = -1, int saveSpecificType = -1, Skill skill = Skill.Invalid,
             int abilityScore = -1, bool isOffhand = false)
         {
@@ -822,7 +785,7 @@ namespace SWLOR.Game.Server.NWNX
 
         /// @brief Get whether the creature can be disarmed.
         /// @param creature The creature object.
-        /// @return true if the creature can be disarmed.
+        /// @return TRUE if the creature can be disarmed.
         public static int GetDisarmable(uint creature)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetDisarmable");
@@ -833,7 +796,7 @@ namespace SWLOR.Game.Server.NWNX
 
         /// @brief Set whether a creature can be disarmed.
         /// @param creature The creature object.
-        /// @param disarmable Set to true if the creature can be disarmed.
+        /// @param disarmable Set to TRUE if the creature can be disarmed.
         public static void SetDisarmable(uint creature, bool isDisarmable)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetDisarmable");
@@ -894,7 +857,7 @@ namespace SWLOR.Game.Server.NWNX
 
         /// @brief Get whether a creature is flat-footed.
         /// @param The creature object.
-        /// @return true if the creature is flat-footed.
+        /// @return TRUE if the creature is flat-footed.
         public static bool GetFlatFooted(uint creature)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFlatFooted");
@@ -917,7 +880,7 @@ namespace SWLOR.Game.Server.NWNX
         /// @brief Deserialize sSerializedQuickbar for oCreature
         /// @param oCreature The creature.
         /// @param sSerializedQuickbar A base64 string of a quickbar
-        /// @return true on success
+        /// @return TRUE on success
         public static bool DeserializeQuickbar(uint creature, string serializedQuickbar)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "DeserializeQuickbar");
@@ -925,6 +888,239 @@ namespace SWLOR.Game.Server.NWNX
             Internal.NativeFunctions.nwnxPushObject(creature);
             Internal.NativeFunctions.nwnxCallFunction();
             return Internal.NativeFunctions.nwnxPopInt() == 1;
+        }
+
+
+        /// @brief Set the encounter source of oCreature.
+        /// @param oCreature The target creature.
+        /// @param oEncounter The source encounter
+        public static void SetEncounter(uint oCreature, uint oEncounter)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetEncounter");
+
+            Internal.NativeFunctions.nwnxPushObject(oEncounter);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        /// @brief Get the encounter source of oCreature.
+        /// @param oCreature The target creature.
+        /// @return The encounter, OBJECT_INVALID if not part of an encounter or on error
+        public static uint GetEncounter(uint oCreature)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetEncounter");
+
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopObject();
+        }
+
+
+        /// @brief Set whether an effect icon is flashing or not.
+        /// @param oCreature The target creature.
+        /// @param nIconId The icon id, see effecticons.2da.
+        /// @param bFlashing TRUE for flashing, FALSE for not flashing.
+        public static void SetEffectIconFlashing(uint oCreature, int nIconId, bool bFlashing)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetEffectIconFlashing");
+
+            Internal.NativeFunctions.nwnxPushInt(bFlashing ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushInt(nIconId);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+
+        /// @brief Override the damage level of oCreature.
+        /// @note Damage levels are the damage state under a creature's name, for example: 'Near Death'
+        /// @param oCreature The target creature.
+        /// @param nDamageLevel A damage level, see damagelevels.2da. Allowed values: 0-255 or -1 to remove the override.
+        public static void OverrideDamageLevel(uint oCreature, int nDamageLevel)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "OverrideDamageLevel");
+
+            Internal.NativeFunctions.nwnxPushInt(nDamageLevel);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+
+        /// @brief Get if oCreature is currently bartering.
+        /// @param oCreature The target creature.
+        /// @return TRUE if oCreature is bartering, FALSE if not or on error.
+        public static bool GetIsBartering(uint oCreature)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetIsBartering");
+
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt() == 1;
+        }
+
+
+        /// @brief Sets caster level for the last item used. Use in a spellhook or spell event before to set caster level for any spells cast from the item.
+        /// @param oCreature the creature who used the item.
+        /// @param nCasterLvl the desired caster level.
+        public static void SetLastItemCasterLevel(uint oCreature, int nCasterLvl)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetLastItemCasterLevel");
+
+            Internal.NativeFunctions.nwnxPushInt(nCasterLvl);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        /// @brief Gets the caster level of the last item used.
+        /// @param oCreature the creature who used the item.
+        /// @return returns the creatures last used item's level.
+        public static int GetLastItemCasterLevel(uint oCreature)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetLastItemCasterLevel");
+
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        /// @brief Gets the Armor classed of attacked against versus
+        /// @param oAttacked The one being attacked
+        /// @param oVersus The one doing the attacking
+        /// @param nTouch TRUE for touch attacks
+        /// @return -255 on Error, Flat footed AC if oVersus is invalid or the Attacked AC versus oVersus.
+        public static int GetArmorClassVersus(uint oAttacked, uint oVersus, bool nTouch = false)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetArmorClassVersus");
+
+            Internal.NativeFunctions.nwnxPushInt(nTouch ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushObject(oVersus);
+            Internal.NativeFunctions.nwnxPushObject(oAttacked);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        /// @brief Move a creature to limbo.
+        /// @param oCreature The creature object.
+        public static void JumpToLimbo(uint oCreature)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "JumpToLimbo");
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        /// @brief Sets the critical hit multiplier modifier for the creature
+        /// @param oCreature The target creature
+        /// @param nModifier The modifier to apply
+        /// @param nHand 0 for all attacks, 1 for Mainhand, 2 for Offhand
+        /// @param bPersist Whether the modifier should persist to .bic file if applicable
+        /// @note Persistence is activated each server reset by first use of either 'SetCriticalMultiplier*' functions. Recommended to trigger on a dummy target OnModuleLoad to enable persistence.
+        public static void SetCriticalMultiplierModifier(uint oCreature, int nModifier, int nHand = 0, bool bPersist = false)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCriticalMultiplierModifier");
+
+            Internal.NativeFunctions.nwnxPushInt(bPersist ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushInt(nHand);
+            Internal.NativeFunctions.nwnxPushInt(nModifier);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        /// @brief Gets the critical hit multiplier modifier for the Creature
+        /// @param oCreature The target creature
+        /// @param nHand 0 for all attacks, 1 for Mainhand, 2 for Offhand
+        /// @return the current critical hit multiplier modifier for the creature
+        public static int GetCriticalMultiplierModifier(uint oCreature, int nHand = 0)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCriticalMultiplierModifier");
+
+            Internal.NativeFunctions.nwnxPushInt(nHand);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        public static void SetCriticalMultiplierOverride(uint oCreature, int nOverride, int nHand = 0, bool bPersist = false)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCriticalMultiplierOverride");
+
+            Internal.NativeFunctions.nwnxPushInt(bPersist ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushInt(nHand);
+            Internal.NativeFunctions.nwnxPushInt(nOverride);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static int GetCriticalMultiplierOverride(uint oCreature, int nHand = 0)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCriticalMultiplierOverride");
+
+            Internal.NativeFunctions.nwnxPushInt(nHand);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        public static void SetCriticalRangeModifier(uint oCreature, int nModifier, int nHand = 0, bool bPersist = false)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCriticalRangeModifier");
+
+            Internal.NativeFunctions.nwnxPushInt(bPersist ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushInt(nHand);
+            Internal.NativeFunctions.nwnxPushInt(nModifier);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static int GetCriticalRangeModifier(uint oCreature, int nHand = 0)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCriticalRangeModifier");
+
+            Internal.NativeFunctions.nwnxPushInt(nHand);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        public static void SetCriticalRangeOverride(uint oCreature, int nOverride, int nHand = 0, bool bPersist = false)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCriticalRangeOverride");
+
+            Internal.NativeFunctions.nwnxPushInt(bPersist ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushInt(nHand);
+            Internal.NativeFunctions.nwnxPushInt(nOverride);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static int NWNX_Creature_GetCriticalRangeOverride(uint oCreature, int nHand = 0)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCriticalRangeOverride");
+
+            Internal.NativeFunctions.nwnxPushInt(nHand);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        public static void AddAssociate(uint oCreature, uint oAssociate, int nAssociateType)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddAssociate");
+
+            Internal.NativeFunctions.nwnxPushInt(nAssociateType);
+            Internal.NativeFunctions.nwnxPushObject(oAssociate);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+
+            Internal.NativeFunctions.nwnxCallFunction();
         }
     }
 }

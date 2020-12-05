@@ -156,12 +156,12 @@ namespace SWLOR.Game.Server.Service
 
             if (featID != (int)Feat.ChatCommandTargeter) return;
 
-            var target = NWNXObject.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
+            var target = _.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
             var targetPositionX = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_X"));
             var targetPositionY = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Y"));
             var targetPositionZ = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Z"));
             var targetPosition = Vector3(targetPositionX, targetPositionY, targetPositionZ);
-            var targetArea = NWNXObject.StringToObject( NWNXEvents.GetEventData("AREA_OBJECT_ID"));
+            var targetArea = _.StringToObject( NWNXEvents.GetEventData("AREA_OBJECT_ID"));
 
             var targetLocation = Location(targetArea, targetPosition, 0.0f);
             string command = pc.GetLocalString("CHAT_COMMAND");

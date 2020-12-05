@@ -118,8 +118,8 @@ namespace SWLOR.Game.Server.Service
         private static void OnItemUsed()
         {
             NWPlayer user = _.OBJECT_SELF;
-            NWItem oItem = NWNXObject.StringToObject(NWNXEvents.GetEventData("ITEM_OBJECT_ID"));
-            NWObject target = NWNXObject.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
+            NWItem oItem = _.StringToObject(NWNXEvents.GetEventData("ITEM_OBJECT_ID"));
+            NWObject target = _.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
             var targetPositionX = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_X"));
             var targetPositionY = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Y"));
             var targetPositionZ = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Z"));

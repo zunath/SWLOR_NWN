@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 EndConversation();
                 var location = GetLocation(player);
-                var trashCan = CreateObject(ObjectType.Placeable, "trash_can", location);
+                var trashCan = CreateObject(ObjectType.Placeable, "reo_trash_can", location);
 
                 AssignCommand(player, () => ActionInteractObject(trashCan));
                 DelayCommand(0.2f, () => SetUseableFlag(trashCan, false));

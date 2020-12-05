@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.NWNX
         // Convert native effect type to unpacked structure
         public static EffectUnpacked UnpackEffect(Effect effect)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "UnpackEffect");
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCurrentNodeType");
             Internal.NativeFunctions.nwnxPushEffect(effect.Handle);
             Internal.NativeFunctions.nwnxCallFunction();
 
@@ -134,6 +134,21 @@ namespace SWLOR.Game.Server.NWNX
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetEffectExpiredCreator");
             Internal.NativeFunctions.nwnxCallFunction();
             return Internal.NativeFunctions.nwnxPopObject();
+        }
+
+
+        /// @brief replace an already applied effect on an object
+        /// Only duration, subtype, tag and spell related fields can be overwritten.
+        /// @note eNew and eOld need to have the same type.
+        /// @return Number of internal effects updated.
+        public static int ReplaceEffect(uint obj, Effect eOld, Effect eNew)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ReplaceEffect");
+            Internal.NativeFunctions.nwnxPushEffect(eNew);
+            Internal.NativeFunctions.nwnxPushEffect(eOld);
+            Internal.NativeFunctions.nwnxPushObject(obj);
+
+            return Internal.NativeFunctions.nwnxPopInt();
         }
     }
 }

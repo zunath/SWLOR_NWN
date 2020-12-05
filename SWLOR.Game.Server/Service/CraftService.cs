@@ -579,7 +579,7 @@ namespace SWLOR.Game.Server.Service
             pc.ClearAllActions();
 
             bool isSetting = GetLocalBool(pc, "CRAFT_RENAMING_ITEM") == true;
-            NWItem renameItem = NWNXObject.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
+            NWItem renameItem = _.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
 
             if (isSetting)
             {

@@ -43,10 +43,10 @@ namespace SWLOR.Game.Server.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        public static void SetWeaponFinesseSize(BaseItem baseItem, CreatureSize nSize)
+        public static void SetWeaponFinesseSize(BaseItem baseItem, CreatureSize nCreatureSize)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetWeaponFinesseSize");
-            Internal.NativeFunctions.nwnxPushInt((int)nSize);
+            Internal.NativeFunctions.nwnxPushInt((int)nCreatureSize);
             Internal.NativeFunctions.nwnxPushInt((int)baseItem);
             Internal.NativeFunctions.nwnxCallFunction();
         }
@@ -154,6 +154,35 @@ namespace SWLOR.Game.Server.NWNX
             data.Target = Internal.NativeFunctions.nwnxPopObject();
             data.Damage = Internal.NativeFunctions.nwnxPopInt();
             return data;
+        }
+
+
+        /// @brief Sets weapon to gain .5 strength bonus.
+        /// @param oWeapon Should be a melee weapon.
+        /// @param nEnable TRUE for bonus. FALSE to turn off bonus.
+        /// @param bPersist whether the two hand state should persist to the gff file.
+        public static void SetOneHalfStrength(uint oWeapon, bool nEnable, bool bPersist = false)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetOneHalfStrength");
+
+            Internal.NativeFunctions.nwnxPushInt(bPersist ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushInt(nEnable ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushObject(oWeapon);
+
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        /// @brief Gets if the weapon is set to gain addition .5 strength bonus
+        /// @param oWeapon the weapon
+        /// @return FALSE/0 if weapon is not receiving the bonus. TRUE/1 if it does.
+        public static int GetOneHalfStrength(uint oWeapon)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetOneHalfStrength");
+            Internal.NativeFunctions.nwnxPushObject(oWeapon);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+
         }
     }
 }

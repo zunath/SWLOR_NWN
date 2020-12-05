@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Security;
 
@@ -9,6 +10,7 @@ namespace SWLOR.Game.Server.NWN
         public delegate void MainLoopHandlerDelegate(ulong frame);
         public delegate int RunScriptHandlerDelegate(string script, uint oid);
         public delegate void ClosureHandlerDelegate(ulong eid, uint oid);
+        public delegate void SignalHandlerDelegate(string signal);
 
         [StructLayout(LayoutKind.Sequential)]
         public struct AllHandlers
@@ -16,6 +18,7 @@ namespace SWLOR.Game.Server.NWN
             public MainLoopHandlerDelegate MainLoop;
             public RunScriptHandlerDelegate RunScript;
             public ClosureHandlerDelegate Closure;
+            public SignalHandlerDelegate Signal;
         }
 
         [SuppressUnmanagedCodeSecurity]
@@ -44,22 +47,10 @@ namespace SWLOR.Game.Server.NWN
         public delegate void StackPushObjectDelegate(uint value);
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void StackPushVectorDelegate(Vector value);
+        public delegate void StackPushVectorDelegate(Vector3 value);
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void StackPushEffectDelegate(IntPtr value);
-        [SuppressUnmanagedCodeSecurity]
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void StackPushEventDelegate(IntPtr value);
-        [SuppressUnmanagedCodeSecurity]
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void StackPushLocationDelegate(IntPtr value);
-        [SuppressUnmanagedCodeSecurity]
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void StackPushTalentDelegate(IntPtr value);
-        [SuppressUnmanagedCodeSecurity]
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void StackPushItemPropertyDelegate(IntPtr value);
+        public delegate void StackPushGameDefinedStructureDelegate(int type, IntPtr str);
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int StackPopIntegerDelegate();
@@ -77,22 +68,10 @@ namespace SWLOR.Game.Server.NWN
         public delegate uint StackPopObjectDelegate();
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate Vector StackPopVectorDelegate();
+        public delegate Vector3 StackPopVectorDelegate();
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate IntPtr StackPopEffectDelegate();
-        [SuppressUnmanagedCodeSecurity]
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate IntPtr StackPopEventDelegate();
-        [SuppressUnmanagedCodeSecurity]
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate IntPtr StackPopLocationDelegate();
-        [SuppressUnmanagedCodeSecurity]
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate IntPtr StackPopTalentDelegate();
-        [SuppressUnmanagedCodeSecurity]
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate IntPtr StackPopItemPropertyDelegate();
+        public delegate IntPtr StackPopGameDefinedStructureDelegate(int type);
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void FreeEffectDelegate(IntPtr ptr);
@@ -108,6 +87,9 @@ namespace SWLOR.Game.Server.NWN
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void FreeItemPropertyDelegate(IntPtr ptr);
+        [SuppressUnmanagedCodeSecurity]
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        public delegate IntPtr FreeGameDefinedStructureDelegate(int type, IntPtr str);
         [SuppressUnmanagedCodeSecurity]
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate int ClosureAssignCommandDelegate(uint oid, ulong eventId);
@@ -167,57 +149,45 @@ namespace SWLOR.Game.Server.NWN
         public delegate void nwnxCallFunctionDelegate();
 
         [StructLayout(LayoutKind.Sequential)]
-        public struct BootstrapArgs
+        public readonly struct BootstrapArgs
         {
-            public GetFunctionPointerDelegate GetFunctionPointer;
-            public RegisterHandlersDelegate RegisterHandlers;
-            public CallBuiltInDelegate CallBuiltIn;
-            public StackPushIntegerDelegate StackPushInteger;
-            public StackPushFloatDelegate StackPushFloat;
-            public StackPushStringDelegate StackPushString;
-            public StackPushStringUTF8Delegate StackPushStringUTF8;
-            public StackPushObjectDelegate StackPushObject;
-            public StackPushVectorDelegate StackPushVector;
-            public StackPushEffectDelegate StackPushEffect;
-            public StackPushEventDelegate StackPushEvent;
-            public StackPushLocationDelegate StackPushLocation;
-            public StackPushTalentDelegate StackPushTalent;
-            public StackPushItemPropertyDelegate StackPushItemProperty;
-            public StackPopIntegerDelegate StackPopInteger;
-            public StackPopFloatDelegate StackPopFloat;
-            public StackPopStringDelegate StackPopString;
-            public StackPopStringUTF8Delegate StackPopStringUTF8;
-            public StackPopObjectDelegate StackPopObject;
-            public StackPopVectorDelegate StackPopVector;
-            public StackPopEffectDelegate StackPopEffect;
-            public StackPopEventDelegate StackPopEvent;
-            public StackPopLocationDelegate StackPopLocation;
-            public StackPopTalentDelegate StackPopTalent;
-            public StackPopItemPropertyDelegate StackPopItemProperty;
-            public FreeEffectDelegate FreeEffect;
-            public FreeEventDelegate FreeEvent;
-            public FreeLocationDelegate FreeLocation;
-            public FreeTalentDelegate FreeTalent;
-            public FreeItemPropertyDelegate FreeItemProperty;
-            public ClosureAssignCommandDelegate ClosureAssignCommand;
-            public ClosureDelayCommandDelegate ClosureDelayCommand;
-            public ClosureActionDoCommandDelegate ClosureActionDoCommand;
-            public nwnxSetFunctionDelegate nwnxSetFunction;
-            public nwnxPushIntDelegate nwnxPushInt;
-            public nwnxPushFloatDelegate nwnxPushFloat;
-            public nwnxPushObjectDelegate nwnxPushObject;
-            public nwnxPushStringDelegate nwnxPushString;
-            public nwnxPushStringUTF8Delegate nwnxPushStringUTF8;
-            public nwnxPushEffectDelegate nwnxPushEffect;
-            public nwnxPushItemPropertyDelegate nwnxPushItemProperty;
-            public nwnxPopIntDelegate nwnxPopInt;
-            public nwnxPopFloatDelegate nwnxPopFloat;
-            public nwnxPopObjectDelegate nwnxPopObject;
-            public nwnxPopStringDelegate nwnxPopString;
-            public nwnxPopStringUTF8Delegate nwnxPopStringUTF8;
-            public nwnxPopEffectDelegate nwnxPopEffect;
-            public nwnxPopItemPropertyDelegate nwnxPopItemProperty;
-            public nwnxCallFunctionDelegate nwnxCallFunction;
+            public readonly GetFunctionPointerDelegate GetFunctionPointer;
+            public readonly RegisterHandlersDelegate RegisterHandlers;
+            public readonly CallBuiltInDelegate CallBuiltIn;
+            public readonly StackPushIntegerDelegate StackPushInteger;
+            public readonly StackPushFloatDelegate StackPushFloat;
+            public readonly StackPushStringDelegate StackPushString;
+            public readonly StackPushStringUTF8Delegate StackPushStringUTF8;
+            public readonly StackPushObjectDelegate StackPushObject;
+            public readonly StackPushVectorDelegate StackPushVector;
+            public readonly StackPushGameDefinedStructureDelegate StackPushGameDefinedStructure;
+            public readonly StackPopIntegerDelegate StackPopInteger;
+            public readonly StackPopFloatDelegate StackPopFloat;
+            public readonly StackPopStringDelegate StackPopString;
+            public readonly StackPopStringUTF8Delegate StackPopStringUTF8;
+            public readonly StackPopObjectDelegate StackPopObject;
+            public readonly StackPopVectorDelegate StackPopVector;
+            public readonly StackPopGameDefinedStructureDelegate StackPopGameDefinedStructure;
+            public readonly FreeGameDefinedStructureDelegate FreeGameDefinedStructure;
+            public readonly ClosureAssignCommandDelegate ClosureAssignCommand;
+            public readonly ClosureDelayCommandDelegate ClosureDelayCommand;
+            public readonly ClosureActionDoCommandDelegate ClosureActionDoCommand;
+            public readonly nwnxSetFunctionDelegate nwnxSetFunction;
+            public readonly nwnxPushIntDelegate nwnxPushInt;
+            public readonly nwnxPushFloatDelegate nwnxPushFloat;
+            public readonly nwnxPushObjectDelegate nwnxPushObject;
+            public readonly nwnxPushStringDelegate nwnxPushString;
+            public readonly nwnxPushStringUTF8Delegate nwnxPushStringUTF8;
+            public readonly nwnxPushEffectDelegate nwnxPushEffect;
+            public readonly nwnxPushItemPropertyDelegate nwnxPushItemProperty;
+            public readonly nwnxPopIntDelegate nwnxPopInt;
+            public readonly nwnxPopFloatDelegate nwnxPopFloat;
+            public readonly nwnxPopObjectDelegate nwnxPopObject;
+            public readonly nwnxPopStringDelegate nwnxPopString;
+            public readonly nwnxPopStringUTF8Delegate nwnxPopStringUTF8;
+            public readonly nwnxPopEffectDelegate nwnxPopEffect;
+            public readonly nwnxPopItemPropertyDelegate nwnxPopItemProperty;
+            public readonly nwnxCallFunctionDelegate nwnxCallFunction;
         }
         public static BootstrapArgs NativeFunctions;
         private static AllHandlers _handlers;
@@ -225,7 +195,7 @@ namespace SWLOR.Game.Server.NWN
         public static void RegisterHandlers(AllHandlers handlers)
         {
             _handlers = handlers;
-            var size = Marshal.SizeOf(typeof(AllHandlers));
+            var size = System.Runtime.InteropServices.Marshal.SizeOf(typeof(AllHandlers));
             IntPtr ptr = Marshal.AllocHGlobal(size);
             Marshal.StructureToPtr(_handlers, ptr, false);
             NativeFunctions.RegisterHandlers(ptr, (uint)size);
@@ -239,7 +209,7 @@ namespace SWLOR.Game.Server.NWN
                 Console.WriteLine("Received NULL bootstrap structure");
                 return 1;
             }
-            int expectedLength = Marshal.SizeOf(typeof(BootstrapArgs));
+            int expectedLength = System.Runtime.InteropServices.Marshal.SizeOf(typeof(BootstrapArgs));
             if (argLength < expectedLength)
             {
                 Console.WriteLine($"Received bootstrap structure too small - actual={argLength}, expected={expectedLength}");
@@ -254,9 +224,10 @@ namespace SWLOR.Game.Server.NWN
             NativeFunctions = Marshal.PtrToStructure<BootstrapArgs>(arg);
 
             AllHandlers handlers;
-            handlers.MainLoop = OnMainLoop;
-            handlers.RunScript = OnRunScript;
-            handlers.Closure = OnClosure;
+            handlers.MainLoop = NWN.Internal.OnMainLoop;
+            handlers.RunScript = NWN.Internal.OnRunScript;
+            handlers.Closure = NWN.Internal.OnClosure;
+            handlers.Signal = NWN.Internal.OnSignal;
             RegisterHandlers(handlers);
 
             try

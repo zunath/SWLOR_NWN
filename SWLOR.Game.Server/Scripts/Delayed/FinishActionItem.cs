@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
@@ -26,7 +27,7 @@ namespace SWLOR.Game.Server.Scripts.Delayed
                 IActionItem actionItem = ItemService.GetActionItemHandler(data.ClassName);
                 data.Player.IsBusy = false;
 
-                Vector userPosition = data.Player.Position;
+                Vector3 userPosition = data.Player.Position;
                 if (userPosition.X != data.UserPosition.X ||
                     userPosition.Y != data.UserPosition.Y ||
                     userPosition.Z != data.UserPosition.Z)

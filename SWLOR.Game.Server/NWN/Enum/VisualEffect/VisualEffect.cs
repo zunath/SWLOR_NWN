@@ -301,6 +301,8 @@ namespace SWLOR.Game.Server.NWN.Enum.VisualEffect
         Vfx_Dur_Smoke = 320,
         Vfx_Dur_Pixiedust = 321,
         Vfx_Fnf_Deck = 322,
+        Vfx_Tilemagic_LavaFountain = 349,
+        Vfx_Tilemagic_Lava = 350,
         Vfx_Dur_Cutscene_Invisibility = 355,
         Vfx_ShakeScreen = 356,
         Vfx_Eyes_Red_Flame_Human_Male = 360,
@@ -344,7 +346,10 @@ namespace SWLOR.Game.Server.NWN.Enum.VisualEffect
         Vfx_Eyes_Org_Halforc_Male = 396,
         Vfx_Eyes_Org_Halforc_Female = 397,
         Vfx_Eyes_Org_Troglodyte = 398,
+        Vfx_Tilemagic_Water = 401,
+        Vfx_Tilemagic_Grass = 402,
         Vfx_Dur_Iounstone = 403,
+        Vfx_Tilemagic_CaveFloor = 406,
         Vfx_Imp_Tornado = 407,
         Vfx_Dur_Glow_Light_Blue = 408,
         Vfx_Dur_Glow_Purple = 409,
@@ -363,6 +368,7 @@ namespace SWLOR.Game.Server.NWN.Enum.VisualEffect
         Vfx_Dur_Glow_White = 422,
         Vfx_Dur_Glow_Light_Purple = 423,
         Vfx_Dur_Ghost_Transparent = 424,
+        Vfx_Tilemagic_Ice = 426,
         Vfx_Dur_Ghost_Smoke = 425,
         Vfx_Dur_Glyph_Of_Warding = 445,
         Vfx_Fnf_Sound_Burst_Silent = 446,
@@ -528,6 +534,8 @@ namespace SWLOR.Game.Server.NWN.Enum.VisualEffect
         Vfx_Imp_Starburst_Green = 644,
         Vfx_Imp_Starburst_Red = 645,
         Vfx_Imp_Nightmare_Head_Hit = 670,
-        Vfx_Placement_Grid = 821,
+
+
+        Vfx_Placement_Grid = 1600,
     }
 }

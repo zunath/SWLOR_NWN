@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System.Numerics;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.NWNX
@@ -22,7 +23,20 @@ namespace SWLOR.Game.Server.NWNX
             return Internal.NativeFunctions.nwnxPopInt();
         }
 
-        // Returns a local variable at the specified index.
+
+        // @brief Gets the local variable at the provided index of the provided object.
+        // @param obj The object.
+        // @param index The index.
+        // @note Index bounds: 0 >= index < NWNX_Object_GetLocalVariableCount().
+        // @note As of build 8193.14 local variables no longer have strict ordering.
+        //       this means that any change to the variables can result in drastically
+        //       different order when iterating.
+        // @note As of build 8193.14, this function takes O(n) time, where n is the number
+        //       of locals on the object. Individual variable access with GetLocalXxx()
+        //       is now O(1) though.
+        // @note As of build 8193.14, this function may return variable type UNKNOWN
+        //       if the value is the default (0/0.0/""/OBJECT_INVALID) for the type.
+        // @return An NWNX_Object_LocalVariable struct.
         public static LocalVariable GetLocalVariable(uint obj, int index)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetLocalVariable");
@@ -38,20 +52,11 @@ namespace SWLOR.Game.Server.NWNX
             return lv;
         }
 
-        // Returns an object from the provided object ID.
-        // This is the counterpart to ObjectToString.
-        public static uint StringToObject(string id)
-        {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "StringToObject");
-            Internal.NativeFunctions.nwnxPushString(id);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopObject();
-        }
-
         // Set the provided object's position to the provided vector.
-        public static void SetPosition(uint obj, Vector pos)
+        public static void SetPosition(uint obj, Vector3 pos, bool updateSubareas = true)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetPosition");
+            Internal.NativeFunctions.nwnxPushInt(updateSubareas ? 1 : 0);
             Internal.NativeFunctions.nwnxPushFloat(pos.X);
             Internal.NativeFunctions.nwnxPushFloat(pos.Y);
             Internal.NativeFunctions.nwnxPushFloat(pos.Z);
@@ -165,7 +170,7 @@ namespace SWLOR.Game.Server.NWNX
         }
 
         /// Add or move obj to area at pos
-        public static void AddToArea(uint obj, uint area, Vector pos)
+        public static void AddToArea(uint obj, uint area, Vector3 pos)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddToArea");
             Internal.NativeFunctions.nwnxPushFloat(pos.Z);
@@ -369,9 +374,9 @@ namespace SWLOR.Game.Server.NWNX
         /// The Z value of vPosition is ignored.
         /// oTrigger The trigger.
         /// vPosition The position.
-        /// true if vPosition is inside oTrigger's geometry.
+        /// TRUE if vPosition is inside oTrigger's geometry.
         /// </summary>
-        public static bool GetPositionIsInTrigger(uint obj, Vector position)
+        public static bool GetPositionIsInTrigger(uint obj, Vector3 position)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetPositionIsInTrigger");
             Internal.NativeFunctions.nwnxPushFloat(position.Z);
@@ -401,7 +406,7 @@ namespace SWLOR.Game.Server.NWNX
         /// Useful to give deserialized items to an object, may not work if oItem is already possessed by an object.
         /// oObject The object receiving oItem, must be a Creature, Placeable, Store or Item
         /// oItem The item.
-        /// true on success.
+        /// TRUE on success.
         /// </summary>
         public static int AcquireItem(uint oObject, uint oItem)
         {
@@ -413,10 +418,71 @@ namespace SWLOR.Game.Server.NWNX
             return Internal.NativeFunctions.nwnxPopInt();
         }
 
+
+        /// @brief Checks for specific spell immunity. Should only be called in spellscripts
+        /// @param oDefender The object defending against the spell.
+        /// @param oCaster The object casting the spell.
+        /// @return -1 if defender has no immunity, 2 if the defender is immune
+        public static int DoSpellImmunity(uint oDefender, uint oCaster)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "DoSpellImmunity");
+
+            Internal.NativeFunctions.nwnxPushObject(oCaster);
+            Internal.NativeFunctions.nwnxPushObject(oDefender);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        /// @brief Checks for spell school/level immunities and mantles. Should only be called in spellscripts
+        /// @param oDefender The object defending against the spell.
+        /// @param oCaster The object casting the spell.
+        /// @return -1 defender no immunity. 2 if immune. 3 if immune, but the immunity has a limit (example: mantles)
+        public static int DoSpellLevelAbsorption(uint oDefender, uint oCaster)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "DoSpellLevelAbsorption");
+            Internal.NativeFunctions.nwnxPushObject(oCaster);
+            Internal.NativeFunctions.nwnxPushObject(oDefender);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
         public struct LocalVariable
         {
             public LocalVariableType Type;
             public string Key;
+        }
+
+        /// @brief Get an object's hit points.
+        /// @note Unlike the native GetCurrentHitpoints function, this excludes temporary hitpoints.
+        /// @param obj The object.
+        /// @return The hit points.
+        public static int GetCurrentHitPoints(uint creature)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCurrentHitPoints");
+            Internal.NativeFunctions.nwnxPushObject(creature);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        public static int GetDoorHasVisibleModel(uint oDoor)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetDoorHasVisibleModel");
+            Internal.NativeFunctions.nwnxPushObject(oDoor);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        public static int GetIsDestroyable(uint oObject)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetIsDestroyable");
+            Internal.NativeFunctions.nwnxPushObject(oObject);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
         }
     }
 }

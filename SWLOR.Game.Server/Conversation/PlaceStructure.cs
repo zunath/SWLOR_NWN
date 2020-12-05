@@ -4,6 +4,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using System.Linq;
+using System.Numerics;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.NWN.Enum;
@@ -48,8 +49,8 @@ namespace SWLOR.Game.Server.Conversation
             dialog.AddPage("StylePage", stylePage);
 
             // Setup placement grid                
-            NWArea area = _.GetArea(player);            
-            Vector vPos;
+            NWArea area = _.GetArea(player);
+            Vector3 vPos;
             vPos.X = 5.0f;
             vPos.Y = 0.0f;
             vPos.Z = 0.1f;
@@ -288,7 +289,7 @@ namespace SWLOR.Game.Server.Conversation
         {
             var data = BaseService.GetPlayerTempData(GetPC());
             float facing = _.GetFacingFromLocation(data.TargetLocation);
-            Vector position = _.GetPositionFromLocation(data.TargetLocation);
+            Vector3 position = _.GetPositionFromLocation(data.TargetLocation);
             string header = ColorTokenService.Green("Current Direction: ") + facing + "\n\n";
             header += ColorTokenService.Green("Current Height: ") + position.Z;
 
@@ -382,7 +383,7 @@ namespace SWLOR.Game.Server.Conversation
         private void DoMoveZ(float degrees, bool isSet)
         {
             var data = BaseService.GetPlayerTempData(GetPC());
-            Vector position = _.GetPositionFromLocation(data.TargetLocation);
+            Vector3 position = _.GetPositionFromLocation(data.TargetLocation);
             
             if (position.Z > 10.0f || 
                 position.Z < -10.0f)

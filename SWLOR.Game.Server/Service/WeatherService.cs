@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Area;
@@ -761,7 +762,7 @@ namespace SWLOR.Game.Server.Service
                 () =>
                 {
                     _Thunderstorm(Location(oArea,
-                                               Vector(fStrikeX, fStrikeY),
+                                               Vector3(fStrikeX, fStrikeY),
                                                0.0f),
                                            nPower);
                 }
@@ -853,7 +854,7 @@ namespace SWLOR.Game.Server.Service
 
                         for (int nCount = d6(); nCount < nMax; nCount++)
                         {
-                            Vector vPosition = GetPosition(GetEnteringObject());
+                            Vector3 vPosition = GetPosition(GetEnteringObject());
 
                             // Vectors are in meters - 10 meters to a tile. 
                             vPosition.X = IntToFloat(Random(nSizeX * 10));

@@ -53,5 +53,32 @@ namespace SWLOR.Game.Server.NWNX
             NWNXCore.NWNX_CallFunction(PLUGIN_NAME, sFunc);
             return NWNXCore.NWNX_GetReturnValueItemProperty(PLUGIN_NAME, sFunc);
         }
+
+        /// @brief Gets the active item property at the index
+        /// @param oItem - the item with the property
+        /// @param nIndex - the index such as returned by some Item Events
+        /// @return A constructed NWNX_IPUnpacked, except for creator, and spell id.
+        public static ItemPropertyUnpacked GetActiveProperty(uint oItem, int nIndex)
+        {
+            const string sFunc = "GetActiveProperty";
+
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, nIndex);
+            NWNXCore.NWNX_PushArgumentObject(PLUGIN_NAME, sFunc, oItem);
+            NWNXCore.NWNX_CallFunction(PLUGIN_NAME, sFunc);
+
+            return new ItemPropertyUnpacked
+            {
+                Property = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, sFunc),
+                SubType = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, sFunc),
+                CostTable = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, sFunc),
+                CostTableValue = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, sFunc),
+                Param1 = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, sFunc),
+                Param1Value = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, sFunc),
+                UsesPerDay = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, sFunc),
+                ChanceToAppear = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, sFunc),
+                IsUseable = Convert.ToBoolean(NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, sFunc)),
+                Tag = NWNXCore.NWNX_GetReturnValueString(PLUGIN_NAME, sFunc)
+            };
+        }
     }
 }

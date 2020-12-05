@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Numerics;
 using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -142,7 +144,7 @@ namespace SWLOR.Game.Server.NWNX
         }
 
         // Plays the VFX at the target position in current area for the given player only
-        public static void ShowVisualEffect(uint player, int effectId, Vector position)
+        public static void ShowVisualEffect(uint player, int effectId, Vector3 position)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ShowVisualEffect");
             Internal.NativeFunctions.nwnxPushFloat(position.X);
@@ -417,5 +419,180 @@ namespace SWLOR.Game.Server.NWNX
             Internal.NativeFunctions.nwnxPushObject(player);
             Internal.NativeFunctions.nwnxCallFunction();
         }
+
+        // @brief Toggle oPlayer's PlayerDM status.
+        // @note This function does nothing for actual DMClient DMs or players with a client version < 8193.14
+        // @param oPlayer The player.
+        // @param bIsDM TRUE to toggle dm mode on, FALSE for off.
+        public static void ToggleDM(uint oPlayer, bool bIsDM)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ToggleDM");
+
+            Internal.NativeFunctions.nwnxPushInt(bIsDM ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushObject(oPlayer);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+
+        /// @brief Override the mouse cursor of oObject for oPlayer only
+        /// @param oPlayer The player object.
+        /// @param oObject The object.
+        /// @param nCursor The cursor, one of MOUSECURSOR_*. -1 to clear the override.
+        public static void SetObjectMouseCursorOverride(uint oPlayer, uint oObject, MouseCursor nCursor)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetObjectMouseCursorOverride");
+
+            Internal.NativeFunctions.nwnxPushInt((int)nCursor);
+            Internal.NativeFunctions.nwnxPushObject(oObject);
+            Internal.NativeFunctions.nwnxPushObject(oPlayer);
+
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        /// @brief Override the hilite color of oObject for oPlayer only
+        /// @param oPlayer The player object.
+        /// @param oObject The object.
+        /// @param nColor The color in 0xRRGGBB format, -1 to clear the override.
+        public static void SetObjectHiliteColorOverride(uint oPlayer, uint oObject, int nColor)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetObjectHiliteColorOverride");
+
+            Internal.NativeFunctions.nwnxPushInt(nColor);
+            Internal.NativeFunctions.nwnxPushObject(oObject);
+            Internal.NativeFunctions.nwnxPushObject(oPlayer);
+
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        /// @brief Remove effects with sEffectTag from oPlayer's TURD
+        /// @note This function should be called in the NWNX_ON_CLIENT_DISCONNECT_AFTER event, OnClientLeave is too early for the TURD to exist.
+        /// @param oPlayer The player object.
+        /// @param sEffectTag The effect tag.
+        public static void RemoveEffectFromTURD(uint oPlayer, string sEffectTag)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveEffectFromTURD");
+            Internal.NativeFunctions.nwnxPushString(sEffectTag);
+            Internal.NativeFunctions.nwnxPushObject(oPlayer);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        /// @brief Set the location oPlayer will spawn when logging in to the server.
+        /// @note This function is best called in the NWNX_ON_ELC_VALIDATE_CHARACTER_BEFORE event, OnClientEnter will be too late.
+        /// @param The player object.
+        /// @param locSpawn The location.
+        public static void SetSpawnLocation(uint oPlayer, Location locSpawn)
+        {
+            var vPosition = _.GetPositionFromLocation(locSpawn);
+
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSpawnLocation");
+            Internal.NativeFunctions.nwnxPushFloat(_.GetFacingFromLocation(locSpawn));
+            Internal.NativeFunctions.nwnxPushFloat(vPosition.Z);
+            Internal.NativeFunctions.nwnxPushFloat(vPosition.Y);
+            Internal.NativeFunctions.nwnxPushFloat(vPosition.X);
+            Internal.NativeFunctions.nwnxPushObject(_.GetAreaFromLocation(locSpawn));
+            Internal.NativeFunctions.nwnxPushObject(oPlayer);
+
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static void SetCustomToken(uint oPlayer, int nCustomTokenNumber, string sTokenValue)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCustomToken");
+            Internal.NativeFunctions.nwnxPushString(sTokenValue);
+            Internal.NativeFunctions.nwnxPushInt(nCustomTokenNumber);
+            Internal.NativeFunctions.nwnxPushObject(oPlayer);
+
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static void SetCreatureNameOverride(uint oPlayer, uint oCreature, string sName)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCreatureNameOverride");
+
+            Internal.NativeFunctions.nwnxPushString(sName);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxPushObject(oPlayer);
+
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        /// @brief Display floaty text above oCreature for oPlayer only.
+        /// @note This will also display the floaty text above creatures that are not part of oPlayer's faction.
+        /// @param oPlayer The player to display the text to.
+        /// @param oCreature The creature to display the text above.
+        /// @param sText The text to display.
+        public static void FloatingTextStringOnCreature(uint oPlayer, uint oCreature, string sText)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCreatureNameOverride");
+
+            Internal.NativeFunctions.nwnxPushString(sText);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxPushObject(oPlayer);
+
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+        /// @brief Give a custom journal entry to oPlayer.
+        /// @warning Custom entries are wiped on client enter - they must be reapplied.
+        /// @param oPlayer The player object.
+        /// @param journalEntry The journal entry in the form of a struct.
+        /// @param silentUpdate 0 = Notify player via sound effects and feedback message, 1 = Suppress sound effects and feedback message
+        /// @return a positive number to indicate the new amount of journal entries on the player.
+        /// @note In contrast to conventional nwn journal entries - this method will overwrite entries with the same tag, so the index / count of entries
+        /// will only increase if you add new entries with unique tags
+        public static int AddCustomJournalEntry(uint player, JournalEntry journalEntry, bool isSilentUpdate = false)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddCustomJournalEntry");
+            Internal.NativeFunctions.nwnxPushInt(isSilentUpdate ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushInt(journalEntry.TimeOfDay);
+            Internal.NativeFunctions.nwnxPushInt(journalEntry.CalendarDay);
+            Internal.NativeFunctions.nwnxPushInt(journalEntry.Updated);
+            Internal.NativeFunctions.nwnxPushInt(journalEntry.IsQuestDisplayed ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushInt(journalEntry.IsQuestCompleted ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushInt(journalEntry.Priority);
+            Internal.NativeFunctions.nwnxPushInt(journalEntry.State);
+            Internal.NativeFunctions.nwnxPushString(journalEntry.Tag);
+            Internal.NativeFunctions.nwnxPushString(journalEntry.Text);
+            Internal.NativeFunctions.nwnxPushString(journalEntry.Name);
+            Internal.NativeFunctions.nwnxPushObject(player);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+
+        /// @brief Returns a struct containing a journal entry that can then be modified.
+        /// @param oPlayer The player object.
+        /// @param questTag The quest tag you wish to get the journal entry for.
+        /// @return a struct containing the journal entry data.
+        /// @note This method will return -1 for the Updated field in the event that no matching journal entry was found,
+        /// only the last matching quest tag will be returned. Eg: If you add 3 journal updates to a player, only the 3rd one will be returned as
+        /// that is the active one that the player currently sees.
+        public static JournalEntry GetJournalEntry(uint player, string questTag)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetJournalEntry");
+            var entry = new JournalEntry();
+
+            Internal.NativeFunctions.nwnxPushString(questTag);
+            Internal.NativeFunctions.nwnxPushObject(player);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            entry.Updated = Internal.NativeFunctions.nwnxPopInt();
+            if (entry.Updated == -1) // -1 set as an indicator to say that the entry was not found
+            {
+                return entry;
+            }
+
+            entry.IsQuestDisplayed = Internal.NativeFunctions.nwnxPopInt() == 1;
+            entry.IsQuestCompleted = Internal.NativeFunctions.nwnxPopInt() == 1;
+            entry.Priority = Internal.NativeFunctions.nwnxPopInt();
+            entry.State = Internal.NativeFunctions.nwnxPopInt();
+            entry.TimeOfDay = Internal.NativeFunctions.nwnxPopInt();
+            entry.CalendarDay = Internal.NativeFunctions.nwnxPopInt();
+            entry.Name = Internal.NativeFunctions.nwnxPopString();
+            entry.Text = Internal.NativeFunctions.nwnxPopString();
+            entry.Tag = questTag;
+            return entry;
+        }
+
+
     }
 }

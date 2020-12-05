@@ -77,6 +77,15 @@ namespace SWLOR.Game.Server
             LoadScripts();
         }
 
+        //
+        // This is called once, just before the module load script is called.
+        // Unlike OnStart, NWScript functions are available to use here.
+        //
+        public static void OnModuleLoad()
+        {
+            Console.WriteLine("OnModuleLoad() called");
+        }
+
         private static void ConfigureDatabase()
         {
             SqlMapper.AddTypeHandler(new MySqlGuidTypeHandler());
@@ -111,6 +120,16 @@ namespace SWLOR.Game.Server
                     }
                 }
             }
+        }
+
+        //
+        // This is called once, just before the server will shutdown. In here, you should
+        // save anything that might not be flushed to disk, and perform any last cleanup.
+        // NWScript functions are available to use.
+        //
+        public static void OnShutdown()
+        {
+            Console.WriteLine("OnShutdown() called");
         }
     }
 }

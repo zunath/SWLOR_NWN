@@ -386,7 +386,7 @@ namespace SWLOR.Game.Server.Service
             Guid structureID = new Guid(starship.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structureItems = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structureID);
             
-            NWLocation location = (player != null ? player.Location : (NWLocation) _.Location(starship, _.Vector(1, 1, 0), 0));
+            NWLocation location = (player != null ? player.Location : (NWLocation) _.Location(starship, _.Vector3(1, 1, 0), 0));
             bay = _.CreateObject(ObjectType.Placeable, "resource_bay", location);
 
             starship.SetLocalObject("STARSHIP_RESOURCE_BAY", bay.Object);

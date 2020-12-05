@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using System.Numerics;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.DoorRule.Contracts;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN.Enum;
@@ -9,7 +10,7 @@ namespace SWLOR.Game.Server.DoorRule
     {
         public NWPlaceable Run(NWArea area, Location location, float orientationOverride = 0f, float sqrtValue = 0f)
         {
-            Vector doorPosition = _.GetPositionFromLocation(location);
+            Vector3 doorPosition = _.GetPositionFromLocation(location);
             float fOrient = _.GetFacingFromLocation(location);
 
             fOrient = fOrient + 126.31f;

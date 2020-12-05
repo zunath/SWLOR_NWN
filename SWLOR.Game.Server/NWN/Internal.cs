@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.NWN
     partial class Internal
     {
         public const uint OBJECT_INVALID = 0x7F000000;
-        public static uint OBJECT_SELF { get; private set; } = OBJECT_INVALID;
+        public static uint OBJECT_SELF { get; set; } = OBJECT_INVALID;
 
         public static void OnMainLoop(ulong frame)
         {
@@ -66,6 +66,26 @@ namespace SWLOR.Game.Server.NWN
             }
             Closures.Remove(eid);
             OBJECT_SELF = old;
+        }
+
+        public static void OnSignal(string signal)
+        {
+            try
+            {
+                switch (signal)
+                {
+                    case "ON_MODULE_LOAD_FINISH":
+                        Entrypoints.OnModuleLoad();
+                        break;
+                    case "ON_DESTROY_SERVER":
+                        Entrypoints.OnShutdown();
+                        break;
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
         }
 
         public static void ClosureAssignCommand(uint obj, ActionDelegate func)

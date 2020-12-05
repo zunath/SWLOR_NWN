@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Numerics;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
@@ -116,7 +117,7 @@ namespace SWLOR.Game.Server.Service
             NWObject self = _.OBJECT_SELF;
             if (self.Tag == "spaceship_copy") return;
 
-            Vector lootPosition = Vector(self.Position.X, self.Position.Y, self.Position.Z - 0.11f);
+            Vector3 lootPosition = Vector3(self.Position.X, self.Position.Y, self.Position.Z - 0.11f);
             Location spawnLocation = Location(self.Area, lootPosition, self.Facing);
 
             NWPlaceable container = CreateObject(ObjectType.Placeable, "corpse", spawnLocation);

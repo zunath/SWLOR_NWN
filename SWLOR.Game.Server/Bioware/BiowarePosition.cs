@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.GameObject;
+﻿using System.Numerics;
+using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.NWN;
 
@@ -63,7 +64,7 @@ namespace SWLOR.Game.Server.Bioware
         /// <param name="fDistance"></param>
         /// <param name="fAngle"></param>
         /// <returns></returns>
-        public static Vector GetChangedPosition(Vector vOriginal, float fDistance, float fAngle)
+        public static Vector3 GetChangedPosition(Vector3 vOriginal, float fDistance, float fAngle)
         {
             float changedZ = vOriginal.Z;
 
@@ -74,7 +75,7 @@ namespace SWLOR.Game.Server.Bioware
             if (changedY < 0.0)
                 changedY = -changedY;
 
-            return _.Vector(changedX, changedY, changedZ);
+            return _.Vector3(changedX, changedY, changedZ);
         }
 
         /// <summary>

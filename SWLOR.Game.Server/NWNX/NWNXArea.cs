@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        // Returns true if resting is not allowed in area
+        // Returns TRUE if resting is not allowed in area
         public static bool GetNoRestingAllowed(uint area)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetNoRestingAllowed");
@@ -99,8 +99,8 @@ namespace SWLOR.Game.Server.NWNX
         }
 
         // Set whether resting is allowed in area
-        // true: Resting not allowed
-        // false: Resting allowed
+        // TRUE: Resting not allowed
+        // FALSE: Resting allowed
         public static void SetNoRestingAllowed(uint area, bool bNoRestingAllowed)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetNoRestingAllowed");
@@ -305,6 +305,47 @@ namespace SWLOR.Game.Server.NWNX
             Internal.NativeFunctions.nwnxPushObject(area);
             Internal.NativeFunctions.nwnxCallFunction();
             return Internal.NativeFunctions.nwnxPopObject();
+        }
+
+
+        /// @brief Add oObject to the ExportGIT exclusion list, objects on this list won't be exported when NWNX_Area_ExportGIT() is called.
+        /// @param oObject The object to add
+        public static void AddObjectToExclusionList(uint oObject)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddObjectToExclusionList");
+            Internal.NativeFunctions.nwnxPushObject(oObject);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        /// @brief Remove oObject from the ExportGIT exclusion list.
+        /// @param oObject The object to add
+        public static void RemoveObjectFromExclusionList(uint oObject)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveObjectFromExclusionList");
+            Internal.NativeFunctions.nwnxPushObject(oObject);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        /// @brief Export the GIT of oArea to the UserDirectory/nwnx folder.
+        /// @note Take care with local objects set on objects, they will likely not reference the same object after a server restart.
+        /// @param oArea The area to export the GIT of.
+        /// @param sFileName The filename, 16 characters or less. If left blank the resref of oArea will be used.
+        /// @param bExportVarTable If TRUE, local variables set on oArea will be exported too.
+        /// @param bExportUUID If TRUE, the UUID of oArea will be exported, if it has one.
+        /// @param nObjectFilter One or more OBJECT_TYPE_* constants. These object will not be exported. For example OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR
+        /// will not export creatures and doors. Use OBJECT_TYPE_ALL to filter all objects or 0 to export all objects.
+        /// @return TRUE if exported successfully, FALSE if not.
+        public static int ExportGIT(uint oArea, string sFileName = "", bool bExportVarTable = true, bool bExportUUID = true, int nObjectFilter = 0)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ExportGIT");
+            Internal.NativeFunctions.nwnxPushInt(nObjectFilter);
+            Internal.NativeFunctions.nwnxPushInt(bExportUUID ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushInt(bExportVarTable ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushString(sFileName);
+            Internal.NativeFunctions.nwnxPushObject(oArea);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
         }
     }
 }

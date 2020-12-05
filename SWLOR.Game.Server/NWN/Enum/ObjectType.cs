@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.NWN.Enum
         Player = 69,
         Store = 128,
         Encounter = 256,
+        Tile = 512,
         All = 32767,
         Invalid = 32767
     }

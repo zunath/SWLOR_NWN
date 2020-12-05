@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Enumeration;
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             // Pull original position from data
             string[] values = data.Split(',');
-            Vector originalPosition = _.Vector
+            Vector3 originalPosition = _.Vector3
             (
                 Convert.ToSingle(values[0]),
                 Convert.ToSingle(values[1]),
@@ -48,7 +49,7 @@ namespace SWLOR.Game.Server.CustomEffect
             );
 
             // Check position
-            Vector position = player.Position;
+            Vector3 position = player.Position;
 
             if ((Math.Abs(position.X - originalPosition.X) > 0.01f ||
                  Math.Abs(position.Y - originalPosition.Y) > 0.01f ||

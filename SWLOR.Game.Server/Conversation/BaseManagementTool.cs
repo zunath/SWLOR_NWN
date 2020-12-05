@@ -7,6 +7,7 @@ using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -945,8 +946,8 @@ namespace SWLOR.Game.Server.Conversation
             var data = BaseService.GetPlayerTempData(GetPC());
             bool canPlaceEditStructures;
             var structure = data.ManipulatingStructure.Structure;
-            Vector position = _.GetPositionFromLocation(data.TargetLocation);
-            Vector playerposition = _.GetPositionFromLocation(GetPC().Location); 
+            Vector3 position = _.GetPositionFromLocation(data.TargetLocation);
+            Vector3 playerposition = _.GetPositionFromLocation(GetPC().Location); 
 
             if (data.BuildingType == Enumeration.BuildingType.Interior ||
                 data.BuildingType == Enumeration.BuildingType.Apartment ||

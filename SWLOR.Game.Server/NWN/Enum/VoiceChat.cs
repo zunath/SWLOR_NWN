@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.NWN
+﻿namespace SWLOR.Game.Server.NWN.Enum
 {
     public enum VoiceChat
     {
@@ -11,7 +11,7 @@
         CanDo = 29,
         CantDo = 30,
         Cheer = 44,
-        Cuss = 43, 
+        Cuss = 43,
         Death = 18,
         Encumbered = 32,
         Enemies = 6,

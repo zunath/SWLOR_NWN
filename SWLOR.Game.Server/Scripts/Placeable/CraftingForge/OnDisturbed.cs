@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Numerics;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Enumeration;
@@ -102,7 +103,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.CraftingForge
                 NWPlaceable flames = (forge.GetLocalObject("FORGE_FLAMES"));
                 if (!flames.IsValid)
                 {
-                    Vector flamePosition = BiowarePosition.GetChangedPosition(forge.Position, 0.36f, forge.Facing);
+                    Vector3 flamePosition = BiowarePosition.GetChangedPosition(forge.Position, 0.36f, forge.Facing);
                     Location flameLocation = _.Location(forge.Area.Object, flamePosition, 0.0f);
                     flames = (_.CreateObject(ObjectType.Placeable, "forge_flame", flameLocation));
                     forge.SetLocalObject("FORGE_FLAMES", flames.Object);

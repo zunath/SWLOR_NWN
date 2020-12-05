@@ -287,7 +287,7 @@ namespace SWLOR.Game.Server.NWN
         public static Location GetItemActivatedTargetLocation()
         {
             Internal.NativeFunctions.CallBuiltIn(441);
-            return new Location(Internal.NativeFunctions.StackPopLocation());
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Location);
         }
 
         /// <summary>

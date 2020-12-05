@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWNX;
 
 using SWLOR.Game.Server.ValueObject;
@@ -206,9 +207,9 @@ namespace SWLOR.Game.Server.Service
             switch (eventID)
             {
                 case 1: // Spawn Creature
-                    var area = NWNXObject.StringToObject(NWNXEvents.GetEventData("AREA"));
+                    var area = _.StringToObject(NWNXEvents.GetEventData("AREA"));
                     string areaName = GetName(area);
-                    NWCreature creature = NWNXObject.StringToObject(NWNXEvents.GetEventData("OBJECT"));
+                    NWCreature creature = _.StringToObject(NWNXEvents.GetEventData("OBJECT"));
                     int objectTypeID = Convert.ToInt32(NWNXEvents.GetEventData("OBJECT_TYPE"));
                     float x = (float)Convert.ToDouble(NWNXEvents.GetEventData("POS_X"));
                     float y = (float)Convert.ToDouble(NWNXEvents.GetEventData("POS_Y"));
@@ -218,17 +219,17 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case 22: // Give XP
                     amount = Convert.ToInt32(NWNXEvents.GetEventData("AMOUNT"));
-                    target = NWNXObject.StringToObject(NWNXEvents.GetEventData("OBJECT"));
+                    target = _.StringToObject(NWNXEvents.GetEventData("OBJECT"));
                     details = amount + "," + target.Name;
                     break;
                 case 23: // Give Level
                     amount = Convert.ToInt32(NWNXEvents.GetEventData("AMOUNT"));
-                    target = NWNXObject.StringToObject(NWNXEvents.GetEventData("OBJECT"));
+                    target = _.StringToObject(NWNXEvents.GetEventData("OBJECT"));
                     details = amount + "," + target.Name;
                     break;
                 case 24: // Give Gold
                     amount = Convert.ToInt32(NWNXEvents.GetEventData("AMOUNT"));
-                    target = NWNXObject.StringToObject(NWNXEvents.GetEventData("OBJECT"));
+                    target = _.StringToObject(NWNXEvents.GetEventData("OBJECT"));
                     details = amount + "," + target.Name;
                     break;
             }

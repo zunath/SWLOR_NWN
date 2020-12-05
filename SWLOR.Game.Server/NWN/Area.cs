@@ -1,3 +1,5 @@
+using System;
+using System.Numerics;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Enum.Area;
 
@@ -48,7 +50,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Get the position of oTarget
         ///   * Return value on error: vector (0.0f, 0.0f, 0.0f)
         /// </summary>
-        public static Vector GetPosition(uint oTarget)
+        public static Vector3 GetPosition(uint oTarget)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.CallBuiltIn(27);
@@ -247,13 +249,13 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   This will return true if the area is flagged as either interior or underground.
+        ///   This will return TRUE if the area is flagged as either interior or underground.
         /// </summary>
-        public static bool GetIsAreaInterior(uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static bool GetIsAreaInterior(uint oArea = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.CallBuiltIn(716);
-            return Internal.NativeFunctions.StackPopInteger() == 1;
+            return Convert.ToBoolean(Internal.NativeFunctions.StackPopInteger());
         }
 
         /// <summary>
@@ -296,7 +298,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If no valid area (or object) is specified, it uses the area of caller.
         ///   If an object other than an area is specified, will use the area that the object is currently in.
         /// </summary>
-        public static void SetSkyBox(Skybox nSkyBox, uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static void SetSkyBox(Skybox nSkyBox, uint oArea = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.StackPushInteger((int)nSkyBox);
@@ -316,7 +318,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If no valid area (or object) is specified, it uses the area of caller.
         ///   If an object other than an area is specified, will use the area that the object is currently in.
         /// </summary>
-        public static void SetFogColor(FogType nFogType, FogColor nFogColor, uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static void SetFogColor(FogType nFogType, FogColor nFogColor, uint oArea = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.StackPushInteger((int)nFogColor);
@@ -331,7 +333,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If no valid area (or object) is specified, it uses the area of caller.
         ///   If an object other than an area is specified, will use the area that the object is currently in.
         /// </summary>
-        public static Skybox GetSkyBox(uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static Skybox GetSkyBox(uint oArea = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.CallBuiltIn(782);
@@ -345,7 +347,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If no valid area (or object) is specified, it uses the area of caller.
         ///   If an object other than an area is specified, will use the area that the object is currently in.
         /// </summary>
-        public static FogColor GetFogColor(FogType nFogType, uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static FogColor GetFogColor(FogType nFogType, uint oArea = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.StackPushInteger((int)nFogType);
@@ -360,7 +362,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If no valid area (or object) is specified, it uses the area of caller.
         ///   If an object other than an area is specified, will use the area that the object is currently in.
         /// </summary>
-        public static void SetFogAmount(FogType nFogType, int nFogAmount, uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static void SetFogAmount(FogType nFogType, int nFogAmount, uint oArea = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.StackPushInteger(nFogAmount);
@@ -375,7 +377,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If no valid area (or object) is specified, it uses the area of caller.
         ///   If an object other than an area is specified, will use the area that the object is currently in.
         /// </summary>
-        public static int GetFogAmount(FogType nFogType, uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static int GetFogAmount(FogType nFogType, uint oArea = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.StackPushInteger((int)nFogType);
@@ -422,7 +424,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If no valid area (or object) is specified, it uses the area of the caller.
         ///   If an object other than an area is specified, will use the area that the object is currently in.
         /// </summary>
-        public static int GetAreaSize(Dimension nAreaDimension, uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static int GetAreaSize(Dimension nAreaDimension, uint oArea = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.StackPushInteger((int)nAreaDimension);
@@ -502,7 +504,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If no valid area is specified, it will use the caller's area.
         ///   * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetFirstObjectInArea(uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static uint GetFirstObjectInArea(uint oArea = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.CallBuiltIn(93);
@@ -514,7 +516,7 @@ namespace SWLOR.Game.Server.NWN
         ///   If no valid area is specified, it will use the caller's area.
         ///   * Return value on error: OBJECT_INVALID
         /// </summary>
-        public static uint GetNextObjectInArea(uint oArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static uint GetNextObjectInArea(uint oArea = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.CallBuiltIn(94);
@@ -528,7 +530,7 @@ namespace SWLOR.Game.Server.NWN
         {
             Internal.NativeFunctions.StackPushObject(oObject);
             Internal.NativeFunctions.CallBuiltIn(213);
-            return new Location(Internal.NativeFunctions.StackPopLocation());
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Location);
         }
 
         /// <summary>
@@ -537,20 +539,20 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static void ActionJumpToLocation(Location lLocation)
         {
-            Internal.NativeFunctions.StackPushLocation(lLocation.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lLocation);
             Internal.NativeFunctions.CallBuiltIn(214);
         }
 
         /// <summary>
         ///   Create a location.
         /// </summary>
-        public static Location Location(uint oArea, Vector? vPosition, float fOrientation)
+        public static Location Location(uint oArea, Vector3 vPosition, float fOrientation)
         {
             Internal.NativeFunctions.StackPushFloat(fOrientation);
-            Internal.NativeFunctions.StackPushVector(vPosition.HasValue ? vPosition.Value : new Vector());
+            Internal.NativeFunctions.StackPushVector(vPosition);
             Internal.NativeFunctions.StackPushObject(oArea);
             Internal.NativeFunctions.CallBuiltIn(215);
-            return new Location(Internal.NativeFunctions.StackPopLocation());
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Location);
         }
 
         /// <summary>
@@ -560,8 +562,8 @@ namespace SWLOR.Game.Server.NWN
             float fDuration = 0.0f)
         {
             Internal.NativeFunctions.StackPushFloat(fDuration);
-            Internal.NativeFunctions.StackPushLocation(lLocation.Handle);
-            Internal.NativeFunctions.StackPushEffect(eEffect.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lLocation);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
             Internal.NativeFunctions.StackPushInteger((int)nDurationType);
             Internal.NativeFunctions.CallBuiltIn(216);
         }
@@ -570,7 +572,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Expose/Hide the entire map of oArea for oPlayer.
         ///   - oArea: The area that the map will be exposed/hidden for.
         ///   - oPlayer: The player the map will be exposed/hidden for.
-        ///   - bExplored: true/false. Whether the map should be completely explored or hidden.
+        ///   - bExplored: TRUE/FALSE. Whether the map should be completely explored or hidden.
         /// </summary>
         public static void ExploreAreaForPlayer(uint oArea, uint oPlayer, bool bExplored = true)
         {
@@ -666,7 +668,7 @@ namespace SWLOR.Game.Server.NWN
         ///   and the fog of war for interior and underground areas.
         ///   This means that if you turn off auto exploration, it falls to you to manage this
         ///   through SetTileExplored(); otherwise, the player will not be able to see anything.
-        ///   Valid arguments: true and false.
+        ///   Valid arguments: TRUE and FALSE.
         ///   Does nothing for non-creatures.
         ///   Returns the previous state (or -1 if non-creature).
         /// </summary>
@@ -679,8 +681,8 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   Returns true if the creature is set to auto-explore the map as it walks around (on by default).
-        ///   Returns false if creature is not actually a creature.
+        ///   Returns TRUE if the creature is set to auto-explore the map as it walks around (on by default).
+        ///   Returns FALSE if creature is not actually a creature.
         /// </summary>
         public static int GetCreatureExploresMinimap(uint creature)
         {
@@ -696,7 +698,7 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static int GetSurfaceMaterial(Location at)
         {
-            Internal.NativeFunctions.StackPushLocation(at.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, at);
             Internal.NativeFunctions.CallBuiltIn(870);
             return Internal.NativeFunctions.StackPopInteger();
         }
@@ -707,7 +709,7 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static float GetGroundHeight(Location at)
         {
-            Internal.NativeFunctions.StackPushLocation(at.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, at);
             Internal.NativeFunctions.CallBuiltIn(871);
             return Internal.NativeFunctions.StackPopFloat();
         }
@@ -717,7 +719,7 @@ namespace SWLOR.Game.Server.NWN
         ///   This function will tell you if the creature has triggered an onEnter event,
         ///   not if it is physically within the space of the subarea
         /// </summary>
-        public static bool GetIsInSubArea(uint oCreature, uint oSubArea = global::SWLOR.Game.Server.NWN._.OBJECT_INVALID)
+        public static bool GetIsInSubArea(uint oCreature, uint oSubArea = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oSubArea);
             Internal.NativeFunctions.StackPushObject(oCreature);
@@ -736,7 +738,7 @@ namespace SWLOR.Game.Server.NWN
         {
             Internal.NativeFunctions.StackPushInteger(nMainLight2Color);
             Internal.NativeFunctions.StackPushInteger(nMainLight1Color);
-            Internal.NativeFunctions.StackPushLocation(lTileLocation.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTileLocation);
             Internal.NativeFunctions.CallBuiltIn(514);
         }
 
@@ -752,7 +754,7 @@ namespace SWLOR.Game.Server.NWN
         {
             Internal.NativeFunctions.StackPushInteger(nSourceLight2Color);
             Internal.NativeFunctions.StackPushInteger(nSourceLight1Color);
-            Internal.NativeFunctions.StackPushLocation(lTileLocation.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTileLocation);
             Internal.NativeFunctions.CallBuiltIn(515);
         }
 
@@ -763,7 +765,7 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static int GetTileMainLight1Color(Location lTile)
         {
-            Internal.NativeFunctions.StackPushLocation(lTile.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTile);
             Internal.NativeFunctions.CallBuiltIn(517);
             return Internal.NativeFunctions.StackPopInteger();
         }
@@ -776,7 +778,7 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static int GetTileMainLight2Color(Location lTile)
         {
-            Internal.NativeFunctions.StackPushLocation(lTile.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTile);
             Internal.NativeFunctions.CallBuiltIn(518);
             return Internal.NativeFunctions.StackPopInteger();
         }
@@ -789,7 +791,7 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static int GetTileSourceLight1Color(Location lTile)
         {
-            Internal.NativeFunctions.StackPushLocation(lTile.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTile);
             Internal.NativeFunctions.CallBuiltIn(519);
             return Internal.NativeFunctions.StackPopInteger();
         }
@@ -802,7 +804,7 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static int GetTileSourceLight2Color(Location lTile)
         {
-            Internal.NativeFunctions.StackPushLocation(lTile.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTile);
             Internal.NativeFunctions.CallBuiltIn(520);
             return Internal.NativeFunctions.StackPopInteger();
         }
@@ -824,7 +826,7 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static uint GetAreaFromLocation(Location lLocation)
         {
-            Internal.NativeFunctions.StackPushLocation(lLocation.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lLocation);
             Internal.NativeFunctions.CallBuiltIn(224);
             return Internal.NativeFunctions.StackPopObject();
         }
@@ -832,9 +834,9 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Get the position vector from lLocation.
         /// </summary>
-        public static Vector GetPositionFromLocation(Location lLocation)
+        public static Vector3 GetPositionFromLocation(Location lLocation)
         {
-            Internal.NativeFunctions.StackPushLocation(lLocation.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lLocation);
             Internal.NativeFunctions.CallBuiltIn(223);
             return Internal.NativeFunctions.StackPopVector();
         }
@@ -858,5 +860,24 @@ namespace SWLOR.Game.Server.NWN
             Internal.NativeFunctions.StackPushInteger((int)nPredefinedAreaTransition);
             Internal.NativeFunctions.CallBuiltIn(203);
         }
+
+
+        /// <summary>
+        /// Sets the detailed wind data for oArea
+        /// The predefined values in the toolset are:
+        ///   NONE:  vDirection=(1.0, 1.0, 0.0), fMagnitude=0.0, fYaw=0.0,   fPitch=0.0
+        ///   LIGHT: vDirection=(1.0, 1.0, 0.0), fMagnitude=1.0, fYaw=100.0, fPitch=3.0
+        ///   HEAVY: vDirection=(1.0, 1.0, 0.0), fMagnitude=2.0, fYaw=150.0, fPitch=5.0
+        /// </summary>
+        public static void SetAreaWind(uint oArea, Vector3 vDirection, float fMagnitude, float fYaw, float fPitch)
+        {
+            Internal.NativeFunctions.StackPushFloat(fPitch);
+            Internal.NativeFunctions.StackPushFloat(fYaw);
+            Internal.NativeFunctions.StackPushFloat(fMagnitude);
+            Internal.NativeFunctions.StackPushVector(vDirection);
+            Internal.NativeFunctions.StackPushObject(oArea);
+            Internal.NativeFunctions.CallBuiltIn(919);
+        }
+
     }
 }

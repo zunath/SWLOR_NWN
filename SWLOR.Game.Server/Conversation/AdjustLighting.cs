@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -150,7 +151,7 @@ namespace SWLOR.Game.Server.Conversation
 
             // Setup placement grid                
             NWArea area = _.GetArea(GetPC());
-            Vector vPos;
+            Vector3 vPos;
             vPos.X = 0.0f;
             vPos.Y = 0.0f;
             vPos.Z = 0.0f;

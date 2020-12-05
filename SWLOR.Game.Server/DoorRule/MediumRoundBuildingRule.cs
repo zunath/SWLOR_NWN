@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using System.Numerics;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.DoorRule.Contracts;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN.Enum;
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.DoorRule
             float orientationAdjustment = orientationOverride != 0f ? orientationOverride : 200.31f;
             float sqrtAdjustment = sqrtValue != 0f ? sqrtValue : 18.0f;
 
-            Vector position = _.GetPositionFromLocation(location);
+            Vector3 position = _.GetPositionFromLocation(location);
             float orientation = _.GetFacingFromLocation(location);
 
             orientation = orientation + orientationAdjustment;

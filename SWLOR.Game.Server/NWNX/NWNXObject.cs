@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using System.Numerics;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.NWNX
@@ -49,7 +50,7 @@ namespace SWLOR.Game.Server.NWNX
         }
 
         // Set the provided object's position to the provided vector.
-        public static void SetPosition(uint obj, Vector pos)
+        public static void SetPosition(uint obj, Vector3 pos)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetPosition");
             Internal.NativeFunctions.nwnxPushFloat(pos.X);
@@ -165,7 +166,7 @@ namespace SWLOR.Game.Server.NWNX
         }
 
         /// Add or move obj to area at pos
-        public static void AddToArea(uint obj, uint area, Vector pos)
+        public static void AddToArea(uint obj, uint area, Vector3 pos)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddToArea");
             Internal.NativeFunctions.nwnxPushFloat(pos.Z);
@@ -371,7 +372,7 @@ namespace SWLOR.Game.Server.NWNX
         /// vPosition The position.
         /// true if vPosition is inside oTrigger's geometry.
         /// </summary>
-        public static bool GetPositionIsInTrigger(uint obj, Vector position)
+        public static bool GetPositionIsInTrigger(uint obj, Vector3 position)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetPositionIsInTrigger");
             Internal.NativeFunctions.nwnxPushFloat(position.Z);

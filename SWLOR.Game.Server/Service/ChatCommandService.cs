@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Service
             var targetPositionX = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_X"));
             var targetPositionY = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Y"));
             var targetPositionZ = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Z"));
-            var targetPosition = Vector(targetPositionX, targetPositionY, targetPositionZ);
+            var targetPosition = Vector3(targetPositionX, targetPositionY, targetPositionZ);
             var targetArea = NWNXObject.StringToObject( NWNXEvents.GetEventData("AREA_OBJECT_ID"));
 
             var targetLocation = Location(targetArea, targetPosition, 0.0f);

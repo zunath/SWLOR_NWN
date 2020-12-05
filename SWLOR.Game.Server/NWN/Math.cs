@@ -1,3 +1,5 @@
+using System.Numerics;
+
 namespace SWLOR.Game.Server.NWN
 {
     public partial class _
@@ -123,9 +125,9 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Normalize vVector
         /// </summary>
-        public static Vector VectorNormalize(Vector? vVector)
+        public static Vector3 VectorNormalize(Vector3 vVector)
         {
-            Internal.NativeFunctions.StackPushVector(vVector.HasValue ? vVector.Value : new Vector());
+            Internal.NativeFunctions.StackPushVector(vVector);
             Internal.NativeFunctions.CallBuiltIn(137);
             return Internal.NativeFunctions.StackPopVector();
         }
@@ -135,9 +137,9 @@ namespace SWLOR.Game.Server.NWN
         ///   distance between two points.
         ///   * Return value on error: 0.0f
         /// </summary>
-        public static float VectorMagnitude(Vector? vVector)
+        public static float VectorMagnitude(Vector3 vVector)
         {
-            Internal.NativeFunctions.StackPushVector(vVector.HasValue ? vVector.Value : new Vector());
+            Internal.NativeFunctions.StackPushVector(vVector);
             Internal.NativeFunctions.CallBuiltIn(104);
             return Internal.NativeFunctions.StackPopFloat();
         }
@@ -195,10 +197,10 @@ namespace SWLOR.Game.Server.NWN
         ///   PLEASE NOTE: This is an expensive function and may
         ///   degrade performance if used frequently.
         /// </summary>
-        public static bool LineOfSightVector(Vector? vSource, Vector? vTarget)
+        public static bool LineOfSightVector(Vector3 vSource, Vector3 vTarget)
         {
-            Internal.NativeFunctions.StackPushVector(vTarget.HasValue ? vTarget.Value : new Vector());
-            Internal.NativeFunctions.StackPushVector(vSource.HasValue ? vSource.Value : new Vector());
+            Internal.NativeFunctions.StackPushVector(vTarget);
+            Internal.NativeFunctions.StackPushVector(vSource);
             Internal.NativeFunctions.CallBuiltIn(753);
             return Internal.NativeFunctions.StackPopInteger() == 1;
         }
@@ -206,7 +208,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Convert fAngle to a vector
         /// </summary>
-        public static Vector AngleToVector(float fAngle)
+        public static Vector3 AngleToVector(float fAngle)
         {
             Internal.NativeFunctions.StackPushFloat(fAngle);
             Internal.NativeFunctions.CallBuiltIn(144);
@@ -216,9 +218,9 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Convert vVector to an angle
         /// </summary>
-        public static float VectorToAngle(Vector? vVector)
+        public static float VectorToAngle(Vector3 vVector)
         {
-            Internal.NativeFunctions.StackPushVector(vVector.HasValue ? vVector.Value : new Vector());
+            Internal.NativeFunctions.StackPushVector(vVector);
             Internal.NativeFunctions.CallBuiltIn(145);
             return Internal.NativeFunctions.StackPopFloat();
         }

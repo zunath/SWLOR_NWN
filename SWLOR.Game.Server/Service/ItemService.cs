@@ -9,6 +9,7 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using SWLOR.Game.Server.Event.Item;
 using SWLOR.Game.Server.Event.Legacy;
@@ -122,7 +123,7 @@ namespace SWLOR.Game.Server.Service
             var targetPositionX = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_X"));
             var targetPositionY = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Y"));
             var targetPositionZ = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Z"));
-            var targetPosition = Vector(targetPositionX, targetPositionY, targetPositionZ);
+            var targetPosition = Vector3(targetPositionX, targetPositionY, targetPositionZ);
             Location targetLocation = Location(user.Area, targetPosition, 0.0f);
 
             string className = oItem.GetLocalString("SCRIPT");
@@ -193,7 +194,7 @@ namespace SWLOR.Game.Server.Service
             float delay = item.Seconds(user, oItem, target, targetLocation, customData);
             var animationID = item.AnimationID();
             bool faceTarget = item.FaceTarget();
-            Vector userPosition = user.Position;
+            Vector3 userPosition = user.Position;
 
             user.AssignCommand(() =>
             {

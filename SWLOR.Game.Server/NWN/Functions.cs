@@ -1,3 +1,5 @@
+using System;
+using System.Numerics;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Enum.Creature;
 
@@ -27,7 +29,7 @@ namespace SWLOR.Game.Server.NWN
         ///   as parameters to delayed actions.  Instead, the effect should be created in the
         ///   script and then passed into the action.  For example:
         ///   effect eDamage = EffectDamage(nDamage, DAMAGE_TYPE_MAGICAL);
-        ///   DelayCommand(fDelay, ApplyEffectToObject(DurationType.Instant, eDamage, oTarget);
+        ///   DelayCommand(fDelay, ApplyEffectToObject(DURATION_TYPE_INSTANT, eDamage, oTarget);
         /// </summary>
         public static void DelayCommand(float fSeconds, ActionDelegate aActionToDelay)
         {
@@ -162,14 +164,14 @@ namespace SWLOR.Game.Server.NWN
         ///   The action subject will move to lDestination.
         ///   - lDestination: The object will move to this location.  If the location is
         ///   invalid or a path cannot be found to it, the command does nothing.
-        ///   - bRun: If this is true, the action subject will run rather than walk
+        ///   - bRun: If this is TRUE, the action subject will run rather than walk
         ///   * No return value, but if an error occurs the log file will contain
         ///   "MoveToPoint failed."
         /// </summary>
         public static void ActionMoveToLocation(Location lDestination, bool bRun = false)
         {
             Internal.NativeFunctions.StackPushInteger(bRun ? 1 : 0);
-            Internal.NativeFunctions.StackPushLocation(lDestination.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lDestination);
             Internal.NativeFunctions.CallBuiltIn(21);
         }
 
@@ -177,7 +179,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Cause the action subject to move to a certain distance from oMoveTo.
         ///   If there is no path to oMoveTo, this command will do nothing.
         ///   - oMoveTo: This is the object we wish the action subject to move to
-        ///   - bRun: If this is true, the action subject will run rather than walk
+        ///   - bRun: If this is TRUE, the action subject will run rather than walk
         ///   - fRange: This is the desired distance between the action subject and oMoveTo
         ///   * No return value, but if an error occurs the log file will contain
         ///   "ActionMoveToObject failed."
@@ -195,7 +197,7 @@ namespace SWLOR.Game.Server.NWN
         ///   - oFleeFrom: This is the object we wish the action subject to move away from.
         ///   If oFleeFrom is not in the same area as the action subject, nothing will
         ///   happen.
-        ///   - bRun: If this is true, the action subject will run rather than walk
+        ///   - bRun: If this is TRUE, the action subject will run rather than walk
         ///   - fMoveAwayRange: This is the distance we wish the action subject to put
         ///   between themselves and oFleeFrom
         ///   * No return value, but if an error occurs the log file will contain
@@ -235,7 +237,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Attack oAttackee.
-        ///   - bPassive: If this is true, attack is in passive mode.
+        ///   - bPassive: If this is TRUE, attack is in passive mode.
         /// </summary>
         public static void ActionAttack(uint oAttackee, bool bPassive = false)
         {
@@ -251,7 +253,7 @@ namespace SWLOR.Game.Server.NWN
         ///   -> CLASS_TYPE_* if nFirstCriteriaType was CREATURE_TYPE_CLASS
         ///   -> SPELL_* if nFirstCriteriaType was CREATURE_TYPE_DOES_NOT_HAVE_SPELL_EFFECT
         ///   or CREATURE_TYPE_HAS_SPELL_EFFECT
-        ///   -> true or false if nFirstCriteriaType was CREATURE_TYPE_IS_ALIVE
+        ///   -> TRUE or FALSE if nFirstCriteriaType was CREATURE_TYPE_IS_ALIVE
         ///   -> PERCEPTION_* if nFirstCriteriaType was CREATURE_TYPE_PERCEPTION
         ///   -> PLAYER_CHAR_IS_PC or PLAYER_CHAR_NOT_PC if nFirstCriteriaType was
         ///   CREATURE_TYPE_PLAYER_CHAR
@@ -369,11 +371,11 @@ namespace SWLOR.Game.Server.NWN
         ///   - nSpell: SPELL_*
         ///   - oTarget: Target for the spell
         ///   - nMetamagic: METAMAGIC_*
-        ///   - bCheat: If this is true, then the executor of the action doesn't have to be
+        ///   - bCheat: If this is TRUE, then the executor of the action doesn't have to be
         ///   able to cast the spell.
         ///   - nDomainLevel: TBD - SS
         ///   - nProjectilePathType: PROJECTILE_PATH_TYPE_*
-        ///   - bInstantSpell: If this is true, the spell is cast immediately. This allows
+        ///   - bInstantSpell: If this is TRUE, the spell is cast immediately. This allows
         ///   the end-user to simulate a high-level magic-user having lots of advance
         ///   warning of impending trouble
         /// </summary>
@@ -686,7 +688,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Get the first object in nShape
         ///   - nShape: SHAPE_*
         ///   - fSize:
-        ///   -> If nShape == Shape.Sphere, this is the radius of the sphere
+        ///   -> If nShape == SHAPE_SPHERE, this is the radius of the sphere
         ///   -> If nShape == SHAPE_SPELLCYLINDER, this is the length of the cylinder
         ///   Spell Cylinder's always have a radius of 1.5m.
         ///   -> If nShape == SHAPE_CONE, this is the widest radius of the cone
@@ -704,18 +706,18 @@ namespace SWLOR.Game.Server.NWN
         ///   - nObjectFilter: This allows you to filter out undesired object types, using
         ///   bitwise "or".
         ///   For example, to return only creatures and doors, the value for this
-        ///   parameter would be ObjectType.Creature | ObjectType.Door
+        ///   parameter would be OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR
         ///   - vOrigin: This is only used for cylinders and cones, and specifies the
         ///   origin of the effect(normally the spell-caster's position).
         ///   Return value on error: OBJECT_INVALID
         /// </summary>
         public static uint GetFirstObjectInShape(Shape nShape, float fSize, Location lTarget, bool bLineOfSight = false,
-            ObjectType nObjectFilter = ObjectType.Creature, Vector? vOrigin = null)
+            ObjectType nObjectFilter = ObjectType.Creature, Vector3 vOrigin = default)
         {
-            Internal.NativeFunctions.StackPushVector(vOrigin.HasValue ? vOrigin.Value : new Vector());
+            Internal.NativeFunctions.StackPushVector(vOrigin);
             Internal.NativeFunctions.StackPushInteger((int)nObjectFilter);
             Internal.NativeFunctions.StackPushInteger(bLineOfSight ? 1 : 0);
-            Internal.NativeFunctions.StackPushLocation(lTarget.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTarget);
             Internal.NativeFunctions.StackPushFloat(fSize);
             Internal.NativeFunctions.StackPushInteger((int)nShape);
             Internal.NativeFunctions.CallBuiltIn(128);
@@ -726,7 +728,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Get the next object in nShape
         ///   - nShape: SHAPE_*
         ///   - fSize:
-        ///   -> If nShape == Shape.Sphere, this is the radius of the sphere
+        ///   -> If nShape == SHAPE_SPHERE, this is the radius of the sphere
         ///   -> If nShape == SHAPE_SPELLCYLINDER, this is the length of the cylinder.
         ///   Spell Cylinder's always have a radius of 1.5m.
         ///   -> If nShape == SHAPE_CONE, this is the widest radius of the cone
@@ -743,18 +745,18 @@ namespace SWLOR.Game.Server.NWN
         ///   at a height 1m above the ground
         ///   - nObjectFilter: This allows you to filter out undesired object types, using
         ///   bitwise "or". For example, to return only creatures and doors, the value for
-        ///   this parameter would be ObjectType.Creature | ObjectType.Door
+        ///   this parameter would be OBJECT_TYPE_CREATURE | OBJECT_TYPE_DOOR
         ///   - vOrigin: This is only used for cylinders and cones, and specifies the origin
         ///   of the effect (normally the spell-caster's position).
         ///   Return value on error: OBJECT_INVALID
         /// </summary>
         public static uint GetNextObjectInShape(Shape nShape, float fSize, Location lTarget, bool bLineOfSight = false,
-            ObjectType nObjectFilter = ObjectType.Creature, Vector? vOrigin = null)
+            ObjectType nObjectFilter = ObjectType.Creature, Vector3 vOrigin = default)
         {
-            Internal.NativeFunctions.StackPushVector(vOrigin.HasValue ? vOrigin.Value : new Vector());
+            Internal.NativeFunctions.StackPushVector(vOrigin);
             Internal.NativeFunctions.StackPushInteger((int)nObjectFilter);
             Internal.NativeFunctions.StackPushInteger(bLineOfSight ? 1 : 0);
-            Internal.NativeFunctions.StackPushLocation(lTarget.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTarget);
             Internal.NativeFunctions.StackPushFloat(fSize);
             Internal.NativeFunctions.StackPushInteger((int)nShape);
             Internal.NativeFunctions.CallBuiltIn(129);
@@ -778,7 +780,7 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static void SignalEvent(uint oObject, Event evToRun)
         {
-            Internal.NativeFunctions.StackPushEvent(evToRun.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Event, evToRun);
             Internal.NativeFunctions.StackPushObject(oObject);
             Internal.NativeFunctions.CallBuiltIn(131);
         }
@@ -801,7 +803,7 @@ namespace SWLOR.Game.Server.NWN
         {
             Internal.NativeFunctions.StackPushInteger(nUserDefinedEventNumber);
             Internal.NativeFunctions.CallBuiltIn(132);
-            return new Event(Internal.NativeFunctions.StackPopEvent());
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Event);
         }
 
         /// <summary>
@@ -822,7 +824,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns true if oCreature is a dead NPC, dead PC or a dying PC.
+        ///   * Returns TRUE if oCreature is a dead NPC, dead PC or a dying PC.
         /// </summary>
         public static bool GetIsDead(uint oCreature)
         {
@@ -834,19 +836,19 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Output vVector to the logfile.
         ///   - vVector
-        ///   - bPrepend: if this is true, the message will be prefixed with "PRINTVECTOR:"
+        ///   - bPrepend: if this is TRUE, the message will be prefixed with "PRINTVECTOR:"
         /// </summary>
-        public static void PrintVector(Vector? vVector, bool bPrepend = false)
+        public static void PrintVector(Vector3 vVector, bool bPrepend = false)
         {
             Internal.NativeFunctions.StackPushInteger(bPrepend ? 1 : 0);
-            Internal.NativeFunctions.StackPushVector(vVector.HasValue ? vVector.Value : new Vector());
+            Internal.NativeFunctions.StackPushVector(vVector);
             Internal.NativeFunctions.CallBuiltIn(141);
         }
 
         /// <summary>
         ///   Create a vector with the specified values for x, y and z
         /// </summary>
-        public static Vector Vector(float x = 0.0f, float y = 0.0f, float z = 0.0f)
+        public static Vector3 Vector3(float x = 0.0f, float y = 0.0f, float z = 0.0f)
         {
             Internal.NativeFunctions.StackPushFloat(z);
             Internal.NativeFunctions.StackPushFloat(y);
@@ -858,9 +860,9 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Cause the caller to face vTarget
         /// </summary>
-        public static void SetFacingPoint(Vector? vTarget)
+        public static void SetFacingPoint(Vector3 vTarget)
         {
-            Internal.NativeFunctions.StackPushVector(vTarget.HasValue ? vTarget.Value : new Vector());
+            Internal.NativeFunctions.StackPushVector(vTarget);
             Internal.NativeFunctions.CallBuiltIn(143);
         }
 
@@ -907,7 +909,7 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static void SetLocalLocation(uint oObject, string sVarName, Location lValue)
         {
-            Internal.NativeFunctions.StackPushLocation(lValue.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lValue);
             Internal.NativeFunctions.StackPushStringUTF8(sVarName);
             Internal.NativeFunctions.StackPushObject(oObject);
             Internal.NativeFunctions.CallBuiltIn(152);
@@ -921,7 +923,7 @@ namespace SWLOR.Game.Server.NWN
             Internal.NativeFunctions.StackPushStringUTF8(sVarName);
             Internal.NativeFunctions.StackPushObject(oObject);
             Internal.NativeFunctions.CallBuiltIn(153);
-            return new Location(Internal.NativeFunctions.StackPopLocation());
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Location);
         }
 
         /// <summary>
@@ -980,9 +982,9 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   Do a Spell Resistance check between oCaster and oTarget, returning true if
+        ///   Do a Spell Resistance check between oCaster and oTarget, returning TRUE if
         ///   the spell was resisted.
-        ///   * Return value if oCaster or oTarget is an invalid object: false
+        ///   * Return value if oCaster or oTarget is an invalid object: FALSE
         ///   * Return value if spell cast is not a player spell: - 1
         ///   * Return value if spell resisted: 1
         ///   * Return value if spell resisted via magic immunity: 2
@@ -997,7 +999,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns true if oObject is listening for something
+        ///   * Returns TRUE if oObject is listening for something
         /// </summary>
         public static bool GetIsListening(uint oObject)
         {
@@ -1181,7 +1183,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns true if oCreature is a Player Controlled character.
+        ///   * Returns TRUE if oCreature is a Player Controlled character.
         /// </summary>
         public static bool GetIsPC(uint oCreature)
         {
@@ -1209,7 +1211,7 @@ namespace SWLOR.Game.Server.NWN
         public static Location GetSpellTargetLocation()
         {
             Internal.NativeFunctions.CallBuiltIn(222);
-            return new Location(Internal.NativeFunctions.StackPopLocation());
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Location);
         }
 
         /// <summary>
@@ -1217,7 +1219,7 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static float GetFacingFromLocation(Location lLocation)
         {
-            Internal.NativeFunctions.StackPushLocation(lLocation.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lLocation);
             Internal.NativeFunctions.CallBuiltIn(225);
             return Internal.NativeFunctions.StackPopFloat();
         }
@@ -1267,10 +1269,10 @@ namespace SWLOR.Game.Server.NWN
         ///   - nSpell: SPELL_*
         ///   - lTargetLocation
         ///   - nMetaMagic: METAMAGIC_*
-        ///   - bCheat: If this is true, then the executor of the action doesn't have to be
+        ///   - bCheat: If this is TRUE, then the executor of the action doesn't have to be
         ///   able to cast the spell.
         ///   - nProjectilePathType: PROJECTILE_PATH_TYPE_*
-        ///   - bInstantSpell: If this is true, the spell is cast immediately; this allows
+        ///   - bInstantSpell: If this is TRUE, the spell is cast immediately; this allows
         ///   the end-user to simulate
         ///   a high-level magic user having lots of advance warning of impending trouble.
         /// </summary>
@@ -1282,7 +1284,7 @@ namespace SWLOR.Game.Server.NWN
             Internal.NativeFunctions.StackPushInteger((int)nProjectilePathType);
             Internal.NativeFunctions.StackPushInteger(bCheat ? 1 : 0);
             Internal.NativeFunctions.StackPushInteger((int)nMetaMagic);
-            Internal.NativeFunctions.StackPushLocation(lTargetLocation.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTargetLocation);
             Internal.NativeFunctions.StackPushInteger((int)nSpell);
             Internal.NativeFunctions.CallBuiltIn(234);
         }
@@ -1321,17 +1323,6 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   Destroy oObject (irrevocably).
-        ///   This will not work on modules and areas.
-        /// </summary>
-        public static void DestroyObject(uint oDestroy, float fDelay = 0.0f)
-        {
-            Internal.NativeFunctions.StackPushFloat(fDelay);
-            Internal.NativeFunctions.StackPushObject(oDestroy);
-            Internal.NativeFunctions.CallBuiltIn(241);
-        }
-
-        /// <summary>
         ///   Get the module.
         ///   * Return value on error: OBJECT_INVALID
         /// </summary>
@@ -1346,7 +1337,7 @@ namespace SWLOR.Game.Server.NWN
         ///   Note: This only creates the event. The event wont actually trigger until SignalEvent()
         ///   is called using this created SpellCastAt event as an argument.
         ///   For example:
-        ///   SignalEvent(oCreature, EventSpellCastAt(oCaster, SPELL_MAGIC_MISSILE, true));
+        ///   SignalEvent(oCreature, EventSpellCastAt(oCaster, SPELL_MAGIC_MISSILE, TRUE));
         ///   This function doesn't cast the spell specified, it only creates an event so that
         ///   when the event is signaled on an object, the object will use its OnSpellCastAt script
         ///   to react to the spell being cast.
@@ -1363,7 +1354,7 @@ namespace SWLOR.Game.Server.NWN
             Internal.NativeFunctions.StackPushInteger((int)nSpell);
             Internal.NativeFunctions.StackPushObject(oCaster);
             Internal.NativeFunctions.CallBuiltIn(244);
-            return new Event(Internal.NativeFunctions.StackPopEvent());
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Event);
         }
 
         /// <summary>
@@ -1472,30 +1463,30 @@ namespace SWLOR.Game.Server.NWN
         ///   Use this in an OnPerception script to determine whether the object that was
         ///   perceived was heard.
         /// </summary>
-        public static int GetLastPerceptionHeard()
+        public static bool GetLastPerceptionHeard()
         {
             Internal.NativeFunctions.CallBuiltIn(257);
-            return Internal.NativeFunctions.StackPopInteger();
+            return Convert.ToBoolean(Internal.NativeFunctions.StackPopInteger());
         }
 
         /// <summary>
         ///   Use this in an OnPerception script to determine whether the object that was
         ///   perceived has become inaudible.
         /// </summary>
-        public static int GetLastPerceptionInaudible()
+        public static bool GetLastPerceptionInaudible()
         {
             Internal.NativeFunctions.CallBuiltIn(258);
-            return Internal.NativeFunctions.StackPopInteger();
+            return Convert.ToBoolean(Internal.NativeFunctions.StackPopInteger());
         }
 
         /// <summary>
         ///   Use this in an OnPerception script to determine whether the object that was
         ///   perceived was seen.
         /// </summary>
-        public static int GetLastPerceptionSeen()
+        public static bool GetLastPerceptionSeen()
         {
             Internal.NativeFunctions.CallBuiltIn(259);
-            return Internal.NativeFunctions.StackPopInteger();
+            return Convert.ToBoolean(Internal.NativeFunctions.StackPopInteger());
         }
 
         /// <summary>
@@ -1512,10 +1503,10 @@ namespace SWLOR.Game.Server.NWN
         ///   Use this in an OnPerception script to determine whether the object that was
         ///   perceived has vanished.
         /// </summary>
-        public static int GetLastPerceptionVanished()
+        public static bool GetLastPerceptionVanished()
         {
             Internal.NativeFunctions.CallBuiltIn(261);
-            return Internal.NativeFunctions.StackPopInteger();
+            return Convert.ToBoolean(Internal.NativeFunctions.StackPopInteger());
         }
 
         /// <summary>
@@ -1640,7 +1631,7 @@ namespace SWLOR.Game.Server.NWN
         ///   - nImmunityType: IMMUNITY_TYPE_*
         ///   - oVersus: if this is specified, then we also check for the race and
         ///   alignment of oVersus
-        ///   * Returns true if oCreature has immunity of type nImmunity versus oVersus.
+        ///   * Returns TRUE if oCreature has immunity of type nImmunity versus oVersus.
         /// </summary>
         public static bool GetIsImmune(uint oCreature, ImmunityType nImmunityType, uint oVersus = OBJECT_INVALID)
         {
@@ -1663,7 +1654,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Set oEncounter's active state to nNewValue.
-        ///   - nNewValue: true/false
+        ///   - nNewValue: TRUE/FALSE
         ///   - oEncounter
         /// </summary>
         public static void SetEncounterActive(int nNewValue, uint oEncounter = OBJECT_INVALID)
@@ -1862,8 +1853,8 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static float GetDistanceBetweenLocations(Location lLocationA, Location lLocationB)
         {
-            Internal.NativeFunctions.StackPushLocation(lLocationB.Handle);
-            Internal.NativeFunctions.StackPushLocation(lLocationA.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lLocationB);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lLocationA);
             Internal.NativeFunctions.CallBuiltIn(298);
             return Internal.NativeFunctions.StackPopFloat();
         }
@@ -1911,7 +1902,7 @@ namespace SWLOR.Game.Server.NWN
         {
             Internal.NativeFunctions.StackPushInteger((int)nSpell);
             Internal.NativeFunctions.CallBuiltIn(301);
-            return new Talent(Internal.NativeFunctions.StackPopTalent());
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Talent);
         }
 
         /// <summary>
@@ -1922,7 +1913,7 @@ namespace SWLOR.Game.Server.NWN
         {
             Internal.NativeFunctions.StackPushInteger((int)nFeat);
             Internal.NativeFunctions.CallBuiltIn(302);
-            return new Talent(Internal.NativeFunctions.StackPopTalent());
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Talent);
         }
 
         /// <summary>
@@ -1933,7 +1924,7 @@ namespace SWLOR.Game.Server.NWN
         {
             Internal.NativeFunctions.StackPushInteger((int)nSkill);
             Internal.NativeFunctions.CallBuiltIn(303);
-            return new Talent(Internal.NativeFunctions.StackPopTalent());
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Talent);
         }
 
         /// <summary>
@@ -1958,7 +1949,7 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static int GetEffectSpellId(Effect eSpellEffect)
         {
-            Internal.NativeFunctions.StackPushEffect(eSpellEffect.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eSpellEffect);
             Internal.NativeFunctions.CallBuiltIn(305);
             return Internal.NativeFunctions.StackPopInteger();
         }
@@ -1969,7 +1960,7 @@ namespace SWLOR.Game.Server.NWN
         public static bool GetCreatureHasTalent(Talent tTalent, uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.StackPushTalent(tTalent.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Talent, tTalent);
             Internal.NativeFunctions.CallBuiltIn(306);
             return Internal.NativeFunctions.StackPopInteger() != 0;
         }
@@ -1984,7 +1975,7 @@ namespace SWLOR.Game.Server.NWN
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger((int)nCategory);
             Internal.NativeFunctions.CallBuiltIn(307);
-            return new Talent(Internal.NativeFunctions.StackPopTalent());
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Talent);
         }
 
         /// <summary>
@@ -2001,7 +1992,7 @@ namespace SWLOR.Game.Server.NWN
             Internal.NativeFunctions.StackPushInteger(nCRMax);
             Internal.NativeFunctions.StackPushInteger((int)nCategory);
             Internal.NativeFunctions.CallBuiltIn(308);
-            return new Talent(Internal.NativeFunctions.StackPopTalent());
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Talent);
         }
 
         /// <summary>
@@ -2010,7 +2001,7 @@ namespace SWLOR.Game.Server.NWN
         public static void ActionUseTalentOnObject(Talent tChosenTalent, uint oTarget)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.StackPushTalent(tChosenTalent.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Talent, tChosenTalent);
             Internal.NativeFunctions.CallBuiltIn(309);
         }
 
@@ -2019,13 +2010,13 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static void ActionUseTalentAtLocation(Talent tChosenTalent, Location lTargetLocation)
         {
-            Internal.NativeFunctions.StackPushLocation(lTargetLocation.Handle);
-            Internal.NativeFunctions.StackPushTalent(tChosenTalent.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTargetLocation);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Talent, tChosenTalent);
             Internal.NativeFunctions.CallBuiltIn(310);
         }
 
         /// <summary>
-        ///   * Returns true if oCreature is of a playable racial type.
+        ///   * Returns TRUE if oCreature is of a playable racial type.
         /// </summary>
         public static bool GetIsPlayableRacialType(uint oCreature)
         {
@@ -2039,7 +2030,7 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static void JumpToLocation(Location lDestination)
         {
-            Internal.NativeFunctions.StackPushLocation(lDestination.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lDestination);
             Internal.NativeFunctions.CallBuiltIn(313);
         }
 
@@ -2221,11 +2212,11 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns true if tTalent is valid.
+        ///   * Returns TRUE if tTalent is valid.
         /// </summary>
         public static bool GetIsTalentValid(Talent tTalent)
         {
-            Internal.NativeFunctions.StackPushTalent(tTalent.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Talent, tTalent);
             Internal.NativeFunctions.CallBuiltIn(359);
             return Internal.NativeFunctions.StackPopInteger() != 0;
         }
@@ -2238,7 +2229,7 @@ namespace SWLOR.Game.Server.NWN
         {
             Internal.NativeFunctions.StackPushFloat(fMoveAwayRange);
             Internal.NativeFunctions.StackPushInteger(bRun ? 1 : 0);
-            Internal.NativeFunctions.StackPushLocation(lMoveAwayFrom.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lMoveAwayFrom);
             Internal.NativeFunctions.CallBuiltIn(360);
         }
 
@@ -2259,7 +2250,7 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static TalentType GetTypeFromTalent(Talent tTalent)
         {
-            Internal.NativeFunctions.StackPushTalent(tTalent.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Talent, tTalent);
             Internal.NativeFunctions.CallBuiltIn(362);
             return (TalentType)Internal.NativeFunctions.StackPopInteger();
         }
@@ -2269,14 +2260,14 @@ namespace SWLOR.Game.Server.NWN
         /// </summary>
         public static int GetIdFromTalent(Talent tTalent)
         {
-            Internal.NativeFunctions.StackPushTalent(tTalent.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Talent, tTalent);
             Internal.NativeFunctions.CallBuiltIn(363);
             return Internal.NativeFunctions.StackPopInteger();
         }
 
         /// <summary>
         ///   Get the public part of the CD Key that oPlayer used when logging in.
-        ///   - nSinglePlayerCDKey: If set to true, the player's public CD Key will
+        ///   - nSinglePlayerCDKey: If set to TRUE, the player's public CD Key will
         ///   be returned when the player is playing in single player mode
         ///   (otherwise returns an empty string in single player mode).
         /// </summary>
@@ -2388,11 +2379,11 @@ namespace SWLOR.Game.Server.NWN
         public static Location GetStartingLocation()
         {
             Internal.NativeFunctions.CallBuiltIn(411);
-            return new Location(Internal.NativeFunctions.StackPopLocation());
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Location);
         }
 
         /// <summary>
-        ///   * Returns true if the weapon equipped is capable of damaging oVersus.
+        ///   * Returns TRUE if the weapon equipped is capable of damaging oVersus.
         /// </summary>
         public static bool GetIsWeaponEffective(uint oVersus = OBJECT_INVALID, bool bOffHand = false)
         {
@@ -2405,7 +2396,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Use this in a SpellCast script to determine whether the spell was considered
         ///   harmful.
-        ///   * Returns true if the last spell cast was harmful.
+        ///   * Returns TRUE if the last spell cast was harmful.
         /// </summary>
         public static bool GetLastSpellHarmful()
         {
@@ -2466,7 +2457,7 @@ namespace SWLOR.Game.Server.NWN
             ProjectilePathType nProjectilePathType = ProjectilePathType.Default)
         {
             Internal.NativeFunctions.StackPushInteger((int)nProjectilePathType);
-            Internal.NativeFunctions.StackPushLocation(lTarget.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTarget);
             Internal.NativeFunctions.StackPushInteger(nSpell);
             Internal.NativeFunctions.CallBuiltIn(502);
         }
@@ -2514,7 +2505,7 @@ namespace SWLOR.Game.Server.NWN
         ///   floaty text.
         ///   - nStrRefToDisplay: String ref (therefore text is translated)
         ///   - oCreatureToFloatAbove
-        ///   - bBroadcastToFaction: If this is true then only creatures in the same faction
+        ///   - bBroadcastToFaction: If this is TRUE then only creatures in the same faction
         ///   as oCreatureToFloatAbove
         ///   will see the floaty text, and only if they are within range (30 metres).
         /// </summary>
@@ -2533,7 +2524,7 @@ namespace SWLOR.Game.Server.NWN
         ///   floaty text.
         ///   - sStringToDisplay: String
         ///   - oCreatureToFloatAbove
-        ///   - bBroadcastToFaction: If this is true then only creatures in the same faction
+        ///   - bBroadcastToFaction: If this is TRUE then only creatures in the same faction
         ///   as oCreatureToFloatAbove
         ///   will see the floaty text, and only if they are within range (30 metres).
         /// </summary>
@@ -2547,7 +2538,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns true if a specific key is required to open the lock on oObject.
+        ///   * Returns TRUE if a specific key is required to open the lock on oObject.
         /// </summary>
         public static bool GetLockKeyRequired(uint oObject)
         {
@@ -2567,7 +2558,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns true if the lock on oObject is lockable.
+        ///   * Returns TRUE if the lock on oObject is lockable.
         /// </summary>
         public static bool GetLockLockable(uint oObject)
         {
@@ -2599,7 +2590,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   - nFeat: FEAT_*
         ///   - oObject
-        ///   * Returns true if oObject has effects on it originating from nFeat.
+        ///   * Returns TRUE if oObject has effects on it originating from nFeat.
         /// </summary>
         public static int GetHasFeatEffect(int nFeat, uint oObject = OBJECT_INVALID)
         {
@@ -2612,8 +2603,8 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   Set the status of the illumination for oPlaceable.
         ///   - oPlaceable
-        ///   - bIlluminate: if this is true, oPlaceable's illumination will be turned on.
-        ///   If this is false, oPlaceable's illumination will be turned off.
+        ///   - bIlluminate: if this is TRUE, oPlaceable's illumination will be turned on.
+        ///   If this is FALSE, oPlaceable's illumination will be turned off.
         ///   Note: You must call RecomputeStaticLighting() after calling this function in
         ///   order for the changes to occur visually for the players.
         ///   SetPlaceableIllumination() buffers the illumination changes, which are then
@@ -2632,7 +2623,7 @@ namespace SWLOR.Game.Server.NWN
         }
 
         /// <summary>
-        ///   * Returns true if the illumination for oPlaceable is on
+        ///   * Returns TRUE if the illumination for oPlaceable is on
         /// </summary>
         public static bool GetPlaceableIllumination(uint oPlaceable = OBJECT_INVALID)
         {
@@ -2644,7 +2635,7 @@ namespace SWLOR.Game.Server.NWN
         /// <summary>
         ///   - oPlaceable
         ///   - nPlaceableAction: PLACEABLE_ACTION_*
-        ///   * Returns true if nPlacebleAction is valid for oPlaceable.
+        ///   * Returns TRUE if nPlacebleAction is valid for oPlaceable.
         /// </summary>
         public static int GetIsPlaceableObjectActionPossible(uint oPlaceable, int nPlaceableAction)
         {
@@ -2778,11 +2769,11 @@ namespace SWLOR.Game.Server.NWN
         ///   The var name must be unique across the entire database, regardless of the variable type.
         ///   If you want a variable to pertain to a specific player in the game, provide a player object.
         /// </summary>
-        public static void SetCampaignVector(string sCampaignName, string sVarName, Vector? vVector,
+        public static void SetCampaignVector(string sCampaignName, string sVarName, Vector3 vVector,
             uint oPlayer = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.StackPushVector(vVector.HasValue ? vVector.Value : new Vector());
+            Internal.NativeFunctions.StackPushVector(vVector);
             Internal.NativeFunctions.StackPushStringUTF8(sVarName);
             Internal.NativeFunctions.StackPushStringUTF8(sCampaignName);
             Internal.NativeFunctions.CallBuiltIn(591);
@@ -2798,7 +2789,7 @@ namespace SWLOR.Game.Server.NWN
             uint oPlayer = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.StackPushLocation(locLocation.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, locLocation);
             Internal.NativeFunctions.StackPushStringUTF8(sVarName);
             Internal.NativeFunctions.StackPushStringUTF8(sCampaignName);
             Internal.NativeFunctions.CallBuiltIn(592);
@@ -2865,7 +2856,7 @@ namespace SWLOR.Game.Server.NWN
         ///   The var name must be unique across the entire database, regardless of the variable type.
         ///   If you want a variable to pertain to a specific player in the game, provide a player object.
         /// </summary>
-        public static Vector GetCampaignVector(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
+        public static Vector3 GetCampaignVector(string sCampaignName, string sVarName, uint oPlayer = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oPlayer);
             Internal.NativeFunctions.StackPushStringUTF8(sVarName);
@@ -2886,7 +2877,7 @@ namespace SWLOR.Game.Server.NWN
             Internal.NativeFunctions.StackPushStringUTF8(sVarName);
             Internal.NativeFunctions.StackPushStringUTF8(sCampaignName);
             Internal.NativeFunctions.CallBuiltIn(598);
-            return new Location(Internal.NativeFunctions.StackPopLocation());
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Location);
         }
 
         /// <summary>
@@ -2945,7 +2936,7 @@ namespace SWLOR.Game.Server.NWN
         {
             Internal.NativeFunctions.StackPushObject(oPlayer);
             Internal.NativeFunctions.StackPushObject(oOwner);
-            Internal.NativeFunctions.StackPushLocation(locLocation.Handle);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, locLocation);
             Internal.NativeFunctions.StackPushStringUTF8(sVarName);
             Internal.NativeFunctions.StackPushStringUTF8(sCampaignName);
             Internal.NativeFunctions.CallBuiltIn(603);
@@ -3143,7 +3134,7 @@ namespace SWLOR.Game.Server.NWN
 
         /// <summary>
         ///   Get if oPlayer is currently connected over a relay (instead of directly).
-        ///   Returns false for any other object, including OBJECT_INVALID.
+        ///   Returns FALSE for any other object, including OBJECT_INVALID.
         /// </summary>
         public static int GetIsPlayerConnectionRelayed(uint oPlayer)
         {
@@ -3294,7 +3285,7 @@ namespace SWLOR.Game.Server.NWN
         ///   The script chunk runs immediately, same as ExecuteScript().
         ///   The script is jitted in place and currently not cached: Each invocation will recompile the script chunk.
         ///   Note that the script chunk will run as if a separate script. This is not eval().
-        ///   By default, the script chunk is wrapped into void main() {}. Pass in bWrapIntoMain = false to override.
+        ///   By default, the script chunk is wrapped into void main() {}. Pass in bWrapIntoMain = FALSE to override.
         ///   Returns "" on success, or the compilation error.
         /// </summary>
         public static string ExecuteScriptChunk(string sScriptChunk, uint oObject, bool bWrapIntoMain = true)
@@ -3447,5 +3438,106 @@ namespace SWLOR.Game.Server.NWN
             Internal.NativeFunctions.CallBuiltIn(903);
             return (ClericDomain)Internal.NativeFunctions.StackPopInteger();
         }
+
+
+
+        /// <summary>
+        /// Queue an action to use an active item property.
+        /// * oItem - item that has the item property to use
+        /// * ip - item property to use
+        /// * object oTarget - target
+        /// * nSubPropertyIndex - specify if your itemproperty has subproperties (such as subradial spells)
+        /// * bDecrementCharges - decrement charges if item property is limited
+        /// </summary>
+        public static void ActionUseItemOnObject(uint oItem, IntPtr ip, uint oTarget, int nSubPropertyIndex = 0, bool bDecrementCharges = true)
+        {
+            Internal.NativeFunctions.StackPushInteger(bDecrementCharges ? 1 : 0);
+            Internal.NativeFunctions.StackPushInteger(nSubPropertyIndex);
+            Internal.NativeFunctions.StackPushObject(oTarget);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.ItemProperty, ip);
+            Internal.NativeFunctions.StackPushObject(oItem);
+            Internal.NativeFunctions.CallBuiltIn(910);
+        }
+
+        /// <summary>
+        /// Queue an action to use an active item property.
+        /// * oItem - item that has the item property to use
+        /// * ip - item property to use
+        /// * location lTarget - target location (must be in the same area as item possessor)
+        /// * nSubPropertyIndex - specify if your itemproperty has subproperties (such as subradial spells)
+        /// * bDecrementCharges - decrement charges if item property is limited
+        /// </summary>
+        public static void ActionUseItemAtLocation(uint oItem, IntPtr ip, IntPtr lTarget, int nSubPropertyIndex = 0, bool bDecrementCharges = true)
+        {
+            Internal.NativeFunctions.StackPushInteger(bDecrementCharges ? 1 : 0);
+            Internal.NativeFunctions.StackPushInteger(nSubPropertyIndex);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTarget);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.ItemProperty, ip);
+            Internal.NativeFunctions.StackPushObject(oItem);
+            Internal.NativeFunctions.CallBuiltIn(911);
+        }
+
+        /// <summary>
+        /// Makes oPC enter a targeting mode, letting them select an object as a target
+        /// If a PC selects a target, it will trigger the module OnPlayerTarget event.
+        /// </summary>
+        public static void EnterTargetingMode(uint oPC, ObjectType nValidObjectTypes = ObjectType.All, MouseCursor nMouseCursorId = MouseCursor.Magic, MouseCursor nBadTargetCursor = MouseCursor.NoMagic)
+        {
+            Internal.NativeFunctions.StackPushInteger((int)nBadTargetCursor);
+            Internal.NativeFunctions.StackPushInteger((int)nMouseCursorId);
+            Internal.NativeFunctions.StackPushInteger((int)nValidObjectTypes);
+            Internal.NativeFunctions.StackPushObject(oPC);
+            Internal.NativeFunctions.CallBuiltIn(912);
+        }
+
+        /// <summary>
+        /// Gets the target object in the module OnPlayerTarget event.
+        /// Returns the area object when the target is the ground.
+        /// </summary>
+        public static uint GetTargetingModeSelectedObject()
+        {
+            Internal.NativeFunctions.CallBuiltIn(913);
+            return Internal.NativeFunctions.StackPopObject();
+        }
+
+        /// <summary>
+        /// Gets the target position in the module OnPlayerTarget event.
+        /// </summary>
+        public static Vector3 GetTargetingModeSelectedPosition()
+        {
+            Internal.NativeFunctions.CallBuiltIn(914);
+            return Internal.NativeFunctions.StackPopVector();
+        }
+
+        /// <summary>
+        /// Gets the player object that triggered the OnPlayerTarget event.
+        /// </summary>
+        public static uint GetLastPlayerToSelectTarget()
+        {
+            Internal.NativeFunctions.CallBuiltIn(915);
+            return Internal.NativeFunctions.StackPopObject();
+        }
+
+        /// <summary>
+        /// Sets oObject's hilite color to nColor
+        /// The nColor format is 0xRRGGBB; -1 clears the color override.
+        /// </summary>
+        public static void SetObjectHiliteColor(uint oObject, int nColor = -1)
+        {
+            Internal.NativeFunctions.StackPushInteger(nColor);
+            Internal.NativeFunctions.StackPushObject(oObject);
+            Internal.NativeFunctions.CallBuiltIn(916);
+        }
+
+        /// <summary>
+        /// Sets the cursor (MOUSECURSOR_*) to use when hovering over oObject
+        /// </summary>
+        public static void SetObjectMouseCursor(uint oObject, MouseCursor nCursor = MouseCursor.Invalid)
+        {
+            Internal.NativeFunctions.StackPushInteger((int)nCursor);
+            Internal.NativeFunctions.StackPushObject(oObject);
+            Internal.NativeFunctions.CallBuiltIn(917);
+        }
+
     }
 }

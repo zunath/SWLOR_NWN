@@ -230,7 +230,7 @@ namespace SWLOR.Game.Server.Service
             var spawnPoint = walkmeshes[index];
             
             return Location(area.Object,
-                Vector((float)spawnPoint.LocationX, (float)spawnPoint.LocationY, (float)spawnPoint.LocationZ),
+                Vector3((float)spawnPoint.LocationX, (float)spawnPoint.LocationY, (float)spawnPoint.LocationZ),
                 RandomService.RandomFloat(0, 360));
 
         }

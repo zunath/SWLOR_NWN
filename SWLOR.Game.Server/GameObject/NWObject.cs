@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Numerics;
 using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Enum;
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual NWArea Area => GetArea(Object);
 
-        public virtual Vector Position => GetPosition(Object);
+        public virtual Vector3 Position => GetPosition(Object);
 
         public virtual bool HasInventory => GetHasInventory(Object);
 

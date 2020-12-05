@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Numerics;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.NWN;
@@ -131,7 +132,7 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 NWArea area = NWModule.Get().Areas.Single(x => x.Resref == entity.RespawnAreaResref);
-                Vector position = _.Vector((float)entity.RespawnLocationX, (float)entity.RespawnLocationY, (float)entity.RespawnLocationZ);
+                Vector3 position = _.Vector3((float)entity.RespawnLocationX, (float)entity.RespawnLocationY, (float)entity.RespawnLocationZ);
                 Location location = _.Location(area.Object, position, (float)entity.RespawnLocationOrientation);
                 pc.AssignCommand(() =>
                 {

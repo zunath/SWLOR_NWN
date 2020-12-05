@@ -22,5 +22,5 @@ BEGIN
     
 	DELETE pcp.*
 	FROM PCPerk pcp
-	WHERE pcp.PerkID = @PerkID;
+	WHERE pcp.PerkID = perkID;
 END

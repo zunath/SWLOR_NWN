@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 })
                 .Action((user, target, location, args) =>
                 {
-                    Dialog.StartConversation(user, user, nameof(CharacterCustomization));
+                    Dialog.StartConversation(user, user, nameof(CharacterCustomizationDialog));
                 });
         }
 

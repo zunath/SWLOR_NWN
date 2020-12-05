@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             page.AddResponse(toggleAchievementNotificationText, () =>
             {
                 dbPlayer.Settings.DisplayAchievementNotification = !dbPlayer.Settings.DisplayAchievementNotification;
+                DB.Set(playerId, dbPlayer);
             });
         }
 

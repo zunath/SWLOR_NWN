@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 page.AddResponse("Viscara", () =>
                 {
                     model.PlanetName = "Viscara";
-                    model.Price = 600;
+                    model.Price = 100;
                     model.DestinationTag = "VISCARA_LANDING";
 
                     ChangePage(ConfirmPageId);
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 page.AddResponse("Mon Cala", () =>
                 {
                     model.PlanetName = "Mon Cala";
-                    model.Price = 600;
+                    model.Price = 200;
                     model.DestinationTag = "MON_CALA_LANDING";
 
                     ChangePage(ConfirmPageId);
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 page.AddResponse("Hutlar", () =>
                 {
                     model.PlanetName = "Hutlar";
-                    model.Price = 600;
+                    model.Price = 300;
                     model.DestinationTag = "HUTLAR_LANDING";
 
                     ChangePage(ConfirmPageId);
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 page.AddResponse("Tatooine", () =>
                 {
                     model.PlanetName = "Tatooine";
-                    model.Price = 1000;
+                    model.Price = 400;
                     model.DestinationTag = "TATOOINE_LANDING";
 
                     ChangePage(ConfirmPageId);

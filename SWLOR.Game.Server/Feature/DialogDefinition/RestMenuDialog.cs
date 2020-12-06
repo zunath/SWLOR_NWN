@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             page.AddResponse("View Achievements", () => SwitchConversation(nameof(ViewAchievementsDialog)));
             page.AddResponse("View Recipes", () => SwitchConversation(nameof(RecipeDialog)));
             page.AddResponse("View Key Items", () => SwitchConversation(nameof(ViewKeyItemsDialog)));
-            //page.AddResponse("Modify Item Appearance", () => SwitchConversation(nameof(ModifyItemAppearanceDialog)));
+            page.AddResponse("Modify Item Appearance", () => SwitchConversation(nameof(ModifyItemAppearanceDialog)));
             page.AddResponse("Player Settings", () => SwitchConversation(nameof(PlayerSettingsDialog)));
             page.AddResponse("Open Trash Can (Destroy Items)", () =>
             {

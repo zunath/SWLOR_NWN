@@ -113,6 +113,8 @@ namespace SWLOR.Game.Server.Feature
                 if (type != ItemPropertyType.UseLimitationPerk) continue;
 
                 var perkType = (PerkType)GetItemPropertySubType(ip);
+                if (perkType == PerkType.Invalid) continue;
+
                 var requiredLevel = GetItemPropertyCostTableValue(ip);
                 var perkLevel = dbPlayer.Perks.ContainsKey(perkType) ? dbPlayer.Perks[perkType] : 0;
 

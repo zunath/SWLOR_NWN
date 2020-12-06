@@ -7,7 +7,7 @@ using SWLOR.Game.Server.Service;
 namespace SWLOR.Game.Server.ChatCommand
 {
     [CommandDetails("Opens the Jukebox.", CommandPermissionType.DM | CommandPermissionType.Admin)]
-    public class JukeboxDM : IChatCommand
+    public class Jukebox : IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {

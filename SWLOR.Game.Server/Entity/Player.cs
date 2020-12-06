@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Entity
             CharacterType = CharacterType.Invalid;
             KeyItems = new Dictionary<KeyItemType, DateTime>();
             Guilds = new Dictionary<GuildType, PlayerGuild>();
+            SavedOutfits = new Dictionary<int, string>();
         }
 
         public override string KeyPrefix => "Player";
@@ -89,6 +90,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
         public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
+        public Dictionary<int, string> SavedOutfits { get; set; }
     }
 
     public class MapPin

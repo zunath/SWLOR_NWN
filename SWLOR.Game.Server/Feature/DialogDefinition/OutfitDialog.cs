@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -64,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dbSavedAppearance = DB.Get<PlayerStoredAppearance>(playerId) ?? new PlayerStoredAppearance();
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
 
             page.Header = "Please select a slot to save the outfit in.\n\n" +
                           "Red slots are unused. Green slots contain stored appearances. Selecting a green slot will overwrite whatever is in that slot.";
@@ -72,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             for (var x = 1; x <= MaxSlots; x++)
             {
                 var slot = x; // Copy due to variable changing in outer scope
-                var text = dbSavedAppearance.SavedOutfits.ContainsKey(slot) 
+                var text = dbPlayer.SavedOutfits.ContainsKey(slot) 
                     ? ColorToken.Green($"Slot #{x}") 
                     : ColorToken.Red($"Slot #{x}");
 
@@ -87,9 +88,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     }
 
                     var serialized = Object.Serialize(armor);
-                    dbSavedAppearance.SavedOutfits[slot] = serialized;
+                    dbPlayer.SavedOutfits[slot] = serialized;
 
-                    DB.Set(playerId, dbSavedAppearance);
+                    DB.Set(playerId, dbPlayer);
                 });
             }
         }
@@ -98,15 +99,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dbSavedAppearance = DB.Get<PlayerStoredAppearance>(playerId) ?? new PlayerStoredAppearance();
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
 
             page.Header = "Please select an outfit to load. The appearance of your currently equipped armor will be overwritten.";
 
             for(var x = 1; x <= MaxSlots; x++)
             {
-                if (!dbSavedAppearance.SavedOutfits.ContainsKey(x)) continue;
+                if (!dbPlayer.SavedOutfits.ContainsKey(x)) continue;
 
-                var outfit = dbSavedAppearance.SavedOutfits[x];
+                var outfit = dbPlayer.SavedOutfits[x];
                 page.AddResponse($"Slot #{x}", () =>
                 {
                     var armor = GetItemInSlot(InventorySlot.Chest, player);
@@ -195,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dbSavedAppearances = DB.Get<PlayerStoredAppearance>(playerId) ?? new PlayerStoredAppearance();
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
             var model = GetDataModel<Model>();
 
             page.Header = "Please select an outfit appearance to delete.";
@@ -203,7 +204,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             for (int x = 1; x <= MaxSlots; x++)
             {
                 // Record exists in DB.
-                if (dbSavedAppearances.SavedOutfits.ContainsKey(x))
+                if (dbPlayer.SavedOutfits.ContainsKey(x))
                 {
                     var slot = x; // Copy due to variable changing in outer scope
 
@@ -213,9 +214,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         page.AddResponse(ColorToken.Red($"CONFIRM DELETE - Slot #{x}"), () =>
                         {
                             model.ConfirmingDeleteSlot = 0;
-                            dbSavedAppearances.SavedOutfits.Remove(slot);
+                            dbPlayer.SavedOutfits.Remove(slot);
 
-                            DB.Set(playerId, dbSavedAppearances);
+                            DB.Set(playerId, dbPlayer);
                         });
                     }
                     else

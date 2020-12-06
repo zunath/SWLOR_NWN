@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.QuestService;
@@ -203,6 +204,44 @@ namespace SWLOR.Game.Server.Service
         public static void AdvanceQuest(uint player, uint questSource, string questId)
         {
             _quests[questId].Advance(player, questSource);
+        }
+
+        /// <summary>
+        /// Forces a player to open a collection placeable in which they will put items needed for the quest.
+        /// </summary>
+        /// <param name="player">The player who will open the collection placeable.</param>
+        /// <param name="questId">The quest to collect items for.</param>
+        public static void RequestItemsFromPlayer(uint player, string questId)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (!dbPlayer.Quests.ContainsKey(questId))
+            {
+                SendMessageToPC(player, "You have not accepted this quest yet.");
+                return;
+            }
+
+            var quest = dbPlayer.Quests[questId];
+            var questDetail = GetQuestById(questId);
+            var questState = questDetail.States[quest.CurrentState];
+
+            // Ensure there's at least one "Collect Item" objective on this quest state.
+            var hasCollectItemObjective = questState.GetObjectives().OfType<CollectItemObjective>().Any();
+
+            // The only time this should happen is if the quest is misconfigured.
+            if (!hasCollectItemObjective)
+            {
+                SendMessageToPC(player, "There are no items to turn in for this quest. This is likely a bug. Please let the staff know.");
+                return;
+            }
+
+            var collector = CreateObject(ObjectType.Placeable, "qst_item_collect", GetLocation(player));
+            SetLocalObject(collector, "QUEST_OWNER", OBJECT_SELF);
+            SetLocalString(collector, "QUEST_ID", questId);
+
+            AssignCommand(collector, () => SetFacingPoint(GetPosition(player)));
+            AssignCommand(player, () => ActionInteractObject(collector));
         }
     }
 }

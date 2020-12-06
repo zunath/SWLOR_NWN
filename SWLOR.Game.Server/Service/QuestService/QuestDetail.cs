@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// </summary>
         /// <param name="player">The player to check</param>
         /// <returns>true if player can complete, false otherwise</returns>
-        private bool CanComplete(uint player)
+        public bool CanComplete(uint player)
         {
             // Has the player even accepted this quest?
             var playerId = GetObjectUUID(player);

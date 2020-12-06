@@ -24,9 +24,10 @@ namespace SWLOR.Game.Server.Service
             { 5, 60000 }
         };
 
-        private static int _maxRank;
-        private static readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _activeGuildTasks = new Dictionary<GuildType, Dictionary<int, List<QuestDetail>>>();
-        private static bool _tasksLoaded;
+        public static int MaxRank { get; private set; }
+        public static DateTime? DateTasksLoaded { get; private set; }
+        private static readonly Dictionary<GuildType, Dictionary<int, List<QuestDetail>>> _activeGuildTasksByRank = new Dictionary<GuildType, Dictionary<int, List<QuestDetail>>>();
+        private static readonly Dictionary<GuildType, Dictionary<string, QuestDetail>> _activeGuildTasks = new Dictionary<GuildType, Dictionary<string, QuestDetail>>();
 
         /// <summary>
         /// When the module loads, cache relevant data and load guild tasks.
@@ -45,7 +46,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            _maxRank = _rankProgression.Keys.Max();
+            MaxRank = _rankProgression.Keys.Max();
 
             RefreshGuildTasks();
         }
@@ -94,7 +95,7 @@ namespace SWLOR.Game.Server.Service
             dbGuild.Points += baseAmount;
 
             // Clamp player GP to the highest rank.
-            var maxGP = _rankProgression[_maxRank];
+            var maxGP = _rankProgression[MaxRank];
             if (dbGuild.Points >= maxGP)
                 dbGuild.Points = maxGP - 1;
 
@@ -102,7 +103,7 @@ namespace SWLOR.Game.Server.Service
             SendMessageToPC(player, $"You earned {baseAmount} {detail.Name} guild points");
 
             // Are we able to rank up?
-            if (dbGuild.Rank < _maxRank)
+            if (dbGuild.Rank < MaxRank)
             {
                 // Is it time for a rank up?
                 var nextRank = _rankProgression[dbGuild.Rank];
@@ -120,9 +121,9 @@ namespace SWLOR.Game.Server.Service
 
         private static void RefreshGuildTasks()
         {
-            if (_tasksLoaded) return;
+            if (DateTasksLoaded != null) return;
 
-            for (var rank = 0; rank < _maxRank; rank++)
+            for (var rank = 0; rank < MaxRank; rank++)
             {
                 foreach (var (type, _) in _activeGuilds)
                 {
@@ -144,27 +145,48 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     if(!_activeGuildTasks.ContainsKey(type))
-                        _activeGuildTasks[type] = new Dictionary<int, List<QuestDetail>>();
+                        _activeGuildTasks[type] = new Dictionary<string, QuestDetail>();
 
-                    _activeGuildTasks[type][rank] = tasks;
+                    if(!_activeGuildTasksByRank.ContainsKey(type))
+                        _activeGuildTasksByRank[type] = new Dictionary<int, List<QuestDetail>>();
+
+                    foreach (var task in tasks)
+                    {
+                        _activeGuildTasks[type][task.QuestId] = task;
+                    }
+
+                    _activeGuildTasksByRank[type][rank] = tasks;
                 }
             }
-            
-            _tasksLoaded = true;
+
+            DateTasksLoaded = DateTime.UtcNow;
+        }
+
+        /// <summary>
+        /// Retrieves quest details associated with the active guild tasks by rank.
+        /// </summary>
+        /// <param name="guild">The guild type to retrieve for</param>
+        /// <param name="rank">The rank to retrieve for</param>
+        /// <returns>A list of active guild tasks</returns>
+        public static List<QuestDetail> GetActiveGuildTasksByRank(GuildType guild, int rank)
+        {
+            if(!_activeGuildTasksByRank.ContainsKey(guild))
+                return new List<QuestDetail>();
+
+            return _activeGuildTasksByRank[guild][rank].ToList();
         }
 
         /// <summary>
         /// Retrieves quest details associated with the active guild tasks.
         /// </summary>
         /// <param name="guild">The guild type to retrieve for</param>
-        /// <param name="rank">The rank to retrieve for</param>
         /// <returns>A list of active guild tasks</returns>
-        public static List<QuestDetail> GetActiveGuildTasks(GuildType guild, int rank)
+        public static Dictionary<string, QuestDetail> GetAllActiveGuildTasks(GuildType guild)
         {
             if(!_activeGuildTasks.ContainsKey(guild))
-                return new List<QuestDetail>();
+                return new Dictionary<string, QuestDetail>();
 
-            return _activeGuildTasks[guild][rank].ToList();
+            return _activeGuildTasks[guild].ToDictionary(x => x.Key, y => y.Value);
         }
 
         /// <summary>

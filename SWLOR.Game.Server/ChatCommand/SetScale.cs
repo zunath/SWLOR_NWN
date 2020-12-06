@@ -12,12 +12,13 @@ namespace SWLOR.Game.Server.ChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
+            if (target.IsPlayer) return;
 
             float value = float.Parse(args[0]);
 
             _.SetObjectVisualTransform(target, ObjectVisualTransform.Scale, value);
 
-            user.SendMessage("Object/Person Scale Changed By " + value);
+            user.SendMessage("Object Scale Changed To " + value);
         }
 
         public string ValidateArguments(NWPlayer user, params string[] args)
@@ -25,6 +26,11 @@ namespace SWLOR.Game.Server.ChatCommand
             if (args.Length <= 0)
             {
                 return "Please specify an amount to scale.";
+            }
+
+            if (!int.TryParse(args[0], out int value))
+            {
+                return "Please specify a valid amount between 1 and "  + ".";
             }
 
             return string.Empty;

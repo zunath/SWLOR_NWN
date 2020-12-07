@@ -155,6 +155,11 @@ namespace SWLOR.Game.Server.Perk.ForceControl
                 _.ApplyEffectToObject(DurationType.Temporary, finalEffect, creature.Object, 6.1f);
                 _.ApplyEffectToObject(DurationType.Temporary, visualEffect, creature.Object, 6.1f);
             });
+            
+            if (creature.IsPlayer)
+            {
+                SkillService.RegisterPCToAllCombatTargetsForSkill(creature.Object, SkillType.ForceControl, null);
+            }
         }
     }
 }

@@ -106,6 +106,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 }
 
                 _.ApplyEffectToObject(DurationType.Temporary, AbilityService.EffectKnockdown(target, duration), target, duration);
+                _.ApplyEffectToObject(DurationType.Temporary, _.EffectSlow(), target, duration);
             }
 
             if (creature.IsPlayer)

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Enum.Creature;
 using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using static SWLOR.Game.Server.NWN._;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
@@ -144,7 +145,12 @@ namespace SWLOR.Game.Server.Perk.ForceSense
 
                 _.ApplyEffectToObject(DurationType.Temporary, effect, targetCreature, 6.1f);
                 _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Dur_Magic_Resistance), targetCreature);
-                
+
+                if (creature.IsPlayer)
+                {
+                    SkillService.RegisterPCToAllCombatTargetsForSkill(creature.Object, SkillType.ForceSense, null);
+                }
+
                 nth++;
                 targetCreature = _.GetNearestCreature(CreatureType.IsAlive, 1, creature, nth);
             }

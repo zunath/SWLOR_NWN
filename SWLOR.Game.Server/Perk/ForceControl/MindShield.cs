@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
 {
@@ -118,6 +119,11 @@ namespace SWLOR.Game.Server.Perk.ForceControl
 
             // Play VFX
             _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Dur_Mind_Affecting_Positive), target);
+            
+            if (creature.IsPlayer)
+            {
+                SkillService.RegisterPCToAllCombatTargetsForSkill(creature.Object, SkillType.ForceControl, null);
+            }
 
         }
     }

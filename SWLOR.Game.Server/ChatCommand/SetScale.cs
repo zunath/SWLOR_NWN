@@ -10,6 +10,8 @@ namespace SWLOR.Game.Server.ChatCommand
     [CommandDetails("Sets Scale.", CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class SetScale : IChatCommand
     {
+        private const int MaxAmount = 100;
+
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)
         {
             if (target.IsPlayer) return;
@@ -25,12 +27,12 @@ namespace SWLOR.Game.Server.ChatCommand
         {
             if (args.Length <= 0)
             {
-                return "Please specify an amount to scale.";
+                return "Please specify an amount of RP XP to give. Valid range: 0-" + MaxAmount;
             }
 
             if (!int.TryParse(args[0], out int value))
             {
-                return "Please specify a valid amount between 1 and "  + ".";
+                return "Please specify a valid amount between 0 and " + MaxAmount + ".";
             }
 
             return string.Empty;

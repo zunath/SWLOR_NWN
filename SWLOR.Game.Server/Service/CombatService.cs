@@ -189,8 +189,8 @@ namespace SWLOR.Game.Server.Service
                 int perkLevel = PerkService.GetCreaturePerkLevel(target.Object, PerkType.ShieldProficiency);
                 float perkBonus = 0.02f * perkLevel;
 
-                // DI = 10% + 1% / 3 AC bonuses on the shield + 2% per perk bonus. 
-                reduction = (0.1 + 0.01 * shield.AC / 3) + perkBonus;
+                // DI = 10% + 1% AC bonuses on the shield + 2% per perk bonus. 
+                reduction = (0.1 + (0.01 * shield.CustomAC)) + perkBonus;
             }
             // Calculate Absorb Energy concentration effect reduction.
             if (concentrationEffect.Type == PerkType.AbsorbEnergy)
@@ -456,7 +456,7 @@ namespace SWLOR.Game.Server.Service
 
             float attackerTotal = attackerSkill + attackerAbility + attackerAffinity + attackerCR;
             float defenderTotal = defenderSkill + defenderAbility + defenderAffinity + defenderCR;
-            float divisor = attackerTotal + defenderTotal + 1; // +1 to prevent division by zero.
+            //float divisor = attackerTotal + defenderTotal + 1; // +1 to prevent division by zero.
 
             //Console.WriteLine("attackerCR = " + attackerCR);
             //Console.WriteLine("defenderCR = " + defenderCR);
@@ -470,8 +470,11 @@ namespace SWLOR.Game.Server.Service
             //Console.WriteLine("defenderTotal = " + defenderTotal);
             //Console.WriteLine("divisor = " + divisor);
 
-            result.DC = (int) (defenderTotal / divisor * 100);
-            result.Roll = RandomService.D100(1);
+            result.DC = (int)defenderTotal + 10;
+                // divisor * 100);
+            result.Roll = RandomService.D20(1) + (int)attackerTotal;
+
+
 
             if (sendRollMessage)
             {

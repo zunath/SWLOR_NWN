@@ -15,6 +15,7 @@
     <None Remove="Data\Migrations\2020-10-22.1.sql" />
     <None Remove="Data\Migrations\2020-10-26.1.sql" />
     <None Remove="Data\Migrations\2020-10-29.1.sql" />
+    <None Remove="Data\Migrations\2020-12-02.1.sql" />
     <None Remove="Data\Migrations\Initialization.sql" />
   </ItemGroup>
 
@@ -27,6 +28,7 @@
     <EmbeddedResource Include="Data\Migrations\2020-10-22.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2020-10-26.1.sql" />
     <EmbeddedResource Include="Data\Migrations\2020-10-29.1.sql" />
+    <EmbeddedResource Include="Data\Migrations\2020-12-02.1.sql" />
     <EmbeddedResource Include="Data\Migrations\Initialization.sql" />
   </ItemGroup>
 

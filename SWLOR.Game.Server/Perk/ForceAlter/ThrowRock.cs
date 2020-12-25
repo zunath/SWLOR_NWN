@@ -47,13 +47,13 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     damage = 5 + mod;
                     break;
                 case 2:
-                    damage = 10 + ((mod * 125) / 10);
+                    damage = 10 + ((mod * 125) / 100);
                     break;
                 case 3:
                     damage = 10 + ((mod * 15) / 10);
                     break;
                 case 4:
-                    damage = 15 + ((mod * 175) / 10);
+                    damage = 15 + ((mod * 175) / 100);
                     break;
                 case 5:
                     damage = 15 + (mod * 2);

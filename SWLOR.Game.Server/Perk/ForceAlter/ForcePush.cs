@@ -105,7 +105,8 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     creature.SendMessage("Lucky Force Push!");
                 }
 
-                _.ApplyEffectToObject(DurationType.Temporary, AbilityService.EffectKnockdown(target, duration), target, duration);
+                _.ApplyEffectToObject(DurationType.Temporary, AbilityService.EffectKnockdown(target, 3.0f), target, 3.0f);
+                _.ApplyEffectToObject(DurationType.Temporary, _.EffectSlow(), target, duration);
             }
 
             if (creature.IsPlayer)

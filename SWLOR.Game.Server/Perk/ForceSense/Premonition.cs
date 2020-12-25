@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
             Effect effect;
-            float duration = 6.1f;
+            float duration = 24.1f;
             int concealment;
             int hitpoints;
 
@@ -77,18 +77,18 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             {
 
                 case 1:
-                    hitpoints = 3;
+                    hitpoints = 5;
                     effect = _.EffectTemporaryHitpoints(hitpoints);
                     break;
                 case 2:
-                    hitpoints = 3;
+                    hitpoints = 10;
                     concealment = 5;
                     effect = _.EffectConcealment(concealment);
                     effect = _.EffectLinkEffects(effect, _.EffectTemporaryHitpoints(hitpoints));
                     break;
                 case 3:
                     concealment = 10;
-                    hitpoints = 5;
+                    hitpoints = 15;
                     effect = _.EffectConcealment(concealment);
                     effect = _.EffectLinkEffects(effect, _.EffectTemporaryHitpoints(hitpoints));
                     break;
@@ -101,12 +101,9 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             _.ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
             _.ApplyEffectToObject(DurationType.Temporary, _.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Purple), creature, duration);
 
-            if (_.GetIsInCombat(creature))
+            if (creature.IsPlayer)
             {
-                if (creature.IsPlayer)
-                {
-                    SkillService.GiveSkillXP(creature.Object, SkillType.ForceSense, (perkLevel * 50));
-                }
+                SkillService.RegisterPCToAllCombatTargetsForSkill(creature.Object, SkillType.ForceSense, null);
             }
         }
     }

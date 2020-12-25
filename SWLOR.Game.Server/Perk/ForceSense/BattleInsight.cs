@@ -6,6 +6,7 @@ using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Enum.Creature;
 using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using static SWLOR.Game.Server.NWN._;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceSense
 {
@@ -85,7 +86,7 @@ namespace SWLOR.Game.Server.Perk.ForceSense
             }
 
             // Penalize the caster
-            Effect effect = _.EffectACDecrease(0);
+            Effect effect = _.EffectACDecrease(amount);
             effect = _.EffectLinkEffects(effect, _.EffectAttackDecrease(amount));
             ApplyEffectToObject(DurationType.Temporary, effect, creature, 6.1f);
 
@@ -133,18 +134,23 @@ namespace SWLOR.Game.Server.Perk.ForceSense
 
                 if (_.GetIsReactionTypeHostile(targetCreature, creature) == true)
                 {
-                    effect = _.EffectACDecrease(0);
+                    effect = _.EffectACDecrease(amount);
                     effect = _.EffectLinkEffects(effect, _.EffectAttackDecrease(amount));
                 }
                 else
                 {
-                    effect = _.EffectACIncrease(0);
+                    effect = _.EffectACIncrease(amount);
                     effect = _.EffectLinkEffects(effect, _.EffectAttackIncrease(amount));
                 }
 
                 _.ApplyEffectToObject(DurationType.Temporary, effect, targetCreature, 6.1f);
                 _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Dur_Magic_Resistance), targetCreature);
-                
+
+                if (creature.IsPlayer)
+                {
+                    SkillService.RegisterPCToAllCombatTargetsForSkill(creature.Object, SkillType.ForceSense, null);
+                }
+
                 nth++;
                 targetCreature = _.GetNearestCreature(CreatureType.IsAlive, 1, creature, nth);
             }

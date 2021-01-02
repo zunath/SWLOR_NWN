@@ -21,12 +21,6 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            if (target.ObjectType != ObjectType.Creature)
-            {
-                user.SendMessage("You may only use stim packs on creatures!");
-                return;
-            }
-
             NWPlayer player = user.Object;
             var ability = (AbilityType)item.GetLocalInt("ABILITY_TYPE");
             int amount = item.GetLocalInt("AMOUNT") + (item.MedicineBonus * 2);
@@ -82,6 +76,11 @@ namespace SWLOR.Game.Server.Item.Medicine
 
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
+            if (target.ObjectType != ObjectType.Creature)
+            {
+                return "You may only use stim packs on creatures!";
+            }
+
             var existing = target.Effects.SingleOrDefault(x => _.GetEffectTag(x) == "STIM_PACK_EFFECT");
 
             if (existing != null && _.GetIsEffectValid(existing) == true)

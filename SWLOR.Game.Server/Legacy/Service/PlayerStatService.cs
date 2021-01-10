@@ -526,45 +526,6 @@ namespace SWLOR.Game.Server.Legacy.Service
             return stats;
         }
 
-        public static float EffectiveResidencyBonus(NWPlayer player)
-        {
-            var dbPlayer = DataService.Player.GetByID(player.GlobalID);
-
-            // Player doesn't have either kind of residence. Return 0f
-            if (dbPlayer.PrimaryResidencePCBaseID == null &&
-                dbPlayer.PrimaryResidencePCBaseStructureID == null) return 0.0f;
-
-            // Two paths for this. Players can either have a primary residence in an apartment which is considered a "PCBase".
-            // Or they can have a primary residence in a building which is a child structure contained in an actual PCBase.
-            // We grab the furniture objects differently based on the type.
-
-            List<PCBaseStructure> structures;
-
-            // Apartments - Pull structures directly from the table based on the PCBaseID
-            if (dbPlayer.PrimaryResidencePCBaseID != null)
-            {
-                structures = DataService.PCBaseStructure.GetAllByPCBaseID((Guid)dbPlayer.PrimaryResidencePCBaseID).ToList();
-
-            }
-            // Buildings - Get the building's PCBaseID and then grab its children
-            else if (dbPlayer.PrimaryResidencePCBaseStructureID != null)
-            {
-                structures = DataService.PCBaseStructure.GetAllByParentPCBaseStructureID((Guid)dbPlayer.PrimaryResidencePCBaseStructureID).ToList();
-            }
-            else return 0.0f;
-
-            var atmoStructures = structures.Where(x =>
-            {
-                var baseStructure = DataService.BaseStructure.GetByID(x.BaseStructureID);
-                return baseStructure.HasAtmosphere;
-            }).ToList();
-
-            var bonus = atmoStructures.Sum(x => (x.StructureBonus * 0.02f) + 0.02f);
-
-            if (bonus >= 1.5f) bonus = 1.5f; // Maximum = 250% XP (+150% bonus from residency)
-            return bonus;
-        }
-
         private static int CalculateBAB(NWPlayer oPC, NWItem ignoreItem, EffectiveItemStats stats)
         {
             var weapon = oPC.RightHand;

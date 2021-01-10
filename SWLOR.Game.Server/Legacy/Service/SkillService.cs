@@ -225,10 +225,6 @@ namespace SWLOR.Game.Server.Legacy.Service
         {
             if (skillID <= 0 || xp <= 0 || !oPC.IsPlayer) return;
 
-            if (enableResidencyBonus)
-            {
-                xp = (int)(xp + xp * PlayerStatService.EffectiveResidencyBonus(oPC));
-            }
             var player = DataService.Player.GetByID(oPC.GlobalID);
             var skill = GetSkill(skillID);
 

@@ -164,7 +164,6 @@ namespace SWLOR.Game.Server.Legacy.Service
             SetLocalString(instance, "INSTANCE_OWNER", owner.GlobalID.ToString());
             SetLocalString(instance, "ORIGINAL_RESREF", areaResref);
             SetLocalBool(instance, "IS_AREA_INSTANCE", true);
-            BaseService.RegisterAreaStructures(instance);
 
             NWObject searchByObject = GetFirstObjectInArea(instance);
             NWObject entranceWP;

@@ -72,7 +72,6 @@ namespace SWLOR.Game.Server.Legacy.Service
             }
 
             if (ChatCommandService.CanHandleChat(sender, message) ||
-                BaseService.CanHandleChat(sender) ||
                 MessageBoardService.CanHandleChat(sender) ||
                 ItemService.CanHandleChat(sender))
             {

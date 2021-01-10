@@ -17,7 +17,6 @@ namespace SWLOR.Game.Server.Legacy
         public static Dictionary<int, bool> DialogFilesInUse { get; }
         public static Dictionary<Guid, CreatureSkillRegistration> CreatureSkillRegistrations;
         public static Dictionary<CasterSpellVO, int> NPCEffects { get; }
-        public static Queue<string> UnregisterProcessingEvents { get; set; }
         public static Dictionary<Guid, EnmityTable> NPCEnmityTables { get; set; }
         public static Dictionary<Guid, CustomData> CustomObjectData { get; set; } 
         public static List<Guid> PCEffectsForRemoval { get; set; }

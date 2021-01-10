@@ -31,8 +31,6 @@ namespace SWLOR.Game.Server.Legacy.Service
         public static BaseStructureCache BaseStructure { get; } = new BaseStructureCache();
         public static BaseStructureTypeCache BaseStructureType { get; } = new BaseStructureTypeCache();
         public static BugReportCache BugReport { get; } = new BugReportCache();
-        public static BuildingStyleCache BuildingStyle { get; } = new BuildingStyleCache();
-        public static BuildingTypeCache BuildingType { get; } = new BuildingTypeCache();
         public static ChatChannelCache ChatChannel { get; } = new ChatChannelCache();
         public static ChatLogCache ChatLog { get; } = new ChatLogCache();
         public static ClientLogEventCache ClientLogEvent { get; } = new ClientLogEventCache();
@@ -65,17 +63,10 @@ namespace SWLOR.Game.Server.Legacy.Service
         public static MarketCategoryCache MarketCategory { get; } = new MarketCategoryCache();
         public static MessageCache Message { get; } = new MessageCache();
         public static NPCGroupCache NPCGroup { get; } = new NPCGroupCache();
-        public static PCBaseCache PCBase { get; } = new PCBaseCache();
-        public static PCBasePermissionCache PCBasePermission { get; } = new PCBasePermissionCache();
-        public static PCBaseStructureCache PCBaseStructure { get; } = new PCBaseStructureCache();
-        public static PCBaseStructureItemCache PCBaseStructureItem { get; } = new PCBaseStructureItemCache();
-        public static PCBaseStructurePermissionCache PCBaseStructurePermission { get; } = new PCBaseStructurePermissionCache();
-        public static PCBaseTypeCache PCBaseType { get; } = new PCBaseTypeCache();
         public static PCCooldownCache PCCooldown { get; } = new PCCooldownCache();
         public static PCCraftedBlueprintCache PCCraftedBlueprint { get; } = new PCCraftedBlueprintCache();
         public static PCCustomEffectCache PCCustomEffect { get; } = new PCCustomEffectCache();
         public static PCGuildPointCache PCGuildPoint { get; } = new PCGuildPointCache();
-        public static PCImpoundedItemCache PCImpoundedItem { get; } = new PCImpoundedItemCache();
         public static PCKeyItemCache PCKeyItem { get; } = new PCKeyItemCache();
         public static PCMapPinCache PCMapPin { get; } = new PCMapPinCache();
         public static PCMapProgressionCache PCMapProgression { get; } = new PCMapProgressionCache();
@@ -229,7 +220,6 @@ namespace SWLOR.Game.Server.Legacy.Service
             LoadCache<PCCraftedBlueprint>();
             LoadCache<PCCustomEffect>();
 
-            LoadPCImpoundedItemsCache();
             LoadCache<PCGuildPoint>();
             LoadCache<PCKeyItem>();
             LoadCache<PCMapPin>();
@@ -281,23 +271,6 @@ namespace SWLOR.Game.Server.Legacy.Service
             foreach (var result in results)
             {
                 MessageHub.Instance.Publish(new OnCacheObjectSet<PCMarketListing>(result));
-            }
-        }
-
-        /// <summary>
-        /// PC Impounded Items should only be loaded into the cache if they:
-        /// 1.) Haven't been retrieved.
-        /// 2.) Haven't expired (30 days after the date they were impounded.)
-        /// Should be called in the InitializeCache() method one time.
-        /// </summary>
-        private static void LoadPCImpoundedItemsCache()
-        {
-            const string Sql = "SELECT * FROM PCImpoundedItem WHERE DateRetrieved IS NULL AND UTC_DATE() < DATE_ADD(CAST(DateImpounded AS DATE), INTERVAL 30 DAY)";
-
-            var results = Connection.Query<PCImpoundedItem>(Sql);
-            foreach (var result in results)
-            {
-                MessageHub.Instance.Publish(new OnCacheObjectSet<PCImpoundedItem>(result));
             }
         }
 

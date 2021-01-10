@@ -74,9 +74,6 @@ namespace SWLOR.Game.Server.Legacy.Event.Conversation
                 SetLocalBool(restrictedLevel, "IS_AREA_INSTANCE", true);
                 SetLocalBool(mainLevel, "IS_AREA_INSTANCE", true);
                 SetLocalBool(directorsChambers, "IS_AREA_INSTANCE", true);
-                BaseService.RegisterAreaStructures(restrictedLevel);
-                BaseService.RegisterAreaStructures(mainLevel);
-                BaseService.RegisterAreaStructures(directorsChambers);
 
                 // Notify of instance creation
                 MessageHub.Instance.Publish(new OnAreaInstanceCreated(restrictedLevel));

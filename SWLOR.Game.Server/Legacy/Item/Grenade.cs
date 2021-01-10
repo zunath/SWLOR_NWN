@@ -300,7 +300,7 @@ namespace SWLOR.Game.Server.Legacy.Item
             SetLocalString(user, "GRENADE_UNLOCKTIME", unlockTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
             //Console.WriteLine("StartUseItem - Current Time = " + now.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
             //Console.WriteLine("StartUseItem - Unlocktime Set To = " + unlockTime.ToString("yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture));
-            if (user.IsCreature) { DurabilityService.RunItemDecay((NWPlayer)user, item, 1.0f); }
+            if (user.IsCreature) { Durability.RunItemDecay((NWPlayer)user, item, 1.0f); }
         }
 
         public void DoImpact(NWCreature user, Location targetLocation, string grenadeType, int perkLevel, float fExplosionRadius, ObjectType nObjectFilter)

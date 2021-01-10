@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Legacy.Item
                 decayMaximum += delta * 0.1f;
             }
 
-            DurabilityService.RunItemDecay(player, item, SWLOR.Game.Server.Service.Random.NextFloat(decayMinimum, decayMaximum));
+            Durability.RunItemDecay(player, item, SWLOR.Game.Server.Service.Random.NextFloat(decayMinimum, decayMaximum));
             var xp = baseXP;
             SkillService.GiveSkillXP(player, SkillType.Harvesting, xp);
 

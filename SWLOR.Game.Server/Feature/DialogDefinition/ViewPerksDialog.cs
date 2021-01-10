@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 GrantFeats();
                 ApplyPurchasePerkTriggers(dbPlayer.Perks[model.SelectedPerk]);
 
-                Events.SignalEvent("FFO_BUY_PERK", player);
+                Events.SignalEvent("SWLOR_BUY_PERK", player);
             }
 
             void GrantFeats()

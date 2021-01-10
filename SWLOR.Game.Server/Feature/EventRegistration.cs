@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Object = SWLOR.Game.Server.Core.NWNX.Object;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -124,7 +125,7 @@ namespace SWLOR.Game.Server.Feature
             Events.SubscribeEvent("NWNX_ON_EXIT_STEALTH_AFTER", "stlex_add_aft");
 
             // Examine events
-            Events.SubscribeEvent("NWNX_ON_EXAMINE_OBJECT_BEFORE", "examine_bef");
+            Events.SubscribeEvent("NWNX_ON_EXAMINE_OBJECT_BEFORE", "examine_reset");
             Events.SubscribeEvent("NWNX_ON_EXAMINE_OBJECT_AFTER", "examine_aft");
 
             // Validate Use Item events
@@ -508,11 +509,29 @@ namespace SWLOR.Game.Server.Feature
                 Events.SignalEvent("APPLICATION_SHUTDOWN", GetModule());
             };
 
-            Events.SubscribeEvent("FFO_BUY_PERK", "ffo_buy_perk");
-            Events.SubscribeEvent("FFO_GAIN_SKILL_POINT", "ffo_gain_skill");
-            Events.SubscribeEvent("FFO_COMPLETE_QUEST", "ffo_complete_qst");
+            Events.SubscribeEvent("SWLOR_BUY_PERK", "swlor_buy_perk");
+            Events.SubscribeEvent("SWLOR_GAIN_SKILL_POINT", "swlor_gain_skill");
+            Events.SubscribeEvent("SWLOR_COMPLETE_QUEST", "swlor_comp_qst");
+            Events.SubscribeEvent("SWLOR_CACHE_SKILLS_LOADED", "swlor_skl_cache");
+            Events.SubscribeEvent("SWLOR_EXAMINE_OBJECT_BEFORE", "examine_bef");
+        }
 
-            Events.SubscribeEvent("FFO_CACHE_SKILLS_LOADED", "ffo_skill_cached");
+        /// <summary>
+        /// When an object is examined, reset the description back to its original text.
+        /// This ensures examine events hooked with the 'examine_bef' event will be able
+        /// to modify the text without respect to the order in which they are called.
+        /// </summary>
+        [NWNEventHandler("examine_reset")]
+        public static void ResetExamineDescription()
+        {
+            var objectId = Events.GetEventData("EXAMINEE_OBJECT_ID");
+            var obj = StringToObject(objectId);
+
+            var description = GetDescription(obj, true) + "\n\n";
+            SetDescription(obj, description);
+            
+            Events.PushEventData("EXAMINEE_OBJECT_ID", objectId);
+            Events.SignalEvent("SWLOR_EXAMINE_OBJECT_BEFORE", OBJECT_SELF);
         }
     }
 }

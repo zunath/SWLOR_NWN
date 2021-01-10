@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Service
             // Send out an event signifying that a player has received a skill rank increase.
             if(receivedRankUp)
             {
-                Events.SignalEvent("FFO_GAIN_SKILL_POINT", player);
+                Events.SignalEvent("SWLOR_GAIN_SKILL_POINT", player);
             }
         }
 

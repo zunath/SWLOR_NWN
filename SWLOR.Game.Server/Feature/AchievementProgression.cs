@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Handles the Buy Perk line of achievements.
         /// </summary>
-        [NWNEventHandler("ffo_buy_perk")]
+        [NWNEventHandler("swlor_buy_perk")]
         public static void BuyPerk()
         {
             var player = OBJECT_SELF;
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Handles the Gain Skill line of achievements.
         /// </summary>
-        [NWNEventHandler("ffo_gain_skill")]
+        [NWNEventHandler("swlor_gain_skill")]
         public static void GainSkillPoint()
         {
             var player = OBJECT_SELF;
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Handles the Complete Quests line of achievements.
         /// </summary>
-        [NWNEventHandler("ffo_complete_qst")]
+        [NWNEventHandler("swlor_comp_qst")]
         public static void CompleteQuests()
         {
             var player = OBJECT_SELF;

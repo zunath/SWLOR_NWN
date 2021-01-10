@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Service
                 _allSkillsByCategory[skillDetail.Category].Add(skillType);
             }
 
-            Events.SignalEvent("FFO_CACHE_SKILLS_LOADED", GetModule());
+            Events.SignalEvent("SWLOR_CACHE_SKILLS_LOADED", GetModule());
             Console.WriteLine("Skill data cached successfully.");
         }
 

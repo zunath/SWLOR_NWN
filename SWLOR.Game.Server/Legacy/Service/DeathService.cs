@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.Event.Module;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Legacy.Service
@@ -43,12 +44,12 @@ namespace SWLOR.Game.Server.Legacy.Service
             for (var index = 0; index < NumberOfInventorySlots; index++)
             {
                 NWItem equipped = GetItemInSlot((InventorySlot)index, player);
-                DurabilityService.RunItemDecay(player, equipped, SWLOR.Game.Server.Service.Random.NextFloat(0.15f, 0.50f));
+                Durability.RunItemDecay(player, equipped, SWLOR.Game.Server.Service.Random.NextFloat(0.15f, 0.50f));
             }
 
             foreach (var item in player.InventoryItems)
             {
-                DurabilityService.RunItemDecay(player, item, SWLOR.Game.Server.Service.Random.NextFloat(0.10f, 0.25f));
+                Durability.RunItemDecay(player, item, SWLOR.Game.Server.Service.Random.NextFloat(0.10f, 0.25f));
             }
         }
 

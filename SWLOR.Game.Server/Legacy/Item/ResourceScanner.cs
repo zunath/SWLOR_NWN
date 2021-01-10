@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Item.Contracts;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
 using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
@@ -28,7 +29,7 @@ namespace SWLOR.Game.Server.Legacy.Item
             if(!string.IsNullOrWhiteSpace(target.GetLocalString("RESOURCE_RESREF")))
             {
                 ScanResource(user, target);
-                DurabilityService.RunItemDecay(player, item, SWLOR.Game.Server.Service.Random.NextFloat(0.05f, 0.1f));
+                Durability.RunItemDecay(player, item, SWLOR.Game.Server.Service.Random.NextFloat(0.05f, 0.1f));
                 effectLocation = target.Location;
             }
             else

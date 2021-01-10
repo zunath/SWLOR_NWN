@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
+using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Legacy.Service
 {
@@ -45,9 +46,9 @@ namespace SWLOR.Game.Server.Legacy.Service
                     sourceTag = "rslot_prismatic";
                     break;
                 case ComponentBonusType.DurabilityUp:
-                    var maxDur = DurabilityService.GetMaxDurability(product) + amount;
-                    DurabilityService.SetMaxDurability(product, maxDur);
-                    DurabilityService.SetDurability(product, maxDur);
+                    var maxDur = Durability.GetMaxDurability(product) + amount;
+                    Durability.SetMaxDurability(product, maxDur);
+                    Durability.SetDurability(product, maxDur);
                     break;
                 case ComponentBonusType.ChargesUp:
                     product.Charges += amount;

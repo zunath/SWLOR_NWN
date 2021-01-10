@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Item.Contracts;
 using SWLOR.Game.Server.Legacy.Service;
 using SWLOR.Game.Server.Legacy.ValueObject;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using PerkType = SWLOR.Game.Server.Legacy.Enumeration.PerkType;
 using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
@@ -64,7 +65,7 @@ namespace SWLOR.Game.Server.Legacy.Item
             else if (delta == -3) baseXP = 50;
             else if (delta == -4) baseXP = 25;
             SkillService.GiveSkillXP(user.Object, skillType, baseXP);
-            DurabilityService.RunItemRepair(user.Object, target.Object, repairAmount, reductionAmount + maxDurabilityReductionPenalty);
+            Durability.RunItemRepair(user.Object, target.Object, repairAmount, reductionAmount + maxDurabilityReductionPenalty);
         }
 
         private static SkillType GetSkillType(NWItem item)
@@ -131,8 +132,8 @@ namespace SWLOR.Game.Server.Legacy.Item
         public string IsValidTarget(NWCreature user, NWItem item, NWObject target, Location targetLocation)
         {
             NWItem targetItem = target.Object;
-            var maxDurability = DurabilityService.GetMaxDurability(targetItem);
-            var durability = DurabilityService.GetDurability(targetItem);
+            var maxDurability = Durability.GetMaxDurability(targetItem);
+            var durability = Durability.GetDurability(targetItem);
 
             if (target.ObjectType != ObjectType.Item)
             {

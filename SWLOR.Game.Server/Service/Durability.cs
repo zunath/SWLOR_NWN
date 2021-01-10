@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -121,16 +122,10 @@ namespace SWLOR.Game.Server.Service
             SendMessageToPC(player, ColorToken.Green("You repaired your " + GetName(item) + ". (" + durMessage + ")"));
         }
 
-        /// <summary>
-        /// Runs through the item repair process for a given player and item.
-        /// </summary>
-        /// <param name="player">The player doing the repair.</param>
-        /// <param name="item">The item being repaired.</param>
-        /// <param name="reduceAmount">The amount to restore by.</param>
-        public static void RunItemDecay(uint player, uint item, float reduceAmount)
+        private static bool HasDurability(uint player, uint item)
         {
             var itemType = GetBaseItemType(item);
-            if (reduceAmount <= 0) return;
+            
             if (GetPlotFlag(player) ||
                 GetPlotFlag(item) ||
                 GetLocalBool(item, "UNBREAKABLE") ||
@@ -140,8 +135,22 @@ namespace SWLOR.Game.Server.Service
                 itemType == BaseItem.CreaturePierceWeapon ||  // Creature piercing weapon
                 itemType == BaseItem.CreatureSlashWeapon ||  // Creature slashing weapon
                 itemType == BaseItem.CreatureSlashPierceWeapon)    // Creature slashing/piercing weapon
-                return;
+                return false;
 
+            return true;
+        }
+        
+        /// <summary>
+        /// Runs through the item repair process for a given player and item.
+        /// </summary>
+        /// <param name="player">The player doing the repair.</param>
+        /// <param name="item">The item being repaired.</param>
+        /// <param name="reduceAmount">The amount to restore by.</param>
+        public static void RunItemDecay(uint player, uint item, float reduceAmount)
+        {
+            if (reduceAmount <= 0) return;
+            if (!HasDurability(player, item)) return;
+            
             var durability = GetDurability(item);
             var sItemName = GetName(item);
             var apr = Creature.GetAttacksPerRound(player, true);
@@ -255,5 +264,51 @@ namespace SWLOR.Game.Server.Service
             InitializeDurability(item);
             SetLocalFloat(item, "DURABILITY_CURRENT", value);
         }
+
+        /// <summary>
+        /// When an item is examined, display the durability on the description.
+        /// </summary>
+        [NWNEventHandler("examine_bef")]
+        public static void AdjustItemDescription()
+        {
+            var item = StringToObject(Events.GetEventData("EXAMINEE_OBJECT_ID"));
+            if (GetObjectType(item) != ObjectType.Item) return;
+
+            var description = GetDescription(item);
+            var maxDurability = GetMaxDurability(item);
+            var durability = GetDurability(item);
+
+            description += ColorToken.Orange("Durability: ");
+            if (durability <= 0.0f)
+                description += ColorToken.Red(Convert.ToString(durability, CultureInfo.InvariantCulture));
+            else
+                description += ColorToken.White(FormatDurability(durability));
+
+            description += ColorToken.White(" / " + FormatDurability(maxDurability)) + "\n";
+
+            SetDescription(item, description);
+        }
+
+        /// <summary>
+        /// When an item is equipped and it has durability, check if its durability is zero.
+        /// If it is zero or less, prevent it from being equipped by the player.
+        /// </summary>
+        [NWNEventHandler("item_eqp_bef")]
+        public static void EquipItem()
+        {
+            var player = OBJECT_SELF;
+            if (!GetIsPC(player) || GetIsDM(player)) return;
+            
+            var item = StringToObject(Events.GetEventData("ITEM"));
+            if (!HasDurability(player, item)) return;
+
+            var durability = GetDurability(item);
+            if (durability <= 0)
+            {
+                Events.SkipEvent();
+                FloatingTextStringOnCreature(ColorToken.Red("That item is broken and must be repaired before you can use it."), player, false);
+            }
+        }
+        
     }
 }

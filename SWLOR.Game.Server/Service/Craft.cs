@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the skill cache has finished loading, recipe and category data is cached.
         /// </summary>
-        [NWNEventHandler("ffo_skill_cached")]
+        [NWNEventHandler("swlor_skl_cache")]
         public static void CacheData()
         {
             CacheCategories();

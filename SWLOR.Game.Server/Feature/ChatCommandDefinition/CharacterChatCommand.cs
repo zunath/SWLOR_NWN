@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Dialog = SWLOR.Game.Server.Service.Dialog;
+using HoloCom = SWLOR.Game.Server.Service.HoloCom;
 using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
@@ -57,10 +58,20 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     Dialog.StartConversation(user, user, nameof(ViewSkillsDialog));
                 });
 
+            builder.Create("endcall")
+                .Description("Ends your current HoloCom call.")
+                .Permissions(AuthorizationLevel.Player, AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Action((user, target, location, args) =>
+                {
+                    HoloCom.SetIsInCall(user, HoloCom.GetCallReceiver(user), false);
+                });
+            
             DeleteCommand(builder);
             LanguageCommand(builder);
             CustomizeCommand(builder);
             ToggleHelmet(builder);
+            ToggleEmoteStyle(builder);
+            ToggleHolonet(builder);
 
             return builder.Build();
         }
@@ -241,6 +252,45 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
+        private static void ToggleEmoteStyle(ChatCommandBuilder builder)
+        {
+            builder.Create("emotestyle")
+                .Description("Toggles your emote style between regular and novel.")
+                .Permissions(AuthorizationLevel.Player)
+                .Action((user, target, location, args) =>
+                {
+                    var curStyle = Communication.GetEmoteStyle(user);
+                    var newStyle = curStyle == EmoteStyle.Novel ? EmoteStyle.Regular : EmoteStyle.Novel;
+                    Communication.SetEmoteStyle(user, newStyle);
+                    SendMessageToPC(user, $"Toggled emote style to {newStyle}.");
+                });
+        }
 
+        private static void ToggleHolonet(ChatCommandBuilder builder)
+        {
+            builder.Create("toggleholonet")
+                .Description("Enables or disables holonet chat channel.")
+                .Permissions(AuthorizationLevel.Player)
+                .Action((user, target, location, args) =>
+                {
+                    var playerId = GetObjectUUID(user);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    dbPlayer.IsHolonetEnabled = !dbPlayer.IsHolonetEnabled;
+                    DB.Set(playerId, dbPlayer);
+                    
+                    SetLocalBool(user, "DISPLAY_HOLONET", dbPlayer.IsHolonetEnabled);
+
+                    if (dbPlayer.IsHolonetEnabled)
+                    {
+                        SendMessageToPC(user, $"Holonet chat: {ColorToken.Green("ENABLED")}");
+                    }
+                    else
+                    {
+                        SendMessageToPC(user, $"Holonet chat: {ColorToken.Red("DISABLED")}");
+                    }
+                    
+                });
+        }
+        
     }
 }

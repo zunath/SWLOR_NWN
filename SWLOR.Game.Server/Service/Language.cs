@@ -165,7 +165,7 @@ namespace SWLOR.Game.Server.Service
             return textAsForeignLanguage;
         }
 
-        public static int GetColour(SkillType language)
+        public static int GetColor(SkillType language)
         {
             byte r = 0;
             byte g = 0;

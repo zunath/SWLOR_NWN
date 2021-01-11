@@ -30,6 +30,8 @@ namespace SWLOR.Game.Server.Entity
                 {AbilityType.Wisdom, 0f}
             };
             ShowHelmet = true;
+            IsHolonetEnabled = true;
+            EmoteStyle = EmoteStyle.Regular;
             MapPins = new Dictionary<string, List<MapPin>>();
             MapProgressions = new Dictionary<string, string>();
             RoleplayProgress = new RoleplayProgress();
@@ -75,6 +77,8 @@ namespace SWLOR.Game.Server.Entity
         public bool ShowHelmet { get; set; }
         public DateTime? DatePerkRefundAvailable { get; set; }
         public CharacterType CharacterType { get; set; }
+        public bool IsHolonetEnabled { get; set; }
+        public EmoteStyle EmoteStyle { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }

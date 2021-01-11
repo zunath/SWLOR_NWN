@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Legacy.Enumeration
+﻿namespace SWLOR.Game.Server.Enumeration
 {
     public enum EmoteStyle
     {

@@ -78,10 +78,10 @@ namespace SWLOR.Game.Server.Feature
             var player = Chat.GetSender();
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
-            string message = Chat.GetMessage().Trim();
-            DateTime now = DateTime.UtcNow;
+            var message = Chat.GetMessage().Trim();
+            var now = DateTime.UtcNow;
 
-            bool isInCharacterChat =
+            var isInCharacterChat =
                 channel == ChatChannel.PlayerTalk ||
                 channel == ChatChannel.PlayerWhisper ||
                 channel == ChatChannel.PlayerParty ||
@@ -101,14 +101,14 @@ namespace SWLOR.Game.Server.Feature
             var dbPlayer = DB.Get<Player>(playerID);
 
             // Spam prevention
-            string timestampString = GetLocalString(player, RPTimestampVariable);
+            var timestampString = GetLocalString(player, RPTimestampVariable);
             SetLocalString(player, RPTimestampVariable, now.ToString(CultureInfo.InvariantCulture));
 
             // If there was a timestamp then we'll check for spam and prevent it from counting towards
             // the RP XP points.
             if (!string.IsNullOrWhiteSpace(timestampString))
             {
-                DateTime lastSend = DateTime.Parse(timestampString);
+                var lastSend = DateTime.Parse(timestampString);
                 if (now <= lastSend.AddSeconds(1))
                 {
                     dbPlayer.RoleplayProgress.SpamMessageCount++;
@@ -132,42 +132,37 @@ namespace SWLOR.Game.Server.Feature
         /// <returns>true if the player can receive an RP point, false otherwise</returns>
         private static bool CanReceiveRPPoint(uint player, ChatChannel channel)
         {
-            var playerID = GetObjectUUID(player);
+            var playerId = GetObjectUUID(player);
 
             // Party - Must be in a party with another PC.
             if (channel == ChatChannel.PlayerParty)
             {
-                var partyMember = GetFirstFactionMember(player);
-                while (GetIsObjectValid(partyMember))
+                for (var member = GetFirstFactionMember(player); GetIsObjectValid(member); member = GetNextFactionMember(player))
                 {
-                    if ( GetObjectUUID(partyMember) == playerID) continue;
+                    if (GetObjectUUID(member) == playerId) continue;
                     return true;
                 }
-
+                
                 return false;
             }
 
-            var currentPlayer = GetFirstPC();
-            while (GetIsObjectValid(currentPlayer))
+            for (var currentPlayer = GetFirstPC(); GetIsObjectValid(currentPlayer); currentPlayer = GetNextPC())
             {
                 float distance;
                 if (channel == ChatChannel.PlayerTalk)
                 {
                     distance = 20.0f;
                 }
-
-                if (channel == ChatChannel.PlayerWhisper)
+                else if (channel == ChatChannel.PlayerWhisper)
                 {
                     distance = 4.0f;
                 }
                 else break;
-
+                
                 if (GetDistanceBetween(player, currentPlayer) <= distance)
                 {
                     return true;
                 }
-
-                currentPlayer = GetNextPC();
             }
 
             return false;

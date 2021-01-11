@@ -9,13 +9,13 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Sends a chat message. Channel is a NWNX_* constant.
         // If no target is provided, then it broadcasts to all eligible targets.
         // Returns true if successful, false otherwise.
-        public static int SendMessage(int channel, string message, uint sender, uint target)
+        public static int SendMessage(ChatChannel channel, string message, uint sender, uint target)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SendMessage");
             Internal.NativeFunctions.nwnxPushObject(target);
             Internal.NativeFunctions.nwnxPushObject(sender);
             Internal.NativeFunctions.nwnxPushString(message);
-            Internal.NativeFunctions.nwnxPushInt(channel);
+            Internal.NativeFunctions.nwnxPushInt((int)channel);
             Internal.NativeFunctions.nwnxCallFunction();
             return Internal.NativeFunctions.nwnxPopInt();
         }

@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Service
             var requiredXP = GetRequiredXP(pcSkill.Rank);
             var receivedRankUp = false;
 
-            int debtRemoved = 0;
+            var debtRemoved = 0;
             if (dbPlayer.XPDebt > 0)
             {
                 if (xp >= dbPlayer.XPDebt)
@@ -62,7 +62,6 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            pcSkill.XP += xp;
 
             if (debtRemoved > 0)
             {
@@ -74,7 +73,12 @@ namespace SWLOR.Game.Server.Service
             {
                 SendMessageToPC(player, $"You earned {details.Name} skill experience. ({xp})");
             }
-
+            else
+            {
+                return;
+            }
+            
+            pcSkill.XP += xp;
             // Skill is at cap and player would level up.
             // Reduce XP to required amount minus 1 XP.
             if (pcSkill.Rank >= details.MaxRank && pcSkill.XP > requiredXP)

@@ -43,9 +43,9 @@ namespace SWLOR.Game.Server.Feature
         public static void OnPlayerRespawn()
         {
             var player = GetLastRespawnButtonPresser();
-            int maxHP = GetMaxHitPoints(player);
+            var maxHP = GetMaxHitPoints(player);
 
-            int amount = maxHP / 2;
+            var amount = maxHP / 2;
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), player);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), player);
 
@@ -110,8 +110,8 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player to teleport</param>
         private static void SendToHomePoint(uint player)
         {
-            var playerID = GetObjectUUID(player);
-            var entity = DB.Get<Player>(playerID);
+            var playerId = GetObjectUUID(player);
+            var entity = DB.Get<Player>(playerId);
             var area = Cache.GetAreaByResref(entity.RespawnAreaResref);
             var position = Vector3(
                 entity.RespawnLocationX,
@@ -131,7 +131,18 @@ namespace SWLOR.Game.Server.Feature
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-            dbPlayer.XPDebt = dbPlayer.TotalSPAcquired * 50;
+            int multiplier;
+
+            if (dbPlayer.TotalSPAcquired >= 300)
+                multiplier = 300;
+            else if (dbPlayer.TotalSPAcquired >= 200)
+                multiplier = 200;
+            else if (dbPlayer.TotalSPAcquired >= 50)
+                multiplier = 100;
+            else
+                multiplier = 50;
+            
+            dbPlayer.XPDebt = dbPlayer.TotalSPAcquired * multiplier;
             DB.Set(playerId, dbPlayer);
 
             return dbPlayer.XPDebt;

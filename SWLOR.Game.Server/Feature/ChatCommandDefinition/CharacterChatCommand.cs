@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -88,7 +89,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             ToggleHelmet(builder);
             ToggleEmoteStyle(builder);
             ToggleHolonet(builder);
-
+            ChangeItemName(builder);
+            ChangeItemDescription(builder);
+            ChangePlayerDescription(builder);
+            
             return builder.Build();
         }
 
@@ -305,6 +309,81 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         SendMessageToPC(user, $"Holonet chat: {ColorToken.Red("DISABLED")}");
                     }
                     
+                });
+        }
+
+        private static void ChangeItemName(ChatCommandBuilder builder)
+        {
+            builder.Create("changeitemname", "itemname")
+                .Description("Changes the name of an item in your inventory. Example: /changeitemname New Name")
+                .Permissions(AuthorizationLevel.Player, AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsObjectValid(target) ||
+                        GetItemPossessor(target) != user ||
+                        GetObjectType(target) != ObjectType.Item)
+                    {
+                        SendMessageToPC(user, "Only items in your inventory may be targeted with this command.");
+                        return;
+                    }
+
+                    var sb = new StringBuilder();
+
+                    foreach (var arg in args)
+                    {
+                        sb.Append(' ').Append(arg);
+                    }
+
+                    SetName(target, sb.ToString());
+                    SendMessageToPC(user, "New name set!");
+                });
+        }
+
+        private static void ChangeItemDescription(ChatCommandBuilder builder)
+        {
+            builder.Create("changeitemdescription", "itemdesc")
+                .Description("Changes the description of an item in your inventory. Example: /changeitemdescription New Name")
+                .Permissions(AuthorizationLevel.Player, AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsObjectValid(target) ||
+                        GetItemPossessor(target) != user ||
+                        GetObjectType(target) != ObjectType.Item)
+                    {
+                        SendMessageToPC(user, "Only items in your inventory may be targeted with this command.");
+                        return;
+                    }
+                    
+                    var sb = new StringBuilder();
+
+                    foreach (var arg in args)
+                    {
+                        sb.Append(' ').Append(arg);
+                    }
+
+                    SetDescription(target, sb.ToString());
+                    SendMessageToPC(user, "New description set!");
+                });
+        }
+
+        private static void ChangePlayerDescription(ChatCommandBuilder builder)
+        {
+            builder.Create("changeplayerdescription", "mydesc")
+                .Description("Changes your character's description. Example: /changedescription My new description.")
+                .Permissions(AuthorizationLevel.Player, AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Action((user, target, location, args) =>
+                {
+                    var sb = new StringBuilder();
+                    
+                    foreach (var arg in args)
+                    {
+                        sb.Append(' ').Append(arg);
+                    }
+
+                    SetDescription(user, sb.ToString());
+                    SendMessageToPC(user, "New description set!");
                 });
         }
         

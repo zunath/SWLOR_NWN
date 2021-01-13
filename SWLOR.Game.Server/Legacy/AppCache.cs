@@ -17,10 +17,8 @@ namespace SWLOR.Game.Server.Legacy
         public static Dictionary<int, bool> DialogFilesInUse { get; }
         public static Dictionary<Guid, CreatureSkillRegistration> CreatureSkillRegistrations;
         public static Dictionary<CasterSpellVO, int> NPCEffects { get; }
-        public static Dictionary<Guid, EnmityTable> NPCEnmityTables { get; set; }
         public static Dictionary<Guid, CustomData> CustomObjectData { get; set; } 
         public static List<Guid> PCEffectsForRemoval { get; set; }
-        public static List<NWObject> ConnectedDMs { get; set; }
         public static Dictionary<Guid, Dictionary<int, int>> PlayerEffectivePerkLevels { get; set; }
 
         static AppCache()
@@ -29,10 +27,8 @@ namespace SWLOR.Game.Server.Legacy
             DialogFilesInUse = new Dictionary<int, bool>();
             CreatureSkillRegistrations = new Dictionary<Guid, CreatureSkillRegistration>();
             NPCEffects = new Dictionary<CasterSpellVO, int>();
-            NPCEnmityTables = new Dictionary<Guid, EnmityTable>();
             CustomObjectData = new Dictionary<Guid, CustomData>();
             PCEffectsForRemoval = new List<Guid>();
-            ConnectedDMs = new List<NWObject>();
             PlayerEffectivePerkLevels = new Dictionary<Guid, Dictionary<int, int>>();
 
             for (var x = 1; x <= DialogService.NumberOfDialogs; x++)
@@ -53,24 +49,13 @@ namespace SWLOR.Game.Server.Legacy
             player.SendMessage("DialogFilesInUse: " + DialogFilesInUse.Count);
             player.SendMessage("CreatureSkillRegistrations: " + CreatureSkillRegistrations.Count);
             player.SendMessage("NPCEffects: " + NPCEffects.Count);
-            player.SendMessage("NPCEnmityTables: " + NPCEnmityTables.Count);
             player.SendMessage("CustomObjectData: " + CustomObjectData.Count);
             player.SendMessage("PCEffectsForRemoval: " + PCEffectsForRemoval.Count);
-            player.SendMessage("ConnectedDMs: " + ConnectedDMs.Count);
             player.SendMessage("PlayerEffectivePerkLevels: " + PlayerEffectivePerkLevels.Count);
         }
 
         private static void Clean()
         {
-            for(var index = NPCEnmityTables.Count-1; index >= 0; index--)
-            {
-                var npcTable = NPCEnmityTables.ElementAt(index);
-                if (!npcTable.Value.NPCObject.IsValid)
-                {
-                    NPCEnmityTables.Remove(npcTable.Key);
-                }
-            }
-            
             for(var index = CustomObjectData.Count-1; index >= 0; index--)
             {
                 var customData = CustomObjectData.ElementAt(index);

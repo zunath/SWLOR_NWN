@@ -182,15 +182,15 @@ namespace SWLOR.Game.Server.Legacy.Service
                 if (GetDistanceBetween(player.Object, creature.Object) > 20.0f) break;
 
                 // Check NPC's enmity table 
-                var enmityTable = EnmityService.GetEnmityTable(creature);
-                foreach (var member in members)
-                {
-                    if (enmityTable.ContainsKey(member.GlobalID) || (target != null && target.IsValid && target == creature))
-                    {
-                        RegisterPCToNPCForSkill(player, creature, skillID);
-                        break;
-                    }
-                }
+                //var enmityTable = EnmityService.GetEnmityTable(creature);
+                //foreach (var member in members)
+                //{
+                //    if (enmityTable.ContainsKey(member.GlobalID) || (target != null && target.IsValid && target == creature))
+                //    {
+                //        RegisterPCToNPCForSkill(player, creature, skillID);
+                //        break;
+                //    }
+                //}
 
                 nth++;
                 creature = GetNearestCreature(CreatureType.IsAlive, 1, player.Object, nth, (int)CreatureType.PlayerCharacter, 0);

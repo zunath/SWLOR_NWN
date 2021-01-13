@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
@@ -157,8 +159,11 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             SetLocalVariable(builder);
             SetPortrait(builder);
             SpawnItem(builder);
-
-
+            GiveRPXP(builder);
+            ResetPerkCooldown(builder);
+            PlayVFX(builder);
+            ResetAbilityRecastTimers(builder);
+            
             return builder.Build();
         }
 
@@ -416,6 +421,140 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     SetIdentified(item, true);
+                });
+        }
+
+        private static void GiveRPXP(ChatCommandBuilder builder)
+        {
+            const int MaxAmount = 10000;
+            
+            builder.Create("giverpxp")
+                .Description("Gives Roleplay XP to a target player.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .RequiresTarget()
+                .Validate((user, args) =>
+                {
+                    // Missing an amount argument?
+                    if (args.Length <= 0)
+                    {
+                        return "Please specify an amount of RP XP to give. Valid range: 1-" + MaxAmount;
+                    }
+
+                    // Can't parse the amount?
+                    if (!int.TryParse(args[0], out var amount))
+                    {
+                        return "Please specify a valid amount between 1 and " + MaxAmount + ".";
+                    }
+
+                    // Amount is outside of our allowed range?
+                    if (amount < 1 || amount > MaxAmount)
+                    {
+                        return "Please specify a valid amount between 1 and " + MaxAmount + ".";
+                    }
+                    
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsPC(target) || GetIsDM(target))
+                    {
+                        SendMessageToPC(user, "Only players may be targeted with this command.");
+                        return;
+                    }
+
+                    var amount = int.Parse(args[0]);
+                    var playerId = GetObjectUUID(target);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    dbPlayer.UnallocatedXP += amount;
+                    
+                    DB.Set(playerId, dbPlayer);
+                    SendMessageToPC(target, $"A DM has awarded you with {amount} roleplay XP.");
+                });
+        }
+
+        private static void ResetPerkCooldown(ChatCommandBuilder builder)
+        {
+            builder.Create("resetperkcooldown")
+                .Description("Resets a player's perk refund cooldowns.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsPC(target) || GetIsDM(target))
+                    {
+                        SendMessageToPC(user, "Only players may be targeted with this command.");
+                        return;
+                    }
+
+                    var playerId = GetObjectUUID(target);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow;
+
+                    DB.Set(playerId, dbPlayer);
+                    SendMessageToPC(target, $"A DM has reset your perk refund cooldown.");
+                });
+        }
+
+        private static void PlayVFX(ChatCommandBuilder builder)
+        {
+            builder.Create("playvfx")
+                .Description("Plays a visual effect from visualeffects.2da.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .RequiresTarget()
+                .Validate((user, args) =>
+                {
+                    if (args.Length < 1)
+                    {
+                        return "Enter the ID from visauleffects.2da. Example: /playvfx 123";
+                    }
+
+                    if (!int.TryParse(args[0], out var vfxId))
+                    {
+                        return "Enter the ID from visauleffects.2da. Example: /playvfx 123";
+                    }
+
+                    try
+                    {
+                        var unused = (VisualEffect) vfxId;
+                    }
+                    catch
+                    {
+                        return "Enter the ID from visauleffects.2da. Example: /playvfx 123";
+                    }
+                    
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    var vfxId = Convert.ToInt32(args[0]);
+                    var vfx = (VisualEffect) vfxId;
+                    var effect = EffectVisualEffect(vfx);
+                    ApplyEffectToObject(DurationType.Instant, effect, target);
+                });
+        }
+
+        private static void ResetAbilityRecastTimers(ChatCommandBuilder builder)
+        {
+            builder.Create("resetcooldown", "resetcooldowns")
+                .Description("Resets a player's ability cooldowns.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsPC(target) || GetIsDM(target))
+                    {
+                        SendMessageToPC(target, "Only players may be targeted with this command.");
+                        return;
+                    }
+
+                    var targetName = GetName(target);
+                    var playerId = GetObjectUUID(target);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    dbPlayer.RecastTimes.Clear();
+                    DB.Set(playerId, dbPlayer);
+                    
+                    SendMessageToPC(user, $"You have reset all of {targetName}'s cooldowns.");
+                    SendMessageToPC(target, "A DM has reset all of your cooldowns.");
                 });
         }
     }

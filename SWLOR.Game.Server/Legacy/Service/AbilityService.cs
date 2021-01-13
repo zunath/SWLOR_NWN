@@ -477,12 +477,12 @@ namespace SWLOR.Game.Server.Legacy.Service
             switch ((EnmityAdjustmentRuleType)perk.EnmityAdjustmentRuleID)
             {
                 case EnmityAdjustmentRuleType.AllTaggedTargets:
-                    EnmityService.AdjustEnmityOnAllTaggedCreatures(attacker, perk.Enmity);
+                    //EnmityService.AdjustEnmityOnAllTaggedCreatures(attacker, perk.Enmity);
                     break;
                 case EnmityAdjustmentRuleType.TargetOnly:
                     if (target.IsValid)
                     {
-                        EnmityService.AdjustEnmity(target, attacker, perk.Enmity);
+                        //EnmityService.AdjustEnmity(target, attacker, perk.Enmity);
                     }
                     break;
                 case EnmityAdjustmentRuleType.Custom:

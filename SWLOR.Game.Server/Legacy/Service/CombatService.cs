@@ -279,7 +279,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 
                 if (target.IsNPC)
                 {
-                    EnmityService.AdjustEnmity(target, player, 5 * data.Base);
+                    //EnmityService.AdjustEnmity(target, player, 5 * data.Base);
                 }
 
                 Damage.SetDamageEventData(data);

@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Legacy.Event.Item
                 Events.SkipEvent();
             }
 
-            MessageHub.Instance.Publish(new OnItemDecrementStack(), false);
+            //MessageHub.Instance.Publish(new OnItemDecrementStack(), false);
         }
 
         public static void UseItemAfter()

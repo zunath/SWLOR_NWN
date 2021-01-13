@@ -65,7 +65,23 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     HoloCom.SetIsInCall(user, HoloCom.GetCallReceiver(user), false);
                 });
-            
+
+            builder.Create("recipe", "recipes")
+                .Description("Opens the recipes menu.")
+                .Permissions(AuthorizationLevel.Player)
+                .Action((user, target, location, args) =>
+                {
+                    Dialog.StartConversation(user, user, nameof(RecipeDialog));
+                });
+
+            builder.Create("perk", "perks")
+                .Description("Opens the perks menu.")
+                .Permissions(AuthorizationLevel.Player)
+                .Action((user, target, location, args) =>
+                {
+                    Dialog.StartConversation(user, user, nameof(ViewPerksDialog));
+                });
+
             DeleteCommand(builder);
             LanguageCommand(builder);
             CustomizeCommand(builder);

@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Legacy.Event.Feat
         [NWNEventHandler("swlor_craft")]
         public static void UseCraftingFeat()
         {
-            MessageHub.Instance.Publish(new OnUseCraftingFeat());
+            //MessageHub.Instance.Publish(new OnUseCraftingFeat());
         }
 
         [NWNEventHandler("onhit_castspell")]

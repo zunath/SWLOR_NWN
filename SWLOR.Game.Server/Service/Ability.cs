@@ -14,17 +14,21 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<Feat, AbilityDetail> _abilities = new Dictionary<Feat, AbilityDetail>();
 
+        private static readonly Dictionary<uint, Feat> _activeConcentrationAbilities = new Dictionary<uint, Feat>();
+        
         // Recast Group Descriptions
         private static readonly Dictionary<RecastGroup, string> _recastDescriptions = new Dictionary<RecastGroup, string>();
 
         /// <summary>
-        /// When the module loads, abilities will be cached.
+        /// When the module loads, abilities will be cached and events will be scheduled.
         /// </summary>
         [NWNEventHandler("mod_load")]
-        public static void BuildCaches()
+        public static void OnModuleLoad()
         {
             CacheRecastGroupNames();
             CacheAbilities();
+
+            Scheduler.ScheduleRepeating(ProcessConcentrationEffects, TimeSpan.FromSeconds(1));
         }
 
         private static void CacheAbilities()
@@ -217,6 +221,87 @@ namespace SWLOR.Game.Server.Service
                         return true;
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Each tick, creatures with a concentration effect will be processed.
+        /// This will drain FP and reapply whatever effect is associated with an ability.
+        /// </summary>
+        private static void ProcessConcentrationEffects()
+        {
+            var pairs = _activeConcentrationAbilities.ToList();
+
+            foreach (var (creature, feat) in pairs)
+            {
+                // Creature is dead or invalid.
+                if (!GetIsObjectValid(creature) ||
+                    GetIsDead(creature))
+                {
+                    EndConcentrationAbility(creature);
+                    continue;
+                }
+
+                var ability = GetAbilityDetail(feat);
+                var effectiveLevel = Perk.GetEffectivePerkLevel(creature, ability.EffectiveLevelPerkType);
+                
+                // Move to next creature if requirements aren't met.
+                if (!CanUseAbility(creature, creature, feat, effectiveLevel))
+                {
+                    EndConcentrationAbility(creature);
+                    continue;
+                }
+                
+                ability.ImpactAction?.Invoke(creature, creature, effectiveLevel);
+
+                foreach (var req in ability.Requirements)
+                {
+                    req.AfterActivationAction(creature);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Starts a concentration ability on a specified creature.
+        /// If there is already a concentration ability active, it will be replaced with this one.
+        /// </summary>
+        /// <param name="creature">The creature who will perform the concentration.</param>
+        /// <param name="feat">The type of ability to activate.</param>
+        public static void StartConcentrationAbility(uint creature, Feat feat)
+        {
+            _activeConcentrationAbilities[creature] = feat;
+            
+            SendMessageToPC(creature, "You begin concentrating...");
+        }
+
+        /// <summary>
+        /// Retrieves a creature's active concentration ability.
+        /// If no concentration ability is active, Feat.Invalid will be returned.
+        /// </summary>
+        /// <param name="creature">The creature to check.</param>
+        /// <returns>The active concentration feat or Feat.Invalid.</returns>
+        public static Feat GetConcentrationFeat(uint creature)
+        {
+            if (_activeConcentrationAbilities.ContainsKey(creature))
+            {
+                return _activeConcentrationAbilities[creature];
+            }
+
+            return Feat.Invalid;
+        }
+        
+        /// <summary>
+        /// Ends a concentration effect on a specified creature.
+        /// If creature isn't concentrating, nothing will happen.
+        /// </summary>
+        /// <param name="creature"></param>
+        public static void EndConcentrationAbility(uint creature)
+        {
+            if (_activeConcentrationAbilities.ContainsKey(creature))
+            {
+                _activeConcentrationAbilities.Remove(creature);
+                
+                SendMessageToPC(creature, "You stop concentrating.");
             }
         }
 

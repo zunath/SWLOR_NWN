@@ -20,7 +20,6 @@ using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using ItemProperty = SWLOR.Game.Server.Core.ItemProperty;
 using OnHitCastSpell = SWLOR.Game.Server.Legacy.Event.Feat.OnHitCastSpell;
-using Profiler = SWLOR.Game.Server.Legacy.ValueObject.Profiler;
 using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
 
 namespace SWLOR.Game.Server.Legacy.Service
@@ -840,7 +839,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 
         public static SkillType GetSkillTypeForItem(NWItem item)
         {
-            using (new Profiler("ItemService::GetSkillTypeForItem"))
+            //using (new Profiler("ItemService::GetSkillTypeForItem"))
             {
                 var type = item.BaseItemType;
 

@@ -560,7 +560,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 
         private static int CalculateEffectivePerkLevel(NWPlayer player, int perkID)
         {
-            using (new Profiler("PerkService::CalculateEffectivePerkLevel"))
+            //using (new Profiler("PerkService::CalculateEffectivePerkLevel"))
             {
                 var pcSkills = DataService.PCSkill.GetAllByPlayerID(player.GlobalID).ToList();
                 // Get the PC's perk information and all of the perk levels at or below their current level.
@@ -571,7 +571,7 @@ namespace SWLOR.Game.Server.Legacy.Service
                 var perkLevelsInRange = DataService.PerkLevel.GetAllAtOrBelowPerkIDAndLevel(perkID, pcPerk.PerkLevel)
                     .OrderByDescending(o => o.Level);
 
-                using (new Profiler("PerkService::CalculateEffectivePerkLevel::PerkLevelIteration"))
+                //using (new Profiler("PerkService::CalculateEffectivePerkLevel::PerkLevelIteration"))
                 {
 
                     // Iterate over each perk level. If player doesn't meet the requirements, the effective level is dropped.

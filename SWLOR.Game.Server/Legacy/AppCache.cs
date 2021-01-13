@@ -16,57 +16,7 @@ namespace SWLOR.Game.Server.Legacy
         public static Dictionary<Guid, PlayerDialog> PlayerDialogs { get; }
         public static Dictionary<int, bool> DialogFilesInUse { get; }
         public static Dictionary<Guid, CreatureSkillRegistration> CreatureSkillRegistrations;
-        public static Dictionary<CasterSpellVO, int> NPCEffects { get; }
         public static Dictionary<Guid, CustomData> CustomObjectData { get; set; } 
-        public static List<Guid> PCEffectsForRemoval { get; set; }
         public static Dictionary<Guid, Dictionary<int, int>> PlayerEffectivePerkLevels { get; set; }
-
-        static AppCache()
-        {
-            PlayerDialogs = new Dictionary<Guid, PlayerDialog>();
-            DialogFilesInUse = new Dictionary<int, bool>();
-            CreatureSkillRegistrations = new Dictionary<Guid, CreatureSkillRegistration>();
-            NPCEffects = new Dictionary<CasterSpellVO, int>();
-            CustomObjectData = new Dictionary<Guid, CustomData>();
-            PCEffectsForRemoval = new List<Guid>();
-            PlayerEffectivePerkLevels = new Dictionary<Guid, Dictionary<int, int>>();
-
-            for (var x = 1; x <= DialogService.NumberOfDialogs; x++)
-            {
-                DialogFilesInUse.Add(x, false);
-            }
-        }
-
-        public static void SubscribeEvents()
-        {
-            MessageHub.Instance.Subscribe<OnObjectProcessorRan>(message => Clean());
-            MessageHub.Instance.Subscribe<OnRequestCacheStats>(message => OnRequestCacheStats(message.Player));
-        }
-
-        private static void OnRequestCacheStats(NWPlayer player)
-        {
-            player.SendMessage("PlayerDialogs: " + PlayerDialogs.Count);
-            player.SendMessage("DialogFilesInUse: " + DialogFilesInUse.Count);
-            player.SendMessage("CreatureSkillRegistrations: " + CreatureSkillRegistrations.Count);
-            player.SendMessage("NPCEffects: " + NPCEffects.Count);
-            player.SendMessage("CustomObjectData: " + CustomObjectData.Count);
-            player.SendMessage("PCEffectsForRemoval: " + PCEffectsForRemoval.Count);
-            player.SendMessage("PlayerEffectivePerkLevels: " + PlayerEffectivePerkLevels.Count);
-        }
-
-        private static void Clean()
-        {
-            for(var index = CustomObjectData.Count-1; index >= 0; index--)
-            {
-                var customData = CustomObjectData.ElementAt(index);
-                var owner = customData.Value.Owner;
-                if (!owner.IsValid)
-                {
-                    CustomObjectData.Remove(customData.Key);
-                }
-            }
-
-        }
-
     }
 }

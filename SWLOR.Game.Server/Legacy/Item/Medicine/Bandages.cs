@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Legacy.Item.Medicine
             NWPlayer player = (user.Object);
             var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
 
-            CustomEffectService.RemovePCCustomEffect(target.Object, CustomEffectType.Bleeding);
+            //CustomEffectService.RemovePCCustomEffect(target.Object, CustomEffectType.Bleeding);
             player.SendMessage("You finish bandaging " + target.Name + "'s wounds.");
             
             var rank = SkillService.GetPCSkillRank(player, SkillType.Medicine);

@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Legacy.Item.Medicine
 
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
-            CustomEffectService.RemovePCCustomEffect(target.Object, CustomEffectType.Poison);
+            //CustomEffectService.RemovePCCustomEffect(target.Object, CustomEffectType.Poison);
 
             foreach (var effect in target.Effects)
             {
@@ -102,10 +102,10 @@ namespace SWLOR.Game.Server.Legacy.Item.Medicine
                 }
             }
 
-            if (CustomEffectService.DoesPCHaveCustomEffect(target.Object, CustomEffectType.Poison))
-            {
-                hasEffect = true;
-            }
+            //if (CustomEffectService.DoesPCHaveCustomEffect(target.Object, CustomEffectType.Poison))
+            //{
+            //    hasEffect = true;
+            //}
 
             if (!hasEffect)
             {

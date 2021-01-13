@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Delayed
 
         private void OnFinishActionItem(OnFinishActionItem data)
         {
-            using (new Profiler(nameof(FinishActionItem)))
+            //using (new Profiler(nameof(FinishActionItem)))
             {
                 var actionItem = ItemService.GetActionItemHandler(data.ClassName);
                 data.Player.IsBusy = false;

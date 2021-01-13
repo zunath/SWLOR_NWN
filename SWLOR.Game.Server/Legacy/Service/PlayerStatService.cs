@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.Legacy.Service
         private static int EffectiveMaxHitPoints(NWPlayer player, EffectiveItemStats stats)
         {
             var hp = 25 + player.ConstitutionModifier * 5;
-            var effectPercentBonus = CustomEffectService.CalculateEffectHPBonusPercent(player);
+            var effectPercentBonus = 0; //CustomEffectService.CalculateEffectHPBonusPercent(player);
 
             hp += PerkService.GetCreaturePerkLevel(player, PerkType.Health) * 5;
             hp += stats.HP;
@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 
         private static int EffectiveArmorClass(NWPlayer player, NWItem ignoreItem, EffectiveItemStats stats)
         {
-            var baseAC = stats.AC + CustomEffectService.CalculateEffectAC(player);
+            var baseAC = stats.AC; //+ CustomEffectService.CalculateEffectAC(player);
 
             // Calculate AC bonus granted by skill ranks.
             // Only chest armor is checked for this bonus.
@@ -292,12 +292,12 @@ namespace SWLOR.Game.Server.Legacy.Service
             var totalAC = GetAC(player) - baseAC;
 
             // Shield Oath and Precision Targeting affect a percentage of the TOTAL armor class on a creature.
-            var stance = CustomEffectService.GetCurrentStanceType(player);
-            if (stance == CustomEffectType.PrecisionTargeting)
-            {
-                var penalty = (int)(totalAC * 0.3f);
-                baseAC -= penalty;
-            }
+            //var stance = CustomEffectService.GetCurrentStanceType(player);
+            //if (stance == CustomEffectType.PrecisionTargeting)
+            //{
+            //    var penalty = (int)(totalAC * 0.3f);
+            //    baseAC -= penalty;
+            //}
 
             if (baseAC < 0) baseAC = 0;
 
@@ -335,7 +335,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             }
                 
             var rank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, (int)skill).Rank;
-            using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::CalculateEffectiveStats"))
+            //using (new Profiler("PlayerStatService::ApplyStatChanges::GetPlayerItemEffectiveStats::ItemLoop::CalculateEffectiveStats"))
             {
                 // Only scale cooldown recovery if it's a bonus. Penalties remain regardless of skill level difference.
                 item.SetLocalInt("STAT_EFFECTIVE_LEVEL_COOLDOWN_RECOVERY", item.CooldownRecovery > 0 
@@ -517,11 +517,11 @@ namespace SWLOR.Game.Server.Legacy.Service
             if (stats.EnmityRate < 0.5f) stats.EnmityRate = 0.5f;
             else if (stats.EnmityRate > 1.5f) stats.EnmityRate = 1.5f;
 
-            var stance = CustomEffectService.GetCurrentStanceType(player);
-            if (stance == CustomEffectType.ShieldOath)
-            {
-                stats.EnmityRate = stats.EnmityRate + 0.2f;
-            }
+            //var stance = CustomEffectService.GetCurrentStanceType(player);
+            //if (stance == CustomEffectType.ShieldOath)
+            //{
+            //    stats.EnmityRate = stats.EnmityRate + 0.2f;
+            //}
 
             return stats;
         }

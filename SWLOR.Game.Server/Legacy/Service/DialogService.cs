@@ -10,7 +10,6 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using Profiler = SWLOR.Game.Server.Legacy.ValueObject.Profiler;
 
 namespace SWLOR.Game.Server.Legacy.Service
 {
@@ -182,7 +181,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             NWPlayer player = (GetPCSpeaker());
             var dialog = LoadPlayerDialog(player.GlobalID);
 
-            using (new Profiler(nameof(DialogService) + "." + nameof(ActionsTaken) + "." + dialog.ActiveDialogName))
+            //using (new Profiler(nameof(DialogService) + "." + nameof(ActionsTaken) + "." + dialog.ActiveDialogName))
             {
                 var convo = GetConversation(dialog.ActiveDialogName);
                 var selectionNumber = nodeID + 1;
@@ -240,7 +239,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             if (!hasDialog) return false;
             var dialog = LoadPlayerDialog(player.GlobalID);
 
-            using (new Profiler(nameof(DialogService) + "." + nameof(AppearsWhen) + "." + dialog.ActiveDialogName))
+            //using (new Profiler(nameof(DialogService) + "." + nameof(AppearsWhen) + "." + dialog.ActiveDialogName))
             {
                 var page = dialog.CurrentPage;
                 var convo = GetConversation(dialog.ActiveDialogName);
@@ -321,7 +320,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 
             var conversation = GetLocalString(OBJECT_SELF, "CONVERSATION");
 
-            using (new Profiler(nameof(DialogService) + "." + nameof(OnDialogStart) + "." + conversation))
+            //using (new Profiler(nameof(DialogService) + "." + nameof(OnDialogStart) + "." + conversation))
             {
 
                 if (!string.IsNullOrWhiteSpace(conversation))
@@ -351,7 +350,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             if (!HasPlayerDialog(player.GlobalID)) return;
 
             var dialog = LoadPlayerDialog(player.GlobalID);
-            using (new Profiler(nameof(DialogService) + "." + nameof(OnDialogEnd) + "." + dialog.ActiveDialogName))
+            //using (new Profiler(nameof(DialogService) + "." + nameof(OnDialogEnd) + "." + dialog.ActiveDialogName))
             {
                 var convo = GetConversation(dialog.ActiveDialogName);
                 convo.EndDialog();

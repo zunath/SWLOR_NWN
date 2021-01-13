@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Legacy.Messaging
                 {
                     if (useProfiler)
                     {
-                        using (new Profiler(subscription.Type.ToString()))
+                        //using (new Profiler(subscription.Type.ToString()))
                         {
                             subscription.Handle(message);
                         }

@@ -80,8 +80,9 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// Assigns an impact action on the active ability we're building.
         /// Calling this more than once will replace the previous action.
         /// Impact actions are fired when a ability is used. The timing of when it fires depends on the activation type.
-        /// For example, "Casted" abilitys fire the impact action at the end of the casting phase.
-        /// While "Queued" abilitys fire the impact action on the next weapon hit.
+        /// "Casted" abilities fire the impact action at the end of the casting phase.
+        /// "Queued" abilities fire the impact action on the next weapon hit.
+        /// "Concentration" abilities fire the impact action on each concentration cycle.
         /// </summary>
         /// <param name="action">The action to fire when a ability impacts a target.</param>
         /// <returns>An ability builder with the configured options</returns>
@@ -170,11 +171,11 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// <summary>
         /// Adds an FP requirement to use the ability at this level.
         /// </summary>
-        /// <param name="requiredMP">The amount of FP needed to use this ability at this level.</param>
+        /// <param name="requiredFP">The amount of FP needed to use this ability at this level.</param>
         /// <returns>An ability builder with the configured options</returns>
-        public AbilityBuilder RequirementMP(int requiredMP)
+        public AbilityBuilder RequirementFP(int requiredFP)
         {
-            var requirement = new PerkFPRequirement(requiredMP);
+            var requirement = new PerkFPRequirement(requiredFP);
             _activeAbility.Requirements.Add(requirement);
 
             return this;

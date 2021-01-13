@@ -13,7 +13,6 @@ using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.ValueObject;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using Profiler = SWLOR.Game.Server.Legacy.ValueObject.Profiler;
 
 namespace SWLOR.Game.Server.Legacy.Service
 {

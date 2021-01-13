@@ -51,11 +51,27 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            // Weapon abilties are queued for the next time the activator's attack lands on an enemy.
+            // Weapon abilities are queued for the next time the activator's attack lands on an enemy.
             if (ability.ActivationType == AbilityActivationType.Weapon)
             {
                 Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name}.");
                 QueueWeaponAbility(activator, ability, feat, effectivePerkLevel);
+            }
+            // Concentration abilities are triggered once per second.
+            else if(ability.ActivationType == AbilityActivationType.Concentration)
+            {
+                // Using the same concentration feat ends the effect.
+                var activeConcentrationAbility = Ability.GetConcentrationFeat(activator);
+                if(activeConcentrationAbility == feat)
+                {
+                    Ability.EndConcentrationAbility(activator);
+                }
+                else
+                {
+                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins concentrating...");
+                    Ability.StartConcentrationAbility(activator, feat);
+                }
+                
             }
             // All other abilities are funneled through the same process.
             else

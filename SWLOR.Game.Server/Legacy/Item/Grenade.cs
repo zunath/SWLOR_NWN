@@ -350,12 +350,12 @@ namespace SWLOR.Game.Server.Legacy.Item
                             if (SWLOR.Game.Server.Service.Random.D6(1) > 4)
                             {
                                 //Console.WriteLine("grenade effect bleeding - frag");
-                                CustomEffectService.ApplyCustomEffect(user, targetCreature.Object, CustomEffectType.Bleeding, duration * 6, perkLevel, Convert.ToString(perkLevel));
+                                //CustomEffectService.ApplyCustomEffect(user, targetCreature.Object, CustomEffectType.Bleeding, duration * 6, perkLevel, Convert.ToString(perkLevel));
                             }
                             if (SWLOR.Game.Server.Service.Random.D6(1) > 4)
                             {
                                 //Console.WriteLine("grenade effects burning - frag");
-                                CustomEffectService.ApplyCustomEffect(user, targetCreature.Object, CustomEffectType.Burning, duration * 6, perkLevel, Convert.ToString(perkLevel));
+                                //CustomEffectService.ApplyCustomEffect(user, targetCreature.Object, CustomEffectType.Burning, duration * 6, perkLevel, Convert.ToString(perkLevel));
                             }
                             //Console.WriteLine("grenade effects set - frag");
                             break;
@@ -365,7 +365,7 @@ namespace SWLOR.Game.Server.Legacy.Item
                             if (SWLOR.Game.Server.Service.Random.D6(1) > 4)
                             {
                                 FloatingTextStringOnCreature("Your ears ring and your body shakes.", targetCreature);
-                                durationEffect = EffectLinkEffects(AbilityService.EffectKnockdown(targetCreature, duration), durationEffect);
+                                //durationEffect = EffectLinkEffects(AbilityService.EffectKnockdown(targetCreature, duration), durationEffect);
                             }
                             break;
                         case "FLASHBANG":
@@ -442,7 +442,7 @@ namespace SWLOR.Game.Server.Legacy.Item
                     duration = SWLOR.Game.Server.Service.Random.D6(1);
                     if (SWLOR.Game.Server.Service.Random.D6(1) > 4)
                     {
-                        CustomEffectService.ApplyCustomEffect(user, (NWCreature)oTarget, CustomEffectType.Burning, duration * 6, perkLevel, Convert.ToString(perkLevel));
+                        //CustomEffectService.ApplyCustomEffect(user, (NWCreature)oTarget, CustomEffectType.Burning, duration * 6, perkLevel, Convert.ToString(perkLevel));
                     }
                     break;
                 case "GAS":

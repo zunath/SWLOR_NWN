@@ -49,12 +49,12 @@ namespace SWLOR.Game.Server.Legacy.Item.Medicine
                     blastHeal *= 2;
                 }
 
-                AbilityService.RestorePlayerFP(target.Object, blastHeal);
+                //AbilityService.RestorePlayerFP(target.Object, blastHeal);
             }
 
             var interval = 6.0f;
             var data = (int)interval + ", " + restoreAmount;
-            CustomEffectService.ApplyCustomEffect(user, target.Object, CustomEffectType.ForcePack, (int)duration, restoreAmount, data);
+            //CustomEffectService.ApplyCustomEffect(user, target.Object, CustomEffectType.ForcePack, (int)duration, restoreAmount, data);
 
             player.SendMessage("You successfully apply a force pack to " + target.Name + ". The force pack will expire in " + duration + " seconds.");
 

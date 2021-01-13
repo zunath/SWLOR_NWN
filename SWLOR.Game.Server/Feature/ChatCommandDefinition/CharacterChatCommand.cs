@@ -92,6 +92,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             ChangeItemName(builder);
             ChangeItemDescription(builder);
             ChangePlayerDescription(builder);
+            ConcentrationAbility(builder);
             
             return builder.Build();
         }
@@ -384,6 +385,35 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     SetDescription(user, sb.ToString());
                     SendMessageToPC(user, "New description set!");
+                });
+        }
+
+        private static void ConcentrationAbility(ChatCommandBuilder builder)
+        {
+            builder.Create("concentration", "conc")
+                .Description("Tells you what concentration ability you have active. Follow with 'end' (no quotes) to turn your concentration ability off. Example: /concentration end")
+                .Permissions(AuthorizationLevel.Player, AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Action((user, target, location, args) =>
+                {
+                    var doEnd = args.Length > 0 && args[0].ToLower() == "end";
+
+                    if (doEnd)
+                    {
+                        Ability.EndConcentrationAbility(user);
+                    }
+                    else
+                    {
+                        var feat = Ability.GetConcentrationFeat(user);
+                        if (feat == Feat.Invalid)
+                        {
+                            SendMessageToPC(user, "No concentration ability is currently active.");
+                        }
+                        else
+                        {
+                            var ability = Ability.GetAbilityDetail(feat);
+                            SendMessageToPC(user, $"Currently active concentration ability: {ability.Name}");
+                        }
+                    }
                 });
         }
         

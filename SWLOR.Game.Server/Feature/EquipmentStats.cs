@@ -78,11 +78,11 @@ namespace SWLOR.Game.Server.Feature
 
             if (isAdding)
             {
-                Stat.AdjustMaxHP(dbPlayer, player, amount);
+                Stat.AdjustPlayerMaxHP(dbPlayer, player, amount);
             }
             else
             {
-                Stat.AdjustMaxHP(dbPlayer, player, -amount);
+                Stat.AdjustPlayerMaxHP(dbPlayer, player, -amount);
             }
 
             DB.Set(playerId, dbPlayer);
@@ -103,11 +103,11 @@ namespace SWLOR.Game.Server.Feature
 
             if (isAdding)
             {
-                Stat.AdjustMaxMP(dbPlayer, amount);
+                Stat.AdjustPlayerMaxFP(dbPlayer, amount);
             }
             else
             {
-                Stat.AdjustMaxMP(dbPlayer, -amount);
+                Stat.AdjustPlayerMaxFP(dbPlayer, -amount);
             }
 
             DB.Set(playerId, dbPlayer);
@@ -128,11 +128,11 @@ namespace SWLOR.Game.Server.Feature
 
             if (isAdding)
             {
-                Stat.AdjustMaxSTM(dbPlayer, amount);
+                Stat.AdjustPlayerMaxSTM(dbPlayer, amount);
             }
             else
             {
-                Stat.AdjustMaxSTM(dbPlayer, -amount);
+                Stat.AdjustPlayerMaxSTM(dbPlayer, -amount);
             }
 
             DB.Set(playerId, dbPlayer);

@@ -276,18 +276,9 @@ namespace SWLOR.Game.Server.Feature
         private static void LoadCreatureStats()
         {
             var self = OBJECT_SELF;
-            var mpStats = GetAbilityModifier(AbilityType.Intelligence, self) +
-                        GetAbilityModifier(AbilityType.Wisdom, self);
-            var stmStats = GetAbilityModifier(AbilityType.Constitution, self);
-            var mp = mpStats * 3;
-            var stm = stmStats * 4;
-            if (mp < 0) mp = 0;
-            if (stm < 0) stm = 0;
-
-            SetLocalInt(self, "MAX_MP", mp);
-            SetLocalInt(self, "MAX_STAMINA", stm);
-            SetLocalInt(self, "FP", mp);
-            SetLocalInt(self, "STAMINA", stm);
+            
+            SetLocalInt(self, "FP", Stat.GetMaxFP(self));
+            SetLocalInt(self, "STAMINA", Stat.GetMaxStamina(self));
         }
 
         /// <summary>
@@ -307,17 +298,17 @@ namespace SWLOR.Game.Server.Feature
         public static void RestoreCreatureStats()
         {
             var self = OBJECT_SELF;
-            var maxMP = GetLocalInt(self, "MAX_MP");
-            var maxSTM = GetLocalInt(self, "MAX_STAMINA");
-            var mp = GetLocalInt(self, "FP") + 1;
+            var maxFP = Stat.GetMaxFP(self);
+            var maxSTM = Stat.GetMaxStamina(self);
+            var fp = GetLocalInt(self, "FP") + 1;
             var stm = GetLocalInt(self, "STAMINA") + 1;
 
-            if (mp > maxMP)
-                mp = maxMP;
+            if (fp > maxFP)
+                fp = maxFP;
             if (stm > maxSTM)
                 stm = maxSTM;
 
-            SetLocalInt(self, "FP", mp);
+            SetLocalInt(self, "FP", fp);
             SetLocalInt(self, "STAMINA", stm);
         }
 

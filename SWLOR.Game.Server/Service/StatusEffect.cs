@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Service
 
             // Run the Grant Action, if applicable.
             var statusEffectDetail = _statusEffects[statusEffectType];
-            statusEffectDetail.GrantAction?.Invoke(creature, length);
+            statusEffectDetail.AppliedAction?.Invoke(source, creature, length);
 
             // Add the status effect icon if there is one.
             if (statusEffectDetail.EffectIconId > 0)

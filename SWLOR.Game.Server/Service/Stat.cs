@@ -8,128 +8,295 @@ namespace SWLOR.Game.Server.Service
     public class Stat
     {
         /// <summary>
-        /// Retrieves the maximum hit points on a player.
+        /// Retrieves the maximum hit points on a creature.
         /// This will include any base NWN calculations used when determining max HP.
         /// </summary>
-        /// <param name="player">The player object</param>
+        /// <param name="creature">The creature object</param>
         /// <returns>The max amount of HP</returns>
-        public static int GetMaxHP(uint player)
+        public static int GetMaxHP(uint creature)
         {
-            return GetMaxHitPoints(player);
+            return GetMaxHitPoints(creature);
         }
 
         /// <summary>
-        /// Retrieves the maximum FP on a player.
+        /// Retrieves the maximum FP on a creature.
+        /// For players:
         /// INT and WIS modifiers will be checked. The higher one is used for calculations.
         /// Each modifier grants +2 to max FP.
+        /// For NPCs:
+        /// INT and WIS modifiers are added together. Each modifier grants +3 to max FP.
         /// </summary>
-        /// <param name="player">The player object</param>
-        /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made.</param>
+        /// <param name="creature">The creature object</param>
+        /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
         /// <returns>The max amount of FP</returns>
-        public static int GetMaxFP(uint player, Player dbPlayer = null)
+        public static int GetMaxFP(uint creature, Player dbPlayer = null)
         {
-            if (dbPlayer == null)
+            // Players
+            if (GetIsPC(creature) && !GetIsDM(creature))
             {
-                var playerId = GetObjectUUID(player);
-                dbPlayer = DB.Get<Player>(playerId);
-            }
-            var baseFP = dbPlayer.MaxFP;
-            var intModifier = GetAbilityModifier(AbilityType.Intelligence, player);
-            var wisModifier = GetAbilityModifier(AbilityType.Wisdom, player);
-            var modifier = intModifier > wisModifier ? intModifier : wisModifier;
+                if (dbPlayer == null)
+                {
+                    var playerId = GetObjectUUID(creature);
+                    dbPlayer = DB.Get<Player>(playerId);
+                }
+                var baseFP = dbPlayer.MaxFP;
+                var intModifier = GetAbilityModifier(AbilityType.Intelligence, creature);
+                var wisModifier = GetAbilityModifier(AbilityType.Wisdom, creature);
+                var modifier = intModifier > wisModifier ? intModifier : wisModifier;
 
-            return baseFP + (modifier * 2);
+                return baseFP + (modifier * 2);
+            }
+            // NPCs
+            else
+            {
+                var statModifier = GetAbilityModifier(AbilityType.Intelligence, creature) +
+                              GetAbilityModifier(AbilityType.Wisdom, creature);
+                var fp = statModifier * 3;
+                if (fp < 0) fp = 0;
+
+                return fp;
+            }
         }
 
         /// <summary>
-        /// Retrieves the maximum STM on a player.
+        /// Retrieves the current FP on a creature.
+        /// </summary>
+        /// <param name="creature">The creature to retrieve FP from.</param>
+        /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
+        /// <returns>The current amount of FP.</returns>
+        public static int GetCurrentFP(uint creature, Player dbPlayer = null)
+        {
+            // Players
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                if (dbPlayer == null)
+                {
+                    var playerId = GetObjectUUID(creature);
+                    dbPlayer = DB.Get<Player>(playerId);
+                }
+
+                return dbPlayer.FP;
+            }
+            // NPCs
+            else
+            {
+                return GetLocalInt(creature, "FP");
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the maximum STM on a creature.
         /// CON modifier will be checked. Each modifier grants +2 to max STM.
         /// </summary>
-        /// <param name="player">The player object</param>
-        /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made.</param>
+        /// <param name="creature">The creature object</param>
+        /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
         /// <returns>The max amount of STM</returns>
-        public static int GetMaxStamina(uint player, Player dbPlayer = null)
+        public static int GetMaxStamina(uint creature, Player dbPlayer = null)
         {
-            if (dbPlayer == null)
+            // Players
+            if (GetIsPC(creature) && !GetIsDM(creature))
             {
-                var playerId = GetObjectUUID(player);
-                dbPlayer = DB.Get<Player>(playerId);
+                if (dbPlayer == null)
+                {
+                    var playerId = GetObjectUUID(creature);
+                    dbPlayer = DB.Get<Player>(playerId);
+                }
+
+                var baseStamina = dbPlayer.MaxStamina;
+                var conModifier = GetAbilityModifier(AbilityType.Constitution, creature);
+
+                return baseStamina + (conModifier * 2);
             }
+            // NPCs
+            else
+            {
+                var statModifier = GetAbilityModifier(AbilityType.Constitution, creature);
+                var stm = statModifier * 4;
 
-            var baseStamina = dbPlayer.MaxStamina;
-            var conModifier = GetAbilityModifier(AbilityType.Constitution, player);
-
-            return baseStamina + (conModifier * 2);
+                return stm;
+            }
         }
 
         /// <summary>
-        /// Restores an entity's FP by a specified amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// Retrieves the current STM on a creature.
         /// </summary>
-        /// <param name="player">The player to modify.</param>
-        /// <param name="entity">The entity to modify.</param>
+        /// <param name="creature">The creature to retrieve STM from.</param>
+        /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
+        /// <returns>The current amount of STM.</returns>
+        public static int GetCurrentStamina(uint creature, Player dbPlayer = null)
+        {
+            // Players
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                if (dbPlayer == null)
+                {
+                    var playerId = GetObjectUUID(creature);
+                    dbPlayer = DB.Get<Player>(playerId);
+                }
+
+                return dbPlayer.Stamina;
+            }
+            // NPCs
+            else
+            {
+                return GetLocalInt(creature, "STAMINA");
+            }
+        }
+        /// <summary>
+        /// Restores a creature's FP by a specified amount.
+        /// </summary>
+        /// <param name="creature">The creature to modify.</param>
         /// <param name="amount">The amount of FP to restore.</param>
-        public static void RestoreFP(uint player, Player entity, int amount)
+        /// <param name="dbPlayer">The player entity to modify. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
+        public static void RestoreFP(uint creature, int amount, Player dbPlayer = null)
         {
             if (amount <= 0) return;
 
-            var maxMP = GetMaxFP(player);
-            entity.FP += amount;
+            var maxFP = GetMaxFP(creature);
+            
+            // Players
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                if (dbPlayer == null)
+                {
+                    dbPlayer = DB.Get<Player>(playerId);
+                }
+                
+                dbPlayer.FP += amount;
 
-            if (entity.FP > maxMP)
-                entity.FP = maxMP;
+                if (dbPlayer.FP > maxFP)
+                    dbPlayer.FP = maxFP;
+                
+                DB.Set(playerId, dbPlayer);
+            }
+            // NPCs
+            else
+            {
+                var fp = GetLocalInt(creature, "FP");
+                fp += amount;
+
+                if (fp > maxFP)
+                    fp = maxFP;
+
+                SetLocalInt(creature, "FP", fp);
+            }
+            
         }
 
         /// <summary>
-        /// Reduces an entity's FP by a specified amount.
-        /// If player would fall below 0 FP, they will be reduced to 0 instead.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// Reduces a creature's FP by a specified amount.
+        /// If creature would fall below 0 FP, they will be reduced to 0 instead.
         /// </summary>
-        /// <param name="entity">The entity to modify</param>
+        /// <param name="creature">The creature whose FP will be reduced.</param>
         /// <param name="reduceBy">The amount of FP to reduce by.</param>
-        public static void ReduceMP(Player entity, int reduceBy)
+        /// <param name="dbPlayer">The player entity to modify. If this is not set, a DB call will be made. Leave null for NPCs.</param>
+        public static void ReduceFP(uint creature, int reduceBy, Player dbPlayer = null)
         {
             if (reduceBy <= 0) return;
 
-            entity.FP -= reduceBy;
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                if (dbPlayer == null)
+                {
+                    dbPlayer = DB.Get<Player>(playerId);
+                }
 
-            if (entity.FP < 0)
-                entity.FP = 0;
+                dbPlayer.FP -= reduceBy;
+
+                if (dbPlayer.FP < 0)
+                    dbPlayer.FP = 0;
+                
+                DB.Set(playerId, dbPlayer);
+            }
+            else
+            {
+                var fp = GetLocalInt(creature, "FP");
+                fp -= reduceBy;
+                if (fp < 0)
+                    fp = 0;
+                
+                SetLocalInt(creature, "FP", fp);
+            }
         }
 
         /// <summary>
         /// Restores an entity's Stamina by a specified amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>
-        /// <param name="player">The player to modify.</param>
-        /// <param name="entity">The entity to modify.</param>
+        /// <param name="creature">The creature to modify.</param>
         /// <param name="amount">The amount of Stamina to restore.</param>
-        public static void RestoreStamina(uint player, Player entity, int amount)
+        /// <param name="dbPlayer">The player entity to modify. If this is not set, a DB call will be made. Leave null for NPCs.</param>
+        public static void RestoreStamina(uint creature, int amount, Player dbPlayer = null)
         {
             if (amount <= 0) return;
 
-            var maxStamina = GetMaxStamina(player, entity);
-            entity.Stamina += amount;
+            var maxSTM = GetMaxStamina(creature);
 
-            if (entity.Stamina > maxStamina)
-                entity.Stamina = maxStamina;
+            // Players
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                if (dbPlayer == null)
+                {
+                    dbPlayer = DB.Get<Player>(playerId);
+                }
+
+                dbPlayer.Stamina += amount;
+
+                if (dbPlayer.Stamina > maxSTM)
+                    dbPlayer.Stamina = maxSTM;
+
+                DB.Set(playerId, dbPlayer);
+            }
+            // NPCs
+            else
+            {
+                var fp = GetLocalInt(creature, "STAMINA");
+                fp += amount;
+
+                if (fp > maxSTM)
+                    fp = maxSTM;
+
+                SetLocalInt(creature, "STAMINA", fp);
+            }
         }
 
         /// <summary>
         /// Reduces an entity's Stamina by a specified amount.
-        /// If player would fall below 0 stamina, they will be reduced to 0 instead.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// If creature would fall below 0 stamina, they will be reduced to 0 instead.
         /// </summary>
-        /// <param name="entity">The entity to modify</param>
+        /// <param name="creature">The creature to modify.</param>
         /// <param name="reduceBy">The amount of Stamina to reduce by.</param>
-        public static void ReduceStamina(Player entity, int reduceBy)
+        /// <param name="dbPlayer">The entity to modify</param>
+        public static void ReduceStamina(uint creature, int reduceBy, Player dbPlayer = null)
         {
             if (reduceBy <= 0) return;
 
-            entity.Stamina -= reduceBy;
+            if (GetIsPC(creature) && !GetIsDM(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                if (dbPlayer == null)
+                {
+                    dbPlayer = DB.Get<Player>(playerId);
+                }
 
-            if (entity.Stamina < 0)
-                entity.Stamina = 0;
+                dbPlayer.Stamina -= reduceBy;
+
+                if (dbPlayer.Stamina < 0)
+                    dbPlayer.Stamina = 0;
+
+                DB.Set(playerId, dbPlayer);
+            }
+            else
+            {
+                var stamina = GetLocalInt(creature, "STAMINA");
+                stamina -= reduceBy;
+                if (stamina < 0)
+                    stamina = 0;
+
+                SetLocalInt(creature, "STAMINA", stamina);
+            }
         }
 
         /// <summary>
@@ -141,7 +308,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="entity">The entity to modify</param>
         /// <param name="player">The player to adjust</param>
         /// <param name="adjustBy">The amount to adjust by.</param>
-        public static void AdjustMaxHP(Player entity, uint player, int adjustBy)
+        public static void AdjustPlayerMaxHP(Player entity, uint player, int adjustBy)
         {
             const int MaxHPPerLevel = 255;
             entity.MaxHP += adjustBy;
@@ -195,7 +362,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustMaxMP(Player entity, int adjustBy)
+        public static void AdjustPlayerMaxFP(Player entity, int adjustBy)
         {
             // Note: It's possible for Max FP to drop to a negative number. This is expected to ensure calculations stay in sync.
             // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
@@ -215,7 +382,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustMaxSTM(Player entity, int adjustBy)
+        public static void AdjustPlayerMaxSTM(Player entity, int adjustBy)
         {
             // Note: It's possible for Max STM to drop to a negative number. This is expected to ensure calculations stay in sync.
             // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
@@ -236,7 +403,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="entity">The entity to modify.</param>
         /// <param name="player">The player to modify.</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustBAB(Player entity, uint player, int adjustBy)
+        public static void AdjustPlayerBAB(Player entity, uint player, int adjustBy)
         {
             entity.BAB += adjustBy;
 
@@ -254,7 +421,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to modify.</param>
         /// <param name="ability">The ability to modify.</param>
         /// <param name="adjustBy">The amount to adjust by.</param>
-        public static void AdjustAttribute(Player entity, uint player, AbilityType ability, float adjustBy)
+        public static void AdjustPlayerAttribute(Player entity, uint player, AbilityType ability, float adjustBy)
         {
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (ability == AbilityType.Invalid) return;
@@ -271,7 +438,7 @@ namespace SWLOR.Game.Server.Service
         /// This should be used sparingly because it can be a heavy call.
         /// This method will not persist the changes so be sure your call DB.Set after calling this.
         /// </summary>
-        public static void RecalculateAllStats(uint player, Player dbPlayer)
+        public static void RecalculateAllPlayerStats(uint player, Player dbPlayer)
         {
             // Reset all adjusted stat values.
             foreach (var adjustedStat in dbPlayer.AdjustedStats)

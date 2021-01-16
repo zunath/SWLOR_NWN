@@ -63,6 +63,13 @@ namespace SWLOR.Game.Server.Service
             // Bypass the NWN "item use" animation.
             Events.SkipEvent();
 
+            // Check item property requirements.
+            if (!CanCreatureUseItem(user, item))
+            {
+                SendMessageToPC(user, "You do not meet the requirements to use this item.");
+                return;
+            }
+            
             var itemDetail = _items[itemTag];
             var validationMessage = itemDetail.ValidateAction == null ? string.Empty : itemDetail.ValidateAction(user, item, target, targetLocation);
 
@@ -74,17 +81,21 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Send the initialization message, if there is one.
-            if (!string.IsNullOrWhiteSpace(itemDetail.InitializationMessage))
+            var initializationMessage = itemDetail.InitializationMessageAction == null
+                ? string.Empty
+                : itemDetail.InitializationMessageAction(user, item, target, targetLocation);
+            if (!string.IsNullOrWhiteSpace(initializationMessage))
             {
-                SendMessageToPC(user, itemDetail.InitializationMessage);
+                SendMessageToPC(user, initializationMessage);
             }
 
+            var maxDistance = itemDetail.CalculateDistanceAction?.Invoke(user, item, target, targetLocation) ?? 3.5f;
             // Distance checks, if necessary for this item.
-            if (itemDetail.MaximumDistance > 0.0f)
+            if (maxDistance > 0.0f)
             {
                 // Target is valid - check distance between objects.
                 if (GetIsObjectValid(target) &&
-                    (GetDistanceBetween(user, target) > itemDetail.MaximumDistance ||
+                    (GetDistanceBetween(user, target) > maxDistance ||
                      area != GetArea(target)))
                 {
                     SendMessageToPC(user, "Your target is too far away.");
@@ -92,7 +103,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 // Target is invalid - check distance between locations.
                 else if (!GetIsObjectValid(target) &&
-                         (GetDistanceBetweenLocations(GetLocation(user), targetLocation) > itemDetail.MaximumDistance ||
+                         (GetDistanceBetweenLocations(GetLocation(user), targetLocation) > maxDistance ||
                           area != GetAreaFromLocation(targetLocation)))
                 {
                     SendMessageToPC(user, "That location is too far away.");
@@ -105,25 +116,57 @@ namespace SWLOR.Game.Server.Service
             {
                 AssignCommand(user, () => SetFacingPoint(targetPosition));
             }
-            
+
+            var delay = itemDetail.DelayAction?.Invoke(user, item, target, targetLocation) ?? 0.0f;
             // Play an animation if configured.
             if (itemDetail.ActivationAnimation != Animation.Invalid)
             {
-                AssignCommand(user, () => ActionPlayAnimation(itemDetail.ActivationAnimation, 1.0f, itemDetail.Delay));
+                AssignCommand(user, () => ActionPlayAnimation(itemDetail.ActivationAnimation, 1.0f, delay));
             }
 
             // Play the timing bar for a player user.
-            if (itemDetail.Delay > 0.0f &&
+            if (delay > 0.0f &&
                 GetIsPC(user))
             {
-                Player.StartGuiTimingBar(user, itemDetail.Delay);
+                Player.StartGuiTimingBar(user, delay);
             }
 
             // Apply the item's action if specified.
             if (itemDetail.ApplyAction != null)
             {
-                DelayCommand(itemDetail.Delay + 0.1f, () => itemDetail.ApplyAction(user, item, target, targetLocation));
+                DelayCommand(delay + 0.1f, () => itemDetail.ApplyAction(user, item, target, targetLocation));
             }
+            
+            // Reduce item charge if specified.
+            var reducesItemCharge = itemDetail.ReducesItemChargeAction?.Invoke(user, item, target, targetLocation) ?? false;
+            if (reducesItemCharge)
+            {
+                SetItemCharges(item, GetItemCharges(item)-1);
+            }
+        }
+
+        /// <summary>
+        /// Checks all of the "Use Limitation: Perk" item properties on an item against a creature's effective level in the required perk.
+        /// If player meets or exceeds the level required for all item properties, returns true. Otherwise returns false.
+        /// </summary>
+        /// <param name="creature">The creature to check.</param>
+        /// <param name="item">The item to pull requirements from.</param>
+        /// <returns>true if all requirements met, false otherwise</returns>
+        public static bool CanCreatureUseItem(uint creature, uint item)
+        {
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.UseLimitationPerk)
+                {
+                    var perkType = (PerkType)GetItemPropertySubType(ip);
+                    var levelRequired = GetItemPropertyCostTableValue(ip);
+
+                    if (Perk.GetEffectivePerkLevel(creature, perkType) < levelRequired)
+                        return false;
+                }
+            }
+
+            return true;
         }
         
         /// <summary>

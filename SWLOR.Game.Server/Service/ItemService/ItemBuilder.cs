@@ -40,7 +40,22 @@ namespace SWLOR.Game.Server.Service.ItemService
         {
             foreach (var item in _activeItems)
             {
-                item.InitializationMessage = message;
+                item.InitializationMessageAction = (user, u, target, location) => message;
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Runs custom logic to determine the message which will be played at the start of using an item.
+        /// </summary>
+        /// <param name="action">The action to run.</param>
+        /// <returns>An item builder with the configured options.</returns>
+        public ItemBuilder InitializationMessage(InitializationMessageDelegate action)
+        {
+            foreach (var item in _activeItems)
+            {
+                item.InitializationMessageAction = action;
             }
 
             return this;
@@ -56,7 +71,22 @@ namespace SWLOR.Game.Server.Service.ItemService
         {
             foreach (var item in _activeItems)
             {
-                item.Delay = seconds;
+                item.DelayAction = (user, u, target, location) => seconds;
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Runs custom logic to determine the number of seconds it takes to use an item.
+        /// </summary>
+        /// <param name="action">The action to run.</param>
+        /// <returns>An item builder with the configured options.</returns>
+        public ItemBuilder Delay(CalculateDelayDelegate action)
+        {
+            foreach (var item in _activeItems)
+            {
+                item.DelayAction = action;
             }
 
             return this;
@@ -101,7 +131,22 @@ namespace SWLOR.Game.Server.Service.ItemService
         {
             foreach (var item in _activeItems)
             {
-                item.MaximumDistance = maxDistance;
+                item.CalculateDistanceAction = (user, u, target, location) => maxDistance;
+            }
+
+            return this;
+        }
+
+        /// <summary>
+        /// Runs custom logic to determine the max distance an item may be used on a target.
+        /// </summary>
+        /// <param name="action">The action to run.</param>
+        /// <returns>An item builder with the configured options.</returns>
+        public ItemBuilder MaxDistance(CalculateDistanceDelegate action)
+        {
+            foreach (var item in _activeItems)
+            {
+                item.CalculateDistanceAction = action;
             }
 
             return this;
@@ -115,12 +160,27 @@ namespace SWLOR.Game.Server.Service.ItemService
         {
             foreach (var item in _activeItems)
             {
-                item.ReducesItemCharge = true;
+                item.ReducesItemChargeAction = (user, u, target, location) => true;
             }
 
             return this;
         }
 
+        /// <summary>
+        /// Runs custom logic to determine if the item will lose charges.
+        /// </summary>
+        /// <param name="action">The action to run.</param>
+        /// <returns>An item builder with the configured options.</returns>
+        public ItemBuilder ReducesItemCharge(ReducesItemChargeDelegate action)
+        {
+            foreach (var item in _activeItems)
+            {
+                item.ReducesItemChargeAction = action;
+            }
+
+            return this;
+        }
+        
         /// <summary>
         /// Enables targeting locations in addition to other objects.
         /// </summary>

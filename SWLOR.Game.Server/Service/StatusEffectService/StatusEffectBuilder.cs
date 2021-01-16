@@ -47,13 +47,13 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         }
 
         /// <summary>
-        /// Sets the action to run when this status effect is granted to a creature.
+        /// Sets the action to run when this status effect is applied to a creature.
         /// </summary>
         /// <param name="grantAction">The action to run when granted.</param>
         /// <returns>A status effect builder with the configured options.</returns>
-        public StatusEffectBuilder GrantAction(Action<uint, float> grantAction)
+        public StatusEffectBuilder GrantAction(StatusEffectAppliedDelegate grantAction)
         {
-            _activeStatusEffect.GrantAction = grantAction;
+            _activeStatusEffect.AppliedAction = grantAction;
 
             return this;
         }
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         /// </summary>
         /// <param name="removeAction">The action to run when removed.</param>
         /// <returns>A status effect builder with the configured options.</returns>
-        public StatusEffectBuilder RemoveAction(Action<uint> removeAction)
+        public StatusEffectBuilder RemoveAction(StatusEffectRemovedDelegate removeAction)
         {
             _activeStatusEffect.RemoveAction = removeAction;
 
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         /// </summary>
         /// <param name="tickAction">The action to run when the effect ticks.</param>
         /// <returns>A status effect builder with the configured options.</returns>
-        public StatusEffectBuilder TickAction(Action<uint, uint> tickAction)
+        public StatusEffectBuilder TickAction(StatusEffectTickDelegate tickAction)
         {
             _activeStatusEffect.TickAction = tickAction;
 

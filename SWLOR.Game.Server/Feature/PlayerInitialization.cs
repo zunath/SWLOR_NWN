@@ -180,9 +180,9 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.UnallocatedSP = 10;
             dbPlayer.Version = 1;
             dbPlayer.Name = GetName(player);
-            Stat.AdjustMaxHP(dbPlayer, player, 10);
-            Stat.AdjustMaxSTM(dbPlayer, 10);
-            Stat.AdjustBAB(dbPlayer, player, 1);
+            Stat.AdjustPlayerMaxHP(dbPlayer, player, 10);
+            Stat.AdjustPlayerMaxSTM(dbPlayer, 10);
+            Stat.AdjustPlayerBAB(dbPlayer, player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);
             dbPlayer.FP = Stat.GetMaxFP(player, dbPlayer);
             dbPlayer.Stamina = Stat.GetMaxStamina(player, dbPlayer);

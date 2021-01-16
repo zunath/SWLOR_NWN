@@ -351,7 +351,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             var index = SWLOR.Game.Server.Service.Random.Next(0, setToUse.Length - 1);
             var itemTag = setToUse[index];
 
-            return new Tuple<ItemProperty, int>(ItemService.GetCustomItemPropertyByItemTag(itemTag), Colorize(itemTag)); 
+            return new Tuple<ItemProperty, int>(null, Colorize(itemTag)); 
         }
     }
 }

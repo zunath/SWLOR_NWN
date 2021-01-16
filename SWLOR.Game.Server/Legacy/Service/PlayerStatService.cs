@@ -331,7 +331,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             }
             else
             {
-                skill = ItemService.GetSkillTypeForItem(item);
+                skill = SkillType.Unknown; // ItemService.GetSkillTypeForItem(item);
             }
                 
             var rank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, (int)skill).Rank;
@@ -426,7 +426,7 @@ namespace SWLOR.Game.Server.Legacy.Service
                 if (processed.Contains(item)) continue;
                 processed.Add(item);
 
-                var skill = ItemService.GetSkillTypeForItem(item);
+                var skill = SkillType.Unknown; // ItemService.GetSkillTypeForItem(item);
                 var rank = DataService.PCSkill.GetByPlayerIDAndSkillID(player.GlobalID, (int)skill).Rank;
                 stats.CooldownRecovery += item.GetLocalInt("STAT_EFFECTIVE_LEVEL_COOLDOWN_RECOVERY");
                 stats.EnmityRate += item.GetLocalFloat("STAT_EFFECTIVE_LEVEL_ENMITY_RATE");
@@ -455,7 +455,7 @@ namespace SWLOR.Game.Server.Legacy.Service
                 stats.FP += item.GetLocalInt("STAT_EFFECTIVE_LEVEL_FP_BONUS");
 
                 // Calculate base attack bonus
-                if (ItemService.WeaponBaseItemTypes.Contains(item.BaseItemType))
+                //if (ItemService.WeaponBaseItemTypes.Contains(item.BaseItemType))
                 {
                     var itemLevel = item.RecommendedLevel;
                     var delta = itemLevel - rank;
@@ -469,7 +469,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 
 
                 // Calculate AC
-                if (ItemService.ArmorBaseItemTypes.Contains(item.BaseItemType))
+                //if (ItemService.ArmorBaseItemTypes.Contains(item.BaseItemType))
                 {
                     int skillRankToUse;
                     var maxAC = 0;
@@ -560,7 +560,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             }
             if (!weapon.IsValid) return 0;
 
-            var itemSkill = ItemService.GetSkillTypeForItem(weapon);
+            var itemSkill = SkillType.Unknown; // ItemService.GetSkillTypeForItem(weapon);
             if (itemSkill == SkillType.Unknown ||
                 itemSkill == SkillType.LightArmor ||
                 itemSkill == SkillType.HeavyArmor ||

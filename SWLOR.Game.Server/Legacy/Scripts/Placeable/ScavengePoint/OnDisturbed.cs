@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Legacy.Scripts.Placeable.ScavengePoint
 
             if (disturbType == DisturbType.Added)
             {
-                ItemService.ReturnItem(oPC, oItem);
+                //ItemService.ReturnItem(oPC, oItem);
             }
             else
             {

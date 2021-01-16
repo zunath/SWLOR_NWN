@@ -788,7 +788,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             NWItem oSpellOrigin = (GetSpellCastItem());
             NWCreature oTarget = (GetSpellTargetObject());
 
-            var skillType = ItemService.GetSkillTypeForItem(oSpellOrigin);
+            var skillType = SkillType.Unknown; // ItemService.GetSkillTypeForItem(oSpellOrigin);
 
             if (skillType == SkillType.Unknown ||
                 skillType == SkillType.LightArmor ||
@@ -834,7 +834,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 
         private static void ApplyWeaponPenalties(NWPlayer oPC, NWItem oItem)
         {
-            var skillType = ItemService.GetSkillTypeForItem(oItem);
+            var skillType = SkillType.Unknown; // ItemService.GetSkillTypeForItem(oItem);
 
             if (skillType == SkillType.Unknown ||
                 skillType == SkillType.HeavyArmor ||
@@ -905,7 +905,7 @@ namespace SWLOR.Game.Server.Legacy.Service
 
         private static void RemoveWeaponPenalties(NWItem oItem)
         {
-            var skillType = ItemService.GetSkillTypeForItem(oItem);
+            var skillType = SkillType.Unknown; // ItemService.GetSkillTypeForItem(oItem);
             if (skillType == SkillType.Unknown ||
                 skillType == SkillType.HeavyArmor ||
                 skillType == SkillType.LightArmor ||
@@ -1001,7 +1001,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             }
             else
             {
-                skill = ItemService.GetSkillTypeForItem(item);
+                skill = SkillType.Unknown; // ItemService.GetSkillTypeForItem(item);
             }
 
             if (skill == SkillType.Unknown) return;

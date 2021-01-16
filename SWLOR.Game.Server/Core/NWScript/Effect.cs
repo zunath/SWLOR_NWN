@@ -928,10 +928,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - nAbility: ABILITY_*
         ///   - nModifyBy: This is the amount by which to decrement the ability
         /// </summary>
-        public static Effect EffectAbilityDecrease(int nAbility, int nModifyBy)
+        public static Effect EffectAbilityDecrease(AbilityType nAbility, int nModifyBy)
         {
             Internal.NativeFunctions.StackPushInteger(nModifyBy);
-            Internal.NativeFunctions.StackPushInteger(nAbility);
+            Internal.NativeFunctions.StackPushInteger((int)nAbility);
             Internal.NativeFunctions.CallBuiltIn(446);
             return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
         }

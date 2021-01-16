@@ -12779,7 +12779,7 @@
         },
         "ScriptOnEnter": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "explore_trigger"
         },
         "ScriptOnExit": {
           "type": "resref",
@@ -12828,21 +12828,6 @@
         "VarTable": {
           "type": "list",
           "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Trigger.ExplorationTrigger"
-              }
-            },
             {
               "__struct_id": 0,
               "Name": {
@@ -12931,7 +12916,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -2.05834453481657e-006
+          "value": -2.296763113918132e-006
         },
         "XPosition": {
           "type": "float",
@@ -12999,7 +12984,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 6.715443419125222e-007
+          "value": 7.907536314633035e-007
         },
         "YPosition": {
           "type": "float",

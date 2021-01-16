@@ -11884,6 +11884,61 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Stamina Pack I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "stm_pack_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stamina Pack II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "stm_pack_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stamina Pack III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "stm_pack_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stamina Pack IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "stm_pack_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stamina Pack V"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "stm_pack_5"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Starship Repair Kit"
                     },
                     "RESREF": {

@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 5
+    "value": 10
   },
   "BaseItem": {
     "type": "int",
-    "value": 24
+    "value": 29
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 5
+    "value": 10
   },
   "Cursed": {
     "type": "byte",
@@ -27,7 +27,7 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Increases the charisma of a target by 2 for 2 minutes. "
+      "0": "Restores a target for 2 STM every 6 seconds for a duration of 30 seconds. Length of time is increased with higher skill ranks in Medicine"
     }
   },
   "Description": {
@@ -43,12 +43,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Charisma Stim I"
+      "0": "Stamina Pack I"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 152
+    "value": 183
   },
   "PaletteID": {
     "type": "byte",
@@ -91,37 +91,6 @@
           "type": "word",
           "value": 329
         }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 33
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 5
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 100
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
       }
     ]
   },
@@ -135,11 +104,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "stim_cha1"
+    "value": "stm_pack_1"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "stim_cha1"
+    "value": "stm_pack_1"
   },
   "VarTable": {
     "type": "list",
@@ -156,14 +125,14 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "Medicine.StimPack"
+          "value": "Medicine.ForcePack"
         }
       },
       {
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "AMOUNT"
+          "value": "HEALING_BONUS"
         },
         "Type": {
           "type": "dword",
@@ -171,22 +140,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 3
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "ABILITY_TYPE"
-        },
-        "Type": {
-          "type": "dword",
           "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 5
         }
       }
     ]

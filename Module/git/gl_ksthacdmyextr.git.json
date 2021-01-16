@@ -36463,7 +36463,7 @@
         },
         "ScriptOnEnter": {
           "type": "resref",
-          "value": "script_1"
+          "value": "explore_trigger"
         },
         "ScriptOnExit": {
           "type": "resref",
@@ -36614,7 +36614,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 8.734064977033995e-006
+          "value": 8.972483556135558e-006
         },
         "XPosition": {
           "type": "float",

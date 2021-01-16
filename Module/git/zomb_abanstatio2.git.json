@@ -152905,7 +152905,7 @@
         },
         "ScriptOnEnter": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "explore_trigger"
         },
         "ScriptOnExit": {
           "type": "resref",
@@ -153142,7 +153142,7 @@
         },
         "ScriptOnEnter": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "explore_trigger"
         },
         "ScriptOnExit": {
           "type": "resref",
@@ -153379,7 +153379,7 @@
         },
         "ScriptOnEnter": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "explore_trigger"
         },
         "ScriptOnExit": {
           "type": "resref",
@@ -153616,7 +153616,7 @@
         },
         "ScriptOnEnter": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "explore_trigger"
         },
         "ScriptOnExit": {
           "type": "resref",
@@ -153853,7 +153853,7 @@
         },
         "ScriptOnEnter": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "explore_trigger"
         },
         "ScriptOnExit": {
           "type": "resref",
@@ -154150,7 +154150,7 @@
         },
         "ScriptOnEnter": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "explore_trigger"
         },
         "ScriptOnExit": {
           "type": "resref",
@@ -154387,7 +154387,7 @@
         },
         "ScriptOnEnter": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "explore_trigger"
         },
         "ScriptOnExit": {
           "type": "resref",
@@ -154624,7 +154624,7 @@
         },
         "ScriptOnEnter": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "explore_trigger"
         },
         "ScriptOnExit": {
           "type": "resref",
@@ -154861,7 +154861,7 @@
         },
         "ScriptOnEnter": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "explore_trigger"
         },
         "ScriptOnExit": {
           "type": "resref",
@@ -155098,7 +155098,7 @@
         },
         "ScriptOnEnter": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "explore_trigger"
         },
         "ScriptOnExit": {
           "type": "resref",
@@ -155335,7 +155335,7 @@
         },
         "ScriptOnEnter": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "explore_trigger"
         },
         "ScriptOnExit": {
           "type": "resref",
@@ -155632,7 +155632,7 @@
         },
         "ScriptOnEnter": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "explore_trigger"
         },
         "ScriptOnExit": {
           "type": "resref",
@@ -155869,7 +155869,7 @@
         },
         "ScriptOnEnter": {
           "type": "resref",
-          "value": "jvm_script_1"
+          "value": "explore_trigger"
         },
         "ScriptOnExit": {
           "type": "resref",
@@ -156029,7 +156029,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.50600942561141e-006
+          "value": 1.625218715162191e-006
         },
         "YPosition": {
           "type": "float",
@@ -156261,7 +156261,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8032069206237793
+          "value": 0.8032068610191345
         },
         "XPosition": {
           "type": "float",
@@ -156269,7 +156269,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5957000851631165
+          "value": 0.595700204372406
         },
         "YPosition": {
           "type": "float",
@@ -156501,7 +156501,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.02454287931323052
+          "value": -0.02454335615038872
         },
         "XPosition": {
           "type": "float",

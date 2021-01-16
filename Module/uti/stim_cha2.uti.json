@@ -27,7 +27,7 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Increases the charisma of a target by 6 for 30 seconds. Length of time increased by skill and perks."
+      "0": "Increases the charisma of a target by 4 for 2 minutes. "
     }
   },
   "Description": {

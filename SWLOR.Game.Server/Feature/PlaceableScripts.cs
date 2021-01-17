@@ -7,7 +7,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public static class TeleportDevice
+    public static class PlaceableScripts
     {
         
         /// <summary>
@@ -63,5 +63,24 @@ namespace SWLOR.Game.Server.Feature
             AssignCommand(user, () => ActionJumpToLocation(location));
         }
 
+        /// <summary>
+        /// Applies a permanent VFX on a placeable on heartbeat, then removes the heartbeat script.
+        /// </summary>
+        [NWNEventHandler("permanent_vfx")]
+        public static void ApplyPermanentVisualEffect()
+        {
+            var obj = OBJECT_SELF;
+
+            var vfxId = GetLocalInt(obj, "PERMANENT_VFX_ID");
+            var vfx = vfxId > 0 ? (VisualEffect) vfxId : VisualEffect.None;
+            
+            if (vfx != VisualEffect.None)
+            {
+                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(vfx), obj);
+            }
+
+            SetEventScript(obj, EventScript.Placeable_OnHeartbeat, string.Empty);
+        }
+        
     }
 }

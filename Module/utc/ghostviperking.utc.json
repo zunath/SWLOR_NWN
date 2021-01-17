@@ -202,7 +202,7 @@
   },
   "ScriptHeartbeat": {
     "type": "resref",
-    "value": "script_1"
+    "value": "permanent_vfx"
   },
   "ScriptOnBlocked": {
     "type": "resref",

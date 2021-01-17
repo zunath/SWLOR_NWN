@@ -118,7 +118,7 @@
   },
   "OnFailToOpen": {
     "type": "resref",
-    "value": "script_1"
+    "value": "generic_convo"
   },
   "OnHeartbeat": {
     "type": "resref",

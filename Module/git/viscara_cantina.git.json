@@ -15201,7 +15201,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante rayée"
+            "2": "Porte mï¿½tallique coulissante rayï¿½e"
           }
         },
         "OnClick": {
@@ -62739,7 +62739,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",

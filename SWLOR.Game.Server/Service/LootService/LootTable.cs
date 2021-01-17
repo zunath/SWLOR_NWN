@@ -16,8 +16,8 @@ namespace SWLOR.Game.Server.Service.LootService
             if (Count <= 0)
                 throw new Exception("No items are in this loot table.");
 
-            int[] weights = new int[Count];
-            for (int x = 0; x < Count; x++)
+            var weights = new int[Count];
+            for (var x = 0; x < Count; x++)
             {
                 var item = this.ElementAt(x);
                 var weight = item.Weight;
@@ -31,8 +31,18 @@ namespace SWLOR.Game.Server.Service.LootService
                 weights[x] = weight;
             }
 
-            int randomIndex = Random.GetRandomWeightedIndex(weights);
+            var randomIndex = Random.GetRandomWeightedIndex(weights);
             return this.ElementAt(randomIndex);
+        }
+
+        /// <summary>
+        /// Retrieves a random item from the loot table.
+        /// Throws an exception if there are no items in the loot table.
+        /// </summary>
+        /// <returns>A random item from the loot table.</returns>
+        public LootTableItem GetRandomItem()
+        {
+            return GetRandomItem(0);
         }
     }
 }

@@ -141,13 +141,13 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   the function will return the merged stack object. If the merged stack
         ///   overflowed, the function will return the overflowed stack that was created.
         /// </summary>
-        public static uint CreateItemOnObject(string sTag, uint oTarget = OBJECT_INVALID, int nStackSize = 1,
+        public static uint CreateItemOnObject(string sResRef, uint oTarget = OBJECT_INVALID, int nStackSize = 1,
             string sNewTag = "")
         {
             Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
             Internal.NativeFunctions.StackPushInteger(nStackSize);
             Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.StackPushStringUTF8(sTag);
+            Internal.NativeFunctions.StackPushStringUTF8(sResRef);
             Internal.NativeFunctions.CallBuiltIn(31);
             return Internal.NativeFunctions.StackPopObject();
         }

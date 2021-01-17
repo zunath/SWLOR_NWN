@@ -9,7 +9,6 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class PlaceableScripts
     {
-        
         /// <summary>
         /// When a teleport placeable is used, send the user to the configured waypoint.
         /// Checks are made for required key items, if specified as local variables on the placeable.
@@ -69,17 +68,41 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("permanent_vfx")]
         public static void ApplyPermanentVisualEffect()
         {
-            var obj = OBJECT_SELF;
+            var placeable = OBJECT_SELF;
 
-            var vfxId = GetLocalInt(obj, "PERMANENT_VFX_ID");
+            var vfxId = GetLocalInt(placeable, "PERMANENT_VFX_ID");
             var vfx = vfxId > 0 ? (VisualEffect) vfxId : VisualEffect.None;
             
             if (vfx != VisualEffect.None)
             {
-                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(vfx), obj);
+                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(vfx), placeable);
             }
 
-            SetEventScript(obj, EventScript.Placeable_OnHeartbeat, string.Empty);
+            SetEventScript(placeable, EventScript.Placeable_OnHeartbeat, string.Empty);
+        }
+
+        /// <summary>
+        /// Handles starting a generic conversation when a placeable is clicked or used by a player or DM.
+        /// </summary>
+        [NWNEventHandler("generic_convo")]
+        public static void GenericConversation()
+        {
+            var placeable = OBJECT_SELF;
+            var user = GetObjectType(placeable) == ObjectType.Placeable ? GetLastUsedBy() : GetClickingObject();
+
+            if (!GetIsPC(user) && !GetIsDM(user)) return;
+
+            var conversation = GetLocalString(placeable, "CONVERSATION");
+            var target = GetLocalBool(placeable, "TARGET_PC") ? user : placeable;
+
+            if (!string.IsNullOrWhiteSpace(conversation))
+            {
+                Dialog.StartConversation(user, target, conversation);
+            }
+            else
+            {
+                AssignCommand(user, () => ActionStartConversation(target, string.Empty, true, false));
+            }
         }
         
     }

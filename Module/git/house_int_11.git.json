@@ -1073,7 +1073,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",

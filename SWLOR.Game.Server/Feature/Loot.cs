@@ -170,6 +170,16 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
+        /// Checks whether a loot table is defined by the specified name.
+        /// </summary>
+        /// <param name="name">The name to search by.</param>
+        /// <returns>true if the loot table exists, false otherwise</returns>
+        public static bool LootTableExists(string name)
+        {
+            return _lootTables.ContainsKey(name);
+        }
+        
+        /// <summary>
         /// Returns all of the loot table details found on a creature's local variables.
         /// </summary>
         /// <param name="creature">The creature to search.</param>
@@ -198,12 +208,12 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// When a creature is hit by another creature with the Gilfinder or Treasure Hunter perk,
+        /// When a creature is hit by another creature with the Creditfinder or Treasure Hunter perk,
         /// a local variable is set on the creature which will be picked up when spawning items.
         /// These will be checked later when the creature dies and loot is spawned.
         /// </summary>
         [NWNEventHandler("item_on_hit")]
-        public static void MarkGilfinderAndTreasureHunterOnTarget()
+        public static void MarkCreditfinderAndTreasureHunterOnTarget()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player) || !GetIsObjectValid(player)) return;
@@ -211,7 +221,7 @@ namespace SWLOR.Game.Server.Feature
             var target = GetSpellTargetObject();
             if (GetIsPC(target) || GetIsDM(target)) return;
 
-            var currentGilfinder = GetLocalInt(target, "GILFINDER_LEVEL");
+            var currentGilfinder = GetLocalInt(target, "CREDITFINDER_LEVEL");
             var currentTreasureHunter = GetLocalInt(target, "TREASURE_HUNTER_LEVEL");
 
             var effectiveGilfinderLevel = Perk.GetEffectivePerkLevel(player, PerkType.CreditFinder);
@@ -219,7 +229,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (effectiveGilfinderLevel > currentGilfinder)
             {
-                SetLocalInt(target, "GILFINDER_LEVEL", effectiveGilfinderLevel);
+                SetLocalInt(target, "CREDITFINDER_LEVEL", effectiveGilfinderLevel);
             }
 
             if (effectiveTreasureHunterLevel > currentTreasureHunter)

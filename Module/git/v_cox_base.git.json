@@ -1924,7 +1924,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_2"
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -2229,7 +2229,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_2"
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -2534,7 +2534,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_2"
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -2839,7 +2839,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_2"
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -3144,7 +3144,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_2"
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -3449,7 +3449,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_2"
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -3754,7 +3754,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_2"
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -4059,7 +4059,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_2"
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",

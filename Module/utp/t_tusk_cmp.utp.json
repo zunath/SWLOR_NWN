@@ -96,7 +96,7 @@
   },
   "OnClosed": {
     "type": "resref",
-    "value": "script_4"
+    "value": "scav_closed"
   },
   "OnDamaged": {
     "type": "resref",
@@ -116,7 +116,7 @@
   },
   "OnInvDisturbed": {
     "type": "resref",
-    "value": "script_3"
+    "value": "scav_disturbed"
   },
   "OnLock": {
     "type": "resref",
@@ -128,7 +128,7 @@
   },
   "OnOpen": {
     "type": "resref",
-    "value": "script_1"
+    "value": "scav_opened"
   },
   "OnSpellCastAt": {
     "type": "resref",

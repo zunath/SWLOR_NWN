@@ -24373,7 +24373,7 @@
           "type": "cexolocstring",
           "value": {
             "0": "Door",
-            "2": "Porte métallique coulissante vers le bas bleu"
+            "2": "Porte mï¿½tallique coulissante vers le bas bleu"
           }
         },
         "OnClick": {
@@ -28442,7 +28442,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditï¿½"
           }
         },
         "OnClick": {
@@ -28669,7 +28669,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditï¿½"
           }
         },
         "OnClick": {
@@ -28896,7 +28896,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaporateur d'humidité"
+            "2": "Vaporateur d'humiditï¿½"
           }
         },
         "OnClick": {
@@ -29123,7 +29123,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Landspeeder endommagé"
+            "2": "Landspeeder endommagï¿½"
           }
         },
         "OnClick": {
@@ -47948,7 +47948,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -48227,7 +48227,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -48504,7 +48504,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -48781,7 +48781,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -49571,7 +49571,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Vaisseau - Décolage"
+            "2": "Vaisseau - Dï¿½colage"
           }
         },
         "Looping": {
@@ -49692,7 +49692,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Trafic aï¿½rien et terrestre"
           }
         },
         "Looping": {
@@ -49827,7 +49827,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Trafic aérien et terrestre"
+            "2": "Trafic aï¿½rien et terrestre"
           }
         },
         "Looping": {
@@ -49969,7 +49969,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Bourdonnements électriques"
+            "2": "Bourdonnements ï¿½lectriques"
           }
         },
         "Looping": {
@@ -50372,7 +50372,7 @@
         "LocName": {
           "type": "cexolocstring",
           "value": {
-            "2": "Droïd - Divers dialogues"
+            "2": "Droï¿½d - Divers dialogues"
           }
         },
         "Looping": {

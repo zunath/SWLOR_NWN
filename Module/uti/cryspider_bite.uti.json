@@ -138,25 +138,5 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cryspider_bite"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "BleedBite"
-        }
-      }
-    ]
   }
 }

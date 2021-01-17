@@ -200,25 +200,5 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "vellenking_0001"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "BleedBite"
-        }
-      }
-    ]
   }
 }

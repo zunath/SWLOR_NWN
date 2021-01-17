@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Legacy.Item.Medicine
         public void ApplyEffects(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             NWPlayer player = (user.Object);
-            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
+            var effectiveStats = new EffectiveItemStats(); //PlayerStatService.GetPlayerItemEffectiveStats(player);
 
             //CustomEffectService.RemovePCCustomEffect(target.Object, CustomEffectType.Bleeding);
             player.SendMessage("You finish bandaging " + target.Name + "'s wounds.");

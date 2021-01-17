@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.Event.Module;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Legacy.Service
@@ -54,7 +55,7 @@ namespace SWLOR.Game.Server.Legacy.Service
                     AddItemProperty(DurationType.Permanent, itemProp, oFinal);
                 }
                 // finally, copy local vars
-                LocalVariableService.CopyVariables(oSource, oFinal);
+                Variable.CopyAll(oSource, oFinal);
             }
 
             DestroyObject(oCopy);

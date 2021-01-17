@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
                 pcSkill.Rank += amount;
                 
                 DataService.SubmitDataChange(pcSkill, DatabaseActionType.Update);
-                PlayerStatService.ApplyStatChanges(GetPC(), null);
+                //PlayerStatService.ApplyStatChanges(GetPC(), null);
 
                 // Reduce the pool levels. Delete the record if it drops to zero.
                 var pool = DataService.PCSkillPool.GetByPlayerIDAndSkillCategoryID(GetPC().GlobalID, model.SkillCategoryID);

@@ -315,7 +315,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             // Update player and apply stat changes only if a level up occurred.
             if (originalRank != pcSkill.Rank)
             {
-                PlayerStatService.ApplyStatChanges(oPC, null);
+                //PlayerStatService.ApplyStatChanges(oPC, null);
             }
         }
 
@@ -574,7 +574,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             if (!oPC.IsInitializedAsPlayer) return; // Players who log in for the first time don't have an ID yet.
             if (oPC.GetLocalInt("LOGGED_IN_ONCE") <= 0) return; // Don't fire heavy calculations if this is the player's first log in after a restart.
 
-            PlayerStatService.ApplyStatChanges(oPC, null);
+            //PlayerStatService.ApplyStatChanges(oPC, null);
             ApplyWeaponPenalties(oPC, oItem);
             ApplyEquipmentPenalties(oPC, oItem);
 
@@ -587,7 +587,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             if (GetLocalBool(oPC, "IS_CUSTOMIZING_ITEM") == true) return; // Don't run heavy code when customizing equipment.
 
             HandleGlovesUnequipEvent();
-            PlayerStatService.ApplyStatChanges(oPC, oItem);
+            //PlayerStatService.ApplyStatChanges(oPC, oItem);
             RemoveWeaponPenalties(oItem);
             RemoveEquipmentPenalties(oItem);
         }
@@ -763,7 +763,7 @@ namespace SWLOR.Game.Server.Legacy.Service
                 MessageHub.Instance.Publish(new OnSkillDecayed(oPC, decaySkill.SkillID, oldRank, decaySkill.Rank));
             }
 
-            PlayerStatService.ApplyStatChanges(oPC, null);
+            //PlayerStatService.ApplyStatChanges(oPC, null);
             return true;
         }
 

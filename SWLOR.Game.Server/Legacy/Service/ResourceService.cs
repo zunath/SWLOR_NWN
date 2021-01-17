@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Legacy.Enumeration;
 using SWLOR.Game.Server.Legacy.GameObject;
+using SWLOR.Game.Server.Legacy.ValueObject;
 using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
 
 namespace SWLOR.Game.Server.Legacy.Service
@@ -89,7 +90,7 @@ namespace SWLOR.Game.Server.Legacy.Service
                 case -6: chance = 27; break;
             }
 
-            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
+            var effectiveStats = new EffectiveItemStats(); //PlayerStatService.GetPlayerItemEffectiveStats(player);
             var itemBonus = (scavenging ? effectiveStats.Scavenging : effectiveStats.Harvesting) / 2;
             if (itemBonus > 30) itemBonus = 30;
             chance += itemBonus;

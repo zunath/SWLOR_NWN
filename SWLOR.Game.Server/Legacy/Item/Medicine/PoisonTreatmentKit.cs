@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Legacy.Item.Medicine
         public float Seconds(NWCreature user, NWItem item, NWObject target, Location targetLocation, CustomData customData)
         {
             NWPlayer player = (user.Object);
-            var effectiveStats = PlayerStatService.GetPlayerItemEffectiveStats(player);
+            var effectiveStats = new EffectiveItemStats(); // PlayerStatService.GetPlayerItemEffectiveStats(player);
 
             if (SWLOR.Game.Server.Service.Random.Next(100) + 1 <= PerkService.GetCreaturePerkLevel(player, PerkType.SpeedyFirstAid) * 10)
             {

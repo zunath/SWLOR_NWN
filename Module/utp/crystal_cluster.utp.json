@@ -110,7 +110,7 @@
   },
   "OnHeartbeat": {
     "type": "resref",
-    "value": "script_2"
+    "value": "res_heartbeat"
   },
   "OnInvDisturbed": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "OnUsed": {
     "type": "resref",
-    "value": "script_1"
+    "value": "res_used"
   },
   "OnUserDefined": {
     "type": "resref",

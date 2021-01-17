@@ -5608,7 +5608,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "teleport"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -26839,7 +26839,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.04907772690057755
+          "value": 0.04907796531915665
         },
         "XPosition": {
           "type": "float",
@@ -29585,7 +29585,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 6.826715889474144e-006
+          "value": 7.303553047677269e-006
         },
         "XPosition": {
           "type": "float",

@@ -6735,7 +6735,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "teleport"
         },
         "OnUserDefined": {
           "type": "resref",

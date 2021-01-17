@@ -8635,7 +8635,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "qst_force_crys"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -8897,7 +8897,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "qst_force_crys"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -9159,7 +9159,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "qst_force_crys"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -9421,7 +9421,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "qst_force_crys"
         },
         "OnUserDefined": {
           "type": "resref",

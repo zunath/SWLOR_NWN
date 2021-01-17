@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Legacy;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.QuestService;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
@@ -112,6 +116,69 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
+        /// <summary>
+        /// When a force crystal is touched, run the progression logic for the First Rites quest.
+        /// </summary>
+        [NWNEventHandler("qst_force_crys")]
+        public static void FirstRitesForceCrystal()
+        {
+            const string InactiveQuestText = "The crystal glows quietly...";
+            var player = GetLastUsedBy();
+            
+            // Not a player.
+            if (!GetIsPC(player) || GetIsDM(player))
+            {
+                SendMessageToPC(player, InactiveQuestText);
+                return;
+            }
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            // Player doesn't have this quest yet.
+            if (!dbPlayer.Quests.ContainsKey("first_rites"))
+            {
+                SendMessageToPC(player, InactiveQuestText);
+                return;
+            }
+
+            // Player is not on the appropriate state of the quest.
+            var playerQuestState = dbPlayer.Quests["first_rites"];
+            if (playerQuestState.CurrentState != 2)
+            {
+                SendMessageToPC(player, InactiveQuestText);
+                return;
+            }
+
+            var quest = Quest.GetQuestById("first_rites");
+            var crystal = OBJECT_SELF;
+            var type = GetLocalInt(crystal, "CRYSTAL_COLOR_TYPE");
+
+            string cluster;
+
+            switch (type)
+            {
+                case 1: cluster = "c_cluster_blue"; break; // Blue
+                case 2: cluster = "c_cluster_red"; break; // Red
+                case 3: cluster = "c_cluster_green"; break; // Green 
+                case 4: cluster = "c_cluster_yellow"; break; // Yellow
+                default: throw new Exception("Invalid crystal color type.");
+            }
+
+            CreateItemOnObject(cluster, player);
+            quest.Advance(player, crystal);
+
+            ObjectVisibility.AdjustVisibilityByObjectId(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", VisibilityType.Hidden);
+
+            var waypoint = GetObjectByTag("FORCE_QUEST_LANDING");
+            var location = GetLocation(waypoint);
+            
+            AssignCommand(player, () => ActionJumpToLocation(location));
+            
+            // todo: unlock perk
+            FloatingTextStringOnCreature("You have unlocked the Lightsaber Blueprints perk.", player, false);
+        }
+        
         private static void FirstRites(QuestBuilder builder)
         {
             builder.Create("first_rites", "First Rites")

@@ -18,5 +18,7 @@
         StaminaPack3 = 13,
         StaminaPack4 = 14,
         StaminaPack5 = 15,
+        Poison = 16,
+        Bleed = 17,
     }
 }

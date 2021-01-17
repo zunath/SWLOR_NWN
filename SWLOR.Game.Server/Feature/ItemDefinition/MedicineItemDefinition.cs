@@ -19,6 +19,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             ForcePack(builder);
             StaminaPack(builder);
             ResuscitationKit(builder);
+            Bandages(builder);
+            PoisonTreatmentKit(builder);
             
             return builder.Build();
         }
@@ -231,6 +233,117 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             CreateItem("res_kit_3", 0.31f);
             CreateItem("res_kit_4", 0.51f);
         }
-        
+
+        private void Bandages(ItemBuilder builder)
+        {
+            builder.Create("bandages")
+                .ValidationAction((user, item, target, location) =>
+                {
+                    if (!StatusEffect.HasStatusEffect(target, StatusEffectType.Bleed))
+                        return "Your target is not bleeding.";
+
+                    return string.Empty;
+                })
+                .InitializationMessage((user, item, target, location) =>
+                {
+                    var name = GetName(target);
+                    return $"You begin bandaging {name}'s wounds...";
+                })
+                .Delay(3.0f)
+                .UserFacesTarget()
+                .MaxDistance((user, item, target, location) =>
+                {
+                    var perkLevel = Perk.GetEffectivePerkLevel(user, PerkType.RangedHealing);
+
+                    return 3.5f + perkLevel;
+                })
+                .PlaysAnimation(Animation.LoopingGetLow)
+                .ReducesItemCharge((user, item, target, location) =>
+                {
+                    var perkLevel = Perk.GetEffectivePerkLevel(user, PerkType.FrugalMedic);
+                    var consumeChance = 10 * perkLevel;
+
+                    return Random.D100(1) > consumeChance;
+                })
+                .ApplyAction((user, item, target, location) =>
+                {
+                    StatusEffect.Remove(target, StatusEffectType.Bleed);
+                    Skill.GiveSkillXP(user, SkillType.FirstAid, 100);
+                    PlaySound("use_bacta");
+                });
+        }
+
+        private void PoisonTreatmentKit(ItemBuilder builder)
+        {
+            bool HasPoison(uint target)
+            {
+                // Check for the status effect first.
+                var hasEffect = StatusEffect.HasStatusEffect(target, StatusEffectType.Poison);
+
+                // Next check for NWN effects.
+                for (var effect = GetFirstEffect(target); GetIsEffectValid(effect); effect = GetNextEffect(target))
+                {
+                    var type = GetEffectType(effect);
+                    if (type == EffectTypeScript.Poison ||
+                        type == EffectTypeScript.Disease ||
+                        type == EffectTypeScript.AbilityDecrease)
+                    {
+                        hasEffect = true;
+                        break;
+                    }
+                }
+
+                return hasEffect;
+            }
+
+            builder.Create("treatment_kit")
+                .ValidationAction((user, item, target, location) =>
+                {
+                    if(!HasPoison(target))
+                        return "Your target is not poisoned.";
+
+                    return string.Empty;
+                })
+                .InitializationMessage((user, item, target, location) =>
+                {
+                    var name = GetName(target);
+                    return $"You begin treating {name}'s infection...";
+                })
+                .Delay(3.0f)
+                .UserFacesTarget()
+                .MaxDistance((user, item, target, location) =>
+                {
+                    var perkLevel = Perk.GetEffectivePerkLevel(user, PerkType.RangedHealing);
+
+                    return 3.5f + perkLevel;
+                })
+                .PlaysAnimation(Animation.LoopingGetLow)
+                .ReducesItemCharge((user, item, target, location) =>
+                {
+                    var perkLevel = Perk.GetEffectivePerkLevel(user, PerkType.FrugalMedic);
+                    var consumeChance = 10 * perkLevel;
+
+                    return Random.D100(1) > consumeChance;
+                })
+                .ApplyAction((user, item, target, location) =>
+                {
+                    StatusEffect.Remove(target, StatusEffectType.Poison);
+
+                    for (var effect = GetFirstEffect(target); GetIsEffectValid(effect); effect = GetNextEffect(target))
+                    {
+                        var type = GetEffectType(effect);
+                        if (type == EffectTypeScript.Poison ||
+                            type == EffectTypeScript.Disease ||
+                            type == EffectTypeScript.AbilityDecrease)
+                        {
+                            RemoveEffect(target, effect);
+                        }
+                    }
+
+                    Skill.GiveSkillXP(user, SkillType.FirstAid, 100);
+                    PlaySound("use_bacta");
+                });
+        }
+
     }
 }

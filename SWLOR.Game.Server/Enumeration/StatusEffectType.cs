@@ -20,5 +20,15 @@
         StaminaPack5 = 15,
         Poison = 16,
         Bleed = 17,
+        BurstOfSpeed1 = 18,
+        BurstOfSpeed2 = 19,
+        BurstOfSpeed3 = 20,
+        BurstOfSpeed4 = 21,
+        BurstOfSpeed5 = 22,
+        ForceHeal1 = 23,
+        ForceHeal2 = 24,
+        ForceHeal3 = 25,
+        ForceHeal4 = 26,
+        ForceHeal5 = 27,
     }
 }

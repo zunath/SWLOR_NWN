@@ -19,10 +19,6 @@
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Feature\AbilityDefinition\" />
-  </ItemGroup>
-
   <Target Name="NWN" AfterTargets="Build">
     <ItemGroup>
       <AllOutputs Include="$(OutputPath)$(MSBuildProjectName).dll" />
@@ -32,7 +28,6 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="$(SolutionDir)NWN.Python\deployBuild.exe -b $(ProjectDir)$(OutDir)" />
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">    
   </Target>
 </Project>

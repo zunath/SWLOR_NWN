@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             builder.Create(Feat.ThrowLightsaber1, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber I")
-                .HasRecastDelay(RecastGroup.Invalid, 60f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(3)
                 .IsCastedAbility()
@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             builder.Create(Feat.ThrowLightsaber2, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber II")
-                .HasRecastDelay(RecastGroup.Invalid, 60f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(3)
                 .IsCastedAbility()
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             builder.Create(Feat.ThrowLightsaber3, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber III")
-                .HasRecastDelay(RecastGroup.Invalid, 60f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(4)
                 .IsCastedAbility()
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             builder.Create(Feat.ThrowLightsaber4, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber IV")
-                .HasRecastDelay(RecastGroup.Invalid, 60f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(5)
                 .IsCastedAbility()
@@ -162,7 +162,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             builder.Create(Feat.ThrowLightsaber5, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber V")
-                .HasRecastDelay(RecastGroup.Invalid, 60f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(5)
                 .IsCastedAbility()

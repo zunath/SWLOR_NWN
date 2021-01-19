@@ -7,6 +7,14 @@ namespace SWLOR.Game.Server.Service.AbilityService
     {
         [RecastGroup("Invalid", "Invalid")]
         Invalid = 0,
+        [RecastGroup("Burst Of Speed", "Burst Of Speed")]
+        BurstOfSpeed = 1,
+        [RecastGroup("Force Heal", "Force Heal")]
+        ForceHeal = 2,
+        [RecastGroup("Force Push", "Force Push")]
+        ForcePush = 3,
+        [RecastGroup("Throw Lightsaber", "Throw Saber")]
+        ThrowLightsaber = 4,
     }
 
     public class RecastGroupAttribute: Attribute

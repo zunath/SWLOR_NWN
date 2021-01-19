@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             builder.Create(Feat.ForceLeap1, PerkType.ForcePush)
                 .Name("Force Push I")
-                .HasRecastDelay(RecastGroup.Invalid, 30f)
+                .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(2)
                 .IsCastedAbility()
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             builder.Create(Feat.ForceLeap1, PerkType.ForcePush)
                 .Name("Force Push II")
-                .HasRecastDelay(RecastGroup.Invalid, 30f)
+                .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(3)
                 .IsCastedAbility()
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             builder.Create(Feat.ForceLeap1, PerkType.ForcePush)
                 .Name("Force Push III")
-                .HasRecastDelay(RecastGroup.Invalid, 30f)
+                .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(4)
                 .IsCastedAbility()
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             builder.Create(Feat.ForceLeap1, PerkType.ForcePush)
                 .Name("Force Push IV")
-                .HasRecastDelay(RecastGroup.Invalid, 30f)
+                .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasActivationDelay(4.0f)
                 .RequirementFP(5)
                 .IsCastedAbility()

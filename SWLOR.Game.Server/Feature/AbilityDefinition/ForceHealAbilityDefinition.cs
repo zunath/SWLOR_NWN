@@ -27,23 +27,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             builder.Create(Feat.ForceLeap1, PerkType.ForceHeal)
                 .Name("Force Heal 1")
-                //.HasRecastDelay(RecastGroup.ForceHeal1, 5f)
+                .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(2)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    var amount = 1; // GetAbilityModifier(AbilityType.Wisdom, activator);
-
-                    ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
-                        ? EffectDamage(amount)
-                        : EffectHeal(amount), target);
-
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_S), target);
-
-                    Enmity.ModifyEnmityOnAll(activator, amount);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    StatusEffect.Apply(activator, target, StatusEffectType.ForceHeal1, 0.0f);
                 });
         }
 
@@ -51,23 +42,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             builder.Create(Feat.ForceLeap1, PerkType.ForceHeal)
                 .Name("Force Heal 2")
-                //.HasRecastDelay(RecastGroup.ForceHeal2, 5f)
+                .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(3)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal2)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    var amount = 2;
-
-                    ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
-                        ? EffectDamage(amount)
-                        : EffectHeal(amount), target);
-
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_S), target);
-
-                    Enmity.ModifyEnmityOnAll(activator, amount);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    StatusEffect.Apply(activator, target, StatusEffectType.ForceHeal2, 0.0f);
                 });
         }
 
@@ -75,23 +57,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             builder.Create(Feat.ForceLeap1, PerkType.ForceHeal)
                 .Name("Force Heal 3")
-                //.HasRecastDelay(RecastGroup.ForceHeal3, 5f)
+                .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(4)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal3)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    var amount = 3;
-
-                    ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
-                        ? EffectDamage(amount)
-                        : EffectHeal(amount), target);
-
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_S), target);
-
-                    Enmity.ModifyEnmityOnAll(activator, amount);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    StatusEffect.Apply(activator, target, StatusEffectType.ForceHeal3, 0.0f);
                 });
         }
 
@@ -99,23 +72,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             builder.Create(Feat.ForceLeap1, PerkType.ForceHeal)
                 .Name("Force Heal 4")
-                //.HasRecastDelay(RecastGroup.ForceHeal4, 12f)
+                .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .HasActivationDelay(4.0f)
                 .RequirementFP(5)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal4)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    var amount = 4;
-
-                    ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
-                        ? EffectDamage(amount)
-                        : EffectHeal(amount), target);
-
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_S), target);
-
-                    Enmity.ModifyEnmityOnAll(activator, amount);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    StatusEffect.Apply(activator, target, StatusEffectType.ForceHeal4, 0.0f);
                 });
         }
 
@@ -123,23 +87,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             builder.Create(Feat.ForceLeap1, PerkType.ForceHeal)
                 .Name("Force Heal 5")
-                //.HasRecastDelay(RecastGroup.ForceHeal5, 12f)
+                .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .HasActivationDelay(4.0f)
                 .RequirementFP(6)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal5)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    var amount = 5;
-
-                    ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
-                        ? EffectDamage(amount)
-                        : EffectHeal(amount), target);
-
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_S), target);
-
-                    Enmity.ModifyEnmityOnAll(activator, amount);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    StatusEffect.Apply(activator, target, StatusEffectType.ForceHeal5, 0.0f);
                 });
         }
     }

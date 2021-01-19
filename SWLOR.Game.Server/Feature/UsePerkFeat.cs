@@ -61,15 +61,15 @@ namespace SWLOR.Game.Server.Feature
             else if(ability.ActivationType == AbilityActivationType.Concentration)
             {
                 // Using the same concentration feat ends the effect.
-                var activeConcentrationAbility = Ability.GetConcentrationFeat(activator);
-                if(activeConcentrationAbility == feat)
+                var activeConcentrationAbility = Ability.GetActiveConcentration(activator);
+                if(activeConcentrationAbility.Feat == feat)
                 {
                     Ability.EndConcentrationAbility(activator);
                 }
                 else
                 {
                     Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins concentrating...");
-                    Ability.StartConcentrationAbility(activator, feat);
+                    Ability.StartConcentrationAbility(activator, feat, ability.ConcentrationStatusEffectType);
                 }
                 
             }

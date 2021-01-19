@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="source">The source of the status effect.</param>
         /// <param name="creature">The creature receiving the status effect.</param>
         /// <param name="statusEffectType">The type of status effect to give.</param>
-        /// <param name="length">The amount of time the status effect should last.</param>
+        /// <param name="length">The amount of time the status effect should last. Set to 0.0f to make it permanent.</param>
         public static void Apply(uint source, uint creature, StatusEffectType statusEffectType, float length)
         {
             if(!_creaturesWithStatusEffects.ContainsKey(creature))
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Service
             if(!_creaturesWithStatusEffects[creature].ContainsKey(statusEffectType))
                 _creaturesWithStatusEffects[creature][statusEffectType] = new StatusEffectGroup();
 
-            var expiration = DateTime.UtcNow.AddSeconds(length);
+            var expiration = length == 0.0f ? DateTime.MaxValue : DateTime.UtcNow.AddSeconds(length);
 
             // If the existing status effect will expire later than this, exit early.
             if (_creaturesWithStatusEffects[creature].ContainsKey(statusEffectType))

@@ -23,12 +23,14 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityActivationType ActivationType { get; set; }
         public PerkType EffectiveLevelPerkType { get; set; }
         public Animation AnimationType { get; set; }
+        public StatusEffectType ConcentrationStatusEffectType { get; set; }
 
         public AbilityDetail()
         {
             ActivationVisualEffect = VisualEffect.None;
             AnimationType = Animation.LoopingConjure1;
             Requirements = new List<IAbilityActivationRequirement>();
+            ConcentrationStatusEffectType = StatusEffectType.Invalid;
         }
     }
 }

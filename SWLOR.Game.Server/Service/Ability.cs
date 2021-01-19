@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.AbilityService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<Feat, AbilityDetail> _abilities = new Dictionary<Feat, AbilityDetail>();
 
-        private static readonly Dictionary<uint, Feat> _activeConcentrationAbilities = new Dictionary<uint, Feat>();
+        private static readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new Dictionary<uint, ActiveConcentrationAbility>();
         
         // Recast Group Descriptions
         private static readonly Dictionary<RecastGroup, string> _recastDescriptions = new Dictionary<RecastGroup, string>();
@@ -27,8 +28,6 @@ namespace SWLOR.Game.Server.Service
         {
             CacheRecastGroupNames();
             CacheAbilities();
-
-            Scheduler.ScheduleRepeating(ProcessConcentrationEffects, TimeSpan.FromSeconds(1));
         }
 
         private static void CacheAbilities()
@@ -228,11 +227,12 @@ namespace SWLOR.Game.Server.Service
         /// Each tick, creatures with a concentration effect will be processed.
         /// This will drain FP and reapply whatever effect is associated with an ability.
         /// </summary>
-        private static void ProcessConcentrationEffects()
+        [NWNEventHandler("mod_heartbeat")]
+        public static void ProcessConcentrationEffects()
         {
             var pairs = _activeConcentrationAbilities.ToList();
 
-            foreach (var (creature, feat) in pairs)
+            foreach (var (creature, concentrationAbility) in pairs)
             {
                 // Creature is dead or invalid.
                 if (!GetIsObjectValid(creature) ||
@@ -242,18 +242,16 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
-                var ability = GetAbilityDetail(feat);
+                var ability = GetAbilityDetail(concentrationAbility.Feat);
                 var effectiveLevel = Perk.GetEffectivePerkLevel(creature, ability.EffectiveLevelPerkType);
                 
                 // Move to next creature if requirements aren't met.
-                if (!CanUseAbility(creature, creature, feat, effectiveLevel))
+                if (!CanUseAbility(creature, creature, concentrationAbility.Feat, effectiveLevel))
                 {
                     EndConcentrationAbility(creature);
                     continue;
                 }
                 
-                ability.ImpactAction?.Invoke(creature, creature, effectiveLevel);
-
                 foreach (var req in ability.Requirements)
                 {
                     req.AfterActivationAction(creature);
@@ -267,9 +265,11 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature who will perform the concentration.</param>
         /// <param name="feat">The type of ability to activate.</param>
-        public static void StartConcentrationAbility(uint creature, Feat feat)
+        /// <param name="statusEffectType">The concentration status effect to apply.</param>
+        public static void StartConcentrationAbility(uint creature, Feat feat, StatusEffectType statusEffectType)
         {
-            _activeConcentrationAbilities[creature] = feat;
+            _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(feat, statusEffectType);
+            StatusEffect.Apply(creature, creature, statusEffectType, 0.0f);
             
             SendMessageToPC(creature, "You begin concentrating...");
         }
@@ -280,14 +280,14 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to check.</param>
         /// <returns>The active concentration feat or Feat.Invalid.</returns>
-        public static Feat GetConcentrationFeat(uint creature)
+        public static ActiveConcentrationAbility GetActiveConcentration(uint creature)
         {
             if (_activeConcentrationAbilities.ContainsKey(creature))
             {
                 return _activeConcentrationAbilities[creature];
             }
 
-            return Feat.Invalid;
+            return new ActiveConcentrationAbility(Feat.Invalid, StatusEffectType.Invalid);
         }
         
         /// <summary>
@@ -299,8 +299,10 @@ namespace SWLOR.Game.Server.Service
         {
             if (_activeConcentrationAbilities.ContainsKey(creature))
             {
+                var activeConcentrationEffect = _activeConcentrationAbilities[creature];
+                StatusEffect.Remove(creature, activeConcentrationEffect.StatusEffectType);
                 _activeConcentrationAbilities.Remove(creature);
-                
+
                 SendMessageToPC(creature, "You stop concentrating.");
             }
         }

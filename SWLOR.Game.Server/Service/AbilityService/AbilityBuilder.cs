@@ -38,17 +38,41 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
-        /// Assigns an activation type on the active ability we're building.
-        /// Calling this more than once will replace the previous activation type.
+        /// Indicates this ability is casted which fires once after the end of a configured delay (or instantly if no delay is assigned).
         /// </summary>
-        /// <param name="activationType">The activation type to set.</param>
-        /// <returns>An ability builder with the configured options</returns>
-        public AbilityBuilder UsesActivationType(AbilityActivationType activationType)
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder IsCastedAbility()
         {
-            _activeAbility.ActivationType = activationType;
+            _activeAbility.ActivationType = AbilityActivationType.Casted;
 
             return this;
         }
+
+        /// <summary>
+        /// Indicates this ability is executed on the next weapon hit.
+        /// </summary>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder IsWeaponAbility()
+        {
+            _activeAbility.ActivationType = AbilityActivationType.Weapon;
+
+            return this;
+        }
+        
+        /// <summary>
+        /// Indicates this is a concentration ability which stays active and drains resources until turned off or player runs out of required resources.
+        /// A corresponding status effect must also be defined and this will be applied when the concentration ability is activated and removed when it ends.
+        /// </summary>
+        /// <param name="concentrationStatusEffectType">The status effect to use for this concentration ability.</param>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder IsConcentrationAbility(StatusEffectType concentrationStatusEffectType)
+        {
+            _activeAbility.ActivationType = AbilityActivationType.Concentration;
+            _activeAbility.ConcentrationStatusEffectType = concentrationStatusEffectType;
+
+            return this;
+        }
+
 
         /// <summary>
         /// Assigns an animation to the caster of the ability. This will be played when the creature uses the ability.

@@ -204,13 +204,6 @@
           "type": "resref",
           "value": "cac_vibrolame01"
         }
-      },
-      {
-        "__struct_id": 4096,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "cell_paralise"
-        }
       }
     ]
   },
@@ -427,30 +420,11 @@
         },
         "InventoryRes": {
           "type": "resref",
-          "value": "equ_piecedroid"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 0
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Dropable": {
-          "type": "byte",
-          "value": 1
-        },
-        "InventoryRes": {
-          "type": "resref",
           "value": "equ_capsule_eau"
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 2
+          "value": 0
         },
         "Repos_Posy": {
           "type": "word",

@@ -199,13 +199,6 @@
           "type": "resref",
           "value": "blast_carabine"
         }
-      },
-      {
-        "__struct_id": 8192,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "cell_fusil009"
-        }
       }
     ]
   },
@@ -346,21 +339,6 @@
     "value": [
       {
         "__struct_id": 0,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "cac_gaderffii"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 0
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 1,
         "Dropable": {
           "type": "byte",
           "value": 1
@@ -371,22 +349,7 @@
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 1
-        },
-        "Repos_Posy": {
-          "type": "word",
           "value": 0
-        }
-      },
-      {
-        "__struct_id": 2,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "cell_fusil009"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 2
         },
         "Repos_Posy": {
           "type": "word",

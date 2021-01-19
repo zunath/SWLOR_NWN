@@ -195,17 +195,6 @@
           "type": "resref",
           "value": "blast_carabine"
         }
-      },
-      {
-        "__struct_id": 8192,
-        "Dropable": {
-          "type": "byte",
-          "value": 1
-        },
-        "EquippedRes": {
-          "type": "resref",
-          "value": "cell_fusil004"
-        }
       }
     ]
   },
@@ -396,154 +385,15 @@
         },
         "InventoryRes": {
           "type": "resref",
-          "value": "cac_gaderffii"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 2
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 2,
-        "Dropable": {
-          "type": "byte",
-          "value": 1
-        },
-        "InventoryRes": {
-          "type": "resref",
           "value": "equ_cell_tusken"
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 3
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 3,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "cell_fusil004"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 4
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 4,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "cell_fusil004"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 5
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "cell_fusil004"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 6
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 6,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "cell_fusil004"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 7
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 7,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "cell_fusil004"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 8
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 8,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "cell_fusil004"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 9
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 9,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "cell_fusil004"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 3
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 10,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "cell_fusil004"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 0
-        },
-        "Repos_Posy": {
-          "type": "word",
           "value": 2
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
         }
       }
     ]

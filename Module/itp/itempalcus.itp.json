@@ -7452,17 +7452,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Pièces détachées de droïd"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "equ_piecedroid"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Pistol Barrel"
                     },
                     "RESREF": {
@@ -8953,17 +8942,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tusk_highe"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tusken Leather"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tusk_leather"
                     }
                   },
                   {
@@ -15464,28 +15442,6 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Chargeur à énergie standard"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "cell_fusil004"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Grand chargeur à énergie standard"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "cell_fusil009"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Rifle Bullets"
                           },
                           "RESREF": {
@@ -15505,33 +15461,6 @@
                     "ID": {
                       "type": "byte",
                       "value": 29
-                    },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Cellule d'énergie pistolet blaster à neutron "
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "cell_pistolet_01"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Cellule d'énergie pistolet blaster paralysant"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "cell_paralise"
-                          }
-                        }
-                      ]
                     },
                     "STRREF": {
                       "type": "dword",
@@ -17837,17 +17766,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "spear_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Bâton Gaderffii"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cac_gaderffii"
                     }
                   },
                   {

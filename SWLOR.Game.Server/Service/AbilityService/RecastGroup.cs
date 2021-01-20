@@ -19,6 +19,10 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ForceStun = 5,
         [RecastGroup("Battle Insight", "Battle Insight")]
         BattleInsight = 6,
+        [RecastGroup("Comprehend Speech", "Comp. Speech")]
+        ComprehendSpeech = 7,
+        [RecastGroup("Mind Trick", "Mind Trick")]
+        MindTrick = 8,
     }
 
     public class RecastGroupAttribute: Attribute

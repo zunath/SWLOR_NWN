@@ -35,5 +35,7 @@
         ForceStun3 = 30,
         BattleInsight1 = 31,
         BattleInsight2 = 32,
+        MindTrick1 = 33,
+        MindTrick2 = 34,
     }
 }

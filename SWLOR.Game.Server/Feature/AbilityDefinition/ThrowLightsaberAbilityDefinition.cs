@@ -116,6 +116,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .RequirementFP(3)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
+                .HasCustomValidation((activator, target, level) =>
+                {
+                    var weapon = GetItemInSlot(InventorySlot.RightHand);
+                    int weaponSize = StringToInt(Get2DAString("baseitems", "WeaponSize", (int)GetBaseItemType(weapon)));
+                    float distance = GetDistanceBetween(activator, target);
+
+                    if (distance > 15)
+                        return "You must be within 15 meters of your target.";
+                    if (!GetIsObjectValid(weapon) && !(GetBaseItemType(weapon) == Core.NWScript.Enum.Item.BaseItem.Lightsaber))
+                        return "You cannot force throw your currently held object.";
+                    else return string.Empty;
+                })
                 .HasImpactAction((activator, target, level) =>
                 {
                     SaberThrow(activator, target, level);
@@ -132,6 +144,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .RequirementFP(3)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
+                .HasCustomValidation((activator, target, level) =>
+                {
+                    var weapon = GetItemInSlot(InventorySlot.RightHand);
+                    int weaponSize = StringToInt(Get2DAString("baseitems", "WeaponSize", (int)GetBaseItemType(weapon)));
+                    float distance = GetDistanceBetween(activator, target);
+
+                    if (distance > 15)
+                        return "You must be within 15 meters of your target.";
+                    if (!GetIsObjectValid(weapon) && !(GetBaseItemType(weapon) == Core.NWScript.Enum.Item.BaseItem.Lightsaber))
+                        return "You cannot force throw your currently held object.";
+                    else return string.Empty;
+                })
                 .HasImpactAction((activator, target, level) =>
                 {
                     SaberThrow(activator, target, level);
@@ -148,6 +172,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .RequirementFP(4)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
+                .HasCustomValidation((activator, target, level) =>
+                {
+                    var weapon = GetItemInSlot(InventorySlot.RightHand);
+                    int weaponSize = StringToInt(Get2DAString("baseitems", "WeaponSize", (int)GetBaseItemType(weapon)));
+                    float distance = GetDistanceBetween(activator, target);
+
+                    if (distance > 15)
+                        return "You must be within 15 meters of your target.";
+                    if (!GetIsObjectValid(weapon) && !(GetBaseItemType(weapon) == Core.NWScript.Enum.Item.BaseItem.Lightsaber))
+                        return "You cannot force throw your currently held object.";
+                    else return string.Empty;
+                })
                 .HasImpactAction((activator, target, level) =>
                 {
                     SaberThrow(activator, target, level);
@@ -164,6 +200,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .RequirementFP(5)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
+                .HasCustomValidation((activator, target, level) =>
+                {
+                    var weapon = GetItemInSlot(InventorySlot.RightHand);
+                    int weaponSize = StringToInt(Get2DAString("baseitems", "WeaponSize", (int)GetBaseItemType(weapon)));
+                    float distance = GetDistanceBetween(activator, target);
+
+                    if (distance > 15)
+                        return "You must be within 15 meters of your target.";
+                    if (!GetIsObjectValid(weapon) && !(GetBaseItemType(weapon) == Core.NWScript.Enum.Item.BaseItem.Lightsaber))
+                        return "You cannot force throw your currently held object.";
+                    else return string.Empty;
+                })
                 .HasImpactAction((activator, target, level) =>
                 {
                     SaberThrow(activator, target, level);
@@ -180,6 +228,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .RequirementFP(5)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
+                .HasCustomValidation((activator, target, level) =>
+                {
+                    var weapon = GetItemInSlot(InventorySlot.RightHand);
+                    int weaponSize = StringToInt(Get2DAString("baseitems", "WeaponSize", (int)GetBaseItemType(weapon)));
+                    float distance = GetDistanceBetween(activator, target);
+
+                    if (distance > 15)
+                        return "You must be within 15 meters of your target.";
+                    if (!GetIsObjectValid(weapon) && !(GetBaseItemType(weapon) == Core.NWScript.Enum.Item.BaseItem.Lightsaber))
+                        return "You cannot force throw your currently held object.";
+                    else return string.Empty;
+                })
                 .HasImpactAction((activator, target, level) =>
                 {
                     SaberThrow(activator, target, level);

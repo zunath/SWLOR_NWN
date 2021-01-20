@@ -30,5 +30,8 @@
         ForceHeal3 = 25,
         ForceHeal4 = 26,
         ForceHeal5 = 27,
+        ForceStun1 = 28,
+        ForceStun2 = 29,
+        ForceStun3 = 30,
     }
 }

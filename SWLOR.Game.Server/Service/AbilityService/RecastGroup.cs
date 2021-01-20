@@ -15,6 +15,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ForcePush = 3,
         [RecastGroup("Throw Lightsaber", "Throw Saber")]
         ThrowLightsaber = 4,
+        [RecastGroup("Force Stun", "Force Stun")]
+        ForceStun = 5,
     }
 
     public class RecastGroupAttribute: Attribute

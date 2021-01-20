@@ -23,6 +23,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ComprehendSpeech = 7,
         [RecastGroup("Mind Trick", "Mind Trick")]
         MindTrick = 8,
+        [RecastGroup("Force Breach", "Force Breach")]
+        ForceBreach = 9,
     }
 
     public class RecastGroupAttribute: Attribute

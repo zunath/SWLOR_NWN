@@ -326,7 +326,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             SendMessageToPC(activator, ColorToken.Gray(GetName(target)) + " resisted your ability");
-            SendMessageToPC(target, ColorToken.Gray("You resisted " + GetName(target)) + "'s ability");
+            SendMessageToPC(target, ColorToken.Gray("You resisted " + GetName(activator)) + "'s ability");
             return true;
         }
     }

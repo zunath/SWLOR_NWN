@@ -307,5 +307,27 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Returns true if the target resists the ability.
+        /// </summary>
+        /// <param name="activator"></param>
+        /// /// <param name="target"></param>
+        /// /// <param name="primaryAbilityType"></param>
+        /// /// <param name="secondaryAbilityType"></param>
+        public static bool GetAbilityResisted(uint activator, uint target, AbilityType primaryAbilityType, AbilityType secondaryAbilityType)
+        {
+            if (GetAbilityModifier(primaryAbilityType, activator) + GetAbilityModifier(secondaryAbilityType, activator) * 0.5 + d20(1)
+                >
+                GetAbilityModifier(primaryAbilityType, target) + GetAbilityModifier(secondaryAbilityType, target) * 0.5 + d20(1)
+                )
+            {
+                
+                return false;
+            }
+
+            SendMessageToPC(activator, ColorToken.Gray(GetName(target)) + " resisted your ability");
+            SendMessageToPC(target, ColorToken.Gray("You resisted " + GetName(activator)) + "'s ability");
+            return true;
+        }
     }
 }

@@ -33,5 +33,7 @@
         ForceStun1 = 28,
         ForceStun2 = 29,
         ForceStun3 = 30,
+        BattleInsight1 = 31,
+        BattleInsight2 = 32,
     }
 }

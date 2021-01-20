@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.ForceStun1)
                 .Name("Force Stun I")
-                .EffectIcon(17) // 25 = Haste
+                .EffectIcon(17) // 17 = Dazed
                 .GrantAction((source, target, length) =>
                 {
                     if (!Ability.GetAbilityResisted(source, target, AbilityType.Intelligence, AbilityType.Wisdom))
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {            
             builder.Create(StatusEffectType.ForceStun2)
                 .Name("Force Stun II")
-                .EffectIcon(17) // 25 = Haste
+                .EffectIcon(17) // 17 = Dazed
                 .GrantAction((source, target, length) =>
                 {
                     const float radiusSize = RadiusSize.Medium;
@@ -75,9 +75,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                     // Target the next nearest creature and do the same thing.
                     var targetCreature = GetFirstObjectInShape(Shape.Sphere, radiusSize, GetLocation(target), true);
-                    while (GetIsObjectValid(targetCreature) && GetIsReactionTypeHostile(target, source))
+                    while (GetIsObjectValid(targetCreature))
                     {
-                        if (targetCreature != target)
+                        if (targetCreature != target && GetIsReactionTypeHostile(target, source))
                         {
                             // Apply to nearest other creature, then exit loop. 
                             // Intentionally applying Force Stun I so that it doesn't continue to chain exponentially.
@@ -118,9 +118,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
                     // Target the next nearest creature and do the same thing.
                     var targetCreature = GetFirstObjectInShape(Shape.Sphere, radiusSize, GetLocation(target), true);
-                    while (GetIsObjectValid(targetCreature) && GetIsReactionTypeHostile(target, source))
+                    while (GetIsObjectValid(targetCreature))
                     {
-                        if (targetCreature != target)
+                        if (targetCreature != target && GetIsReactionTypeHostile(target, source))
                         {
                             // Apply to nearest other creature, then move on to the next.
                             // Intentionally applying Force Stun I so that it doesn't continue to chain exponentially.

@@ -25,6 +25,14 @@ namespace SWLOR.Game.Server.Service.AbilityService
         MindTrick = 8,
         [RecastGroup("Force Breach", "Force Breach")]
         ForceBreach = 9,
+        [RecastGroup("Force Body", "Force Body")]
+        ForceBody = 10,
+        [RecastGroup("Force Drain", "Force Drain")]
+        ForceDrain = 11,
+        [RecastGroup("Force Lightning", "F. Lightning")]
+        ForceLightning = 12,
+        [RecastGroup("Force Mind", "Force Mind")]
+        ForceMind = 13,
     }
 
     public class RecastGroupAttribute: Attribute

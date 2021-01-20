@@ -37,5 +37,10 @@
         BattleInsight2 = 32,
         MindTrick1 = 33,
         MindTrick2 = 34,
+        ForceDrain1 = 35,
+        ForceDrain2 = 36,
+        ForceDrain3 = 37,
+        ForceDrain4 = 38,
+        ForceDrain5 = 39,
     }
 }

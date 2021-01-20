@@ -1,0 +1,114 @@
+﻿//using Random = SWLOR.Game.Server.Service.Random;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
+
+namespace SWLOR.Game.Server.Feature.AbilityDefinition
+{
+    public class ForceLightningAbilityDefinition : IAbilityListDefinition
+    {
+        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        {
+            var builder = new AbilityBuilder();
+            ForceLightning1(builder);
+            ForceLightning2(builder);
+            ForceLightning3(builder);
+            ForceLightning4(builder);
+
+            return builder.Build();
+        }
+
+        private static void ForceLightning1(AbilityBuilder builder)
+        {
+            builder.Create(Feat.ForceLightning1, PerkType.ForceLightning)
+                .Name("Force Lightning I")
+                .HasRecastDelay(RecastGroup.ForceLightning, 30f)
+                .HasActivationDelay(2.0f)
+                .RequirementFP(2)
+                .IsCastedAbility()
+                .DisplaysVisualEffectWhenActivating()
+                .HasImpactAction((activator, target, level) =>
+                {
+                    if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
+                    {
+                        ApplyEffectToObject(DurationType.Instant, EffectDamage(10 + GetAbilityModifier(AbilityType.Intelligence)), target);
+                        ActionCastFakeSpellAtObject((int) Spell.LightningBolt, target);
+                    }
+
+                    Enmity.ModifyEnmityOnAll(activator, 1);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                });
+        }
+
+        private static void ForceLightning2(AbilityBuilder builder)
+        {
+            builder.Create(Feat.ForceLightning2, PerkType.ForceLightning)
+                .Name("Force Lightning II")
+                .HasRecastDelay(RecastGroup.ForceLightning, 30f)
+                .HasActivationDelay(2.0f)
+                .RequirementFP(3)
+                .IsCastedAbility()
+                .DisplaysVisualEffectWhenActivating()
+                .HasImpactAction((activator, target, level) =>
+                {
+                    if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
+                    {
+                        ApplyEffectToObject(DurationType.Instant, EffectDamage(15 + GetAbilityModifier(AbilityType.Intelligence)), target);
+                        ActionCastFakeSpellAtObject((int)Spell.LightningBolt, target);
+                    }
+
+                    Enmity.ModifyEnmityOnAll(activator, 1);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                });
+        }
+
+        private static void ForceLightning3(AbilityBuilder builder)
+        {
+            builder.Create(Feat.ForceLightning3, PerkType.ForceLightning)
+                .Name("Force Lightning III")
+                .HasRecastDelay(RecastGroup.ForceLightning, 30f)
+                .HasActivationDelay(2.0f)
+                .RequirementFP(4)
+                .IsCastedAbility()
+                .DisplaysVisualEffectWhenActivating()
+                .HasImpactAction((activator, target, level) =>
+                {
+                    if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
+                    {
+                        ApplyEffectToObject(DurationType.Instant, EffectDamage((int) (20 + GetAbilityModifier(AbilityType.Intelligence) * 1.5)), target);
+                        ActionCastFakeSpellAtObject((int)Spell.LightningBolt, target);
+                    }
+
+                    Enmity.ModifyEnmityOnAll(activator, 1);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                });
+        }
+
+        private static void ForceLightning4(AbilityBuilder builder)
+        {
+            builder.Create(Feat.ForceLightning4, PerkType.ForceLightning)
+                .Name("Force Lightning IV")
+                .HasRecastDelay(RecastGroup.ForceLightning, 30f)
+                .HasActivationDelay(4.0f)
+                .RequirementFP(5)
+                .IsCastedAbility()
+                .DisplaysVisualEffectWhenActivating()
+                .HasImpactAction((activator, target, level) =>
+                {
+                    if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
+                    {
+                        ApplyEffectToObject(DurationType.Instant, EffectDamage((int)(25 + GetAbilityModifier(AbilityType.Intelligence) * 1.75)), target);
+                        ActionCastFakeSpellAtObject((int)Spell.LightningBolt, target);
+                    }
+
+                    Enmity.ModifyEnmityOnAll(activator, 1);
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                });
+        }
+    }
+}

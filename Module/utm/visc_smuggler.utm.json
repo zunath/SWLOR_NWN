@@ -192,7 +192,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "rifle_cox"
+                "value": "blaster_cox"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -211,7 +211,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "blaster_cox"
+                "value": "club_cox"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -230,11 +230,11 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "club_cox"
+                "value": "doubleaxe_cox"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 9
+                "value": 8
               },
               "Repos_Posy": {
                 "type": "word",
@@ -249,11 +249,11 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "doubleaxe_cox"
+                "value": "greataxe_cox"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 7
+                "value": 4
               },
               "Repos_Posy": {
                 "type": "word",
@@ -262,25 +262,6 @@
             },
             {
               "__struct_id": 8,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "greataxe_cox"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 2
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 3
-              }
-            },
-            {
-              "__struct_id": 9,
               "Infinite": {
                 "type": "byte",
                 "value": 1

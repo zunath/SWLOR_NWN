@@ -686,7 +686,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.2191047966480255
+          "value": 0.2191050201654434
         },
         "XPosition": {
           "type": "float",
@@ -694,7 +694,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9757013320922852
+          "value": -0.9757012724876404
         },
         "YPosition": {
           "type": "float",
@@ -1708,7 +1708,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 4.442530098458519e-006
+          "value": 4.680948677560082e-006
         },
         "XPosition": {
           "type": "float",
@@ -23730,39 +23730,7 @@
                     },
                     "PropertiesList": {
                       "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 42
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 11
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 109
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
-                          }
-                        }
-                      ]
+                      "value": []
                     },
                     "Repos_PosX": {
                       "type": "word",
@@ -31226,7 +31194,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 4.442530098458519e-006
+          "value": 4.680948677560082e-006
         },
         "XPosition": {
           "type": "float",

@@ -321,8 +321,12 @@ namespace SWLOR.Game.Server.Service
                 GetAbilityModifier(primaryAbilityType, target) + GetAbilityModifier(secondaryAbilityType, target) * 0.5 + d20(1)
                 )
             {
+                
                 return false;
             }
+
+            SendMessageToPC(activator, ColorToken.Gray(GetName(target)) + " resisted your ability");
+            SendMessageToPC(target, ColorToken.Gray("You resisted " + GetName(target)) + "'s ability");
             return true;
         }
     }

@@ -25,15 +25,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             return builder.Build();
         }
 
+        public string Validation(uint activator, uint target, int level)
+        {
+            var weapon = GetItemInSlot(InventorySlot.RightHand);
+            int weaponSize = StringToInt(Get2DAString("baseitems", "WeaponSize", (int) GetBaseItemType(weapon)));
+            float distance = GetDistanceBetween(activator, target);
+
+            if (distance > 15)
+                return "You must be within 15 meters of your target.";
+            if (!GetIsObjectValid(weapon) && !(GetBaseItemType(weapon) == Core.NWScript.Enum.Item.BaseItem.Lightsaber))
+                return "You cannot force throw your currently held object.";
+            else return string.Empty;
+        }
+
         private static void SaberThrow(uint activator, uint target, int level)
         {
-            uint weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             
             int iDamage = GetAbilityModifier(AbilityType.Intelligence, activator) + (int) (GetAbilityModifier(AbilityType.Wisdom, activator) * 0.5f);
             int iRange = 15;
             int iCount = 1;
             float fDelay = GetDistanceBetween(activator, target) / 10.0f;
-            uint oTargetObject;
+            var oTargetObject = target;
 
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)

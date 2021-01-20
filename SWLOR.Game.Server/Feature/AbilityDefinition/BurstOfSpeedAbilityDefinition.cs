@@ -31,11 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .HasActivationDelay(2.0f)
                 .RequirementFP(2)
                 .IsConcentrationAbility(StatusEffectType.BurstOfSpeed1)
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level) =>
-                {
-                    StatusEffect.Apply(activator, target, StatusEffectType.BurstOfSpeed1, 0.0f);
-                });
+                .DisplaysVisualEffectWhenActivating();
         }
         private static void BurstOfSpeed2(AbilityBuilder builder)
         {
@@ -45,11 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .HasActivationDelay(2.0f)
                 .RequirementFP(3)
                 .IsConcentrationAbility(StatusEffectType.BurstOfSpeed2)
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level) =>
-                {
-                    StatusEffect.Apply(activator, target, StatusEffectType.BurstOfSpeed2, 0.0f);
-                });
+                .DisplaysVisualEffectWhenActivating();
         }
         private static void BurstOfSpeed3(AbilityBuilder builder)
         {
@@ -59,11 +51,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .HasActivationDelay(2.0f)
                 .RequirementFP(4)
                 .IsConcentrationAbility(StatusEffectType.BurstOfSpeed3)
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level) =>
-                {
-                    StatusEffect.Apply(activator, target, StatusEffectType.BurstOfSpeed3, 0.0f);
-                });
+                .DisplaysVisualEffectWhenActivating();
         }
         private static void BurstOfSpeed4(AbilityBuilder builder)
         {
@@ -73,11 +61,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .HasActivationDelay(2.0f)
                 .RequirementFP(5)
                 .IsConcentrationAbility(StatusEffectType.BurstOfSpeed4)
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level) =>
-                {
-                    StatusEffect.Apply(activator, target, StatusEffectType.BurstOfSpeed4, 0.0f);
-                });
+                .DisplaysVisualEffectWhenActivating();
         }
         private static void BurstOfSpeed5(AbilityBuilder builder)
         {
@@ -87,11 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .HasActivationDelay(2.0f)
                 .RequirementFP(6)
                 .IsConcentrationAbility(StatusEffectType.BurstOfSpeed5)
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level) =>
-                {
-                    StatusEffect.Apply(activator, target, StatusEffectType.BurstOfSpeed1, 0.0f);
-                });
+                .DisplaysVisualEffectWhenActivating();
         }
     }
 }

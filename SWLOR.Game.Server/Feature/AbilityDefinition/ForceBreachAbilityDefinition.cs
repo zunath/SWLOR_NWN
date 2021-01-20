@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -9,119 +10,102 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition
 {
-    public class ForcePushAbilityDefinition : IAbilityListDefinition
+    public class ForceBreachAbilityDefinition : IAbilityListDefinition
     {
         public Dictionary<Feat, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
-            ForcePush1(builder);
-            ForcePush2(builder);
-            ForcePush3(builder);
-            ForcePush4(builder);
+            ForceBreach1(builder);
+            ForceBreach2(builder);
+            ForceBreach3(builder);
+            ForceBreach4(builder);
 
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level)
+        private static void ImpactAction(uint activator, uint target, int level)
         {
-            var size = GetCreatureSize(target);
-            CreatureSize maxSize = CreatureSize.Invalid;
+            int damage;
+
             switch (level)
             {
                 case 1:
-                    maxSize = CreatureSize.Small;
+                    damage = 10 + GetAbilityModifier(AbilityType.Wisdom);
                     break;
                 case 2:
-                    maxSize = CreatureSize.Medium;
+                    damage = 15 + GetAbilityModifier(AbilityType.Wisdom);
                     break;
                 case 3:
-                    maxSize = CreatureSize.Large;
+                    damage = (int)(20 + GetAbilityModifier(AbilityType.Wisdom) * 1.5);
                     break;
                 case 4:
-                    maxSize = CreatureSize.Huge;
+                    damage = (int)(25 + GetAbilityModifier(AbilityType.Wisdom) * 1.75);
+                    break;
+                default:
+                    damage = 0;
                     break;
             }
 
-            if (size > maxSize)
-                return "Your target is too large to force push.";
-
-            return string.Empty;
-        }
-
-        private static void ImpactAction(uint activator, uint target, int level)
-        {
             if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
             {
-                ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f);
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Silence), target);
             }
-            else ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, 6.0f);
 
             Enmity.ModifyEnmityOnAll(activator, 1);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
 
-        private static void ForcePush1(AbilityBuilder builder)
+        private static void ForceBreach1(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForcePush1, PerkType.ForcePush)
-                .Name("Force Push I")
-                .HasRecastDelay(RecastGroup.ForcePush, 30f)
+            builder.Create(Feat.ForceBreach1, PerkType.ForceBreach)
+                .Name("Force Breach I")
+                .HasRecastDelay(RecastGroup.ForceBreach, 30f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(2)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
                 .HasImpactAction((activator, target, level) =>
                 {
                     ImpactAction(activator, target, level);
                 });
         }
 
-        private static void ForcePush2(AbilityBuilder builder)
+        private static void ForceBreach2(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForcePush2, PerkType.ForcePush)
-                .Name("Force Push II")
-                .HasRecastDelay(RecastGroup.ForcePush, 30f)
+            builder.Create(Feat.ForceBreach2, PerkType.ForceBreach)
+                .Name("Force Breach II")
+                .HasRecastDelay(RecastGroup.ForceBreach, 30f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(3)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
                 .HasImpactAction((activator, target, level) =>
                 {
                     ImpactAction(activator, target, level);
                 });
         }
 
-        private static void ForcePush3(AbilityBuilder builder)
+        private static void ForceBreach3(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForcePush3, PerkType.ForcePush)
-                .Name("Force Push III")
-                .HasRecastDelay(RecastGroup.ForcePush, 30f)
+            builder.Create(Feat.ForceBreach3, PerkType.ForceBreach)
+                .Name("Force Breach III")
+                .HasRecastDelay(RecastGroup.ForceBreach, 30f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(4)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
                 .HasImpactAction((activator, target, level) =>
                 {
                     ImpactAction(activator, target, level);
                 });
         }
 
-        private static void ForcePush4(AbilityBuilder builder)
+        private static void ForceBreach4(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForcePush4, PerkType.ForcePush)
-                .Name("Force Push IV")
-                .HasRecastDelay(RecastGroup.ForcePush, 30f)
+            builder.Create(Feat.ForceBreach4, PerkType.ForceBreach)
+                .Name("Force Breach IV")
+                .HasRecastDelay(RecastGroup.ForceBreach, 30f)
                 .HasActivationDelay(4.0f)
                 .RequirementFP(5)
                 .IsCastedAbility()

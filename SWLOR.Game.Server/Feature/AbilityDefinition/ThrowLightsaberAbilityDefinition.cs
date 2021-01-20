@@ -25,10 +25,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             return builder.Build();
         }
 
-        public string Validation(uint activator, uint target, int level)
+        private static string Validation(uint activator, uint target, int level)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand);
-            int weaponSize = StringToInt(Get2DAString("baseitems", "WeaponSize", (int) GetBaseItemType(weapon)));
             float distance = GetDistanceBetween(activator, target);
 
             if (distance > 15)
@@ -38,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             else return string.Empty;
         }
 
-        private static void SaberThrow(uint activator, uint target, int level)
+        private static void ImpactAction(uint activator, uint target, int level)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             
@@ -105,6 +104,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
                 oTargetObject = GetNextObjectInShape(Shape.SpellCylinder, iRange, GetLocation(target), true, ObjectType.Creature, GetPosition(activator));
             }
+
+            Enmity.ModifyEnmityOnAll(activator, 1);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
 
         private static void ThrowLightsaber1(AbilityBuilder builder)
@@ -116,11 +118,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .RequirementFP(3)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
+                .HasCustomValidation((activator, target, level) =>
+                {
+                    return Validation(activator, target, level);
+                })
                 .HasImpactAction((activator, target, level) =>
                 {
-                    SaberThrow(activator, target, level);
-                    Enmity.ModifyEnmityOnAll(activator, 1);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    ImpactAction(activator, target, level);
                 });
         }
         private static void ThrowLightsaber2(AbilityBuilder builder)
@@ -132,11 +136,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .RequirementFP(3)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
+                .HasCustomValidation((activator, target, level) =>
+                {
+                    return Validation(activator, target, level);
+                })
                 .HasImpactAction((activator, target, level) =>
                 {
-                    SaberThrow(activator, target, level);
-                    Enmity.ModifyEnmityOnAll(activator, 1);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    ImpactAction(activator, target, level);
                 });
         }
         private static void ThrowLightsaber3(AbilityBuilder builder)
@@ -148,11 +154,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .RequirementFP(4)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
+                .HasCustomValidation((activator, target, level) =>
+                {
+                    return Validation(activator, target, level);
+                })
                 .HasImpactAction((activator, target, level) =>
                 {
-                    SaberThrow(activator, target, level);
-                    Enmity.ModifyEnmityOnAll(activator, 1);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    ImpactAction(activator, target, level);
                 });
         }
         private static void ThrowLightsaber4(AbilityBuilder builder)
@@ -164,11 +172,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .RequirementFP(5)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
+                .HasCustomValidation((activator, target, level) =>
+                {
+                    return Validation(activator, target, level);
+                })
                 .HasImpactAction((activator, target, level) =>
                 {
-                    SaberThrow(activator, target, level);
-                    Enmity.ModifyEnmityOnAll(activator, 1);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    ImpactAction(activator, target, level);
                 });
         }
         private static void ThrowLightsaber5(AbilityBuilder builder)
@@ -180,11 +190,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .RequirementFP(5)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
+                .HasCustomValidation((activator, target, level) =>
+                {
+                    return Validation(activator, target, level);
+                })
                 .HasImpactAction((activator, target, level) =>
                 {
-                    SaberThrow(activator, target, level);
-                    Enmity.ModifyEnmityOnAll(activator, 1);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    ImpactAction(activator, target, level);
                 });
         }
     }

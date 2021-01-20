@@ -29,18 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .HasActivationDelay(2.0f)
                 .RequirementFP(4)
                 .IsConcentrationAbility(StatusEffectType.ForceStun1)
-                .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level) =>
-                {
-                    if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
-                    {
-                        ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f);
-                    }
-                    else ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, 6.0f);
-
-                    Enmity.ModifyEnmityOnAll(activator, 1);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
-                }); 
+                .DisplaysVisualEffectWhenActivating(); 
         }
 
         private static void ForceStun2(AbilityBuilder builder)
@@ -50,8 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .HasRecastDelay(RecastGroup.ForceStun, 60f * 5f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(6)
-                .IsConcentrationAbility(StatusEffectType.ForceStun1)
-                .IsConcentrationAbility(StatusEffectType.Bleed)
+                .IsConcentrationAbility(StatusEffectType.ForceStun2)
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -62,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .HasRecastDelay(RecastGroup.ForceStun, 60f * 5f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(8)
-                .IsConcentrationAbility(StatusEffectType.ForceStun1)
+                .IsConcentrationAbility(StatusEffectType.ForceStun3)
                 .DisplaysVisualEffectWhenActivating();
         }
     }

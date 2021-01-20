@@ -20,6 +20,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             return builder.Build();
         }
 
+        private static string Validation(uint activator, uint target, int level)
+        {
+            if (GetRacialType(target) == RacialType.Cyborg || GetRacialType(target) == RacialType.Robot)
+            {
+                return "Mind trick does not work on this creature.";
+            }
+            else return string.Empty;
+        }
+
         private static void MindTrick1(AbilityBuilder builder)
         {
             builder.Create(Feat.MindTrick1, PerkType.MindTrick)
@@ -29,11 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .RequirementFP(3)
                 .HasCustomValidation((activator, target, level) =>
                 {
-                    if (GetRacialType(target) == RacialType.Cyborg || GetRacialType(target) == RacialType.Robot)
-                    {
-                        return "Mind trick does not work on this creature.";
-                    }
-                    else return string.Empty;
+                    return Validation(activator, target, level);
                 })
                 .IsConcentrationAbility(StatusEffectType.MindTrick1)
                 .DisplaysVisualEffectWhenActivating(); 
@@ -48,11 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .RequirementFP(5)
                 .HasCustomValidation((activator, target, level) =>
                 {
-                    if (GetRacialType(target) == RacialType.Cyborg || GetRacialType(target) == RacialType.Robot)
-                    {
-                        return "Mind trick does not work on this creature.";
-                    }
-                    else return string.Empty;
+                    return Validation(activator, target, level);
                 })
                 .IsConcentrationAbility(StatusEffectType.MindTrick2)
                 .DisplaysVisualEffectWhenActivating();

@@ -21,6 +21,33 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             return builder.Build();
         }
 
+        private static void ImpactAction(uint activator, uint target, int level)
+        {
+            float multiplier = 0;
+            switch (level)
+            {
+                case 1:
+                    multiplier = 0.25f;
+                    break;
+                case 2:
+                    multiplier = 0.5f;
+                    break;
+                default:
+                    break;
+            }
+            // Damage user.
+            ApplyEffectToObject(DurationType.Instant, EffectDamage((int)(GetCurrentHitPoints(activator) * multiplier)), activator);
+
+            // Recover FP on target.
+            Stat.RestoreFP(activator, (int)(GetCurrentHitPoints(activator) * multiplier));
+
+            // Play VFX
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Odd), target);
+
+            Enmity.ModifyEnmityOnAll(activator, 1);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+        }
+
         private static void ForceBody1(AbilityBuilder builder)
         {
             builder.Create(Feat.ForceBody1, PerkType.ForceBody)
@@ -30,17 +57,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level) =>
-                {                    
-                    // Damage user.
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage((int) (GetCurrentHitPoints(activator) * 0.25f)), activator);
-
-                    // Recover FP on target.
-                    Stat.RestoreFP(activator, (int)(GetCurrentHitPoints(activator) * 0.25f));
-
-                    // Play VFX
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Odd), target);
-
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                {
+                    ImpactAction(activator, target, level);
                 });
         }
 
@@ -54,16 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    // Damage user.
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage((int)(GetCurrentHitPoints(activator) * 0.5f)), activator);
-
-                    // Recover FP on target.
-                    Stat.RestoreFP(activator, (int)(GetCurrentHitPoints(activator) * 0.5f));
-
-                    // Play VFX
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Odd), target);
-
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    ImpactAction(activator, target, level);
                 });
         }
     }

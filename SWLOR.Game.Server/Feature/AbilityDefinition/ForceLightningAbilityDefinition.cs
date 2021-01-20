@@ -23,6 +23,39 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             return builder.Build();
         }
 
+        private static void ImpactAction(uint activator, uint target, int level)
+        {
+            int damage;
+
+            switch (level)
+            {
+                case 1:
+                    damage = 10 + GetAbilityModifier(AbilityType.Intelligence);
+                    break;
+                case 2:
+                    damage = 15 + GetAbilityModifier(AbilityType.Intelligence);
+                    break;
+                case 3:
+                    damage = (int)(20 + GetAbilityModifier(AbilityType.Intelligence) * 1.5);
+                    break;
+                case 4:
+                    damage = (int)(25 + GetAbilityModifier(AbilityType.Intelligence) * 1.75);
+                    break;
+                default:
+                    damage = 0;
+                    break;
+            }
+
+            if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
+                ActionCastFakeSpellAtObject((int)Spell.LightningBolt, target);
+            }
+
+            Enmity.ModifyEnmityOnAll(activator, 1);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+        }
+
         private static void ForceLightning1(AbilityBuilder builder)
         {
             builder.Create(Feat.ForceLightning1, PerkType.ForceLightning)
@@ -34,14 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
-                    {
-                        ApplyEffectToObject(DurationType.Instant, EffectDamage(10 + GetAbilityModifier(AbilityType.Intelligence)), target);
-                        ActionCastFakeSpellAtObject((int) Spell.LightningBolt, target);
-                    }
-
-                    Enmity.ModifyEnmityOnAll(activator, 1);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    ImpactAction(activator, target, level);
                 });
         }
 
@@ -56,14 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
-                    {
-                        ApplyEffectToObject(DurationType.Instant, EffectDamage(15 + GetAbilityModifier(AbilityType.Intelligence)), target);
-                        ActionCastFakeSpellAtObject((int)Spell.LightningBolt, target);
-                    }
-
-                    Enmity.ModifyEnmityOnAll(activator, 1);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    ImpactAction(activator, target, level);
                 });
         }
 
@@ -78,14 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
-                    {
-                        ApplyEffectToObject(DurationType.Instant, EffectDamage((int) (20 + GetAbilityModifier(AbilityType.Intelligence) * 1.5)), target);
-                        ActionCastFakeSpellAtObject((int)Spell.LightningBolt, target);
-                    }
-
-                    Enmity.ModifyEnmityOnAll(activator, 1);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    ImpactAction(activator, target, level);
                 });
         }
 
@@ -100,14 +112,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
-                    {
-                        ApplyEffectToObject(DurationType.Instant, EffectDamage((int)(25 + GetAbilityModifier(AbilityType.Intelligence) * 1.75)), target);
-                        ActionCastFakeSpellAtObject((int)Spell.LightningBolt, target);
-                    }
-
-                    Enmity.ModifyEnmityOnAll(activator, 1);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    ImpactAction(activator, target, level);
                 });
         }
     }

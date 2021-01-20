@@ -22,6 +22,44 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             return builder.Build();
         }
 
+        private static string Validation(uint activator, uint target, int level)
+        {
+            var size = GetCreatureSize(target);
+            CreatureSize maxSize = CreatureSize.Invalid;
+            switch (level)
+            {
+                case 1:
+                    maxSize = CreatureSize.Small;
+                    break;
+                case 2:
+                    maxSize = CreatureSize.Medium;
+                    break;
+                case 3:
+                    maxSize = CreatureSize.Large;
+                    break;
+                case 4:
+                    maxSize = CreatureSize.Huge;
+                    break;
+            }
+
+            if (size > maxSize)
+                return "Your target is too large to force push.";
+
+            return string.Empty;
+        }
+
+        private static void ImpactAction(uint activator, uint target, int level)
+        {
+            if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
+            {
+                ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f);
+            }
+            else ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, 6.0f);
+
+            Enmity.ModifyEnmityOnAll(activator, 1);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+        }
+
         private static void ForcePush1(AbilityBuilder builder)
         {
             builder.Create(Feat.ForcePush1, PerkType.ForcePush)
@@ -33,22 +71,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation((activator, target, level) =>
                 {
-                    if (!(GetCreatureSize(target) == CreatureSize.Small))
-                    {
-                        return "Your target is too large to force push.";
-                    }
-                    return string.Empty;
+                    return Validation(activator, target, level);
                 })
                 .HasImpactAction((activator, target, level) =>
                 {
-                    if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
-                    {
-                        ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f);
-                    }
-                    else ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, 6.0f);
-
-                    Enmity.ModifyEnmityOnAll(activator, 1);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    ImpactAction(activator, target, level);
                 });
         }
 
@@ -63,23 +90,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation((activator, target, level) =>
                 {
-                    if (!(GetCreatureSize(target) == CreatureSize.Small ||
-                          GetCreatureSize(target) == CreatureSize.Medium))
-                    {
-                        return "Your target is too large to force push.";
-                    }
-                    return string.Empty;
+                    return Validation(activator, target, level);
                 })
                 .HasImpactAction((activator, target, level) =>
                 {
-                    if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
-                    {
-                        ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f);
-                    }
-                    else ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, 6.0f);
-
-                    Enmity.ModifyEnmityOnAll(activator, 1);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    ImpactAction(activator, target, level);
                 });
         }
 
@@ -94,24 +109,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation((activator, target, level) =>
                 {
-                    if (!(GetCreatureSize(target) == CreatureSize.Small ||
-                          GetCreatureSize(target) == CreatureSize.Medium ||
-                          GetCreatureSize(target) == CreatureSize.Large))
-                    {
-                        return "Your target is too large to force push.";
-                    }
-                    return string.Empty;
+                    return Validation(activator, target, level);
                 })
                 .HasImpactAction((activator, target, level) =>
                 {
-                    if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
-                    {
-                        ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f);
-                    }
-                    else ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, 6.0f);
-
-                    Enmity.ModifyEnmityOnAll(activator, 1);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    ImpactAction(activator, target, level);
                 });
         }
 
@@ -126,14 +128,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
-                    {
-                        ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f);
-                    }
-                    else ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, 6.0f);
-
-                    Enmity.ModifyEnmityOnAll(activator, 1);
-                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+                    ImpactAction(activator, target, level);
                 });
         }
     }

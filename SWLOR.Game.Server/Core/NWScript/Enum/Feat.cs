@@ -1663,5 +1663,25 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         HardLook3 = 1684,
         HardLook4 = 1685,
         HardLook5 = 1686,
+
+
+        // todo: assign IDs to these once they're added to the 2das
+        ForceBody1 = 0,
+        ForceBody2 = 0,
+        ForceBreach1 = 0,
+        ForceBreach2 = 0,
+        ForceBreach3 = 0,
+        ForceBreach4 = 0,
+        ForceLightning1 = 0,
+        ForceLightning2 = 0,
+        ForceLightning3 = 0,
+        ForceLightning4 = 0,
+        ForceMind1 = 0,
+        ForceMind2 = 0,
+        ForceDrain1 = 0,
+        ForceDrain2 = 0,
+        ForceDrain3 = 0,
+        ForceDrain4 = 0,
+        ForceDrain5 = 0,
     }
 }

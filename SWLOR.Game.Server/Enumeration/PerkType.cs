@@ -184,7 +184,7 @@
         ShieldExpertise = 178,
         Ironclad = 179,
 
-
+        ForceDrain = 180, // todo: add this perk
 
         TreasureHunter = 1002,
         CreditFinder = 1003,

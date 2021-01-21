@@ -66,8 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            // BREACH EFFECT doesn't exist yet and is not defined
-            // if (inflictBreach) StatusEffect.Apply(activator, target, StatusEffectType.Invalid, 60f);
+            ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(2), target, 60f);
 
             Enmity.ModifyEnmityOnAll(activator, 1);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);

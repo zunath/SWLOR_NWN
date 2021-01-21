@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand);
 
-            if (Item.VibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon))
+            if (Item.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon))
                 && (GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.SmallShield ||
                     GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.LargeShield ||
                     GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.TowerShield ||

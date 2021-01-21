@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             if (distance > 15)
                 return "You must be within 15 meters of your target.";
-            if (!GetIsObjectValid(weapon) && !(GetBaseItemType(weapon) == Core.NWScript.Enum.Item.BaseItem.Lightsaber))
+            if (!GetIsObjectValid(weapon) || !Item.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon)))
                 return "You cannot force throw your currently held object.";
             else return string.Empty;
         }

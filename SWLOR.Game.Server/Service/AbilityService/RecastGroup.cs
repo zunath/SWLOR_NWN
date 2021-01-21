@@ -33,6 +33,18 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ForceLightning = 12,
         [RecastGroup("Force Mind", "Force Mind")]
         ForceMind = 13,
+        [RecastGroup("Hacking Blade", "Hacking Blade")]
+        HackingBlade = 14,
+        [RecastGroup("Riot Blade", "Riot Blade")]
+        RiotBlade = 15,
+        [RecastGroup("Poison Stab", "Poison Stab")]
+        PoisonStab = 16,
+        [RecastGroup("Backstab", "Backstab")]
+        Backstab = 17,        
+        [RecastGroup("Force Leap", "Force Leap")]
+        ForceLeap = 18,
+        [RecastGroup("Saber Strike", "Saber Strike")]
+        SaberStrike = 19,
     }
 
     public class RecastGroupAttribute: Attribute

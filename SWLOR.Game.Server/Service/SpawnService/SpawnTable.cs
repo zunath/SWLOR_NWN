@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
         public SpawnTable(string name)
         {
             Name = name;
-            RespawnDelayMinutes = Spawning.DefaultRespawnMinutes;
+            RespawnDelayMinutes = Spawn.DefaultRespawnMinutes;
             Spawns = new List<SpawnObject>();
         }
 

@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
 {
     public class SpawnTableBuilder
     {
-        private readonly Dictionary<int, SpawnTable> SpawnTables = new Dictionary<int, SpawnTable>();
+        private readonly Dictionary<string, SpawnTable> SpawnTables = new Dictionary<string, SpawnTable>();
 
         private SpawnTable ActiveTable { get; set; }
         private SpawnObject ActiveSpawn { get; set; }
@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
         /// <param name="spawnTableId">The spawn table Id to create the table with</param>
         /// <param name="name">The name of the spawn table. This is purely for the programmer's benefit. Not used by the system.</param>
         /// <returns>A spawn table builder with the configured settings.</returns>
-        public SpawnTableBuilder Create(int spawnTableId, string name = null)
+        public SpawnTableBuilder Create(string spawnTableId, string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 name = $"Spawn Table {spawnTableId}";
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
         /// Builds a dictionary of spawn tables.
         /// </summary>
         /// <returns>A dictionary of spawn tables</returns>
-        public Dictionary<int, SpawnTable> Build()
+        public Dictionary<string, SpawnTable> Build()
         {
             return SpawnTables;
         }

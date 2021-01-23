@@ -5,13 +5,12 @@ using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SpawnService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Game.Server.Service
 {
-    public static class Spawning
+    public static class Spawn
     {
         public const int DespawnMinutes = 20;
         public const int DefaultRespawnMinutes = 5;
@@ -19,7 +18,7 @@ namespace SWLOR.Game.Server.Feature
         private class SpawnDetail
         {
             public string SerializedObject { get; set; }
-            public int SpawnTableId { get; set; }
+            public string SpawnTableId { get; set; }
             public uint Area { get; set; }
             public float X { get; set; }
             public float Y { get; set; }
@@ -44,7 +43,7 @@ namespace SWLOR.Game.Server.Feature
         private static readonly List<QueuedSpawn> _queuedSpawns = new List<QueuedSpawn>();
         private static readonly Dictionary<uint, List<QueuedSpawn>> _queuedSpawnsByArea = new Dictionary<uint, List<QueuedSpawn>>();
         private static readonly Dictionary<uint, DateTime> _queuedAreaDespawns = new Dictionary<uint, DateTime>();
-        private static readonly Dictionary<int, SpawnTable> _spawnTables = new Dictionary<int, SpawnTable>();
+        private static readonly Dictionary<string, SpawnTable> _spawnTables = new Dictionary<string, SpawnTable>();
         private static readonly Dictionary<uint, List<Guid>> _allSpawnsByArea = new Dictionary<uint, List<Guid>>();
         private static readonly Dictionary<uint, List<ActiveSpawn>> _activeSpawnsByArea = new Dictionary<uint, List<ActiveSpawn>>();
 
@@ -52,7 +51,7 @@ namespace SWLOR.Game.Server.Feature
         public static void CacheData()
         {
             LoadSpawnTables();
-            //StoreSpawns();
+            StoreSpawns();
         }
 
         /// <summary>
@@ -64,16 +63,16 @@ namespace SWLOR.Game.Server.Feature
             // Get all implementations of spawn table definitions.
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(ISpawnTableDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+                .Where(w => typeof(ISpawnListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 
             foreach (var type in types)
             {
-                var instance = (ISpawnTableDefinition)Activator.CreateInstance(type);
+                var instance = (ISpawnListDefinition)Activator.CreateInstance(type);
                 var builtTables = instance.BuildSpawnTables();
 
                 foreach (var table in builtTables)
                 {
-                    if (table.Key <= 0)
+                    if (string.IsNullOrWhiteSpace(table.Key))
                     {
                         Log.Write(LogGroup.Error, $"Spawn table {table.Key} has an invalid key. Values must be greater than zero.");
                         continue;
@@ -130,8 +129,8 @@ namespace SWLOR.Game.Server.Feature
                     // Waypoints with a spawn table ID 
                     else if (type == ObjectType.Waypoint)
                     {
-                        var spawnTableId = GetLocalInt(obj, "SPAWN_TABLE_ID");
-                        if (spawnTableId > 0)
+                        var spawnTableId = GetLocalString(obj, "SPAWN_TABLE_ID");
+                        if (!string.IsNullOrWhiteSpace(spawnTableId))
                         {
                             if (!_spawnTables.ContainsKey(spawnTableId))
                             {
@@ -373,7 +372,7 @@ namespace SWLOR.Game.Server.Feature
             }
             // Spawn tables have their own logic which must be run to determine the spawn to use.
             // Create the object at the stored location.
-            else if(detail.SpawnTableId > 0)
+            else if(!string.IsNullOrWhiteSpace(detail.SpawnTableId))
             {
                 var spawnTable = _spawnTables[detail.SpawnTableId];
                 var (objectType, resref) = spawnTable.GetNextSpawnResref();

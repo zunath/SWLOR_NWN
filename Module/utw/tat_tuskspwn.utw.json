@@ -108,7 +108,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "ext_tusken_tr003"
+          "value": ""
         }
       },
       {
@@ -119,11 +119,11 @@
         },
         "Type": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Value": {
-          "type": "int",
-          "value": 0
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_RAIDER"
         }
       },
       {

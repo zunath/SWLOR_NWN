@@ -42,7 +42,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "creature_spawn"
+    "value": "v_ww_gimpassa"
   },
   "TemplateResRef": {
     "type": "resref",
@@ -74,11 +74,11 @@
         },
         "Type": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Value": {
-          "type": "int",
-          "value": 23
+          "type": "cexostring",
+          "value": "VISCARA_WILDWOODS_GIMPASSA"
         }
       },
       {

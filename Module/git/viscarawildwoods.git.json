@@ -5693,7 +5693,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.04907463118433952
+          "value": 0.04907725006341934
         },
         "XPosition": {
           "type": "float",
@@ -5701,7 +5701,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9987950921058655
+          "value": -0.9987949728965759
         },
         "YPosition": {
           "type": "float",
@@ -5748,7 +5748,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -5780,11 +5780,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -5906,7 +5906,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -5938,11 +5938,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -6009,7 +6009,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.9852772951126099
+          "value": 0.9852772355079651
         },
         "XPosition": {
           "type": "float",
@@ -6017,7 +6017,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.1709637343883514
+          "value": 0.1709640920162201
         },
         "YPosition": {
           "type": "float",
@@ -6064,7 +6064,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -6096,11 +6096,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -6222,7 +6222,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -6254,11 +6254,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -6325,7 +6325,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.4714014530181885
+          "value": 0.4714033603668213
         },
         "XPosition": {
           "type": "float",
@@ -6333,7 +6333,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.881918728351593
+          "value": -0.8819177150726318
         },
         "YPosition": {
           "type": "float",
@@ -6380,7 +6380,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -6412,11 +6412,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -6483,7 +6483,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.266716867685318
+          "value": 0.2667191624641419
         },
         "XPosition": {
           "type": "float",
@@ -6491,7 +6491,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9637749195098877
+          "value": -0.9637743234634399
         },
         "YPosition": {
           "type": "float",
@@ -6538,7 +6538,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -6570,11 +6570,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -6696,7 +6696,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -6728,11 +6728,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -6854,7 +6854,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -6886,11 +6886,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -7012,7 +7012,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -7044,11 +7044,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -7170,7 +7170,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -7202,11 +7202,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -7281,7 +7281,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.6895415186882019
+          "value": 0.6895415782928467
         },
         "YPosition": {
           "type": "float",
@@ -7328,7 +7328,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -7360,11 +7360,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -7486,7 +7486,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -7518,11 +7518,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -7644,7 +7644,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -7676,11 +7676,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -7802,7 +7802,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -7834,11 +7834,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -7960,7 +7960,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_gimpassa"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -7992,11 +7992,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 23
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_GIMPASSA"
               }
             },
             {
@@ -8118,7 +8118,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_gimpassa"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -8150,11 +8150,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 23
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_GIMPASSA"
               }
             },
             {
@@ -8276,7 +8276,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_gimpassa"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -8308,11 +8308,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 23
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_GIMPASSA"
               }
             },
             {
@@ -8434,7 +8434,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_gimpassa"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -8466,11 +8466,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 23
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_GIMPASSA"
               }
             },
             {
@@ -8592,7 +8592,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -8624,11 +8624,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -8695,7 +8695,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.93299400806427
+          "value": -0.9329944849014282
         },
         "XPosition": {
           "type": "float",
@@ -8703,7 +8703,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.3598919212818146
+          "value": -0.3598906099796295
         },
         "YPosition": {
           "type": "float",
@@ -8750,7 +8750,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_gimpassa"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -8782,11 +8782,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 23
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_GIMPASSA"
               }
             },
             {
@@ -8908,7 +8908,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -8940,11 +8940,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -9066,7 +9066,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_gimpassa"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -9098,11 +9098,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 23
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_GIMPASSA"
               }
             },
             {
@@ -9169,7 +9169,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.8032065033912659
+          "value": -0.8032060265541077
         },
         "XPosition": {
           "type": "float",
@@ -9177,7 +9177,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5957006812095642
+          "value": 0.595701277256012
         },
         "YPosition": {
           "type": "float",
@@ -9224,7 +9224,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_gimpassa"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -9256,11 +9256,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 23
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_GIMPASSA"
               }
             },
             {
@@ -9382,7 +9382,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_gimpassa"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -9414,11 +9414,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 23
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_GIMPASSA"
               }
             },
             {
@@ -9540,7 +9540,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -9572,11 +9572,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -9698,7 +9698,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -9730,11 +9730,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -9856,7 +9856,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -9888,11 +9888,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -9959,7 +9959,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9569413661956787
+          "value": -0.9569418430328369
         },
         "XPosition": {
           "type": "float",
@@ -9967,7 +9967,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.2902812957763672
+          "value": -0.2902796864509583
         },
         "YPosition": {
           "type": "float",
@@ -10014,7 +10014,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -10046,11 +10046,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -10172,7 +10172,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -10204,11 +10204,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -10330,7 +10330,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -10362,11 +10362,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -10488,7 +10488,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -10520,11 +10520,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -10646,7 +10646,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -10678,11 +10678,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -10804,7 +10804,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -10836,11 +10836,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -10907,7 +10907,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.7883456945419312
+          "value": 0.7883453965187073
         },
         "XPosition": {
           "type": "float",
@@ -10915,7 +10915,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.615232527256012
+          "value": 0.6152328848838806
         },
         "YPosition": {
           "type": "float",
@@ -10962,7 +10962,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -10994,11 +10994,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -11120,7 +11120,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_wildwd_looter"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -11152,11 +11152,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 22
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_LOOTERS"
               }
             },
             {
@@ -11223,7 +11223,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.5555735230445862
+          "value": 0.5555751323699951
         },
         "XPosition": {
           "type": "float",
@@ -11231,7 +11231,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.8314673900604248
+          "value": -0.8314663767814636
         },
         "YPosition": {
           "type": "float",
@@ -11278,7 +11278,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_kinrath"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -11310,11 +11310,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 24
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_KINRATH"
               }
             },
             {
@@ -11436,7 +11436,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_kinrath"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -11468,11 +11468,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 24
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_KINRATH"
               }
             },
             {
@@ -11594,7 +11594,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_kinrath"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -11626,11 +11626,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 24
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_KINRATH"
               }
             },
             {
@@ -11752,7 +11752,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_kinrath"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -11784,11 +11784,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 24
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_KINRATH"
               }
             },
             {
@@ -11910,7 +11910,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_kinrath"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -11942,11 +11942,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 24
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_KINRATH"
               }
             },
             {
@@ -12068,7 +12068,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_kinrath"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -12100,11 +12100,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 24
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_KINRATH"
               }
             },
             {
@@ -12226,7 +12226,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_kinrath"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -12258,11 +12258,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 24
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_KINRATH"
               }
             },
             {
@@ -12384,7 +12384,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_kinrath"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -12416,11 +12416,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 24
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_KINRATH"
               }
             },
             {
@@ -12542,7 +12542,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_kinrath"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -12574,11 +12574,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 24
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_KINRATH"
               }
             },
             {
@@ -12700,7 +12700,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_kinrath"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -12732,11 +12732,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 24
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_KINRATH"
               }
             },
             {
@@ -12858,7 +12858,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_kinrath"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -12890,11 +12890,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 24
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_KINRATH"
               }
             },
             {
@@ -13016,7 +13016,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_ww_kinrath"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -13048,11 +13048,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 24
+                "type": "cexostring",
+                "value": "VISCARA_WILDWOODS_KINRATH"
               }
             },
             {

@@ -16983,149 +16983,6 @@
         "__struct_id": 5,
         "Appearance": {
           "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Creature Spawn (Edit Variables)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "creature_spawn_droid"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "creature_spawn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 120.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            }
-          ]
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 144.8243713378906
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 62.98942184448242
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -5.7220458984375e-006
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
           "value": 1
         },
         "Description": {
@@ -17249,11 +17106,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 12
+                "type": "cexostring",
+                "value": "CZ220_MYNOCKS"
               }
             },
             {
@@ -17392,11 +17249,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 12
+                "type": "cexostring",
+                "value": "CZ220_MYNOCKS"
               }
             },
             {
@@ -17535,11 +17392,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 12
+                "type": "cexostring",
+                "value": "CZ220_MYNOCKS"
               }
             },
             {
@@ -17678,11 +17535,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 12
+                "type": "cexostring",
+                "value": "CZ220_MYNOCKS"
               }
             },
             {
@@ -17821,11 +17678,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 12
+                "type": "cexostring",
+                "value": "CZ220_MYNOCKS"
               }
             },
             {
@@ -17964,11 +17821,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -18107,11 +17964,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -18250,11 +18107,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -18393,11 +18250,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -19168,11 +19025,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -19311,11 +19168,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -19454,11 +19311,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -19597,11 +19454,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -19740,11 +19597,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -19883,11 +19740,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -20026,11 +19883,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -20169,11 +20026,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -20312,11 +20169,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -20455,11 +20312,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -20598,11 +20455,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -20741,11 +20598,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -20884,11 +20741,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -21027,11 +20884,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -21170,11 +21027,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -21313,11 +21170,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -21456,11 +21313,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 12
+                "type": "cexostring",
+                "value": "CZ220_MYNOCKS"
               }
             },
             {
@@ -21599,11 +21456,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 12
+                "type": "cexostring",
+                "value": "CZ220_MYNOCKS"
               }
             },
             {
@@ -21742,11 +21599,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 12
+                "type": "cexostring",
+                "value": "CZ220_MYNOCKS"
               }
             },
             {
@@ -21885,11 +21742,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 12
+                "type": "cexostring",
+                "value": "CZ220_MYNOCKS"
               }
             },
             {
@@ -22028,11 +21885,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 12
+                "type": "cexostring",
+                "value": "CZ220_MYNOCKS"
               }
             },
             {
@@ -22171,11 +22028,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -22314,11 +22171,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 12
+                "type": "cexostring",
+                "value": "CZ220_MYNOCKS"
               }
             },
             {
@@ -22457,11 +22314,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -22600,11 +22457,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -22743,11 +22600,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -22886,11 +22743,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -23029,11 +22886,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {
@@ -23172,11 +23029,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 15
+                "type": "cexostring",
+                "value": "CZ220_COLICOID_EXPERIMENT"
               }
             },
             {
@@ -23315,11 +23172,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 11
+                "type": "cexostring",
+                "value": "CZ220_DROIDS"
               }
             },
             {

@@ -428,22 +428,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian Facility Spawns"
+                      "value": "Mon Cala - Animals"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "man_fac_spwn"
+                      "value": "mon_cala_animals"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Mandalorian War Hero"
+                      "value": "Mon Cala - Eco-Terrorist Leader"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "man_leader_spwn"
+                      "value": "creature_spaw002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala - Eco-Terrorists"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "creature_spaw001"
                     }
                   },
                   {
@@ -670,11 +681,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Viscara - Kath Hound"
+                      "value": "Viscara - Mandalorian Facility Spawns"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "v_kath_hound"
+                      "value": "man_fac_spwn"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Mandalorian War Hero"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_leader_spwn"
                     }
                   },
                   {
@@ -686,6 +708,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "v_val_cainmogs"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Wildlands"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_kath_hound"
                     }
                   },
                   {

@@ -25,7 +25,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Mandalorian War Hero"
+      "0": "Viscara - Mandalorian War Hero"
     }
   },
   "MapNote": {
@@ -42,7 +42,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "creature_spawn"
+    "value": "man_leader_spwn"
   },
   "TemplateResRef": {
     "type": "resref",
@@ -74,11 +74,11 @@
         },
         "Type": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Value": {
-          "type": "int",
-          "value": 21
+          "type": "cexostring",
+          "value": "VISCARA_MANDALORIAN_LEADER"
         }
       },
       {

@@ -2143,7 +2143,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 4.442530098458519e-006
+          "value": 5.157785835763207e-006
         },
         "XPosition": {
           "type": "float",
@@ -2275,11 +2275,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 45
+                "type": "cexostring",
+                "value": "TATOOINE_SANDDEMON"
               }
             },
             {
@@ -2433,11 +2433,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 45
+                "type": "cexostring",
+                "value": "TATOOINE_SANDDEMON"
               }
             },
             {
@@ -2591,11 +2591,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 45
+                "type": "cexostring",
+                "value": "TATOOINE_SANDDEMON"
               }
             },
             {
@@ -2749,11 +2749,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {
@@ -2907,11 +2907,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {
@@ -3065,11 +3065,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {
@@ -3223,11 +3223,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {
@@ -3381,11 +3381,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {
@@ -3539,11 +3539,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {
@@ -3697,11 +3697,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {

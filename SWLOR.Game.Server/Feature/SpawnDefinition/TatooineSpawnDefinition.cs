@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             Wraid(builder);
             SandDemon(builder);
             TuskenRaider(builder);
+            SandWorm(builder);
 
             return builder.Build();
         }
@@ -50,6 +51,13 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             builder.Create("TATOOINE_TUSKEN_RAIDER", "Tusken Raiders")
                 .AddSpawn(ObjectType.Creature, "ext_tusken_tr003")
+                .WithFrequency(50);
+        }
+
+        private void SandWorm(SpawnTableBuilder builder)
+        {
+            builder.Create("TATOOINE_SAND_WORM", "Sand Worm")
+                .AddSpawn(ObjectType.Creature, "sandworm")
                 .WithFrequency(50);
         }
     }

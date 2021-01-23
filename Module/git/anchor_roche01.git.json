@@ -332,11 +332,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 42
+                "type": "cexostring",
+                "value": "TATOOINE_WOMPRATS"
               }
             },
             {
@@ -475,11 +475,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 42
+                "type": "cexostring",
+                "value": "TATOOINE_WOMPRATS"
               }
             },
             {
@@ -618,11 +618,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 42
+                "type": "cexostring",
+                "value": "TATOOINE_WOMPRATS"
               }
             },
             {
@@ -761,11 +761,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 42
+                "type": "cexostring",
+                "value": "TATOOINE_WOMPRATS"
               }
             },
             {
@@ -904,11 +904,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 42
+                "type": "cexostring",
+                "value": "TATOOINE_WOMPRATS"
               }
             },
             {
@@ -1047,11 +1047,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 42
+                "type": "cexostring",
+                "value": "TATOOINE_WOMPRATS"
               }
             },
             {

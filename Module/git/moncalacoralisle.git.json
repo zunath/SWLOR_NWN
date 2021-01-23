@@ -71331,7 +71331,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -71344,11 +71344,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -71376,11 +71376,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -71440,7 +71440,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -71489,7 +71489,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -71502,11 +71502,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -71534,11 +71534,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -71598,7 +71598,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -71647,7 +71647,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -71660,11 +71660,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -71692,11 +71692,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -71756,7 +71756,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -71805,7 +71805,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -71818,11 +71818,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -71850,11 +71850,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -71914,14 +71914,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9238808155059815
+          "value": -0.9238809943199158
         },
         "XPosition": {
           "type": "float",
@@ -71929,7 +71929,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.3826803267002106
+          "value": -0.3826798796653748
         },
         "YPosition": {
           "type": "float",
@@ -71963,7 +71963,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -71976,11 +71976,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -72008,11 +72008,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -72072,7 +72072,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -72121,7 +72121,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -72134,11 +72134,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -72166,11 +72166,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -72230,14 +72230,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 6.111460152169457e-006
+          "value": 6.826715889474144e-006
         },
         "XPosition": {
           "type": "float",
@@ -72279,7 +72279,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -72292,11 +72292,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -72324,11 +72324,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -72388,14 +72388,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 6.111460152169457e-006
+          "value": 6.826715889474144e-006
         },
         "XPosition": {
           "type": "float",
@@ -72437,7 +72437,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -72450,11 +72450,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -72482,11 +72482,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -72546,14 +72546,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9807859063148499
+          "value": -0.9807859659194946
         },
         "XPosition": {
           "type": "float",
@@ -72561,7 +72561,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.1950871646404266
+          "value": -0.1950868219137192
         },
         "YPosition": {
           "type": "float",
@@ -72595,7 +72595,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -72608,11 +72608,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -72640,11 +72640,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -72704,7 +72704,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -72753,7 +72753,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -72766,11 +72766,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -72798,11 +72798,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -72862,14 +72862,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.5555742979049683
+          "value": -0.5555751323699951
         },
         "XPosition": {
           "type": "float",
@@ -72877,7 +72877,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.8314668536186218
+          "value": -0.8314663767814636
         },
         "YPosition": {
           "type": "float",
@@ -72911,7 +72911,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -72924,11 +72924,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -72956,11 +72956,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -73020,7 +73020,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -73069,7 +73069,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -73082,11 +73082,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -73114,11 +73114,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -73178,7 +73178,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -73227,7 +73227,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -73240,11 +73240,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -73272,11 +73272,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -73336,7 +73336,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -73385,7 +73385,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -73398,11 +73398,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -73430,11 +73430,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -73494,14 +73494,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.8314685225486755
+          "value": -0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -73509,7 +73509,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -73543,7 +73543,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -73556,11 +73556,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -73588,11 +73588,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -73652,14 +73652,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -73667,7 +73667,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -73701,7 +73701,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -73714,11 +73714,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -73746,11 +73746,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -73810,14 +73810,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -73825,7 +73825,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -73859,7 +73859,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -73872,11 +73872,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -73904,11 +73904,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -73968,7 +73968,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -74017,7 +74017,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -74030,11 +74030,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -74062,11 +74062,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -74126,14 +74126,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -74141,7 +74141,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -74175,7 +74175,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -74188,11 +74188,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -74220,11 +74220,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -74284,7 +74284,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -74333,7 +74333,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -74346,11 +74346,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -74378,11 +74378,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -74442,7 +74442,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -74491,7 +74491,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -74504,11 +74504,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -74536,11 +74536,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -74600,14 +74600,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9238808155059815
+          "value": -0.9238809943199158
         },
         "XPosition": {
           "type": "float",
@@ -74615,7 +74615,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.3826803267002106
+          "value": -0.3826798796653748
         },
         "YPosition": {
           "type": "float",
@@ -74649,7 +74649,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -74662,11 +74662,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -74694,11 +74694,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -74758,14 +74758,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -74773,7 +74773,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -74807,7 +74807,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -74820,11 +74820,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -74852,11 +74852,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -74916,14 +74916,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -74931,7 +74931,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -74965,7 +74965,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -74978,11 +74978,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -75010,11 +75010,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -75074,14 +75074,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -75089,7 +75089,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -75123,7 +75123,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -75136,11 +75136,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -75168,11 +75168,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -75232,14 +75232,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -75247,7 +75247,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -75281,7 +75281,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -75294,11 +75294,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -75326,11 +75326,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -75390,7 +75390,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -75439,7 +75439,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -75452,11 +75452,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -75484,11 +75484,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -75548,7 +75548,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -75597,7 +75597,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -75610,11 +75610,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -75642,11 +75642,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -75706,7 +75706,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -75755,7 +75755,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -75768,11 +75768,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -75800,11 +75800,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -75864,14 +75864,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -75879,7 +75879,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -75913,7 +75913,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -75926,11 +75926,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -75958,11 +75958,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -76022,14 +76022,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -76037,7 +76037,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -76071,7 +76071,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -76084,11 +76084,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -76116,11 +76116,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -76180,14 +76180,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -76195,7 +76195,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -76229,7 +76229,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -76242,11 +76242,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -76274,11 +76274,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -76338,14 +76338,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -76353,7 +76353,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -76387,7 +76387,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -76400,11 +76400,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -76432,11 +76432,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -76496,14 +76496,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -76511,7 +76511,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -76545,7 +76545,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -76558,11 +76558,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -76590,11 +76590,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -76654,14 +76654,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -76669,7 +76669,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -76703,7 +76703,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -76716,11 +76716,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -76748,11 +76748,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -76812,14 +76812,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -76827,7 +76827,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -76861,7 +76861,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -76874,11 +76874,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -76906,11 +76906,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -76970,7 +76970,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -77019,7 +77019,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -77032,11 +77032,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -77064,11 +77064,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -77128,7 +77128,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -77177,7 +77177,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -77190,11 +77190,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -77222,11 +77222,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -77286,7 +77286,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -77335,7 +77335,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -77348,11 +77348,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -77380,11 +77380,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -77444,7 +77444,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -77493,7 +77493,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -77506,11 +77506,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -77538,11 +77538,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -77602,14 +77602,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.3826889991760254
+          "value": -0.3826896548271179
         },
         "XPosition": {
           "type": "float",
@@ -77617,7 +77617,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9238772392272949
+          "value": -0.923876941204071
         },
         "YPosition": {
           "type": "float",
@@ -77651,7 +77651,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -77664,11 +77664,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -77696,11 +77696,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -77760,14 +77760,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -77775,7 +77775,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -77809,7 +77809,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -77822,11 +77822,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -77854,11 +77854,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -77918,7 +77918,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -77967,7 +77967,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -77980,11 +77980,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -78012,11 +78012,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -78076,14 +78076,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.1950956881046295
+          "value": 0.1950966268777847
         },
         "XPosition": {
           "type": "float",
@@ -78091,7 +78091,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9807842373847961
+          "value": -0.980783998966217
         },
         "YPosition": {
           "type": "float",
@@ -78125,7 +78125,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -78138,11 +78138,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -78170,11 +78170,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -78234,14 +78234,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -78249,7 +78249,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -78283,7 +78283,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -78296,11 +78296,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -78328,11 +78328,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -78392,7 +78392,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -78441,7 +78441,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -78454,11 +78454,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -78486,11 +78486,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -78550,7 +78550,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -78599,7 +78599,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -78612,11 +78612,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -78644,11 +78644,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -78708,7 +78708,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -78757,7 +78757,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -78770,11 +78770,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -78802,11 +78802,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -78866,7 +78866,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -78915,7 +78915,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -78928,11 +78928,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -78960,11 +78960,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -79024,7 +79024,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -79073,7 +79073,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -79086,11 +79086,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -79118,11 +79118,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -79182,7 +79182,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -79231,7 +79231,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -79244,11 +79244,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -79276,11 +79276,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -79340,14 +79340,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.3826889991760254
+          "value": 0.3826896548271179
         },
         "XPosition": {
           "type": "float",
@@ -79355,7 +79355,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9238772392272949
+          "value": -0.923876941204071
         },
         "YPosition": {
           "type": "float",
@@ -79389,7 +79389,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -79402,11 +79402,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -79434,11 +79434,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -79498,14 +79498,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": -6.111460152169457e-006
+          "value": -6.826715889474144e-006
         },
         "XPosition": {
           "type": "float",
@@ -79547,7 +79547,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -79560,11 +79560,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -79592,11 +79592,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -79656,14 +79656,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.5555742979049683
+          "value": -0.5555751323699951
         },
         "XPosition": {
           "type": "float",
@@ -79671,7 +79671,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.8314668536186218
+          "value": -0.8314663767814636
         },
         "YPosition": {
           "type": "float",
@@ -79705,7 +79705,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -79718,11 +79718,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -79750,11 +79750,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -79814,7 +79814,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -79863,7 +79863,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -79876,11 +79876,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -79908,11 +79908,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -79972,7 +79972,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -80021,7 +80021,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -80034,11 +80034,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -80066,11 +80066,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -80130,14 +80130,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -80145,7 +80145,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -80179,7 +80179,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -80192,11 +80192,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -80224,11 +80224,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -80288,7 +80288,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -80337,7 +80337,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -80350,11 +80350,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -80382,11 +80382,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -80446,7 +80446,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -80495,7 +80495,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -80508,11 +80508,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -80540,11 +80540,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -80604,7 +80604,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -80653,7 +80653,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -80666,11 +80666,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -80698,11 +80698,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -80762,7 +80762,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -80811,7 +80811,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -80824,11 +80824,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -80856,11 +80856,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -80920,14 +80920,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.1950956881046295
+          "value": 0.1950966268777847
         },
         "XPosition": {
           "type": "float",
@@ -80935,7 +80935,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9807842373847961
+          "value": -0.980783998966217
         },
         "YPosition": {
           "type": "float",
@@ -80969,7 +80969,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -80982,11 +80982,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -81014,11 +81014,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -81078,14 +81078,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.5555742979049683
+          "value": 0.5555751323699951
         },
         "XPosition": {
           "type": "float",
@@ -81093,7 +81093,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.8314668536186218
+          "value": -0.8314663767814636
         },
         "YPosition": {
           "type": "float",
@@ -81127,7 +81127,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -81140,11 +81140,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -81172,11 +81172,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -81236,7 +81236,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -81285,7 +81285,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -81298,11 +81298,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -81330,11 +81330,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -81394,7 +81394,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -81443,7 +81443,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -81456,11 +81456,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -81488,11 +81488,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -81552,14 +81552,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.9807859063148499
+          "value": 0.9807859659194946
         },
         "XPosition": {
           "type": "float",
@@ -81567,7 +81567,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.1950871646404266
+          "value": -0.1950868219137192
         },
         "YPosition": {
           "type": "float",
@@ -81601,7 +81601,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -81614,11 +81614,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -81646,11 +81646,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -81710,14 +81710,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.3826889991760254
+          "value": 0.3826896548271179
         },
         "XPosition": {
           "type": "float",
@@ -81725,7 +81725,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9238772392272949
+          "value": -0.923876941204071
         },
         "YPosition": {
           "type": "float",
@@ -81759,7 +81759,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -81772,11 +81772,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -81804,11 +81804,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -81868,14 +81868,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.1950956881046295
+          "value": -0.1950966268777847
         },
         "XPosition": {
           "type": "float",
@@ -81883,7 +81883,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9807842373847961
+          "value": -0.980783998966217
         },
         "YPosition": {
           "type": "float",
@@ -81917,7 +81917,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -81930,11 +81930,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -81962,11 +81962,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -82026,14 +82026,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9807859063148499
+          "value": -0.9807859659194946
         },
         "XPosition": {
           "type": "float",
@@ -82041,7 +82041,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.1950871646404266
+          "value": -0.1950868219137192
         },
         "YPosition": {
           "type": "float",
@@ -82075,7 +82075,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -82088,11 +82088,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -82120,11 +82120,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -82184,14 +82184,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": -6.111460152169457e-006
+          "value": -6.826715889474144e-006
         },
         "XPosition": {
           "type": "float",
@@ -82233,7 +82233,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -82246,11 +82246,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -82278,11 +82278,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -82342,7 +82342,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -82391,7 +82391,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -82404,11 +82404,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -82436,11 +82436,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -82500,14 +82500,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -82515,7 +82515,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -82549,7 +82549,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -82562,11 +82562,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -82594,11 +82594,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -82658,14 +82658,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -82673,7 +82673,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -82707,7 +82707,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -82720,11 +82720,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -82752,11 +82752,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -82816,14 +82816,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -82831,7 +82831,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -82865,7 +82865,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -82878,11 +82878,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -82910,11 +82910,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -82974,7 +82974,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -83023,7 +83023,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -83036,11 +83036,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -83068,11 +83068,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -83132,14 +83132,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.1950956881046295
+          "value": -0.1950966268777847
         },
         "XPosition": {
           "type": "float",
@@ -83147,7 +83147,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9807842373847961
+          "value": -0.980783998966217
         },
         "YPosition": {
           "type": "float",
@@ -83181,7 +83181,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -83194,11 +83194,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -83226,11 +83226,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -83290,14 +83290,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8314685225486755
+          "value": 0.8314682841300964
         },
         "XPosition": {
           "type": "float",
@@ -83305,7 +83305,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555718541145325
+          "value": 0.5555721521377564
         },
         "YPosition": {
           "type": "float",
@@ -83339,7 +83339,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -83352,11 +83352,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -83384,11 +83384,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -83448,14 +83448,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9238808155059815
+          "value": -0.9238809943199158
         },
         "XPosition": {
           "type": "float",
@@ -83463,7 +83463,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.3826803267002106
+          "value": -0.3826798796653748
         },
         "YPosition": {
           "type": "float",
@@ -83497,7 +83497,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -83510,11 +83510,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -83542,11 +83542,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -83606,7 +83606,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -83655,7 +83655,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -83668,11 +83668,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -83700,11 +83700,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -83764,14 +83764,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.5555742979049683
+          "value": -0.5555751323699951
         },
         "XPosition": {
           "type": "float",
@@ -83779,7 +83779,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.8314668536186218
+          "value": -0.8314663767814636
         },
         "YPosition": {
           "type": "float",
@@ -83813,7 +83813,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -83826,11 +83826,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -83858,11 +83858,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -83922,7 +83922,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
@@ -83971,7 +83971,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
+            "0": "Mon Cala - Animals"
           }
         },
         "MapNote": {
@@ -83984,11 +83984,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "creature_spawn"
+          "value": "mon_cala_animals"
         },
         "VarTable": {
           "type": "list",
@@ -84016,11 +84016,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 40
+                "type": "cexostring",
+                "value": "MONCALA_CORAL_ISLES"
               }
             },
             {
@@ -84080,14 +84080,14 @@
               },
               "Value": {
                 "type": "int",
-                "value": 0
+                "value": 501
               }
             }
           ]
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.9238808155059815
+          "value": 0.9238809943199158
         },
         "XPosition": {
           "type": "float",
@@ -84095,7 +84095,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.3826803267002106
+          "value": -0.3826798796653748
         },
         "YPosition": {
           "type": "float",
@@ -84154,7 +84154,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.0980171337723732
+          "value": 0.09801749140024185
         },
         "YPosition": {
           "type": "float",

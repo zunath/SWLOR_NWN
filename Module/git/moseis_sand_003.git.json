@@ -616,7 +616,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.0245557501912117
+          "value": 0.02455670386552811
         },
         "XPosition": {
           "type": "float",
@@ -762,11 +762,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 42
+                "type": "cexostring",
+                "value": "TATOOINE_WOMPRATS"
               }
             },
             {
@@ -905,11 +905,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 42
+                "type": "cexostring",
+                "value": "TATOOINE_WOMPRATS"
               }
             },
             {
@@ -1048,11 +1048,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 42
+                "type": "cexostring",
+                "value": "TATOOINE_WOMPRATS"
               }
             },
             {
@@ -1191,11 +1191,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 42
+                "type": "cexostring",
+                "value": "TATOOINE_WOMPRATS"
               }
             },
             {
@@ -1334,11 +1334,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 42
+                "type": "cexostring",
+                "value": "TATOOINE_WOMPRATS"
               }
             },
             {
@@ -1477,11 +1477,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 42
+                "type": "cexostring",
+                "value": "TATOOINE_WOMPRATS"
               }
             },
             {
@@ -1620,11 +1620,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 44
+                "type": "cexostring",
+                "value": "TATOOINE_WRAID"
               }
             },
             {
@@ -1763,11 +1763,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 44
+                "type": "cexostring",
+                "value": "TATOOINE_WRAID"
               }
             },
             {
@@ -1906,11 +1906,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 44
+                "type": "cexostring",
+                "value": "TATOOINE_WRAID"
               }
             },
             {
@@ -2049,11 +2049,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 44
+                "type": "cexostring",
+                "value": "TATOOINE_WRAID"
               }
             },
             {

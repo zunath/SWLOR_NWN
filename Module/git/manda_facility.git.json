@@ -81599,7 +81599,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -81612,7 +81612,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -81644,11 +81644,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -81757,7 +81757,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -81770,7 +81770,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -81802,11 +81802,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -81915,7 +81915,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -81928,7 +81928,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -81960,11 +81960,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -82031,7 +82031,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.2191124707460403
+          "value": 0.2191138565540314
         },
         "XPosition": {
           "type": "float",
@@ -82039,7 +82039,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9756996035575867
+          "value": -0.9756993055343628
         },
         "YPosition": {
           "type": "float",
@@ -82073,7 +82073,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -82086,7 +82086,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -82118,11 +82118,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -82231,7 +82231,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -82244,7 +82244,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -82276,11 +82276,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -82389,7 +82389,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -82402,7 +82402,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -82434,11 +82434,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -82547,7 +82547,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -82560,7 +82560,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -82592,11 +82592,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -82705,7 +82705,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -82718,7 +82718,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -82750,11 +82750,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -82821,7 +82821,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.1950947642326355
+          "value": 0.1950961649417877
         },
         "XPosition": {
           "type": "float",
@@ -82829,7 +82829,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9807844161987305
+          "value": -0.9807841181755066
         },
         "YPosition": {
           "type": "float",
@@ -82863,7 +82863,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -82876,7 +82876,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -82908,11 +82908,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -83021,7 +83021,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -83034,7 +83034,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -83066,11 +83066,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -83137,7 +83137,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9700326323509216
+          "value": -0.970032811164856
         },
         "XPosition": {
           "type": "float",
@@ -83145,7 +83145,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.2429747730493546
+          "value": -0.2429738491773605
         },
         "YPosition": {
           "type": "float",
@@ -83179,7 +83179,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -83192,7 +83192,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -83224,11 +83224,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -83337,7 +83337,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -83350,7 +83350,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -83382,11 +83382,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -83495,7 +83495,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -83508,7 +83508,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -83540,11 +83540,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -83611,7 +83611,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.4714010357856751
+          "value": -0.4714023172855377
         },
         "XPosition": {
           "type": "float",
@@ -83619,7 +83619,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.8819189667701721
+          "value": -0.8819183111190796
         },
         "YPosition": {
           "type": "float",
@@ -83653,7 +83653,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -83666,7 +83666,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -83698,11 +83698,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -83811,7 +83811,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -83824,7 +83824,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -83856,11 +83856,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -83969,7 +83969,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -83982,7 +83982,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -84014,11 +84014,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -84127,7 +84127,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -84140,7 +84140,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -84172,11 +84172,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -84285,7 +84285,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -84298,7 +84298,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -84330,11 +84330,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -84443,7 +84443,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -84456,7 +84456,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -84488,11 +84488,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -84601,7 +84601,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -84614,7 +84614,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -84646,11 +84646,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -84759,7 +84759,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -84772,7 +84772,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -84804,11 +84804,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -84917,7 +84917,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -84930,7 +84930,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -84962,11 +84962,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -85075,7 +85075,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -85088,7 +85088,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -85120,11 +85120,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -85233,7 +85233,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -85246,7 +85246,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -85278,11 +85278,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -85391,7 +85391,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -85404,7 +85404,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -85436,11 +85436,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -85507,7 +85507,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.923880934715271
+          "value": 0.9238812327384949
         },
         "XPosition": {
           "type": "float",
@@ -85515,7 +85515,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.3826800882816315
+          "value": -0.3826793134212494
         },
         "YPosition": {
           "type": "float",
@@ -85549,7 +85549,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -85562,7 +85562,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -85594,11 +85594,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -85707,7 +85707,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -85720,7 +85720,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -85752,11 +85752,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -85865,7 +85865,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -85878,7 +85878,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -85910,11 +85910,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -86023,7 +86023,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -86036,7 +86036,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -86068,11 +86068,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -86181,7 +86181,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -86194,7 +86194,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -86226,11 +86226,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -86339,7 +86339,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -86352,7 +86352,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -86384,11 +86384,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -86497,7 +86497,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -86510,7 +86510,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -86542,11 +86542,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -86655,7 +86655,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -86668,7 +86668,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -86700,11 +86700,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -86813,7 +86813,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -86826,7 +86826,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -86858,11 +86858,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -86971,7 +86971,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -86984,7 +86984,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -87016,11 +87016,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -87129,7 +87129,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -87142,7 +87142,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -87174,11 +87174,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -87287,7 +87287,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -87300,7 +87300,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -87332,11 +87332,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -87403,7 +87403,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9637770056724548
+          "value": -0.9637773036956787
         },
         "XPosition": {
           "type": "float",
@@ -87411,7 +87411,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.2667092978954315
+          "value": -0.2667083740234375
         },
         "YPosition": {
           "type": "float",
@@ -87445,7 +87445,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -87458,7 +87458,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -87490,11 +87490,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -87561,7 +87561,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9637770056724548
+          "value": -0.9637773036956787
         },
         "XPosition": {
           "type": "float",
@@ -87569,7 +87569,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.2667092978954315
+          "value": -0.2667083740234375
         },
         "YPosition": {
           "type": "float",
@@ -87603,7 +87603,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -87616,7 +87616,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -87648,11 +87648,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -87761,7 +87761,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -87774,7 +87774,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -87806,11 +87806,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -87877,7 +87877,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.09802753478288651
+          "value": -0.09802895784378052
         },
         "XPosition": {
           "type": "float",
@@ -87885,7 +87885,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9951837062835693
+          "value": -0.9951835870742798
         },
         "YPosition": {
           "type": "float",
@@ -87919,7 +87919,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -87932,7 +87932,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -87964,11 +87964,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -88077,7 +88077,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -88090,7 +88090,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -88122,11 +88122,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -88235,7 +88235,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -88248,7 +88248,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -88280,11 +88280,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -88393,7 +88393,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -88406,7 +88406,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -88438,11 +88438,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -88509,7 +88509,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9637770056724548
+          "value": -0.9637773036956787
         },
         "XPosition": {
           "type": "float",
@@ -88517,7 +88517,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.2667092978954315
+          "value": -0.2667083740234375
         },
         "YPosition": {
           "type": "float",
@@ -88577,7 +88577,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.50600942561141e-006
+          "value": 2.102055759678478e-006
         },
         "YPosition": {
           "type": "float",
@@ -88637,7 +88637,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.50600942561141e-006
+          "value": 2.102055759678478e-006
         },
         "YPosition": {
           "type": "float",
@@ -88731,7 +88731,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian War Hero"
+            "0": "Viscara - Mandalorian War Hero"
           }
         },
         "MapNote": {
@@ -88744,7 +88744,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_leader_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -88776,11 +88776,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 21
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_LEADER"
               }
             },
             {
@@ -88889,7 +88889,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -88902,7 +88902,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -88934,11 +88934,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -89047,7 +89047,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -89060,7 +89060,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -89092,11 +89092,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {
@@ -89163,7 +89163,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.3826863765716553
+          "value": -0.3826878964900971
         },
         "XPosition": {
           "type": "float",
@@ -89171,7 +89171,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9238783121109009
+          "value": -0.9238776564598084
         },
         "YPosition": {
           "type": "float",
@@ -89205,7 +89205,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Mandalorian Facility Spawns"
+            "0": "Viscara - Mandalorian Facility Spawns"
           }
         },
         "MapNote": {
@@ -89218,7 +89218,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "man_fac_spwn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -89250,11 +89250,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 19
+                "type": "cexostring",
+                "value": "VISCARA_MANDALORIAN_RAIDERS"
               }
             },
             {

@@ -6007,11 +6007,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 31
+                "type": "cexostring",
+                "value": "HUTLAR_BYYSK"
               }
             },
             {
@@ -6150,11 +6150,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 31
+                "type": "cexostring",
+                "value": "HUTLAR_BYYSK"
               }
             },
             {
@@ -6206,7 +6206,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.5758104920387268
+          "value": 0.5758107304573059
         },
         "XPosition": {
           "type": "float",
@@ -6214,7 +6214,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.8175832033157349
+          "value": -0.8175830245018005
         },
         "YPosition": {
           "type": "float",
@@ -6293,11 +6293,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 31
+                "type": "cexostring",
+                "value": "HUTLAR_BYYSK"
               }
             },
             {
@@ -6357,7 +6357,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.07356615364551544
+          "value": 0.07356639206409454
         },
         "YPosition": {
           "type": "float",
@@ -6436,11 +6436,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 31
+                "type": "cexostring",
+                "value": "HUTLAR_BYYSK"
               }
             },
             {
@@ -6579,11 +6579,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 31
+                "type": "cexostring",
+                "value": "HUTLAR_BYYSK"
               }
             },
             {
@@ -6722,11 +6722,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 31
+                "type": "cexostring",
+                "value": "HUTLAR_BYYSK"
               }
             },
             {
@@ -6865,11 +6865,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 31
+                "type": "cexostring",
+                "value": "HUTLAR_BYYSK"
               }
             },
             {
@@ -7008,11 +7008,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 31
+                "type": "cexostring",
+                "value": "HUTLAR_BYYSK"
               }
             },
             {
@@ -7151,11 +7151,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 31
+                "type": "cexostring",
+                "value": "HUTLAR_BYYSK"
               }
             },
             {
@@ -7294,11 +7294,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 31
+                "type": "cexostring",
+                "value": "HUTLAR_BYYSK"
               }
             },
             {
@@ -7437,11 +7437,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 31
+                "type": "cexostring",
+                "value": "HUTLAR_BYYSK"
               }
             },
             {
@@ -7580,11 +7580,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 31
+                "type": "cexostring",
+                "value": "HUTLAR_BYYSK"
               }
             },
             {
@@ -7723,11 +7723,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 31
+                "type": "cexostring",
+                "value": "HUTLAR_BYYSK"
               }
             },
             {
@@ -7779,7 +7779,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.4052442908287048
+          "value": 0.4052447080612183
         },
         "XPosition": {
           "type": "float",
@@ -7787,7 +7787,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9142084717750549
+          "value": -0.9142082333564758
         },
         "YPosition": {
           "type": "float",
@@ -7866,11 +7866,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -8009,11 +8009,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -8152,11 +8152,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -8295,11 +8295,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -8438,11 +8438,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -8581,11 +8581,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -8724,11 +8724,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -8867,11 +8867,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -9010,11 +9010,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -9153,11 +9153,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -9296,11 +9296,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -9439,11 +9439,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -9582,11 +9582,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -9725,11 +9725,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -9868,11 +9868,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -10011,11 +10011,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -10154,11 +10154,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -10297,11 +10297,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -10440,11 +10440,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -10583,11 +10583,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -10726,11 +10726,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -10869,11 +10869,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -11012,11 +11012,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -11155,11 +11155,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -11298,11 +11298,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -11441,11 +11441,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 31
+                "type": "cexostring",
+                "value": "HUTLAR_BYYSK"
               }
             },
             {
@@ -11584,11 +11584,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 31
+                "type": "cexostring",
+                "value": "HUTLAR_BYYSK"
               }
             },
             {
@@ -11727,11 +11727,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 31
+                "type": "cexostring",
+                "value": "HUTLAR_BYYSK"
               }
             },
             {
@@ -11870,11 +11870,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 31
+                "type": "cexostring",
+                "value": "HUTLAR_BYYSK"
               }
             },
             {
@@ -11926,7 +11926,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.4052431881427765
+          "value": -0.4052433967590332
         },
         "XPosition": {
           "type": "float",
@@ -11934,7 +11934,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9142089486122131
+          "value": -0.9142088294029236
         },
         "YPosition": {
           "type": "float",
@@ -12013,11 +12013,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -12156,11 +12156,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -12299,11 +12299,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -12442,11 +12442,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -12585,11 +12585,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {
@@ -12728,11 +12728,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 32
+                "type": "cexostring",
+                "value": "HUTLAR_QION_ANIMALS"
               }
             },
             {

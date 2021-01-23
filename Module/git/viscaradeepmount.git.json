@@ -34712,7 +34712,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_deep_raivor"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -34744,11 +34744,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 28
+                "type": "cexostring",
+                "value": "VISCARA_DEEPMOUNTAIN_RAIVORS"
               }
             },
             {
@@ -34870,7 +34870,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_deep_raivor"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -34902,11 +34902,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 28
+                "type": "cexostring",
+                "value": "VISCARA_DEEPMOUNTAIN_RAIVORS"
               }
             },
             {
@@ -35028,7 +35028,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_deep_raivor"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -35060,11 +35060,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 28
+                "type": "cexostring",
+                "value": "VISCARA_DEEPMOUNTAIN_RAIVORS"
               }
             },
             {
@@ -35186,7 +35186,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_deep_raivor"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -35218,11 +35218,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 28
+                "type": "cexostring",
+                "value": "VISCARA_DEEPMOUNTAIN_RAIVORS"
               }
             },
             {
@@ -35344,7 +35344,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_deep_raivor"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -35376,11 +35376,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 28
+                "type": "cexostring",
+                "value": "VISCARA_DEEPMOUNTAIN_RAIVORS"
               }
             },
             {
@@ -35502,7 +35502,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_deep_raivor"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -35534,11 +35534,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 28
+                "type": "cexostring",
+                "value": "VISCARA_DEEPMOUNTAIN_RAIVORS"
               }
             },
             {
@@ -35660,7 +35660,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_deep_raivor"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -35692,11 +35692,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 28
+                "type": "cexostring",
+                "value": "VISCARA_DEEPMOUNTAIN_RAIVORS"
               }
             },
             {
@@ -35818,7 +35818,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_deep_raivor"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -35850,11 +35850,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 28
+                "type": "cexostring",
+                "value": "VISCARA_DEEPMOUNTAIN_RAIVORS"
               }
             },
             {
@@ -35976,7 +35976,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_deep_raivor"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -36008,11 +36008,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 28
+                "type": "cexostring",
+                "value": "VISCARA_DEEPMOUNTAIN_RAIVORS"
               }
             },
             {
@@ -36134,7 +36134,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_deep_raivor"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -36166,11 +36166,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 28
+                "type": "cexostring",
+                "value": "VISCARA_DEEPMOUNTAIN_RAIVORS"
               }
             },
             {
@@ -36292,7 +36292,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_deep_raivor"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -36324,11 +36324,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 28
+                "type": "cexostring",
+                "value": "VISCARA_DEEPMOUNTAIN_RAIVORS"
               }
             },
             {
@@ -36450,7 +36450,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_deep_raivor"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -36482,11 +36482,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 28
+                "type": "cexostring",
+                "value": "VISCARA_DEEPMOUNTAIN_RAIVORS"
               }
             },
             {
@@ -36608,7 +36608,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_deep_raivor"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -36640,11 +36640,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 28
+                "type": "cexostring",
+                "value": "VISCARA_DEEPMOUNTAIN_RAIVORS"
               }
             },
             {
@@ -36766,7 +36766,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_deep_raivor"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -36798,11 +36798,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 28
+                "type": "cexostring",
+                "value": "VISCARA_DEEPMOUNTAIN_RAIVORS"
               }
             },
             {

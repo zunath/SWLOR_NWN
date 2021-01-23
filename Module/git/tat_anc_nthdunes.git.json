@@ -41290,11 +41290,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 45
+                "type": "cexostring",
+                "value": "TATOOINE_SANDDEMON"
               }
             },
             {
@@ -41448,11 +41448,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 45
+                "type": "cexostring",
+                "value": "TATOOINE_SANDDEMON"
               }
             },
             {
@@ -41606,11 +41606,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 45
+                "type": "cexostring",
+                "value": "TATOOINE_SANDDEMON"
               }
             },
             {
@@ -41764,11 +41764,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 45
+                "type": "cexostring",
+                "value": "TATOOINE_SANDDEMON"
               }
             },
             {
@@ -41922,11 +41922,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 45
+                "type": "cexostring",
+                "value": "TATOOINE_SANDDEMON"
               }
             },
             {
@@ -42035,11 +42035,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 44
+                "type": "cexostring",
+                "value": "TATOOINE_WRAID"
               }
             },
             {
@@ -42178,11 +42178,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 44
+                "type": "cexostring",
+                "value": "TATOOINE_WRAID"
               }
             },
             {
@@ -42321,11 +42321,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 44
+                "type": "cexostring",
+                "value": "TATOOINE_WRAID"
               }
             },
             {
@@ -42464,11 +42464,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 44
+                "type": "cexostring",
+                "value": "TATOOINE_WRAID"
               }
             },
             {
@@ -42607,11 +42607,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 44
+                "type": "cexostring",
+                "value": "TATOOINE_WRAID"
               }
             },
             {
@@ -42795,11 +42795,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {
@@ -42953,11 +42953,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {
@@ -43111,11 +43111,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {
@@ -43269,11 +43269,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {
@@ -43427,11 +43427,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {
@@ -43585,11 +43585,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {

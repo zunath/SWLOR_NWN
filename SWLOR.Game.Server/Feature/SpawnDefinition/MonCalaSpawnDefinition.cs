@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             var builder = new SpawnTableBuilder();
             CoralIsles(builder);
             EcoTerrorists(builder);
+            EcoTerroristLeader(builder);
 
             return builder.Build();
         }
@@ -36,6 +37,13 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "ecoterr_2")
                 .WithFrequency(50);
+        }
+
+        private void EcoTerroristLeader(SpawnTableBuilder builder)
+        {
+            builder.Create("MONCALA_ECOTERRORIST_LEADER", "Eco-Terrorist Leader")
+                .AddSpawn(ObjectType.Creature, "ecoterr_ldr")
+                .WithFrequency(100);
         }
     }
 }

@@ -25,7 +25,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Viscara - Mandalorian Facility Spawns"
+      "0": "Mon Cala - Eco-Terrorist Leader"
     }
   },
   "MapNote": {
@@ -42,11 +42,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "man_fac_spwn"
+    "value": "mon_cala_eco_terrorist_leader"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "man_fac_spwn"
+    "value": "creature_spaw002"
   },
   "VarTable": {
     "type": "list",
@@ -78,7 +78,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "VISCARA_MANDALORIAN_RAIDERS"
+          "value": "MONCALA_ECOTERRORIST_LEADER"
         }
       },
       {
@@ -108,7 +108,7 @@
         },
         "Value": {
           "type": "float",
-          "value": 1000.0
+          "value": 500.0
         }
       },
       {
@@ -138,7 +138,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 0
+          "value": 501
         }
       }
     ]

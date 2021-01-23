@@ -554,7 +554,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.863637294263754e-006
+          "value": 2.102055759678478e-006
         },
         "YPosition": {
           "type": "float",
@@ -4738,7 +4738,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -1.315673307544785e-005
+          "value": -1.303752378589707e-005
         },
         "YPosition": {
           "type": "float",
@@ -4797,7 +4797,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.863637294263754e-006
+          "value": 2.102055759678478e-006
         },
         "YPosition": {
           "type": "float",
@@ -4921,11 +4921,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {
@@ -4955,7 +4955,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.863637294263754e-006
+          "value": 2.102055759678478e-006
         },
         "YPosition": {
           "type": "float",
@@ -5079,11 +5079,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {
@@ -5113,7 +5113,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.863637294263754e-006
+          "value": 2.102055759678478e-006
         },
         "YPosition": {
           "type": "float",
@@ -5237,11 +5237,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {
@@ -5271,7 +5271,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.863637294263754e-006
+          "value": 2.102055759678478e-006
         },
         "YPosition": {
           "type": "float",
@@ -5395,11 +5395,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {
@@ -5429,7 +5429,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.863637294263754e-006
+          "value": 2.102055759678478e-006
         },
         "YPosition": {
           "type": "float",
@@ -5553,11 +5553,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {
@@ -5587,7 +5587,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.863637294263754e-006
+          "value": 2.102055759678478e-006
         },
         "YPosition": {
           "type": "float",
@@ -5711,11 +5711,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {
@@ -5745,7 +5745,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.863637294263754e-006
+          "value": 2.102055759678478e-006
         },
         "YPosition": {
           "type": "float",
@@ -5869,11 +5869,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 46
+                "type": "cexostring",
+                "value": "TATOOINE_TUSKEN_RAIDER"
               }
             },
             {
@@ -5903,7 +5903,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.863637294263754e-006
+          "value": 2.102055759678478e-006
         },
         "YPosition": {
           "type": "float",

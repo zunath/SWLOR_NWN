@@ -26839,7 +26839,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.04907796531915665
+          "value": 0.04907868057489395
         },
         "XPosition": {
           "type": "float",
@@ -26847,7 +26847,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9987949728965759
+          "value": -0.9987949132919312
         },
         "YPosition": {
           "type": "float",
@@ -26894,7 +26894,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_val_cairnmogs"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -26926,11 +26926,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 25
+                "type": "cexostring",
+                "value": "VISCARA_VALLEY_CAIRNMOGS"
               }
             },
             {
@@ -27052,7 +27052,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_val_cairnmogs"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -27084,11 +27084,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 25
+                "type": "cexostring",
+                "value": "VISCARA_VALLEY_CAIRNMOGS"
               }
             },
             {
@@ -27210,7 +27210,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_val_cairnmogs"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -27242,11 +27242,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 25
+                "type": "cexostring",
+                "value": "VISCARA_VALLEY_CAIRNMOGS"
               }
             },
             {
@@ -27368,7 +27368,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_val_cairnmogs"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -27400,11 +27400,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 25
+                "type": "cexostring",
+                "value": "VISCARA_VALLEY_CAIRNMOGS"
               }
             },
             {
@@ -27526,7 +27526,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_val_cairnmogs"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -27558,11 +27558,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 25
+                "type": "cexostring",
+                "value": "VISCARA_VALLEY_CAIRNMOGS"
               }
             },
             {
@@ -27684,7 +27684,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_val_cairnmogs"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -27716,11 +27716,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 25
+                "type": "cexostring",
+                "value": "VISCARA_VALLEY_CAIRNMOGS"
               }
             },
             {
@@ -27842,7 +27842,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_val_cairnmogs"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -27874,11 +27874,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 25
+                "type": "cexostring",
+                "value": "VISCARA_VALLEY_CAIRNMOGS"
               }
             },
             {
@@ -28000,7 +28000,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_val_cairnmogs"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -28032,11 +28032,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 25
+                "type": "cexostring",
+                "value": "VISCARA_VALLEY_CAIRNMOGS"
               }
             },
             {
@@ -28158,7 +28158,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_val_cairnmogs"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -28190,11 +28190,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 25
+                "type": "cexostring",
+                "value": "VISCARA_VALLEY_CAIRNMOGS"
               }
             },
             {
@@ -28316,7 +28316,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_val_cairnmogs"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -28348,11 +28348,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 25
+                "type": "cexostring",
+                "value": "VISCARA_VALLEY_CAIRNMOGS"
               }
             },
             {
@@ -28474,7 +28474,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_val_cairnmogs"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -28506,11 +28506,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 25
+                "type": "cexostring",
+                "value": "VISCARA_VALLEY_CAIRNMOGS"
               }
             },
             {
@@ -28632,7 +28632,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_val_cairnmogs"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -28664,11 +28664,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 25
+                "type": "cexostring",
+                "value": "VISCARA_VALLEY_CAIRNMOGS"
               }
             },
             {
@@ -28790,7 +28790,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_val_cairnmogs"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -28822,11 +28822,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 25
+                "type": "cexostring",
+                "value": "VISCARA_VALLEY_CAIRNMOGS"
               }
             },
             {
@@ -28948,7 +28948,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_val_cairnmogs"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -28980,11 +28980,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 25
+                "type": "cexostring",
+                "value": "VISCARA_VALLEY_CAIRNMOGS"
               }
             },
             {
@@ -29106,7 +29106,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_val_cairnmogs"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -29138,11 +29138,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 25
+                "type": "cexostring",
+                "value": "VISCARA_VALLEY_CAIRNMOGS"
               }
             },
             {
@@ -29264,7 +29264,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_val_cairnmogs"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -29296,11 +29296,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 25
+                "type": "cexostring",
+                "value": "VISCARA_VALLEY_CAIRNMOGS"
               }
             },
             {
@@ -29422,7 +29422,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_val_cairnmogs"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -29454,11 +29454,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 25
+                "type": "cexostring",
+                "value": "VISCARA_VALLEY_CAIRNMOGS"
               }
             },
             {
@@ -29585,7 +29585,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 7.303553047677269e-006
+          "value": 8.25722781883087e-006
         },
         "XPosition": {
           "type": "float",
@@ -29857,7 +29857,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_val_cairnmogs"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -29889,11 +29889,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 25
+                "type": "cexostring",
+                "value": "VISCARA_VALLEY_CAIRNMOGS"
               }
             },
             {

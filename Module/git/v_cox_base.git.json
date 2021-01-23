@@ -4335,7 +4335,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -4367,11 +4367,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -4493,7 +4493,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -4525,11 +4525,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -4596,7 +4596,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.02454645372927189
+          "value": -0.0245483610779047
         },
         "XPosition": {
           "type": "float",
@@ -4604,7 +4604,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9996986985206604
+          "value": -0.9996986389160156
         },
         "YPosition": {
           "type": "float",
@@ -4651,7 +4651,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -4683,11 +4683,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -4754,7 +4754,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.02454645372927189
+          "value": -0.0245483610779047
         },
         "XPosition": {
           "type": "float",
@@ -4762,7 +4762,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9996986985206604
+          "value": -0.9996986389160156
         },
         "YPosition": {
           "type": "float",
@@ -4809,7 +4809,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -4841,11 +4841,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -4912,7 +4912,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9987954497337341
+          "value": -0.9987955093383789
         },
         "XPosition": {
           "type": "float",
@@ -4920,7 +4920,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.04906750097870827
+          "value": -0.04906678572297096
         },
         "YPosition": {
           "type": "float",
@@ -4967,7 +4967,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -4999,11 +4999,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -5070,7 +5070,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9495281577110291
+          "value": -0.9495280385017395
         },
         "XPosition": {
           "type": "float",
@@ -5078,7 +5078,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.3136818706989288
+          "value": 0.3136822283267975
         },
         "YPosition": {
           "type": "float",
@@ -5125,7 +5125,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -5157,11 +5157,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -5228,7 +5228,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.2429844737052918
+          "value": -0.2429863214492798
         },
         "XPosition": {
           "type": "float",
@@ -5236,7 +5236,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9700301885604858
+          "value": -0.9700297117233276
         },
         "YPosition": {
           "type": "float",
@@ -5283,7 +5283,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -5315,11 +5315,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -5386,7 +5386,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.2667175531387329
+          "value": -0.2667191624641419
         },
         "XPosition": {
           "type": "float",
@@ -5394,7 +5394,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9637747406959534
+          "value": -0.9637743234634399
         },
         "YPosition": {
           "type": "float",
@@ -5441,7 +5441,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -5473,11 +5473,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -5599,7 +5599,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -5631,11 +5631,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -5757,7 +5757,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -5789,11 +5789,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -5915,7 +5915,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -5947,11 +5947,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -6073,7 +6073,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -6105,11 +6105,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -6231,7 +6231,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -6263,11 +6263,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -6389,7 +6389,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -6421,11 +6421,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -6547,7 +6547,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -6579,11 +6579,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -6705,7 +6705,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -6737,11 +6737,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -6863,7 +6863,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -6895,11 +6895,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -7021,7 +7021,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -7053,11 +7053,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -7179,7 +7179,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -7211,11 +7211,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -7282,7 +7282,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9569413065910339
+          "value": -0.956941545009613
         },
         "XPosition": {
           "type": "float",
@@ -7290,7 +7290,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.2902814149856567
+          "value": -0.2902806103229523
         },
         "YPosition": {
           "type": "float",
@@ -7337,7 +7337,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -7369,11 +7369,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -7440,7 +7440,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.1467359960079193
+          "value": -0.1467376351356506
         },
         "XPosition": {
           "type": "float",
@@ -7448,7 +7448,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9891756772994995
+          "value": -0.9891754388809204
         },
         "YPosition": {
           "type": "float",
@@ -7495,7 +7495,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -7527,11 +7527,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -7653,7 +7653,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -7685,11 +7685,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -7756,7 +7756,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.1224161386489868
+          "value": -0.1224177926778793
         },
         "XPosition": {
           "type": "float",
@@ -7764,7 +7764,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9924788475036621
+          "value": -0.9924786686897278
         },
         "YPosition": {
           "type": "float",
@@ -7811,7 +7811,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -7843,11 +7843,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -7914,7 +7914,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.3598994910717011
+          "value": 0.3599005937576294
         },
         "XPosition": {
           "type": "float",
@@ -7922,7 +7922,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.932991087436676
+          "value": -0.9329906702041626
         },
         "YPosition": {
           "type": "float",
@@ -7969,7 +7969,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -8001,11 +8001,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -8072,7 +8072,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.09802207350730896
+          "value": 0.09802397340536118
         },
         "XPosition": {
           "type": "float",
@@ -8080,7 +8080,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9951842427253723
+          "value": -0.995184063911438
         },
         "YPosition": {
           "type": "float",
@@ -8127,7 +8127,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -8159,11 +8159,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -8230,7 +8230,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.07357039302587509
+          "value": 0.07357205450534821
         },
         "XPosition": {
           "type": "float",
@@ -8238,7 +8238,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9972900152206421
+          "value": -0.9972898960113525
         },
         "YPosition": {
           "type": "float",
@@ -8285,7 +8285,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -8317,11 +8317,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -8443,7 +8443,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -8475,11 +8475,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -8546,7 +8546,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.09802207350730896
+          "value": -0.09802397340536118
         },
         "XPosition": {
           "type": "float",
@@ -8554,7 +8554,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9951842427253723
+          "value": -0.995184063911438
         },
         "YPosition": {
           "type": "float",
@@ -8601,7 +8601,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -8633,11 +8633,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -8759,7 +8759,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -8791,11 +8791,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -8862,7 +8862,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.09802207350730896
+          "value": -0.09802397340536118
         },
         "XPosition": {
           "type": "float",
@@ -8870,7 +8870,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9951842427253723
+          "value": -0.995184063911438
         },
         "YPosition": {
           "type": "float",
@@ -8917,7 +8917,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -8949,11 +8949,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -9020,7 +9020,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.09802207350730896
+          "value": -0.09802397340536118
         },
         "XPosition": {
           "type": "float",
@@ -9028,7 +9028,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9951842427253723
+          "value": -0.995184063911438
         },
         "YPosition": {
           "type": "float",
@@ -9075,7 +9075,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -9107,11 +9107,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -9233,7 +9233,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -9265,11 +9265,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -10535,7 +10535,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_boss"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -10567,11 +10567,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 27
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHLEADER"
               }
             },
             {
@@ -10693,7 +10693,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -10725,11 +10725,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -10851,7 +10851,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -10883,11 +10883,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {
@@ -10954,7 +10954,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.4275544881820679
+          "value": 0.4275542795658112
         },
         "XPosition": {
           "type": "float",
@@ -10962,7 +10962,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.9039895534515381
+          "value": 0.9039896726608276
         },
         "YPosition": {
           "type": "float",
@@ -11009,7 +11009,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "v_coxx_base"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -11041,11 +11041,11 @@
               },
               "Type": {
                 "type": "dword",
-                "value": 1
+                "value": 3
               },
               "Value": {
-                "type": "int",
-                "value": 26
+                "type": "cexostring",
+                "value": "VISCARA_COXXION_FLESHEATERS"
               }
             },
             {

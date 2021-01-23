@@ -11,14 +11,14 @@ using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition
 {
-    public class SaberStrikeAbilityDefinition : IAbilityListDefinition
+    public class HardSlashAbilityDefinition : IAbilityListDefinition
     {
         public Dictionary<Feat, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
-            SaberStrike1(builder);
-            SaberStrike2(builder);
-            SaberStrike3(builder);
+            HardSlash1(builder);
+            HardSlash2(builder);
+            HardSlash3(builder);
 
             return builder.Build();
         }
@@ -27,13 +27,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand);
 
-            if (Item.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon))
-                && (GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.SmallShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.LargeShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.TowerShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.Invalid))
+            if (!Item.HeavyVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
-                return "This is a one-handed ability.";
+                return "This is a heavy vibroblade ability.";
             }
             else
                 return string.Empty;
@@ -42,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private static void ImpactAction(uint activator, uint target, int level)
         {
             var damage = 0;
-            var inflictBreach = false;
+
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
@@ -50,33 +46,29 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             switch (level)
             {
                 case 1:
-                    damage = d6();
-                    if (d2() == 1) inflictBreach = true;
+                    damage = d12();
                     break;
                 case 2:
-                    damage = d6(2);
-                    if (d4() > 1) inflictBreach = true;
+                    damage = d8(2);
                     break;
                 case 3:
-                    damage = d6(3);
-                    inflictBreach = true;
+                    damage = d8(3);
                     break;
                 default:
                     break;
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            if (inflictBreach) ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(2), target, 60f);
 
             Enmity.ModifyEnmityOnAll(activator, 1);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
 
-        private static void SaberStrike1(AbilityBuilder builder)
+        private static void HardSlash1(AbilityBuilder builder)
         {
-            builder.Create(Feat.SaberStrike1, PerkType.SaberStrike)
-                .Name("Saber Strike I")
-                .HasRecastDelay(RecastGroup.SaberStrike, 30f)
+            builder.Create(Feat.HardSlash1, PerkType.HardSlash)
+                .Name("Hard Slash I")
+                .HasRecastDelay(RecastGroup.HardSlash, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
@@ -89,11 +81,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     ImpactAction(activator, target, level);
                 });
         }
-        private static void SaberStrike2(AbilityBuilder builder)
+        private static void HardSlash2(AbilityBuilder builder)
         {
-            builder.Create(Feat.SaberStrike2, PerkType.SaberStrike)
-                .Name("Saber Strike II")
-                .HasRecastDelay(RecastGroup.SaberStrike, 30f)
+            builder.Create(Feat.HardSlash2, PerkType.HardSlash)
+                .Name("Hard Slash II")
+                .HasRecastDelay(RecastGroup.HardSlash, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
@@ -106,11 +98,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     ImpactAction(activator, target, level);
                 });
         }
-        private static void SaberStrike3(AbilityBuilder builder)
+        private static void HardSlash3(AbilityBuilder builder)
         {
-            builder.Create(Feat.SaberStrike3, PerkType.SaberStrike)
-                .Name("Saber Strike III")
-                .HasRecastDelay(RecastGroup.SaberStrike, 30f)
+            builder.Create(Feat.HardSlash3, PerkType.HardSlash)
+                .Name("Hard Slash III")
+                .HasRecastDelay(RecastGroup.HardSlash, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(8)
                 .IsCastedAbility()

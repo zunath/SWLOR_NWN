@@ -45,6 +45,22 @@ namespace SWLOR.Game.Server.Service.AbilityService
         ForceLeap = 18,
         [RecastGroup("Saber Strike", "Saber Strike")]
         SaberStrike = 19,
+        [RecastGroup("Crescent Moon", "Cresc. Moon")]
+        CrescentMoon = 20,
+        [RecastGroup("Hard Slash", "Hard Slash")]
+        HardSlash = 21,
+        [RecastGroup("Skewer", "Skewer")]
+        Skewer = 22,
+        [RecastGroup("Double Thrust", "Double Thrust")]
+        DoubleThrust = 23,
+        [RecastGroup("Leg Sweep", "Leg Sweep")]
+        LegSweep = 24,
+        [RecastGroup("Cross Cut", "Cross Cut")]
+        CrossCut = 25,
+        [RecastGroup("Circle Slash", "Circle Slash")]
+        CircleSlash = 26,
+        [RecastGroup("Double Strike", "Double Strike")]
+        DoubleStrike = 27,
     }
 
     public class RecastGroupAttribute: Attribute

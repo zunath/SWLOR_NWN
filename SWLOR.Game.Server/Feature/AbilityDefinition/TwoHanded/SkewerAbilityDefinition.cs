@@ -1,24 +1,21 @@
 ﻿//using Random = SWLOR.Game.Server.Service.Random;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
-using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition
 {
-    public class SaberStrikeAbilityDefinition : IAbilityListDefinition
+    public class SkewerAbilityDefinition : IAbilityListDefinition
     {
         public Dictionary<Feat, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
-            SaberStrike1(builder);
-            SaberStrike2(builder);
-            SaberStrike3(builder);
+            Skewer1(builder);
+            Skewer2(builder);
+            Skewer3(builder);
 
             return builder.Build();
         }
@@ -27,22 +24,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand);
 
-            if (Item.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon))
-                && (GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.SmallShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.LargeShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.TowerShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.Invalid))
+            if (!Item.PolearmBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
-                return "This is a one-handed ability.";
+                return "This is a polearm ability.";
             }
-            else
+            else 
                 return string.Empty;
         }
 
         private static void ImpactAction(uint activator, uint target, int level)
         {
+            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var damage = 0;
-            var inflictBreach = false;
+            var inflict = false;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
@@ -51,35 +45,40 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             {
                 case 1:
                     damage = d6();
-                    if (d2() == 1) inflictBreach = true;
+                    if (Random(100)<45) inflict = true;
                     break;
                 case 2:
                     damage = d6(2);
-                    if (d4() > 1) inflictBreach = true;
+                    if (d4()>1) inflict = true;
                     break;
                 case 3:
                     damage = d6(3);
-                    inflictBreach = true;
+                    inflict = true;
                     break;
                 default:
                     break;
             }
 
-            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            if (inflictBreach) ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(2), target, 60f);
+            ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
+            if (inflict)
+            {
+                Ability.EndConcentrationAbility(target);
+                SendMessageToPC(activator, ColorToken.Gray(GetName(target)) + "'s  concentration has been broken.");
+                SendMessageToPC(target, ColorToken.Gray(GetName(activator)) + " broke your concentration.");
+            }
 
             Enmity.ModifyEnmityOnAll(activator, 1);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
 
-        private static void SaberStrike1(AbilityBuilder builder)
+        private static void Skewer1(AbilityBuilder builder)
         {
-            builder.Create(Feat.SaberStrike1, PerkType.SaberStrike)
-                .Name("Saber Strike I")
-                .HasRecastDelay(RecastGroup.SaberStrike, 30f)
+            builder.Create(Feat.Skewer1, PerkType.Skewer)
+                .Name("Skewer I")
+                .HasRecastDelay(RecastGroup.Skewer, 30f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
-                .IsCastedAbility()
+                .IsWeaponAbility()
                 .HasCustomValidation((activator, target, level) =>
                 {
                     return Validation(activator, target, level);
@@ -89,31 +88,31 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     ImpactAction(activator, target, level);
                 });
         }
-        private static void SaberStrike2(AbilityBuilder builder)
+        private static void Skewer2(AbilityBuilder builder)
         {
-            builder.Create(Feat.SaberStrike2, PerkType.SaberStrike)
-                .Name("Saber Strike II")
-                .HasRecastDelay(RecastGroup.SaberStrike, 30f)
+            builder.Create(Feat.Skewer2, PerkType.Skewer)
+                .Name("Skewer II")
+                .HasRecastDelay(RecastGroup.Skewer, 30f)
+                .HasActivationDelay(2.0f)
+                .RequirementStamina(4)
+                .IsWeaponAbility()
+                .HasCustomValidation((activator, target, level) =>
+                {
+                    return Validation(activator, target, level);
+                })
+                .HasImpactAction((activator, target, level) =>
+                {
+                    ImpactAction(activator, target, level);
+                });
+        }
+        private static void Skewer3(AbilityBuilder builder)
+        {
+            builder.Create(Feat.Skewer3, PerkType.Skewer)
+                .Name("Skewer III")
+                .HasRecastDelay(RecastGroup.Skewer, 30f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
-                .IsCastedAbility()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
-        }
-        private static void SaberStrike3(AbilityBuilder builder)
-        {
-            builder.Create(Feat.SaberStrike3, PerkType.SaberStrike)
-                .Name("Saber Strike III")
-                .HasRecastDelay(RecastGroup.SaberStrike, 30f)
-                .HasActivationDelay(2.0f)
-                .RequirementStamina(8)
-                .IsCastedAbility()
+                .IsWeaponAbility()
                 .HasCustomValidation((activator, target, level) =>
                 {
                     return Validation(activator, target, level);

@@ -1,24 +1,21 @@
 ﻿//using Random = SWLOR.Game.Server.Service.Random;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
-using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition
 {
-    public class SaberStrikeAbilityDefinition : IAbilityListDefinition
+    public class CrossCutAbilityDefinition : IAbilityListDefinition
     {
         public Dictionary<Feat, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
-            SaberStrike1(builder);
-            SaberStrike2(builder);
-            SaberStrike3(builder);
+            CrossCut1(builder);
+            CrossCut2(builder);
+            CrossCut3(builder);
 
             return builder.Build();
         }
@@ -27,13 +24,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand);
 
-            if (Item.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon))
-                && (GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.SmallShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.LargeShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.TowerShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.Invalid))
+            if (!Item.TwinBladeBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
-                return "This is a one-handed ability.";
+                return "This is a twin-blade ability.";
             }
             else
                 return string.Empty;
@@ -42,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private static void ImpactAction(uint activator, uint target, int level)
         {
             var damage = 0;
-            var inflictBreach = false;
+            var amount = 0;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
@@ -50,33 +43,33 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             switch (level)
             {
                 case 1:
-                    damage = d6();
-                    if (d2() == 1) inflictBreach = true;
+                    damage = d4();
+                    amount = 2;
                     break;
                 case 2:
-                    damage = d6(2);
-                    if (d4() > 1) inflictBreach = true;
+                    damage = d4(2);
+                    amount = 4;
                     break;
                 case 3:
-                    damage = d6(3);
-                    inflictBreach = true;
+                    damage = d4(3);
+                    amount = 6;
                     break;
                 default:
                     break;
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            if (inflictBreach) ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(2), target, 60f);
+            ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(amount), target, 60f);
 
             Enmity.ModifyEnmityOnAll(activator, 1);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
 
-        private static void SaberStrike1(AbilityBuilder builder)
+        private static void CrossCut1(AbilityBuilder builder)
         {
-            builder.Create(Feat.SaberStrike1, PerkType.SaberStrike)
-                .Name("Saber Strike I")
-                .HasRecastDelay(RecastGroup.SaberStrike, 30f)
+            builder.Create(Feat.CrossCut1, PerkType.CrossCut)
+                .Name("Cross Cut I")
+                .HasRecastDelay(RecastGroup.CrossCut, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
@@ -87,13 +80,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .HasImpactAction((activator, target, level) =>
                 {
                     ImpactAction(activator, target, level);
+                    ImpactAction(activator, target, level);
                 });
         }
-        private static void SaberStrike2(AbilityBuilder builder)
+        private static void CrossCut2(AbilityBuilder builder)
         {
-            builder.Create(Feat.SaberStrike2, PerkType.SaberStrike)
-                .Name("Saber Strike II")
-                .HasRecastDelay(RecastGroup.SaberStrike, 30f)
+            builder.Create(Feat.CrossCut2, PerkType.CrossCut)
+                .Name("Cross Cut II")
+                .HasRecastDelay(RecastGroup.CrossCut, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
@@ -104,13 +98,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .HasImpactAction((activator, target, level) =>
                 {
                     ImpactAction(activator, target, level);
+                    ImpactAction(activator, target, level);
                 });
         }
-        private static void SaberStrike3(AbilityBuilder builder)
+        private static void CrossCut3(AbilityBuilder builder)
         {
-            builder.Create(Feat.SaberStrike3, PerkType.SaberStrike)
-                .Name("Saber Strike III")
-                .HasRecastDelay(RecastGroup.SaberStrike, 30f)
+            builder.Create(Feat.CrossCut3, PerkType.CrossCut)
+                .Name("Cross Cut III")
+                .HasRecastDelay(RecastGroup.CrossCut, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(8)
                 .IsCastedAbility()
@@ -120,6 +115,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 })
                 .HasImpactAction((activator, target, level) =>
                 {
+                    ImpactAction(activator, target, level);
                     ImpactAction(activator, target, level);
                 });
         }

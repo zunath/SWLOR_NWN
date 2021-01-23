@@ -42,6 +42,7 @@
         ForceDrain3 = 37,
         ForceDrain4 = 38,
         ForceDrain5 = 39,
-        Tranquilize = 40,
+        Shock = 40,
+        Tranquilize = 41,
     }
 }

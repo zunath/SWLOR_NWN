@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Random = SWLOR.Game.Server.Service.Random;
@@ -67,5 +68,23 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 });
         }
 
+        private void Tranquilize(StatusEffectBuilder builder)
+        {
+            builder.Create(StatusEffectType.Bleed)
+                .Name("Tranquilize")
+                .EffectIcon(129) // 129 = Wounding
+                .GrantAction((source, target, length) =>
+                {
+                    var effect = EffectDazed();
+                    effect = EffectLinkEffects(effect, EffectVisualEffect(Core.NWScript.Enum.VisualEffect.VisualEffect.Vfx_Dur_Iounstone_Blue));
+                    effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.Tranquilize);
+
+                    ApplyEffectToObject(DurationType.Permanent, effect, target, length);
+                })
+                .RemoveAction((target) =>
+                {
+                    RemoveEffectByTag(target, "StatusEffectType." + StatusEffectType.Tranquilize);
+                });
+        }
     }
 }

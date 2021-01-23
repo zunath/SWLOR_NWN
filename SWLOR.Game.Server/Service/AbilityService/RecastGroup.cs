@@ -69,6 +69,22 @@ namespace SWLOR.Game.Server.Service.AbilityService
         Slam = 30,
         [RecastGroup("Spinning Whirl", "Spinning Whirl")]
         SpinningWhirl = 31,
+        [RecastGroup("Quick Draw", "Quick Draw")]
+        QuickDraw = 32,
+        [RecastGroup("Double Shot", "Double Shot")]
+        DoubleShot = 33,
+        [RecastGroup("Explosive Toss", "Explosive Toss")]
+        ExplosiveToss = 34,
+        [RecastGroup("Piercing Toss", "Piercing Toss")]
+        PiercingToss = 35,
+        [RecastGroup("Full Auto", "Full Auto")]
+        FullAuto = 36,
+        [RecastGroup("Hammer Shot", "Hammer Shot")]
+        HammerShot = 37,
+        [RecastGroup("Tranquilizer Shot", "Tranq. Shot")]
+        TranquilizerShot = 38,
+        [RecastGroup("Crippling Shot", "Crippling Shot")]
+        CripplingShot = 39,
     }
 
     public class RecastGroupAttribute: Attribute

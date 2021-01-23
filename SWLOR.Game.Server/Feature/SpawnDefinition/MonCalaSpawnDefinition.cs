@@ -1,0 +1,41 @@
+﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Service.SpawnService;
+
+namespace SWLOR.Game.Server.Feature.SpawnDefinition
+{
+    public class MonCalaSpawnDefinition: ISpawnListDefinition
+    {
+        public Dictionary<string, SpawnTable> BuildSpawnTables()
+        {
+            var builder = new SpawnTableBuilder();
+            CoralIsles(builder);
+            EcoTerrorists(builder);
+
+            return builder.Build();
+        }
+
+        private void CoralIsles(SpawnTableBuilder builder)
+        {
+            builder.Create("MONCALA_CORAL_ISLES", "Coral Isles")
+                .AddSpawn(ObjectType.Creature, "viper")
+                .WithFrequency(20)
+
+                .AddSpawn(ObjectType.Creature, "mc_aradile")
+                .WithFrequency(40)
+
+                .AddSpawn(ObjectType.Creature, "mc_amphihydrus")
+                .WithFrequency(10);
+        }
+
+        private void EcoTerrorists(SpawnTableBuilder builder)
+        {
+            builder.Create("MONCALA_ECOTERRORISTS", "Eco-Terrorists")
+                .AddSpawn(ObjectType.Creature, "ecoterr_1")
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Creature, "ecoterr_2")
+                .WithFrequency(50);
+        }
+    }
+}

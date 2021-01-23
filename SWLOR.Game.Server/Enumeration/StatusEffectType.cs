@@ -42,5 +42,6 @@
         ForceDrain3 = 37,
         ForceDrain4 = 38,
         ForceDrain5 = 39,
+        Shock = 40,
     }
 }

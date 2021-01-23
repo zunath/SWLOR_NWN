@@ -61,6 +61,14 @@ namespace SWLOR.Game.Server.Service.AbilityService
         CircleSlash = 26,
         [RecastGroup("Double Strike", "Double Strike")]
         DoubleStrike = 27,
+        [RecastGroup("Electric Fist", "Electric Fist")]
+        ElectricFist = 28,
+        [RecastGroup("Striking Cobra", "Striking Cobra")]
+        StrikingCobra = 29,
+        [RecastGroup("Slam", "Slam")]
+        Slam = 30,
+        [RecastGroup("Spinning Whirl", "Spinning Whirl")]
+        SpinningWhirl = 31,
     }
 
     public class RecastGroupAttribute: Attribute

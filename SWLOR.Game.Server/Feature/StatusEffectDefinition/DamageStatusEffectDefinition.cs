@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var builder = new StatusEffectBuilder();
             Bleed(builder);
             Poison(builder);
+            Shock(builder);
 
             return builder.Build();
         }
@@ -25,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(129) // 129 = Wounding
                 .TickAction((source, target) =>
                 {
-                    var damage = EffectDamage(1);
+                    var damage = EffectDamage(d2());
                     ApplyEffectToObject(DurationType.Instant, damage, target);
 
                     var location = GetLocation(target);
@@ -49,6 +50,20 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     ApplyEffectToObject(DurationType.Instant, damage, target);
                     ApplyEffectToObject(DurationType.Temporary, decreasedAC, target, 1.0f);
 
+                });
+        }
+
+        private void Shock(StatusEffectBuilder builder)
+        {
+            builder.Create(StatusEffectType.Bleed)
+                .Name("Shock")
+                .EffectIcon(129) // 129 = Wounding
+                .TickAction((source, target) =>
+                {
+                    var damage = EffectDamage(d4(), DamageType.Electrical);
+                    ApplyEffectToObject(DurationType.Instant, damage, target);
+
+                    var location = GetLocation(target);                                       
                 });
         }
 

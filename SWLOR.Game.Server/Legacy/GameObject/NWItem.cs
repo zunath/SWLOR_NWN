@@ -3,8 +3,6 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
-using SWLOR.Game.Server.Legacy.Enumeration;
-using SkillType = SWLOR.Game.Server.Legacy.Enumeration.SkillType;
 
 namespace SWLOR.Game.Server.Legacy.GameObject
 {
@@ -92,155 +90,7 @@ namespace SWLOR.Game.Server.Legacy.GameObject
             }
             set => NWScript.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_AC", value);
         }
-        public virtual CustomItemType CustomItemType
-        {
-            get
-            {
-                // Item property takes precedence, followed by local int on the item, 
-                // followed by hard-calculating it based on base item type.
-                var itemType = (int)ItemPropertyType.Invalid; // GetItemPropertyValueAndRemove(ItemPropertyType.ItemType);
-                var storedItemType = (CustomItemType)NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_TYPE");
-
-                if (itemType > -1)
-                {
-                    // Found a valid item property
-                    CustomItemType = (CustomItemType)itemType;
-                    return (CustomItemType)itemType;
-                }
-
-                if (storedItemType != CustomItemType.None)
-                {
-                    // Found a valid stored item type
-                    return storedItemType;
-                }
-
-                // Attempt to get the item type by base item type.
-                // Will fail for armor as there's no determining factor for light versus heavy.
-                // Need to assign the local variable or give the armor the item property in order to mark it.
-                var type = GetCustomItemType(this);
-                CustomItemType = type;
-
-                return type;
-            }
-            set => NWScript.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_TYPE", (int)value);
-        }
-
-
-        private CustomItemType GetCustomItemType(NWItem item)
-        {
-            if (GetLocalBool("LIGHTSABER"))
-            {
-                return CustomItemType.Lightsaber;
-            }
-
-            BaseItem[] vibroblades =
-            {
-                BaseItem.BastardSword,
-                BaseItem.Longsword,
-                BaseItem.Katana,
-                BaseItem.Scimitar,
-                BaseItem.BattleAxe
-            };
-
-            BaseItem[] finesseVibroblades =
-            {
-                BaseItem.Dagger,
-                BaseItem.Rapier,
-                BaseItem.ShortSword,
-                BaseItem.Kukri,
-                BaseItem.Sickle,
-                BaseItem.Whip,
-                BaseItem.HandAxe
-            };
-
-            BaseItem[] batons =
-            {
-                BaseItem.LightFlail,
-                BaseItem.LightHammer,
-                BaseItem.LightMace,
-                BaseItem.MorningStar
-            };
-
-            BaseItem[] lightsabers =
-            {
-                BaseItem.Lightsaber
-            };
-
-            BaseItem[] heavyVibroblades =
-            {
-                BaseItem.GreatAxe,
-                BaseItem.GreatSword,
-                BaseItem.DwarvenWarAxe
-            };
-
-
-            BaseItem[] polearms =
-            {
-                BaseItem.Halberd,
-                BaseItem.Scythe,
-                BaseItem.ShortSpear,
-                BaseItem.Trident
-            };
-
-            BaseItem[] twinVibroblades =
-            {
-                BaseItem.DoubleAxe,
-                BaseItem.TwoBladedSword
-            };
-
-            BaseItem[] saberstaffs =
-            {
-                BaseItem.Saberstaff
-            };
-
-            BaseItem[] martialArts =
-            {
-                BaseItem.Club,
-                BaseItem.Gloves,
-                BaseItem.Bracer,
-                BaseItem.Kama,
-                BaseItem.QuarterStaff
-            };
-
-            BaseItem[] blasterRifles =
-            {
-                BaseItem.Rifle,
-                BaseItem.Cannon
-            };
-
-            BaseItem[] blasterPistol =
-            {
-                BaseItem.Pistol,
-                BaseItem.Longbow,
-                BaseItem.Sling
-            };
-
-            BaseItem[] throwing =
-            {
-                BaseItem.Dart,
-                BaseItem.Shuriken,
-                BaseItem.ThrowingAxe
-            };
-
-
-
-            if (vibroblades.Contains(item.BaseItemType)) return CustomItemType.Vibroblade;
-            if (finesseVibroblades.Contains(item.BaseItemType)) return CustomItemType.FinesseVibroblade;
-            if (batons.Contains(item.BaseItemType)) return CustomItemType.Baton;
-            if (heavyVibroblades.Contains(item.BaseItemType)) return CustomItemType.HeavyVibroblade;
-            if (saberstaffs.Contains(item.BaseItemType)) return CustomItemType.Saberstaff;
-            if (polearms.Contains(item.BaseItemType)) return CustomItemType.Polearm;
-            if (twinVibroblades.Contains(item.BaseItemType)) return CustomItemType.TwinBlade;
-            if (martialArts.Contains(item.BaseItemType)) return CustomItemType.MartialArtWeapon;
-            if (blasterRifles.Contains(item.BaseItemType)) return CustomItemType.BlasterRifle;
-            if (blasterPistol.Contains(item.BaseItemType)) return CustomItemType.BlasterPistol;
-            if (throwing.Contains(item.BaseItemType)) return CustomItemType.Throwing;
-            if (lightsabers.Contains(item.BaseItemType)) return CustomItemType.Lightsaber;
-            // Armor is deliberately left out here because we don't have a way to determine the type of armor it should be
-            // based on base item type.
-
-            return CustomItemType.None;
-        }
+       
 
         private void SetCustomProperty(string propertyName, ItemPropertyType type, int value)
         {
@@ -390,21 +240,6 @@ namespace SWLOR.Game.Server.Legacy.GameObject
                 return craftBonus;
             }
             set => SetCustomProperty("CUSTOM_ITEM_PROPERTY_CRAFT_BONUS_FABRICATION", ItemPropertyType.Invalid, value);
-        }
-        public virtual SkillType AssociatedSkillType
-        {
-            get
-            {
-                var skillType = GetItemPropertyValueAndRemove(ItemPropertyType.Invalid);
-                if (skillType <= -1) return (SkillType)NWScript.GetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_ASSOCIATED_SKILL_ID");
-                AssociatedSkillType = (SkillType)skillType;
-                return (SkillType)skillType;
-            }
-            set 
-            {
-                GetItemPropertyValueAndRemove(ItemPropertyType.Invalid);
-                NWScript.SetLocalInt(Object, "CUSTOM_ITEM_PROPERTY_ASSOCIATED_SKILL_ID", (int)value);
-            }
         }
         public virtual int CraftTierLevel
         {

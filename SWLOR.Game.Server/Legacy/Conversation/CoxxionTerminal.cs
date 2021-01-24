@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Legacy.Event.Module;
 using SWLOR.Game.Server.Legacy.GameObject;
 using SWLOR.Game.Server.Legacy.Messaging;
 using SWLOR.Game.Server.Legacy.ValueObject.Dialog;
@@ -15,7 +14,7 @@ namespace SWLOR.Game.Server.Legacy.Conversation
 
         public static void SubscribeEvents()
         {
-            MessageHub.Instance.Subscribe<OnModuleLoad>(m => LoadDoors());
+            //MessageHub.Instance.Subscribe<OnModuleLoad>(m => LoadDoors());
         }
 
         public static void LoadDoors()

@@ -130,7 +130,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "bp_rep_3"
+                "value": "bag_lg"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -149,7 +149,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "br_rep_3"
+                "value": "nibullxxang"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -168,7 +168,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "bag_lg"
+                "value": "yondeyn"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -187,7 +187,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "nibullxxang"
+                "value": "zondeyn"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -206,7 +206,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "yondeyn"
+                "value": "kylan_juice"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -215,44 +215,6 @@
               "Repos_Posy": {
                 "type": "word",
                 "value": 0
-              }
-            },
-            {
-              "__struct_id": 5,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "zondeyn"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 0
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 2
-              }
-            },
-            {
-              "__struct_id": 6,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "kylan_juice"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 2
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 2
               }
             }
           ]

@@ -10806,6 +10806,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Armor Repair Kit I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "arm_rep_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Repair Kit II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "arm_rep_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Repair Kit III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "arm_rep_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Armor Repair Kit IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "arm_rep_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bandages"
                     },
                     "RESREF": {
@@ -10817,308 +10861,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Basic Baton Repair Kit"
+                      "value": "Basic Armor Repair Kit"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "bt_rep_b"
+                      "value": "arm_rep_b"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Basic Blaster Pistol Repair Kit"
+                      "value": "Basic Weapon Repair Kit"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "bp_rep_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Blaster Rifle Repair Kit"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "br_rep_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Finesse Vibroblade Repair Kit"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "fv_rep_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Force Armor Repair Kit"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "fa_rep_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Heavy Armor Repair Kit"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ha_rep_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Heavy Vibroblade Repair Kit"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hv_rep_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Light Armor Repair Kit"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "la_rep_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Lightsaber Repair Kit"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ls_rep_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Martial Arts Weapon Repair Kit"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ma_rep_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Polearm Repair Kit"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "po_rep_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Saberstaff Repair Kit"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ss_rep_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Shield Repair Kit"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sh_rep_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Throwing Weapon Repair Kit"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "th_rep_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Twin Blade Repair Kit"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tb_rep_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Vibroblade Repair Kit"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vb_rep_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Baton Repair Kit I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "bt_rep_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Baton Repair Kit II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "bt_rep_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Baton Repair Kit III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "bt_rep_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Baton Repair Kit IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "bt_rep_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blaster Pistol Repair Kit I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "bp_rep_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blaster Pistol Repair Kit II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "bp_rep_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blaster Pistol Repair Kit III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "bp_rep_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blaster Pistol Repair Kit IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "bp_rep_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blaster Rifle Repair Kit I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "br_rep_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blaster Rifle Repair Kit II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "br_rep_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blaster Rifle Repair Kit III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "br_rep_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Blaster Rifle Repair Kit IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "br_rep_4"
+                      "value": "wpn_rep_b"
                     }
                   },
                   {
@@ -11218,94 +10976,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "stim_dex3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Finesse Vibroblade Repair Kit I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "fv_rep_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Finesse Vibroblade Repair Kit II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "fv_rep_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Finesse Vibroblade Repair Kit III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "fv_rep_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Finesse Vibroblade Repair Kit IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "fv_rep_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Force Armor Repair Kit I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "fa_rep_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Force Armor Repair Kit II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "fa_rep_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Force Armor Repair Kit III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "fa_rep_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Force Armor Repair Kit IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "fa_rep_4"
                     }
                   },
                   {
@@ -11422,94 +11092,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Heavy Armor Repair Kit I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ha_rep_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Heavy Armor Repair Kit II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ha_rep_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Heavy Armor Repair Kit III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ha_rep_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Heavy Armor Repair Kit IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ha_rep_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Heavy Vibroblade Repair Kit I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hv_rep_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Heavy Vibroblade Repair Kit II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hv_rep_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Heavy Vibroblade Repair Kit III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hv_rep_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Heavy Vibroblade Repair Kit IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "hv_rep_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Intelligence Stim I"
                     },
                     "RESREF": {
@@ -11543,187 +11125,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Light Armor Repair Kit I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "la_rep_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Light Armor Repair Kit II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "la_rep_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Light Armor Repair Kit III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "la_rep_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Light Armor Repair Kit IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "la_rep_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Lightsaber Repair Kit I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ls_rep_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Lightsaber Repair Kit II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ls_rep_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Lightsaber Repair Kit III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ls_rep_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Lightsaber Repair Kit IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ls_rep_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Martial Arts Weapon Repair Kit I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ma_rep_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Martial Arts Weapon Repair Kit II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ma_rep_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Martial Arts Weapon Repair Kit III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ma_rep_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Martial Arts Weapon Repair Kit IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ma_rep_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Poison Treatment Kit"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "treatment_kit"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Polearm Repair Kit I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "po_rep_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Polearm Repair Kit II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "po_rep_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Polearm Repair Kit III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "po_rep_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Polearm Repair Kit IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "po_rep_4"
                     }
                   },
                   {
@@ -11768,94 +11174,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "res_kit_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Saberstaff Repair Kit I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ss_rep_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Saberstaff Repair Kit II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ss_rep_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Saberstaff Repair Kit III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ss_rep_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Saberstaff Repair Kit IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ss_rep_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Shield Repair Kit I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sh_rep_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Shield Repair Kit II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sh_rep_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Shield Repair Kit III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sh_rep_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Shield Repair Kit IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "sh_rep_4"
                     }
                   },
                   {
@@ -11917,17 +11235,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Starship Repair Kit"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ss_rep"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Strength Stim I"
                     },
                     "RESREF": {
@@ -11961,132 +11268,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Throwing Weapon Repair Kit I"
+                      "value": "Weapon Repair Kit I"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "th_rep_1"
+                      "value": "wpn_rep_1"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Throwing Weapon Repair Kit II"
+                      "value": "Weapon Repair Kit II"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "th_rep_2"
+                      "value": "wpn_rep_2"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Throwing Weapon Repair Kit III"
+                      "value": "Weapon Repair Kit III"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "th_rep_3"
+                      "value": "wpn_rep_3"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Throwing Weapon Repair Kit IV"
+                      "value": "Weapon Repair Kit IV"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "th_rep_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Twin Blade Repair Kit I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tb_rep_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Twin Blade Repair Kit II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tb_rep_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Twin Blade Repair Kit III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tb_rep_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Twin Blade Repair Kit IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tb_rep_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Vibroblade Repair Kit I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vb_rep_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Vibroblade Repair Kit II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vb_rep_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Vibroblade Repair Kit III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vb_rep_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Vibroblade Repair Kit IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "vb_rep_4"
+                      "value": "wpn_rep_4"
                     }
                   },
                   {

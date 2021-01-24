@@ -149,7 +149,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "bt_rep_2"
+                "value": "bystan"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -168,7 +168,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "fv_rep_2"
+                "value": "yuusntan"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -187,7 +187,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "hv_rep_2"
+                "value": "luusntan"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -206,167 +206,15 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "ma_rep_2"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 8
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 5,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "po_rep_2"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 0
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 2
-              }
-            },
-            {
-              "__struct_id": 6,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "tb_rep_2"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 2
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 2
-              }
-            },
-            {
-              "__struct_id": 7,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "vb_rep_2"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 4
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 2
-              }
-            },
-            {
-              "__struct_id": 8,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "bystan"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 6
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 2
-              }
-            },
-            {
-              "__struct_id": 9,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "yuusntan"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 8
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 2
-              }
-            },
-            {
-              "__struct_id": 10,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "luusntan"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 0
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 4
-              }
-            },
-            {
-              "__struct_id": 11,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
                 "value": "ruusntan"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 2
+                "value": 8
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 4
-              }
-            },
-            {
-              "__struct_id": 12,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "th_rep_2"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 4
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 4
+                "value": 0
               }
             }
           ]

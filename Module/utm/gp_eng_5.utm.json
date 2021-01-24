@@ -106,7 +106,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "bp_rep_4"
+                "value": "bag_ex"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -125,7 +125,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "br_rep_4"
+                "value": "rainbow_selcxyn"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -144,7 +144,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "bag_ex"
+                "value": "rainbow_llelxxyn"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -163,7 +163,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "rainbow_selcxyn"
+                "value": "ultraynno"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -182,7 +182,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "rainbow_llelxxyn"
+                "value": "jankky"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -191,44 +191,6 @@
               "Repos_Posy": {
                 "type": "word",
                 "value": 0
-              }
-            },
-            {
-              "__struct_id": 5,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "ultraynno"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 0
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 2
-              }
-            },
-            {
-              "__struct_id": 6,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "jankky"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 2
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 2
               }
             }
           ]

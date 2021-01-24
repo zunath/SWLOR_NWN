@@ -149,7 +149,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "bp_rep_2"
+                "value": "horzzuntil"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -168,7 +168,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "br_rep_2"
+                "value": "oprlang"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -187,7 +187,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "horzzuntil"
+                "value": "feevina"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -206,7 +206,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "oprlang"
+                "value": "elec_sogayn"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -215,44 +215,6 @@
               "Repos_Posy": {
                 "type": "word",
                 "value": 0
-              }
-            },
-            {
-              "__struct_id": 5,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "feevina"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 0
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 2
-              }
-            },
-            {
-              "__struct_id": 6,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "elec_sogayn"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 2
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 2
               }
             }
           ]

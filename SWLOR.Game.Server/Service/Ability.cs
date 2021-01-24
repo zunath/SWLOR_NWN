@@ -17,16 +17,12 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new Dictionary<uint, ActiveConcentrationAbility>();
         
-        // Recast Group Descriptions
-        private static readonly Dictionary<RecastGroup, string> _recastDescriptions = new Dictionary<RecastGroup, string>();
-
         /// <summary>
         /// When the module loads, abilities will be cached and events will be scheduled.
         /// </summary>
         [NWNEventHandler("mod_load")]
         public static void OnModuleLoad()
         {
-            CacheRecastGroupNames();
             CacheAbilities();
         }
 
@@ -71,31 +67,6 @@ namespace SWLOR.Game.Server.Service
                 throw new KeyNotFoundException($"Feat '{featType}' is not registered to an ability.");
 
             return _abilities[featType];
-        }
-
-        /// <summary>
-        /// Reads all of the enum values on the RecastGroup enumeration and stores their short name into the cache.
-        /// </summary>
-        private static void CacheRecastGroupNames()
-        {
-            foreach (var recast in Enum.GetValues(typeof(RecastGroup)).Cast<RecastGroup>())
-            {
-                var attr = recast.GetAttribute<RecastGroup, RecastGroupAttribute>();
-                _recastDescriptions[recast] = attr.ShortName;
-            }
-        }
-
-        /// <summary>
-        /// Retrieves the human-readable name of a recast group.
-        /// </summary>
-        /// <param name="recastGroup">The recast group to retrieve.</param>
-        /// <returns>The name of a recast group.</returns>
-        public static string GetRecastGroupName(RecastGroup recastGroup)
-        {
-            if (!_recastDescriptions.ContainsKey(recastGroup))
-                throw new KeyNotFoundException($"Recast group {recastGroup} has not been registered. Did you forget the Description attribute?");
-
-            return _recastDescriptions[recastGroup];
         }
 
 
@@ -159,69 +130,16 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Check if ability is on a recast timer still.
-            if (IsOnRecastDelay(activator, ability.RecastGroup))
+            var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(activator, ability.RecastGroup);
+            if (isOnRecast)
             {
+                SendMessageToPC(activator, $"This ability can be used in {timeToWait}.");
                 return false;
             }
 
             return true;
         }
 
-        /// <summary>
-        /// Returns true if a recast delay has not expired yet.
-        /// Returns false if there is no recast delay or the time has already passed.
-        /// </summary>
-        /// <param name="creature">The creature to check</param>
-        /// <param name="recastGroup">The recast group to check</param>
-        /// <returns>true if recast delay hasn't passed. false otherwise</returns>
-        private static bool IsOnRecastDelay(uint creature, RecastGroup recastGroup)
-        {
-            if (GetIsDM(creature)) return false;
-            var now = DateTime.UtcNow;
-
-            // Players
-            if (GetIsPC(creature) && !GetIsDMPossessed(creature))
-            {
-                var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Entity.Player>(playerId);
-
-                if (!dbPlayer.RecastTimes.ContainsKey(recastGroup)) return false;
-
-                if (now >= dbPlayer.RecastTimes[recastGroup])
-                {
-                    return false;
-                }
-                else
-                {
-                    string timeToWait = Time.GetTimeToWaitLongIntervals(now, dbPlayer.RecastTimes[recastGroup], false);
-                    SendMessageToPC(creature, $"This ability can be used in {timeToWait}.");
-                    return true;
-                }
-            }
-            // NPCs and DM-possessed NPCs
-            else
-            {
-                string unlockDate = GetLocalString(creature, $"ABILITY_RECAST_ID_{(int)recastGroup}");
-                if (string.IsNullOrWhiteSpace(unlockDate))
-                {
-                    return false;
-                }
-                else
-                {
-                    var dateTime = DateTime.ParseExact(unlockDate, "yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture);
-                    if (now >= dateTime)
-                    {
-                        return false;
-                    }
-                    else
-                    {
-                        string timeToWait = Time.GetTimeToWaitLongIntervals(now, dateTime, false);
-                        SendMessageToPC(creature, $"This ability can be used in {timeToWait}.");
-                        return true;
-                    }
-                }
-            }
-        }
 
         /// <summary>
         /// Each tick, creatures with a concentration effect will be processed.

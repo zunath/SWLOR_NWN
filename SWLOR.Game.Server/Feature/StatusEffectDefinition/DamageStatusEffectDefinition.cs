@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var builder = new StatusEffectBuilder();
             Bleed(builder);
             Poison(builder);
+            Burn(builder);
 
             return builder.Build();
         }
@@ -49,6 +50,20 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     ApplyEffectToObject(DurationType.Instant, damage, target);
                     ApplyEffectToObject(DurationType.Temporary, decreasedAC, target, 1.0f);
 
+                });
+        }
+
+        private void Burn(StatusEffectBuilder builder)
+        {
+            builder.Create(StatusEffectType.Burn)
+                .Name("Burn")
+                .EffectIcon(20) // 20 = Poison todo: need a better icon
+                .TickAction((source, target) =>
+                {
+                    var amount = Random.Next(2, 4);
+                    var damage = EffectDamage(amount, DamageType.Fire);
+
+                    ApplyEffectToObject(DurationType.Instant, damage, target);
                 });
         }
 

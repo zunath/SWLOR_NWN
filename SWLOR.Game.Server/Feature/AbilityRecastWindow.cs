@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature
 
         private static string BuildTimerText(RecastGroup group, DateTime now, DateTime recastTime)
         {
-            var recastName = (Ability.GetRecastGroupName(group) + ":").PadRight(14, ' ');
+            var recastName = (Recast.GetRecastGroupName(group) + ":").PadRight(14, ' ');
             var delta = recastTime - now;
             var formatTime = delta.ToString(@"hh\:mm\:ss").PadRight(8, ' ');
             return recastName + formatTime;

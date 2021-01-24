@@ -262,6 +262,9 @@ namespace SWLOR.Game.Server.Service
             var item = StringToObject(Events.GetEventData("ITEM"));
             var price = Convert.ToInt32(Events.GetEventData("PRICE"));
             var store = StringToObject(Events.GetEventData("STORE"));
+
+            if (GetResRef(store) != "player_store") return;
+
             var sellerPlayerId = GetLocalString(store, "SELLER_PLAYER_ID");
             var dbPlayer = DB.Get<Player>(sellerPlayerId);
             var dbPlayerStore = DB.Get<PlayerStore>(sellerPlayerId);

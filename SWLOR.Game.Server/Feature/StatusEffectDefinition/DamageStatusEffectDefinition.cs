@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Random = SWLOR.Game.Server.Service.Random;
@@ -14,6 +15,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             var builder = new StatusEffectBuilder();
             Bleed(builder);
             Poison(builder);
+            Shock(builder);
+            Tranquilize(builder);
             Burn(builder);
 
             return builder.Build();
@@ -26,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(129) // 129 = Wounding
                 .TickAction((source, target) =>
                 {
-                    var damage = EffectDamage(1);
+                    var damage = EffectDamage(d2());
                     ApplyEffectToObject(DurationType.Instant, damage, target);
 
                     var location = GetLocation(target);
@@ -50,6 +53,39 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     ApplyEffectToObject(DurationType.Instant, damage, target);
                     ApplyEffectToObject(DurationType.Temporary, decreasedAC, target, 1.0f);
 
+                });
+        }
+
+        private void Shock(StatusEffectBuilder builder)
+        {
+            builder.Create(StatusEffectType.Shock)
+                .Name("Shock")
+                .EffectIcon(115) // 115 =  DAMAGE_IMMUNITY_ELECTRICAL 
+                .TickAction((source, target) =>
+                {
+                    var damage = EffectDamage(d4(), DamageType.Electrical);
+                    ApplyEffectToObject(DurationType.Instant, damage, target);
+
+                    var location = GetLocation(target);                                       
+                });
+        }
+
+        private void Tranquilize(StatusEffectBuilder builder)
+        {
+            builder.Create(StatusEffectType.Tranquilize)
+                .Name("Tranquilize")
+                .EffectIcon(18) // 18 = Stunned
+                .GrantAction((source, target, length) =>
+                {
+                    var effect = EffectDazed();
+                    effect = EffectLinkEffects(effect, EffectVisualEffect(Core.NWScript.Enum.VisualEffect.VisualEffect.Vfx_Dur_Iounstone_Blue));
+                    effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.Tranquilize);
+
+                    ApplyEffectToObject(DurationType.Permanent, effect, target, length);
+                })
+                .RemoveAction((target) =>
+                {
+                    RemoveEffectByTag(target, "StatusEffectType." + StatusEffectType.Tranquilize);
                 });
         }
 

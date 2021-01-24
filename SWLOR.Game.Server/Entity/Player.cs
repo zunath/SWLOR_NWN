@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Entity
                 {AbilityType.Wisdom, 0f}
             };
             ShowHelmet = true;
+            IsUsingDualPistolMode = false;
             IsHolonetEnabled = true;
             EmoteStyle = EmoteStyle.Regular;
             MapPins = new Dictionary<string, List<MapPin>>();
@@ -75,6 +76,7 @@ namespace SWLOR.Game.Server.Entity
         public int XPDebt { get; set; }
         public bool IsDeleted { get; set; }
         public bool ShowHelmet { get; set; }
+        public bool IsUsingDualPistolMode { get; set; }
         public DateTime? DatePerkRefundAvailable { get; set; }
         public CharacterType CharacterType { get; set; }
         public bool IsHolonetEnabled { get; set; }

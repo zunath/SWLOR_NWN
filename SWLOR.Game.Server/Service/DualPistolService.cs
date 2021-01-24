@@ -145,13 +145,10 @@ namespace SWLOR.Game.Server.Service
         }
 
         [NWNEventHandler("mod_equip")]
-        private static void OnModuleEquipItem()
+        public static void OnModuleEquipItem()
         {
             var player = GetPCItemLastEquippedBy();
             var item = GetPCItemLastEquipped();
-
-            if (GetLocalBool(player, "IS_CUSTOMIZING_ITEM")) return; // Don't run heavy code when customizing equipment.
-
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);           
             //Console.WriteLine("dbPlayer.IsUsingDualPistolMode Currently = " + dbPlayer.IsUsingDualPistolMode);
@@ -174,12 +171,11 @@ namespace SWLOR.Game.Server.Service
         }
 
         [NWNEventHandler("mod_unequip")]
-        private static void OnModuleUnequipItem()
+        public static void OnModuleUnequipItem()
         {            
             var player = GetPCItemLastUnequippedBy();            
             var item = GetPCItemLastUnequipped();
 
-            if (GetLocalBool(player, "IS_CUSTOMIZING_ITEM")) return; // Don't run heavy code when customizing equipment.
             if (!GetIsPC(player)) return;
 
             if (GetBaseItemType(item) == BaseItem.Sling)
@@ -201,12 +197,11 @@ namespace SWLOR.Game.Server.Service
         }
 
         [NWNEventHandler("mod_unacquire")]
-        private static void OnModuleUnaquireItem()
+        public static void OnModuleUnaquireItem()
         {
             var player = GetModuleItemLostBy();
             var item = GetModuleItemLost();
 
-            if (GetLocalBool(player, "IS_CUSTOMIZING_ITEM")) return; // Don't run heavy code when customizing equipment.
             if (!GetIsPC(player)) return;
 
             if (GetBaseItemType(item) == BaseItem.OffHandPistol)
@@ -223,8 +218,6 @@ namespace SWLOR.Game.Server.Service
                 DestroyObject(item);
             }
         }
-        private static void OnModuleAquireItem()
-        {
-        }
+
     }
 }

@@ -27,8 +27,6 @@ namespace SWLOR.Game.Server.Legacy.Data.Entity
         public int Enmity { get; set; }
         public int EnmityAdjustmentRuleID { get; set; }
         public int? CastAnimationID { get; set; }
-        public SpecializationType Specialization { get; set; }
-        public ForceBalanceType ForceBalance { get; set; }
 
         public IEntity Clone()
         {
@@ -47,8 +45,6 @@ namespace SWLOR.Game.Server.Legacy.Data.Entity
                 Enmity = Enmity,
                 EnmityAdjustmentRuleID = EnmityAdjustmentRuleID,
                 CastAnimationID = CastAnimationID,
-                Specialization = Specialization,
-                ForceBalance = ForceBalance
             };
         }
     }

@@ -34,7 +34,6 @@ namespace SWLOR.Game.Server.Legacy.Data.Entity
         public string AreaName { get; set; }
         public string AreaTag { get; set; }
         public string AreaResref { get; set; }
-        public Enumeration.PCBaseType? PCBaseTypeID { get; set; }
         public DateTime? DateRentDue { get; set; }
         public Guid? AttackerPlayerID { get; set; }
 
@@ -61,7 +60,6 @@ namespace SWLOR.Game.Server.Legacy.Data.Entity
                 AreaName = AreaName,
                 AreaTag = AreaTag,
                 AreaResref = AreaResref,
-                PCBaseTypeID = PCBaseTypeID,
                 DateRentDue = DateRentDue,
                 AttackerPlayerID = AttackerPlayerID
             };

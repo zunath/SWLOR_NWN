@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Legacy.Enumeration;
+﻿using SWLOR.Game.Server.Core.NWNX.Enum;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Object = SWLOR.Game.Server.Core.NWNX.Object;
 

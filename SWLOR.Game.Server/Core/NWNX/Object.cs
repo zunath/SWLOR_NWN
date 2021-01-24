@@ -1,4 +1,5 @@
 using System.Numerics;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Legacy.Enumeration;
 
 namespace SWLOR.Game.Server.Core.NWNX

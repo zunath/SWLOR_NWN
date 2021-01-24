@@ -403,7 +403,7 @@ namespace SWLOR.Game.Server.Legacy.Service
             // If this perk level requires a specialization, confirm the player has the required specialization.
             if (level.SpecializationID > 0)
             {
-                if (level.SpecializationID != (int)dbPlayer.SpecializationID)
+                //if (level.SpecializationID != (int)dbPlayer.SpecializationID)
                     return false;
             }
 

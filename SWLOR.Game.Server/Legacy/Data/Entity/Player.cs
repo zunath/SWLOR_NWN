@@ -61,7 +61,6 @@ namespace SWLOR.Game.Server.Legacy.Data.Entity
         public int GoldTill { get; set; }
         public int RoleplayPoints { get; set; }
         public int RoleplayXP { get; set; }
-        public SpecializationType SpecializationID { get; set; }
         public int? ActiveConcentrationPerkID { get; set; }
         public int ActiveConcentrationTier { get; set; }
         public bool ModeDualPistol { get; set; }
@@ -116,7 +115,6 @@ namespace SWLOR.Game.Server.Legacy.Data.Entity
                 GoldTill = GoldTill,
                 RoleplayPoints = RoleplayPoints,
                 RoleplayXP = RoleplayXP,
-                SpecializationID = SpecializationID,
                 ActiveConcentrationPerkID = ActiveConcentrationPerkID,
                 ActiveConcentrationTier = ActiveConcentrationTier,
                 ModeDualPistol = ModeDualPistol

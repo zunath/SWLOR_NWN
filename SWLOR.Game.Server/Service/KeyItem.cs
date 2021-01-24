@@ -198,6 +198,33 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Checks whether a player has all of the specified key items.
+        /// Returns false if player is non-PC or DM.
+        /// </summary>
+        /// <param name="player">The player to check.</param>
+        /// <param name="keyItems">Required key items.</param>
+        /// <returns>true if player has all key items, false otherwise</returns>
+        public static bool HasAllKeyItems(uint player, List<KeyItemType> keyItems)
+        {
+            if (!GetIsPC(player) || GetIsDM(player)) return false;
+
+            // No key items specified, default to true.
+            if (keyItems == null)
+                return true;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            
+            foreach (var ki in keyItems)
+            {
+                if (!dbPlayer.KeyItems.ContainsKey(ki))
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// When a placeable with a key item defined is used by a player, give it to them.
         /// </summary>
         [NWNEventHandler("get_key_item")]

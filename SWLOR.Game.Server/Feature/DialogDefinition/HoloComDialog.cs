@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = DialogBuilder.Create()
+            var builder = new DialogBuilder()
                 .AddPage(MainPageId, MainPageInit);
 
             return builder.Build();

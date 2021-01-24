@@ -21,7 +21,6 @@
 
   <ItemGroup>
     <Folder Include="Feature\AbilityDefinition\Professions\" />
-    <Folder Include="Legacy\Service\" />
   </ItemGroup>
 
   <Target Name="NWN" AfterTargets="Build">

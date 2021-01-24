@@ -12,11 +12,6 @@ namespace SWLOR.Game.Server.Service.DialogService
         private readonly List<Action> _endActions = new List<Action>();
         private object _dataModel;
 
-        public static DialogBuilder Create()
-        {
-            return new DialogBuilder();
-        }
-
         public DialogBuilder AddInitializationAction(Action initializationAction)
         {
             _initializationActions.Add(initializationAction);

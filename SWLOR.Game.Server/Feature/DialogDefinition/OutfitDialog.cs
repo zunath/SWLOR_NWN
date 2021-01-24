@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         public override PlayerDialog SetUp(uint player)
         {
-            var dialog = DialogBuilder.Create()
+            var builder = new DialogBuilder()
                 .WithDataModel(new Model())
                 .AddBackAction((previous, next) =>
                 {
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 .AddPage(LoadPageId, LoadPageInit)
                 .AddPage(DeletePageId, DeletePageInit);
 
-            return dialog.Build();
+            return builder.Build();
         }
 
         private void MainPageInit(DialogPage page)

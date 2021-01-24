@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         public override PlayerDialog SetUp(uint player)
         {
-            var dialog = DialogBuilder.Create()
+            var builder = new DialogBuilder()
                 .WithDataModel(new Model())
                 .AddBackAction((oldPage, newPage) =>
                 {
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 .AddPage(SkillDetailsId, SkillDetailsInit)
                 .AddPage(DistributeXPId, DistributeXPAmountInit);
 
-            return dialog.Build();
+            return builder.Build();
         }
 
         /// <summary>

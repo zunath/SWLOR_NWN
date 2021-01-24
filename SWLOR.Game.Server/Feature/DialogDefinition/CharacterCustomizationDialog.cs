@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         public override PlayerDialog SetUp(uint player)
         {
-            var builder = DialogBuilder.Create()
+            var builder = new DialogBuilder()
                 .WithDataModel(new Model())
                 .AddPage(MainPageId, MainPageInit)
                 .AddPage(SkinColorPageId, SkinColorPageInit)

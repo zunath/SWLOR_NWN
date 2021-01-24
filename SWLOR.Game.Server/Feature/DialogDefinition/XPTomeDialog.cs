@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         public override PlayerDialog SetUp(uint player)
         {
-            var dialog = DialogBuilder.Create()
+            var builder = new DialogBuilder()
                 .WithDataModel(new Model())
                 .AddInitializationAction(Initialize)
                 .AddPage(CategoryPageId, CategoryPageInit)
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 .AddPage(ConfirmationPageId, ConfirmationPageInit);
 
 
-            return dialog.Build();
+            return builder.Build();
         }
 
         private void Initialize()

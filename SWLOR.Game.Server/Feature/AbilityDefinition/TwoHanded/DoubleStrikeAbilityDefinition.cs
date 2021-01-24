@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Sonic), target);
 
             Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.TwoHanded, 3);
         }
 
         private static void DoubleStrike1(AbilityBuilder builder)

@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             Bleed(builder);
             Poison(builder);
             Shock(builder);
+            Tranquilize(builder);
 
             return builder.Build();
         }
@@ -56,9 +57,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void Shock(StatusEffectBuilder builder)
         {
-            builder.Create(StatusEffectType.Bleed)
+            builder.Create(StatusEffectType.Shock)
                 .Name("Shock")
-                .EffectIcon(129) // 129 = Wounding
+                .EffectIcon(115) // 115 =  DAMAGE_IMMUNITY_ELECTRICAL 
                 .TickAction((source, target) =>
                 {
                     var damage = EffectDamage(d4(), DamageType.Electrical);
@@ -70,9 +71,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void Tranquilize(StatusEffectBuilder builder)
         {
-            builder.Create(StatusEffectType.Bleed)
+            builder.Create(StatusEffectType.Tranquilize)
                 .Name("Tranquilize")
-                .EffectIcon(129) // 129 = Wounding
+                .EffectIcon(18) // 18 = Stunned
                 .GrantAction((source, target, length) =>
                 {
                     var effect = EffectDazed();

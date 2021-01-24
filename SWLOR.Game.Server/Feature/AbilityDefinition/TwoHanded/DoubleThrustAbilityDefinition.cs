@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
 
             Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.TwoHanded, 3);
         }
 
         private static void DoubleThrust1(AbilityBuilder builder)

@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(amount), target, 60f);
 
             Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.TwoHanded, 3);
         }
 
         private static void CrossCut1(AbilityBuilder builder)

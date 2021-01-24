@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static string Validation(uint activator, uint target, int level)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand);
+            var weapon = GetItemInSlot(InventorySlot.LeftHand);
 
             if (!Item.KnucklesBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (inflict) StatusEffect.Apply(activator, target, StatusEffectType.Shock, duration);
 
             Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.MartialArts, 3);
         }
 
         private static void ElectricFist1(AbilityBuilder builder)

@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (inflict) ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, 3f);
 
             Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.TwoHanded, 3);
         }
 
         private static void CrescentMoon1(AbilityBuilder builder)

@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             if (inflict) ApplyEffectToObject(DurationType.Temporary, EffectBlindness(), target, duration);
 
             Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.MartialArts, 3);
         }
 
         private static void Slam1(AbilityBuilder builder)

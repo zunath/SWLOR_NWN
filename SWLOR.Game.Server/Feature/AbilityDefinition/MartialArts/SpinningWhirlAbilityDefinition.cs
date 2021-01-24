@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }            
 
             Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.MartialArts, 3);
         }
 
         private static void SpinningWhirl1(AbilityBuilder builder)

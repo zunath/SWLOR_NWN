@@ -87,6 +87,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             LanguageCommand(builder);
             CustomizeCommand(builder);
             ToggleHelmet(builder);
+            ToggleDualPistolMode(builder);
             ToggleEmoteStyle(builder);
             ToggleHolonet(builder);
             ChangeItemName(builder);
@@ -270,6 +271,17 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     {
                         SetHiddenWhenEquipped(helmet, !dbPlayer.ShowHelmet);
                     }
+                });
+        }
+
+        private static void ToggleDualPistolMode(ChatCommandBuilder builder)
+        {
+            builder.Create("toggledualpistolmode")
+                .Description("Toggles whether or not your pistol will be dual wielded when equipped.")
+                .Permissions(AuthorizationLevel.Player)
+                .Action((user, target, location, args) =>
+                {
+                    DualPistolService.ToggleDualPistolMode(user);
                 });
         }
 

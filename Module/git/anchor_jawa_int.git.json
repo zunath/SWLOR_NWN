@@ -1603,7 +1603,7 @@
               },
               "Orientation": {
                 "type": "float",
-                "value": -2.577080011367798
+                "value": -2.577079772949219
               },
               "X": {
                 "type": "float",
@@ -1862,7 +1862,7 @@
               "__struct_id": 2,
               "Orientation": {
                 "type": "float",
-                "value": -3.092496156692505
+                "value": -3.092495679855347
               },
               "X": {
                 "type": "float",
@@ -2941,7 +2941,7 @@
               "__struct_id": 2,
               "Orientation": {
                 "type": "float",
-                "value": -3.117040395736694
+                "value": -3.117039918899536
               },
               "X": {
                 "type": "float",
@@ -3264,7 +3264,7 @@
               "__struct_id": 2,
               "Orientation": {
                 "type": "float",
-                "value": 2.748886823654175
+                "value": 2.748886346817017
               },
               "X": {
                 "type": "float",
@@ -3763,7 +3763,7 @@
               "__struct_id": 2,
               "Orientation": {
                 "type": "float",
-                "value": -2.871604919433594
+                "value": -2.871604681015015
               },
               "X": {
                 "type": "float",

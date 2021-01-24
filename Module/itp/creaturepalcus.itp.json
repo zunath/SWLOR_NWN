@@ -5007,25 +5007,6 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tatooine Militia"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "tat_militia02"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
                       "value": 4.0
                     },
                     "FACTION": {

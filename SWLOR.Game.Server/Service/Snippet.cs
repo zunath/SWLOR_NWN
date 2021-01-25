@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Service
         /// check for any conversation conditions and process them.
         /// </summary>
         /// <returns></returns>
+        [NWNEventHandler("appear")]
         [NWNEventHandler("appears")]
         public static bool ConversationAppearsWhen()
         {
@@ -71,6 +72,7 @@ namespace SWLOR.Game.Server.Service
         /// check for any conversation actions and process them.
         /// </summary>
         [NWNEventHandler("action")]
+        [NWNEventHandler("actions")]
         public static void ConversationAction()
         {
             var player = GetPCSpeaker();
@@ -87,15 +89,30 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (var condition in _appearsWhenCommands)
             {
-                if (!Util.GetScriptParamIsSet(condition.Key)) continue;
+                var notConditionEnabled = false;
 
-                var param = GetScriptParam(condition.Key);
+                // Check for "not" condition first.
+                if (Util.GetScriptParamIsSet("!" + condition.Key))
+                {
+                    notConditionEnabled = true;
+                }
+                // If we can't find either condition, exit.
+                else if (!Util.GetScriptParamIsSet(condition.Key)) continue;
+
+                var conditionKey = notConditionEnabled ? "!" + condition.Key : condition.Key;
+                var param = GetScriptParam(conditionKey);
                 var args = param.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
                 var snippetName = condition.Key;
 
                 // The first command that fails will result in failure.
                 var commandResult = _appearsWhenCommands[snippetName](player, args.ToArray());
-                if (!commandResult) return false;
+                
+                // "Not" conditions check for the opposite condition.
+                if (notConditionEnabled && commandResult)
+                    return false;
+
+                // Normal conditions
+                if (!notConditionEnabled && !commandResult) return false;
             }
 
             return true;

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.QuestService;
@@ -42,6 +44,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                     KeyItem.RemoveKeyItem(player, KeyItemType.AvixTathamsWorkReceipt);
                     KeyItem.RemoveKeyItem(player, KeyItemType.HalronLinthsWorkReceipt);
                     KeyItem.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkReceipt);
+
+                    var cdKey = NWScript.GetPCPublicCDKey(player);
+                    var dbAccount = DB.Get<Account>(cdKey) ?? new Account();
+                    dbAccount.HasCompletedTutorial = true;
+
+                    DB.Set(cdKey, dbAccount);
                 });
         }
 

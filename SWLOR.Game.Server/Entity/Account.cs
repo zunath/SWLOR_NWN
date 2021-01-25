@@ -16,6 +16,8 @@ namespace SWLOR.Game.Server.Entity
 
         public ulong TimesLoggedIn { get; set; }
 
+        public bool HasCompletedTutorial { get; set; }
+
         public Dictionary<AchievementType, DateTime> Achievements { get; set; }
 
         public AchievementProgress AchievementProgress { get; set; }

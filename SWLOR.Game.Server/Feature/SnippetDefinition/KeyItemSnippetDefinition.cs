@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             if (args.Length <= 0)
             {
-                const string Error = "'condition-has-key-items' requires a keyItemId argument.";
+                const string Error = "'condition-all-key-items' requires a keyItemId argument.";
                 SendMessageToPC(player, Error);
                 Log.Write(LogGroup.Error, Error);
                 return false;
@@ -55,5 +55,49 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
 
             return true;
         }
+
+        /// <summary>
+        /// Snippet which gives a one or more key items to the player.
+        /// </summary>
+        /// <param name="player">The player to give to</param>
+        /// <param name="args">Arguments provided by the conversation builder.</param>
+        [Snippet("action-give-key-items")]
+        public static void ActionGiveKeyItem(uint player, string[] args)
+        {
+            if (args.Length <= 0)
+            {
+                const string Error = "'action-give-key-items' requires a keyItemId argument.";
+                SendMessageToPC(player, Error);
+                Log.Write(LogGroup.Error, Error);
+                return;
+            }
+
+            foreach (var arg in args)
+            {
+                KeyItemType type;
+
+                // Try searching by Id first.
+                if (int.TryParse(arg, out var argId))
+                {
+                    type = KeyItem.GetKeyItemTypeById(argId);
+                }
+                // Couldn't parse an integer. Look by name.
+                else
+                {
+                    type = KeyItem.GetKeyItemTypeByName(arg);
+                }
+
+                // Type is invalid, log an error and end.
+                if (type == KeyItemType.Invalid)
+                {
+                    Log.Write(LogGroup.Error, $"{arg} is not a valid KeyItemType");
+                    return;
+                }
+
+                KeyItem.GiveKeyItem(player, type);
+            }
+
+        }
+
     }
 }

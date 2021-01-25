@@ -15,7 +15,7 @@
 
 void main()
 {
-    ExecuteScript("crea_on_blocked", OBJECT_SELF);
+    ExecuteScript("crea_blocked", OBJECT_SELF);
 
     if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
        GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_BLOCKED_EVENT") == TRUE) return;

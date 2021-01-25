@@ -23,7 +23,7 @@
 
 void main()
 {
-    ExecuteScript("crea_on_death", OBJECT_SELF);
+    ExecuteScript("crea_death", OBJECT_SELF);
     if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
        GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_DEATH_EVENT") == TRUE) return;
 

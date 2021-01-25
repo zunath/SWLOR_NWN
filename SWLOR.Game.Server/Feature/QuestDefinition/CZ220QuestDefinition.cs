@@ -17,7 +17,6 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             SuppliesWeaponsmith(builder);
             SuppliesScavenging(builder);
             SuppliesFabrication(builder);
-            SuppliesEngineering(builder);
             SuppliesArmorsmith(builder);
             DatapadRetrieval(builder);
             MynockMayhem(builder);
@@ -106,29 +105,6 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("The Crafting Terminal Droid operator has requested you create a single unit of Power Core. You can use any fabrication terminal to make the item. You will find the necessary resources down on the maintenance level.")
                 .AddCollectItemObjective("power_core", 1)
-
-                .AddState()
-                .SetStateJournalText("Speak to the Crafting Terminal Droid operator for your reward.")
-
-                .AddGoldReward(50)
-                .AddKeyItemReward(KeyItemType.CraftingTerminalDroidOperatorsWorkReceipt)
-
-                .OnAcceptAction((player, sourceObject) =>
-                {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
-                })
-                .OnCompleteAction((player, sourceObject) =>
-                {
-                    KeyItem.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
-                });
-        }
-        private static void SuppliesEngineering(QuestBuilder builder)
-        {
-            builder.Create("cz220_engineering", "CZ-220 Supplies - Engineering")
-
-                .AddState()
-                .SetStateJournalText("The Crafting Terminal Droid operator has requested you create a Basic Resource Scanner. You can use any engineering terminal to make the item. You will find the necessary resources down on the maintenance level.")
-                .AddCollectItemObjective("scanner_r_b", 1)
 
                 .AddState()
                 .SetStateJournalText("Speak to the Crafting Terminal Droid operator for your reward.")

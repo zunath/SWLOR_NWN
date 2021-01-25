@@ -20,7 +20,7 @@
 
 void main()
 {
-    ExecuteScript("crea_on_roundend", OBJECT_SELF);
+    ExecuteScript("crea_roundend", OBJECT_SELF);
     if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
        GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_COMBAT_ROUND_END_EVENT") == TRUE) return;
 

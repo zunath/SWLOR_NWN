@@ -34,7 +34,7 @@
 
 void main()
 {
-    ExecuteScript("crea_on_spawn", OBJECT_SELF);
+    ExecuteScript("crea_spawn", OBJECT_SELF);
     if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
        GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_SPAWN_EVENT") == TRUE) return;
 

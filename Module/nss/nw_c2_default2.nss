@@ -12,7 +12,7 @@
 
 void main()
 {
-    ExecuteScript("crea_on_percept", OBJECT_SELF);
+    ExecuteScript("crea_perception", OBJECT_SELF);
 
     if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
        GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_PERCEPTION_EVENT") == TRUE) return;

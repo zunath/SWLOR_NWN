@@ -14,7 +14,7 @@
 
 void main()
 {
-    ExecuteScript("crea_on_convo", OBJECT_SELF);
+    ExecuteScript("crea_convo", OBJECT_SELF);
     if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
        GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_CONVERSATION_EVENT") == TRUE) return;
 

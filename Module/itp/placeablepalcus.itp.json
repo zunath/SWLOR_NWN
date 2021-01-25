@@ -67550,11 +67550,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Arkoxit Vein"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "arkoxit_vein"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bank Terminal"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "bank_term"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bisteiss Vein"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bisteiss_vein"
                     }
                   },
                   {
@@ -67687,6 +67709,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "craft_temp_store"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Croknor Vein"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "corknor_vein"
                     }
                   },
                   {
@@ -67858,6 +67891,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hemorgite Vein"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hemorgite_vein"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jasioclase Vein"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "jasioclase_vein"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Jukebox"
                     },
                     "RESREF": {
@@ -67896,6 +67951,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cz220_junk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Keromber Vein"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "keromber_vein"
                     }
                   },
                   {
@@ -67946,22 +68012,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Old Player House"
+                      "value": "Ochne Vein"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "old_house"
+                      "value": "ochne_vein"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Ore Vein"
+                      "value": "Old Player House"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "ore_vein"
+                      "value": "old_house"
                     }
                   },
                   {
@@ -68028,6 +68094,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_flyship"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Plagionite Vein"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "plagionite_vein"
                     }
                   },
                   {
@@ -68116,6 +68193,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "resource_silo"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Scordspar Vein"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "scordspar_vein"
                     }
                   },
                   {
@@ -68391,6 +68479,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "t_tusk_cmp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Veldite Vein"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "veldite_vein"
                     }
                   },
                   {

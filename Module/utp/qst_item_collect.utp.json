@@ -94,7 +94,7 @@
   },
   "OnClosed": {
     "type": "resref",
-    "value": "script_3"
+    "value": "qst_collect_clsd"
   },
   "OnDamaged": {
     "type": "resref",
@@ -114,7 +114,7 @@
   },
   "OnInvDisturbed": {
     "type": "resref",
-    "value": "script_1"
+    "value": "qst_collect_dist"
   },
   "OnLock": {
     "type": "resref",
@@ -126,7 +126,7 @@
   },
   "OnOpen": {
     "type": "resref",
-    "value": "script_2"
+    "value": "qst_collect_open"
   },
   "OnSpellCastAt": {
     "type": "resref",

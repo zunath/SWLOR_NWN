@@ -29,7 +29,7 @@
 
 void main()
 {
-    ExecuteScript("crea_on_splcast", OBJECT_SELF);
+    ExecuteScript("crea_spellcastat", OBJECT_SELF);
     if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
        GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_SPELL_CAST_AT_EVENT") == TRUE) return;
 

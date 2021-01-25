@@ -21,7 +21,7 @@
 
 void main()
 {
-    ExecuteScript("crea_on_hb", OBJECT_SELF);
+    ExecuteScript("crea_heartbeat", OBJECT_SELF);
 
     if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
        GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_HEARTBEAT_EVENT") == TRUE) return;

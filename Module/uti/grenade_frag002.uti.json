@@ -98,11 +98,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 42
+          "value": 35
         },
         "CostValue": {
           "type": "word",
-          "value": 8
+          "value": 2
         },
         "Param1": {
           "type": "byte",

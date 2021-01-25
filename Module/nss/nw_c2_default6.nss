@@ -21,7 +21,7 @@
 
 void main()
 {
-    ExecuteScript("crea_on_damaged", OBJECT_SELF);
+    ExecuteScript("crea_damaged", OBJECT_SELF);
     if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
        GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_DAMAGED_EVENT") == TRUE) return;
 

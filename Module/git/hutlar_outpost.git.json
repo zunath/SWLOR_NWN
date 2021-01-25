@@ -879,7 +879,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9891765117645264
+          "value": -0.9891765713691711
         },
         "XPosition": {
           "type": "float",
@@ -887,7 +887,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.1467303484678268
+          "value": -0.1467301100492477
         },
         "YPosition": {
           "type": "float",
@@ -1753,7 +1753,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.8175848126411438
+          "value": 0.8175849318504334
         },
         "XPosition": {
           "type": "float",
@@ -1761,7 +1761,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.5758081674575806
+          "value": -0.5758079886436462
         },
         "YPosition": {
           "type": "float",
@@ -2635,7 +2635,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.04906750097870827
+          "value": -0.04906726256012917
         },
         "YPosition": {
           "type": "float",
@@ -3501,7 +3501,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.8314695358276367
+          "value": -0.8314694762229919
         },
         "XPosition": {
           "type": "float",
@@ -3509,7 +3509,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.5555703639984131
+          "value": 0.5555704236030579
         },
         "YPosition": {
           "type": "float",
@@ -4373,7 +4373,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.6895406842231751
+          "value": 0.6895409822463989
         },
         "XPosition": {
           "type": "float",
@@ -4381,7 +4381,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.7242469787597656
+          "value": -0.724246621131897
         },
         "YPosition": {
           "type": "float",
@@ -5227,7 +5227,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.9238795638084412
+          "value": 0.9238796830177307
         },
         "XPosition": {
           "type": "float",
@@ -5235,7 +5235,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.382683277130127
+          "value": -0.3826830685138702
         },
         "YPosition": {
           "type": "float",
@@ -6386,21 +6386,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CURRENT_LOCATION"
               },
               "Type": {
@@ -6424,7 +6409,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "StarportFlights"
+                "value": "StarportFlightsDialog"
               }
             }
           ]
@@ -6663,21 +6648,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CURRENT_LOCATION"
               },
               "Type": {
@@ -6701,7 +6671,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "StarportFlights"
+                "value": "StarportFlightsDialog"
               }
             }
           ]
@@ -6940,21 +6910,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CURRENT_LOCATION"
               },
               "Type": {
@@ -6978,7 +6933,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "StarportFlights"
+                "value": "StarportFlightsDialog"
               }
             }
           ]
@@ -7217,21 +7172,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CURRENT_LOCATION"
               },
               "Type": {
@@ -7255,7 +7195,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "StarportFlights"
+                "value": "StarportFlightsDialog"
               }
             }
           ]
@@ -8043,7 +7983,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.04906737431883812
+          "value": -0.04906736686825752
         },
         "XPosition": {
           "type": "float",
@@ -8102,7 +8042,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 2.296763113918132e-006
+          "value": 2.773600272121257e-006
         },
         "XPosition": {
           "type": "float",

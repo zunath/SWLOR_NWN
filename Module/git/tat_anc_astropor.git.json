@@ -1426,7 +1426,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 1.350243655906525e-005
+          "value": 1.374085513816681e-005
         },
         "XPosition": {
           "type": "float",
@@ -7030,7 +7030,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.2429754585027695
+          "value": -0.2429753541946411
         },
         "YPosition": {
           "type": "float",
@@ -13646,7 +13646,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.4052514731884003
+          "value": 0.405251681804657
         },
         "XPosition": {
           "type": "float",
@@ -13654,7 +13654,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9142052531242371
+          "value": -0.9142051339149475
         },
         "YPosition": {
           "type": "float",
@@ -15540,7 +15540,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.3368822932243347
+          "value": -0.3368821740150452
         },
         "YPosition": {
           "type": "float",
@@ -21143,7 +21143,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.4714069366455078
+          "value": 0.4714073538780212
         },
         "XPosition": {
           "type": "float",
@@ -21151,7 +21151,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.881915807723999
+          "value": -0.8819155693054199
         },
         "YPosition": {
           "type": "float",
@@ -23108,7 +23108,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.04907696321606636
+          "value": -0.04907695949077606
         },
         "XPosition": {
           "type": "float",
@@ -24479,7 +24479,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.02454144880175591
+          "value": 0.02454168722033501
         },
         "XPosition": {
           "type": "float",
@@ -49490,21 +49490,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CURRENT_LOCATION"
               },
               "Type": {
@@ -49528,7 +49513,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "StarportFlights"
+                "value": "StarportFlightsDialog"
               }
             }
           ]
@@ -49544,285 +49529,6 @@
         "Y": {
           "type": "float",
           "value": 174.8894958496094
-        },
-        "Z": {
-          "type": "float",
-          "value": -5.222045729169622e-006
-        }
-      },
-      {
-        "__struct_id": 9,
-        "AnimationState": {
-          "type": "byte",
-          "value": 0
-        },
-        "Appearance": {
-          "type": "dword",
-          "value": 479
-        },
-        "AutoRemoveKey": {
-          "type": "byte",
-          "value": 0
-        },
-        "Bearing": {
-          "type": "float",
-          "value": 0.3190680146217346
-        },
-        "BodyBag": {
-          "type": "byte",
-          "value": 0
-        },
-        "CloseLockDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Conversation": {
-          "type": "resref",
-          "value": ""
-        },
-        "CurrentHP": {
-          "type": "short",
-          "value": 10
-        },
-        "Description": {
-          "id": 14533,
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "DisarmDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Faction": {
-          "type": "dword",
-          "value": 1
-        },
-        "Fort": {
-          "type": "byte",
-          "value": 5
-        },
-        "Hardness": {
-          "type": "byte",
-          "value": 5
-        },
-        "HasInventory": {
-          "type": "byte",
-          "value": 0
-        },
-        "HP": {
-          "type": "short",
-          "value": 10
-        },
-        "Interruptable": {
-          "type": "byte",
-          "value": 1
-        },
-        "KeyName": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "KeyRequired": {
-          "type": "byte",
-          "value": 0
-        },
-        "Lockable": {
-          "type": "byte",
-          "value": 0
-        },
-        "Locked": {
-          "type": "byte",
-          "value": 0
-        },
-        "LocName": {
-          "id": 5670,
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine Starport: To Ships"
-          }
-        },
-        "OnClick": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnClosed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDamaged": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDeath": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDisarm": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnHeartbeat": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnInvDisturbed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnLock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnMeleeAttacked": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnOpen": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnSpellCastAt": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnTrapTriggered": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUnlock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUsed": {
-          "type": "resref",
-          "value": "generic_convo"
-        },
-        "OnUserDefined": {
-          "type": "resref",
-          "value": ""
-        },
-        "OpenLockDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Plot": {
-          "type": "byte",
-          "value": 1
-        },
-        "PortraitId": {
-          "type": "word",
-          "value": 0
-        },
-        "Ref": {
-          "type": "byte",
-          "value": 0
-        },
-        "Static": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "starport_ent"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "starport_ent_1"
-        },
-        "TrapDetectable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapDetectDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapDisarmable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapFlag": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapOneShot": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapType": {
-          "type": "byte",
-          "value": 0
-        },
-        "Type": {
-          "type": "byte",
-          "value": 0
-        },
-        "Useable": {
-          "type": "byte",
-          "value": 1
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "CONVERSATION"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "PublicStarport"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "STARPORT_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "E38D63C5-D595-4DC8-873A-35151229CD6F"
-              }
-            }
-          ]
-        },
-        "Will": {
-          "type": "byte",
-          "value": 0
-        },
-        "X": {
-          "type": "float",
-          "value": 98.18639373779297
-        },
-        "Y": {
-          "type": "float",
-          "value": 166.0294647216797
         },
         "Z": {
           "type": "float",
@@ -50046,21 +49752,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CURRENT_LOCATION"
               },
               "Type": {
@@ -50084,7 +49775,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "StarportFlights"
+                "value": "StarportFlightsDialog"
               }
             }
           ]
@@ -50323,21 +50014,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CURRENT_LOCATION"
               },
               "Type": {
@@ -50361,7 +50037,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "StarportFlights"
+                "value": "StarportFlightsDialog"
               }
             }
           ]
@@ -54997,7 +54673,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.04908832162618637
+          "value": -0.04908831417560577
         },
         "XPosition": {
           "type": "float",
@@ -55238,7 +54914,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.0245478842407465
+          "value": -0.0245483610779047
         },
         "XPosition": {
           "type": "float",

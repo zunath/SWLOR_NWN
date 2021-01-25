@@ -44,7 +44,7 @@ void SafeFaction(object oCurrent, object oAttacker)
 
 void main()
 {
-    ExecuteScript("crea_on_attacked", OBJECT_SELF);
+    ExecuteScript("crea_attacked", OBJECT_SELF);
     if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
        GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_ATTACKED_EVENT") == TRUE) return;
 

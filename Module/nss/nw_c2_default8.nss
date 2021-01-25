@@ -13,7 +13,7 @@
 
 void main()
 {
-    ExecuteScript("crea_on_disturb", OBJECT_SELF);
+    ExecuteScript("crea_disturb", OBJECT_SELF);
     if(GetLocalInt(OBJECT_SELF, "IGNORE_NWN_EVENTS") == TRUE ||
        GetLocalInt(OBJECT_SELF, "IGNORE_NWN_ON_DISTURBED_EVENT") == TRUE) return;
 

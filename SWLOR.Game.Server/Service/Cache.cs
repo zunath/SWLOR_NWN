@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="resref">The resref of the item we want to cache.</param>
         private static void CacheItemNameByResref(string resref)
         {
-            var storageContainer = GetObjectByTag("temp_item_storage");
+            var storageContainer = GetObjectByTag("TEMP_ITEM_STORAGE");
             var item = CreateItemOnObject(resref, storageContainer);
             ItemNamesByResref[resref] = GetName(item);
             DestroyObject(item);

@@ -21,6 +21,10 @@
     "value": [
       {
         "__struct_id": 0,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -50,6 +54,10 @@
                 "type": "resref",
                 "value": ""
               },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
               "Index": {
                 "type": "dword",
                 "value": 3
@@ -65,6 +73,10 @@
                 "type": "resref",
                 "value": ""
               },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
               "Index": {
                 "type": "dword",
                 "value": 1
@@ -79,6 +91,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -112,6 +128,10 @@
       },
       {
         "__struct_id": 1,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -141,6 +161,10 @@
                 "type": "resref",
                 "value": ""
               },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
               "Index": {
                 "type": "dword",
                 "value": 5
@@ -159,6 +183,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -192,6 +220,10 @@
       },
       {
         "__struct_id": 2,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -221,6 +253,10 @@
                 "type": "resref",
                 "value": ""
               },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
               "Index": {
                 "type": "dword",
                 "value": 5
@@ -235,6 +271,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -268,6 +308,10 @@
       },
       {
         "__struct_id": 3,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -297,6 +341,10 @@
                 "type": "resref",
                 "value": ""
               },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
               "Index": {
                 "type": "dword",
                 "value": 7
@@ -311,6 +359,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -344,6 +396,10 @@
       },
       {
         "__struct_id": 4,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -389,6 +445,10 @@
       },
       {
         "__struct_id": 5,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -416,7 +476,23 @@
               "__struct_id": 0,
               "Active": {
                 "type": "resref",
-                "value": "on_qst1_state_2"
+                "value": "condition"
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Key": {
+                      "type": "cexostring",
+                      "value": "condition-on-quest-state"
+                    },
+                    "Value": {
+                      "type": "cexostring",
+                      "value": "locate_m_fac 2"
+                    }
+                  }
+                ]
               },
               "Index": {
                 "type": "dword",
@@ -432,6 +508,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -465,6 +545,10 @@
       },
       {
         "__struct_id": 6,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -493,6 +577,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -526,6 +614,10 @@
       },
       {
         "__struct_id": 7,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -555,6 +647,10 @@
                 "type": "resref",
                 "value": ""
               },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
               "Index": {
                 "type": "dword",
                 "value": 12
@@ -569,6 +665,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -602,6 +702,10 @@
       },
       {
         "__struct_id": 8,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -631,6 +735,10 @@
                 "type": "resref",
                 "value": ""
               },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
               "Index": {
                 "type": "dword",
                 "value": 14
@@ -645,6 +753,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -678,6 +790,10 @@
       },
       {
         "__struct_id": 9,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -723,6 +839,10 @@
       },
       {
         "__struct_id": 10,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -750,7 +870,23 @@
               "__struct_id": 0,
               "Active": {
                 "type": "resref",
-                "value": "on_qst2_state_2"
+                "value": "condition"
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Key": {
+                      "type": "cexostring",
+                      "value": "condition-on-quest-state"
+                    },
+                    "Value": {
+                      "type": "cexostring",
+                      "value": "find_cap_nguth 2"
+                    }
+                  }
+                ]
               },
               "Index": {
                 "type": "dword",
@@ -766,6 +902,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -799,6 +939,10 @@
       },
       {
         "__struct_id": 11,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -827,6 +971,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -860,6 +1008,10 @@
       },
       {
         "__struct_id": 12,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -889,6 +1041,10 @@
                 "type": "resref",
                 "value": ""
               },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
               "Index": {
                 "type": "dword",
                 "value": 19
@@ -903,6 +1059,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -936,6 +1096,10 @@
       },
       {
         "__struct_id": 13,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -964,6 +1128,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -997,6 +1165,10 @@
       },
       {
         "__struct_id": 14,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1024,7 +1196,23 @@
               "__struct_id": 0,
               "Active": {
                 "type": "resref",
-                "value": "on_qst3_state_2"
+                "value": "condition"
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Key": {
+                      "type": "cexostring",
+                      "value": "condition-on-quest-state"
+                    },
+                    "Value": {
+                      "type": "cexostring",
+                      "value": "the_manda_leader 2"
+                    }
+                  }
+                ]
               },
               "Index": {
                 "type": "dword",
@@ -1040,6 +1228,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -1073,6 +1265,10 @@
       },
       {
         "__struct_id": 15,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1101,6 +1297,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -1134,6 +1334,10 @@
       },
       {
         "__struct_id": 16,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1192,6 +1396,10 @@
     "value": [
       {
         "__struct_id": 0,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1233,6 +1441,10 @@
       },
       {
         "__struct_id": 1,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1257,6 +1469,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -1290,6 +1506,10 @@
       },
       {
         "__struct_id": 2,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1331,6 +1551,10 @@
       },
       {
         "__struct_id": 3,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1355,6 +1579,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -1388,6 +1616,10 @@
       },
       {
         "__struct_id": 4,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1429,6 +1661,10 @@
       },
       {
         "__struct_id": 5,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1453,6 +1689,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -1486,6 +1726,10 @@
       },
       {
         "__struct_id": 6,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1527,6 +1771,22 @@
       },
       {
         "__struct_id": 7,
+        "ActionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "action-accept-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "locate_m_fac"
+              }
+            }
+          ]
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1552,6 +1812,10 @@
                 "type": "resref",
                 "value": ""
               },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
               "Index": {
                 "type": "dword",
                 "value": 4
@@ -1569,7 +1833,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": "accept_quest_1"
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -1584,6 +1848,10 @@
       },
       {
         "__struct_id": 8,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1625,6 +1893,22 @@
       },
       {
         "__struct_id": 9,
+        "ActionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "action-advance-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "locate_m_fac"
+              }
+            }
+          ]
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1648,7 +1932,23 @@
               "__struct_id": 0,
               "Active": {
                 "type": "resref",
-                "value": "quest_done_1"
+                "value": "condition"
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Key": {
+                      "type": "cexostring",
+                      "value": "condition-completed-quest"
+                    },
+                    "Value": {
+                      "type": "cexostring",
+                      "value": "locate_m_fac"
+                    }
+                  }
+                ]
               },
               "Index": {
                 "type": "dword",
@@ -1671,7 +1971,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": "next_state_1"
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -1686,6 +1986,10 @@
       },
       {
         "__struct_id": 10,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1710,6 +2014,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -1743,6 +2051,10 @@
       },
       {
         "__struct_id": 11,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1784,6 +2096,10 @@
       },
       {
         "__struct_id": 12,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1808,6 +2124,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -1841,6 +2161,10 @@
       },
       {
         "__struct_id": 13,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1882,6 +2206,22 @@
       },
       {
         "__struct_id": 14,
+        "ActionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "action-accept-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "find_cap_nguth"
+              }
+            }
+          ]
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1907,6 +2247,10 @@
                 "type": "resref",
                 "value": ""
               },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
               "Index": {
                 "type": "dword",
                 "value": 9
@@ -1924,7 +2268,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": "accept_quest_2"
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -1939,6 +2283,10 @@
       },
       {
         "__struct_id": 15,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -1980,6 +2328,22 @@
       },
       {
         "__struct_id": 16,
+        "ActionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "action-advance-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "find_cap_nguth"
+              }
+            }
+          ]
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -2003,7 +2367,23 @@
               "__struct_id": 0,
               "Active": {
                 "type": "resref",
-                "value": "quest_done_2"
+                "value": "condition"
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "Key": {
+                      "type": "cexostring",
+                      "value": "condition-completed-quest"
+                    },
+                    "Value": {
+                      "type": "cexostring",
+                      "value": "find_cap_nguth"
+                    }
+                  }
+                ]
               },
               "Index": {
                 "type": "dword",
@@ -2026,7 +2406,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": "next_state_2"
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -2041,6 +2421,10 @@
       },
       {
         "__struct_id": 17,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -2065,6 +2449,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -2098,6 +2486,10 @@
       },
       {
         "__struct_id": 18,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -2139,6 +2531,22 @@
       },
       {
         "__struct_id": 19,
+        "ActionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "action-accept-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "the_manda_leader"
+              }
+            }
+          ]
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -2164,6 +2572,10 @@
                 "type": "resref",
                 "value": ""
               },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
+              },
               "Index": {
                 "type": "dword",
                 "value": 13
@@ -2181,7 +2593,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": "accept_quest_3"
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -2196,6 +2608,10 @@
       },
       {
         "__struct_id": 20,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -2237,6 +2653,10 @@
       },
       {
         "__struct_id": 21,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -2278,6 +2698,10 @@
       },
       {
         "__struct_id": 22,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -2302,6 +2726,10 @@
               "Active": {
                 "type": "resref",
                 "value": ""
+              },
+              "ConditionParams": {
+                "type": "list",
+                "value": []
               },
               "Index": {
                 "type": "dword",
@@ -2335,6 +2763,22 @@
       },
       {
         "__struct_id": 23,
+        "ActionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "action-advance-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "the_manda_leader"
+              }
+            }
+          ]
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -2361,7 +2805,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": "next_state_3"
+          "value": "action"
         },
         "Sound": {
           "type": "resref",
@@ -2383,7 +2827,23 @@
         "__struct_id": 0,
         "Active": {
           "type": "resref",
-          "value": "quest_done_3"
+          "value": "condition"
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "condition-completed-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "the_manda_leader"
+              }
+            }
+          ]
         },
         "Index": {
           "type": "dword",
@@ -2394,7 +2854,23 @@
         "__struct_id": 1,
         "Active": {
           "type": "resref",
-          "value": "has_quest_3"
+          "value": "condition"
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "condition-has-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "the_manda_leader"
+              }
+            }
+          ]
         },
         "Index": {
           "type": "dword",
@@ -2405,7 +2881,23 @@
         "__struct_id": 2,
         "Active": {
           "type": "resref",
-          "value": "quest_done_2"
+          "value": "condition"
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "condition-completed-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "find_cap_nguth"
+              }
+            }
+          ]
         },
         "Index": {
           "type": "dword",
@@ -2416,7 +2908,23 @@
         "__struct_id": 3,
         "Active": {
           "type": "resref",
-          "value": "has_quest_2"
+          "value": "condition"
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "condition-has-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "find_cap_nguth"
+              }
+            }
+          ]
         },
         "Index": {
           "type": "dword",
@@ -2427,7 +2935,23 @@
         "__struct_id": 4,
         "Active": {
           "type": "resref",
-          "value": "quest_done_1"
+          "value": "condition"
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "condition-completed-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "locate_m_fac"
+              }
+            }
+          ]
         },
         "Index": {
           "type": "dword",
@@ -2438,7 +2962,23 @@
         "__struct_id": 5,
         "Active": {
           "type": "resref",
-          "value": "has_quest_1"
+          "value": "condition"
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "condition-has-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "locate_m_fac"
+              }
+            }
+          ]
         },
         "Index": {
           "type": "dword",
@@ -2450,6 +2990,10 @@
         "Active": {
           "type": "resref",
           "value": ""
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": []
         },
         "Index": {
           "type": "dword",

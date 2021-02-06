@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature
 
         private static IEnumerable<uint> SpawnLoot(uint creature, string lootTableName, int chance, int attempts)
         {
-            var gilfinderLevel = GetLocalInt(creature, "GILFINDER_LEVEL");
+            var gilfinderLevel = GetLocalInt(creature, "CREDITFINDER_LEVEL");
             var gilPercentIncrease = gilfinderLevel * 0.2f;
             var treasureHunterLevel = GetLocalInt(creature, "TREASURE_HUNTER_LEVEL");
 

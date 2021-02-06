@@ -630,7 +630,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_ID"
+          "value": "LOOT_TABLE_1"
         },
         "Type": {
           "type": "dword",

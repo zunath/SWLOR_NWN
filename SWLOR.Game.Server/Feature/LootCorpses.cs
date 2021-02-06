@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature
             var lootPosition = Vector3(position.X, position.Y, position.Z - 0.11f);
             Location spawnLocation = Location(area, lootPosition, facing);
 
-            var container = CreateObject(ObjectType.Placeable, "npc_corpse", spawnLocation);
+            var container = CreateObject(ObjectType.Placeable, "corpse", spawnLocation);
             SetLocalObject(container, "CORPSE_BODY", self);
             SetName(container, $"{GetName(self)}'s Corpse");
             

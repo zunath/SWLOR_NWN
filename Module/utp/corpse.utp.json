@@ -94,7 +94,7 @@
   },
   "OnClosed": {
     "type": "resref",
-    "value": "script_1"
+    "value": "corpse_closed"
   },
   "OnDamaged": {
     "type": "resref",
@@ -114,7 +114,7 @@
   },
   "OnInvDisturbed": {
     "type": "resref",
-    "value": "script_2"
+    "value": "corpse_disturbed"
   },
   "OnLock": {
     "type": "resref",

@@ -20,7 +20,7 @@ services:
   nwserver:
     hostname: nwserver
     env_file: ${PWD-.}/swlor.env
-    image: nwnxee/unified:latest
+    image: nwnxee/unified:8e1e895
     volumes:
     - ${PWD-.}/:/nwn/home
     - ${PWD-.}/logs:/nwn/run/logs.0

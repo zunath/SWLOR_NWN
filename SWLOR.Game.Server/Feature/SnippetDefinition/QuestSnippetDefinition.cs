@@ -1,8 +1,5 @@
-﻿using System.Linq;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Entity;
+﻿using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.QuestService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.SnippetDefinition
@@ -10,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
     public static class QuestSnippetDefinition
     {
         /// <summary>
-        /// Snippet which checks whether a player has completed a quest.
+        /// Snippet which checks whether a player has completed one or more quests.
         /// </summary>
         /// <param name="player">The player to check</param>
         /// <param name="args">Arguments provided by conversation builder</param>
@@ -20,19 +17,26 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             if (args.Length <= 0)
             {
-                const string Error = "'condition-completed-quest' requires a questId argument.";
+                const string Error = "'condition-completed-quest' requires at least one questId argument.";
                 SendMessageToPC(player, Error);
                 Log.Write(LogGroup.Error, Error);
                 return false;
             }
 
-            var questId = args[0];
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
+            foreach (var questId in args)
+            {
+                var playerId = GetObjectUUID(player);
+                var dbPlayer = DB.Get<Player>(playerId);
 
-            if (!dbPlayer.Quests.ContainsKey(questId)) return false;
+                // Doesn't have the quest at all.
+                if (!dbPlayer.Quests.ContainsKey(questId)) return false;
 
-            return dbPlayer.Quests[questId].DateLastCompleted != null;
+                // Hasn't completed the quest.
+                if (dbPlayer.Quests[questId].DateLastCompleted == null) return false;
+            }
+
+            // Otherwise the player meets all necessary prerequisite quest completions.
+            return true;
         }
 
         /// <summary>

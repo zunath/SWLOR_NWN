@@ -61,6 +61,8 @@ namespace SWLOR.Game.Server.Service
         /// <returns></returns>
         [NWNEventHandler("appear")]
         [NWNEventHandler("appears")]
+        [NWNEventHandler("condition")]
+        [NWNEventHandler("conditions")]
         public static bool ConversationAppearsWhen()
         {
             var player = GetPCSpeaker();

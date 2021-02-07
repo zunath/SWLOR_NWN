@@ -15,7 +15,7 @@ export default class Home extends React.Component {
                 <div className="row">&nbsp;</div>
                 <div className="row">
                     <div className="col-4 offset-8">
-                        <a href="https://codepen.io/TimPietrusky/pen/eHGfj" target="_blank" rel="nopener noreferrer">Animation: Tim Pietrusky</a>
+                        <a href="https://codepen.io/TimPietrusky/pen/eHGfj" target="_blank" rel="noopener noreferrer">Animation: Tim Pietrusky</a>
                     </div>
                 </div>
             </div>

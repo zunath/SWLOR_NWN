@@ -6,6 +6,7 @@ import SS3 from '../images/SWLOR_Image_3.png';
 import SS4 from '../images/SWLOR_Image_4.png';
 import SS5 from '../images/SWLOR_Image_5.jpg';
 import SS6 from '../images/SWLOR_Image_6.png';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 export default class Gallery extends React.Component {
     

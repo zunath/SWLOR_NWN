@@ -3,13 +3,7 @@ import { Link } from 'react-router-dom';
 import Logo from '../images/swollogo2.png';
 
 export default class Header extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
-    confirmLogout() {
-    }
-
+    
     render() {
 
         return (
@@ -57,7 +51,7 @@ export default class Header extends React.Component {
                                 </a>
                             </li>
                             <li className="nav-item">
-                                <a className="nav-link" href="https://discord.gg/MyQAM6m" target="_blank" rel="nopener noreferrer">
+                                <a className="nav-link" href="https://discord.gg/MyQAM6m" target="_blank" rel="noopener noreferrer">
                                     <i className="fa fa-commenting-o fa-lg" /> Discord
                                 </a>
                             </li>
@@ -67,10 +61,10 @@ export default class Header extends React.Component {
                                     <i className="fa fa-code" /> Source Code
                                 </Link>
                                 <div className="dropdown-menu">
-                                    <a className="dropdown-item" href="https://github.com/zunath/SWLOR_NWN" target="_blank" rel="nopener noreferrer">
+                                    <a className="dropdown-item" href="https://github.com/zunath/SWLOR_NWN" target="_blank" rel="noopener noreferrer">
                                         <i className="fa fa-code" /> &nbsp;Server Source Code
                                     </a>
-                                    <a className="dropdown-item" href="https://github.com/zunath/SWLOR_Website" target="_blank" rel="nopener noreferrer">
+                                    <a className="dropdown-item" href="https://github.com/zunath/SWLOR_Website" target="_blank" rel="noopener noreferrer">
                                         <i className="fa fa-code" /> &nbsp;Website Source Code
                                     </a>
                                 </div>

@@ -1,5 +1,4 @@
 ﻿import * as React from 'react';
-import { Link } from 'react-router-dom';
 
 export default class About extends React.Component {
     render() {
@@ -37,7 +36,7 @@ export default class About extends React.Component {
                                 <div className="card-text">
                                     Direct Connect: play.starwarsnwn.com:5121
                                     <br />
-                                    Discord: <a href="https://discord.gg/MyQAM6m" target="_blank" rel="nopener noreferrer">Click Here</a>
+                                    Discord: <a href="https://discord.gg/MyQAM6m" target="_blank" rel="noopener noreferrer">Click Here</a>
                                 </div>
                             </div>
                         </div>
@@ -46,11 +45,11 @@ export default class About extends React.Component {
                             <div className="card-header">Buy Neverwinter Nights: Enhanced Edition</div>
                             <div className="card-body">
                                 <div className="card-text">
-                                    Buy on Steam: <a href="http://store.steampowered.com/app/704450/Neverwinter_Nights_Enhanced_Edition/" target="_blank" rel="nopener noreferrer">Click Here</a>
+                                    Buy on Steam: <a href="http://store.steampowered.com/app/704450/Neverwinter_Nights_Enhanced_Edition/" target="_blank" rel="noopener noreferrer">Click Here</a>
                                     <br />
-                                    Buy from Beamdog: <a href="https://www.beamdog.com/products/neverwinter-nights-enhanced-edition#signup-form" target="_blank" rel="nopener noreferrer">Click Here</a>
+                                    Buy from Beamdog: <a href="https://www.beamdog.com/products/neverwinter-nights-enhanced-edition#signup-form" target="_blank" rel="noopener noreferrer">Click Here</a>
                                     <br />
-                                    Buy from GOG: <a href="https://www.gog.com/game/neverwinter_nights_enhanced_edition_pack" target="_blank" rel="nopener noreferrer">Click Here</a>
+                                    Buy from GOG: <a href="https://www.gog.com/game/neverwinter_nights_enhanced_edition_pack" target="_blank" rel="noopener noreferrer">Click Here</a>
                                 </div>
                             </div>
                         </div>

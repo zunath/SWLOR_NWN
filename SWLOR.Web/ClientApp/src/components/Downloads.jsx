@@ -52,7 +52,7 @@ export default class Downloads extends React.Component {
                                 <td>This overrides the graphics of your user interface. It will affect all servers do you will need to move it out of your override folder if you no longer wish to use it.</td>
                                 <td>Extract all files to your My Documents/Neverwinter Nights/override directory.</td>
                                 <td>
-                                    <a className="btn btn-primary btn-block" href={this.buildURL(1)} target="_blank">Download</a>
+                                    <a className="btn btn-primary btn-block" href={this.buildURL(1)} target="_blank" rel="noopener noreferrer">Download</a>
                                 </td>
                             </tr>
 
@@ -61,7 +61,7 @@ export default class Downloads extends React.Component {
                                 <td>These are the DEVELOPMENT-ONLY hakpaks. If you only want to play, you DO NOT need these. Simply connect to the server to get the files and start playing.</td>
                                 <td>Extract all .hak files to your My Documents/Neverwinter Nights/hak directory. Extract the swlor_tlk.tlk file to your tlk directory. Make the tlk directory if it doesn't already exist</td>
                                 <td>
-                                    <a className="btn btn-primary btn-block" href={this.buildURL(2)} target="_blank">Download</a>
+                                    <a className="btn btn-primary btn-block" href={this.buildURL(2)} target="_blank" rel="noopener noreferrer">Download</a>
                                 </td>
                             </tr>
                         </tbody>

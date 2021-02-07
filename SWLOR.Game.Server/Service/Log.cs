@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Serilog;
 using Serilog.Core;
 using SWLOR.Game.Server.Core;
@@ -54,12 +55,19 @@ namespace SWLOR.Game.Server.Service
                     .WriteTo.Async(a => a.File(path, rollingInterval: RollingInterval.Day));
 
                 // Errors should also be print to the console.
-                if (group == LogGroup.Error || printToConsole)
+                if (group == LogGroup.Error)
                 {
                     logger.WriteTo.Console();
                 }
 
                 _loggers[group] = logger.CreateLogger();
+            }
+
+            // Errors already print to console by default but if any other log groups have the printToConsole flag,
+            // do a console write line.
+            if (group != LogGroup.Error && printToConsole)
+            {
+                Console.WriteLine(details);
             }
 
             _loggers[group].Information(details);

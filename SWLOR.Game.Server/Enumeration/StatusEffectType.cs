@@ -44,7 +44,7 @@
         ForceDrain5 = 39,
         Shock = 40,
         Tranquilize = 41,
-
-        Burn = 42
+        Burn = 42,
+        Rest = 43,
     }
 }

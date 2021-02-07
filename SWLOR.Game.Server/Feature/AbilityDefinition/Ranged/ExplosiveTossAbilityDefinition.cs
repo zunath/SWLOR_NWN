@@ -1,4 +1,5 @@
 ﻿//using Random = SWLOR.Game.Server.Service.Random;
+
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
@@ -6,7 +7,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
-namespace SWLOR.Game.Server.Feature.AbilityDefinition
+namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
     public class ExplosiveTossAbilityDefinition : IAbilityListDefinition
     {

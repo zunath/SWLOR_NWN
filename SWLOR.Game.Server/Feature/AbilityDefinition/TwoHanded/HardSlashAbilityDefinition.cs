@@ -1,15 +1,13 @@
 ﻿//using Random = SWLOR.Game.Server.Service.Random;
+
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
-using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 
-namespace SWLOR.Game.Server.Feature.AbilityDefinition
+namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
     public class HardSlashAbilityDefinition : IAbilityListDefinition
     {

@@ -45,7 +45,10 @@ namespace SWLOR.Game.Server.Feature
             var ability = Ability.GetAbilityDetail(feat);
             
             // Creature cannot use the feat.
-            var effectivePerkLevel = Perk.GetEffectivePerkLevel(activator, ability.EffectiveLevelPerkType);
+            var effectivePerkLevel = 
+                ability.EffectiveLevelPerkType == PerkType.Invalid 
+                    ? 1 // If there's not an associated perk, default level to 1.
+                    : Perk.GetEffectivePerkLevel(activator, ability.EffectiveLevelPerkType);
             if (!Ability.CanUseAbility(activator, target, feat, effectivePerkLevel))
             {
                 return;

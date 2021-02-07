@@ -17046,7 +17046,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Mynock"
+            "0": "CZ-220 - Mynock"
           }
         },
         "MapNote": {
@@ -17072,21 +17072,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -17096,51 +17081,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_MYNOCKS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -17189,7 +17129,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Mynock"
+            "0": "CZ-220 - Mynock"
           }
         },
         "MapNote": {
@@ -17215,21 +17155,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -17239,51 +17164,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_MYNOCKS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -17332,7 +17212,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Mynock"
+            "0": "CZ-220 - Mynock"
           }
         },
         "MapNote": {
@@ -17358,21 +17238,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -17382,51 +17247,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_MYNOCKS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -17475,7 +17295,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Mynock"
+            "0": "CZ-220 - Mynock"
           }
         },
         "MapNote": {
@@ -17501,21 +17321,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -17525,51 +17330,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_MYNOCKS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -17618,7 +17378,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Mynock"
+            "0": "CZ-220 - Mynock"
           }
         },
         "MapNote": {
@@ -17644,21 +17404,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -17668,51 +17413,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_MYNOCKS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -17761,7 +17461,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -17787,21 +17487,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -17811,51 +17496,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -17904,7 +17544,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -17930,21 +17570,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -17954,51 +17579,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -18047,7 +17627,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -18073,21 +17653,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -18097,51 +17662,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -18190,7 +17710,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -18216,21 +17736,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -18240,51 +17745,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -18333,7 +17793,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Ore Vein"
+            "0": "CZ-220 Veldite Veins"
           }
         },
         "MapNote": {
@@ -18346,7 +17806,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_VELDITE"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -18491,7 +17951,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Ore Vein"
+            "0": "CZ-220 Veldite Veins"
           }
         },
         "MapNote": {
@@ -18504,7 +17964,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_VELDITE"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -18649,7 +18109,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Ore Vein"
+            "0": "CZ-220 Veldite Veins"
           }
         },
         "MapNote": {
@@ -18662,7 +18122,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_VELDITE"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -18807,7 +18267,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Ore Vein"
+            "0": "CZ-220 Veldite Veins"
           }
         },
         "MapNote": {
@@ -18820,7 +18280,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_VELDITE"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -18965,7 +18425,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -18991,21 +18451,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -19015,51 +18460,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -19108,7 +18508,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -19134,21 +18534,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -19158,51 +18543,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -19251,7 +18591,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -19277,21 +18617,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -19301,51 +18626,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -19394,7 +18674,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -19420,21 +18700,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -19444,51 +18709,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -19537,7 +18757,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -19563,21 +18783,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -19587,51 +18792,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -19680,7 +18840,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -19706,21 +18866,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -19730,51 +18875,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -19823,7 +18923,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -19849,21 +18949,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -19873,51 +18958,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -19966,7 +19006,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -19992,21 +19032,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -20016,51 +19041,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -20109,7 +19089,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -20135,21 +19115,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -20159,51 +19124,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -20252,7 +19172,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -20278,21 +19198,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -20302,51 +19207,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -20395,7 +19255,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -20421,21 +19281,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -20445,51 +19290,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -20538,7 +19338,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -20564,21 +19364,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -20588,51 +19373,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -20681,7 +19421,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -20707,21 +19447,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -20731,51 +19456,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -20824,7 +19504,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -20850,21 +19530,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -20874,51 +19539,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -20967,7 +19587,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -20993,21 +19613,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -21017,51 +19622,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -21110,7 +19670,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -21136,21 +19696,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -21160,51 +19705,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -21253,7 +19753,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Mynock"
+            "0": "CZ-220 - Mynock"
           }
         },
         "MapNote": {
@@ -21279,21 +19779,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -21303,51 +19788,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_MYNOCKS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -21396,7 +19836,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Mynock"
+            "0": "CZ-220 - Mynock"
           }
         },
         "MapNote": {
@@ -21422,21 +19862,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -21446,51 +19871,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_MYNOCKS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -21539,7 +19919,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Mynock"
+            "0": "CZ-220 - Mynock"
           }
         },
         "MapNote": {
@@ -21565,21 +19945,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -21589,51 +19954,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_MYNOCKS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -21682,7 +20002,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Mynock"
+            "0": "CZ-220 - Mynock"
           }
         },
         "MapNote": {
@@ -21708,21 +20028,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -21732,51 +20037,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_MYNOCKS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -21825,7 +20085,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Mynock"
+            "0": "CZ-220 - Mynock"
           }
         },
         "MapNote": {
@@ -21851,21 +20111,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -21875,51 +20120,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_MYNOCKS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -21968,7 +20168,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -21994,21 +20194,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -22018,51 +20203,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -22111,7 +20251,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Mynock"
+            "0": "CZ-220 - Mynock"
           }
         },
         "MapNote": {
@@ -22137,21 +20277,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -22161,51 +20286,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_MYNOCKS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -22254,7 +20334,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -22280,21 +20360,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -22304,51 +20369,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -22397,7 +20417,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -22423,21 +20443,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -22447,51 +20452,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -22540,7 +20500,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -22566,21 +20526,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -22590,51 +20535,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -22683,7 +20583,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -22709,21 +20609,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -22733,51 +20618,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -22826,7 +20666,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -22852,21 +20692,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -22876,51 +20701,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -22969,7 +20749,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Colicoid Experiment Spawn"
+            "0": "CZ-220 - Colicoid Experiment Spawn"
           }
         },
         "MapNote": {
@@ -22995,21 +20775,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -23019,51 +20784,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_COLICOID_EXPERIMENT"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 600.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -23112,7 +20832,7 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "CZ-220 Malfunctioning Droids"
+            "0": "CZ-220 - Malfunctioning Droids"
           }
         },
         "MapNote": {
@@ -23138,21 +20858,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
               },
               "Type": {
@@ -23162,51 +20867,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "CZ220_DROIDS"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 300.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
               }
             }
           ]
@@ -23266,7 +20926,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -23279,37 +20939,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -23317,37 +20947,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -23407,7 +21007,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -23420,37 +21020,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -23458,37 +21028,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -23548,7 +21088,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -23561,37 +21101,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -23599,37 +21109,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -23689,7 +21169,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -23702,37 +21182,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -23740,37 +21190,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -23830,7 +21250,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -23843,37 +21263,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -23881,37 +21271,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -23971,7 +21331,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -23984,37 +21344,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -24022,37 +21352,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -24112,7 +21412,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -24125,37 +21425,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -24163,37 +21433,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -24253,7 +21493,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -24266,37 +21506,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -24304,37 +21514,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -24394,7 +21574,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -24407,37 +21587,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -24445,37 +21595,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -24535,7 +21655,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -24548,37 +21668,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -24586,37 +21676,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -24676,7 +21736,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -24689,37 +21749,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -24727,37 +21757,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -24817,7 +21817,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -24830,37 +21830,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -24868,37 +21838,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -25078,7 +22018,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -25091,37 +22031,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -25129,37 +22039,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -25219,7 +22099,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -25232,37 +22112,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -25270,37 +22120,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -25360,7 +22180,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -25373,37 +22193,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -25411,37 +22201,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -25501,7 +22261,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -25514,37 +22274,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -25552,37 +22282,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -25642,7 +22342,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -25655,37 +22355,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -25693,37 +22363,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -25783,7 +22423,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -25796,37 +22436,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -25834,37 +22444,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -25924,7 +22504,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -25937,37 +22517,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -25975,37 +22525,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -26065,7 +22585,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -26078,37 +22598,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -26116,37 +22606,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -26206,7 +22666,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_JUNKPILES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -26219,37 +22679,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -26257,37 +22687,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_junk"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_JUNKPILES"
               }
             }
           ]
@@ -26347,7 +22747,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_CACHES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -26360,37 +22760,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -26398,37 +22768,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_cache"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 240.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_CACHES"
               }
             }
           ]
@@ -26488,7 +22828,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_CACHES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -26501,37 +22841,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -26539,37 +22849,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_cache"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 240.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_CACHES"
               }
             }
           ]
@@ -26629,7 +22909,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_CACHES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -26642,37 +22922,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -26680,37 +22930,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_cache"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 240.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_CACHES"
               }
             }
           ]
@@ -26770,7 +22990,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_CACHES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -26783,37 +23003,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -26821,37 +23011,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_cache"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 240.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_CACHES"
               }
             }
           ]
@@ -26911,7 +23071,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_CACHES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -26924,37 +23084,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -26962,37 +23092,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_cache"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 240.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_CACHES"
               }
             }
           ]
@@ -27052,7 +23152,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_CACHES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -27065,37 +23165,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -27103,37 +23173,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_cache"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 240.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_CACHES"
               }
             }
           ]
@@ -27193,7 +23233,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_CACHES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -27206,37 +23246,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -27244,37 +23254,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_cache"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 240.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_CACHES"
               }
             }
           ]
@@ -27334,7 +23314,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_CACHES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -27347,37 +23327,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -27385,37 +23335,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_cache"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 240.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_CACHES"
               }
             }
           ]
@@ -27475,7 +23395,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_CACHES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -27488,37 +23408,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -27526,37 +23416,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_cache"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 240.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_CACHES"
               }
             }
           ]
@@ -27616,7 +23476,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_CACHES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -27629,37 +23489,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -27667,37 +23497,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_cache"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 240.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_CACHES"
               }
             }
           ]
@@ -27757,7 +23557,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_CACHES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -27770,37 +23570,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -27808,37 +23578,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_cache"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 240.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_CACHES"
               }
             }
           ]
@@ -27898,7 +23638,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "placeable_spawn"
+          "value": "CZ220_CACHES"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -27911,37 +23651,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
               },
               "Type": {
                 "type": "dword",
@@ -27949,37 +23659,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_cache"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 240.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
+                "value": "CZ220_CACHES"
               }
             }
           ]

@@ -42,7 +42,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "placeable_spawn"
+    "value": "COXXION_BASE_SCAVENGE"
   },
   "TemplateResRef": {
     "type": "resref",
@@ -55,37 +55,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "SPAWN_TYPE"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 64
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
           "value": "SPAWN_TABLE_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SPAWN_RESREF"
         },
         "Type": {
           "type": "dword",
@@ -93,37 +63,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "v_cox_scav"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SPAWN_RESPAWN_SECONDS"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 2
-        },
-        "Value": {
-          "type": "float",
-          "value": 500.0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "IS_SPAWN"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1
+          "value": "COXXION_BASE_SCAVENGE"
         }
       }
     ]

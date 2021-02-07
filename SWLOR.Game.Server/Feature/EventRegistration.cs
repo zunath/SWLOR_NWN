@@ -91,7 +91,6 @@ namespace SWLOR.Game.Server.Feature
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
-                Console.WriteLine("adding events to area: " + GetName(area));
                 SetEventScript(area, EventScript.Area_OnEnter, "area_enter");
                 SetEventScript(area, EventScript.Area_OnExit, "area_exit");
                 SetEventScript(area, EventScript.Area_OnHeartbeat, "area_heartbeat");

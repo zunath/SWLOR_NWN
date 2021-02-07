@@ -68,14 +68,15 @@ namespace SWLOR.Game.Server.Service
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IPerkListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 
+            var perkCount = 0;
             foreach (var type in types)
             {
                 var instance = (IPerkListDefinition) Activator.CreateInstance(type);
                 var perks = instance.BuildPerks();
+                perkCount += perks.Count;
 
                 foreach (var (perkType, perkDetail) in perks)
                 {
-                    Console.WriteLine($"Registering perk: {perkDetail.Name}");
                     var categoryDetail = _allCategories[perkDetail.Category];
 
                     // Add to the perks cache
@@ -129,7 +130,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Console.WriteLine("Perk data cached successfully.");
+            Console.WriteLine($"{perkCount} perks loaded successfully.");
         }
 
         /// <summary>

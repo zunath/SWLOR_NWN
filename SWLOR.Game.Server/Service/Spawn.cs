@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Service
             public float Z { get; set; }
             public float Facing { get; set; }
             public int RespawnDelayMinutes { get; set; }
+            public bool UseRandomSpawnLocation { get; set; }
         }
 
         private class ActiveSpawn
@@ -97,6 +98,7 @@ namespace SWLOR.Game.Server.Service
         {
             for(var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
+                // Process spawns within the area.
                 for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
                 {
                     var type = GetObjectType(obj);
@@ -157,6 +159,31 @@ namespace SWLOR.Game.Server.Service
                             _allSpawnsByArea[area].Add(id);
                         }
                     }
+                }
+                // Process resource spawns by local variable on the area.
+                var resourceSpawnTableId = GetLocalString(area, "RESOURCE_SPAWN_TABLE_ID");
+                if (!string.IsNullOrWhiteSpace(resourceSpawnTableId))
+                {
+                    if (!_spawnTables.ContainsKey(resourceSpawnTableId))
+                    {
+                        Log.Write(LogGroup.Error, $"Area has an invalid resource spawn table Id. ({resourceSpawnTableId}) is not defined. Do you have the right spawn table Id?");
+                        continue;
+                    }
+
+                    var id = Guid.NewGuid();
+                    var spawnTable = _spawnTables[resourceSpawnTableId];
+                    _spawns.Add(id, new SpawnDetail
+                    {
+                        SpawnTableId = resourceSpawnTableId,
+                        Area = area,
+                        RespawnDelayMinutes = spawnTable.RespawnDelayMinutes,
+                        UseRandomSpawnLocation = true
+                    });
+
+                    if (!_allSpawnsByArea.ContainsKey(area))
+                        _allSpawnsByArea[area] = new List<Guid>();
+
+                    _allSpawnsByArea[area].Add(id);
                 }
             }
         }
@@ -363,7 +390,9 @@ namespace SWLOR.Game.Server.Service
             if (!string.IsNullOrWhiteSpace(detail.SerializedObject))
             {
                 var deserialized = Core.NWNX.Object.Deserialize(detail.SerializedObject);
-                var position = new Vector3(detail.X, detail.Y, detail.Z);
+                var position = detail.UseRandomSpawnLocation ?
+                    GetPositionFromLocation(Walkmesh.GetRandomLocation(detail.Area)) :
+                    new Vector3(detail.X, detail.Y, detail.Z);
                 Core.NWNX.Object.AddToArea(deserialized, detail.Area, position);
 
                 AssignCommand(deserialized, () => SetFacing(detail.Facing));
@@ -385,7 +414,9 @@ namespace SWLOR.Game.Server.Service
                     return OBJECT_INVALID;
                 }
 
-                var position = new Vector3(detail.X, detail.Y, detail.Z);
+                var position = detail.UseRandomSpawnLocation ?
+                    GetPositionFromLocation(Walkmesh.GetRandomLocation(detail.Area)) :
+                    new Vector3(detail.X, detail.Y, detail.Z);
                 var location = Location(detail.Area, position, detail.Facing);
 
                 var spawn = CreateObject(objectType, resref, location);

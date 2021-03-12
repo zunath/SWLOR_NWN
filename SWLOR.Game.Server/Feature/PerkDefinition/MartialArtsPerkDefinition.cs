@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -161,6 +164,51 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             builder.Create(PerkCategoryType.MartialArtsKnuckles, PerkType.KnucklesMastery)
                 .Name("Knuckles Mastery")
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.KnucklesBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.KnucklesBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.KnucklesBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + 1;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.KnucklesBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
 
                 .AddPerkLevel()
                 .Description("Grants +1 BAB when equipped with a Knuckles.")
@@ -308,6 +356,51 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             builder.Create(PerkCategoryType.MartialArtsStaff, PerkType.StaffMastery)
                 .Name("Staff Mastery")
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.StaffBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.StaffBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.StaffBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + 1;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.StaffBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
 
                 .AddPerkLevel()
                 .Description("Grants +1 BAB when equipped with a Staff.")

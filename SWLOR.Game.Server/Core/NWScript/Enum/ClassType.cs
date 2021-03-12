@@ -44,6 +44,10 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         EyeOfGruumsh = 39,
         ShouDisciple = 40,
         PDK = 41,
+
+        Standard = 66,
+        ForceSensitive = 67,
+
         Invalid = 255
     }
 }

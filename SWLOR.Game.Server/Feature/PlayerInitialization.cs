@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Feature
             InitializeLanguages(player, dbPlayer);
             Race.SetDefaultRaceAppearance(player);
             GiveStartingItems(player);
+            AssignCharacterType(player, dbPlayer);
 
             DB.Set(playerId, dbPlayer);
         }
@@ -282,6 +283,16 @@ namespace SWLOR.Game.Server.Feature
             SetItemCursedFlag(item, true);
 
             GiveGoldToCreature(player, 100);
+        }
+
+        private static void AssignCharacterType(uint player, Player dbPlayer)
+        {
+            var @class = GetClassByPosition(1, player);
+
+            if (@class == ClassType.Standard)
+                dbPlayer.CharacterType = CharacterType.Standard;
+            else if (@class == ClassType.ForceSensitive)
+                dbPlayer.CharacterType = CharacterType.ForceSensitive;
         }
 
     }

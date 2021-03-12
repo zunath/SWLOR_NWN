@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -157,6 +160,51 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             builder.Create(PerkCategoryType.OneHandedVibroblade, PerkType.VibrobladeMastery)
                 .Name("Vibroblade Mastery")
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.VibrobladeBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.VibrobladeBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.VibrobladeBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + 1;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.VibrobladeBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
 
                 .AddPerkLevel()
                 .Description("Grants +1 BAB when equipped with a Vibroblade.")
@@ -304,6 +352,51 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             builder.Create(PerkCategoryType.OneHandedFinesseVibroblade, PerkType.FinesseVibrobladeMastery)
                 .Name("Finesse Vibroblade Mastery")
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + 1;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
 
                 .AddPerkLevel()
                 .Description("Grants +1 BAB when equipped with a Finesse Vibroblade.")
@@ -456,6 +549,51 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             builder.Create(PerkCategoryType.OneHandedLightsaber, PerkType.LightsaberMastery)
                 .Name("Lightsaber Mastery")
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.LightsaberBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.LightsaberBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.LightsaberBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + 1;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.LightsaberBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
 
                 .AddPerkLevel()
                 .Description("Grants +1 BAB when equipped with a Lightsaber.")

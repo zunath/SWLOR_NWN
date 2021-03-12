@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -172,6 +175,51 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.HeavyVibrobladeMastery)
                 .Name("Heavy Vibroblade Mastery")
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + 1;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
 
                 .AddPerkLevel()
                 .Description("Grants +1 BAB when equipped with a Heavy Vibroblade.")
@@ -319,6 +367,51 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.PolearmMastery)
                 .Name("Polearm Mastery")
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.PolearmBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.PolearmBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.PolearmBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + 1;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.PolearmBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
 
                 .AddPerkLevel()
                 .Description("Grants +1 BAB when equipped with a Polearm.")
@@ -467,6 +560,51 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.TwinBladeMastery)
                 .Name("Twin Blade Mastery")
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.TwinBladeBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.TwinBladeBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.TwinBladeBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + 1;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.TwinBladeBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
 
                 .AddPerkLevel()
                 .Description("Grants +1 BAB when equipped with a Twin Blade.")
@@ -619,6 +757,51 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.SaberstaffMastery)
                 .Name("Saberstaff Mastery")
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.SaberstaffBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.SaberstaffBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.SaberstaffBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + 1;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.SaberstaffBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
 
                 .AddPerkLevel()
                 .Description("Grants +1 BAB when equipped with a Saberstaff.")

@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Item = SWLOR.Game.Server.Service.Item;
 
 namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
@@ -184,6 +187,51 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             builder.Create(PerkCategoryType.RangedPistol, PerkType.PistolMastery)
                 .Name("Pistol Mastery")
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.PistolBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.PistolBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.PistolBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + 1;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.PistolBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
 
                 .AddPerkLevel()
                 .Description("Grants +1 BAB when equipped with a Pistol.")
@@ -331,6 +379,51 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             builder.Create(PerkCategoryType.RangedThrowing, PerkType.ThrowingWeaponMastery)
                 .Name("Throwing Weapon Mastery")
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + 1;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
 
                 .AddPerkLevel()
                 .Description("Grants +1 BAB when equipped with a Throwing Weapon.")
@@ -479,6 +572,51 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             builder.Create(PerkCategoryType.RangedCannon, PerkType.CannonMastery)
                 .Name("Cannon Mastery")
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.CannonBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.CannonBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.CannonBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + 1;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.CannonBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
 
                 .AddPerkLevel()
                 .Description("Grants +1 BAB when equipped with a Cannon.")
@@ -626,6 +764,51 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             builder.Create(PerkCategoryType.RangedRifle, PerkType.RifleMastery)
                 .Name("Rifle Mastery")
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.RifleBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    if (slot != InventorySlot.RightHand) return;
+
+                    var itemType = GetBaseItemType(item);
+                    if (Item.RifleBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+
+                })
+                .TriggerPurchase((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.RifleBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) + 1;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    var item = GetItemInSlot(InventorySlot.RightHand, player);
+                    var itemType = GetBaseItemType(item);
+
+                    if (Item.RifleBaseItemTypes.Contains(itemType))
+                    {
+                        var bab = GetBaseAttackBonus(player) - level;
+                        Creature.SetBaseAttackBonus(player, bab);
+                    }
+                })
 
                 .AddPerkLevel()
                 .Description("Grants +1 BAB when equipped with a Rifle.")

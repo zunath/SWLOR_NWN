@@ -137,11 +137,53 @@ namespace SWLOR.Game.Server.Feature
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
-            var playerId = GetObjectUUID(player);
             var item = StringToObject(Events.GetEventData("ITEM"));
             var slot = (InventorySlot)Convert.ToInt32(Events.GetEventData("SLOT"));
+            
+            // The unequip event doesn't fire if an item is being swapped out. 
+            // If there's an item in the slot, run the unequip triggers first.
+            var existingItemInSlot = GetItemInSlot(slot, player);
+            if (GetIsObjectValid(existingItemInSlot))
+            {
+                RunUnequipTriggers(player, existingItemInSlot);
+            }
 
             foreach (var (perkType, actionList) in Perk.GetAllEquipTriggers())
+            {
+                var playerPerkLevel = Perk.GetEffectivePerkLevel(player, perkType);
+                if (playerPerkLevel <= 0) continue;
+
+                foreach (var action in actionList)
+                {
+                    action(player, item, slot, perkType, playerPerkLevel);
+                }
+            }
+        }
+
+        private static void RunUnequipTriggers(uint player, uint item)
+        {
+            var slot = InventorySlot.Invalid;
+
+            if (GetItemInSlot(InventorySlot.Head, player) == item) slot = InventorySlot.Head;
+            if (GetItemInSlot(InventorySlot.Chest, player) == item) slot = InventorySlot.Chest;
+            if (GetItemInSlot(InventorySlot.Boots, player) == item) slot = InventorySlot.Boots;
+            if (GetItemInSlot(InventorySlot.Arms, player) == item) slot = InventorySlot.Arms;
+            if (GetItemInSlot(InventorySlot.RightHand, player) == item) slot = InventorySlot.RightHand;
+            if (GetItemInSlot(InventorySlot.LeftHand, player) == item) slot = InventorySlot.LeftHand;
+            if (GetItemInSlot(InventorySlot.Cloak, player) == item) slot = InventorySlot.Cloak;
+            if (GetItemInSlot(InventorySlot.LeftRing, player) == item) slot = InventorySlot.LeftRing;
+            if (GetItemInSlot(InventorySlot.RightRing, player) == item) slot = InventorySlot.RightRing;
+            if (GetItemInSlot(InventorySlot.Neck, player) == item) slot = InventorySlot.Neck;
+            if (GetItemInSlot(InventorySlot.Belt, player) == item) slot = InventorySlot.Belt;
+            if (GetItemInSlot(InventorySlot.Arrows, player) == item) slot = InventorySlot.Arrows;
+            if (GetItemInSlot(InventorySlot.Bullets, player) == item) slot = InventorySlot.Bullets;
+            if (GetItemInSlot(InventorySlot.Bolts, player) == item) slot = InventorySlot.Bolts;
+            if (GetItemInSlot(InventorySlot.CreatureLeft, player) == item) slot = InventorySlot.CreatureLeft;
+            if (GetItemInSlot(InventorySlot.CreatureRight, player) == item) slot = InventorySlot.CreatureRight;
+            if (GetItemInSlot(InventorySlot.CreatureBite, player) == item) slot = InventorySlot.CreatureBite;
+            if (GetItemInSlot(InventorySlot.CreatureArmor, player) == item) slot = InventorySlot.CreatureArmor;
+
+            foreach (var (perkType, actionList) in Perk.GetAllUnequipTriggers())
             {
                 var playerPerkLevel = Perk.GetEffectivePerkLevel(player, perkType);
                 if (playerPerkLevel <= 0) continue;
@@ -156,24 +198,14 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When an item is unequipped, if any of a player's perks has an Unequipped Trigger, run those actions now.
         /// </summary>
-        [NWNEventHandler("mod_unequip")]
+        [NWNEventHandler("item_uneqp_bef")]
         public static void ApplyUnequipTriggers()
         {
-            var player = GetPCItemLastUnequippedBy();
+            var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
-            var item = GetPCItemLastUnequipped();
-
-            foreach (var (perkType, actionList) in Perk.GetAllUnequipTriggers())
-            {
-                var playerPerkLevel = Perk.GetEffectivePerkLevel(player, perkType);
-                if (playerPerkLevel <= 0) continue;
-
-                foreach (var action in actionList)
-                {
-                    action(player, item, perkType, playerPerkLevel);
-                }
-            }
+            var item = StringToObject(Events.GetEventData("ITEM"));
+            RunUnequipTriggers(player, item);
         }
 
     }

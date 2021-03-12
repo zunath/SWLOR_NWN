@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             var builder = new SpawnTableBuilder();
             CoxxionBase(builder);
+            WildlandsResources(builder);
 
             return builder.Build();
         }
@@ -18,6 +19,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             builder.Create("COXXION_BASE_SCAVENGE")
                 .AddSpawn(ObjectType.Placeable, "v_cox_scav");
+        }
+
+        private void WildlandsResources(SpawnTableBuilder builder)
+        {
+            builder.Create("RESOURCES_VISCARA_WILDLANDS")
+                .AddSpawn(ObjectType.Placeable, "veldite_vein");
         }
     }
 }

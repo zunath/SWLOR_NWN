@@ -5,6 +5,7 @@ using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Area;
 using SWLOR.Game.Server.Service.SpawnService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -170,22 +171,62 @@ namespace SWLOR.Game.Server.Service
                         continue;
                     }
 
-                    var id = Guid.NewGuid();
-                    var spawnTable = _spawnTables[resourceSpawnTableId];
-                    _spawns.Add(id, new SpawnDetail
+                    var spawnCount = CalculateResourceSpawnCount(area);
+                    for (var count = 1; count <= spawnCount; count++)
                     {
-                        SpawnTableId = resourceSpawnTableId,
-                        Area = area,
-                        RespawnDelayMinutes = spawnTable.RespawnDelayMinutes,
-                        UseRandomSpawnLocation = true
-                    });
+                        var id = Guid.NewGuid();
+                        var spawnTable = _spawnTables[resourceSpawnTableId];
+                        _spawns.Add(id, new SpawnDetail
+                        {
+                            SpawnTableId = resourceSpawnTableId,
+                            Area = area,
+                            RespawnDelayMinutes = spawnTable.RespawnDelayMinutes,
+                            UseRandomSpawnLocation = true
+                        });
 
-                    if (!_allSpawnsByArea.ContainsKey(area))
-                        _allSpawnsByArea[area] = new List<Guid>();
+                        if (!_allSpawnsByArea.ContainsKey(area))
+                            _allSpawnsByArea[area] = new List<Guid>();
 
-                    _allSpawnsByArea[area].Add(id);
+                        _allSpawnsByArea[area].Add(id);
+                    }
                 }
             }
+        }
+
+        /// <summary>
+        /// Determines the number of spawns to use in an area.
+        /// If an int local variable 'RESOURCE_SPAWN_COUNT' is found, use that number.
+        /// Otherwise the size of the area will be used to determine the count.
+        /// </summary>
+        /// <param name="area">The area to determine spawn counts for</param>
+        /// <returns>A positive integer indicating the number of resource spawns to use in a given area.</returns>
+        private static int CalculateResourceSpawnCount(uint area)
+        {
+            var count = GetLocalInt(area, "RESOURCE_SPAWN_COUNT");
+            
+            // Found the local variable. Use that count.
+            if (count > 0) return count;
+
+            // Local variable wasn't found or was zero. 
+            // Determine the count by the size of the area.
+            var width = GetAreaSize(Dimension.Width, area);
+            var height = GetAreaSize(Dimension.Height, area);
+            var size = width * height;
+
+            if (size <= 12)
+                count = 2;
+            else if (size <= 32)
+                count = 6;
+            else if (size <= 64)
+                count = 10;
+            else if (size <= 256)
+                count = 25;
+            else if (size <= 512)
+                count = 40;
+            else if (size <= 1024)
+                count = 50;
+
+            return count;
         }
 
         [NWNEventHandler("area_enter")]
@@ -395,7 +436,8 @@ namespace SWLOR.Game.Server.Service
                     new Vector3(detail.X, detail.Y, detail.Z);
                 Core.NWNX.Object.AddToArea(deserialized, detail.Area, position);
 
-                AssignCommand(deserialized, () => SetFacing(detail.Facing));
+                var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
+                AssignCommand(deserialized, () => SetFacing(facing));
                 SetLocalString(deserialized, "SPAWN_ID", spawnId.ToString());
 
                 return deserialized;
@@ -417,7 +459,9 @@ namespace SWLOR.Game.Server.Service
                 var position = detail.UseRandomSpawnLocation ?
                     GetPositionFromLocation(Walkmesh.GetRandomLocation(detail.Area)) :
                     new Vector3(detail.X, detail.Y, detail.Z);
-                var location = Location(detail.Area, position, detail.Facing);
+
+                var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
+                var location = Location(detail.Area, position, facing);
 
                 var spawn = CreateObject(objectType, resref, location);
                 SetLocalString(spawn, "SPAWN_ID", spawnId.ToString());

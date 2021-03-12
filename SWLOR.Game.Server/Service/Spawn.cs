@@ -247,6 +247,7 @@ namespace SWLOR.Game.Server.Service
         /// When a creature dies, its details need to be queued up for a respawn.
         /// </summary>
         [NWNEventHandler("crea_death")]
+        [NWNEventHandler("plc_death")]
         public static void QueueRespawn()
         {
             var creature = OBJECT_SELF;

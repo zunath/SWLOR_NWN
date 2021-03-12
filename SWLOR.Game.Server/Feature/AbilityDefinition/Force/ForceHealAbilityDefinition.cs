@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceHeal1(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceLeap1, PerkType.ForceHeal)
+            builder.Create(Feat.ForceHeal1, PerkType.ForceHeal)
                 .Name("Force Heal 1")
                 .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .HasActivationDelay(2.0f)
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceHeal2(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceLeap1, PerkType.ForceHeal)
+            builder.Create(Feat.ForceHeal2, PerkType.ForceHeal)
                 .Name("Force Heal II")
                 .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .HasActivationDelay(2.0f)
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceHeal3(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceLeap1, PerkType.ForceHeal)
+            builder.Create(Feat.ForceHeal3, PerkType.ForceHeal)
                 .Name("Force Heal III")
                 .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .HasActivationDelay(2.0f)
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceHeal4(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceLeap1, PerkType.ForceHeal)
+            builder.Create(Feat.ForceHeal4, PerkType.ForceHeal)
                 .Name("Force Heal IV")
                 .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .HasActivationDelay(4.0f)
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceHeal5(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceLeap1, PerkType.ForceHeal)
+            builder.Create(Feat.ForceHeal5, PerkType.ForceHeal)
                 .Name("Force Heal V")
                 .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .HasActivationDelay(4.0f)

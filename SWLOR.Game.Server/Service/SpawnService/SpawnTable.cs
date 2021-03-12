@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service.SpawnService
         /// <summary>
         /// Retrieves the next spawn resref and object type based on the rules for this specific spawn table.
         /// </summary>
-        /// <returns>A tuple cointaining the object type and resref to spawn.</returns>
+        /// <returns>A tuple containing the object type and resref to spawn.</returns>
         public Tuple<ObjectType, string> GetNextSpawnResref()
         {
             var selectedObject = SelectRandomSpawnObject();

@@ -1683,5 +1683,10 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         ForceDrain3 = 0,
         ForceDrain4 = 0,
         ForceDrain5 = 0,
+        ForceHeal1 = 0,
+        ForceHeal2 = 0,
+        ForceHeal3 = 0,
+        ForceHeal4 = 0,
+        ForceHeal5 = 0,
     }
 }

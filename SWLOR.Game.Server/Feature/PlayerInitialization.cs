@@ -183,7 +183,7 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.Name = GetName(player);
             Stat.AdjustPlayerMaxHP(dbPlayer, player, 10);
             Stat.AdjustPlayerMaxSTM(dbPlayer, 10);
-            Stat.AdjustPlayerBAB(dbPlayer, player, 1);
+            Creature.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);
             dbPlayer.FP = Stat.GetMaxFP(player, dbPlayer);
             dbPlayer.Stamina = Stat.GetMaxStamina(player, dbPlayer);
@@ -285,6 +285,11 @@ namespace SWLOR.Game.Server.Feature
             GiveGoldToCreature(player, 100);
         }
 
+        /// <summary>
+        /// Sets the character type (either Standard or Force Sensitive) based on their character class.
+        /// </summary>
+        /// <param name="player">The player</param>
+        /// <param name="dbPlayer">The player entity</param>
         private static void AssignCharacterType(uint player, Player dbPlayer)
         {
             var @class = GetClassByPosition(1, player);

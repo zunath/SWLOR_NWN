@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
@@ -45,6 +46,26 @@ namespace SWLOR.Game.Server.Service
         public static void UseItem()
         {
             var user = OBJECT_SELF;
+            void CheckPosition(uint actionUser, string actionId, Vector3 originalPosition)
+            {
+                // Action ended, no need to continue checking.
+                if (!GetLocalBool(actionUser, actionId)) return;
+
+                var position = GetPosition(actionUser);
+
+                if (position.X != originalPosition.X ||
+                    position.Y != originalPosition.Y ||
+                    position.Z != originalPosition.Z)
+                {
+                    Activity.ClearBusy(actionUser);
+                    SendMessageToPC(actionUser, "You move and interrupt your action.");
+                    Player.StopGuiTimingBar(actionUser, string.Empty);
+                    return;
+                }
+
+                DelayCommand(0.1f, () => CheckPosition(actionUser, actionId, originalPosition));
+            }
+
             var item = StringToObject(Events.GetEventData("ITEM_OBJECT_ID"));
             var itemTag = GetTag(item);
 
@@ -59,6 +80,7 @@ namespace SWLOR.Game.Server.Service
             var targetPositionZ = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Z"));
             var targetPosition = GetIsObjectValid(target) ? GetPosition(target) : Vector3(targetPositionX, targetPositionY, targetPositionZ);
             var targetLocation = GetIsObjectValid(target) ? GetLocation(target) : Location(area, targetPosition, 0.0f);
+            var userPosition = GetPosition(user);
 
             // Bypass the NWN "item use" animation.
             Events.SkipEvent();
@@ -69,7 +91,14 @@ namespace SWLOR.Game.Server.Service
                 SendMessageToPC(user, "You do not meet the requirements to use this item.");
                 return;
             }
-            
+
+            // User is busy
+            if (Activity.IsBusy(user))
+            {
+                SendMessageToPC(user, "You are busy.");
+                return;
+            }
+
             var itemDetail = _items[itemTag];
             var validationMessage = itemDetail.ValidateAction == null ? string.Empty : itemDetail.ValidateAction(user, item, target, targetLocation);
 
@@ -134,14 +163,43 @@ namespace SWLOR.Game.Server.Service
             // Apply the item's action if specified.
             if (itemDetail.ApplyAction != null)
             {
-                DelayCommand(delay + 0.1f, () => itemDetail.ApplyAction(user, item, target, targetLocation));
-            }
-            
-            // Reduce item charge if specified.
-            var reducesItemCharge = itemDetail.ReducesItemChargeAction?.Invoke(user, item, target, targetLocation) ?? false;
-            if (reducesItemCharge)
-            {
-                SetItemCharges(item, GetItemCharges(item)-1);
+                var actionId = Guid.NewGuid().ToString();
+                Activity.SetBusy(user);
+                SetLocalBool(user, actionId, true);
+                CheckPosition(user, actionId, userPosition);
+
+                DelayCommand(delay + 0.1f, () =>
+                {
+                    DeleteLocalBool(user, actionId);
+                    Activity.ClearBusy(user);
+
+                    var updatedPosition = GetPosition(user);
+
+                    // Check if user has moved.
+                    if (userPosition.X != updatedPosition.X ||
+                        userPosition.Y != updatedPosition.Y ||
+                        userPosition.Z != updatedPosition.Z)
+                    {
+                        return;
+                    }
+
+                    // Rerun validation since things may have changed since the user started the action.
+                    validationMessage = itemDetail.ValidateAction == null ? string.Empty : itemDetail.ValidateAction(user, item, target, targetLocation);
+                    if (!string.IsNullOrWhiteSpace(validationMessage))
+                    {
+                        SendMessageToPC(user, validationMessage);
+                        return;
+                    }
+
+                    itemDetail.ApplyAction(user, item, target, targetLocation);
+
+                    // Reduce item charge if specified.
+                    var reducesItemCharge = itemDetail.ReducesItemChargeAction?.Invoke(user, item, target, targetLocation) ?? false;
+                    if (reducesItemCharge)
+                    {
+                        SetItemCharges(item, GetItemCharges(item) - 1);
+                    }
+                });
             }
         }
 
@@ -238,6 +296,64 @@ namespace SWLOR.Game.Server.Service
 
             return ArmorType.Invalid;
         }
+
+        /// <summary>
+        /// Retrieves the list of weapon base item types.
+        /// </summary>
+        public static List<BaseItem> WeaponBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.BastardSword,
+            BaseItem.Longsword,
+            BaseItem.Katana,
+            BaseItem.Scimitar,
+            BaseItem.BattleAxe,
+            BaseItem.Dagger,
+            BaseItem.Rapier,
+            BaseItem.ShortSword,
+            BaseItem.Kukri,
+            BaseItem.Sickle,
+            BaseItem.Whip,
+            BaseItem.HandAxe,
+            BaseItem.Lightsaber,
+            BaseItem.GreatAxe,
+            BaseItem.GreatSword,
+            BaseItem.DwarvenWarAxe,
+            BaseItem.Halberd,
+            BaseItem.Scythe,
+            BaseItem.ShortSpear,
+            BaseItem.Trident,
+            BaseItem.DoubleAxe,
+            BaseItem.TwoBladedSword,
+            BaseItem.Saberstaff,
+            BaseItem.Knuckles,
+            BaseItem.QuarterStaff,
+            BaseItem.LightMace,
+            BaseItem.Pistol,
+            BaseItem.ThrowingAxe,
+            BaseItem.Shuriken,
+            BaseItem.Dart,
+            BaseItem.Cannon,
+            BaseItem.Longbow,
+        };
+
+        /// <summary>
+        /// Retrieves the list of armor base item types.
+        /// </summary>
+        public static List<BaseItem> ArmorBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.Armor,
+            BaseItem.Helmet,
+            BaseItem.Cloak,
+            BaseItem.Belt,
+            BaseItem.Amulet,
+            BaseItem.Boots,
+            BaseItem.LargeShield,
+            BaseItem.SmallShield,
+            BaseItem.TowerShield,
+            BaseItem.Gloves,
+            BaseItem.Bracer,
+            BaseItem.Ring
+        };
 
         /// <summary>
         /// Retrieves the list of Vibroblade base item types.

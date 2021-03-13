@@ -17,29 +17,17 @@ namespace SWLOR.Game.Server.Core.Bioware
     public static class BiowareXP2
     {
         /// <summary>
-        /// 
-        /// ----------------------------------------------------------------------------
         /// Add an item property in a safe fashion, preventing unwanted stacking
-        /// Parameters:
-        ///   oItem     - the item to add the property to
-        ///   ip        - the itemproperty to add
-        ///   fDuration - set 0.0f to add the property permanent, anything else is temporary
-        ///   nAddItemPropertyPolicy - How to handle existing properties. Valid values are:
+        /// </summary>
+        /// <param name="oItem">the item to add the property to</param>
+        /// <param name="ip">the itemproperty to add</param>
+        /// <param name="fDuration">set 0.0f to add the property permanent, anything else is temporary</param>
+        /// <param name="nAddItemPropertyPolicy">How to handle existing properties. Valid values are:
         ///	     X2_IP_ADDPROP_POLICY_REPLACE_EXISTING - remove any property of the same type, subtype, durationtype before adding;
         ///	     X2_IP_ADDPROP_POLICY_KEEP_EXISTING - do not add if any property with same type, subtype and durationtype already exists;
-        ///	     X2_IP_ADDPROP_POLICY_IGNORE_EXISTING - add itemproperty in any case - Do not Use with OnHit or OnHitSpellCast props!
-        ///   bIgnoreDurationType  - If set to true, an item property will be considered identical even if the DurationType is different. Be careful when using this
-        ///	                          with X2_IP_ADDPROP_POLICY_REPLACE_EXISTING, as this could lead to a temporary item property removing a permanent one
-        ///   bIgnoreSubType       - If set to true an item property will be considered identical even if the SubType is different.
-        ///
-        /// ----------------------------------------------------------------------------
-        /// </summary>
-        /// <param name="oItem"></param>
-        /// <param name="ip"></param>
-        /// <param name="fDuration"></param>
-        /// <param name="nAddItemPropertyPolicy"></param>
-        /// <param name="bIgnoreDurationType"></param>
-        /// <param name="bIgnoreSubType"></param>
+        ///	     X2_IP_ADDPROP_POLICY_IGNORE_EXISTING - add itemproperty in any case - Do not Use with OnHit or OnHitSpellCast props!</param>
+        /// <param name="bIgnoreDurationType">If set to true, an item property will be considered identical even if the DurationType is different. Be careful when using this with X2_IP_ADDPROP_POLICY_REPLACE_EXISTING, as this could lead to a temporary item property removing a permanent one</param>
+        /// <param name="bIgnoreSubType">If set to true an item property will be considered identical even if the SubType is different.</param>
         public static void IPSafeAddItemProperty(uint oItem, ItemProperty ip, float fDuration, AddItemPropertyPolicy nAddItemPropertyPolicy, bool bIgnoreDurationType, bool bIgnoreSubType)
         {
             var nType = GetItemPropertyType(ip);

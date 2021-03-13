@@ -397,23 +397,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Modifies a player's Base Attack Bonus (BAB) by a certain amount.
-        /// This method will not persist the changes so be sure you call DB.Set after calling this.
-        /// </summary>
-        /// <param name="entity">The entity to modify.</param>
-        /// <param name="player">The player to modify.</param>
-        /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustPlayerBAB(Player entity, uint player, int adjustBy)
-        {
-            entity.BAB += adjustBy;
-
-            if (entity.BAB < 1)
-                entity.BAB = 1;
-
-            Creature.SetBaseAttackBonus(player, entity.BAB);
-        }
-
-        /// <summary>
         /// Modifies a player's attribute by a certain amount.
         /// This method will not persist the changes so be sure you call DB.Set after calling this.
         /// </summary>

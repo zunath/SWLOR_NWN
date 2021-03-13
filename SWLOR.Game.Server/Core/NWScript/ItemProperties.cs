@@ -5,7 +5,6 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using Alignment = SWLOR.Game.Server.Core.NWScript.Enum.Item.Property.Alignment;
 using AlignmentGroup = SWLOR.Game.Server.Core.NWScript.Enum.Item.Property.AlignmentGroup;
 using DamageType = SWLOR.Game.Server.Core.NWScript.Enum.Item.Property.DamageType;
-using RacialType = SWLOR.Game.Server.Core.NWScript.Enum.Item.Property.RacialType;
 using SpellSchool = SWLOR.Game.Server.Core.NWScript.Enum.SpellSchool;
 
 namespace SWLOR.Game.Server.Core.NWScript

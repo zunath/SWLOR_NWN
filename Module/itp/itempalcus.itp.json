@@ -9349,979 +9349,198 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Charisma +1"
+                      "value": "Weapon Mod: Animal Killer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_cha1"
+                      "value": "mod_w_animalkill"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Charisma +2"
+                      "value": "Weapon Mod: Beast Killer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_cha2"
+                      "value": "mod_w_beastkill"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Charisma +3"
+                      "value": "Weapon Mod: Bothan Killer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_cha3"
+                      "value": "mod_w_bothankill"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Cooldown Reduction +1"
+                      "value": "Weapon Mod: Cathar Killer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_cstspd1"
+                      "value": "mod_w_catharkill"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Cooldown Reduction +2"
+                      "value": "Weapon Mod: Chiss Killer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_cstspd2"
+                      "value": "mod_w_chisskill"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Cooldown Reduction +3"
+                      "value": "Weapon Mod: Cyborg Killer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_cstspd3"
+                      "value": "mod_w_cyborgkill"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: FP +10"
+                      "value": "Weapon Mod: Echani Killer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_mana2"
+                      "value": "mod_w_echanikill"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: FP +15"
+                      "value": "Weapon Mod: Human Killer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_mana3"
+                      "value": "mod_w_humankill"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: FP +5"
+                      "value": "Weapon Mod: Mirialan Killer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_mana1"
+                      "value": "mod_w_mirialanki"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: FP Regen +1"
+                      "value": "Weapon Mod: Mon Calamari Killer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_manareg1"
+                      "value": "mod_w_moncalkill"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: FP Regen +2"
+                      "value": "Weapon Mod: Robot Killer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_manareg2"
+                      "value": "mod_w_robotkill"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: FP Regen +3"
+                      "value": "Weapon Mod: Trandoshan Killer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_manareg3"
+                      "value": "mod_w_trandokill"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Intelligence +1"
+                      "value": "Weapon Mod: Twi'lek Killer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_int1"
+                      "value": "mod_w_twilekkill"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Intelligence +2"
+                      "value": "Weapon Mod: Ugnaught Killer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_int2"
+                      "value": "mod_w_uggykill"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Intelligence +3"
+                      "value": "Weapon Mod: Undead Killer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_int3"
+                      "value": "mod_w_undeadkill"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Wisdom +1"
+                      "value": "Weapon Mod: Vermin Killer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_wis1"
+                      "value": "mod_w_verminkill"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Wisdom +2"
+                      "value": "Weapon Mod: Wookiee Killer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_wis2"
+                      "value": "mod_w_wookieekil"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Blue Mod: Wisdom +3"
+                      "value": "Weapon Mod: Zabrak Killer"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "rune_wis3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Green Mod: Armorsmith +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_armsmth1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Green Mod: Armorsmith +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_armsmth2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Green Mod: Armorsmith +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_armsmth3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Green Mod: Cooking +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_cooking1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Green Mod: Cooking +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_cooking2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Green Mod: Cooking +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_cooking3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Green Mod: Engineering +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_engin1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Green Mod: Engineering +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_engin2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Green Mod: Engineering +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_engin3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Green Mod: Fabrication +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_fab1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Green Mod: Fabrication +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_fab2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Green Mod: Fabrication +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_fab3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Green Mod: Harvesting +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_mining1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Green Mod: Harvesting +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_mining2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Green Mod: Harvesting +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_mining3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Green Mod: Weaponsmith +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_wpnsmth1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Green Mod: Weaponsmith +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_wpnsmth2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Green Mod: Weaponsmith +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_wpnsmth3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Attack Bonus +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_ab1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Attack Bonus +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_ab2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Attack Bonus +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_ab3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Base Attack Bonus +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_bab1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Base Attack Bonus +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_bab2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Base Attack Bonus +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_bab3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Constitution +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_con1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Constitution +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_con2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Constitution +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_con3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Damage +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_dmg1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Damage +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_dmg2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Damage +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_dmg3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Dexterity +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_dex1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Dexterity +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_dex2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Dexterity +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_dex3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Enhancement Bonus +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_eb1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Enhancement Bonus +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_eb2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Enhancement Bonus +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_eb3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Hit Points +10"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_hp2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Hit Points +15"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_hp3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Hit Points +5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_hp1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: HP Regen +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_hpregen1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: HP Regen +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_hpregen2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: HP Regen +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_hpregen3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Strength +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_str1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Strength +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_str2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Red Mod: Strength +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_str3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Armor Class +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_ac1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Armor Class +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_ac2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Armor Class +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_ac3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Durability +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_dur1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Durability +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_dur2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Durability +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_dur3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Improved Enmity +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_enmup1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Improved Enmity +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_enmup2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Improved Enmity +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_enmup3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Level Decrease -3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_lvldown1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Level Decrease -5"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_lvldown2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Luck +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_luck1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Luck +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_luck2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Medicine +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_faid1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Medicine +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_faid2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Medicine +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_faid3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Meditate +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_med1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Meditate +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_med2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Reduced Enmity -1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_enmdown1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Reduced Enmity -2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_enmdown2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Reduced Enmity -3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_enmdown3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Rest +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_rest1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Rest +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_rest2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Sneak Attack +1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_snkatk1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Sneak Attack +2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_snkatk2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Yellow Mod: Sneak Attack +3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "rune_snkatk3"
+                      "value": "mod_w_zabrakkill"
                     }
                   }
                 ]

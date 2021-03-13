@@ -102,7 +102,7 @@
   },
   "OnDeath": {
     "type": "resref",
-    "value": ""
+    "value": "plc_death"
   },
   "OnDisarm": {
     "type": "resref",

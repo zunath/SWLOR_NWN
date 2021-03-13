@@ -217,8 +217,14 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 }
                 else if (model.IsConfirming)
                 {
+                    var playerId = GetObjectUUID(player);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    dbPlayer.UnallocatedXP -= model.XPDistributing;
+                    DB.Set(playerId, dbPlayer);
+
                     Skill.GiveSkillXP(player, model.SelectedSkill, model.XPDistributing);
                     model.IsConfirming = false;
+                    model.XPDistributing = 0;
                 }
                 else
                 {

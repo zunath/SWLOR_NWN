@@ -1,55 +1,80 @@
-﻿using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Feature.DialogDefinition;
+﻿using System;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
-using Dialog = SWLOR.Game.Server.Service.Dialog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
     public static class DebuggingTools
     {
-        [NWNEventHandler("test2")]
-        public static void DebugSpawnCreature()
-        {
-            var location = GetLocation(GetWaypointByTag("DEATH_DEFAULT_RESPAWN_POINT"));
-            var spawn = CreateObject(ObjectType.Creature, "test_zombie", location);
-
-            SetLocalInt(spawn, "QUEST_NPC_GROUP_ID", 1);
-        }
-
-        [NWNEventHandler("test6")]
-        public static void IncreaseEnmityOnBoy()
+        [NWNEventHandler("testspace")]
+        public static void DebugTestSpace()
         {
             var player = GetLastUsedBy();
-            var boy = GetObjectByTag("ENMITY_TARGET");
-            var lastAttacker = GetLastAttacker(player);
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
 
-            Enmity.ModifyEnmity(boy, lastAttacker, 999);
-        }
+            var shipId = new Guid("B2840D9A-E2BA-4308-9ECA-6D49ED38EB4E");
+            dbPlayer.Ships[shipId] = new PlayerShip
+            {
+                Name = "Mah Test Ship",
+                Type = ShipType.TestShip,
+                HighPowerModules = new Dictionary<string, PlayerShipModule>
+                {
+                    {
+                        "1", new PlayerShipModule
+                        {
+                            Type = ShipModuleType.TestModule
+                        }
+                    },
+                    {
+                        "2", new PlayerShipModule
+                        {
+                            Type = ShipModuleType.TestModule,
+                            RecastTime = DateTime.UtcNow.AddMinutes(5)
+                        }
+                    },
+                    {
+                        "3", new PlayerShipModule
+                        {
+                            Type = ShipModuleType.TestModule,
+                            RecastTime = new DateTime(2021, 3, 14, 23, 5, 9)
+                        }
+                    },
+                },
+                LowPowerModules = new Dictionary<string, PlayerShipModule>
+                {
+                    {
+                        "4", new PlayerShipModule
+                        {
+                            Type = ShipModuleType.TestModule
+                        }
+                    },
+                    {
+                        "5", new PlayerShipModule
+                        {
+                            Type = ShipModuleType.TestModule,
+                            RecastTime = new DateTime(2021, 3, 14, 18, 2, 3)
+                        }
+                    },
+                    {
+                        "6", new PlayerShipModule
+                        {
+                            Type = ShipModuleType.TestModule
+                        }
+                    },
+                }
+            };
 
-        [NWNEventHandler("test9")]
-        public static void OpenHomePurchaseMenu()
-        {
-            var player = GetLastUsedBy();
+            DB.Set(playerId, dbPlayer);
 
-            Creature.AddFeatByLevel(player, Feat.StructureTool, 1);
+            Space.EnterSpaceMode(player, shipId);
 
-            Dialog.StartConversation(player, OBJECT_SELF, nameof(PlayerHouseDialog));
-        }
-
-        [NWNEventHandler("test10")]
-        public static void SpawnGold()
-        {
-            var player = GetLastUsedBy();
-            GiveGoldToCreature(player, 5000);
-        }
-
-        [NWNEventHandler("test11")]
-        public static void DisplayAchievementWindow()
-        {
-            Achievement.DisplayAchievementNotificationWindow(GetLastUsedBy(), "Test Achievement");
+            var location = GetLocation(GetWaypointByTag("Viscara_Orbit"));
+            AssignCommand(player, () => ActionJumpToLocation(location));
         }
     }
 }

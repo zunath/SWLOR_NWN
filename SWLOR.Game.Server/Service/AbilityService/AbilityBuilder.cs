@@ -73,6 +73,16 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        /// <summary>
+        /// Indicates this ability can be used while in space.
+        /// </summary>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder CanBeUsedInSpace()
+        {
+            _activeAbility.CanBeUsedInSpace = true;
+
+            return this;
+        }
 
         /// <summary>
         /// Assigns an animation to the caster of the ability. This will be played when the creature uses the ability.

@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 
                 SetLocalString(sender, "CHAT_COMMAND", command);
-                SetLocalString(sender, "CHAT_COMMAND_ARGS", command);
+                SetLocalString(sender, "CHAT_COMMAND_ARGS", args);
                 SendMessageToPC(sender, "Please use your 'Chat Command Targeter' feat to select the target of this chat command.");
 
                 if (!GetHasFeat(Feat.ChatCommandTargeter, sender) || GetIsDM(sender) || GetIsDMPossessed(sender))

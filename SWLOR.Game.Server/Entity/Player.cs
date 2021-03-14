@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Entity
             KeyItems = new Dictionary<KeyItemType, DateTime>();
             Guilds = new Dictionary<GuildType, PlayerGuild>();
             SavedOutfits = new Dictionary<int, string>();
+            Ships = new Dictionary<Guid, PlayerShip>();
         }
 
         public override string KeyPrefix => "Player";
@@ -81,6 +82,9 @@ namespace SWLOR.Game.Server.Entity
         public CharacterType CharacterType { get; set; }
         public bool IsHolonetEnabled { get; set; }
         public EmoteStyle EmoteStyle { get; set; }
+        public string SerializedHotBar { get; set; }
+        public Guid ActiveShipId { get; set; }
+        public AppearanceType OriginalAppearanceType { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }
@@ -97,6 +101,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
         public Dictionary<int, string> SavedOutfits { get; set; }
+        public Dictionary<Guid, PlayerShip> Ships { get; set; }
     }
 
     public class MapPin
@@ -146,5 +151,33 @@ namespace SWLOR.Game.Server.Entity
     {
         public int Rank { get; set; }
         public int Points { get; set; }
+    }
+
+    public class PlayerShip
+    {
+        public ShipType Type { get; set; }
+        public string Name { get; set; }
+        public int Shield { get; set; }
+        public int Hull { get; set; }
+        public int Capacitor { get; set; }
+        public string SerializedHotBar { get; set; }
+        public Dictionary<string, PlayerShipModule> HighPowerModules { get; set; }
+        public Dictionary<string, PlayerShipModule> LowPowerModules { get; set; }
+
+        public PlayerShip()
+        {
+            Name = string.Empty;
+            SerializedHotBar = string.Empty;
+
+            HighPowerModules = new Dictionary<string, PlayerShipModule>();
+            LowPowerModules = new Dictionary<string, PlayerShipModule>();
+        }
+    }
+
+    public class PlayerShipModule
+    {
+        public ShipModuleType Type { get; set; }
+        public string SerializedItem { get; set; }
+        public DateTime RecastTime { get; set; }
     }
 }

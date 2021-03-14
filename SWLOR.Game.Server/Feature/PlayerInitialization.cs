@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature
             AdjustStats(player, dbPlayer);
             AdjustAlignment(player);
             InitializeLanguages(player, dbPlayer);
-            Race.SetDefaultRaceAppearance(player);
+            AssignRacialAppearance(player, dbPlayer);
             GiveStartingItems(player);
             AssignCharacterType(player, dbPlayer);
 
@@ -267,6 +267,18 @@ namespace SWLOR.Game.Server.Feature
 
                 dbPlayer.Skills[language].XP = Service.Skill.GetRequiredXP(level) - 1;
             }
+        }
+
+        /// <summary>
+        /// Assigns and stores the player's original racial appearance.
+        /// This value is primarily used in the space system for switching between space and character modes.
+        /// </summary>
+        /// <param name="player">The player object</param>
+        /// <param name="dbPlayer">The database entity</param>
+        private static void AssignRacialAppearance(uint player, Player dbPlayer)
+        {
+            Race.SetDefaultRaceAppearance(player);
+            dbPlayer.OriginalAppearanceType = GetAppearanceType(player);
         }
 
         /// <summary>

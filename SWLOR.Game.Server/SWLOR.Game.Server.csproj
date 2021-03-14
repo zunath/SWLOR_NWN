@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <Folder Include="Feature\AbilityDefinition\Professions\" />
-    <Folder Include="Feature\ItemModDefinition\" />
   </ItemGroup>
 
   <Target Name="NWN" AfterTargets="Build">

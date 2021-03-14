@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Service.ItemModService
         }
 
         /// <summary>
-        /// returns a built dictionary of item mod details.
+        /// Returns a built dictionary of item mod details.
         /// </summary>
         /// <returns>A dictionary of item mod details.</returns>
         public Dictionary<string, ItemModDetail> Build()

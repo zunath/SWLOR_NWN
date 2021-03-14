@@ -1,173 +1,186 @@
-﻿using SWLOR.Game.Server.Entity;
+﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.SnippetService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {
-    public static class QuestSnippetDefinition
+    public class QuestSnippetDefinition: ISnippetListDefinition
     {
-        /// <summary>
-        /// Snippet which checks whether a player has completed one or more quests.
-        /// </summary>
-        /// <param name="player">The player to check</param>
-        /// <param name="args">Arguments provided by conversation builder</param>
-        /// <returns>true if player has completed quest, false otherwise</returns>
-        [Snippet("condition-completed-quest")]
-        public static bool ConditionHasCompletedQuest(uint player, string[] args)
+        private readonly SnippetBuilder _builder = new SnippetBuilder();
+
+        public Dictionary<string, SnippetDetail> BuildSnippets()
         {
-            if (args.Length <= 0)
-            {
-                const string Error = "'condition-completed-quest' requires at least one questId argument.";
-                SendMessageToPC(player, Error);
-                Log.Write(LogGroup.Error, Error);
-                return false;
-            }
+            // Conditions
+            ConditionHasCompletedQuest();
+            ConditionHasQuest();
+            ConditionOnQuestState();
 
-            foreach (var questId in args)
-            {
-                var playerId = GetObjectUUID(player);
-                var dbPlayer = DB.Get<Player>(playerId);
+            // Actions
+            ActionAcceptQuest();
+            ActionAdvanceQuest();
+            ActionRequestItemsFromPlayer();
 
-                // Doesn't have the quest at all.
-                if (!dbPlayer.Quests.ContainsKey(questId)) return false;
-
-                // Hasn't completed the quest.
-                if (dbPlayer.Quests[questId].DateLastCompleted == null) return false;
-            }
-
-            // Otherwise the player meets all necessary prerequisite quest completions.
-            return true;
+            return _builder.Build();
         }
 
-        /// <summary>
-        /// Snippet which checks whether a player has a quest.
-        /// </summary>
-        /// <param name="player">The player to check</param>
-        /// <param name="args">Arguments provided by conversation builder.</param>
-        /// <returns>true if player has a quest, false otherwise</returns>
-        [Snippet("condition-has-quest")]
-        public static bool ConditionHasQuest(uint player, string[] args)
+        private void ConditionHasCompletedQuest()
         {
-            if (args.Length <= 0)
-            {
-                const string Error = "'condition-has-quest' requires a questId argument.";
-                SendMessageToPC(player, Error);
-                Log.Write(LogGroup.Error, Error);
-                return false;
-            }
-
-            var questId = args[0];
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            return dbPlayer.Quests.ContainsKey(questId);
-        }
-
-        /// <summary>
-        /// Snippet which checks if a player is on one or more states of a quest.
-        /// </summary>
-        /// <returns></returns>
-        [Snippet("condition-on-quest-state")]
-        public static bool ConditionOnQuestState(uint player, string[] args)
-        {
-            if (args.Length < 2)
-            {
-                const string Error = "'condition-on-quest-state' requires a questId argument and at least one stateNumber argument.";
-                SendMessageToPC(player, Error);
-                Log.Write(LogGroup.Error, Error);
-                return false;
-            }
-
-            var questId = args[0];
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-            if (!dbPlayer.Quests.ContainsKey(questId)) return false;
-
-            // Try to parse each Id. If it parses, check the player's current state.
-            // If they're on this quest state, return true. Otherwise move to the next argument.
-            for (int index = 1; index < args.Length; index++)
-            {
-                if (int.TryParse(args[index], out var stateId))
+            _builder.Create("condition-completed-quest")
+                .Description("Checks whether a player has completed one or more quests.")
+                .AppearsWhenAction((player, args) =>
                 {
-                    if (dbPlayer.Quests[questId].CurrentState == stateId)
+                    if (args.Length <= 0)
                     {
-                        return true;
+                        const string Error = "'condition-completed-quest' requires at least one questId argument.";
+                        SendMessageToPC(player, Error);
+                        Log.Write(LogGroup.Error, Error);
+                        return false;
                     }
-                }
-                else
+
+                    foreach (var questId in args)
+                    {
+                        var playerId = GetObjectUUID(player);
+                        var dbPlayer = DB.Get<Player>(playerId);
+
+                        // Doesn't have the quest at all.
+                        if (!dbPlayer.Quests.ContainsKey(questId)) return false;
+
+                        // Hasn't completed the quest.
+                        if (dbPlayer.Quests[questId].DateLastCompleted == null) return false;
+                    }
+
+                    // Otherwise the player meets all necessary prerequisite quest completions.
+                    return true;
+                });
+        }
+
+        private void ConditionHasQuest()
+        {
+            _builder.Create("condition-has-quest")
+                .Description("Checks whether a player has a quest.")
+                .AppearsWhenAction((player, args) =>
                 {
-                    var error = $"Could not read stateNumber {index + 1} in the 'condition-on-quest-state' snippet.";
-                    SendMessageToPC(player, error);
-                    Log.Write(LogGroup.Error, error);
+                    if (args.Length <= 0)
+                    {
+                        const string Error = "'condition-has-quest' requires a questId argument.";
+                        SendMessageToPC(player, Error);
+                        Log.Write(LogGroup.Error, Error);
+                        return false;
+                    }
+
+                    var questId = args[0];
+                    var playerId = GetObjectUUID(player);
+                    var dbPlayer = DB.Get<Player>(playerId);
+
+                    return dbPlayer.Quests.ContainsKey(questId);
+                });
+        }
+
+        private void ConditionOnQuestState()
+        {
+            _builder.Create("condition-on-quest-state")
+                .Description("Checks if a player is on one or more states of a quest.")
+                .AppearsWhenAction((player, args) =>
+                {
+                    if (args.Length < 2)
+                    {
+                        const string Error = "'condition-on-quest-state' requires a questId argument and at least one stateNumber argument.";
+                        SendMessageToPC(player, Error);
+                        Log.Write(LogGroup.Error, Error);
+                        return false;
+                    }
+
+                    var questId = args[0];
+                    var playerId = GetObjectUUID(player);
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    if (!dbPlayer.Quests.ContainsKey(questId)) return false;
+
+                    // Try to parse each Id. If it parses, check the player's current state.
+                    // If they're on this quest state, return true. Otherwise move to the next argument.
+                    for (int index = 1; index < args.Length; index++)
+                    {
+                        if (int.TryParse(args[index], out var stateId))
+                        {
+                            if (dbPlayer.Quests[questId].CurrentState == stateId)
+                            {
+                                return true;
+                            }
+                        }
+                        else
+                        {
+                            var error = $"Could not read stateNumber {index + 1} in the 'condition-on-quest-state' snippet.";
+                            SendMessageToPC(player, error);
+                            Log.Write(LogGroup.Error, error);
+
+                            return false;
+                        }
+                    }
 
                     return false;
-                }
-            }
+                });
 
-            return false;
         }
 
-        /// <summary>
-        /// Snippet which accepts a quest for a player.
-        /// </summary>
-        /// <param name="player">The player to check.</param>
-        /// <param name="args">Arguments provided by conversation builder.</param>
-        [Snippet("action-accept-quest")]
-        public static void AcceptQuest(uint player, string[] args)
+        private void ActionAcceptQuest()
         {
-            if (args.Length <= 0)
-            {
-                const string Error = "'action-accept-quest' requires a questId argument.";
-                SendMessageToPC(player, Error);
-                Log.Write(LogGroup.Error, Error);
-                return;
-            }
+            _builder.Create("action-accept-quest")
+                .Description("Accepts a quest for a player.")
+                .ActionsTakenAction((player, args) =>
+                {
+                    if (args.Length <= 0)
+                    {
+                        const string Error = "'action-accept-quest' requires a questId argument.";
+                        SendMessageToPC(player, Error);
+                        Log.Write(LogGroup.Error, Error);
+                        return;
+                    }
 
-            var questId = args[0];
-            Quest.AcceptQuest(player, questId);
+                    var questId = args[0];
+                    Quest.AcceptQuest(player, questId);
+                });
         }
 
-        /// <summary>
-        /// Snippet which advances a quest for a player.
-        /// </summary>
-        /// <param name="player">The player to check.</param>
-        /// <param name="args">Arguments provided by conversation builder.</param>
-        [Snippet("action-advance-quest")]
-        public static void AdvanceQuest(uint player, string[] args)
+        private void ActionAdvanceQuest()
         {
-            if (args.Length <= 0)
-            {
-                const string Error = "'action-advance-quest' requires a questId argument.";
-                SendMessageToPC(player, Error);
-                Log.Write(LogGroup.Error, Error);
-                return;
-            }
+            _builder.Create("action-advance-quest")
+                .Description("Advances a quest for a player.")
+                .ActionsTakenAction((player, args) =>
+                {
+                    if (args.Length <= 0)
+                    {
+                        const string Error = "'action-advance-quest' requires a questId argument.";
+                        SendMessageToPC(player, Error);
+                        Log.Write(LogGroup.Error, Error);
+                        return;
+                    }
 
-            var questId = args[0];
-            Quest.AdvanceQuest(player, OBJECT_SELF, questId);
+                    var questId = args[0];
+                    Quest.AdvanceQuest(player, OBJECT_SELF, questId);
+                });
         }
 
-
-        /// <summary>
-        /// Spawns a container and forces the player to open it. They are then instructed to insert any quest items inside.
-        /// </summary>
-        /// <param name="player">The player we're requesting items from</param>
-        /// <param name="args">Arguments provided by conversation builder.</param>
-        [Snippet("action-request-quest-items")]
-        public static void RequestItemsFromPlayer(uint player, string[] args)
+        private void ActionRequestItemsFromPlayer()
         {
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            _builder.Create("action-request-quest-items")
+                .Description("Spawns a container and forces the player to open it. They are then instructed to insert any quest items inside.")
+                .ActionsTakenAction((player, args) =>
+                {
+                    if (!GetIsPC(player) || GetIsDM(player)) return;
 
-            if (args.Length <= 0)
-            {
-                const string Error = "'action-request-quest-items' requires a questId argument.";
-                SendMessageToPC(player, Error);
-                Log.Write(LogGroup.Error, Error);
-                return;
-            }
+                    if (args.Length <= 0)
+                    {
+                        const string Error = "'action-request-quest-items' requires a questId argument.";
+                        SendMessageToPC(player, Error);
+                        Log.Write(LogGroup.Error, Error);
+                        return;
+                    }
 
-            var questId = args[0];
-            Quest.RequestItemsFromPlayer(player, questId);
+                    var questId = args[0];
+                    Quest.RequestItemsFromPlayer(player, questId);
+                });
         }
+
     }
 }

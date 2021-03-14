@@ -1,58 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Service.SnippetService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
-    public class SnippetAttribute : Attribute
-    {
-        public string Name { get; }
-
-        public SnippetAttribute(string name)
-        {
-            Name = name;
-        }
-    }
-
     public static class Snippet
     {
-        private delegate bool AppearsWhenDelegate(uint player, string[] args);
-        private delegate void ActionsTakenDelegate(uint player, string[] args);
-
-        private static readonly Dictionary<string, AppearsWhenDelegate> _appearsWhenCommands = new Dictionary<string, AppearsWhenDelegate>();
-        private static readonly Dictionary<string, ActionsTakenDelegate> _actionsTakenCommands = new Dictionary<string, ActionsTakenDelegate>();
+        private static readonly Dictionary<string, SnippetDetail> _appearsWhenCommands = new Dictionary<string, SnippetDetail>();
+        private static readonly Dictionary<string, SnippetDetail> _actionsTakenCommands = new Dictionary<string, SnippetDetail>();
 
         /// <summary>
         /// When the module loads, all available conversation snippets are loaded into the cache.
         /// </summary>
         [NWNEventHandler("mod_load")]
-        public static void RegisterSnippets()
+        public static void CacheData()
         {
-            var methods = Assembly.GetExecutingAssembly()
-                .GetTypes()
-                .SelectMany(t => t.GetMethods())
-                .Where(m => m.GetCustomAttributes(typeof(SnippetAttribute), false).Length > 0)
-                .ToArray();
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(w => typeof(ISnippetListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 
-            foreach (var mi in methods)
+            foreach (var type in types)
             {
-                foreach (var attr in mi.GetCustomAttributes(typeof(SnippetAttribute), false))
+                var instance = (ISnippetListDefinition)Activator.CreateInstance(type);
+                var snippets = instance.BuildSnippets();
+
+                foreach (var (key, snippet) in snippets)
                 {
-                    var name = ((SnippetAttribute)attr).Name.ToLower();
-                    if (name.StartsWith("action"))
+                    if (snippet.ConditionAction != null)
                     {
-                        _actionsTakenCommands[name] = (ActionsTakenDelegate)mi.CreateDelegate(typeof(ActionsTakenDelegate));
+                        _appearsWhenCommands.Add(key, snippet);
                     }
-                    else if (name.StartsWith("condition"))
+
+                    if (snippet.ActionsTakenAction != null)
                     {
-                        _appearsWhenCommands[name] = (AppearsWhenDelegate)mi.CreateDelegate(typeof(AppearsWhenDelegate));
+                        _actionsTakenCommands.Add(key, snippet);
                     }
+
                 }
             }
+
+            Console.WriteLine($"Loaded {_actionsTakenCommands.Count} action snippets.");
+            Console.WriteLine($"Loaded {_appearsWhenCommands.Count} condition snippets.");
         }
         /// <summary>
         /// When a conversation node with this script assigned in the "Appears When" event is run,
@@ -107,7 +99,7 @@ namespace SWLOR.Game.Server.Service
                 var snippetName = condition.Key;
 
                 // The first command that fails will result in failure.
-                var commandResult = _appearsWhenCommands[snippetName](player, args.ToArray());
+                var commandResult = _appearsWhenCommands[snippetName].ConditionAction(player, args.ToArray());
                 
                 // "Not" conditions check for the opposite condition.
                 if (notConditionEnabled && commandResult)
@@ -134,7 +126,7 @@ namespace SWLOR.Game.Server.Service
                 var args = param.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
                 var commandText = action.Key;
 
-                _actionsTakenCommands[commandText](player, args.ToArray());
+                _actionsTakenCommands[commandText].ActionsTakenAction(player, args.ToArray());
             }
         }
     }

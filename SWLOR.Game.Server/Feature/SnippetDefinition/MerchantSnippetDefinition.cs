@@ -1,35 +1,49 @@
-﻿using SWLOR.Game.Server.Core.NWScript;
+﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.SnippetService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {
-    public static class MerchantSnippetDefinition
+    public class MerchantSnippetDefinition: ISnippetListDefinition
     {
-        /// <summary>
-        /// Snippet which opens a store. If store tag isn't specified,
-        /// the nearest store to the NPC will be opened.
-        /// </summary>
-        /// <param name="player">The player opening the store.</param>
-        /// <param name="args">Arguments provided by conversation builder.</param>
-        [Snippet("action-open-store")]
-        public static void OpenStore(uint player, string[] args)
+        private readonly SnippetBuilder _builder = new SnippetBuilder();
+
+        public Dictionary<string, SnippetDetail> BuildSnippets()
         {
-            var npc = OBJECT_SELF;
-            var store = GetNearestObject(ObjectType.Store, npc);
-            if (args.Length > 0)
-            {
-                var storeTag = args[0];
-                store = GetNearestObjectByTag(storeTag, npc);
-            }
+            // Conditions
 
-            if (!GetIsObjectValid(store))
-            {
-                Log.Write(LogGroup.Error, $"{GetName(npc)} could not locate a valid store. Check conversation for incorrect snippet parameters.", true);
-            }
+            // Actions
+            OpenStore();
 
-            NWScript.OpenStore(store, player);
+            return _builder.Build();
         }
+
+        private void OpenStore()
+        {
+            _builder.Create("action-open-store")
+                .Description("Opens a store. If store tag isn't specified, the nearest store to the NPC will be opened.")
+                .ActionsTakenAction((player, args) =>
+                {
+
+                    var npc = OBJECT_SELF;
+                    var store = GetNearestObject(ObjectType.Store, npc);
+                    if (args.Length > 0)
+                    {
+                        var storeTag = args[0];
+                        store = GetNearestObjectByTag(storeTag, npc);
+                    }
+
+                    if (!GetIsObjectValid(store))
+                    {
+                        Log.Write(LogGroup.Error, $"{GetName(npc)} could not locate a valid store. Check conversation for incorrect snippet parameters.", true);
+                    }
+
+                    NWScript.OpenStore(store, player);
+                });
+        }
+
     }
 }

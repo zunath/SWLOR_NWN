@@ -1,39 +1,51 @@
-﻿using SWLOR.Game.Server.Service;
+﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.SnippetService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.SnippetDefinition
 {
-    public class TransportationSnippetDefinition
+    public class TransportationSnippetDefinition: ISnippetListDefinition
     {
-        /// <summary>
-        /// Snippet which teleports a player to the waypoint with the specified tag.
-        /// </summary>
-        /// <param name="player">The player to teleport</param>
-        /// <param name="args">Arguments provided by the conversation builder.</param>
-        [Snippet("action-teleport")]
-        public static void ActionTeleport(uint player, string[] args)
+        private readonly SnippetBuilder _builder = new SnippetBuilder();
+        public Dictionary<string, SnippetDetail> BuildSnippets()
         {
-            if (args.Length <= 0)
-            {
-                const string Error = "'action-teleport' requires a waypoint tag argument.";
-                SendMessageToPC(player, Error);
-                Log.Write(LogGroup.Error, Error);
-                return;
-            }
+            // Conditions
 
-            var waypointTag = args[0];
-            var waypoint = GetWaypointByTag(waypointTag);
+            // Actions
+            ActionTeleport();
 
-            if (!GetIsObjectValid(waypoint))
-            {
-                var error = $"Could not locate waypoint with tag '{waypointTag}' for snippet 'action-teleport'";
-                SendMessageToPC(player, error);
-                Log.Write(LogGroup.Error, error);
-                return;
-            }
+            return _builder.Build();
+        }
 
-            var location = GetLocation(waypoint);
-            AssignCommand(player, () => ActionJumpToLocation(location));
+        private void ActionTeleport()
+        {
+            _builder.Create("action-teleport")
+                .Description("Teleports a player to the waypoint with the specified tag.")
+                .ActionsTakenAction((player, args) =>
+                {
+                    if (args.Length <= 0)
+                    {
+                        const string Error = "'action-teleport' requires a waypoint tag argument.";
+                        SendMessageToPC(player, Error);
+                        Log.Write(LogGroup.Error, Error);
+                        return;
+                    }
+
+                    var waypointTag = args[0];
+                    var waypoint = GetWaypointByTag(waypointTag);
+
+                    if (!GetIsObjectValid(waypoint))
+                    {
+                        var error = $"Could not locate waypoint with tag '{waypointTag}' for snippet 'action-teleport'";
+                        SendMessageToPC(player, error);
+                        Log.Write(LogGroup.Error, error);
+                        return;
+                    }
+
+                    var location = GetLocation(waypoint);
+                    AssignCommand(player, () => ActionJumpToLocation(location));
+                });
         }
     }
 }

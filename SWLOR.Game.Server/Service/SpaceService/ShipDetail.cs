@@ -6,6 +6,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
     {
         public string Name { get; set; }
         public AppearanceType Appearance { get; set; }
+        public string ItemResref { get; set; }
 
         public int MaxShield { get; set; }
         public int MaxHull { get; set; }

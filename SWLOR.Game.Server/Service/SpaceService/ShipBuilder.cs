@@ -48,6 +48,18 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// Sets the resref of the deed item which is used for registering this ship type.
+        /// </summary>
+        /// <param name="itemResref">The resref of the deed item.</param>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder ItemResref(string itemResref)
+        {
+            _activeShip.ItemResref = itemResref;
+
+            return this;
+        }
+
+        /// <summary>
         /// Sets the maximum shields of the ship.
         /// </summary>
         /// <param name="maxShield">The value to set.</param>

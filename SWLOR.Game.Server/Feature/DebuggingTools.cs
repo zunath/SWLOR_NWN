@@ -21,7 +21,10 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.Ships[shipId] = new PlayerShip
             {
                 Name = "Mah Test Ship",
-                Type = ShipType.TestShip,
+                Type = ShipType.LightEscort,
+                Shield = 20,
+                Hull = 20,
+                Capacitor = 10,
                 HighPowerModules = new Dictionary<string, PlayerShipModule>
                 {
                     {

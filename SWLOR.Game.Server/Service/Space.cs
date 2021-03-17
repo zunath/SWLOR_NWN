@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Space
     {
+        public const int MaxRegisteredShips = 10;
+
         private static readonly Dictionary<ShipType, ShipDetail> _ships = new Dictionary<ShipType, ShipDetail>();
         private static readonly Dictionary<ShipModuleType, ShipModuleDetail> _shipModules = new Dictionary<ShipModuleType, ShipModuleDetail>();
 

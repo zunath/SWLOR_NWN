@@ -1,9 +1,9 @@
 ﻿namespace SWLOR.Game.Server.Enumeration
 {
-    public enum ShipType
+    public enum ShipModulePowerType
     {
         Invalid = 0,
-        LightFreighter = 1,
-        LightEscort = 2,
+        High = 1,
+        Low = 2,
     }
 }

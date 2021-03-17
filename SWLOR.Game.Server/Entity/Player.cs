@@ -84,6 +84,7 @@ namespace SWLOR.Game.Server.Entity
         public EmoteStyle EmoteStyle { get; set; }
         public string SerializedHotBar { get; set; }
         public Guid ActiveShipId { get; set; }
+        public Guid SelectedShipId { get; set; }
         public AppearanceType OriginalAppearanceType { get; set; }
 
         public PlayerSettings Settings { get; set; }

@@ -440,8 +440,9 @@ namespace SWLOR.Game.Server.Feature
             Events.SubscribeEvent("NWNX_ON_INPUT_ATTACK_OBJECT_AFTER", "input_atk_aft");
 
             // Input Force Move To events
-            Events.SubscribeEvent("NWNX_ON_INPUT_FORCE_MOVE_TO_OBJECT_BEFORE", "force_move_bef");
-            Events.SubscribeEvent("NWNX_ON_INPUT_FORCE_MOVE_TO_OBJECT_AFTER", "force_move_aft");
+            // NOTE: These events are disabled because they cause NWServer to crash when a player clicks to move anywhere.
+            //Events.SubscribeEvent("NWNX_ON_INPUT_FORCE_MOVE_TO_OBJECT_BEFORE", "force_move_bef");
+            //Events.SubscribeEvent("NWNX_ON_INPUT_FORCE_MOVE_TO_OBJECT_AFTER", "force_move_aft");
 
             // Object Lock events
             Events.SubscribeEvent("NWNX_ON_OBJECT_LOCK_BEFORE", "obj_lock_bef");

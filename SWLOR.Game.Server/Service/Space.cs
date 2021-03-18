@@ -175,7 +175,8 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.ActiveShipId = shipId;
 
             // Load the player's ship hot bar.
-            if (!Creature.DeserializeQuickbar(player, dbPlayerShip.SerializedHotBar))
+            if (string.IsNullOrWhiteSpace(dbPlayerShip.SerializedHotBar) ||
+                !Creature.DeserializeQuickbar(player, dbPlayerShip.SerializedHotBar))
             {
                 // Deserialization failed. Clear out the player's hot bar and start fresh.
                 for (var slot = 0; slot <= 35; slot++)
@@ -207,7 +208,8 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.ActiveShipId = Guid.Empty;
 
             // Load the player's hot bar.
-            if (!Creature.DeserializeQuickbar(player, dbPlayer.SerializedHotBar))
+            if (string.IsNullOrWhiteSpace(dbPlayer.SerializedHotBar) ||
+                !Creature.DeserializeQuickbar(player, dbPlayer.SerializedHotBar))
             {
                 // Deserialization failed. Clear out the player's hot bar and start fresh.
                 for (var slot = 0; slot <= 35; slot++)

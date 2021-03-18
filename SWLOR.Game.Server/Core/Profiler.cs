@@ -7,12 +7,12 @@ namespace SWLOR.Game.Server.Core
     {
         public Profiler(string name)
         {
-            NWNXProfiler.PushPerfScope(name, "RunScript", "Script");
+            //NWNXProfiler.PushPerfScope(name, "RunScript", "Script");
         }
 
         public void Dispose()
         {
-            NWNXProfiler.PopPerfScope();
+            //NWNXProfiler.PopPerfScope();
         }
     }
 }

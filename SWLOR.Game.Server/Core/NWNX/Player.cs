@@ -594,6 +594,21 @@ namespace SWLOR.Game.Server.Core.NWNX
             return entry;
         }
 
+        public static void CloseStore(uint oPlayer)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "CloseStore");
+            Internal.NativeFunctions.nwnxPushObject(oPlayer);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
 
+        public static void SetTlkOverride(uint oPlayer, int nStrRef, string sOverride, bool bRestoreGlobal = true)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetTlkOverride");
+            Internal.NativeFunctions.nwnxPushInt(bRestoreGlobal ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushString(sOverride);
+            Internal.NativeFunctions.nwnxPushInt(nStrRef);
+            Internal.NativeFunctions.nwnxPushObject(oPlayer);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
     }
 }

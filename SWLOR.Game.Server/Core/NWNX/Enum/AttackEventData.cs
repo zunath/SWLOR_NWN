@@ -20,7 +20,9 @@ namespace SWLOR.Game.Server.Core.NWNX.Enum
         public int Base { get; set; }
         public int AttackNumber { get; set; } // 1-based index of the attack in current combat round
         public int AttackResult { get; set; } // 1=hit, 3=critical hit, 4=miss, 8=concealed
-        public int AttackType { get; set; } // 1=main hand, 2=offhand, 3-5=creature, 6=haste
+        public int WeaponAttackType { get; set; }//< 1=main hand, 2=offhand, 3-5=creature, 6=extra(haste), 7=unarmed, 8=unarmed extra
         public int SneakAttack { get; set; } // 0=neither, 1=sneak attack, 2=death attack, 3=both
+        public int AttackType { get; set; } // 1=main hand, 2=offhand, 3-5=creature, 6=haste
+        public bool IsKillingBlow { get; set; }
     }
 }

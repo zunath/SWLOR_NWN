@@ -181,5 +181,42 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.StackPushInteger((int)type);
             Internal.NativeFunctions.nwnxCallFunction();
         }
+
+        /// @brief Get the servers minimum level.
+        /// @return The minimum level for the server.
+        public static int GetMinLevel()
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMinLevel");
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        /// @brief Set the servers minimum level.
+        /// @param nLevel The minimum level for the server.
+        public static void SetMinLevel(int nLevel)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetMinLevel");
+            Internal.NativeFunctions.StackPushInteger(nLevel);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        /// @brief Get the servers maximum level.
+        /// @return The maximum level for the server.
+        public static int GetMaxLevel()
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMaxLevel");
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        /// @brief Set the servers maximum level.
+        /// @note Attention when using this and the MaxLevel plugin. They both change the same value.
+        /// @param nLevel The maximum level for the server.
+        public static void SetMaxLevel(int nLevel)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetMaxLevel");
+            Internal.NativeFunctions.StackPushInteger(nLevel);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
     }
 }

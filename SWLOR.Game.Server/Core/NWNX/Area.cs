@@ -1,8 +1,18 @@
+using System.Numerics;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Area;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
+    public struct TileInfo
+    {
+        public int nID; /// The tile's ID
+        public int nHeight; /// The tile's height
+        public int nOrientation; /// The tile's orientation
+        public int nGridX; /// The tile's grid x position
+        public int nGridY; /// The tile's grid y position
+    };
+
     public static class Area
     {
         private const string PLUGIN_NAME = "NWNX_Area";
@@ -347,6 +357,117 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
 
             return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+
+        /// @brief Get the tile info of the tile at [fTileX, fTileY] in oArea.
+        /// @param oArea The area name.
+        /// @param fTileX, fTileY The coordinates of the tile.
+        /// @return A NWNX_Area_TileInfo struct with tile info.
+        public static TileInfo GetTileInfo(uint oArea, float fTileX, float fTileY)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetTileInfo");
+            Internal.NativeFunctions.nwnxPushFloat(fTileY);
+            Internal.NativeFunctions.nwnxPushFloat(fTileX);
+            Internal.NativeFunctions.nwnxPushObject(oArea);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            var str = new TileInfo
+            {
+                nGridY = Internal.NativeFunctions.nwnxPopInt(),
+                nGridX = Internal.NativeFunctions.nwnxPopInt(),
+                nOrientation = Internal.NativeFunctions.nwnxPopInt(),
+                nHeight = Internal.NativeFunctions.nwnxPopInt(),
+                nID = Internal.NativeFunctions.nwnxPopInt()
+            };
+
+            return str;
+        }
+
+        /// @brief Export the .are file of oArea to the UserDirectory/nwnx folder, or to the location of sAlias.
+        /// @param oArea The area to export the .are file of.
+        /// @param sFileName The filename, 16 characters or less and should be lowercase. This will also be the resref of the area.
+        /// @param sNewName Optional new name of the area. Leave blank to use the current name.
+        /// @param sNewTag Optional new tag of the area. Leave blank to use the current tag.
+        /// @param sAlias The alias of the resource directory to add the .are file to. Default: UserDirectory/nwnx
+        /// @return TRUE if exported successfully, FALSE if not.
+        public static bool ExportARE(uint oArea, string sFileName, string sNewName = "", string sNewTag = "", string sAlias = "NWNX")
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ExportARE");
+            Internal.NativeFunctions.nwnxPushString(sAlias);
+            Internal.NativeFunctions.nwnxPushString(sNewTag);
+            Internal.NativeFunctions.nwnxPushString(sNewName);
+            Internal.NativeFunctions.nwnxPushString(sFileName);
+            Internal.NativeFunctions.nwnxPushObject(oArea);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt() == 1;
+        }
+
+        /// @brief Get the ambient sound playing in an area during the day.
+        /// @param oArea The area to get the sound of.
+        /// @return The ambient soundtrack. See ambientsound.2da.
+        public static int GetAmbientSoundDay(uint oArea)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAmbientSoundDay");
+            Internal.NativeFunctions.nwnxPushObject(oArea);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        /// @brief Get the ambient sound playing in an area during the night.
+        /// @param oArea The area to get the sound of.
+        /// @return The ambient soundtrack. See ambientsound.2da.
+        public static int GetAmbientSoundNight(uint oArea)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAmbientSoundNight");
+            Internal.NativeFunctions.nwnxPushObject(oArea);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        /// @brief Get the volume of the ambient sound playing in an area during the day.
+        /// @param oArea The area to get the sound volume of.
+        /// @return The volume.
+        public static int GetAmbientSoundDayVolume(uint oArea)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAmbientSoundDayVolume");
+            Internal.NativeFunctions.nwnxPushObject(oArea);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        /// @brief Get the volume of the ambient sound playing in an area during the night.
+        /// @param oArea The area to get the sound volume of.
+        /// @return The volume.
+        public static int GetAmbientSoundNightVolume(uint oArea)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAmbientSoundNightVolume");
+            Internal.NativeFunctions.nwnxPushObject(oArea);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        /// @brief Create a sound object.
+        /// @param oArea The area where to create the sound object.
+        /// @param vPosition The area position where to create the sound object.
+        /// @param sResRef The ResRef of the sound object.
+        /// @return The sound object.
+        public static uint CreateSoundObject(uint oArea, Vector3 vPosition, string sResRef)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "CreateSoundObject");
+            Internal.NativeFunctions.nwnxPushString(sResRef);
+            Internal.NativeFunctions.nwnxPushFloat(vPosition.Z);
+            Internal.NativeFunctions.nwnxPushFloat(vPosition.Y);
+            Internal.NativeFunctions.nwnxPushFloat(vPosition.X);
+            Internal.NativeFunctions.nwnxPushObject(oArea);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopObject();
         }
     }
 }

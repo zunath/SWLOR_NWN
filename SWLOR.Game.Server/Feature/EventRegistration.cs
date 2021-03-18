@@ -118,10 +118,10 @@ namespace SWLOR.Game.Server.Feature
             Events.SubscribeEvent("NWNX_ON_REMOVE_ASSOCIATE_AFTER", "asso_rem_aft");
 
             // Stealth events
-            Events.SubscribeEvent("NWNX_ON_ENTER_STEALTH_BEFORE", "stlent_add_bef");
-            Events.SubscribeEvent("NWNX_ON_ENTER_STEALTH_AFTER", "stlent_add_aft");
-            Events.SubscribeEvent("NWNX_ON_EXIT_STEALTH_BEFORE", "stlex_add_bef");
-            Events.SubscribeEvent("NWNX_ON_EXIT_STEALTH_AFTER", "stlex_add_aft");
+            Events.SubscribeEvent("NWNX_ON_STEALTH_ENTER_BEFORE", "stlent_add_bef");
+            Events.SubscribeEvent("NWNX_ON_STEALTH_ENTER_AFTER", "stlent_add_aft");
+            Events.SubscribeEvent("NWNX_ON_STEALTH_EXIT_BEFORE", "stlex_add_bef");
+            Events.SubscribeEvent("NWNX_ON_STEALTH_EXIT_AFTER", "stlex_add_aft");
 
             // Examine events
             Events.SubscribeEvent("NWNX_ON_EXAMINE_OBJECT_BEFORE", "examine_reset");

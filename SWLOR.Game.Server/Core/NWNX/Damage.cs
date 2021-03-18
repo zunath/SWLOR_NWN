@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
@@ -9,36 +10,40 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Set Damage Event Script
         // If oOwner is OBJECT_INVALID, this sets the script globally for all creatures
         // If oOwner is valid, it will set it only for that creature.
-        public static void SetDamageEventScript(string script, uint? oOwner = null)
+        public static void SetDamageEventScript(string script, uint oOwner = OBJECT_INVALID)
         {
-            if (oOwner == null) oOwner = NWScript.NWScript.OBJECT_INVALID;
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetEventScript");
-            Internal.NativeFunctions.nwnxPushObject((uint)oOwner);
+            Internal.NativeFunctions.nwnxPushObject(oOwner);
             Internal.NativeFunctions.nwnxPushString(script);
             Internal.NativeFunctions.nwnxPushString("DAMAGE");
+
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
         // Get Damage Event Data (to use only on Damage Event Script)
         public static DamageEventData GetDamageEventData()
         {
-            var data = new DamageEventData();
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetDamageEventData");
             Internal.NativeFunctions.nwnxCallFunction();
-            data.Damager = Internal.NativeFunctions.nwnxPopObject();
-            data.Bludgeoning = Internal.NativeFunctions.nwnxPopInt();
-            data.Pierce = Internal.NativeFunctions.nwnxPopInt();
-            data.Slash = Internal.NativeFunctions.nwnxPopInt();
-            data.Magical = Internal.NativeFunctions.nwnxPopInt();
-            data.Acid = Internal.NativeFunctions.nwnxPopInt();
-            data.Cold = Internal.NativeFunctions.nwnxPopInt();
-            data.Divine = Internal.NativeFunctions.nwnxPopInt();
-            data.Electrical = Internal.NativeFunctions.nwnxPopInt();
-            data.Fire = Internal.NativeFunctions.nwnxPopInt();
-            data.Negative = Internal.NativeFunctions.nwnxPopInt();
-            data.Positive = Internal.NativeFunctions.nwnxPopInt();
-            data.Sonic = Internal.NativeFunctions.nwnxPopInt();
-            data.Base = Internal.NativeFunctions.nwnxPopInt();
+
+            var data = new DamageEventData
+            {
+                Damager = Internal.NativeFunctions.nwnxPopObject(),
+                Bludgeoning = Internal.NativeFunctions.nwnxPopInt(),
+                Pierce = Internal.NativeFunctions.nwnxPopInt(),
+                Slash = Internal.NativeFunctions.nwnxPopInt(),
+                Magical = Internal.NativeFunctions.nwnxPopInt(),
+                Acid = Internal.NativeFunctions.nwnxPopInt(),
+                Cold = Internal.NativeFunctions.nwnxPopInt(),
+                Divine = Internal.NativeFunctions.nwnxPopInt(),
+                Electrical = Internal.NativeFunctions.nwnxPopInt(),
+                Fire = Internal.NativeFunctions.nwnxPopInt(),
+                Negative = Internal.NativeFunctions.nwnxPopInt(),
+                Positive = Internal.NativeFunctions.nwnxPopInt(),
+                Sonic = Internal.NativeFunctions.nwnxPopInt(),
+                Base = Internal.NativeFunctions.nwnxPopInt()
+            };
+
             return data;
         }
 
@@ -59,17 +64,17 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxPushInt(data.Slash);
             Internal.NativeFunctions.nwnxPushInt(data.Pierce);
             Internal.NativeFunctions.nwnxPushInt(data.Bludgeoning);
+
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
         // Set Attack Event Script
         // If oOwner is OBJECT_INVALID, this sets the script globally for all creatures
         // If oOwner is valid, it will set it only for that creature.
-        public static void SetAttackEventScript(string script, uint? oOwner = null)
+        public static void SetAttackEventScript(string script, uint oOwner = OBJECT_INVALID)
         {
-            if (oOwner == null) oOwner = NWScript.NWScript.OBJECT_INVALID;
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetEventScript");
-            Internal.NativeFunctions.nwnxPushObject((uint)oOwner);
+            Internal.NativeFunctions.nwnxPushObject(oOwner);
             Internal.NativeFunctions.nwnxPushString(script);
             Internal.NativeFunctions.nwnxPushString("ATTACK");
             Internal.NativeFunctions.nwnxCallFunction();
@@ -78,27 +83,33 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Get Attack Event Data (to use only on Attack Event Script)
         public static AttackEventData GetAttackEventData()
         {
-            var data = new AttackEventData();
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAttackEventData");
             Internal.NativeFunctions.nwnxCallFunction();
-            data.Target = Internal.NativeFunctions.nwnxPopObject();
-            data.Bludgeoning = Internal.NativeFunctions.nwnxPopInt();
-            data.Pierce = Internal.NativeFunctions.nwnxPopInt();
-            data.Slash = Internal.NativeFunctions.nwnxPopInt();
-            data.Magical = Internal.NativeFunctions.nwnxPopInt();
-            data.Acid = Internal.NativeFunctions.nwnxPopInt();
-            data.Cold = Internal.NativeFunctions.nwnxPopInt();
-            data.Divine = Internal.NativeFunctions.nwnxPopInt();
-            data.Electrical = Internal.NativeFunctions.nwnxPopInt();
-            data.Fire = Internal.NativeFunctions.nwnxPopInt();
-            data.Negative = Internal.NativeFunctions.nwnxPopInt();
-            data.Positive = Internal.NativeFunctions.nwnxPopInt();
-            data.Sonic = Internal.NativeFunctions.nwnxPopInt();
-            data.Base = Internal.NativeFunctions.nwnxPopInt();
-            data.AttackNumber = Internal.NativeFunctions.nwnxPopInt();
-            data.AttackResult = Internal.NativeFunctions.nwnxPopInt();
-            data.AttackType = Internal.NativeFunctions.nwnxPopInt();
-            data.SneakAttack = Internal.NativeFunctions.nwnxPopInt();
+
+            var data = new AttackEventData
+            {
+                Target = Internal.NativeFunctions.nwnxPopObject(),
+                Bludgeoning = Internal.NativeFunctions.nwnxPopInt(),
+                Pierce = Internal.NativeFunctions.nwnxPopInt(),
+                Slash = Internal.NativeFunctions.nwnxPopInt(),
+                Magical = Internal.NativeFunctions.nwnxPopInt(),
+                Acid = Internal.NativeFunctions.nwnxPopInt(),
+                Cold = Internal.NativeFunctions.nwnxPopInt(),
+                Divine = Internal.NativeFunctions.nwnxPopInt(),
+                Electrical = Internal.NativeFunctions.nwnxPopInt(),
+                Fire = Internal.NativeFunctions.nwnxPopInt(),
+                Negative = Internal.NativeFunctions.nwnxPopInt(),
+                Positive = Internal.NativeFunctions.nwnxPopInt(),
+                Sonic = Internal.NativeFunctions.nwnxPopInt(),
+                Base = Internal.NativeFunctions.nwnxPopInt(),
+                AttackNumber = Internal.NativeFunctions.nwnxPopInt(),
+                AttackResult = Internal.NativeFunctions.nwnxPopInt(),
+                WeaponAttackType = Internal.NativeFunctions.nwnxPopInt(),
+                SneakAttack = Internal.NativeFunctions.nwnxPopInt(),
+                IsKillingBlow = Internal.NativeFunctions.nwnxPopInt() == 1,
+                AttackType = Internal.NativeFunctions.nwnxPopInt()
+            };
+
             return data;
         }
 
@@ -106,6 +117,8 @@ namespace SWLOR.Game.Server.Core.NWNX
         public static void SetAttackEventData(AttackEventData data)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAttackEventData");
+
+            Internal.NativeFunctions.nwnxPushInt(data.AttackResult);
             Internal.NativeFunctions.nwnxPushInt(data.Base);
             Internal.NativeFunctions.nwnxPushInt(data.Sonic);
             Internal.NativeFunctions.nwnxPushInt(data.Positive);
@@ -119,16 +132,17 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxPushInt(data.Slash);
             Internal.NativeFunctions.nwnxPushInt(data.Pierce);
             Internal.NativeFunctions.nwnxPushInt(data.Bludgeoning);
+
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
         // Deal damage to target - permits multiple damage types and checks enhancement bonus for overcoming DR
-        public static void DealDamage(DamageEventData data, uint oTarget, uint oSource, bool iRanged = false)
+        public static void DealDamage(DamageData data, uint oTarget, uint oSource, bool iRanged = false)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAttackEventData");
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "DealDamage");
+            
             Internal.NativeFunctions.nwnxPushInt(iRanged ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushInt(data.Base);
+            Internal.NativeFunctions.nwnxPushInt(data.Power);
             Internal.NativeFunctions.nwnxPushInt(data.Sonic);
             Internal.NativeFunctions.nwnxPushInt(data.Positive);
             Internal.NativeFunctions.nwnxPushInt(data.Negative);
@@ -143,6 +157,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxPushInt(data.Bludgeoning);
             Internal.NativeFunctions.nwnxPushObject(oTarget);
             Internal.NativeFunctions.nwnxPushObject(oSource);
+
             Internal.NativeFunctions.nwnxCallFunction();
         }
     }

@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature
             if (!string.IsNullOrWhiteSpace(conversation))
             {
                 var talker = GetLastSpeaker();
-                Dialog.StartConversation(talker, talker, conversation);
+                Dialog.StartConversation(talker, OBJECT_SELF, conversation);
             }
         }
 

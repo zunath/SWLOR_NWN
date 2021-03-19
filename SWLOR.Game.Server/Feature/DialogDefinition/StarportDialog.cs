@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             public Guid SelectedShipId { get; set; }
             public bool IsConfirmingUnregister { get; set; }
+            public bool IsManagingActiveShip { get; set; }
         }
 
         private const string MainPageId = "MAIN_PAGE";
@@ -33,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 {
                     var model = GetDataModel<Model>();
                     model.IsConfirmingUnregister = false;
+                    model.IsManagingActiveShip = false;
                 });
 
             return builder.Build();
@@ -47,6 +49,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var displayUndock = false;
             var waypointTag = GetLocalString(OBJECT_SELF, "STARPORT_TELEPORT_WAYPOINT");
             var waypoint = GetWaypointByTag(waypointTag);
+            var model = GetDataModel<Model>();
 
             if (dbPlayer.SelectedShipId != Guid.Empty)
             {
@@ -62,6 +65,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                           activeShipInfo + "\n" +
                           "What would you like to do?";
 
+            // Register New Ship (available only if player hasn't reached cap)
             if (dbPlayer.Ships.Count < Space.MaxRegisteredShips)
             {
                 page.AddResponse("Register New Ship", () =>
@@ -73,15 +77,30 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 });
             }
 
+            // Manage Active Ship (available only if a ship has been selected)
+            if (dbPlayer.SelectedShipId != Guid.Empty)
+            {
+                page.AddResponse("Manage Active Ship", () =>
+                {
+                    model.SelectedShipId = dbPlayer.SelectedShipId;
+                    model.IsManagingActiveShip = true;
+                    ChangePage(ShipDetailPageId);
+                });
+            }
+
+            // Manage Ships
             page.AddResponse("Manage Ships", () =>
             {
                 ChangePage(ManageShipsPageId);
             });
 
+            // Undock (available if a waypoint is specified)
             if (displayUndock && GetIsObjectValid(waypoint))
             {
                 page.AddResponse("Undock", () =>
                 {
+                    EndConversation();
+
                     Space.EnterSpaceMode(player, dbPlayer.SelectedShipId);
                     AssignCommand(player, () => ActionJumpToLocation(GetLocation(waypoint)));
                 });
@@ -118,7 +137,6 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     ChangePage(ShipDetailPageId);
                 });
             }
-
         }
 
         private void ShipDetailPageInit(DialogPage page)
@@ -212,7 +230,11 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     model.SelectedShipId = Guid.Empty;
                     model.IsConfirmingUnregister = false;
 
-                    NavigationStack.TryPop(out _);
+                    if (!model.IsManagingActiveShip)
+                    {
+                        NavigationStack.TryPop(out _);
+                    }
+
                     ChangePage(ManageShipsPageId, false);
                 });
             }

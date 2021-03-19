@@ -97,9 +97,9 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player to draw the component for.</param>
         private static void DrawSpaceRecastComponent(uint player)
         {
-            static string BuildTimerText(ShipModuleType type, DateTime now, DateTime recastTime)
+            static string BuildTimerText(string itemTag, DateTime now, DateTime recastTime)
             {
-                var shipModule = Space.GetShipModuleDetailByType(type);
+                var shipModule = Space.GetShipModuleDetailByItemTag(itemTag);
 
                 var recastName = (shipModule.ShortName + ":").PadRight(14, ' ');
 
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature
             var numberOfRecasts = 0;
             foreach (var (_, shipModule) in allModules)
             {
-                var moduleDetail = Space.GetShipModuleDetailByType(shipModule.Type);
+                var moduleDetail = Space.GetShipModuleDetailByItemTag(shipModule.ItemTag);
 
                 // Skip any passive modules (they don't have recast timers)
                 if (moduleDetail.IsPassive) continue;
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Feature
                 // Max of 15 recasts can be shown in the window.
                 if (numberOfRecasts >= MaxNumberOfShipModules) break;
 
-                var text = BuildTimerText(shipModule.Type, now, shipModule.RecastTime);
+                var text = BuildTimerText(shipModule.ItemTag, now, shipModule.RecastTime);
                 var centerWindowX = Gui.CenterStringInWindow(text, WindowX, WindowWidth);
                 PostString(player, text, centerWindowX + 2, WindowY + numberOfRecasts, ScreenAnchor.TopRight, 1.1f, Gui.ColorWhite, Gui.ColorWhite, _shipModuleIdReservation.StartId + numberOfRecasts, Gui.TextName);
 
@@ -151,5 +151,22 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
+        [NWNEventHandler("interval_pc_1s")]
+        public static void CleanUpExpiredRecastTimers()
+        {
+            var player = OBJECT_SELF;
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var now = DateTime.UtcNow;
+
+            foreach (var (group, dateTime) in dbPlayer.RecastTimes)
+            {
+                if (dateTime > now) continue;
+
+                dbPlayer.RecastTimes.Remove(group);
+            }
+
+            DB.Set(playerId, dbPlayer);
+        }
     }
 }

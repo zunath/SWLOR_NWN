@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -16,7 +17,7 @@ namespace SWLOR.Game.Server.Service
         public const int MaxRegisteredShips = 10;
 
         private static readonly Dictionary<ShipType, ShipDetail> _ships = new Dictionary<ShipType, ShipDetail>();
-        private static readonly Dictionary<ShipModuleType, ShipModuleDetail> _shipModules = new Dictionary<ShipModuleType, ShipModuleDetail>();
+        private static readonly Dictionary<string, ShipModuleDetail> _shipModules = new Dictionary<string, ShipModuleDetail>();
 
         /// <summary>
         /// When the module loads, cache all space data into memory.
@@ -80,11 +81,21 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves a ship module's detail by type.
         /// </summary>
-        /// <param name="type">The type of ship module to search for.</param>
+        /// <param name="itemTag">The item tag of the ship module to search for.</param>
         /// <returns>A ship module detail matching the type.</returns>
-        public static ShipModuleDetail GetShipModuleDetailByType(ShipModuleType type)
+        public static ShipModuleDetail GetShipModuleDetailByItemTag(string itemTag)
         {
-            return _shipModules[type];
+            return _shipModules[itemTag];
+        }
+
+        /// <summary>
+        /// Determines whether an item's tag is registered to a ship module.
+        /// </summary>
+        /// <param name="itemTag">The item tag of the ship module to search for.</param>
+        /// <returns>true if registered, false otherwise</returns>
+        public static bool IsRegisteredShipModule(string itemTag)
+        {
+            return _shipModules.ContainsKey(itemTag);
         }
 
         /// <summary>
@@ -221,6 +232,33 @@ namespace SWLOR.Game.Server.Service
             }
             
             DB.Set(playerId, dbPlayer);
+        }
+
+        /// <summary>
+        /// When a ship module is examined, append the configured description to the item's description.
+        /// </summary>
+        [NWNEventHandler("examine_bef")]
+        public static void ExamineShipModule()
+        {
+            var item = StringToObject(Events.GetEventData("EXAMINEE_OBJECT_ID"));
+
+            // Must be an item
+            if (GetObjectType(item) != ObjectType.Item) return;
+
+            var itemTag = GetTag(item);
+
+            // Tag must be registered with the system.
+            if (!_shipModules.ContainsKey(itemTag)) return;
+
+            var moduleDetail = GetShipModuleDetailByItemTag(itemTag);
+
+            // A description must have been set.
+            if (string.IsNullOrWhiteSpace(moduleDetail.Description)) return;
+
+            // Append the ship module's description to the item's description.
+            var description = GetDescription(item);
+            description += moduleDetail.Description + "\n";
+            SetDescription(item, description);
         }
     }
 }

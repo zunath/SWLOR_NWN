@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
     {
         public string Name { get; set; }
         public string ShortName { get; set; }
+        public string Description { get; set; }
         public bool IsPassive { get; set; }
         public ShipModulePowerType PowerType { get; set; }
         public ShipModuleCalculateCapacitorDelegate CalculateCapacitorAction { get; set; }

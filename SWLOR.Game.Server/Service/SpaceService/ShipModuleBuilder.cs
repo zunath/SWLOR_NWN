@@ -6,18 +6,18 @@ namespace SWLOR.Game.Server.Service.SpaceService
 {
     public class ShipModuleBuilder
     {
-        private readonly Dictionary<ShipModuleType, ShipModuleDetail> _shipModules = new Dictionary<ShipModuleType, ShipModuleDetail>();
+        private readonly Dictionary<string, ShipModuleDetail> _shipModules = new Dictionary<string, ShipModuleDetail>();
         private ShipModuleDetail _activeShipModule;
 
         /// <summary>
         /// Creates a new ship module.
         /// </summary>
-        /// <param name="type">The type of ship module to create.</param>
+        /// <param name="itemTag">The tag of the item associated with this ship module.</param>
         /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder Create(ShipModuleType type)
+        public ShipModuleBuilder Create(string itemTag)
         {
             _activeShipModule = new ShipModuleDetail();
-            _shipModules[type] = _activeShipModule;
+            _shipModules[itemTag] = _activeShipModule;
 
             return this;
         }
@@ -48,6 +48,19 @@ namespace SWLOR.Game.Server.Service.SpaceService
             }
 
             _activeShipModule.ShortName = shortName;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the description of the active ship module we're building.
+        /// This description is shown when the ship module is examined.
+        /// </summary>
+        /// <param name="description">The description to set.</param>
+        /// <returns>A ship module builder with the configured options.</returns>
+        public ShipModuleBuilder Description(string description)
+        {
+            _activeShipModule.Description = description;
 
             return this;
         }
@@ -163,7 +176,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// Builds a dictionary of ship module details.
         /// </summary>
         /// <returns>A dictionary of ship module details.</returns>
-        public Dictionary<ShipModuleType, ShipModuleDetail> Build()
+        public Dictionary<string, ShipModuleDetail> Build()
         {
             return _shipModules;
         }

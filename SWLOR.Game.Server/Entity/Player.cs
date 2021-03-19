@@ -161,6 +161,9 @@ namespace SWLOR.Game.Server.Entity
         public int Shield { get; set; }
         public int Hull { get; set; }
         public int Capacitor { get; set; }
+        public int MaxShieldBonus { get; set; }
+        public int MaxHullBonus { get; set; }
+        public int MaxCapacitorBonus { get; set; }
         public string SerializedHotBar { get; set; }
         public Dictionary<string, PlayerShipModule> HighPowerModules { get; set; }
         public Dictionary<string, PlayerShipModule> LowPowerModules { get; set; }
@@ -177,7 +180,7 @@ namespace SWLOR.Game.Server.Entity
 
     public class PlayerShipModule
     {
-        public ShipModuleType Type { get; set; }
+        public string ItemTag { get; set; }
         public string SerializedItem { get; set; }
         public DateTime RecastTime { get; set; }
     }

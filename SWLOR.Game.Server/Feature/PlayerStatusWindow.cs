@@ -104,11 +104,11 @@ namespace SWLOR.Game.Server.Feature
             var shipDetail = Space.GetShipDetailByType(dbPlayerShip.Type);
 
             var currentShields = dbPlayerShip.Shield;
-            var maxShields = shipDetail.MaxShield;
+            var maxShields = shipDetail.MaxShield + dbPlayerShip.MaxShieldBonus;
             var currentHull = dbPlayerShip.Hull;
-            var maxHull = shipDetail.MaxHull;
+            var maxHull = shipDetail.MaxHull + dbPlayerShip.MaxHullBonus;
             var currentCapacitor = dbPlayerShip.Capacitor;
-            var maxCapacitor = shipDetail.MaxCapacitor;
+            var maxCapacitor = shipDetail.MaxCapacitor + dbPlayerShip.MaxCapacitorBonus;
 
             var backgroundBar = BuildBar(1, 1, 22);
             var shieldsBar = BuildBar(currentShields, maxShields, 22);

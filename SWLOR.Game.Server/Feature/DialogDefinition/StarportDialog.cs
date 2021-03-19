@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 foreach (var (_, module) in playerShip.HighPowerModules)
                 {
-                    var moduleDetail = Space.GetShipModuleDetailByType(module.Type);
+                    var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     highPowerModulesText += moduleDetail.Name + "\n";
                 }
             }
@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 foreach (var (_, module) in playerShip.LowPowerModules)
                 {
-                    var moduleDetail = Space.GetShipModuleDetailByType(module.Type);
+                    var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
                     lowPowerModulesText += moduleDetail.Name + "\n";
                 }
             }
@@ -303,6 +303,14 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 return;
             }
 
+            // Doesn't meet perk requirements.
+            if (!Item.CanCreatureUseItem(player, item))
+            {
+                Item.ReturnItem(player, item);
+                SendMessageToPC(player, "You do not meet the perk requirements necessary to register this ship.");
+                return;
+            }
+
             // Validation passed. Add the ship to the player's record.
             var shipType = (ShipType)shipTypeId;
             var shipDetail = Space.GetShipDetailByType(shipType);
@@ -386,23 +394,21 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var shipDetails = Space.GetShipDetailByType(playerShip.Type);
 
             var item = GetInventoryDisturbItem();
+            var itemTag = GetTag(item);
             var itemId = GetObjectUUID(item);
             var type = GetInventoryDisturbType();
             
             if (type == DisturbType.Added)
             {
-                var moduleTypeId = GetLocalInt(item, "STARSHIP_MODULE_ID");
-
                 // Not a valid module type.
-                if (moduleTypeId <= 0)
+                if (!Space.IsRegisteredShipModule(itemTag))
                 {
                     Item.ReturnItem(player, item);
                     SendMessageToPC(player, "Only starship modules may be installed.");
                     return;
                 }
-
-                var moduleType = (ShipModuleType) moduleTypeId;
-                var moduleDetails = Space.GetShipModuleDetailByType(moduleType);
+                
+                var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
 
                 // No high power nodes available.
                 if (moduleDetails.PowerType == ShipModulePowerType.High &&
@@ -422,13 +428,21 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     return;
                 }
 
+                // Doesn't meet perk requirements.
+                if (!Item.CanCreatureUseItem(player, item))
+                {
+                    Item.ReturnItem(player, item);
+                    SendMessageToPC(player, "You do not meet the perk requirements necessary to install this module.");
+                    return;
+                }
+
                 // Add to high power modules.
                 if (moduleDetails.PowerType == ShipModulePowerType.High)
                 {
                     dbPlayer.Ships[playerShipId].HighPowerModules.Add(itemId, new PlayerShipModule
                     {
                         SerializedItem = Object.Serialize(item),
-                        Type = moduleType,
+                        ItemTag = itemTag,
                         RecastTime = DateTime.MinValue
                     });
                 }
@@ -438,7 +452,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     dbPlayer.Ships[playerShipId].LowPowerModules.Add(itemId, new PlayerShipModule
                     {
                         SerializedItem = Object.Serialize(item),
-                        Type = moduleType,
+                        ItemTag = itemTag,
                         RecastTime = DateTime.MinValue
                     });
                 }
@@ -469,10 +483,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     return;
                 }
 
-                var moduleTypeId = GetLocalInt(item, "STARSHIP_MODULE_ID");
-                var moduleType = (ShipModuleType)moduleTypeId;
-                var moduleDetails = Space.GetShipModuleDetailByType(moduleType);
-
+                var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
                 moduleDetails.ModuleUnequippedAction?.Invoke(player, item, playerShip);
                 DB.Set(playerId, dbPlayer);
             }

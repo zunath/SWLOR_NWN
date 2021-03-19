@@ -9501,6 +9501,26 @@
       }
     ]
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "SPACE"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
+  },
   "WaypointList": {
     "type": "list",
     "value": [
@@ -9545,7 +9565,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 0.1224144846200943
+          "value": 0.1224149540066719
         },
         "XPosition": {
           "type": "float",
@@ -9553,7 +9573,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": -0.9924790859222412
+          "value": -0.9924790263175964
         },
         "YPosition": {
           "type": "float",

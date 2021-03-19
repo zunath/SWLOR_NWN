@@ -80,6 +80,10 @@
             }
           ]
         },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
         "Con": {
           "type": "byte",
           "value": 10
@@ -615,10 +619,6 @@
           "value": [
             {
               "__struct_id": 0,
-              "Comment": {
-                "type": "cexostring",
-                "value": ""
-              },
               "Rank": {
                 "type": "byte",
                 "value": 0
@@ -912,7 +912,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.04906776919960976
+          "value": 0.04906788840889931
         },
         "YPosition": {
           "type": "float",
@@ -1775,7 +1775,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -0.9852776527404785
+          "value": -0.9852775931358337
         },
         "XPosition": {
           "type": "float",
@@ -1783,7 +1783,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 0.1709619760513306
+          "value": 0.1709620952606201
         },
         "YPosition": {
           "type": "float",
@@ -2024,7 +2024,7 @@
               "__struct_id": 2,
               "Orientation": {
                 "type": "float",
-                "value": -2.331647396087647
+                "value": -2.331647157669067
               },
               "X": {
                 "type": "float",
@@ -5113,6 +5113,26 @@
         "ZPosition": {
           "type": "float",
           "value": 0.0
+        }
+      }
+    ]
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "SPACE"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
         }
       }
     ]

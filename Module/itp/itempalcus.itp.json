@@ -11325,6 +11325,39 @@
                       "type": "resref",
                       "value": "republicagent001"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ship Deed: Light Escort"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sdeed_escort"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ship Deed: Light Freighter"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sdeed_freighter"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Module: Test"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shp_module_test"
+                    }
                   }
                 ]
               },

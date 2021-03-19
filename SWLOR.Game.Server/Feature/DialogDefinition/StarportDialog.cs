@@ -442,32 +442,43 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         RecastTime = DateTime.MinValue
                     });
                 }
+                // Power type not specified
+                else
+                {
+                    Log.Write(LogGroup.Error, $"Power type is not specified for module {moduleDetails.Name}.");
+                    Item.ReturnItem(player, item);
+                    SendMessageToPC(player, ColorToken.Red($"This module has not been properly configured. Notify an admin."));
+                    return;
+                }
+
+                moduleDetails.ModuleEquippedAction?.Invoke(player, item, playerShip);
+                DB.Set(playerId, dbPlayer);
             }
             else if (type == DisturbType.Removed)
             {
                 if (dbPlayer.Ships[playerShipId].HighPowerModules.ContainsKey(itemId))
                 {
-                    var module = dbPlayer.Ships[playerShipId].HighPowerModules[itemId];
-                    var deserializedItem = Object.Deserialize(module.SerializedItem);
-                    Object.AcquireItem(player, deserializedItem);
-
                     dbPlayer.Ships[playerShipId].HighPowerModules.Remove(itemId);
-                    DB.Set(playerId, dbPlayer);
                 }
                 else if (dbPlayer.Ships[playerShipId].LowPowerModules.ContainsKey(itemId))
                 {
-                    var module = dbPlayer.Ships[playerShipId].LowPowerModules[itemId];
-                    var deserializedItem = Object.Deserialize(module.SerializedItem);
-                    Object.AcquireItem(player, deserializedItem);
-
                     dbPlayer.Ships[playerShipId].LowPowerModules.Remove(itemId);
-                    DB.Set(playerId, dbPlayer);
                 }
+                else
+                {
+                    return;
+                }
+
+                var moduleTypeId = GetLocalInt(item, "STARSHIP_MODULE_ID");
+                var moduleType = (ShipModuleType)moduleTypeId;
+                var moduleDetails = Space.GetShipModuleDetailByType(moduleType);
+
+                moduleDetails.ModuleUnequippedAction?.Invoke(player, item, playerShip);
+                DB.Set(playerId, dbPlayer);
             }
 
-
-            SendMessageToPC(player, $"High Power Modules: {playerShip.HighPowerModules.Count} / {shipDetails.HighPowerNodes}");
-            SendMessageToPC(player, $"Low Power Modules: {playerShip.LowPowerModules.Count} / {shipDetails.LowPowerNodes}");
+            SendMessageToPC(player, $"High Power Modules: {dbPlayer.Ships[playerShipId].HighPowerModules.Count} / {shipDetails.HighPowerNodes}");
+            SendMessageToPC(player, $"Low Power Modules: {dbPlayer.Ships[playerShipId].LowPowerModules.Count} / {shipDetails.LowPowerNodes}");
         }
     }
 }

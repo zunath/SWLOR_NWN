@@ -211,7 +211,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
                     model.SelectedShipId = Guid.Empty;
                     model.IsConfirmingUnregister = false;
-                    ChangePage(ManageShipsPageId);
+
+                    NavigationStack.TryPop(out _);
+                    ChangePage(ManageShipsPageId, false);
                 });
             }
             else

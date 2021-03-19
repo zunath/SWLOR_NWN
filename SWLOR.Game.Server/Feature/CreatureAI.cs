@@ -49,6 +49,13 @@ namespace SWLOR.Game.Server.Feature
         public static void CreatureConversation()
         {
             ExecuteScript("cdef_c2_default4", OBJECT_SELF);
+
+            var conversation = GetLocalString(OBJECT_SELF, "CONVERSATION");
+            if (!string.IsNullOrWhiteSpace(conversation))
+            {
+                var talker = GetLastSpeaker();
+                Dialog.StartConversation(talker, talker, conversation);
+            }
         }
 
         /// <summary>

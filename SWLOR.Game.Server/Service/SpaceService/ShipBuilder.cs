@@ -6,18 +6,18 @@ namespace SWLOR.Game.Server.Service.SpaceService
 {
     public class ShipBuilder
     {
-        private readonly Dictionary<ShipType, ShipDetail> _ships = new Dictionary<ShipType, ShipDetail>();
+        private readonly Dictionary<string, ShipDetail> _ships = new Dictionary<string, ShipDetail>();
         private ShipDetail _activeShip;
 
         /// <summary>
         /// Creates a new ship.
         /// </summary>
-        /// <param name="type">The type of ship to associate with this detail.</param>
+        /// <param name="itemTag">The tag of the item to associate with the ship detail.</param>
         /// <returns>A ship builder with the configured options.</returns>
-        public ShipBuilder Create(ShipType type)
+        public ShipBuilder Create(string itemTag)
         {
             _activeShip = new ShipDetail();
-            _ships[type] = _activeShip;
+            _ships[itemTag] = _activeShip;
 
             return this;
         }
@@ -145,10 +145,34 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// Indicates a player must have the perk at a specific level in order to use the ship.
+        /// </summary>
+        /// <param name="perkType">The type of perk to require</param>
+        /// <param name="requiredLevel">The minimum level required</param>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder RequirePerk(PerkType perkType, int requiredLevel)
+        {
+            if (requiredLevel < 0)
+            {
+                Log.Write(LogGroup.Error, $"Failed to add required perk to {_activeShip.Name} because requiredLevel cannot be less than zero.");
+                return this;
+            }
+            if (requiredLevel > 100)
+            {
+                Log.Write(LogGroup.Error, $"Failed to add required perk to {_activeShip.Name} because requiredLevel cannot be greater than 100.");
+                return this;
+            }
+
+            _activeShip.RequiredPerks[perkType] = requiredLevel;
+
+            return this;
+        }
+
+        /// <summary>
         /// Returns a built dictionary of ships.
         /// </summary>
         /// <returns>A dictionary of ship details.</returns>
-        public Dictionary<ShipType, ShipDetail> Build()
+        public Dictionary<string, ShipDetail> Build()
         {
             return _ships;
         }

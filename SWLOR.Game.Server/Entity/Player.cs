@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Entity
 
     public class PlayerShip
     {
-        public ShipType Type { get; set; }
+        public string ItemTag { get; set; }
         public string Name { get; set; }
         public int Shield { get; set; }
         public int Hull { get; set; }

@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -18,7 +17,7 @@ namespace SWLOR.Game.Server.Service
     {
         public const int MaxRegisteredShips = 10;
 
-        private static readonly Dictionary<ShipType, ShipDetail> _ships = new Dictionary<ShipType, ShipDetail>();
+        private static readonly Dictionary<string, ShipDetail> _ships = new Dictionary<string, ShipDetail>();
         private static readonly Dictionary<string, ShipModuleDetail> _shipModules = new Dictionary<string, ShipModuleDetail>();
 
         /// <summary>
@@ -73,11 +72,11 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves a ship's detail by type.
         /// </summary>
-        /// <param name="type">The type of ship to search for.</param>
+        /// <param name="itemTag">The item tag to search for.</param>
         /// <returns>A ship detail matching the type.</returns>
-        public static ShipDetail GetShipDetailByType(ShipType type)
+        public static ShipDetail GetShipDetailByItemTag(string itemTag)
         {
-            return _ships[type];
+            return _ships[itemTag];
         }
 
         /// <summary>
@@ -88,6 +87,16 @@ namespace SWLOR.Game.Server.Service
         public static ShipModuleDetail GetShipModuleDetailByItemTag(string itemTag)
         {
             return _shipModules[itemTag];
+        }
+
+        /// <summary>
+        /// Determines whether an item's tag is registered to a ship module.
+        /// </summary>
+        /// <param name="itemTag">The item tag of the ship to search for.</param>
+        /// <returns>true if registered, false otherwise</returns>
+        public static bool IsRegisteredShip(string itemTag)
+        {
+            return _ships.ContainsKey(itemTag);
         }
 
         /// <summary>
@@ -178,7 +187,7 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Entity.Player>(playerId);
             var dbPlayerShip = dbPlayer.Ships[shipId];
-            var shipDetail = _ships[dbPlayerShip.Type];
+            var shipDetail = _ships[dbPlayerShip.ItemTag];
 
             // Update player appearance to match that of the ship.
             SetCreatureAppearanceType(player, shipDetail.Appearance);
@@ -237,6 +246,43 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Determines if player can still use their ship.
+        /// </summary>
+        /// <param name="player">The player to check</param>
+        /// <param name="playerShipId">The Id of the player's ship to check</param>
+        /// <returns>true if all requirements are met, false otherwise</returns>
+        public static bool CanPlayerUseShip(uint player, Guid playerShipId)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Entity.Player>(playerId);
+
+            if (!dbPlayer.Ships.ContainsKey(playerShipId)) return false;
+
+            var playerShip = dbPlayer.Ships[playerShipId];
+            var shipDetails = _ships[playerShip.ItemTag];
+
+            // Check ship requirements
+            foreach (var (perkType, requiredLevel) in shipDetails.RequiredPerks)
+            {
+                if (!dbPlayer.Perks.ContainsKey(perkType)) return false;
+
+                if (dbPlayer.Perks[perkType] < requiredLevel) return false;
+            }
+
+            foreach (var (itemTag, _) in playerShip.HighPowerModules)
+            {
+                if (!CanPlayerUseShipModule(player, itemTag)) return false;
+            }
+
+            foreach (var (itemTag, _) in playerShip.LowPowerModules)
+            {
+                if (!CanPlayerUseShipModule(player, itemTag)) return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Determines if player can use a ship module by its tag.
         /// </summary>
         /// <param name="player">The player to check</param>
@@ -250,30 +296,30 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Entity.Player>(playerId);
             var shipModule = _shipModules[itemTag];
 
-            foreach (var (perkType, level) in shipModule.RequiredPerks)
+            foreach (var (perkType, requiredLevel) in shipModule.RequiredPerks)
             {
                 if (!dbPlayer.Perks.ContainsKey(perkType)) return false;
 
-                if (dbPlayer.Perks[perkType] < level) return false;
+                if (dbPlayer.Perks[perkType] < requiredLevel) return false;
             }
 
             return true;
         }
 
         /// <summary>
-        /// When a ship module is examined, append the configured description to the item's description.
+        /// When a ship module item is examined,
+        /// append the configured description to the item's description and add prerequisite perk item properties.
         /// </summary>
         [NWNEventHandler("examine_bef")]
-        public static void ExamineShipModule()
+        public static void ExamineShipModuleItem()
         {
             var item = StringToObject(Events.GetEventData("EXAMINEE_OBJECT_ID"));
 
             // Must be an item
             if (GetObjectType(item) != ObjectType.Item) return;
 
-            var itemTag = GetTag(item);
-
             // Tag must be registered with the system.
+            var itemTag = GetTag(item);
             if (!_shipModules.ContainsKey(itemTag)) return;
 
             var moduleDetail = GetShipModuleDetailByItemTag(itemTag);
@@ -288,6 +334,29 @@ namespace SWLOR.Game.Server.Service
 
             // Apply item properties defined in code.
             foreach (var (perkType, level) in moduleDetail.RequiredPerks)
+            {
+                var ip = ItemPropertyCustom(ItemPropertyType.UseLimitationPerk, (int)perkType, level);
+                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+            }
+        }
+
+        /// <summary>
+        /// When a ship item is examined, add the prerequisite perk item properties.
+        /// </summary>
+        [NWNEventHandler("examine_bef")]
+        public static void ExamineShipItem()
+        {
+            var item = StringToObject(Events.GetEventData("EXAMINEE_OBJECT_ID"));
+
+            // Must be an item
+            if (GetObjectType(item) != ObjectType.Item) return;
+
+            // Tag must be registered with the system.
+            var itemTag = GetTag(item);
+            if (!_ships.ContainsKey(itemTag)) return;
+            var shipDetail = _ships[itemTag];
+
+            foreach (var (perkType, level) in shipDetail.RequiredPerks)
             {
                 var ip = ItemPropertyCustom(ItemPropertyType.UseLimitationPerk, (int)perkType, level);
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);

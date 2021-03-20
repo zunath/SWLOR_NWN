@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Object = SWLOR.Game.Server.Core.NWNX.Object;
 
@@ -54,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             if (dbPlayer.SelectedShipId != Guid.Empty)
             {
                 var selectedShip = dbPlayer.Ships[dbPlayer.SelectedShipId];
-                var shipDetail = Space.GetShipDetailByType(selectedShip.Type);
+                var shipDetail = Space.GetShipDetailByItemTag(selectedShip.ItemTag);
 
                 activeShipInfo = ColorToken.Green("Active Ship: ") + selectedShip.Name + $" [{shipDetail.Name}]\n";
                 displayUndock = true;
@@ -117,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             if (dbPlayer.SelectedShipId != Guid.Empty)
             {
                 var selectedShip = dbPlayer.Ships[dbPlayer.SelectedShipId];
-                var shipDetail = Space.GetShipDetailByType(selectedShip.Type);
+                var shipDetail = Space.GetShipDetailByItemTag(selectedShip.ItemTag);
 
                 activeShipInfo = ColorToken.Green("Active Ship: ") + selectedShip.Name + $" [{shipDetail.Name}]\n";
             }
@@ -146,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var dbPlayer = DB.Get<Player>(playerId);
             var model = GetDataModel<Model>();
             var playerShip = dbPlayer.Ships[model.SelectedShipId];
-            var shipDetail = Space.GetShipDetailByType(playerShip.Type);
+            var shipDetail = Space.GetShipDetailByItemTag(playerShip.ItemTag);
             var isActiveShip = dbPlayer.SelectedShipId == model.SelectedShipId;
             var highPowerModulesText = string.Empty;
             var lowPowerModulesText = string.Empty;
@@ -278,14 +279,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var player = GetLastDisturbed();
             var item = GetInventoryDisturbItem();
+            var itemTag = GetTag(item);
             var type = GetInventoryDisturbType();
 
             if (type != DisturbType.Added) return;
 
-            var shipTypeId = GetLocalInt(item, "STARSHIP_DEED_ID");
-
             // Item inserted wasn't a ship deed.
-            if (shipTypeId <= 0)
+            if (Space.IsRegisteredShip(itemTag))
             {
                 Item.ReturnItem(player, item);
                 SendMessageToPC(player, "Only ship deeds may be placed inside.");
@@ -312,12 +312,11 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             }
 
             // Validation passed. Add the ship to the player's record.
-            var shipType = (ShipType)shipTypeId;
-            var shipDetail = Space.GetShipDetailByType(shipType);
+            var shipDetail = Space.GetShipDetailByItemTag(itemTag);
             var shipId = Guid.NewGuid();
             dbPlayer.Ships.Add(shipId, new PlayerShip
             {
-                Type = shipType,
+                ItemTag = itemTag,
                 Name = shipDetail.Name,
                 Shield = shipDetail.MaxShield,
                 Hull = shipDetail.MaxHull,
@@ -358,7 +357,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var container = OBJECT_SELF;
             var playerShipId = new Guid(GetLocalString(container, "PLAYER_SHIP_ID"));
             var playerShip = dbPlayer.Ships[playerShipId];
-            var shipDetails = Space.GetShipDetailByType(playerShip.Type);
+            var shipDetails = Space.GetShipDetailByItemTag(playerShip.ItemTag);
 
             SendMessageToPC(player, $"High Power Modules: {playerShip.HighPowerModules.Count} / {shipDetails.HighPowerNodes}");
             SendMessageToPC(player, $"Low Power Modules: {playerShip.LowPowerModules.Count} / {shipDetails.LowPowerNodes}");
@@ -391,7 +390,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var container = OBJECT_SELF;
             var playerShipId = new Guid(GetLocalString(container, "PLAYER_SHIP_ID"));
             var playerShip = dbPlayer.Ships[playerShipId];
-            var shipDetails = Space.GetShipDetailByType(playerShip.Type);
+            var shipDetails = Space.GetShipDetailByItemTag(playerShip.ItemTag);
 
             var item = GetInventoryDisturbItem();
             var itemTag = GetTag(item);

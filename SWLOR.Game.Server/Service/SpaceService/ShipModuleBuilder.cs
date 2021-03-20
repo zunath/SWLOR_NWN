@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="perkType">The type of perk to require.</param>
         /// <param name="requiredLevel">The required level of the perk.</param>
-        /// <returns></returns>
+        /// <returns>A ship module builder with the configured options.</returns>
         public ShipModuleBuilder RequirePerk(PerkType perkType, int requiredLevel)
         {
             if (requiredLevel < 0)

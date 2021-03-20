@@ -1,4 +1,6 @@
-﻿using SWLOR.Game.Server.Core.NWScript.Enum;
+﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
@@ -18,9 +20,12 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         public bool HasDroidBay { get; set; }
 
+        public Dictionary<PerkType, int> RequiredPerks { get; set; }
+
         public ShipDetail()
         {
             Name = string.Empty;
+            RequiredPerks = new Dictionary<PerkType, int>();
         }
     }
 }

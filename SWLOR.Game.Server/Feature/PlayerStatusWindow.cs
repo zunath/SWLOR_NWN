@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
             var shipId = dbPlayer.ActiveShipId;
             var dbPlayerShip = dbPlayer.Ships[shipId];
-            var shipDetail = Space.GetShipDetailByType(dbPlayerShip.Type);
+            var shipDetail = Space.GetShipDetailByItemTag(dbPlayerShip.ItemTag);
 
             var currentShields = dbPlayerShip.Shield;
             var maxShields = shipDetail.MaxShield + dbPlayerShip.MaxShieldBonus;

@@ -3556,5 +3556,16 @@ namespace SWLOR.Game.Server.Core.NWScript
             Internal.NativeFunctions.CallBuiltIn(917);
         }
 
+        /// <summary>
+        /// Overrides a given strref to always return sValue instead of what is in the TLK file.
+        /// Setting sValue to "" will delete the override
+        /// </summary>
+        public static void SetTlkOverride(int nStrRef, string sValue = "")
+        {
+            Internal.NativeFunctions.StackPushString(sValue);
+            Internal.NativeFunctions.StackPushInteger(nStrRef);
+            Internal.NativeFunctions.CallBuiltIn(953);
+        }
+
     }
 }

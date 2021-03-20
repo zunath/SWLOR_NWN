@@ -2,6 +2,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
 {
     public enum EventScript
     {
+        Invalid = 0,
         Module_OnHeartbeat = 3000,
         Module_OnUserDefined = 3001,
         Module_OnModuleLoad = 3002,

@@ -173,6 +173,30 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// Indicates a player must have the perk at a specific level in order to equip and use it.
+        /// </summary>
+        /// <param name="perkType">The type of perk to require.</param>
+        /// <param name="requiredLevel">The required level of the perk.</param>
+        /// <returns></returns>
+        public ShipModuleBuilder RequirePerk(PerkType perkType, int requiredLevel)
+        {
+            if (requiredLevel < 0)
+            {
+                Log.Write(LogGroup.Error, $"Failed to add required perk to {_activeShipModule.Name} because requiredLevel cannot be less than zero.");
+                return this;
+            }
+            if (requiredLevel > 100)
+            {
+                Log.Write(LogGroup.Error, $"Failed to add required perk to {_activeShipModule.Name} because requiredLevel cannot be greater than 100.");
+                return this;
+            }
+
+            _activeShipModule.RequiredPerks[perkType] = requiredLevel;
+
+            return this;
+        }
+
+        /// <summary>
         /// Builds a dictionary of ship module details.
         /// </summary>
         /// <returns>A dictionary of ship module details.</returns>

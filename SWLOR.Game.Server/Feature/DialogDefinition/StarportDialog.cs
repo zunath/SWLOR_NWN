@@ -427,9 +427,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     SendMessageToPC(player, "No low power nodes are available.");
                     return;
                 }
-
+                
                 // Doesn't meet perk requirements.
-                if (!Item.CanCreatureUseItem(player, item))
+                if (!Space.CanPlayerUseShipModule(player, itemTag))
                 {
                     Item.ReturnItem(player, item);
                     SendMessageToPC(player, "You do not meet the perk requirements necessary to install this module.");

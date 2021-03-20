@@ -1,4 +1,6 @@
-﻿namespace SWLOR.Game.Server.Core.NWScript
+﻿using SWLOR.Game.Server.Core.NWScript.Enum;
+
+namespace SWLOR.Game.Server.Core.NWScript
 {
     public partial class NWScript
     {
@@ -25,6 +27,16 @@
             Internal.NativeFunctions.StackPushString(sParamValue);
             Internal.NativeFunctions.StackPushString(sParamName);
             Internal.NativeFunctions.CallBuiltIn(907);
+        }
+
+        /// <summary>
+        ///  Returns the currently executing event (EVENT_SCRIPT_*) or 0 if not determinable.
+        /// Note: Will return 0 in DelayCommand/AssignCommand. ExecuteScript(Chunk) will inherit their event ID from their parent event.
+        /// </summary>
+        public static EventScript GetCurrentlyRunningEvent()
+        {
+            Internal.NativeFunctions.CallBuiltIn(938);
+            return (EventScript)Internal.NativeFunctions.StackPopInteger();
         }
 
     }

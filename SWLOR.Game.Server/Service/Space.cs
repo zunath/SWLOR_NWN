@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -235,6 +237,30 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Determines if player can use a ship module by its tag.
+        /// </summary>
+        /// <param name="player">The player to check</param>
+        /// <param name="itemTag">The ship module item tag</param>
+        /// <returns>true if player can use the module, false otherwise</returns>
+        public static bool CanPlayerUseShipModule(uint player, string itemTag)
+        {
+            if (!_shipModules.ContainsKey(itemTag)) return false;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Entity.Player>(playerId);
+            var shipModule = _shipModules[itemTag];
+
+            foreach (var (perkType, level) in shipModule.RequiredPerks)
+            {
+                if (!dbPlayer.Perks.ContainsKey(perkType)) return false;
+
+                if (dbPlayer.Perks[perkType] < level) return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// When a ship module is examined, append the configured description to the item's description.
         /// </summary>
         [NWNEventHandler("examine_bef")]
@@ -259,6 +285,13 @@ namespace SWLOR.Game.Server.Service
             var description = GetDescription(item);
             description += moduleDetail.Description + "\n";
             SetDescription(item, description);
+
+            // Apply item properties defined in code.
+            foreach (var (perkType, level) in moduleDetail.RequiredPerks)
+            {
+                var ip = ItemPropertyCustom(ItemPropertyType.UseLimitationPerk, (int)perkType, level);
+                BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
+            }
         }
     }
 }

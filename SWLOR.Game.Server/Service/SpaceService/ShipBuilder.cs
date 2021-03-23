@@ -96,11 +96,11 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
-        /// Sets the shield recharge rate of the ship.
+        /// Sets the shield recharge rate of the ship (in whole seconds).
         /// </summary>
         /// <param name="shieldRechargeRate">The value to set.</param>
         /// <returns>A ship builder with the configured options.</returns>
-        public ShipBuilder ShieldRechargeRate(float shieldRechargeRate)
+        public ShipBuilder ShieldRechargeRate(int shieldRechargeRate)
         {
             _activeShip.ShieldRechargeRate = shieldRechargeRate;
 

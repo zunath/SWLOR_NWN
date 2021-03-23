@@ -13,8 +13,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int MaxShield { get; set; }
         public int MaxHull { get; set; }
         public int MaxCapacitor { get; set; }
-        public float ShieldRechargeRate { get; set; }
-
+        public int ShieldRechargeRate { get; set; }
         public int HighPowerNodes { get; set; }
         public int LowPowerNodes { get; set; }
 

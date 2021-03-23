@@ -519,11 +519,21 @@ namespace SWLOR.Game.Server.Service
             var shipDetail = _ships[playerShip.ItemTag];
 
             // Shield recovery
-            playerShip.Shield++; // todo: shield recovery calculation
+            playerShip.ShieldCycle++;
+            var rechargeRate = shipDetail.ShieldRechargeRate - playerShip.ShieldCycleBonus;
+            if (rechargeRate <= 0)
+                rechargeRate = 1;
 
-            // Clamp shield to max.
-            if (playerShip.Shield > shipDetail.MaxShield + playerShip.MaxShieldBonus)
-                playerShip.Shield = shipDetail.MaxShield + playerShip.MaxShieldBonus;
+            if (playerShip.ShieldCycle >= rechargeRate)
+            {
+                playerShip.Shield++; // todo: shield recovery calculation
+
+                // Clamp shield to max.
+                if (playerShip.Shield > shipDetail.MaxShield + playerShip.MaxShieldBonus)
+                    playerShip.Shield = shipDetail.MaxShield + playerShip.MaxShieldBonus;
+
+                playerShip.ShieldCycle = 0;
+            }
 
             // Capacitor recovery
             playerShip.Capacitor++; // todo: capacitor recovery calculation

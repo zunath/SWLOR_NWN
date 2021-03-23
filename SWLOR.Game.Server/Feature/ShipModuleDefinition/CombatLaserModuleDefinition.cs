@@ -7,7 +7,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
-    public class LaserModuleDefinition: IShipModuleListDefinition
+    public class CombatLaserModuleDefinition: IShipModuleListDefinition
     {
         private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
 

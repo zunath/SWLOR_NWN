@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxArmor(20)
                 .MaxCapacitor(20)
                 .MaxShield(20)
-                .ShieldRechargeRate(6f)
+                .ShieldRechargeRate(6)
                 .HighPowerNodes(3)
                 .LowPowerNodes(3);
         }
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxArmor(20)
                 .MaxCapacitor(20)
                 .MaxShield(20)
-                .ShieldRechargeRate(6f)
+                .ShieldRechargeRate(6)
                 .HighPowerNodes(3)
                 .LowPowerNodes(3);
         }

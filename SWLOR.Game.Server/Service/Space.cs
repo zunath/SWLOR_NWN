@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
@@ -19,6 +20,7 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<string, ShipDetail> _ships = new Dictionary<string, ShipDetail>();
         private static readonly Dictionary<string, ShipModuleDetail> _shipModules = new Dictionary<string, ShipModuleDetail>();
+        private static readonly List<ShipModuleFeat> _shipModuleFeats = ShipModuleFeat.GetAll();
 
         /// <summary>
         /// When the module loads, cache all space data into memory.
@@ -64,6 +66,13 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var (moduleType, moduleDetail) in shipModules)
                 {
+                    // Give warning if ship module is active and short name is longer than GUI will allow.
+                    if (moduleDetail.ShortName.Length > 14 &&
+                        !moduleDetail.IsPassive)
+                    {
+                        Log.Write(LogGroup.Space, $"Ship module with short name {moduleDetail.ShortName} is longer than 14 characters. Short names should be no more than 14 characters so they display on the UI properly.", true);
+                    }
+
                     _shipModules.Add(moduleType, moduleDetail);
                 }
             }
@@ -196,6 +205,30 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.SerializedHotBar = Creature.SerializeQuickbar(player);
             dbPlayer.ActiveShipId = shipId;
 
+            // Load ship modules as feats.
+            var allModules = dbPlayerShip.HighPowerModules.Concat(dbPlayerShip.LowPowerModules).ToList();
+            for (var index = 0; index < _shipModuleFeats.Count-1; index++)
+            {
+                // No more feats to add to the player. Exit early.
+                if (index + 1 > allModules.Count) break;
+
+                var equippedModule = allModules[index];
+                var shipModuleDetail = _shipModules[equippedModule.Value.ItemTag];
+
+                // Passive modules shouldn't be converted to feats.
+                if (shipModuleDetail.IsPassive) continue;
+
+                // Convert current ship module to feat.
+                var shipModuleFeat = _shipModuleFeats[index];
+                Creature.AddFeat(player, shipModuleFeat.Feat);
+
+                // Rename the feat to match the configured name on the ship module.
+                Player.SetTlkOverride(player, shipModuleFeat.NameTlkId, shipModuleDetail.Name);
+                Player.SetTlkOverride(player, shipModuleFeat.DescriptionTlkId, shipModuleDetail.Description);
+
+                index++;
+            }
+
             // Load the player's ship hot bar.
             if (string.IsNullOrWhiteSpace(dbPlayerShip.SerializedHotBar) ||
                 !Creature.DeserializeQuickbar(player, dbPlayerShip.SerializedHotBar))
@@ -228,6 +261,12 @@ namespace SWLOR.Game.Server.Service
             // Save the ship's hot bar and unassign the active ship Id.
             dbPlayer.Ships[shipId].SerializedHotBar = Creature.SerializeQuickbar(player);
             dbPlayer.ActiveShipId = Guid.Empty;
+
+            // Remove all module feats from the player.
+            foreach (var moduleFeat in _shipModuleFeats)
+            {
+                Creature.RemoveFeat(player, moduleFeat.Feat);
+            }
 
             // Load the player's hot bar.
             if (string.IsNullOrWhiteSpace(dbPlayer.SerializedHotBar) ||
@@ -362,5 +401,7 @@ namespace SWLOR.Game.Server.Service
                 BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, false);
             }
         }
+        
+
     }
 }

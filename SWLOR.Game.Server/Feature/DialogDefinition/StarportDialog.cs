@@ -285,7 +285,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             if (type != DisturbType.Added) return;
 
             // Item inserted wasn't a ship deed.
-            if (Space.IsRegisteredShip(itemTag))
+            if (!Space.IsRegisteredShip(itemTag))
             {
                 Item.ReturnItem(player, item);
                 SendMessageToPC(player, "Only ship deeds may be placed inside.");

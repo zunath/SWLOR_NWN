@@ -42,11 +42,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <returns>A ship module builder with the configured options.</returns>
         public ShipModuleBuilder ShortName(string shortName)
         {
-            if (shortName.Length > 14)
-            {
-                Log.Write(LogGroup.Space, $"Ship module with short name {shortName} is longer than 14 characters. Short names should be no more than 14 characters so they display on the UI properly.", true);
-            }
-
             _activeShipModule.ShortName = shortName;
 
             return this;

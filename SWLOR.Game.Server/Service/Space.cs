@@ -481,6 +481,12 @@ namespace SWLOR.Game.Server.Service
                 shipModule.Value.RecastTime = recastTimer;
             }
 
+            // Reduce capacitor
+            if (requiredCapacitor != null)
+            {
+                dbPlayerShip.Capacitor -= (int)requiredCapacitor;
+            }
+
             // Update changes
             DB.Set(playerId, dbPlayer);
         }

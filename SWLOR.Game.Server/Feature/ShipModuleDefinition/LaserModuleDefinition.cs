@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, 1)
                 .Recast(3.0f)
+                .Capacitor(2)
                 .ActivatedAction((player, target, ship) =>
                 {
                     AssignCommand(player, () =>

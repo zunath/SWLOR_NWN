@@ -167,9 +167,20 @@ namespace SWLOR.Game.Server.Service
             if (!IsPlayerInSpaceMode(player)) return;
             Events.SkipEvent();
 
-            ClearCurrentTarget(player);
             var target = StringToObject(Events.GetEventData("TARGET"));
-            SetCurrentTarget(player, target);
+            var currentTarget = GetCurrentTarget(player);
+            
+            // Targeted the same object - remove it.
+            if (currentTarget == target)
+            {
+                ClearCurrentTarget(player);
+            }
+            // Targeted something new. Remove existing target and pick the new one.
+            else
+            {
+                ClearCurrentTarget(player);
+                SetCurrentTarget(player, target);
+            }
         }
 
         /// <summary>
@@ -490,5 +501,40 @@ namespace SWLOR.Game.Server.Service
             // Update changes
             DB.Set(playerId, dbPlayer);
         }
+
+        /// <summary>
+        /// When the player's heartbeat fires, recover capacitor and shield.
+        /// </summary>
+        [NWNEventHandler("interval_pc_1s")]
+        public static void PlayerShipRecovery()
+        {
+            var player = OBJECT_SELF;
+
+            // Not in space mode, exit early.
+            if (!IsPlayerInSpaceMode(player)) return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Entity.Player>(playerId);
+            var playerShip = dbPlayer.Ships[dbPlayer.ActiveShipId];
+            var shipDetail = _ships[playerShip.ItemTag];
+
+            // Shield recovery
+            playerShip.Shield++; // todo: shield recovery calculation
+
+            // Clamp shield to max.
+            if (playerShip.Shield > shipDetail.MaxShield + playerShip.MaxShieldBonus)
+                playerShip.Shield = shipDetail.MaxShield + playerShip.MaxShieldBonus;
+
+            // Capacitor recovery
+            playerShip.Capacitor++; // todo: capacitor recovery calculation
+
+            // Clamp capacitor to max.
+            if (playerShip.Capacitor > shipDetail.MaxCapacitor + playerShip.MaxCapacitorBonus)
+                playerShip.Capacitor = shipDetail.MaxCapacitor + playerShip.MaxCapacitorBonus;
+
+            // Update changes
+            DB.Set(playerId, dbPlayer);
+        }
+
     }
 }

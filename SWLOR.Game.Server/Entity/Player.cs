@@ -180,6 +180,7 @@ namespace SWLOR.Game.Server.Entity
 
     public class PlayerShipModule
     {
+        public Feat AssignedShipModuleFeat { get; set; }
         public string ItemTag { get; set; }
         public string SerializedItem { get; set; }
         public DateTime RecastTime { get; set; }

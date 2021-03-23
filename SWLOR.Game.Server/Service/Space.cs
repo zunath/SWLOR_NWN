@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<string, ShipDetail> _ships = new Dictionary<string, ShipDetail>();
         private static readonly Dictionary<string, ShipModuleDetail> _shipModules = new Dictionary<string, ShipModuleDetail>();
-        private static readonly List<ShipModuleFeat> _shipModuleFeats = ShipModuleFeat.GetAll();
+        public static Dictionary<Feat, ShipModuleFeat> ShipModuleFeats { get; } = ShipModuleFeat.GetAll();
 
         /// <summary>
         /// When the module loads, cache all space data into memory.
@@ -207,26 +207,21 @@ namespace SWLOR.Game.Server.Service
 
             // Load ship modules as feats.
             var allModules = dbPlayerShip.HighPowerModules.Concat(dbPlayerShip.LowPowerModules).ToList();
-            for (var index = 0; index < _shipModuleFeats.Count-1; index++)
-            {
-                // No more feats to add to the player. Exit early.
-                if (index + 1 > allModules.Count) break;
 
-                var equippedModule = allModules[index];
-                var shipModuleDetail = _shipModules[equippedModule.Value.ItemTag];
+            foreach(var (_, shipModule) in allModules)
+            {
+                var shipModuleDetail = _shipModules[shipModule.ItemTag];
 
                 // Passive modules shouldn't be converted to feats.
                 if (shipModuleDetail.IsPassive) continue;
 
                 // Convert current ship module to feat.
-                var shipModuleFeat = _shipModuleFeats[index];
-                Creature.AddFeat(player, shipModuleFeat.Feat);
+                Creature.AddFeat(player, shipModule.AssignedShipModuleFeat);
 
                 // Rename the feat to match the configured name on the ship module.
+                var shipModuleFeat = ShipModuleFeats[shipModule.AssignedShipModuleFeat];
                 Player.SetTlkOverride(player, shipModuleFeat.NameTlkId, shipModuleDetail.Name);
                 Player.SetTlkOverride(player, shipModuleFeat.DescriptionTlkId, shipModuleDetail.Description);
-
-                index++;
             }
 
             // Load the player's ship hot bar.
@@ -263,9 +258,9 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.ActiveShipId = Guid.Empty;
 
             // Remove all module feats from the player.
-            foreach (var moduleFeat in _shipModuleFeats)
+            foreach (var (feat, _) in ShipModuleFeats)
             {
-                Creature.RemoveFeat(player, moduleFeat.Feat);
+                Creature.RemoveFeat(player, feat);
             }
 
             // Load the player's hot bar.
@@ -402,6 +397,92 @@ namespace SWLOR.Game.Server.Service
             }
         }
         
+        /// <summary>
+        /// When a ship module's feat is used, execute the currently equipped module's custom code.
+        /// </summary>
+        [NWNEventHandler("feat_use_bef")]
+        public static void HandleShipModuleFeats()
+        {
+            var feat = (Feat)Convert.ToInt32(Events.GetEventData("FEAT_ID"));
 
+            if (!ShipModuleFeats.ContainsKey(feat)) return;
+            
+            var player = OBJECT_SELF;
+            if (!GetIsPC(player) || GetIsDM(player)) return; // todo: Revisit to incorporate NPC usage.
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Entity.Player>(playerId);
+
+            // Player somehow used the feat outside of Space mode.
+            if (dbPlayer.ActiveShipId == Guid.Empty) 
+            {
+                Log.Write(LogGroup.Error, $"{GetName(player)} used a ship module feat ({feat}) outside of space mode.");
+                return;
+            } 
+
+            var dbPlayerShip = dbPlayer.Ships[dbPlayer.ActiveShipId];
+            
+            // Check high powered modules
+            var shipModule = dbPlayerShip
+                .HighPowerModules
+                .SingleOrDefault(x => x.Value.AssignedShipModuleFeat == feat);
+
+            // Not found in high powered modules, check low now.
+            if (shipModule.Value == null)
+            {
+                shipModule = dbPlayerShip
+                    .LowPowerModules
+                    .SingleOrDefault(x => x.Value.AssignedShipModuleFeat == feat);
+            }
+
+            // Neither high nor low had this feat. Log an error.
+            if(shipModule.Value == null)
+            {
+                Log.Write(LogGroup.Error, $"Failed to locate matching ship module by its feat for player {GetName(player)}");
+                SendMessageToPC(player, "Unable to use that module.");
+                return;
+            }
+
+            // Found the ship module. Run validation checks.
+            var shipModuleDetails = _shipModules[shipModule.Value.ItemTag];
+
+            // Check capacitor requirements
+            var requiredCapacitor = shipModuleDetails.CalculateCapacitorAction?.Invoke(player, dbPlayerShip);
+            if (requiredCapacitor != null && dbPlayerShip.Capacitor < requiredCapacitor)
+            {
+                SendMessageToPC(player, $"Your ship does not have enough capacitor to use that module. (Required: {requiredCapacitor})");
+                return;
+            }
+
+            // Check recast requirements
+            var now = DateTime.UtcNow;
+            if (shipModule.Value.RecastTime > now)
+            {
+                SendMessageToPC(player, "That module is not ready.");
+                return;
+            }
+
+            // Check for a valid target.
+            var target = GetCurrentTarget(player);
+            if (!GetIsObjectValid(target))
+            {
+                SendMessageToPC(player, "Target not selected.");
+                return;
+            }
+
+            // Validation succeeded, run the module-specific code now.
+            shipModuleDetails.ModuleActivatedAction?.Invoke(player, target, dbPlayerShip);
+
+            // Update the recast timer.
+            if (shipModuleDetails.CalculateRecastAction != null)
+            {
+                var recastSeconds = shipModuleDetails.CalculateRecastAction(player, dbPlayerShip);
+                var recastTimer = now.AddSeconds(recastSeconds);
+                shipModule.Value.RecastTime = recastTimer;
+            }
+
+            // Update changes
+            DB.Set(playerId, dbPlayer);
+        }
     }
 }

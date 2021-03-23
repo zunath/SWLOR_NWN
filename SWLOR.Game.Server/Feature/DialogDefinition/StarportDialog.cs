@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
@@ -435,11 +437,47 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     return;
                 }
 
+                var assignedFeat = Feat.Invalid;
+                // Determine which feat to assign this module to.
+                foreach (var (feat, _) in Space.ShipModuleFeats)
+                {
+                    var highPowerFeat = dbPlayer
+                        .Ships[playerShipId]
+                        .HighPowerModules
+                        .Where(x => x.Value.AssignedShipModuleFeat == feat)
+                        .ToList();
+
+                    var lowPowerFeat  = dbPlayer
+                        .Ships[playerShipId]
+                        .LowPowerModules
+                        .Where(x => x.Value.AssignedShipModuleFeat == feat)
+                        .ToList();
+
+                    // Neither high nor low slots have this feat assigned to them.
+                    // We'll attach the new module to this feat.
+                    if (highPowerFeat.Count <= 0 &&
+                        lowPowerFeat.Count <= 0)
+                    {
+                        assignedFeat = feat;
+                        break;
+                    }
+                }
+
+                // Safety check to ensure we found a ship module feat to use.
+                if(assignedFeat == Feat.Invalid)
+                {
+                    Item.ReturnItem(player, item);
+                    Log.Write(LogGroup.Error, $"Unable to find a free ship module feat slot. Do you need to increase the number of ship feats?");
+                    SendMessageToPC(player, "There was a problem installing this ship module into your ship.");
+                    return;
+                }
+
                 // Add to high power modules.
                 if (moduleDetails.PowerType == ShipModulePowerType.High)
                 {
                     dbPlayer.Ships[playerShipId].HighPowerModules.Add(itemId, new PlayerShipModule
                     {
+                        AssignedShipModuleFeat = assignedFeat,
                         SerializedItem = Object.Serialize(item),
                         ItemTag = itemTag,
                         RecastTime = DateTime.MinValue
@@ -450,6 +488,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 {
                     dbPlayer.Ships[playerShipId].LowPowerModules.Add(itemId, new PlayerShipModule
                     {
+                        AssignedShipModuleFeat = assignedFeat,
                         SerializedItem = Object.Serialize(item),
                         ItemTag = itemTag,
                         RecastTime = DateTime.MinValue

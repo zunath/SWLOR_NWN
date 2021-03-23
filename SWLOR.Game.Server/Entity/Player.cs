@@ -169,6 +169,8 @@ namespace SWLOR.Game.Server.Entity
         public int IonDamageBonus { get; set; }
         public int KineticDamageBonus { get; set; }
         public int ExplosiveDamageBonus { get; set; }
+        public int AccuracyBonus { get; set; }
+        public int EvasionBonus { get; set; }
         public string SerializedHotBar { get; set; }
         public Dictionary<string, PlayerShipModule> HighPowerModules { get; set; }
         public Dictionary<string, PlayerShipModule> LowPowerModules { get; set; }

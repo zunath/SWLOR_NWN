@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Object = SWLOR.Game.Server.Core.NWNX.Object;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -20,6 +21,8 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<string, ShipDetail> _ships = new Dictionary<string, ShipDetail>();
         private static readonly Dictionary<string, ShipModuleDetail> _shipModules = new Dictionary<string, ShipModuleDetail>();
+        private static readonly Dictionary<uint, ShipStatus> _shipNPCs = new Dictionary<uint, ShipStatus>();
+
         public static Dictionary<Feat, ShipModuleFeat> ShipModuleFeats { get; } = ShipModuleFeat.GetAll();
 
         /// <summary>
@@ -135,9 +138,37 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player whose target to retrieve.</param>
         /// <returns>The selected target or OBJECT_INVALID.</returns>
-        private static uint GetCurrentTarget(uint player)
+        private static ShipStatus GetCurrentTarget(uint player)
         {
-            return GetLocalObject(player, "SPACE_TARGET");
+            var target = GetLocalObject(player, "SPACE_TARGET");
+            if (!GetIsObjectValid(target))
+            {
+                return new ShipStatus();
+            }
+
+            if (GetIsPC(target))
+            {
+                var targetPlayerId = GetObjectUUID(target);
+                var dbTargetPlayer = DB.Get<Entity.Player>(targetPlayerId);
+                var dbPlayerShip = dbTargetPlayer.Ships[dbTargetPlayer.ActiveShipId];
+
+                return new ShipStatus
+                {
+                    Creature = target,
+                    Shield = dbPlayerShip.Shield,
+                    Hull = dbPlayerShip.Hull,
+                    Capacitor = dbPlayerShip.Capacitor
+                };
+            }
+            else
+            {
+                if (!_shipNPCs.ContainsKey(target))
+                {
+                    throw new Exception("Tried to get NPC target that wasn't registered with Space system.");
+                }
+
+                return _shipNPCs[target];
+            }
         }
 
         /// <summary>
@@ -148,9 +179,9 @@ namespace SWLOR.Game.Server.Service
         {
             // Remove the VFX from the current target if it exists.
             var currentTarget = GetCurrentTarget(player);
-            if (GetIsObjectValid(currentTarget))
+            if (GetIsObjectValid(currentTarget.Creature))
             {
-                Player.ApplyLoopingVisualEffectToObject(player, currentTarget, VisualEffect.None);
+                Player.ApplyLoopingVisualEffectToObject(player, currentTarget.Creature, VisualEffect.None);
             }
 
             DeleteLocalObject(player, "SPACE_TARGET");
@@ -171,7 +202,7 @@ namespace SWLOR.Game.Server.Service
             var currentTarget = GetCurrentTarget(player);
             
             // Targeted the same object - remove it.
-            if (currentTarget == target)
+            if (currentTarget.Creature == target)
             {
                 ClearCurrentTarget(player);
             }
@@ -475,7 +506,7 @@ namespace SWLOR.Game.Server.Service
 
             // Check for a valid target.
             var target = GetCurrentTarget(player);
-            if (!GetIsObjectValid(target))
+            if (!GetIsObjectValid(target.Creature))
             {
                 SendMessageToPC(player, "Target not selected.");
                 return;
@@ -546,5 +577,199 @@ namespace SWLOR.Game.Server.Service
             DB.Set(playerId, dbPlayer);
         }
 
+        /// <summary>
+        /// When a creature spawns, track it in the cache.
+        /// </summary>
+        [NWNEventHandler("crea_spawn")]
+        public static void CreatureSpawn()
+        {
+            var creature = OBJECT_SELF;
+            var area = GetArea(creature);
+
+            // Only creatures spawned within space areas will be tracked by this system.
+            if (!GetLocalBool(area, "SPACE")) return;
+
+            _shipNPCs[creature] = new ShipStatus
+            {
+                Creature = creature,
+                Capacitor = 20, // todo: determine how to calculate this
+                Hull = 20, // todo: determine how to calculate this
+                Shield = 20 // todo: determine how to calculate this
+            };
+        }
+
+        /// <summary>
+        /// When a creature dies, remove it from the cache.
+        /// </summary>
+        [NWNEventHandler("crea_death")]
+        public static void CreatureDeath()
+        {
+            var creature = OBJECT_SELF;
+
+            if (_shipNPCs.ContainsKey(creature))
+            {
+                _shipNPCs.Remove(creature);
+            }
+        }
+        
+        /// <summary>
+        /// Applies damage to a ship target. Damage will first be taken to the shields.
+        /// When shields reaches zero, damage will be taken on the hull.
+        /// When hull reaches zero, the ship will explode.
+        /// </summary>
+        /// <param name="attacker">The attacking ship</param>
+        /// <param name="target">The defending, targeted ship</param>
+        /// <param name="amount">The amount of damage to apply to the target.</param>
+        public static void ApplyShipDamage(uint attacker, uint target, int amount)
+        {
+            if (amount < 0) return;
+
+            var targetShipStatus = new ShipStatus();
+            
+            if (GetIsPC(target))
+            {
+                var targetPlayerId = GetObjectUUID(target);
+                var dbTargetPlayer = DB.Get<Entity.Player>(targetPlayerId);
+                var dbPlayerShip = dbTargetPlayer.Ships[dbTargetPlayer.ActiveShipId];
+
+                targetShipStatus.Creature = target;
+                targetShipStatus.Shield = dbPlayerShip.Shield;
+                targetShipStatus.Hull = dbPlayerShip.Hull;
+                targetShipStatus.Capacitor = dbPlayerShip.Capacitor;
+            }
+            else
+            {
+                targetShipStatus = _shipNPCs[target];
+            }
+
+            var remainingDamage = amount;
+            // First deal damage to target's shields.
+            if (remainingDamage <= targetShipStatus.Shield)
+            {
+                // Shields have enough to cover the attack.
+                targetShipStatus.Shield -= remainingDamage;
+                remainingDamage = 0;
+            }
+            else
+            {
+                remainingDamage -= targetShipStatus.Shield;
+                targetShipStatus.Shield = 0;
+            }
+
+
+            // If damage is remaining, deal it to the hull.
+            if (remainingDamage > 0)
+            {
+                targetShipStatus.Hull -= remainingDamage;
+            }
+
+            // Safety clamping
+            if (targetShipStatus.Shield < 0)
+                targetShipStatus.Shield = 0;
+            if (targetShipStatus.Hull < 0)
+                targetShipStatus.Hull = 0;
+
+            // Apply death if shield and hull have reached zero.
+            if (targetShipStatus.Shield <= 0 && targetShipStatus.Hull <= 0)
+            {
+                ApplyDeath(target);
+            }
+            else
+            {
+                if (GetIsPC(target))
+                {
+                    var targetPlayerId = GetObjectUUID(target);
+                    var dbTargetPlayer = DB.Get<Entity.Player>(targetPlayerId);
+                    var dbPlayerShip = dbTargetPlayer.Ships[dbTargetPlayer.ActiveShipId];
+
+                    dbPlayerShip.Shield = targetShipStatus.Shield;
+                    dbPlayerShip.Hull = targetShipStatus.Hull;
+
+                    DB.Set(targetPlayerId, dbTargetPlayer);
+                }
+                else
+                {
+                    // Update NPC cache.
+                    _shipNPCs[target] = targetShipStatus;
+                }
+            }
+
+            // Notify nearby players of damage taken by target.
+            Messaging.SendMessageNearbyToPlayers(target, $"{GetName(attacker)} deals {amount} damage to {GetName(target)}.");
+        }
+
+        /// <summary>
+        /// Applies death to a creature.
+        /// If this is a PC, their ship will be destroyed.
+        /// If this is an NPC, they will be killed and explode in spectacular fashion.
+        /// </summary>
+        /// <param name="creature">The creature who will be killed.</param>
+        private static void ApplyDeath(uint creature)
+        {
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), creature);
+
+            // When a player dies, they have a chance to drop every module installed on their ship.
+            // The ship also gets permanently destroyed and removed from their database record.
+            // Finally, they return to their stored respawn point.
+            if (GetIsPC(creature))
+            {
+                var deathLocation = GetLocation(creature);
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Entity.Player>(playerId);
+                var dbPlayerShip = dbPlayer.Ships[dbPlayer.ActiveShipId];
+                const int ChanceToDropModule = 80;
+
+                // Give a chance to drop each installed module.
+                foreach (var (_, shipModule) in dbPlayerShip.HighPowerModules)
+                {
+                    if (Random.D100(1) <= ChanceToDropModule)
+                    {
+                        var deserialized = Object.Deserialize(shipModule.SerializedItem);
+                        CopyObject(deserialized, deathLocation);
+                        DestroyObject(deserialized);
+                    }
+                }
+
+                foreach (var (_, shipModule) in dbPlayerShip.LowPowerModules)
+                {
+                    if (Random.D100(1) <= ChanceToDropModule)
+                    {
+                        var deserialized = Object.Deserialize(shipModule.SerializedItem);
+                        CopyObject(deserialized, deathLocation);
+                        DestroyObject(deserialized);
+                    }
+                }
+
+                // Exit space mode
+                ExitSpaceMode(creature);
+
+                // Jump player to their respawn point.
+                var respawnArea = Cache.GetAreaByResref(dbPlayer.RespawnAreaResref);
+                var respawnLocation = Location(
+                    respawnArea,
+                    Vector3(
+                        dbPlayer.RespawnLocationX, 
+                        dbPlayer.RespawnLocationY, 
+                        dbPlayer.RespawnLocationZ),
+                    dbPlayer.RespawnLocationOrientation);
+
+                AssignCommand(creature, () =>
+                {
+                    ActionJumpToLocation(respawnLocation);
+                });
+
+                // Remove the destroyed ship from the player's data.
+                dbPlayer.Ships.Remove(dbPlayer.ActiveShipId);
+                dbPlayer.ActiveShipId = Guid.Empty;
+
+                // Update the changes
+                DB.Set(playerId, dbPlayer);
+            }
+            // Simply kill NPCs
+            else
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectDeath(), creature);
+            }
+        }
     }
 }

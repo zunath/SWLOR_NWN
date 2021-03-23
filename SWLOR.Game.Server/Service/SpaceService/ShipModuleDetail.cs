@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
     public delegate float ShipModuleCalculateRecastDelegate(uint player, PlayerShip playerShip);
     public delegate void ShipModuleEquippedDelegate(uint player, uint item, PlayerShip playerShip);
     public delegate void ShipModuleUnequippedDelegate(uint player, uint item, PlayerShip playerShip);
-    public delegate void ShipModuleActivatedDelegate(uint player, uint target, PlayerShip playerShip);
+    public delegate void ShipModuleActivatedDelegate(uint player, ShipStatus target, PlayerShip playerShip);
 
     public class ShipModuleDetail
     {

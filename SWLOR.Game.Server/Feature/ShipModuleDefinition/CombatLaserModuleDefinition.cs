@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -33,8 +34,9 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     AssignCommand(player, () =>
                     {
                         var effect = EffectBeam(VisualEffect.Vfx_Beam_Lightning, player, BodyNode.Chest);
-                        ApplyEffectToObject(DurationType.Temporary, effect, target, 1.0f);
-                        ApplyEffectToObject(DurationType.Instant, EffectDamage(1), target);
+                        ApplyEffectToObject(DurationType.Temporary, effect, target.Creature, 1.0f);
+
+                        Space.ApplyShipDamage(player, target.Creature, 5);
                     });
 
                 });

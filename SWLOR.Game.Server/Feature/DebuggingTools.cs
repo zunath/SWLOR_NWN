@@ -6,17 +6,12 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class DebuggingTools
     {
-        [NWNEventHandler("test1")]
-        public static void LeaveSpace()
+        [NWNEventHandler("test2")]
+        public static void KillMe()
         {
             var player = GetLastUsedBy();
-
-            Space.ExitSpaceMode(player);
-
-            var wp = GetWaypointByTag("V_Colony_Exit");
-            var location = GetLocation(wp);
-
-            AssignCommand(player, () => ActionJumpToLocation(location));
+            
+            Space.ApplyShipDamage(player, player, 999);
         }
 
     }

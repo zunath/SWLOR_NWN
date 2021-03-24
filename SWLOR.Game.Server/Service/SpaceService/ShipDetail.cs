@@ -18,6 +18,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int LowPowerNodes { get; set; }
         public int Accuracy { get; set; }
         public int Evasion { get; set; }
+        public int ExplosiveDefense { get; set; }
+        public int ThermalDefense { get; set; }
+        public int EMDefense { get; set; }
         public bool HasDroidBay { get; set; }
 
         public Dictionary<PerkType, int> RequiredPerks { get; set; }

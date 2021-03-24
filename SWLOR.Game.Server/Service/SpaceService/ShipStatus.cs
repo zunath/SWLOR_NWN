@@ -10,6 +10,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int Capacitor { get; set; }
         public int Evasion { get; set; }
         public int Accuracy { get; set; }
+        public int ExplosiveDefense { get; set; }
+        public int ThermalDefense { get; set; }
+        public int EMDefense { get; set; }
 
         public ShipStatus()
         {

@@ -166,11 +166,14 @@ namespace SWLOR.Game.Server.Entity
         public int MaxCapacitorBonus { get; set; }
         public int ShieldCycle { get; set; }
         public int ShieldCycleBonus { get; set; }
-        public int IonDamageBonus { get; set; }
-        public int KineticDamageBonus { get; set; }
+        public int EMDamageBonus { get; set; }
+        public int ThermalDamageBonus { get; set; }
         public int ExplosiveDamageBonus { get; set; }
         public int AccuracyBonus { get; set; }
         public int EvasionBonus { get; set; }
+        public int ThermalDefenseBonus { get; set; }
+        public int ExplosiveDefenseBonus { get; set; }
+        public int EMDefenseBonus { get; set; }
         public string SerializedHotBar { get; set; }
         public Dictionary<string, PlayerShipModule> HighPowerModules { get; set; }
         public Dictionary<string, PlayerShipModule> LowPowerModules { get; set; }

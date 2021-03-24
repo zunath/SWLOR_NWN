@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<string, ShipDetail> _ships = new Dictionary<string, ShipDetail>();
         private static readonly Dictionary<string, ShipModuleDetail> _shipModules = new Dictionary<string, ShipModuleDetail>();
         private static readonly Dictionary<uint, ShipStatus> _shipNPCs = new Dictionary<uint, ShipStatus>();
+        private static readonly Dictionary<string, ShipEnemyDetail> _shipEnemies = new Dictionary<string, ShipEnemyDetail>();
 
         public static Dictionary<Feat, ShipModuleFeat> ShipModuleFeats { get; } = ShipModuleFeat.GetAll();
 
@@ -33,11 +34,16 @@ namespace SWLOR.Game.Server.Service
         {
             LoadShips();
             LoadShipModules();
+            LoadShipEnemies();
 
             Console.WriteLine($"Loaded {_ships.Count} ships.");
             Console.WriteLine($"Loaded {_shipModules.Count} ship modules.");
+            Console.WriteLine($"Loaded {_shipEnemies.Count} ship enemies.");
         }
 
+        /// <summary>
+        /// Loads all of the implementations of IShipListDefinition into the cache.
+        /// </summary>
         private static void LoadShips()
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()
@@ -56,6 +62,9 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Loads all of the implementations of IShipModuleListDefinition into the cache.
+        /// </summary>
         private static void LoadShipModules()
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()
@@ -77,6 +86,27 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     _shipModules.Add(moduleType, moduleDetail);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Loads all of the implementations of IShipEnemyListDefinition into the cache.
+        /// </summary>
+        private static void LoadShipEnemies()
+        {
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(w => typeof(IShipEnemyListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+
+            foreach (var type in types)
+            {
+                var instance = (IShipEnemyListDefinition)Activator.CreateInstance(type);
+                var ships = instance.BuildShipEnemies();
+
+                foreach (var (creatureTag, enemy) in ships)
+                {
+                    _shipEnemies.Add(creatureTag, enemy);
                 }
             }
         }
@@ -557,17 +587,26 @@ namespace SWLOR.Game.Server.Service
         public static void CreatureSpawn()
         {
             var creature = OBJECT_SELF;
-            var area = GetArea(creature);
+            var creatureTag = GetTag(creature);
 
-            // Only creatures spawned within space areas will be tracked by this system.
-            if (!GetLocalBool(area, "SPACE")) return;
+            // Not registered with the space system. Exit early.
+            if (!_shipEnemies.ContainsKey(creatureTag)) return;
+
+            var registeredEnemyType = _shipEnemies[creatureTag];
 
             _shipNPCs[creature] = new ShipStatus
             {
                 Creature = creature,
-                Capacitor = 20, // todo: determine how to calculate this
-                Hull = 20, // todo: determine how to calculate this
-                Shield = 20 // todo: determine how to calculate this
+                Capacitor = registeredEnemyType.Capacitor, 
+                Hull = registeredEnemyType.Hull, 
+                Shield = registeredEnemyType.Shield,
+                
+                Evasion = registeredEnemyType.Evasion,
+                Accuracy = registeredEnemyType.Accuracy,
+
+                EMDefense = registeredEnemyType.EMDefense,
+                ExplosiveDefense = registeredEnemyType.ExplosiveDefense,
+                ThermalDefense = registeredEnemyType.ThermalDefense
             };
         }
 
@@ -606,11 +645,19 @@ namespace SWLOR.Game.Server.Service
                 var targetPlayerId = GetObjectUUID(creature);
                 var dbTargetPlayer = DB.Get<Entity.Player>(targetPlayerId);
                 var dbPlayerShip = dbTargetPlayer.Ships[dbTargetPlayer.ActiveShipId];
+                var shipDetail = _ships[dbPlayerShip.ItemTag];
 
                 shipStatus.Creature = creature;
                 shipStatus.Shield = dbPlayerShip.Shield;
                 shipStatus.Hull = dbPlayerShip.Hull;
                 shipStatus.Capacitor = dbPlayerShip.Capacitor;
+                
+                shipStatus.Accuracy = shipDetail.Accuracy + dbPlayerShip.AccuracyBonus;
+                shipStatus.Evasion = shipDetail.Evasion + dbPlayerShip.EvasionBonus;
+
+                shipStatus.ThermalDefense = shipDetail.ThermalDefense + dbPlayerShip.ThermalDefenseBonus;
+                shipStatus.ExplosiveDefense = shipDetail.ExplosiveDefense + dbPlayerShip.ExplosiveDefenseBonus;
+                shipStatus.EMDefense = shipDetail.EMDefense + dbPlayerShip.EMDefenseBonus;
             }
             else
             {

@@ -141,34 +141,7 @@ namespace SWLOR.Game.Server.Service
         private static ShipStatus GetCurrentTarget(uint player)
         {
             var target = GetLocalObject(player, "SPACE_TARGET");
-            if (!GetIsObjectValid(target))
-            {
-                return new ShipStatus();
-            }
-
-            if (GetIsPC(target))
-            {
-                var targetPlayerId = GetObjectUUID(target);
-                var dbTargetPlayer = DB.Get<Entity.Player>(targetPlayerId);
-                var dbPlayerShip = dbTargetPlayer.Ships[dbTargetPlayer.ActiveShipId];
-
-                return new ShipStatus
-                {
-                    Creature = target,
-                    Shield = dbPlayerShip.Shield,
-                    Hull = dbPlayerShip.Hull,
-                    Capacitor = dbPlayerShip.Capacitor
-                };
-            }
-            else
-            {
-                if (!_shipNPCs.ContainsKey(target))
-                {
-                    throw new Exception("Tried to get NPC target that wasn't registered with Space system.");
-                }
-
-                return _shipNPCs[target];
-            }
+            return GetShipStatus(target);
         }
 
         /// <summary>
@@ -514,7 +487,7 @@ namespace SWLOR.Game.Server.Service
 
             // Validation succeeded, run the module-specific code now.
             shipModuleDetails.ModuleActivatedAction?.Invoke(player, target, dbPlayerShip);
-
+            
             // Update the recast timer.
             if (shipModuleDetails.CalculateRecastAction != null)
             {
@@ -611,6 +584,58 @@ namespace SWLOR.Game.Server.Service
                 _shipNPCs.Remove(creature);
             }
         }
+
+        /// <summary>
+        /// Retrieves the ship status of a given creature.
+        /// If creature is an NPC, it will be retrieved from the cache.
+        /// If creature is a PC, it will be retrieved from the database.
+        /// </summary>
+        /// <param name="creature">The creature to get the status of</param>
+        /// <returns>A ship status containing current statistics about a creature's ship.</returns>
+        private static ShipStatus GetShipStatus(uint creature)
+        {
+            var shipStatus = new ShipStatus();
+
+            if (!GetIsObjectValid(creature))
+            {
+                return new ShipStatus();
+            }
+
+            if (GetIsPC(creature))
+            {
+                var targetPlayerId = GetObjectUUID(creature);
+                var dbTargetPlayer = DB.Get<Entity.Player>(targetPlayerId);
+                var dbPlayerShip = dbTargetPlayer.Ships[dbTargetPlayer.ActiveShipId];
+
+                shipStatus.Creature = creature;
+                shipStatus.Shield = dbPlayerShip.Shield;
+                shipStatus.Hull = dbPlayerShip.Hull;
+                shipStatus.Capacitor = dbPlayerShip.Capacitor;
+            }
+            else
+            {
+                shipStatus = _shipNPCs.ContainsKey(creature) 
+                    ? _shipNPCs[creature] 
+                    : new ShipStatus();
+            }
+
+            return shipStatus;
+        }
+
+        /// <summary>
+        /// Calculates attacker's chance to hit target.
+        /// </summary>
+        /// <param name="attacker">The creature attacking.</param>
+        /// <param name="target">The creature being targeted.</param>
+        public static int CalculateChanceToHit(uint attacker, uint target)
+        {
+            var attackerShipStatus = GetShipStatus(attacker);
+            var targetShipStatus = GetShipStatus(target);
+            
+            var delta = attackerShipStatus.Accuracy - targetShipStatus.Evasion;
+            var chanceToHit = 75 + delta * 0.5f;
+            return (int)chanceToHit;
+        }
         
         /// <summary>
         /// Applies damage to a ship target. Damage will first be taken to the shields.
@@ -624,24 +649,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (amount < 0) return;
 
-            var targetShipStatus = new ShipStatus();
-            
-            if (GetIsPC(target))
-            {
-                var targetPlayerId = GetObjectUUID(target);
-                var dbTargetPlayer = DB.Get<Entity.Player>(targetPlayerId);
-                var dbPlayerShip = dbTargetPlayer.Ships[dbTargetPlayer.ActiveShipId];
-
-                targetShipStatus.Creature = target;
-                targetShipStatus.Shield = dbPlayerShip.Shield;
-                targetShipStatus.Hull = dbPlayerShip.Hull;
-                targetShipStatus.Capacitor = dbPlayerShip.Capacitor;
-            }
-            else
-            {
-                targetShipStatus = _shipNPCs[target];
-            }
-
+            var targetShipStatus = GetShipStatus(target);
             var remainingDamage = amount;
             // First deal damage to target's shields.
             if (remainingDamage <= targetShipStatus.Shield)
@@ -761,6 +769,7 @@ namespace SWLOR.Game.Server.Service
                 // Remove the destroyed ship from the player's data.
                 dbPlayer.Ships.Remove(dbPlayer.ActiveShipId);
                 dbPlayer.ActiveShipId = Guid.Empty;
+                dbPlayer.SelectedShipId = Guid.Empty;
 
                 // Update the changes
                 DB.Set(playerId, dbPlayer);

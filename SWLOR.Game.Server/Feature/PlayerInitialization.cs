@@ -44,6 +44,7 @@ namespace SWLOR.Game.Server.Feature
             AssignRacialAppearance(player, dbPlayer);
             GiveStartingItems(player);
             AssignCharacterType(player, dbPlayer);
+            RegisterDefaultRespawnPoint(dbPlayer);
 
             DB.Set(playerId, dbPlayer);
         }
@@ -310,6 +311,35 @@ namespace SWLOR.Game.Server.Feature
                 dbPlayer.CharacterType = CharacterType.Standard;
             else if (@class == ClassType.ForceSensitive)
                 dbPlayer.CharacterType = CharacterType.ForceSensitive;
+        }
+
+        /// <summary>
+        /// Sets the player's default respawn location to that of the waypoint with tag 'DTH_DEFAULT_RESPAWN_POINT'.
+        /// If no waypoint by that tag can be found, an error will be logged.
+        /// </summary>
+        /// <param name="dbPlayer">The player's database entity.</param>
+        private static void RegisterDefaultRespawnPoint(Player dbPlayer)
+        {
+            const string DefaultRespawnWaypointTag = "DTH_DEFAULT_RESPAWN_POINT";
+            var waypoint = GetWaypointByTag(DefaultRespawnWaypointTag);
+
+            if (!GetIsObjectValid(waypoint))
+            {
+                Log.Write(LogGroup.Error, $"Default respawn waypoint could not be located. Did you place a waypoint with the tag 'DTH_DEFAULT_RESPAWN_POINT'?");
+                return;
+            }
+
+            var location = GetLocation(waypoint);
+            var position = GetPositionFromLocation(location);
+            var orientation = GetFacingFromLocation(location);
+            var area = GetAreaFromLocation(location);
+            var areaResref = GetResRef(area);
+
+            dbPlayer.RespawnAreaResref = areaResref;
+            dbPlayer.RespawnLocationX = position.X;
+            dbPlayer.RespawnLocationY = position.Y;
+            dbPlayer.RespawnLocationZ = position.Z;
+            dbPlayer.RespawnLocationOrientation = orientation;
         }
 
     }

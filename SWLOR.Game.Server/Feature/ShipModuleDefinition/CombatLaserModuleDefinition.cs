@@ -30,24 +30,33 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, 1)
                 .Recast(3.0f)
-                .Capacitor(10)
-                .ActivatedAction((player, target, ship) =>
+                .Capacitor(6)
+                .ActivatedAction((activator, target) =>
                 {
-                    var chanceToHit = Space.CalculateChanceToHit(player, target.Creature);
-                    var isHit = Random.D100(1) <= chanceToHit;
+                    var chanceToHit = Space.CalculateChanceToHit(activator.Creature, target.Creature);
+                    var roll = Random.D100(1);
+                    var isHit = roll <= chanceToHit;
                     
-                    AssignCommand(player, () =>
+                    Console.WriteLine($"roll = {roll} vs {chanceToHit}"); // todo debug
+                    
+                    if (isHit)
                     {
-                        var effect = EffectBeam(VisualEffect.Vfx_Beam_Lightning, player, BodyNode.Chest, !isHit);
-                        ApplyEffectToObject(DurationType.Temporary, effect, target.Creature, 1.0f);
-
-                        if (isHit)
+                        AssignCommand(activator.Creature, () =>
                         {
-                            // todo: damage calculations
-
-                            Space.ApplyShipDamage(player, target.Creature, 5);
-                        }
-                    });
+                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Lightning, activator.Creature, BodyNode.Chest);
+                            ApplyEffectToObject(DurationType.Temporary, effect, target.Creature, 1.0f);
+                            Space.ApplyShipDamage(activator.Creature, target.Creature, 5); // todo: damage calculation
+                        });
+                    }
+                    else
+                    {
+                        AssignCommand(activator.Creature, () =>
+                        {
+                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Lightning, activator.Creature, BodyNode.Chest, true);
+                            ApplyEffectToObject(DurationType.Temporary, effect, target.Creature, 1.0f);
+                        });
+                        SendMessageToPC(activator.Creature, "You miss your target.");
+                    }
                 });
         }
 

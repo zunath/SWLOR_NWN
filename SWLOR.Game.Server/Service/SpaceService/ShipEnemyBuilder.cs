@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
@@ -10,6 +6,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
     {
         private readonly Dictionary<string, ShipEnemyDetail> _shipEnemies = new Dictionary<string, ShipEnemyDetail>();
         private ShipEnemyDetail _activeShipEnemy;
+        private string _creatureTag;
 
         /// <summary>
         /// Creates a new ship enemy.
@@ -18,6 +15,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <returns>A ship enemy builder with the configured options.</returns>
         public ShipEnemyBuilder Create(string creatureTag)
         {
+            _creatureTag = creatureTag;
             _activeShipEnemy = new ShipEnemyDetail();
             _shipEnemies[creatureTag] = _activeShipEnemy;
 
@@ -116,6 +114,32 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public ShipEnemyBuilder ThermalDefense(int thermalDefense)
         {
             _activeShipEnemy.ThermalDefense = thermalDefense;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds the specified ship module to the enemy's loadout.
+        /// </summary>
+        /// <param name="shipModuleItemTag">Item tag of the ship module to attach.</param>
+        /// <returns>A ship enemy builder with the configured options.</returns>
+        public ShipEnemyBuilder ShipModule(string shipModuleItemTag)
+        {
+            if (!Space.IsRegisteredShipModule(shipModuleItemTag))
+            {
+                Log.Write(LogGroup.Error, $"Failed to add {shipModuleItemTag} to ship enemy with tag {_creatureTag} as this module is not registered. Please ensure you entered the correct module tag.");
+                return this;
+            }
+
+            var shipModule = Space.GetShipModuleDetailByItemTag(shipModuleItemTag);
+            if (shipModule.PowerType == ShipModulePowerType.High)
+            {
+                _activeShipEnemy.HighPoweredModules.Add(shipModuleItemTag);
+            }
+            else
+            {
+                _activeShipEnemy.LowPowerModules.Add(shipModuleItemTag);
+            }
 
             return this;
         }

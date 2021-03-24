@@ -452,39 +452,27 @@ namespace SWLOR.Game.Server.Service
 
             if (!ShipModuleFeats.ContainsKey(feat)) return;
             
-            var player = OBJECT_SELF;
-            if (!GetIsPC(player) || GetIsDM(player)) return; // todo: Revisit to incorporate NPC usage.
-
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Entity.Player>(playerId);
-
-            // Player somehow used the feat outside of Space mode.
-            if (dbPlayer.ActiveShipId == Guid.Empty) 
-            {
-                Log.Write(LogGroup.Error, $"{GetName(player)} used a ship module feat ({feat}) outside of space mode.");
-                return;
-            } 
-
-            var dbPlayerShip = dbPlayer.Ships[dbPlayer.ActiveShipId];
+            var activator = OBJECT_SELF;
+            var activatorShipStatus = GetShipStatus(activator);
             
             // Check high powered modules
-            var shipModule = dbPlayerShip
+            var shipModule = activatorShipStatus
                 .HighPowerModules
-                .SingleOrDefault(x => x.Value.AssignedShipModuleFeat == feat);
+                .SingleOrDefault(x => x.Key == feat);
 
             // Not found in high powered modules, check low now.
             if (shipModule.Value == null)
             {
-                shipModule = dbPlayerShip
+                shipModule = activatorShipStatus
                     .LowPowerModules
-                    .SingleOrDefault(x => x.Value.AssignedShipModuleFeat == feat);
+                    .SingleOrDefault(x => x.Key == feat);
             }
 
-            // Neither high nor low had this feat. Log an error.
-            if(shipModule.Value == null)
+            // Neither high nor low had this feat.Log an error.
+            if (shipModule.Value == null)
             {
-                Log.Write(LogGroup.Error, $"Failed to locate matching ship module by its feat for player {GetName(player)}");
-                SendMessageToPC(player, "Unable to use that module.");
+                Log.Write(LogGroup.Error, $"Failed to locate matching ship module by its feat for player {GetName(activator)}");
+                SendMessageToPC(activator, "Unable to use that module.");
                 return;
             }
 
@@ -492,10 +480,10 @@ namespace SWLOR.Game.Server.Service
             var shipModuleDetails = _shipModules[shipModule.Value.ItemTag];
 
             // Check capacitor requirements
-            var requiredCapacitor = shipModuleDetails.CalculateCapacitorAction?.Invoke(player, dbPlayerShip);
-            if (requiredCapacitor != null && dbPlayerShip.Capacitor < requiredCapacitor)
+            var requiredCapacitor = shipModuleDetails.CalculateCapacitorAction?.Invoke(activatorShipStatus);
+            if (requiredCapacitor != null && activatorShipStatus.Capacitor < requiredCapacitor)
             {
-                SendMessageToPC(player, $"Your ship does not have enough capacitor to use that module. (Required: {requiredCapacitor})");
+                SendMessageToPC(activator, $"Your ship does not have enough capacitor to use that module. (Required: {requiredCapacitor})");
                 return;
             }
 
@@ -503,25 +491,25 @@ namespace SWLOR.Game.Server.Service
             var now = DateTime.UtcNow;
             if (shipModule.Value.RecastTime > now)
             {
-                SendMessageToPC(player, "That module is not ready.");
+                SendMessageToPC(activator, "That module is not ready.");
                 return;
             }
 
             // Check for a valid target.
-            var target = GetCurrentTarget(player);
+            var target = GetCurrentTarget(activator);
             if (!GetIsObjectValid(target.Creature))
             {
-                SendMessageToPC(player, "Target not selected.");
+                SendMessageToPC(activator, "Target not selected.");
                 return;
             }
 
             // Validation succeeded, run the module-specific code now.
-            shipModuleDetails.ModuleActivatedAction?.Invoke(player, target, dbPlayerShip);
+            shipModuleDetails.ModuleActivatedAction?.Invoke(activatorShipStatus, target);
             
             // Update the recast timer.
             if (shipModuleDetails.CalculateRecastAction != null)
             {
-                var recastSeconds = shipModuleDetails.CalculateRecastAction(player, dbPlayerShip);
+                var recastSeconds = shipModuleDetails.CalculateRecastAction(activatorShipStatus);
                 var recastTimer = now.AddSeconds(recastSeconds);
                 shipModule.Value.RecastTime = recastTimer;
             }
@@ -529,11 +517,14 @@ namespace SWLOR.Game.Server.Service
             // Reduce capacitor
             if (requiredCapacitor != null)
             {
-                dbPlayerShip.Capacitor -= (int)requiredCapacitor;
+                activatorShipStatus.Capacitor -= (int) requiredCapacitor;
             }
 
-            // Update changes
-            DB.Set(playerId, dbPlayer);
+            // Update changes for players. No need to update NPCs as they are already stored in memory cache.
+            if (GetIsPC(activator))
+            {
+                ApplyShipStatusPropertiesToPlayerEntity(activatorShipStatus, activator);
+            }
         }
 
         /// <summary>
@@ -594,7 +585,7 @@ namespace SWLOR.Game.Server.Service
 
             var registeredEnemyType = _shipEnemies[creatureTag];
 
-            _shipNPCs[creature] = new ShipStatus
+            var shipStatus = new ShipStatus
             {
                 Creature = creature,
                 Capacitor = registeredEnemyType.Capacitor, 
@@ -608,6 +599,33 @@ namespace SWLOR.Game.Server.Service
                 ExplosiveDefense = registeredEnemyType.ExplosiveDefense,
                 ThermalDefense = registeredEnemyType.ThermalDefense
             };
+
+            // Attach the modules to the ship status.
+            var featCount = 0;
+            foreach (var itemTag in registeredEnemyType.HighPoweredModules)
+            {
+                var feat = ShipModuleFeats.ElementAt(featCount).Key;
+                shipStatus.HighPowerModules.Add(feat, new ShipStatus.ShipStatusModule
+                {
+                    ItemTag = itemTag,
+                    RecastTime = DateTime.UtcNow
+                });
+
+                featCount++;
+            }
+            foreach (var itemTag in registeredEnemyType.LowPowerModules)
+            {
+                var feat = ShipModuleFeats.ElementAt(featCount).Key;
+                shipStatus.LowPowerModules.Add(feat, new ShipStatus.ShipStatusModule
+                {
+                    ItemTag = itemTag,
+                    RecastTime = DateTime.UtcNow
+                });
+
+                featCount++;
+            }
+
+            _shipNPCs[creature] = shipStatus;
         }
 
         /// <summary>
@@ -622,6 +640,30 @@ namespace SWLOR.Game.Server.Service
             {
                 _shipNPCs.Remove(creature);
             }
+        }
+
+        private static void ApplyShipStatusPropertiesToPlayerEntity(ShipStatus shipStatus, uint player)
+        {
+            if (!GetIsPC(player) || GetIsDM(player)) return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Entity.Player>(playerId);
+            var dbPlayerShip = dbPlayer.Ships[dbPlayer.ActiveShipId];
+
+            dbPlayerShip.Shield = shipStatus.Shield;
+            dbPlayerShip.Hull = shipStatus.Hull;
+            dbPlayerShip.Capacitor = shipStatus.Capacitor;
+
+            foreach (var (_, shipModule) in shipStatus.HighPowerModules)
+            {
+                // todo: map the recast changes back to entity
+            }
+            foreach (var (_, shipModule) in shipStatus.LowPowerModules)
+            {
+                // todo: map the recast changes back to entity
+            }
+
+            DB.Set(playerId, dbPlayer);
         }
 
         /// <summary>
@@ -640,6 +682,7 @@ namespace SWLOR.Game.Server.Service
                 return new ShipStatus();
             }
 
+            // Player ship statuses must be mapped from their database records.
             if (GetIsPC(creature))
             {
                 var targetPlayerId = GetObjectUUID(creature);
@@ -658,7 +701,26 @@ namespace SWLOR.Game.Server.Service
                 shipStatus.ThermalDefense = shipDetail.ThermalDefense + dbPlayerShip.ThermalDefenseBonus;
                 shipStatus.ExplosiveDefense = shipDetail.ExplosiveDefense + dbPlayerShip.ExplosiveDefenseBonus;
                 shipStatus.EMDefense = shipDetail.EMDefense + dbPlayerShip.EMDefenseBonus;
+
+                foreach (var (_, shipModule) in dbPlayerShip.HighPowerModules)
+                {
+                    shipStatus.HighPowerModules.Add(shipModule.AssignedShipModuleFeat, new ShipStatus.ShipStatusModule
+                    {
+                        ItemTag = shipModule.ItemTag,
+                        RecastTime = shipModule.RecastTime
+                    });
+                }
+
+                foreach (var (_, shipModule) in dbPlayerShip.LowPowerModules)
+                {
+                    shipStatus.LowPowerModules.Add(shipModule.AssignedShipModuleFeat, new ShipStatus.ShipStatusModule
+                    {
+                        ItemTag = shipModule.ItemTag,
+                        RecastTime = shipModule.RecastTime
+                    });
+                }
             }
+            // NPC ship statuses are stored directly in cache so we can return them immediately.
             else
             {
                 shipStatus = _shipNPCs.ContainsKey(creature) 
@@ -750,7 +812,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Notify nearby players of damage taken by target.
-            Messaging.SendMessageNearbyToPlayers(target, $"{GetName(attacker)} deals {amount} damage to {GetName(target)}.");
+            Messaging.SendMessageNearbyToPlayers(attacker, $"{GetName(attacker)} deals {amount} damage to {GetName(target)}.");
         }
 
         /// <summary>
@@ -772,7 +834,7 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Entity.Player>(playerId);
                 var dbPlayerShip = dbPlayer.Ships[dbPlayer.ActiveShipId];
-                const int ChanceToDropModule = 80;
+                const int ChanceToDropModule = 65;
 
                 // Give a chance to drop each installed module.
                 foreach (var (_, shipModule) in dbPlayerShip.HighPowerModules)

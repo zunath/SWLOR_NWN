@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <returns>A ship module builder with the configured options.</returns>
         public ShipModuleBuilder Recast(float seconds)
         {
-            _activeShipModule.CalculateRecastAction = (player, ship) => seconds;
+            _activeShipModule.CalculateRecastAction = (activator) => seconds;
 
             return this;
         }
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <returns>A ship module builder with the configured options.</returns>
         public ShipModuleBuilder Capacitor(int capacitor)
         {
-            _activeShipModule.CalculateCapacitorAction = (player, ship) => capacitor;
+            _activeShipModule.CalculateCapacitorAction = (activator) => capacitor;
 
             return this;
         }
@@ -156,7 +156,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
-        /// Sets the action to run when this module is used in space by the player.
+        /// Sets the action to run when this module is used in space by the activator.
         /// </summary>
         /// <param name="action">The action to take.</param>
         /// <returns>A ship module builder with the configured options.</returns>

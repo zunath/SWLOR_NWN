@@ -23,6 +23,18 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// Sets the item tag of the ship being used by the enemy.
+        /// </summary>
+        /// <param name="itemTag"></param>
+        /// <returns></returns>
+        public ShipEnemyBuilder ItemTag(string itemTag)
+        {
+            _activeShipEnemy.ShipItemTag = itemTag;
+
+            return this;
+        }
+
+        /// <summary>
         /// Sets the shield of the ship currently being built.
         /// </summary>
         /// <param name="shield">The shield level to set.</param>

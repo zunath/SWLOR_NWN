@@ -3,18 +3,24 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
     public static class PlayerStatusWindow
     {
-        private static Gui.IdReservation _idReservation;
+        private static Gui.IdReservation _characterIdReservation;
+        private static Gui.IdReservation _spaceIdReservation;
 
         [NWNEventHandler("mod_load")]
         public static void ReserveIds()
         {
-            _idReservation = Gui.ReserveIds(nameof(PlayerStatusWindow), 14);
+            // Reserve 20 Ids for the player's status
+            _characterIdReservation = Gui.ReserveIds(nameof(PlayerStatusWindow) + "_CHARACTER", 20);
+
+            // Reserve another 22 Ids for the target's status (if player is in space mode)
+            _spaceIdReservation = Gui.ReserveIds(nameof(PlayerStatusWindow) + "_SPACE", 22);
         }
 
         /// <summary>
@@ -28,7 +34,11 @@ namespace SWLOR.Game.Server.Feature
             // Space UI elements
             if (Space.IsPlayerInSpaceMode(player))
             {
-                DrawSpaceStatusComponent(player);
+                var shipStatus = Space.GetShipStatus(player);
+                var target = Space.GetCurrentTarget(player);
+
+                DrawSpaceStatusComponent(player, shipStatus);
+                DrawSpaceStatusComponent(player, target, 4, GetName(target.Creature));
             }
             // Character UI elements
             else
@@ -71,23 +81,23 @@ namespace SWLOR.Game.Server.Feature
             var fpText = "FP:".PadRight(5, ' ') + $"{currentFP.ToString().PadLeft(4, ' ')} / {maxFP.ToString().PadLeft(4, ' ')}";
             var stmText = "STM:".PadRight(5, ' ') + $"{currentSTM.ToString().PadLeft(4, ' ')} / {maxSTM.ToString().PadLeft(4, ' ')}";
 
-            PostString(player, hpText, centerWindowX + 8, WindowY + 3, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, _idReservation.StartId + 2, Gui.TextName);
-            PostString(player, fpText, centerWindowX + 8, WindowY + 2, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, _idReservation.StartId + 1, Gui.TextName);
-            PostString(player, stmText, centerWindowX + 8, WindowY + 1, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, _idReservation.StartId, Gui.TextName);
+            PostString(player, hpText, centerWindowX + 8, WindowY + 3, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, _characterIdReservation.StartId + 2, Gui.TextName);
+            PostString(player, fpText, centerWindowX + 8, WindowY + 2, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, _characterIdReservation.StartId + 1, Gui.TextName);
+            PostString(player, stmText, centerWindowX + 8, WindowY + 1, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, _characterIdReservation.StartId, Gui.TextName);
 
             // Draw the bars
-            PostString(player, hpBar, centerWindowX + 2, WindowY + 3, Anchor, 0.0f, Gui.ColorHealthBar, Gui.ColorHealthBar, _idReservation.StartId + 3, Gui.FontName);
-            PostString(player, fpBar, centerWindowX + 2, WindowY + 2, Anchor, 0.0f, Gui.ColorManaBar, Gui.ColorManaBar, _idReservation.StartId + 4, Gui.FontName);
-            PostString(player, stmBar, centerWindowX + 2, WindowY + 1, Anchor, 0.0f, Gui.ColorStaminaBar, Gui.ColorStaminaBar, _idReservation.StartId + 5, Gui.FontName);
+            PostString(player, hpBar, centerWindowX + 2, WindowY + 3, Anchor, 0.0f, Gui.ColorHealthBar, Gui.ColorHealthBar, _characterIdReservation.StartId + 3, Gui.FontName);
+            PostString(player, fpBar, centerWindowX + 2, WindowY + 2, Anchor, 0.0f, Gui.ColorManaBar, Gui.ColorManaBar, _characterIdReservation.StartId + 4, Gui.FontName);
+            PostString(player, stmBar, centerWindowX + 2, WindowY + 1, Anchor, 0.0f, Gui.ColorStaminaBar, Gui.ColorStaminaBar, _characterIdReservation.StartId + 5, Gui.FontName);
 
             // Draw the backgrounds
             if (!GetLocalBool(player, "PLAYERSTATUSWINDOW_BACKGROUND_DRAWN"))
             {
-                PostString(player, backgroundBar, centerWindowX + 2, WindowY + 3, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, _idReservation.StartId + 6, Gui.FontName);
-                PostString(player, backgroundBar, centerWindowX + 2, WindowY + 2, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, _idReservation.StartId + 7, Gui.FontName);
-                PostString(player, backgroundBar, centerWindowX + 2, WindowY + 1, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, _idReservation.StartId + 8, Gui.FontName);
+                PostString(player, backgroundBar, centerWindowX + 2, WindowY + 3, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, _characterIdReservation.StartId + 6, Gui.FontName);
+                PostString(player, backgroundBar, centerWindowX + 2, WindowY + 2, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, _characterIdReservation.StartId + 7, Gui.FontName);
+                PostString(player, backgroundBar, centerWindowX + 2, WindowY + 1, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, _characterIdReservation.StartId + 8, Gui.FontName);
 
-                Gui.DrawWindow(player, _idReservation.StartId + 9, Anchor, WindowX, WindowY, WindowWidth-2, 3);
+                Gui.DrawWindow(player, _characterIdReservation.StartId + 9, Anchor, WindowX, WindowY, WindowWidth-2, 3);
             }
         }
 
@@ -95,20 +105,21 @@ namespace SWLOR.Game.Server.Feature
         /// Draws the ship's Shield, Hull, and Capacitor status information on the player's screen.
         /// </summary>
         /// <param name="player">The player to draw the component for.</param>
-        private static void DrawSpaceStatusComponent(uint player)
+        /// <param name="shipStatus">The ship details</param>
+        /// <param name="yOffset">The window's Y position offset</param>
+        private static void DrawSpaceStatusComponent(uint player, ShipStatus shipStatus, int yOffset = 0, string targetName = "")
         {
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
-            var shipId = dbPlayer.ActiveShipId;
-            var dbPlayerShip = dbPlayer.Ships[shipId];
-            var shipDetail = Space.GetShipDetailByItemTag(dbPlayerShip.ItemTag);
+            if (!GetIsObjectValid(shipStatus.Creature)) return;
 
-            var currentShields = dbPlayerShip.Shield;
-            var maxShields = shipDetail.MaxShield + dbPlayerShip.MaxShieldBonus;
-            var currentHull = dbPlayerShip.Hull;
-            var maxHull = shipDetail.MaxHull + dbPlayerShip.MaxHullBonus;
-            var currentCapacitor = dbPlayerShip.Capacitor;
-            var maxCapacitor = shipDetail.MaxCapacitor + dbPlayerShip.MaxCapacitorBonus;
+            var guiStartId = string.IsNullOrWhiteSpace(targetName) ? _characterIdReservation.StartId : _spaceIdReservation.StartId;
+            var shipDetail = Space.GetShipDetailByItemTag(shipStatus.ItemTag);
+
+            var currentShields = shipStatus.Shield;
+            var maxShields = shipDetail.MaxShield;
+            var currentHull = shipStatus.Hull;
+            var maxHull = shipDetail.MaxHull;
+            var currentCapacitor = shipStatus.Capacitor;
+            var maxCapacitor = shipDetail.MaxCapacitor;
 
             var backgroundBar = BuildBar(1, 1, 22);
             var shieldsBar = BuildBar(currentShields, maxShields, 22);
@@ -116,35 +127,42 @@ namespace SWLOR.Game.Server.Feature
             var capacitorBar = BuildBar(currentCapacitor, maxCapacitor, 22);
 
             const int WindowX = 1;
-            const int WindowY = 5;
+            var windowY = 5 + yOffset + (string.IsNullOrWhiteSpace(targetName) ? 0 : 1);
             const int WindowWidth = 25;
             const ScreenAnchor Anchor = ScreenAnchor.BottomRight;
 
             // Draw order is backwards. The top-most layer needs to be drawn first.
             var centerWindowX = Gui.CenterStringInWindow(backgroundBar, WindowX, WindowWidth);
 
-            // Draw the text
+            // Build the text
             var shieldsText = "SH:".PadRight(5, ' ') + $"{currentShields.ToString().PadLeft(4, ' ')} / {maxShields.ToString().PadLeft(4, ' ')}";
             var hullText = "HL:".PadRight(5, ' ') + $"{currentHull.ToString().PadLeft(4, ' ')} / {maxHull.ToString().PadLeft(4, ' ')}";
             var capacitorText = "CAP:".PadRight(5, ' ') + $"{currentCapacitor.ToString().PadLeft(4, ' ')} / {maxCapacitor.ToString().PadLeft(4, ' ')}";
 
-            PostString(player, shieldsText, centerWindowX + 8, WindowY + 3, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, _idReservation.StartId + 2, Gui.TextName);
-            PostString(player, hullText, centerWindowX + 8, WindowY + 2, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, _idReservation.StartId + 1, Gui.TextName);
-            PostString(player, capacitorText, centerWindowX + 8, WindowY + 1, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, _idReservation.StartId, Gui.TextName);
+            // Draw header, if applicable.
+            if (!string.IsNullOrWhiteSpace(targetName))
+            {
+                PostString(player, targetName, centerWindowX + 8, windowY + 4, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, guiStartId + 9, Gui.TextName); 
+            }
+
+            PostString(player, shieldsText, centerWindowX + 8, windowY + 3, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, guiStartId + 2, Gui.TextName); 
+            PostString(player, hullText, centerWindowX + 8, windowY + 2, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, guiStartId + 1, Gui.TextName); 
+            PostString(player, capacitorText, centerWindowX + 8, windowY + 1, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, guiStartId, Gui.TextName); 
 
             // Draw the bars
-            PostString(player, shieldsBar, centerWindowX + 2, WindowY + 3, Anchor, 0.0f, Gui.ColorShieldsBar, Gui.ColorShieldsBar, _idReservation.StartId + 3, Gui.FontName);
-            PostString(player, hullBar, centerWindowX + 2, WindowY + 2, Anchor, 0.0f, Gui.ColorHullBar, Gui.ColorHullBar, _idReservation.StartId + 4, Gui.FontName);
-            PostString(player, capacitorBar, centerWindowX + 2, WindowY + 1, Anchor, 0.0f, Gui.ColorCapacitorBar, Gui.ColorCapacitorBar, _idReservation.StartId + 5, Gui.FontName);
+            PostString(player, shieldsBar, centerWindowX + 2, windowY + 3, Anchor, 0.0f, Gui.ColorShieldsBar, Gui.ColorShieldsBar, guiStartId + 3, Gui.FontName); 
+            PostString(player, hullBar, centerWindowX + 2, windowY + 2, Anchor, 0.0f, Gui.ColorHullBar, Gui.ColorHullBar, guiStartId + 4, Gui.FontName); 
+            PostString(player, capacitorBar, centerWindowX + 2, windowY + 1, Anchor, 0.0f, Gui.ColorCapacitorBar, Gui.ColorCapacitorBar, guiStartId + 5, Gui.FontName); 
 
             // Draw the backgrounds
             if (!GetLocalBool(player, "PLAYERSTATUSWINDOW_BACKGROUND_DRAWN"))
             {
-                PostString(player, backgroundBar, centerWindowX + 2, WindowY + 3, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, _idReservation.StartId + 6, Gui.FontName);
-                PostString(player, backgroundBar, centerWindowX + 2, WindowY + 2, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, _idReservation.StartId + 7, Gui.FontName);
-                PostString(player, backgroundBar, centerWindowX + 2, WindowY + 1, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, _idReservation.StartId + 8, Gui.FontName);
+                PostString(player, backgroundBar, centerWindowX + 2, windowY + 3, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, guiStartId + 6, Gui.FontName); 
+                PostString(player, backgroundBar, centerWindowX + 2, windowY + 2, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, guiStartId + 7, Gui.FontName); 
+                PostString(player, backgroundBar, centerWindowX + 2, windowY + 1, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, guiStartId + 8, Gui.FontName); 
 
-                Gui.DrawWindow(player, _idReservation.StartId + 9, Anchor, WindowX, WindowY, WindowWidth - 2, 3);
+                var windowHeight = string.IsNullOrWhiteSpace(targetName) ? 3 : 4;
+                Gui.DrawWindow(player, guiStartId + 10, Anchor, WindowX, windowY, WindowWidth - 2, windowHeight); 
             }
         }
 

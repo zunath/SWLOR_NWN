@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player whose target to retrieve.</param>
         /// <returns>The selected target or OBJECT_INVALID.</returns>
-        private static ShipStatus GetCurrentTarget(uint player)
+        public static ShipStatus GetCurrentTarget(uint player)
         {
             var target = GetLocalObject(player, "SPACE_TARGET");
             return GetShipStatus(target);
@@ -588,6 +588,8 @@ namespace SWLOR.Game.Server.Service
             var shipStatus = new ShipStatus
             {
                 Creature = creature,
+                ItemTag = registeredEnemyType.ShipItemTag,
+
                 Capacitor = registeredEnemyType.Capacitor, 
                 Hull = registeredEnemyType.Hull, 
                 Shield = registeredEnemyType.Shield,
@@ -673,7 +675,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature to get the status of</param>
         /// <returns>A ship status containing current statistics about a creature's ship.</returns>
-        private static ShipStatus GetShipStatus(uint creature)
+        public static ShipStatus GetShipStatus(uint creature)
         {
             var shipStatus = new ShipStatus();
 
@@ -691,6 +693,8 @@ namespace SWLOR.Game.Server.Service
                 var shipDetail = _ships[dbPlayerShip.ItemTag];
 
                 shipStatus.Creature = creature;
+                shipStatus.ItemTag = dbPlayerShip.ItemTag;
+
                 shipStatus.Shield = dbPlayerShip.Shield;
                 shipStatus.Hull = dbPlayerShip.Hull;
                 shipStatus.Capacitor = dbPlayerShip.Capacitor;

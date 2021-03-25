@@ -4,6 +4,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
 {
     public class ShipEnemyDetail
     {
+        public string ShipItemTag { get; set; }
         public int Shield { get; set; }
         public int Hull { get; set; }
         public int Capacitor { get; set; }

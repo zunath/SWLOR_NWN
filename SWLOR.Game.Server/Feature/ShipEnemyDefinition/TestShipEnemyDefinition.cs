@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.ShipEnemyDefinition
         private void DemoEnemy()
         {
             _builder.Create("TargetDummy")
+                .ItemTag("ShipDeedLightEscort")
                 .Capacitor(20)
                 .Shield(20)
                 .Hull(10)

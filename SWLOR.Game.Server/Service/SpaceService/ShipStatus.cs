@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         public uint Creature { get; set; }
+        public string ItemTag { get; set; }
         public int Shield { get; set; }
         public int Hull { get; set; }
         public int Capacitor { get; set; }

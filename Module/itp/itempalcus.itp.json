@@ -11297,11 +11297,484 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Basic Capacitor Booster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_boost_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Combat Laser"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "com_laser_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic EM Amplifier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "em_amp_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Evasion Booster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "eva_boost_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Explosive Amplifier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "exp_amp_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Hull Booster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hull_boost_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Ion Cannon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ion_cann_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Missile Launcher"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "msl_launch_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Shield Booster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shld_boost_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Targeting System"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tgt_sys_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Thermal Amplifier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "therm_amp_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capacitor Booster I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_boost_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capacitor Booster II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_boost_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capacitor Booster III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_boost_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Capacitor Booster IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_boost_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Combat Laser I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "com_laser_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Combat Laser II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "com_laser_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Combat Laser III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "com_laser_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Combat Laser IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "com_laser_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "EM Amplifier I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "em_amp_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "EM Amplifier II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "em_amp_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "EM Amplifier III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "em_amp_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "EM Amplifier IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "em_amp_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Evasion Booster I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "eva_boost_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Evasion Booster II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "eva_boost_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Evasion Booster III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "eva_boost_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Evasion Booster IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "eva_boost_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Explosive Amplifier I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "exp_amp_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Explosive Amplifier II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "exp_amp_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Explosive Amplifier III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "exp_amp_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Explosive Amplifier IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "exp_amp_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "HasteJedi2"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "hastejedi2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hull Booster I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hull_boost_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hull Booster II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hull_boost_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hull Booster III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hull_boost_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hull Booster IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hull_boost_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ion Cannon I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ion_cann_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ion Cannon II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ion_cann_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ion Cannon III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ion_cann_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ion Cannon IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ion_cann_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Missile Launcher I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "msl_launch_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Missile Launcher II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "msl_launch_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Missile Launcher III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "msl_launch_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Missile Launcher IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "msl_launch_4"
                     }
                   },
                   {
@@ -11330,6 +11803,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Shield Booster I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shld_boost_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shield Booster II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shld_boost_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shield Booster III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shld_boost_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shield Booster IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shld_boost_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Ship Deed: Light Escort"
                     },
                     "RESREF": {
@@ -11352,11 +11869,88 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Starship Module: Test"
+                      "value": "Targeting System I"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "shp_module_test"
+                      "value": "tgt_sys_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Targeting System II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tgt_sys_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Targeting System III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tgt_sys_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Targeting System IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "tgt_sys_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thermal Amplifier I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "therm_amp_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thermal Amplifier II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "therm_amp_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thermal Amplifier III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "therm_amp_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Thermal Amplifier IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "therm_amp_4"
                     }
                   }
                 ]

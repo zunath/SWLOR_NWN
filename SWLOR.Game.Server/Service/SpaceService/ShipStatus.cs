@@ -23,6 +23,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int ExplosiveDefense { get; set; }
         public int ThermalDefense { get; set; }
         public int EMDefense { get; set; }
+        public int ExplosiveDamage { get; set; }
+        public int ThermalDamage { get; set; }
+        public int EMDamage { get; set; }
 
         public Dictionary<Feat, ShipStatusModule> HighPowerModules { get; set; }
         public Dictionary<Feat, ShipStatusModule> LowPowerModules { get; set; }

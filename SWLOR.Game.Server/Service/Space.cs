@@ -706,6 +706,11 @@ namespace SWLOR.Game.Server.Service
                 shipStatus.ExplosiveDefense = shipDetail.ExplosiveDefense + dbPlayerShip.ExplosiveDefenseBonus;
                 shipStatus.EMDefense = shipDetail.EMDefense + dbPlayerShip.EMDefenseBonus;
 
+                shipStatus.ThermalDamage = dbPlayerShip.ThermalDamageBonus;
+                shipStatus.ExplosiveDamage = dbPlayerShip.ExplosiveDamageBonus;
+                shipStatus.EMDamage = dbPlayerShip.EMDamageBonus;
+
+
                 foreach (var (_, shipModule) in dbPlayerShip.HighPowerModules)
                 {
                     shipStatus.HighPowerModules.Add(shipModule.AssignedShipModuleFeat, new ShipStatus.ShipStatusModule

@@ -16,43 +16,52 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 
         public Dictionary<string, ShipModuleDetail> BuildShipModules()
         {
-            Laser();
+            CombatLaser("com_laser_b", "Basic Combat Laser", "B. Cmbt Laser", "Deals light thermal damage to your target.", 1, 3f, 6, 5);
+            CombatLaser("com_laser_1", "Combat Laser I", "Cmbt Laser I", "Deals light thermal damage to your target.", 2, 4f, 9, 8);
+            CombatLaser("com_laser_2", "Combat Laser II", "Cmbt Laser II", "Deals light thermal damage to your target.", 3, 5f, 12, 11);
+            CombatLaser("com_laser_3", "Combat Laser III", "Cmbt Laser III", "Deals light thermal damage to your target.", 4, 6f, 15, 14);
+            CombatLaser("com_laser_4", "Combat Laser IV", "Cmbt Laser IV", "Deals light thermal damage to your target.", 5, 7f, 18, 16);
+
             return _builder.Build();
         }
 
-        private void Laser()
+        private void CombatLaser(string itemTag, string name, string shortName, string description, int requiredLevel, float recast, int capacitor, int baseDamage)
         {
-            _builder.Create("com_laser_b")
-                .Name("Basic Combat Laser")
-                .ShortName("B. Cmbt Laser")
-                .Description("Deals light thermal damage to your target.")
+            _builder.Create(itemTag)
+                .Name(name)
+                .ShortName(shortName)
+                .Description(description)
                 .IsActiveModule()
                 .PowerType(ShipModulePowerType.High)
-                .RequirePerk(PerkType.OffensiveModules, 1)
-                .Recast(3.0f)
-                .Capacitor(6)
+                .RequirePerk(PerkType.OffensiveModules, requiredLevel)
+                .Recast(recast)
+                .Capacitor(capacitor)
                 .ActivatedAction((activator, target) =>
                 {
+                    var targetDefense = target.ThermalDefense;
+                    var attackerDamage = baseDamage + activator.ThermalDamage;
+
+                    var damage = attackerDamage - targetDefense;
+                    if (damage < 0) damage = 0;
+
                     var chanceToHit = Space.CalculateChanceToHit(activator.Creature, target.Creature);
                     var roll = Random.D100(1);
                     var isHit = roll <= chanceToHit;
-                    
-                    Console.WriteLine($"roll = {roll} vs {chanceToHit}"); // todo debug
                     
                     if (isHit)
                     {
                         AssignCommand(activator.Creature, () =>
                         {
-                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Lightning, activator.Creature, BodyNode.Chest);
+                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Fire, activator.Creature, BodyNode.Chest);
                             ApplyEffectToObject(DurationType.Temporary, effect, target.Creature, 1.0f);
-                            Space.ApplyShipDamage(activator.Creature, target.Creature, 5); // todo: damage calculation
+                            Space.ApplyShipDamage(activator.Creature, target.Creature, damage);
                         });
                     }
                     else
                     {
                         AssignCommand(activator.Creature, () =>
                         {
-                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Lightning, activator.Creature, BodyNode.Chest, true);
+                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Fire, activator.Creature, BodyNode.Chest, true);
                             ApplyEffectToObject(DurationType.Temporary, effect, target.Creature, 1.0f);
                         });
                         SendMessageToPC(activator.Creature, "You miss your target.");

@@ -21,7 +21,8 @@ namespace SWLOR.Game.Server.Feature.ShipEnemyDefinition
                 .Capacitor(20)
                 .Shield(20)
                 .Hull(10)
-                .Evasion(5);
+                .Evasion(5)
+                .ThermalDefense(2);
         }
 
     }

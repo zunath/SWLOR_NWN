@@ -754,7 +754,7 @@ namespace SWLOR.Game.Server.Service
             var chanceToHit = 75 + delta * 0.5f;
             return (int)chanceToHit;
         }
-        
+
         /// <summary>
         /// Applies damage to a ship target. Damage will first be taken to the shields.
         /// When shields reaches zero, damage will be taken on the hull.

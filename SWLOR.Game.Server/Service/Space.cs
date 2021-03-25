@@ -5,13 +5,13 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Object = SWLOR.Game.Server.Core.NWNX.Object;
+using Player = SWLOR.Game.Server.Core.NWNX.Player;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -168,10 +168,10 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player whose target to retrieve.</param>
         /// <returns>The selected target or OBJECT_INVALID.</returns>
-        public static ShipStatus GetCurrentTarget(uint player)
+        public static (uint, ShipStatus) GetCurrentTarget(uint player)
         {
             var target = GetLocalObject(player, "SPACE_TARGET");
-            return GetShipStatus(target);
+            return (target, GetShipStatus(target));
         }
 
         /// <summary>
@@ -181,10 +181,10 @@ namespace SWLOR.Game.Server.Service
         private static void ClearCurrentTarget(uint player)
         {
             // Remove the VFX from the current target if it exists.
-            var currentTarget = GetCurrentTarget(player);
-            if (GetIsObjectValid(currentTarget.Creature))
+            var (target, _) = GetCurrentTarget(player);
+            if (GetIsObjectValid(target))
             {
-                Player.ApplyLoopingVisualEffectToObject(player, currentTarget.Creature, VisualEffect.None);
+                Player.ApplyLoopingVisualEffectToObject(player, target, VisualEffect.None);
             }
 
             DeleteLocalObject(player, "SPACE_TARGET");
@@ -202,10 +202,10 @@ namespace SWLOR.Game.Server.Service
             Events.SkipEvent();
 
             var target = StringToObject(Events.GetEventData("TARGET"));
-            var currentTarget = GetCurrentTarget(player);
+            var (currentTarget, _) = GetCurrentTarget(player);
             
             // Targeted the same object - remove it.
-            if (currentTarget.Creature == target)
+            if (currentTarget == target)
             {
                 ClearCurrentTarget(player);
             }
@@ -214,6 +214,39 @@ namespace SWLOR.Game.Server.Service
             {
                 ClearCurrentTarget(player);
                 SetCurrentTarget(player, target);
+            }
+        }
+
+        /// <summary>
+        /// When a creature leaves an area, their current target is cleared.
+        /// </summary>
+        [NWNEventHandler("area_exit")]
+        public static void ClearTargetOnAreaExit()
+        {
+            var player = GetExitingObject();
+            if (!GetIsPC(player)) return;
+
+            ClearCurrentTarget(player);
+        }
+
+        /// <summary>
+        /// When a player enters the game, reapply any custom TLK strings related to ship module feats.
+        /// </summary>
+        [NWNEventHandler("mod_enter")]
+        public static void ReloadPlayerTlkStrings()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!IsPlayerInSpaceMode(player)) return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Entity.Player>(playerId);
+            var dbPlayerShip = dbPlayer.Ships[dbPlayer.ActiveShipId];
+
+            foreach (var (feat, shipModule) in dbPlayerShip.HighPowerModules)
+            {
+                var shipModuleDetail = _shipModules[shipModule.ItemTag];
+                ApplyShipModuleFeatTLKs(player, shipModuleDetail, feat);
             }
         }
 
@@ -253,7 +286,7 @@ namespace SWLOR.Game.Server.Service
             // Load ship modules as feats.
             var allModules = dbPlayerShip.HighPowerModules.Concat(dbPlayerShip.LowPowerModules).ToList();
 
-            foreach(var (_, shipModule) in allModules)
+            foreach(var (feat, shipModule) in allModules)
             {
                 var shipModuleDetail = _shipModules[shipModule.ItemTag];
 
@@ -261,12 +294,10 @@ namespace SWLOR.Game.Server.Service
                 if (shipModuleDetail.IsPassive) continue;
 
                 // Convert current ship module to feat.
-                Creature.AddFeat(player, shipModule.AssignedShipModuleFeat);
+                Creature.AddFeat(player, feat);
 
                 // Rename the feat to match the configured name on the ship module.
-                var shipModuleFeat = ShipModuleFeats[shipModule.AssignedShipModuleFeat];
-                Player.SetTlkOverride(player, shipModuleFeat.NameTlkId, shipModuleDetail.Name);
-                Player.SetTlkOverride(player, shipModuleFeat.DescriptionTlkId, shipModuleDetail.Description);
+                ApplyShipModuleFeatTLKs(player, shipModuleDetail, feat);
             }
 
             // Load the player's ship hot bar.
@@ -283,6 +314,22 @@ namespace SWLOR.Game.Server.Service
             }
 
             DB.Set(playerId, dbPlayer);
+        }
+
+        /// <summary>
+        /// Applies the custom TLKs related to a ship module feat.
+        /// </summary>
+        /// <param name="player">The player who will receive the TLK override.</param>
+        /// <param name="shipModuleDetail">The ship module detail whose name and description will be loaded.</param>
+        /// <param name="feat">The ship module feat</param>
+        private static void ApplyShipModuleFeatTLKs(uint player, ShipModuleDetail shipModuleDetail, Feat feat)
+        {
+            if (!ShipModuleFeats.ContainsKey(feat)) return;
+
+            var shipModuleFeat = ShipModuleFeats[feat];
+
+            Player.SetTlkOverride(player, shipModuleFeat.NameTlkId, shipModuleFeat.SlotName + ":" + shipModuleDetail.Name);
+            Player.SetTlkOverride(player, shipModuleFeat.DescriptionTlkId, shipModuleDetail.Description);
         }
 
         /// <summary>
@@ -348,14 +395,14 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer.Perks[perkType] < requiredLevel) return false;
             }
 
-            foreach (var (itemTag, _) in playerShip.HighPowerModules)
+            foreach (var (feat, shipModule) in playerShip.HighPowerModules)
             {
-                if (!CanPlayerUseShipModule(player, itemTag)) return false;
+                if (!CanPlayerUseShipModule(player, shipModule.ItemTag)) return false;
             }
 
-            foreach (var (itemTag, _) in playerShip.LowPowerModules)
+            foreach (var (feat, shipModule) in playerShip.LowPowerModules)
             {
-                if (!CanPlayerUseShipModule(player, itemTag)) return false;
+                if (!CanPlayerUseShipModule(player, shipModule.ItemTag)) return false;
             }
 
             return true;
@@ -480,7 +527,7 @@ namespace SWLOR.Game.Server.Service
             var shipModuleDetails = _shipModules[shipModule.Value.ItemTag];
 
             // Check capacitor requirements
-            var requiredCapacitor = shipModuleDetails.CalculateCapacitorAction?.Invoke(activatorShipStatus);
+            var requiredCapacitor = shipModuleDetails.CalculateCapacitorAction?.Invoke(activator, activatorShipStatus);
             if (requiredCapacitor != null && activatorShipStatus.Capacitor < requiredCapacitor)
             {
                 SendMessageToPC(activator, $"Your ship does not have enough capacitor to use that module. (Required: {requiredCapacitor})");
@@ -496,20 +543,20 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Check for a valid target.
-            var target = GetCurrentTarget(activator);
-            if (!GetIsObjectValid(target.Creature))
+            var (target, targetShipStatus) = GetCurrentTarget(activator);
+            if (!GetIsObjectValid(target) || targetShipStatus == null)
             {
                 SendMessageToPC(activator, "Target not selected.");
                 return;
             }
 
             // Validation succeeded, run the module-specific code now.
-            shipModuleDetails.ModuleActivatedAction?.Invoke(activatorShipStatus, target);
+            shipModuleDetails.ModuleActivatedAction?.Invoke(activator, activatorShipStatus, target, targetShipStatus);
             
             // Update the recast timer.
             if (shipModuleDetails.CalculateRecastAction != null)
             {
-                var recastSeconds = shipModuleDetails.CalculateRecastAction(activatorShipStatus);
+                var recastSeconds = shipModuleDetails.CalculateRecastAction(activator, activatorShipStatus);
                 var recastTimer = now.AddSeconds(recastSeconds);
                 shipModule.Value.RecastTime = recastTimer;
             }
@@ -523,7 +570,11 @@ namespace SWLOR.Game.Server.Service
             // Update changes for players. No need to update NPCs as they are already stored in memory cache.
             if (GetIsPC(activator))
             {
-                ApplyShipStatusPropertiesToPlayerEntity(activatorShipStatus, activator);
+                var playerId = GetObjectUUID(activator);
+                var dbPlayer = DB.Get<Entity.Player>(playerId);
+                dbPlayer.Ships[dbPlayer.ActiveShipId] = activatorShipStatus;
+
+                DB.Set(playerId, dbPlayer);
             }
         }
 
@@ -545,27 +596,27 @@ namespace SWLOR.Game.Server.Service
 
             // Shield recovery
             playerShip.ShieldCycle++;
-            var rechargeRate = shipDetail.ShieldRechargeRate - playerShip.ShieldCycleBonus;
+            var rechargeRate = playerShip.ShieldCycle;
             if (rechargeRate <= 0)
                 rechargeRate = 1;
 
             if (playerShip.ShieldCycle >= rechargeRate)
             {
-                playerShip.Shield++; // todo: shield recovery calculation
+                playerShip.Shield++;
 
                 // Clamp shield to max.
-                if (playerShip.Shield > shipDetail.MaxShield + playerShip.MaxShieldBonus)
-                    playerShip.Shield = shipDetail.MaxShield + playerShip.MaxShieldBonus;
+                if (playerShip.Shield > playerShip.MaxShield)
+                    playerShip.Shield = playerShip.MaxShield;
 
                 playerShip.ShieldCycle = 0;
             }
 
             // Capacitor recovery
-            playerShip.Capacitor++; // todo: capacitor recovery calculation
+            playerShip.Capacitor++;
 
             // Clamp capacitor to max.
-            if (playerShip.Capacitor > shipDetail.MaxCapacitor + playerShip.MaxCapacitorBonus)
-                playerShip.Capacitor = shipDetail.MaxCapacitor + playerShip.MaxCapacitorBonus;
+            if (playerShip.Capacitor > shipDetail.MaxCapacitor)
+                playerShip.Capacitor = shipDetail.MaxCapacitor;
 
             // Update changes
             DB.Set(playerId, dbPlayer);
@@ -584,22 +635,24 @@ namespace SWLOR.Game.Server.Service
             if (!_shipEnemies.ContainsKey(creatureTag)) return;
 
             var registeredEnemyType = _shipEnemies[creatureTag];
+            var shipDetail = _ships[registeredEnemyType.ShipItemTag];
 
             var shipStatus = new ShipStatus
             {
-                Creature = creature,
                 ItemTag = registeredEnemyType.ShipItemTag,
-
-                Capacitor = registeredEnemyType.Capacitor, 
-                Hull = registeredEnemyType.Hull, 
-                Shield = registeredEnemyType.Shield,
-                
-                Evasion = registeredEnemyType.Evasion,
-                Accuracy = registeredEnemyType.Accuracy,
-
-                EMDefense = registeredEnemyType.EMDefense,
-                ExplosiveDefense = registeredEnemyType.ExplosiveDefense,
-                ThermalDefense = registeredEnemyType.ThermalDefense
+                Name = shipDetail.Name,
+                Shield = shipDetail.MaxShield,
+                MaxShield = shipDetail.MaxShield,
+                Hull = shipDetail.MaxHull,
+                MaxHull = shipDetail.MaxHull,
+                Capacitor = shipDetail.MaxCapacitor,
+                MaxCapacitor = shipDetail.MaxCapacitor,
+                EMDefense = shipDetail.EMDefense,
+                ExplosiveDefense = shipDetail.ExplosiveDefense,
+                ThermalDefense = shipDetail.ThermalDefense,
+                Accuracy = shipDetail.Accuracy,
+                Evasion = shipDetail.Evasion,
+                ShieldRechargeRate = shipDetail.ShieldRechargeRate
             };
 
             // Attach the modules to the ship status.
@@ -607,22 +660,28 @@ namespace SWLOR.Game.Server.Service
             foreach (var itemTag in registeredEnemyType.HighPoweredModules)
             {
                 var feat = ShipModuleFeats.ElementAt(featCount).Key;
+                var shipModule = _shipModules[itemTag];
                 shipStatus.HighPowerModules.Add(feat, new ShipStatus.ShipStatusModule
                 {
                     ItemTag = itemTag,
                     RecastTime = DateTime.UtcNow
                 });
 
+                shipModule.ModuleEquippedAction?.Invoke(creature, shipStatus);
+
                 featCount++;
             }
             foreach (var itemTag in registeredEnemyType.LowPowerModules)
             {
                 var feat = ShipModuleFeats.ElementAt(featCount).Key;
+                var shipModule = _shipModules[itemTag];
                 shipStatus.LowPowerModules.Add(feat, new ShipStatus.ShipStatusModule
                 {
                     ItemTag = itemTag,
                     RecastTime = DateTime.UtcNow
                 });
+
+                shipModule.ModuleEquippedAction?.Invoke(creature, shipStatus);
 
                 featCount++;
             }
@@ -644,30 +703,6 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void ApplyShipStatusPropertiesToPlayerEntity(ShipStatus shipStatus, uint player)
-        {
-            if (!GetIsPC(player) || GetIsDM(player)) return;
-
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Entity.Player>(playerId);
-            var dbPlayerShip = dbPlayer.Ships[dbPlayer.ActiveShipId];
-
-            dbPlayerShip.Shield = shipStatus.Shield;
-            dbPlayerShip.Hull = shipStatus.Hull;
-            dbPlayerShip.Capacitor = shipStatus.Capacitor;
-
-            foreach (var (_, shipModule) in shipStatus.HighPowerModules)
-            {
-                // todo: map the recast changes back to entity
-            }
-            foreach (var (_, shipModule) in shipStatus.LowPowerModules)
-            {
-                // todo: map the recast changes back to entity
-            }
-
-            DB.Set(playerId, dbPlayer);
-        }
-
         /// <summary>
         /// Retrieves the ship status of a given creature.
         /// If creature is an NPC, it will be retrieved from the cache.
@@ -677,67 +712,27 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A ship status containing current statistics about a creature's ship.</returns>
         public static ShipStatus GetShipStatus(uint creature)
         {
-            var shipStatus = new ShipStatus();
-
             if (!GetIsObjectValid(creature))
             {
-                return new ShipStatus();
+                return null;
             }
 
-            // Player ship statuses must be mapped from their database records.
+            // Player ship statuses must retrieved from the database.
             if (GetIsPC(creature))
             {
                 var targetPlayerId = GetObjectUUID(creature);
                 var dbTargetPlayer = DB.Get<Entity.Player>(targetPlayerId);
                 var dbPlayerShip = dbTargetPlayer.Ships[dbTargetPlayer.ActiveShipId];
-                var shipDetail = _ships[dbPlayerShip.ItemTag];
 
-                shipStatus.Creature = creature;
-                shipStatus.ItemTag = dbPlayerShip.ItemTag;
-
-                shipStatus.Shield = dbPlayerShip.Shield;
-                shipStatus.Hull = dbPlayerShip.Hull;
-                shipStatus.Capacitor = dbPlayerShip.Capacitor;
-                
-                shipStatus.Accuracy = shipDetail.Accuracy + dbPlayerShip.AccuracyBonus;
-                shipStatus.Evasion = shipDetail.Evasion + dbPlayerShip.EvasionBonus;
-
-                shipStatus.ThermalDefense = shipDetail.ThermalDefense + dbPlayerShip.ThermalDefenseBonus;
-                shipStatus.ExplosiveDefense = shipDetail.ExplosiveDefense + dbPlayerShip.ExplosiveDefenseBonus;
-                shipStatus.EMDefense = shipDetail.EMDefense + dbPlayerShip.EMDefenseBonus;
-
-                shipStatus.ThermalDamage = dbPlayerShip.ThermalDamageBonus;
-                shipStatus.ExplosiveDamage = dbPlayerShip.ExplosiveDamageBonus;
-                shipStatus.EMDamage = dbPlayerShip.EMDamageBonus;
-
-
-                foreach (var (_, shipModule) in dbPlayerShip.HighPowerModules)
-                {
-                    shipStatus.HighPowerModules.Add(shipModule.AssignedShipModuleFeat, new ShipStatus.ShipStatusModule
-                    {
-                        ItemTag = shipModule.ItemTag,
-                        RecastTime = shipModule.RecastTime
-                    });
-                }
-
-                foreach (var (_, shipModule) in dbPlayerShip.LowPowerModules)
-                {
-                    shipStatus.LowPowerModules.Add(shipModule.AssignedShipModuleFeat, new ShipStatus.ShipStatusModule
-                    {
-                        ItemTag = shipModule.ItemTag,
-                        RecastTime = shipModule.RecastTime
-                    });
-                }
+                return dbPlayerShip;
             }
             // NPC ship statuses are stored directly in cache so we can return them immediately.
             else
             {
-                shipStatus = _shipNPCs.ContainsKey(creature) 
+                return _shipNPCs.ContainsKey(creature) 
                     ? _shipNPCs[creature] 
-                    : new ShipStatus();
+                    : null;
             }
-
-            return shipStatus;
         }
 
         /// <summary>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -46,7 +47,7 @@ namespace SWLOR.Game.Server.Entity
             KeyItems = new Dictionary<KeyItemType, DateTime>();
             Guilds = new Dictionary<GuildType, PlayerGuild>();
             SavedOutfits = new Dictionary<int, string>();
-            Ships = new Dictionary<Guid, PlayerShip>();
+            Ships = new Dictionary<Guid, ShipStatus>();
         }
 
         public override string KeyPrefix => "Player";
@@ -102,7 +103,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
         public Dictionary<int, string> SavedOutfits { get; set; }
-        public Dictionary<Guid, PlayerShip> Ships { get; set; }
+        public Dictionary<Guid, ShipStatus> Ships { get; set; }
     }
 
     public class MapPin
@@ -152,47 +153,5 @@ namespace SWLOR.Game.Server.Entity
     {
         public int Rank { get; set; }
         public int Points { get; set; }
-    }
-
-    public class PlayerShip
-    {
-        public string ItemTag { get; set; }
-        public string Name { get; set; }
-        public int Shield { get; set; }
-        public int Hull { get; set; }
-        public int Capacitor { get; set; }
-        public int MaxShieldBonus { get; set; }
-        public int MaxHullBonus { get; set; }
-        public int MaxCapacitorBonus { get; set; }
-        public int ShieldCycle { get; set; }
-        public int ShieldCycleBonus { get; set; }
-        public int EMDamageBonus { get; set; }
-        public int ThermalDamageBonus { get; set; }
-        public int ExplosiveDamageBonus { get; set; }
-        public int AccuracyBonus { get; set; }
-        public int EvasionBonus { get; set; }
-        public int ThermalDefenseBonus { get; set; }
-        public int ExplosiveDefenseBonus { get; set; }
-        public int EMDefenseBonus { get; set; }
-        public string SerializedHotBar { get; set; }
-        public Dictionary<string, PlayerShipModule> HighPowerModules { get; set; }
-        public Dictionary<string, PlayerShipModule> LowPowerModules { get; set; }
-
-        public PlayerShip()
-        {
-            Name = string.Empty;
-            SerializedHotBar = string.Empty;
-
-            HighPowerModules = new Dictionary<string, PlayerShipModule>();
-            LowPowerModules = new Dictionary<string, PlayerShipModule>();
-        }
-    }
-
-    public class PlayerShipModule
-    {
-        public Feat AssignedShipModuleFeat { get; set; }
-        public string ItemTag { get; set; }
-        public string SerializedItem { get; set; }
-        public DateTime RecastTime { get; set; }
     }
 }

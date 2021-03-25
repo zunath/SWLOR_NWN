@@ -225,6 +225,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     if(dbPlayer.SelectedShipId == model.SelectedShipId)
                         dbPlayer.SelectedShipId = Guid.Empty;
 
+                    if (dbPlayer.ActiveShipId == model.SelectedShipId)
+                        dbPlayer.ActiveShipId = Guid.Empty;
+
                     dbPlayer.Ships.Remove(model.SelectedShipId);
                     DB.Set(playerId, dbPlayer);
 
@@ -316,13 +319,22 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             // Validation passed. Add the ship to the player's record.
             var shipDetail = Space.GetShipDetailByItemTag(itemTag);
             var shipId = Guid.NewGuid();
-            dbPlayer.Ships.Add(shipId, new PlayerShip
+            dbPlayer.Ships.Add(shipId, new ShipStatus
             {
                 ItemTag = itemTag,
                 Name = shipDetail.Name,
                 Shield = shipDetail.MaxShield,
+                MaxShield = shipDetail.MaxShield,
                 Hull = shipDetail.MaxHull,
-                Capacitor = shipDetail.MaxCapacitor
+                MaxHull = shipDetail.MaxHull,
+                Capacitor = shipDetail.MaxCapacitor,
+                MaxCapacitor = shipDetail.MaxCapacitor,
+                EMDefense = shipDetail.EMDefense,
+                ExplosiveDefense = shipDetail.ExplosiveDefense,
+                ThermalDefense = shipDetail.ThermalDefense,
+                Accuracy = shipDetail.Accuracy,
+                Evasion = shipDetail.Evasion,
+                ShieldRechargeRate = shipDetail.ShieldRechargeRate
             });
             DB.Set(playerId, dbPlayer);
 
@@ -444,13 +456,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     var highPowerFeat = dbPlayer
                         .Ships[playerShipId]
                         .HighPowerModules
-                        .Where(x => x.Value.AssignedShipModuleFeat == feat)
+                        .Where(x => x.Key == feat)
                         .ToList();
 
                     var lowPowerFeat  = dbPlayer
                         .Ships[playerShipId]
                         .LowPowerModules
-                        .Where(x => x.Value.AssignedShipModuleFeat == feat)
+                        .Where(x => x.Key == feat)
                         .ToList();
 
                     // Neither high nor low slots have this feat assigned to them.
@@ -475,9 +487,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 // Add to high power modules.
                 if (moduleDetails.PowerType == ShipModulePowerType.High)
                 {
-                    dbPlayer.Ships[playerShipId].HighPowerModules.Add(itemId, new PlayerShipModule
+                    dbPlayer.Ships[playerShipId].HighPowerModules.Add(assignedFeat, new ShipStatus.ShipStatusModule
                     {
-                        AssignedShipModuleFeat = assignedFeat,
+                        ItemInstanceId = itemId,
                         SerializedItem = Object.Serialize(item),
                         ItemTag = itemTag,
                         RecastTime = DateTime.MinValue
@@ -486,9 +498,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 // Add to low power modules.
                 else if (moduleDetails.PowerType == ShipModulePowerType.Low)
                 {
-                    dbPlayer.Ships[playerShipId].LowPowerModules.Add(itemId, new PlayerShipModule
+                    dbPlayer.Ships[playerShipId].LowPowerModules.Add(assignedFeat, new ShipStatus.ShipStatusModule
                     {
-                        AssignedShipModuleFeat = assignedFeat,
+                        ItemInstanceId = itemId,
                         SerializedItem = Object.Serialize(item),
                         ItemTag = itemTag,
                         RecastTime = DateTime.MinValue
@@ -502,19 +514,32 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     SendMessageToPC(player, ColorToken.Red($"This module has not been properly configured. Notify an admin."));
                     return;
                 }
+                
+                // Run the equip action which will directly modify the attributes of this player ship.
+                moduleDetails.ModuleEquippedAction?.Invoke(player, playerShip);
 
-                moduleDetails.ModuleEquippedAction?.Invoke(player, item, playerShip);
+                // Save any changes which occurred as a result of the equip action.
                 DB.Set(playerId, dbPlayer);
             }
             else if (type == DisturbType.Removed)
             {
-                if (dbPlayer.Ships[playerShipId].HighPowerModules.ContainsKey(itemId))
+                var (highFeat, highShipModule) = dbPlayer
+                    .Ships[playerShipId]
+                    .HighPowerModules
+                    .SingleOrDefault(x => x.Value.ItemInstanceId == itemId);
+
+                var (lowFeat, lowShipModule) = dbPlayer
+                    .Ships[playerShipId]
+                    .HighPowerModules
+                    .SingleOrDefault(x => x.Value.ItemInstanceId == itemId);
+
+                if (highShipModule != null)
                 {
-                    dbPlayer.Ships[playerShipId].HighPowerModules.Remove(itemId);
+                    dbPlayer.Ships[playerShipId].HighPowerModules.Remove(highFeat);
                 }
-                else if (dbPlayer.Ships[playerShipId].LowPowerModules.ContainsKey(itemId))
+                else if (lowShipModule != null)
                 {
-                    dbPlayer.Ships[playerShipId].LowPowerModules.Remove(itemId);
+                    dbPlayer.Ships[playerShipId].LowPowerModules.Remove(lowFeat);
                 }
                 else
                 {
@@ -522,7 +547,11 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 }
 
                 var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
-                moduleDetails.ModuleUnequippedAction?.Invoke(player, item, playerShip);
+                
+                // Run the unequip action which will directly modify the attributes of this player ship.
+                moduleDetails.ModuleUnequippedAction?.Invoke(player, playerShip);
+
+                // Save any changes which occurred as a result of the unequip action.
                 DB.Set(playerId, dbPlayer);
             }
 

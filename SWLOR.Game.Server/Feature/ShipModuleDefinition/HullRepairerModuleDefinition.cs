@@ -35,10 +35,10 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description($"Restores {restoreAmount} points of Hull HP per use.")
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
-                .ActivatedAction((activator, target) =>
+                .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus) =>
                 {
-                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Knock), target.Creature);
-                    Messaging.SendMessageNearbyToPlayers(activator.Creature, $"{GetName(activator.Creature)} restores {restoreAmount} of hull damage on {GetName(target.Creature)}.");
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Knock), target);
+                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {restoreAmount} of hull damage on {GetName(target)}.");
                 });
         }
 

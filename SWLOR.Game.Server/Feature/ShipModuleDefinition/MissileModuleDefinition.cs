@@ -35,39 +35,39 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
                 .Recast(recast)
                 .Capacitor(capacitor)
-                .ActivatedAction((activator, target) =>
+                .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus) =>
                 {
-                    var chanceToHit = Space.CalculateChanceToHit(activator.Creature, target.Creature);
+                    var chanceToHit = Space.CalculateChanceToHit(activator, target);
                     var roll = Random.D100(1);
                     var isHit = roll <= chanceToHit;
-                    var targetDistance = GetDistanceBetween(activator.Creature, target.Creature);
-                    var targetLocation = GetLocation(target.Creature);
-                    var targetDefense = target.ExplosiveDefense;
-                    var attackerDamage = baseDamage + activator.ExplosiveDamage;
+                    var targetDistance = GetDistanceBetween(activator, target);
+                    var targetLocation = GetLocation(target);
+                    var targetDefense = targetShipStatus.ExplosiveDefense;
+                    var attackerDamage = baseDamage + activatorShipStatus.ExplosiveDamage;
                     var damage = attackerDamage - targetDefense;
                     if (damage < 0) damage = 0;
                     var delay = (float)(targetDistance / (3.0 * log(targetDistance) + 2.0));
 
                     // Shoot some missiles out to the target.
                     var isHitCopy = isHit;
-                    AssignCommand(activator.Creature, () =>
+                    AssignCommand(activator, () =>
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv, !isHitCopy), target.Creature);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv, !isHitCopy), target);
                     });
                     
                     // Display an explosion at the target location in a few seconds (based on travel distance of the initial missile graphic)
                     // Then apply damage on target and those nearby.
                     DelayCommand(delay, () =>
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball, !isHitCopy), target.Creature);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball, !isHitCopy), target);
 
                         if (isHit)
                         {
-                            Space.ApplyShipDamage(activator.Creature, target.Creature, damage);
+                            Space.ApplyShipDamage(activator, target, damage);
                         }
                         else
                         {
-                            Messaging.SendMessageNearbyToPlayers(activator.Creature, $"{GetName(activator.Creature)} misses their intended target.");
+                            Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} misses their intended target.");
                         }
 
                         // Iterate over nearby targets, rolling to apply damage to each.
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         while (GetIsObjectValid(nearby))
                         {
                             // Picked up the same creature as our initial target. Move to the next one since we've already processed it.
-                            if (nearby == target.Creature)
+                            if (nearby == target)
                             {
                                 nearby = GetNextObjectInShape(Shape.Sphere, 3f, targetLocation, false, ObjectType.Creature);
                                 continue;
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             if (GetDistanceBetweenLocations(targetLocation, nearbyLocation) > 5f) break;
 
                             var shipTarget = Space.GetShipStatus(nearby);
-                            if (!GetIsObjectValid(shipTarget.Creature))
+                            if (!GetIsObjectValid(nearby))
                             {
                                 nearby = GetNextObjectInShape(Shape.Sphere, 3f, targetLocation, false, ObjectType.Creature);
                                 continue;
@@ -99,17 +99,17 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             }
 
                             targetDefense = shipTarget.ExplosiveDefense;
-                            attackerDamage = baseDamage + activator.ExplosiveDamage;
+                            attackerDamage = baseDamage + activatorShipStatus.ExplosiveDamage;
 
                             damage = attackerDamage - targetDefense;
                             if (damage < 0) damage = 0;
-                            chanceToHit = Space.CalculateChanceToHit(activator.Creature, shipTarget.Creature);
+                            chanceToHit = Space.CalculateChanceToHit(activator, nearby);
                             roll = Random.D100(1);
                             isHit = roll <= chanceToHit;
 
                             if (isHit)
                             {
-                                Space.ApplyShipDamage(activator.Creature, shipTarget.Creature, damage / 2);
+                                Space.ApplyShipDamage(activator, nearby, damage / 2);
                             }
 
                             nearby = GetNextObjectInShape(Shape.Sphere, 3f, targetLocation, false, ObjectType.Creature);

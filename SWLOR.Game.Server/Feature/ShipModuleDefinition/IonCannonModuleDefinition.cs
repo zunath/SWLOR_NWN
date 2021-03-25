@@ -35,53 +35,53 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
                 .Recast(recast)
                 .Capacitor(capacitor)
-                .ActivatedAction((activator, target) =>
+                .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus) =>
                 {
-                    var targetDefense = target.EMDefense;
-                    var attackerDamage = baseDamage + activator.EMDamage;
+                    var targetDefense = targetShipStatus.EMDefense;
+                    var attackerDamage = baseDamage + activatorShipStatus.EMDamage;
 
                     var damage = attackerDamage - targetDefense;
                     if (damage < 0) damage = 0;
 
-                    var chanceToHit = Space.CalculateChanceToHit(activator.Creature, target.Creature);
+                    var chanceToHit = Space.CalculateChanceToHit(activator, target);
                     var roll = Random.D100(1);
                     var isHit = roll <= chanceToHit;
 
                     if (isHit)
                     {
-                        AssignCommand(activator.Creature, () =>
+                        AssignCommand(activator, () =>
                         {
-                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Mind, activator.Creature, BodyNode.Chest);
-                            ApplyEffectToObject(DurationType.Temporary, effect, target.Creature, 1.0f);
+                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Mind, activator, BodyNode.Chest);
+                            ApplyEffectToObject(DurationType.Temporary, effect, target, 1.0f);
                         });
 
                         DelayCommand(0.1f, () =>
                         {
-                            AssignCommand(activator.Creature, () =>
+                            AssignCommand(activator, () =>
                             {
                                 var effect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion);
-                                ApplyEffectToObject(DurationType.Instant, effect, target.Creature);
-                                Space.ApplyShipDamage(activator.Creature, target.Creature, damage);
+                                ApplyEffectToObject(DurationType.Instant, effect, target);
+                                Space.ApplyShipDamage(activator, target, damage);
                             });
                         });
                     }
                     else
                     {
-                        AssignCommand(activator.Creature, () =>
+                        AssignCommand(activator, () =>
                         {
-                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Mind, activator.Creature, BodyNode.Chest, true);
-                            ApplyEffectToObject(DurationType.Temporary, effect, target.Creature, 1.0f);
+                            var effect = EffectBeam(VisualEffect.Vfx_Beam_Mind, activator, BodyNode.Chest, true);
+                            ApplyEffectToObject(DurationType.Temporary, effect, target, 1.0f);
                         });
 
                         DelayCommand(0.1f, () =>
                         {
-                            AssignCommand(activator.Creature, () =>
+                            AssignCommand(activator, () =>
                             {
                                 var effect = EffectVisualEffect(VisualEffect.Vfx_Fnf_Electric_Explosion, true);
-                                ApplyEffectToObject(DurationType.Instant, effect, target.Creature);
+                                ApplyEffectToObject(DurationType.Instant, effect, target);
                             });
                         });
-                        SendMessageToPC(activator.Creature, "You miss your target.");
+                        SendMessageToPC(activator, "You miss your target.");
                     }
                 });
         }

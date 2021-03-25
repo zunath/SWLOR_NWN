@@ -18,11 +18,7 @@ namespace SWLOR.Game.Server.Feature.ShipEnemyDefinition
         {
             _builder.Create("TargetDummy")
                 .ItemTag("ShipDeedLightEscort")
-                .Capacitor(20)
-                .Shield(20)
-                .Hull(10)
-                .Evasion(5)
-                .ThermalDefense(2);
+                .ShipModule("com_laser_b");
         }
 
     }

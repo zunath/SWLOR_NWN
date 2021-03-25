@@ -28,13 +28,13 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Description($"Improves a ship's maximum shields by {shieldBoostAmount}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)
-                .EquippedAction((player, item, ship) =>
+                .EquippedAction((creature, shipStatus) =>
                 {
-                    ship.MaxShieldBonus += shieldBoostAmount;
+                    shipStatus.MaxShield += shieldBoostAmount;
                 })
-                .UnequippedAction((player, item, ship) =>
+                .UnequippedAction((creature, shipStatus) =>
                 {
-                    ship.MaxShieldBonus -= shieldBoostAmount;
+                    shipStatus.MaxShield -= shieldBoostAmount;
                 });
         }
     }

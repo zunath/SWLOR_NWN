@@ -35,10 +35,10 @@ namespace SWLOR.Game.Server.Feature
             if (Space.IsPlayerInSpaceMode(player))
             {
                 var shipStatus = Space.GetShipStatus(player);
-                var target = Space.GetCurrentTarget(player);
+                var (target, targetShipStatus) = Space.GetCurrentTarget(player);
 
-                DrawSpaceStatusComponent(player, shipStatus);
-                DrawSpaceStatusComponent(player, target, 4, GetName(target.Creature));
+                DrawSpaceStatusComponent(player, player, shipStatus);
+                DrawSpaceStatusComponent(player, target, targetShipStatus, 4, GetName(target));
             }
             // Character UI elements
             else
@@ -105,21 +105,23 @@ namespace SWLOR.Game.Server.Feature
         /// Draws the ship's Shield, Hull, and Capacitor status information on the player's screen.
         /// </summary>
         /// <param name="player">The player to draw the component for.</param>
+        /// <param name="target">The target currently selected, or the player itself.</param>
         /// <param name="shipStatus">The ship details</param>
         /// <param name="yOffset">The window's Y position offset</param>
-        private static void DrawSpaceStatusComponent(uint player, ShipStatus shipStatus, int yOffset = 0, string targetName = "")
+        /// <param name="targetName">The name of the target. If null or whitespace, it will be drawn at the player's position. Otherwise it will be drawn at the target's position on the player's screen.</param>
+        private static void DrawSpaceStatusComponent(uint player, uint target, ShipStatus shipStatus, int yOffset = 0, string targetName = "")
         {
-            if (!GetIsObjectValid(shipStatus.Creature)) return;
+            if (!GetIsObjectValid(target) || shipStatus == null) return;
 
             var guiStartId = string.IsNullOrWhiteSpace(targetName) ? _characterIdReservation.StartId : _spaceIdReservation.StartId;
-            var shipDetail = Space.GetShipDetailByItemTag(shipStatus.ItemTag);
+            var lifeSpan = string.IsNullOrWhiteSpace(targetName) ? 0.0f : 1.2f;
 
             var currentShields = shipStatus.Shield;
-            var maxShields = shipDetail.MaxShield;
+            var maxShields = shipStatus.MaxShield;
             var currentHull = shipStatus.Hull;
-            var maxHull = shipDetail.MaxHull;
+            var maxHull = shipStatus.MaxHull;
             var currentCapacitor = shipStatus.Capacitor;
-            var maxCapacitor = shipDetail.MaxCapacitor;
+            var maxCapacitor = shipStatus.MaxCapacitor;
 
             var backgroundBar = BuildBar(1, 1, 22);
             var shieldsBar = BuildBar(currentShields, maxShields, 22);
@@ -142,24 +144,24 @@ namespace SWLOR.Game.Server.Feature
             // Draw header, if applicable.
             if (!string.IsNullOrWhiteSpace(targetName))
             {
-                PostString(player, targetName, centerWindowX + 8, windowY + 4, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, guiStartId + 9, Gui.TextName); 
+                PostString(player, targetName, centerWindowX + 8, windowY + 4, Anchor, lifeSpan, Gui.ColorWhite, Gui.ColorWhite, guiStartId + 9, Gui.TextName); 
             }
 
-            PostString(player, shieldsText, centerWindowX + 8, windowY + 3, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, guiStartId + 2, Gui.TextName); 
-            PostString(player, hullText, centerWindowX + 8, windowY + 2, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, guiStartId + 1, Gui.TextName); 
-            PostString(player, capacitorText, centerWindowX + 8, windowY + 1, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, guiStartId, Gui.TextName); 
+            PostString(player, shieldsText, centerWindowX + 8, windowY + 3, Anchor, lifeSpan, Gui.ColorWhite, Gui.ColorWhite, guiStartId + 2, Gui.TextName); 
+            PostString(player, hullText, centerWindowX + 8, windowY + 2, Anchor, lifeSpan, Gui.ColorWhite, Gui.ColorWhite, guiStartId + 1, Gui.TextName); 
+            PostString(player, capacitorText, centerWindowX + 8, windowY + 1, Anchor, lifeSpan, Gui.ColorWhite, Gui.ColorWhite, guiStartId, Gui.TextName); 
 
             // Draw the bars
-            PostString(player, shieldsBar, centerWindowX + 2, windowY + 3, Anchor, 0.0f, Gui.ColorShieldsBar, Gui.ColorShieldsBar, guiStartId + 3, Gui.FontName); 
-            PostString(player, hullBar, centerWindowX + 2, windowY + 2, Anchor, 0.0f, Gui.ColorHullBar, Gui.ColorHullBar, guiStartId + 4, Gui.FontName); 
-            PostString(player, capacitorBar, centerWindowX + 2, windowY + 1, Anchor, 0.0f, Gui.ColorCapacitorBar, Gui.ColorCapacitorBar, guiStartId + 5, Gui.FontName); 
+            PostString(player, shieldsBar, centerWindowX + 2, windowY + 3, Anchor, lifeSpan, Gui.ColorShieldsBar, Gui.ColorShieldsBar, guiStartId + 3, Gui.FontName); 
+            PostString(player, hullBar, centerWindowX + 2, windowY + 2, Anchor, lifeSpan, Gui.ColorHullBar, Gui.ColorHullBar, guiStartId + 4, Gui.FontName); 
+            PostString(player, capacitorBar, centerWindowX + 2, windowY + 1, Anchor, lifeSpan, Gui.ColorCapacitorBar, Gui.ColorCapacitorBar, guiStartId + 5, Gui.FontName); 
 
             // Draw the backgrounds
             if (!GetLocalBool(player, "PLAYERSTATUSWINDOW_BACKGROUND_DRAWN"))
             {
-                PostString(player, backgroundBar, centerWindowX + 2, windowY + 3, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, guiStartId + 6, Gui.FontName); 
-                PostString(player, backgroundBar, centerWindowX + 2, windowY + 2, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, guiStartId + 7, Gui.FontName); 
-                PostString(player, backgroundBar, centerWindowX + 2, windowY + 1, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, guiStartId + 8, Gui.FontName); 
+                PostString(player, backgroundBar, centerWindowX + 2, windowY + 3, Anchor, lifeSpan, Gui.ColorBlack, Gui.ColorBlack, guiStartId + 6, Gui.FontName); 
+                PostString(player, backgroundBar, centerWindowX + 2, windowY + 2, Anchor, lifeSpan, Gui.ColorBlack, Gui.ColorBlack, guiStartId + 7, Gui.FontName); 
+                PostString(player, backgroundBar, centerWindowX + 2, windowY + 1, Anchor, lifeSpan, Gui.ColorBlack, Gui.ColorBlack, guiStartId + 8, Gui.FontName); 
 
                 var windowHeight = string.IsNullOrWhiteSpace(targetName) ? 3 : 4;
                 Gui.DrawWindow(player, guiStartId + 10, Anchor, WindowX, windowY, WindowWidth - 2, windowHeight); 

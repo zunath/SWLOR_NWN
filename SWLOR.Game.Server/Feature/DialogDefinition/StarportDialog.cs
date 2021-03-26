@@ -530,7 +530,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
                 var (lowFeat, lowShipModule) = dbPlayer
                     .Ships[playerShipId]
-                    .HighPowerModules
+                    .LowPowerModules
                     .SingleOrDefault(x => x.Value.ItemInstanceId == itemId);
 
                 if (highShipModule != null)

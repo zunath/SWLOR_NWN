@@ -576,6 +576,15 @@ namespace SWLOR.Game.Server.Service
 
                 DB.Set(playerId, dbPlayer);
             }
+
+            if (GetIsPC(target))
+            {
+                var playerId = GetObjectUUID(target);
+                var dbPlayer = DB.Get<Entity.Player>(playerId);
+                dbPlayer.Ships[dbPlayer.ActiveShipId] = targetShipStatus;
+
+                DB.Set(playerId, dbPlayer);
+            }
         }
 
         /// <summary>

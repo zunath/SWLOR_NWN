@@ -514,7 +514,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     SendMessageToPC(player, ColorToken.Red($"This module has not been properly configured. Notify an admin."));
                     return;
                 }
-                
+
+                // Add to the list of active modules if not passive.
+                if (moduleDetails.Type != ShipModuleType.Passive)
+                {
+                    dbPlayer.Ships[playerShipId].ActiveModules.Add(assignedFeat);
+                }
+
                 // Run the equip action which will directly modify the attributes of this player ship.
                 moduleDetails.ModuleEquippedAction?.Invoke(player, playerShip);
 
@@ -536,10 +542,14 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 if (highShipModule != null)
                 {
                     dbPlayer.Ships[playerShipId].HighPowerModules.Remove(highFeat);
+                    if (dbPlayer.Ships[playerShipId].ActiveModules.Contains(highFeat))
+                        dbPlayer.Ships[playerShipId].ActiveModules.Remove(highFeat);
                 }
                 else if (lowShipModule != null)
                 {
                     dbPlayer.Ships[playerShipId].LowPowerModules.Remove(lowFeat);
+                    if (dbPlayer.Ships[playerShipId].ActiveModules.Contains(lowFeat))
+                        dbPlayer.Ships[playerShipId].ActiveModules.Remove(lowFeat);
                 }
                 else
                 {

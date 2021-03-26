@@ -29,8 +29,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(shortName)
+                .Type(ShipModuleType.Missile)
                 .Description(description)
-                .IsActiveModule()
                 .RequiresTarget()
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
@@ -65,6 +65,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         if (isHit)
                         {
                             Space.ApplyShipDamage(activator, target, damage);
+                            Enmity.ModifyEnmity(activator, target, damage);
                         }
                         else
                         {
@@ -112,6 +113,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             {
                                 Space.ApplyShipDamage(activator, nearby, damage / 2);
                             }
+
+                            Enmity.ModifyEnmity(activator, nearby, damage);
 
                             nearby = GetNextObjectInShape(Shape.Sphere, 3f, targetLocation, false, ObjectType.Creature);
                         }

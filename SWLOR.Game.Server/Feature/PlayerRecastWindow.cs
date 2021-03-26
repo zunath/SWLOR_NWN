@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
@@ -133,7 +134,7 @@ namespace SWLOR.Game.Server.Feature
                 var moduleDetail = Space.GetShipModuleDetailByItemTag(shipModule.ItemTag);
 
                 // Skip any passive modules (they don't have recast timers)
-                if (moduleDetail.IsPassive) continue;
+                if (moduleDetail.Type == ShipModuleType.Passive) continue;
 
                 // Max of 15 recasts can be shown in the window.
                 if (numberOfRecasts >= MaxNumberOfShipModules) break;

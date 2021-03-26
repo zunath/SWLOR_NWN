@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module loads, cache all space data into memory.
         /// </summary>
         [NWNEventHandler("mod_load")]
-        public static void CacheData()
+        public static void LoadSpaceSystem()
         {
             LoadShips();
             LoadShipModules();
@@ -39,6 +40,8 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {_ships.Count} ships.");
             Console.WriteLine($"Loaded {_shipModules.Count} ship modules.");
             Console.WriteLine($"Loaded {_shipEnemies.Count} ship enemies.");
+
+            Scheduler.ScheduleRepeating(ProcessSpaceNPCAI, TimeSpan.FromSeconds(1));
         }
 
         /// <summary>
@@ -80,7 +83,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     // Give warning if ship module is active and short name is longer than GUI will allow.
                     if (moduleDetail.ShortName.Length > 14 &&
-                        !moduleDetail.IsPassive)
+                        moduleDetail.Type != ShipModuleType.Passive)
                     {
                         Log.Write(LogGroup.Space, $"Ship module with short name {moduleDetail.ShortName} is longer than 14 characters. Short names should be no more than 14 characters so they display on the UI properly.", true);
                     }
@@ -154,13 +157,17 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Sets a player's current target.
         /// </summary>
-        /// <param name="player"></param>
-        /// <param name="target"></param>
-        private static void SetCurrentTarget(uint player, uint target)
+        /// <param name="creature">The creature whose target will be set.</param>
+        /// <param name="target">The target to set.</param>
+        private static void SetCurrentTarget(uint creature, uint target)
         {
-            // Set the VFX to the new target.
-            Player.ApplyLoopingVisualEffectToObject(player, target, VisualEffect.Vfx_Target_Marker);
-            SetLocalObject(player, "SPACE_TARGET", target);
+            // Set the VFX to the new target if creature is a player.
+            if (GetIsObjectValid(target) &&
+                GetIsPC(creature))
+            {
+                Player.ApplyLoopingVisualEffectToObject(creature, target, VisualEffect.Vfx_Target_Marker);
+            }
+            SetLocalObject(creature, "SPACE_TARGET", target);
         }
 
         /// <summary>
@@ -175,19 +182,20 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Clears a player's current target.
+        /// Clears a creature's current target.
         /// </summary>
-        /// <param name="player">The player whose target will be cleared.</param>
-        private static void ClearCurrentTarget(uint player)
+        /// <param name="creature">The creature whose target will be cleared.</param>
+        private static void ClearCurrentTarget(uint creature)
         {
             // Remove the VFX from the current target if it exists.
-            var (target, _) = GetCurrentTarget(player);
-            if (GetIsObjectValid(target))
+            var (target, _) = GetCurrentTarget(creature);
+            if (GetIsObjectValid(target) &&
+                GetIsPC(creature))
             {
-                Player.ApplyLoopingVisualEffectToObject(player, target, VisualEffect.None);
+                Player.ApplyLoopingVisualEffectToObject(creature, target, VisualEffect.None);
             }
 
-            DeleteLocalObject(player, "SPACE_TARGET");
+            DeleteLocalObject(creature, "SPACE_TARGET");
         }
 
         /// <summary>
@@ -200,6 +208,11 @@ namespace SWLOR.Game.Server.Service
 
             if (!IsPlayerInSpaceMode(player)) return;
             Events.SkipEvent();
+
+            // Clicking enemies will cause this flag to be true (and we should proceed with target selection)
+            // Being attacked by enemies will have this flag set to false (and we should exit without doing anything else)
+            var clearAllActions = Convert.ToInt32(Events.GetEventData("CLEAR_ALL_ACTIONS"));
+            if (clearAllActions == 0) return;
 
             var target = StringToObject(Events.GetEventData("TARGET"));
             var (currentTarget, _) = GetCurrentTarget(player);
@@ -291,7 +304,7 @@ namespace SWLOR.Game.Server.Service
                 var shipModuleDetail = _shipModules[shipModule.ItemTag];
 
                 // Passive modules shouldn't be converted to feats.
-                if (shipModuleDetail.IsPassive) continue;
+                if (shipModuleDetail.Type == ShipModuleType.Passive) continue;
 
                 // Convert current ship module to feat.
                 Creature.AddFeat(player, feat);
@@ -587,6 +600,35 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        private static void ApplyAutoShipRecovery(ShipStatus shipStatus)
+        {
+            var shipDetail = _ships[shipStatus.ItemTag];
+
+            // Shield recovery
+            shipStatus.ShieldCycle++;
+            var rechargeRate = shipStatus.ShieldCycle;
+            if (rechargeRate <= 0)
+                rechargeRate = 1;
+
+            if (shipStatus.ShieldCycle >= rechargeRate)
+            {
+                shipStatus.Shield++;
+
+                // Clamp shield to max.
+                if (shipStatus.Shield > shipStatus.MaxShield)
+                    shipStatus.Shield = shipStatus.MaxShield;
+
+                shipStatus.ShieldCycle = 0;
+            }
+
+            // Capacitor recovery
+            shipStatus.Capacitor++;
+
+            // Clamp capacitor to max.
+            if (shipStatus.Capacitor > shipDetail.MaxCapacitor)
+                shipStatus.Capacitor = shipDetail.MaxCapacitor;
+        }
+
         /// <summary>
         /// When the player's heartbeat fires, recover capacitor and shield.
         /// </summary>
@@ -601,31 +643,8 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Entity.Player>(playerId);
             var playerShip = dbPlayer.Ships[dbPlayer.ActiveShipId];
-            var shipDetail = _ships[playerShip.ItemTag];
 
-            // Shield recovery
-            playerShip.ShieldCycle++;
-            var rechargeRate = playerShip.ShieldCycle;
-            if (rechargeRate <= 0)
-                rechargeRate = 1;
-
-            if (playerShip.ShieldCycle >= rechargeRate)
-            {
-                playerShip.Shield++;
-
-                // Clamp shield to max.
-                if (playerShip.Shield > playerShip.MaxShield)
-                    playerShip.Shield = playerShip.MaxShield;
-
-                playerShip.ShieldCycle = 0;
-            }
-
-            // Capacitor recovery
-            playerShip.Capacitor++;
-
-            // Clamp capacitor to max.
-            if (playerShip.Capacitor > shipDetail.MaxCapacitor)
-                playerShip.Capacitor = shipDetail.MaxCapacitor;
+            ApplyAutoShipRecovery(playerShip);
 
             // Update changes
             DB.Set(playerId, dbPlayer);
@@ -676,6 +695,11 @@ namespace SWLOR.Game.Server.Service
                     RecastTime = DateTime.UtcNow
                 });
 
+                if (shipModule.Type != ShipModuleType.Passive)
+                {
+                    shipStatus.ActiveModules.Add(feat);
+                }
+
                 shipModule.ModuleEquippedAction?.Invoke(creature, shipStatus);
 
                 featCount++;
@@ -689,6 +713,11 @@ namespace SWLOR.Game.Server.Service
                     ItemTag = itemTag,
                     RecastTime = DateTime.UtcNow
                 });
+
+                if (shipModule.Type != ShipModuleType.Passive)
+                {
+                    shipStatus.ActiveModules.Add(feat);
+                }
 
                 shipModule.ModuleEquippedAction?.Invoke(creature, shipStatus);
 
@@ -901,6 +930,57 @@ namespace SWLOR.Game.Server.Service
             {
                 ApplyEffectToObject(DurationType.Instant, EffectDeath(), creature);
             }
+        }
+
+        /// <summary>
+        /// Every second, run through all known spaceship NPCs and process their AI.
+        /// </summary>
+        private static void ProcessSpaceNPCAI()
+        {
+            var sw = new Stopwatch();
+            sw.Start();
+
+            var now = DateTime.UtcNow;
+
+            foreach (var (creature, shipStatus) in _shipNPCs)
+            {
+                ApplyAutoShipRecovery(shipStatus);
+
+                // Determine target
+                var target = Enmity.GetHighestEnmityTarget(creature);
+                if (!GetIsObjectValid(target)) continue;
+
+                // Determine which modules are available.
+                var allModules = shipStatus.HighPowerModules.Concat(shipStatus.LowPowerModules);
+                var availableModules = allModules.Where(x =>
+                {
+                    var shipModuleDetail = _shipModules[x.Value.ItemTag];
+                    var capacitorRequired = shipModuleDetail.CalculateCapacitorAction?.Invoke(creature, shipStatus) ?? 0;
+
+                    return x.Value.RecastTime <= now &&
+                           shipStatus.Capacitor >= capacitorRequired;
+                });
+
+                // Determine which module(s) to activate
+
+                // todo: Act dumb for now and activate them all. Implement better decision making later.
+
+                SetCurrentTarget(creature, target);
+                foreach (var (feat, shipModule) in availableModules)
+                {
+                    Console.WriteLine($"{GetName(creature)} is using feat: {feat} which is module: {shipModule.ItemTag} on target {GetName(target)}"); // todo debug
+
+                    AssignCommand(creature, () =>
+                    {
+                        ActionUseFeat(feat, target);
+                    });
+                }
+            }
+
+
+            sw.Stop();
+
+            Console.WriteLine($"Space AI took {sw.ElapsedMilliseconds}ms to run."); // todo debug
         }
     }
 }

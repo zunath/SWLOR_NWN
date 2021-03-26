@@ -30,8 +30,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(shortName)
+                .Type(ShipModuleType.CombatLaser)
                 .Description(description)
-                .IsActiveModule()
                 .RequiresTarget()
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
@@ -67,6 +67,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         });
                         SendMessageToPC(activator, "You miss your target.");
                     }
+
+                    Enmity.ModifyEnmity(activator, target, damage);
                 });
         }
 

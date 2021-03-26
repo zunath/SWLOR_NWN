@@ -48,6 +48,18 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// Sets the ship module type which is used in NPC AI determinations.
+        /// </summary>
+        /// <param name="type">The type of module to associate with the AI.</param>
+        /// <returns>A ship module builder with the configured options.</returns>
+        public ShipModuleBuilder Type(ShipModuleType type)
+        {
+            _activeShipModule.Type = type;
+
+            return this;
+        }
+
+        /// <summary>
         /// Sets the description of the active ship module we're building.
         /// This description is shown when the ship module is examined.
         /// </summary>
@@ -68,17 +80,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public ShipModuleBuilder PowerType(ShipModulePowerType powerType)
         {
             _activeShipModule.PowerType = powerType;
-
-            return this;
-        }
-
-        /// <summary>
-        /// Indicates this ship module can be actively used.
-        /// </summary>
-        /// <returns>A ship module builder with the configured options.</returns>
-        public ShipModuleBuilder IsActiveModule()
-        {
-            _activeShipModule.IsPassive = false;
 
             return this;
         }

@@ -34,13 +34,27 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public int EMDefense { get; set; }
         public string SerializedHotBar { get; set; }
 
+        /// <summary>
+        /// Equipped high-powered modules
+        /// </summary>
         public Dictionary<Feat, ShipStatusModule> HighPowerModules { get; set; }
+
+        /// <summary>
+        /// Equipped low-powered modules
+        /// </summary>
         public Dictionary<Feat, ShipStatusModule> LowPowerModules { get; set; }
+
+        /// <summary>
+        /// A collection of ship modules, by feat, which can be activated.
+        /// This is primarily used by ship AI but is also available for player ships.
+        /// </summary>
+        public HashSet<Feat> ActiveModules { get; set; }
 
         public ShipStatus()
         {
             HighPowerModules = new Dictionary<Feat, ShipStatusModule>();
             LowPowerModules = new Dictionary<Feat, ShipStatusModule>();
+            ActiveModules = new HashSet<Feat>();
         }
     }
 }

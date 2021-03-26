@@ -412,12 +412,12 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer.Perks[perkType] < requiredLevel) return false;
             }
 
-            foreach (var (feat, shipModule) in playerShip.HighPowerModules)
+            foreach (var (_, shipModule) in playerShip.HighPowerModules)
             {
                 if (!CanPlayerUseShipModule(player, shipModule.ItemTag)) return false;
             }
 
-            foreach (var (feat, shipModule) in playerShip.LowPowerModules)
+            foreach (var (_, shipModule) in playerShip.LowPowerModules)
             {
                 if (!CanPlayerUseShipModule(player, shipModule.ItemTag)) return false;
             }
@@ -629,7 +629,7 @@ namespace SWLOR.Game.Server.Service
 
             // Shield recovery
             shipStatus.ShieldCycle++;
-            var rechargeRate = shipStatus.ShieldCycle;
+            var rechargeRate = shipStatus.ShieldRechargeRate;
             if (rechargeRate <= 0)
                 rechargeRate = 1;
 
@@ -991,18 +991,43 @@ namespace SWLOR.Game.Server.Service
                 });
 
                 // Determine which module(s) to activate
-
-                // todo: Act dumb for now and activate them all. Implement better decision making later.
-
                 SetCurrentTarget(creature, target);
                 foreach (var (feat, shipModule) in availableModules)
                 {
                     Console.WriteLine($"{GetName(creature)} is using feat: {feat} which is module: {shipModule.ItemTag} on target {GetName(target)}"); // todo debug
 
-                    AssignCommand(creature, () =>
+                    var shipModuleDetail = _shipModules[shipModule.ItemTag];
+                    var useModule = false;
+                    if (shipModuleDetail.Type == ShipModuleType.ShieldRepairer)
                     {
-                        ActionUseFeat(feat, target);
-                    });
+                        var shieldPointsLost = shipStatus.MaxShield - shipStatus.Shield;
+                        if (shieldPointsLost >= 8)
+                        {
+                            useModule = true;
+                        }
+                    }
+                    else if(shipModuleDetail.Type == ShipModuleType.HullRepairer)
+                    {
+                        var hullPointsLost = shipStatus.MaxHull - shipStatus.Hull;
+                        if (hullPointsLost >= 6)
+                        {
+                            useModule = true;
+                        }
+                    }
+                    else if (shipModuleDetail.Type == ShipModuleType.CombatLaser ||
+                             shipModuleDetail.Type == ShipModuleType.IonCannon ||
+                             shipModuleDetail.Type == ShipModuleType.Missile)
+                    {
+                        useModule = true;
+                    }
+
+                    if (useModule)
+                    {
+                        AssignCommand(creature, () =>
+                        {
+                            ActionUseFeat(feat, target);
+                        });
+                    }
                 }
             }
 

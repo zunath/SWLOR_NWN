@@ -4,14 +4,13 @@ using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
-    // Player-only delegates
+    
     public delegate void ShipModuleEquippedDelegate(uint creature, ShipStatus shipStatus);
     public delegate void ShipModuleUnequippedDelegate(uint creature, ShipStatus shipStatus);
-
-    // Player & NPC delegates
     public delegate float ShipModuleCalculateRecastDelegate(uint creature, ShipStatus shipStatus);
     public delegate int ShipModuleCalculateCapacitorDelegate(uint creature, ShipStatus shipStatus);
     public delegate void ShipModuleActivatedDelegate(uint activator, ShipStatus activatorShipStatus, uint target, ShipStatus targetShipStatus);
+    public delegate string ShipModuleValidationDelegate(uint activator, ShipStatus activatorShipStatus, uint target, ShipStatus targetShipStatus);
 
     public class ShipModuleDetail
     {
@@ -28,6 +27,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public ShipModuleEquippedDelegate ModuleEquippedAction { get; set; }
         public ShipModuleUnequippedDelegate ModuleUnequippedAction { get; set; }
         public ShipModuleActivatedDelegate ModuleActivatedAction { get; set; }
+        public ShipModuleValidationDelegate ModuleValidationAction { get; set; }
 
         public ShipModuleDetail()
         {

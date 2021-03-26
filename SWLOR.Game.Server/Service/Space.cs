@@ -575,6 +575,17 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // Run any custom validation specific to the ship module.
+            if (shipModuleDetails.ModuleValidationAction != null)
+            {
+                var result = shipModuleDetails.ModuleValidationAction(activator, activatorShipStatus, target, targetShipStatus);
+                if (!string.IsNullOrWhiteSpace(result))
+                {
+                    SendMessageToPC(activator, result);
+                    return;
+                }
+            }
+
             // Validation succeeded, run the module-specific code now.
             shipModuleDetails.ModuleActivatedAction?.Invoke(activator, activatorShipStatus, target, targetShipStatus);
             

@@ -170,6 +170,18 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// Sets the action to run when custom validation is requested.
+        /// </summary>
+        /// <param name="action">The action to take.</param>
+        /// <returns>A ship module builder with the configured options.</returns>
+        public ShipModuleBuilder ValidationAction(ShipModuleValidationDelegate action)
+        {
+            _activeShipModule.ModuleValidationAction = action;
+
+            return this;
+        }
+
+        /// <summary>
         /// Indicates this ship module requires a target to use.
         /// Only applicable when dealing with an active ship module.
         /// </summary>

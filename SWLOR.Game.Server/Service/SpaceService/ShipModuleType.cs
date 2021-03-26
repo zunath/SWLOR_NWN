@@ -9,5 +9,6 @@
         Missile = 4,
         HullRepairer = 5,
         ShieldRepairer = 6,
+        MiningLaser = 7,
     }
 }

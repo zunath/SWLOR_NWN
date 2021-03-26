@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.SpaceService
@@ -176,6 +177,18 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public ShipModuleBuilder RequiresTarget()
         {
             _activeShipModule.RequiresTarget = true;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a valid object type which this ship module can be used upon.
+        /// </summary>
+        /// <param name="type">The type of object to allow.</param>
+        /// <returns>A ship module builder with the configured options.</returns>
+        public ShipModuleBuilder ValidTargetType(ObjectType type)
+        {
+            _activeShipModule.ValidTargetTypes.Add(type);
 
             return this;
         }

@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Service
         /// Removes a creature from all enmity tables.
         /// </summary>
         /// <param name="creature">The creature to remove.</param>
-        private static void RemoveCreatureEnmity(uint creature)
+        public static void RemoveCreatureEnmity(uint creature)
         {
             // Creature isn't on any enmity table.
             if (!_creatureToEnemies.ContainsKey(creature)) return;

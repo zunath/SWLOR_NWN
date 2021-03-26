@@ -2,22 +2,22 @@
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
-    public class ShipEnemyBuilder
+    public class SpaceObjectBuilder
     {
-        private readonly Dictionary<string, ShipEnemyDetail> _shipEnemies = new Dictionary<string, ShipEnemyDetail>();
-        private ShipEnemyDetail _activeShipEnemy;
+        private readonly Dictionary<string, SpaceObjectDetail> _spaceObjects = new Dictionary<string, SpaceObjectDetail>();
+        private SpaceObjectDetail _activeSpaceObject;
         private string _creatureTag;
 
         /// <summary>
-        /// Creates a new ship enemy.
+        /// Creates a new space object.
         /// </summary>
-        /// <param name="creatureTag">The tag of the creature to associate with this ship detail.</param>
+        /// <param name="objectTag">The tag of the object to associate with this space object detail.</param>
         /// <returns>A ship enemy builder with the configured options.</returns>
-        public ShipEnemyBuilder Create(string creatureTag)
+        public SpaceObjectBuilder Create(string objectTag)
         {
-            _creatureTag = creatureTag;
-            _activeShipEnemy = new ShipEnemyDetail();
-            _shipEnemies[creatureTag] = _activeShipEnemy;
+            _creatureTag = objectTag;
+            _activeSpaceObject = new SpaceObjectDetail();
+            _spaceObjects[objectTag] = _activeSpaceObject;
 
             return this;
         }
@@ -27,9 +27,9 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="itemTag"></param>
         /// <returns></returns>
-        public ShipEnemyBuilder ItemTag(string itemTag)
+        public SpaceObjectBuilder ItemTag(string itemTag)
         {
-            _activeShipEnemy.ShipItemTag = itemTag;
+            _activeSpaceObject.ShipItemTag = itemTag;
 
             return this;
         }
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// </summary>
         /// <param name="shipModuleItemTag">Item tag of the ship module to attach.</param>
         /// <returns>A ship enemy builder with the configured options.</returns>
-        public ShipEnemyBuilder ShipModule(string shipModuleItemTag)
+        public SpaceObjectBuilder ShipModule(string shipModuleItemTag)
         {
             if (!Space.IsRegisteredShipModule(shipModuleItemTag))
             {
@@ -50,19 +50,19 @@ namespace SWLOR.Game.Server.Service.SpaceService
             var shipModule = Space.GetShipModuleDetailByItemTag(shipModuleItemTag);
             if (shipModule.PowerType == ShipModulePowerType.High)
             {
-                _activeShipEnemy.HighPoweredModules.Add(shipModuleItemTag);
+                _activeSpaceObject.HighPoweredModules.Add(shipModuleItemTag);
             }
             else
             {
-                _activeShipEnemy.LowPowerModules.Add(shipModuleItemTag);
+                _activeSpaceObject.LowPowerModules.Add(shipModuleItemTag);
             }
 
             return this;
         }
 
-        public Dictionary<string, ShipEnemyDetail> Build()
+        public Dictionary<string, SpaceObjectDetail> Build()
         {
-            return _shipEnemies;
+            return _spaceObjects;
         }
     }
 }

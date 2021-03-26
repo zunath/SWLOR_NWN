@@ -22,8 +22,10 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<string, ShipDetail> _ships = new Dictionary<string, ShipDetail>();
         private static readonly Dictionary<string, ShipModuleDetail> _shipModules = new Dictionary<string, ShipModuleDetail>();
+        private static readonly Dictionary<string, SpaceObjectDetail> _spaceObjects = new Dictionary<string, SpaceObjectDetail>();
+        
         private static readonly Dictionary<uint, ShipStatus> _shipNPCs = new Dictionary<uint, ShipStatus>();
-        private static readonly Dictionary<string, ShipEnemyDetail> _shipEnemies = new Dictionary<string, ShipEnemyDetail>();
+        private static readonly Dictionary<uint, ShipStatus> _spaceObjectInstances = new Dictionary<uint, ShipStatus>();
 
         public static Dictionary<Feat, ShipModuleFeat> ShipModuleFeats { get; } = ShipModuleFeat.GetAll();
 
@@ -39,7 +41,7 @@ namespace SWLOR.Game.Server.Service
 
             Console.WriteLine($"Loaded {_ships.Count} ships.");
             Console.WriteLine($"Loaded {_shipModules.Count} ship modules.");
-            Console.WriteLine($"Loaded {_shipEnemies.Count} ship enemies.");
+            Console.WriteLine($"Loaded {_spaceObjects.Count} space objects.");
 
             Scheduler.ScheduleRepeating(ProcessSpaceNPCAI, TimeSpan.FromSeconds(1));
         }
@@ -94,22 +96,22 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Loads all of the implementations of IShipEnemyListDefinition into the cache.
+        /// Loads all of the implementations of ISpaceObjectListDefinition into the cache.
         /// </summary>
         private static void LoadShipEnemies()
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
-                .Where(w => typeof(IShipEnemyListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+                .Where(w => typeof(ISpaceObjectListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 
             foreach (var type in types)
             {
-                var instance = (IShipEnemyListDefinition)Activator.CreateInstance(type);
-                var ships = instance.BuildShipEnemies();
+                var instance = (ISpaceObjectListDefinition)Activator.CreateInstance(type);
+                var ships = instance.BuildSpaceObjects();
 
                 foreach (var (creatureTag, enemy) in ships)
                 {
-                    _shipEnemies.Add(creatureTag, enemy);
+                    _spaceObjects.Add(creatureTag, enemy);
                 }
             }
         }
@@ -159,13 +161,14 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="creature">The creature whose target will be set.</param>
         /// <param name="target">The target to set.</param>
-        private static void SetCurrentTarget(uint creature, uint target)
+        /// <param name="vfx">The visual effect to use on the target.</param>
+        private static void SetCurrentTarget(uint creature, uint target, VisualEffect vfx = VisualEffect.Vfx_Target_Marker)
         {
             // Set the VFX to the new target if creature is a player.
             if (GetIsObjectValid(target) &&
                 GetIsPC(creature))
             {
-                Player.ApplyLoopingVisualEffectToObject(creature, target, VisualEffect.Vfx_Target_Marker);
+                Player.ApplyLoopingVisualEffectToObject(creature, target, vfx);
             }
             SetLocalObject(creature, "SPACE_TARGET", target);
         }
@@ -357,6 +360,7 @@ namespace SWLOR.Game.Server.Service
 
             ClearCurrentTarget(player);
             SetCreatureAppearanceType(player, dbPlayer.OriginalAppearanceType);
+            Enmity.RemoveCreatureEnmity(player);
 
             // Save the ship's hot bar and unassign the active ship Id.
             dbPlayer.Ships[shipId].SerializedHotBar = Creature.SerializeQuickbar(player);
@@ -555,8 +559,16 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // Check for a valid target if the ship module requires it.
             var (target, targetShipStatus) = GetCurrentTarget(activator);
+            // Check for valid object type if the ship module requires it.
+            if (shipModuleDetails.ValidTargetTypes.Count > 0 &&
+                !shipModuleDetails.ValidTargetTypes.Contains(GetObjectType(target)))
+            {
+                SendMessageToPC(activator, "This module cannot be used on that target type.");
+                return;
+            }
+
+            // Check for a valid target if the ship module requires it.
             if (shipModuleDetails.RequiresTarget && (!GetIsObjectValid(target) || targetShipStatus == null))
             {
                 SendMessageToPC(activator, "Target not selected.");
@@ -660,9 +672,9 @@ namespace SWLOR.Game.Server.Service
             var creatureTag = GetTag(creature);
 
             // Not registered with the space system. Exit early.
-            if (!_shipEnemies.ContainsKey(creatureTag)) return;
+            if (!_spaceObjects.ContainsKey(creatureTag)) return;
 
-            var registeredEnemyType = _shipEnemies[creatureTag];
+            var registeredEnemyType = _spaceObjects[creatureTag];
             var shipDetail = _ships[registeredEnemyType.ShipItemTag];
 
             var shipStatus = new ShipStatus
@@ -961,6 +973,12 @@ namespace SWLOR.Game.Server.Service
                            shipStatus.Capacitor >= capacitorRequired;
                 });
 
+                // Keep distance from target.
+                AssignCommand(creature, () =>
+                {
+                    ActionMoveAwayFromObject(target, true, 10f);
+                });
+
                 // Determine which module(s) to activate
 
                 // todo: Act dumb for now and activate them all. Implement better decision making later.
@@ -981,6 +999,40 @@ namespace SWLOR.Game.Server.Service
             sw.Stop();
 
             Console.WriteLine($"Space AI took {sw.ElapsedMilliseconds}ms to run."); // todo debug
+        }
+
+        /// <summary>
+        /// When a creature clicks on a space object, target that object.
+        /// </summary>
+        [NWNEventHandler("spc_target")]
+        public static void TargetSpaceObject()
+        {
+            var creature = GetPlaceableLastClickedBy();
+            var self = OBJECT_SELF;
+
+            var tag = GetTag(self);
+
+            // Space object not registered with the system.
+            if (!_spaceObjects.ContainsKey(tag)) return;
+
+            // Register this instance into the cache.
+            if (!_spaceObjectInstances.ContainsKey(self))
+                _spaceObjectInstances[self] = new ShipStatus();
+
+            var (target, _) = GetCurrentTarget(creature);
+            AssignCommand(creature, () => ClearAllActions());
+
+            // Targeted the same object - remove it.
+            if (target == self)
+            {
+                ClearCurrentTarget(creature);
+            }
+            // Targeted something new. Remove existing target and pick the new one.
+            else
+            {
+                ClearCurrentTarget(creature);
+                SetCurrentTarget(creature, self, VisualEffect.Vfx_Dur_Aura_Red);
+            }
         }
     }
 }

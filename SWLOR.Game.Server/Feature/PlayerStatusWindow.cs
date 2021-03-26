@@ -164,7 +164,7 @@ namespace SWLOR.Game.Server.Feature
                 PostString(player, backgroundBar, centerWindowX + 2, windowY + 1, Anchor, lifeSpan, Gui.ColorBlack, Gui.ColorBlack, guiStartId + 8, Gui.FontName); 
 
                 var windowHeight = string.IsNullOrWhiteSpace(targetName) ? 3 : 4;
-                Gui.DrawWindow(player, guiStartId + 10, Anchor, WindowX, windowY, WindowWidth - 2, windowHeight); 
+                Gui.DrawWindow(player, guiStartId + 10, Anchor, WindowX, windowY, WindowWidth - 2, windowHeight, lifeSpan); 
             }
         }
 

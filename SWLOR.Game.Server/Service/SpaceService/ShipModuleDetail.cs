@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.SpaceService
@@ -21,6 +22,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public bool RequiresTarget { get; set; }
         public ShipModulePowerType PowerType { get; set; }
         public Dictionary<PerkType, int> RequiredPerks { get; set; }
+        public HashSet<ObjectType> ValidTargetTypes { get; set; }
         public ShipModuleCalculateCapacitorDelegate CalculateCapacitorAction { get; set; }
         public ShipModuleCalculateRecastDelegate CalculateRecastAction { get; set; }
         public ShipModuleEquippedDelegate ModuleEquippedAction { get; set; }
@@ -31,6 +33,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         {
             Type = ShipModuleType.Passive;
             RequiredPerks = new Dictionary<PerkType, int>();
+            ValidTargetTypes = new HashSet<ObjectType>();
         }
     }
 }

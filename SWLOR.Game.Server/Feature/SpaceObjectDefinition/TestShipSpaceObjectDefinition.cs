@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Service.SpaceService;
 
-namespace SWLOR.Game.Server.Feature.ShipEnemyDefinition
+namespace SWLOR.Game.Server.Feature.SpaceObjectDefinition
 {
-    public class TestShipEnemyDefinition: IShipEnemyListDefinition
+    public class TestShipSpaceObjectDefinition: ISpaceObjectListDefinition
     {
-        private readonly ShipEnemyBuilder _builder = new ShipEnemyBuilder();
+        private readonly SpaceObjectBuilder _builder = new SpaceObjectBuilder();
 
-        public Dictionary<string, ShipEnemyDetail> BuildShipEnemies()
+        public Dictionary<string, SpaceObjectDetail> BuildSpaceObjects()
         {
             DemoEnemy();
 

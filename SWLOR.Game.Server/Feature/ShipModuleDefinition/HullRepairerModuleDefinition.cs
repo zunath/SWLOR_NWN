@@ -37,6 +37,12 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Capacitor(capacitor)
                 .ActivatedAction((activator, activatorShipStatus, target, targetShipStatus) =>
                 {
+                    if (!GetIsObjectValid(target))
+                    {
+                        target = activator;
+                        targetShipStatus = activatorShipStatus;
+                    }
+
                     if (activator != target)
                     {
                         AssignCommand(activator, () =>

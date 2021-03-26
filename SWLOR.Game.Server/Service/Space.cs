@@ -542,9 +542,9 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // Check for a valid target.
+            // Check for a valid target if the ship module requires it.
             var (target, targetShipStatus) = GetCurrentTarget(activator);
-            if (!GetIsObjectValid(target) || targetShipStatus == null)
+            if (shipModuleDetails.RequiresTarget && (!GetIsObjectValid(target) || targetShipStatus == null))
             {
                 SendMessageToPC(activator, "Target not selected.");
                 return;

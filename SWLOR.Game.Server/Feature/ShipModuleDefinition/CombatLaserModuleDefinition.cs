@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .ShortName(shortName)
                 .Description(description)
                 .IsActiveModule()
+                .RequiresTarget()
                 .PowerType(ShipModulePowerType.High)
                 .RequirePerk(PerkType.OffensiveModules, requiredLevel)
                 .Recast(recast)

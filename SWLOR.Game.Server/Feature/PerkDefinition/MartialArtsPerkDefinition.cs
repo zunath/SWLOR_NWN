@@ -149,14 +149,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 4 Knuckles.")
                 .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 30)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.KnucklesProficiency4)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 5 Knuckles.")
                 .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 40)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.KnucklesProficiency5);
         }
 
@@ -341,14 +339,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 4 Staves.")
                 .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 30)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.StaffProficiency4)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 5 Staves.")
                 .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 40)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.StaffProficiency5);
         }
 

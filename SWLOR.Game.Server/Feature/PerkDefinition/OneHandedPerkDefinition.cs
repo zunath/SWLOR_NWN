@@ -145,14 +145,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 4 Vibroblades.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 30)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.VibrobladeProficiency4)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 5 Vibroblades.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 40)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.VibrobladeProficiency5);
         }
 
@@ -337,14 +335,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 4 Finesse Vibroblades.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 30)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.FinesseVibrobladeProficiency4)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 5 Finesse Vibroblades.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 40)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.FinesseVibrobladeProficiency5);
         }
 

@@ -160,14 +160,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 4 Heavy Vibroblades.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwoHanded, 30)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.HeavyVibrobladeProficiency4)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 5 Heavy Vibroblades.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwoHanded, 40)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.HeavyVibrobladeProficiency5);
         }
 
@@ -352,14 +350,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 4 polearms.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwoHanded, 30)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.PolearmProficiency4)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 5 polearms.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwoHanded, 40)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.PolearmProficiency5);
         }
 
@@ -545,14 +541,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 4 twin blades.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwoHanded, 30)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.TwinBladeProficiency4)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 5 twin blades.")
                 .Price(2)
                 .RequirementSkill(SkillType.TwoHanded, 40)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.TwinBladeProficiency5);
         }
 

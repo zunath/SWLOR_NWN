@@ -172,14 +172,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 4 Pistols.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 30)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.PistolProficiency4)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 5 Pistols.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 40)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.PistolProficiency5);
         }
 
@@ -364,14 +362,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 4 Throwing Weapons.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 30)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.ThrowingWeaponProficiency4)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 5 Throwing Weapons.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 40)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.ThrowingWeaponProficiency5);
         }
 
@@ -557,14 +553,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 4 Cannons.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 30)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.CannonProficiency4)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 5 Cannons.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 40)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.CannonProficiency5);
         }
 
@@ -749,14 +743,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 4 Rifles.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 30)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.RifleProficiency4)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 5 Rifles.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 40)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.RifleProficiency5);
         }
 

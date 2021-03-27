@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -46,7 +47,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var player = GetPC();
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var activeShipInfo = string.Empty;
+
+            // Must have the CZ-220 shuttle pass in order to use the ship management.
+            if (!dbPlayer.KeyItems.ContainsKey(KeyItemType.CZ220ShuttlePass))
+            {
+                page.Header = "Greetings. I am still setting up here. In the meantime, you should speak to Selan Flembek. Thank you for your patience.";
+                return;
+            }
+
+            var selectedShipInfo = string.Empty;
             var displayUndock = false;
             var waypointTag = GetLocalString(OBJECT_SELF, "STARPORT_TELEPORT_WAYPOINT");
             var waypoint = GetWaypointByTag(waypointTag);
@@ -57,13 +66,18 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 var selectedShip = dbPlayer.Ships[dbPlayer.SelectedShipId];
                 var shipDetail = Space.GetShipDetailByItemTag(selectedShip.ItemTag);
 
-                activeShipInfo = ColorToken.Green("Active Ship: ") + selectedShip.Name + $" [{shipDetail.Name}]\n";
-                displayUndock = true;
+                selectedShipInfo = ColorToken.Green("Active Ship: ") + selectedShip.Name + $" [{shipDetail.Name}]\n";
+
+                // Ensure the player has the necessary perks to use the ship and all modules.
+                if (Space.CanPlayerUseShip(player, dbPlayer.SelectedShipId))
+                {
+                    displayUndock = true;
+                }
             }
 
             page.Header = ColorToken.Green("Starport Menu") + "\n" +
                           ColorToken.Green("Ships Registered: ") + $"{dbPlayer.Ships.Count} / {Space.MaxRegisteredShips}" + "\n" +
-                          activeShipInfo + "\n" +
+                          selectedShipInfo + "\n" +
                           "What would you like to do?";
 
             // Register New Ship (available only if player hasn't reached cap)

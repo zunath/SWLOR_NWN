@@ -3202,14 +3202,17 @@ namespace SWLOR.Game.Server.Core.NWScript
         }
 
         /// <summary>
-        ///   Sets a visual transform on the given object.
-        ///   - oObject can be any valid Creature, Placeable, Item or Door.
-        ///   - nTransform is one of OBJECT_VISUAL_TRANSFORM_*
-        ///   - fValue depends on the transformation to apply.
-        ///   Returns the old/previous value.
+        ///  Sets a visual transform on the given object.
+        /// - oObject can be any valid Creature, Placeable, Item or Door.
+        /// - nTransform is one of OBJECT_VISUAL_TRANSFORM_*
+        /// - fValue depends on the transformation to apply.
+        /// Returns the old/previous value.
         /// </summary>
-        public static float SetObjectVisualTransform(uint oObject, ObjectVisualTransform nTransform, float fValue)
+        public static float SetObjectVisualTransform(uint oObject, ObjectVisualTransform nTransform, float fValue, Lerp nLerpType = Lerp.None, float fLerpDuration = 0.0f, bool bPauseWithGame = true)
         {
+            Internal.NativeFunctions.StackPushInteger(bPauseWithGame ? 1 : 0);
+            Internal.NativeFunctions.StackPushFloat(fLerpDuration);
+            Internal.NativeFunctions.StackPushInteger((int)nLerpType);
             Internal.NativeFunctions.StackPushFloat(fValue);
             Internal.NativeFunctions.StackPushInteger((int)nTransform);
             Internal.NativeFunctions.StackPushObject(oObject);

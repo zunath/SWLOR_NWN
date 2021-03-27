@@ -61,6 +61,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         targetShipStatus.Hull = targetShipStatus.MaxHull;
 
                     Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {baseRecovery} hull HP to {GetName(target)}'s ship.");
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
 
         }

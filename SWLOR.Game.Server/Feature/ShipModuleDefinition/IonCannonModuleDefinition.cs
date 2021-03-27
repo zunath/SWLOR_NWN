@@ -88,6 +88,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     }
 
                     Enmity.ModifyEnmity(activator, target, damage);
+                    CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
                 });
         }
     }

@@ -74,6 +74,8 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} misses their intended target.");
                         }
 
+                        CombatPoint.AddCombatPoint(activator, target, SkillType.Piloting);
+
                         // Iterate over nearby targets, rolling to apply damage to each.
                         var nearby = GetFirstObjectInShape(Shape.Sphere, 3f, targetLocation, false, ObjectType.Creature);
                         while (GetIsObjectValid(nearby))
@@ -117,6 +119,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             }
 
                             Enmity.ModifyEnmity(activator, nearby, damage);
+                            CombatPoint.AddCombatPoint(activator, nearby, SkillType.Piloting);
 
                             nearby = GetNextObjectInShape(Shape.Sphere, 3f, targetLocation, false, ObjectType.Creature);
                         }

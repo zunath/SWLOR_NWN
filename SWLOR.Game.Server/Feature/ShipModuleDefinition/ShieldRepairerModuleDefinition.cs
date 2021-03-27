@@ -61,6 +61,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                         targetShipStatus.Shield = targetShipStatus.MaxShield;
 
                     Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} restores {baseRecovery} shield HP to {GetName(target)}'s ship.");
+                    CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);
                 });
         }
     }

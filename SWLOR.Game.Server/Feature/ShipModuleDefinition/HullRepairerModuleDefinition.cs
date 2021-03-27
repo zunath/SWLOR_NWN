@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(shortName)
+                .Texture("iit_ess_020")
                 .Type(ShipModuleType.HullRepairer)
                 .ValidTargetType(ObjectType.Creature)
                 .Description(description)

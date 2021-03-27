@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
 {
-    public class AgilityBoosterModuleDefinition : IShipModuleListDefinition
+    public class EvasionBoosterModuleDefinition : IShipModuleListDefinition
     {
         private readonly ShipModuleBuilder _builder = new ShipModuleBuilder();
 
@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(name)
+                .Texture("iit_ess_018")
                 .Description($"Improves a ship's evasion by {evasionBoostAmount}.")
                 .PowerType(ShipModulePowerType.Low)
                 .RequirePerk(PerkType.DefensiveModules, requiredLevel)

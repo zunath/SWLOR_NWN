@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(shortName)
                 .Type(ShipModuleType.CombatLaser)
+                .Texture("iit_ess_004")
                 .Description(description)
                 .RequiresTarget()
                 .ValidTargetType(ObjectType.Creature)

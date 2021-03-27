@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
         public string Name { get; set; }
         public string ShortName { get; set; }
         public ShipModuleType Type { get; set; }
+        public string Texture { get; set; }
         public string Description { get; set; }
         public bool RequiresTarget { get; set; }
         public ShipModulePowerType PowerType { get; set; }
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
         public ShipModuleDetail()
         {
+            Texture = string.Empty;
             Type = ShipModuleType.Passive;
             RequiredPerks = new Dictionary<PerkType, int>();
             ValidTargetTypes = new HashSet<ObjectType>();

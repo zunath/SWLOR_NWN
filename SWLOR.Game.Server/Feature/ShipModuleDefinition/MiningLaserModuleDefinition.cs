@@ -28,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             _builder.Create(itemTag)
                 .Name(name)
                 .ShortName(shortName)
+                .Texture("iit_ess_084")
                 .Type(ShipModuleType.MiningLaser)
                 .ValidTargetType(ObjectType.Placeable)
                 .Description($"Mines targets up to tier {requiredLevel}.")

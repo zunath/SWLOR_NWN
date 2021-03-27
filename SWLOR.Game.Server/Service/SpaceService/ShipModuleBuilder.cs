@@ -49,6 +49,19 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
+        /// Sets the texture used by the ship module item.
+        /// This should match whatever is set in the toolset for this item.
+        /// </summary>
+        /// <param name="texture">The name of the texture</param>
+        /// <returns>A ship module builder with the configured options.</returns>
+        public ShipModuleBuilder Texture(string texture)
+        {
+            _activeShipModule.Texture = texture;
+
+            return this;
+        }
+
+        /// <summary>
         /// Sets the ship module type which is used in NPC AI determinations.
         /// </summary>
         /// <param name="type">The type of module to associate with the AI.</param>

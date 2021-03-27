@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                 .Name(name)
                 .ShortName(shortName)
                 .Type(ShipModuleType.IonCannon)
+                .Texture("iit_ess_050")
                 .Description(description)
                 .RequiresTarget()
                 .ValidTargetType(ObjectType.Creature)

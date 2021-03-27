@@ -262,7 +262,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var (feat, shipModule) in dbPlayerShip.HighPowerModules)
             {
                 var shipModuleDetail = _shipModules[shipModule.ItemTag];
-                ApplyShipModuleFeatTLKs(player, shipModuleDetail, feat);
+                ApplyShipModuleFeat(player, shipModuleDetail, feat);
             }
         }
 
@@ -313,7 +313,7 @@ namespace SWLOR.Game.Server.Service
                 Creature.AddFeat(player, feat);
 
                 // Rename the feat to match the configured name on the ship module.
-                ApplyShipModuleFeatTLKs(player, shipModuleDetail, feat);
+                ApplyShipModuleFeat(player, shipModuleDetail, feat);
             }
 
             // Load the player's ship hot bar.
@@ -334,18 +334,22 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Applies the custom TLKs related to a ship module feat.
+        /// Also applies an override of the ship module onto the ship feat's texture.
         /// </summary>
-        /// <param name="player">The player who will receive the TLK override.</param>
-        /// <param name="shipModuleDetail">The ship module detail whose name and description will be loaded.</param>
+        /// <param name="player">The player who will receive the overrides.</param>
+        /// <param name="shipModuleDetail">The ship module detail whose name, description, and graphic will be loaded.</param>
         /// <param name="feat">The ship module feat</param>
-        private static void ApplyShipModuleFeatTLKs(uint player, ShipModuleDetail shipModuleDetail, Feat feat)
+        private static void ApplyShipModuleFeat(uint player, ShipModuleDetail shipModuleDetail, Feat feat)
         {
+            if (!GetIsObjectValid(player)) return;
             if (!ShipModuleFeats.ContainsKey(feat)) return;
 
             var shipModuleFeat = ShipModuleFeats[feat];
 
             Player.SetTlkOverride(player, shipModuleFeat.NameTlkId, shipModuleFeat.SlotName + ":" + shipModuleDetail.Name);
             Player.SetTlkOverride(player, shipModuleFeat.DescriptionTlkId, shipModuleDetail.Description);
+
+            SetTextureOverride(shipModuleFeat.TextureName, shipModuleDetail.Texture, player);
         }
 
         /// <summary>

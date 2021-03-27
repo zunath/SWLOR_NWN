@@ -200,6 +200,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 {
                     if (GetHasFeat(feat, player)) continue;
 
+                    // If feat isn't registered or the ability doesn't have an impact action,
+                    // don't add the feat to the player's hot bar.
+                    if (!Ability.IsFeatRegistered(feat)) continue;
+                    var abilityDetail = Ability.GetAbilityDetail(feat);
+                    if (abilityDetail.ImpactAction == null) continue;
+
                     Creature.AddFeatByLevel(player, feat, 1);
                     AddFeatToHotBar(feat);
                 }

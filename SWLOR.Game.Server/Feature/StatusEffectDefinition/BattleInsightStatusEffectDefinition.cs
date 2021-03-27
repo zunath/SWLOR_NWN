@@ -1,12 +1,9 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
-using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
@@ -44,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         var effect = EffectAttackIncrease(3);
                         effect = EffectLinkEffects(effect, EffectACIncrease(3));
                         effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
-                        ApplyEffectToObject(DurationType.Temporary, effect, target, 6f);
+                        ApplyEffectToObject(DurationType.Temporary, effect, player, 6f);
                     }
                 })
                 .RemoveAction((target) =>
@@ -75,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         var effect = EffectAttackIncrease(6);
                         effect = EffectLinkEffects(effect, EffectACIncrease(6));
                         effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BattleInsight2);
-                        ApplyEffectToObject(DurationType.Temporary, effect, target, 6f);
+                        ApplyEffectToObject(DurationType.Temporary, effect, player, 6f);
                     }
                 })
                 .RemoveAction((target) =>

@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -67,6 +68,7 @@ namespace SWLOR.Game.Server.Feature
             var hpBar = BuildBar(currentHP, maxHP, 22);
             var fpBar = BuildBar(currentFP, maxFP, 22);
             var stmBar = BuildBar(currentSTM, maxSTM, 22);
+            var isStandard = dbPlayer.CharacterType == CharacterType.Standard;
 
             const int WindowX = 1;
             const int WindowY = 5;
@@ -82,22 +84,46 @@ namespace SWLOR.Game.Server.Feature
             var stmText = "STM:".PadRight(5, ' ') + $"{currentSTM.ToString().PadLeft(4, ' ')} / {maxSTM.ToString().PadLeft(4, ' ')}";
 
             PostString(player, hpText, centerWindowX + 8, WindowY + 3, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, _characterIdReservation.StartId + 2, Gui.TextName);
-            PostString(player, fpText, centerWindowX + 8, WindowY + 2, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, _characterIdReservation.StartId + 1, Gui.TextName);
-            PostString(player, stmText, centerWindowX + 8, WindowY + 1, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, _characterIdReservation.StartId, Gui.TextName);
+
+            if (isStandard)
+            {
+                PostString(player, stmText, centerWindowX + 8, WindowY + 2, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, _characterIdReservation.StartId, Gui.TextName);
+            }
+            else
+            {
+                PostString(player, fpText, centerWindowX + 8, WindowY + 2, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, _characterIdReservation.StartId + 1, Gui.TextName);
+                PostString(player, stmText, centerWindowX + 8, WindowY + 1, Anchor, 0.0f, Gui.ColorWhite, Gui.ColorWhite, _characterIdReservation.StartId, Gui.TextName);
+            }
 
             // Draw the bars
             PostString(player, hpBar, centerWindowX + 2, WindowY + 3, Anchor, 0.0f, Gui.ColorHealthBar, Gui.ColorHealthBar, _characterIdReservation.StartId + 3, Gui.FontName);
-            PostString(player, fpBar, centerWindowX + 2, WindowY + 2, Anchor, 0.0f, Gui.ColorManaBar, Gui.ColorManaBar, _characterIdReservation.StartId + 4, Gui.FontName);
-            PostString(player, stmBar, centerWindowX + 2, WindowY + 1, Anchor, 0.0f, Gui.ColorStaminaBar, Gui.ColorStaminaBar, _characterIdReservation.StartId + 5, Gui.FontName);
+
+            if (isStandard)
+            {
+                PostString(player, stmBar, centerWindowX + 2, WindowY + 2, Anchor, 0.0f, Gui.ColorStaminaBar, Gui.ColorStaminaBar, _characterIdReservation.StartId + 5, Gui.FontName);
+            }
+            else
+            {
+                PostString(player, fpBar, centerWindowX + 2, WindowY + 2, Anchor, 0.0f, Gui.ColorManaBar, Gui.ColorManaBar, _characterIdReservation.StartId + 4, Gui.FontName);
+                PostString(player, stmBar, centerWindowX + 2, WindowY + 1, Anchor, 0.0f, Gui.ColorStaminaBar, Gui.ColorStaminaBar, _characterIdReservation.StartId + 5, Gui.FontName);
+            }
 
             // Draw the backgrounds
             if (!GetLocalBool(player, "PLAYERSTATUSWINDOW_BACKGROUND_DRAWN"))
             {
                 PostString(player, backgroundBar, centerWindowX + 2, WindowY + 3, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, _characterIdReservation.StartId + 6, Gui.FontName);
-                PostString(player, backgroundBar, centerWindowX + 2, WindowY + 2, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, _characterIdReservation.StartId + 7, Gui.FontName);
-                PostString(player, backgroundBar, centerWindowX + 2, WindowY + 1, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, _characterIdReservation.StartId + 8, Gui.FontName);
 
-                Gui.DrawWindow(player, _characterIdReservation.StartId + 9, Anchor, WindowX, WindowY, WindowWidth-2, 3);
+                if (isStandard)
+                {
+                    PostString(player, backgroundBar, centerWindowX + 2, WindowY + 2, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, _characterIdReservation.StartId + 7, Gui.FontName);
+                }
+                else
+                {
+                    PostString(player, backgroundBar, centerWindowX + 2, WindowY + 2, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, _characterIdReservation.StartId + 7, Gui.FontName);
+                    PostString(player, backgroundBar, centerWindowX + 2, WindowY + 1, Anchor, 0.0f, Gui.ColorBlack, Gui.ColorBlack, _characterIdReservation.StartId + 8, Gui.FontName);
+                }
+                
+                Gui.DrawWindow(player, _characterIdReservation.StartId + 9, Anchor, WindowX, WindowY, WindowWidth - 2, 3);
             }
         }
 
@@ -144,27 +170,27 @@ namespace SWLOR.Game.Server.Feature
             // Draw header, if applicable.
             if (!string.IsNullOrWhiteSpace(targetName))
             {
-                PostString(player, targetName, centerWindowX + 8, windowY + 4, Anchor, lifeSpan, Gui.ColorWhite, Gui.ColorWhite, guiStartId + 9, Gui.TextName); 
+                PostString(player, targetName, centerWindowX + 8, windowY + 4, Anchor, lifeSpan, Gui.ColorWhite, Gui.ColorWhite, guiStartId + 9, Gui.TextName);
             }
 
-            PostString(player, shieldsText, centerWindowX + 8, windowY + 3, Anchor, lifeSpan, Gui.ColorWhite, Gui.ColorWhite, guiStartId + 2, Gui.TextName); 
-            PostString(player, hullText, centerWindowX + 8, windowY + 2, Anchor, lifeSpan, Gui.ColorWhite, Gui.ColorWhite, guiStartId + 1, Gui.TextName); 
-            PostString(player, capacitorText, centerWindowX + 8, windowY + 1, Anchor, lifeSpan, Gui.ColorWhite, Gui.ColorWhite, guiStartId, Gui.TextName); 
+            PostString(player, shieldsText, centerWindowX + 8, windowY + 3, Anchor, lifeSpan, Gui.ColorWhite, Gui.ColorWhite, guiStartId + 2, Gui.TextName);
+            PostString(player, hullText, centerWindowX + 8, windowY + 2, Anchor, lifeSpan, Gui.ColorWhite, Gui.ColorWhite, guiStartId + 1, Gui.TextName);
+            PostString(player, capacitorText, centerWindowX + 8, windowY + 1, Anchor, lifeSpan, Gui.ColorWhite, Gui.ColorWhite, guiStartId, Gui.TextName);
 
             // Draw the bars
-            PostString(player, shieldsBar, centerWindowX + 2, windowY + 3, Anchor, lifeSpan, Gui.ColorShieldsBar, Gui.ColorShieldsBar, guiStartId + 3, Gui.FontName); 
-            PostString(player, hullBar, centerWindowX + 2, windowY + 2, Anchor, lifeSpan, Gui.ColorHullBar, Gui.ColorHullBar, guiStartId + 4, Gui.FontName); 
-            PostString(player, capacitorBar, centerWindowX + 2, windowY + 1, Anchor, lifeSpan, Gui.ColorCapacitorBar, Gui.ColorCapacitorBar, guiStartId + 5, Gui.FontName); 
+            PostString(player, shieldsBar, centerWindowX + 2, windowY + 3, Anchor, lifeSpan, Gui.ColorShieldsBar, Gui.ColorShieldsBar, guiStartId + 3, Gui.FontName);
+            PostString(player, hullBar, centerWindowX + 2, windowY + 2, Anchor, lifeSpan, Gui.ColorHullBar, Gui.ColorHullBar, guiStartId + 4, Gui.FontName);
+            PostString(player, capacitorBar, centerWindowX + 2, windowY + 1, Anchor, lifeSpan, Gui.ColorCapacitorBar, Gui.ColorCapacitorBar, guiStartId + 5, Gui.FontName);
 
             // Draw the backgrounds
             if (!GetLocalBool(player, "PLAYERSTATUSWINDOW_BACKGROUND_DRAWN"))
             {
-                PostString(player, backgroundBar, centerWindowX + 2, windowY + 3, Anchor, lifeSpan, Gui.ColorBlack, Gui.ColorBlack, guiStartId + 6, Gui.FontName); 
-                PostString(player, backgroundBar, centerWindowX + 2, windowY + 2, Anchor, lifeSpan, Gui.ColorBlack, Gui.ColorBlack, guiStartId + 7, Gui.FontName); 
-                PostString(player, backgroundBar, centerWindowX + 2, windowY + 1, Anchor, lifeSpan, Gui.ColorBlack, Gui.ColorBlack, guiStartId + 8, Gui.FontName); 
+                PostString(player, backgroundBar, centerWindowX + 2, windowY + 3, Anchor, lifeSpan, Gui.ColorBlack, Gui.ColorBlack, guiStartId + 6, Gui.FontName);
+                PostString(player, backgroundBar, centerWindowX + 2, windowY + 2, Anchor, lifeSpan, Gui.ColorBlack, Gui.ColorBlack, guiStartId + 7, Gui.FontName);
+                PostString(player, backgroundBar, centerWindowX + 2, windowY + 1, Anchor, lifeSpan, Gui.ColorBlack, Gui.ColorBlack, guiStartId + 8, Gui.FontName);
 
                 var windowHeight = string.IsNullOrWhiteSpace(targetName) ? 3 : 4;
-                Gui.DrawWindow(player, guiStartId + 10, Anchor, WindowX, windowY, WindowWidth - 2, windowHeight, lifeSpan); 
+                Gui.DrawWindow(player, guiStartId + 10, Anchor, WindowX, windowY, WindowWidth - 2, windowHeight, lifeSpan);
             }
         }
 
@@ -193,7 +219,7 @@ namespace SWLOR.Game.Server.Feature
             // When the anchor is at the top-right, the drawing is backwards.
             // We still need to add spaces to the end of the bar to ensure it's showing the
             // empty space.
-            for(var x = 0; x < width; x++)
+            for (var x = 0; x < width; x++)
             {
                 if (x < currentNumber)
                 {

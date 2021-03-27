@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Object = SWLOR.Game.Server.Core.NWNX.Object;
 
@@ -532,6 +533,17 @@ namespace SWLOR.Game.Server.Feature
             
             Events.PushEventData("EXAMINEE_OBJECT_ID", objectId);
             Events.SignalEvent("SWLOR_EXAMINE_OBJECT_BEFORE", OBJECT_SELF);
+        }
+
+        /// <summary>
+        /// A handful of NWNX functions require special calls to load persistence.
+        /// When the module loads, run those methods here.
+        /// </summary>
+        [NWNEventHandler("mod_load")]
+        public static void TriggerNWNXPersistence()
+        {
+            var firstObject = GetFirstObjectInArea(GetFirstArea());
+            Creature.SetCriticalRangeModifier(firstObject, 0, 0, true);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -75,7 +76,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(6)
                 .RequirementSkill(SkillType.MartialArts, 45)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.InnerStrength2);
+                .GrantsFeat(Feat.InnerStrength2)
+                
+                .TriggerPurchase((player, type, level) =>
+                {
+                    Creature.SetCriticalRangeModifier(player, -level, 0, true, BaseItem.Gloves);
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    Creature.SetCriticalRangeModifier(player, 0, 0, true, BaseItem.Gloves);
+                });
         }
 
         private void MartialFinesse(PerkBuilder builder)

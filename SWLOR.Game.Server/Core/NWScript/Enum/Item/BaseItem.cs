@@ -2,6 +2,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
 {
     public enum BaseItem
     {
+        Invalid = -1,
         ShortSword = 0,
         Longsword = 1,
         BattleAxe = 2,
@@ -97,7 +98,6 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         Whip = 111,
         CraftBase = 112,
         OffHandPistol = 213,
-        Invalid = 255,
 
         Saberstaff = 511,
         Lightsaber = 512,

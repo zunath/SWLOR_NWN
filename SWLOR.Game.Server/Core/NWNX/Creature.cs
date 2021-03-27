@@ -2,6 +2,7 @@ using System.Numerics;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
@@ -1016,10 +1017,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param nHand 0 for all attacks, 1 for Mainhand, 2 for Offhand
         /// @param bPersist Whether the modifier should persist to .bic file if applicable
         /// @note Persistence is activated each server reset by first use of either 'SetCriticalMultiplier*' functions. Recommended to trigger on a dummy target OnModuleLoad to enable persistence.
-        public static void SetCriticalMultiplierModifier(uint oCreature, int nModifier, int nHand = 0, bool bPersist = false)
+        public static void SetCriticalMultiplierModifier(uint oCreature, int nModifier, int nHand = 0, bool bPersist = false, BaseItem baseItemType = BaseItem.Invalid)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCriticalMultiplierModifier");
 
+            Internal.NativeFunctions.nwnxPushInt((int)baseItemType);
             Internal.NativeFunctions.nwnxPushInt(bPersist ? 1 : 0);
             Internal.NativeFunctions.nwnxPushInt(nHand);
             Internal.NativeFunctions.nwnxPushInt(nModifier);
@@ -1032,10 +1034,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param oCreature The target creature
         /// @param nHand 0 for all attacks, 1 for Mainhand, 2 for Offhand
         /// @return the current critical hit multiplier modifier for the creature
-        public static int GetCriticalMultiplierModifier(uint oCreature, int nHand = 0)
+        public static int GetCriticalMultiplierModifier(uint oCreature, int nHand = 0, BaseItem baseItemType = BaseItem.Invalid)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCriticalMultiplierModifier");
 
+            Internal.NativeFunctions.nwnxPushInt((int)baseItemType);
             Internal.NativeFunctions.nwnxPushInt(nHand);
             Internal.NativeFunctions.nwnxPushObject(oCreature);
             Internal.NativeFunctions.nwnxCallFunction();
@@ -1043,10 +1046,11 @@ namespace SWLOR.Game.Server.Core.NWNX
             return Internal.NativeFunctions.nwnxPopInt();
         }
 
-        public static void SetCriticalMultiplierOverride(uint oCreature, int nOverride, int nHand = 0, bool bPersist = false)
+        public static void SetCriticalMultiplierOverride(uint oCreature, int nOverride, int nHand = 0, bool bPersist = false, BaseItem baseItemType = BaseItem.Invalid)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCriticalMultiplierOverride");
 
+            Internal.NativeFunctions.nwnxPushInt((int)baseItemType);
             Internal.NativeFunctions.nwnxPushInt(bPersist ? 1 : 0);
             Internal.NativeFunctions.nwnxPushInt(nHand);
             Internal.NativeFunctions.nwnxPushInt(nOverride);
@@ -1055,10 +1059,11 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        public static int GetCriticalMultiplierOverride(uint oCreature, int nHand = 0)
+        public static int GetCriticalMultiplierOverride(uint oCreature, int nHand = 0, BaseItem baseItemType = BaseItem.Invalid)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCriticalMultiplierOverride");
 
+            Internal.NativeFunctions.nwnxPushInt((int)baseItemType);
             Internal.NativeFunctions.nwnxPushInt(nHand);
             Internal.NativeFunctions.nwnxPushObject(oCreature);
             Internal.NativeFunctions.nwnxCallFunction();
@@ -1066,10 +1071,11 @@ namespace SWLOR.Game.Server.Core.NWNX
             return Internal.NativeFunctions.nwnxPopInt();
         }
 
-        public static void SetCriticalRangeModifier(uint oCreature, int nModifier, int nHand = 0, bool bPersist = false)
+        public static void SetCriticalRangeModifier(uint oCreature, int nModifier, int nHand = 0, bool bPersist = false, BaseItem baseItemType  = BaseItem.Invalid)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCriticalRangeModifier");
 
+            Internal.NativeFunctions.nwnxPushInt((int)baseItemType);
             Internal.NativeFunctions.nwnxPushInt(bPersist ? 1 : 0);
             Internal.NativeFunctions.nwnxPushInt(nHand);
             Internal.NativeFunctions.nwnxPushInt(nModifier);
@@ -1078,10 +1084,11 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        public static int GetCriticalRangeModifier(uint oCreature, int nHand = 0)
+        public static int GetCriticalRangeModifier(uint oCreature, int nHand = 0, BaseItem baseItemType = BaseItem.Invalid)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCriticalRangeModifier");
 
+            Internal.NativeFunctions.nwnxPushInt((int)baseItemType);
             Internal.NativeFunctions.nwnxPushInt(nHand);
             Internal.NativeFunctions.nwnxPushObject(oCreature);
             Internal.NativeFunctions.nwnxCallFunction();
@@ -1089,10 +1096,11 @@ namespace SWLOR.Game.Server.Core.NWNX
             return Internal.NativeFunctions.nwnxPopInt();
         }
 
-        public static void SetCriticalRangeOverride(uint oCreature, int nOverride, int nHand = 0, bool bPersist = false)
+        public static void SetCriticalRangeOverride(uint oCreature, int nOverride, int nHand = 0, bool bPersist = false, BaseItem baseItemType = BaseItem.Invalid)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCriticalRangeOverride");
 
+            Internal.NativeFunctions.nwnxPushInt((int)baseItemType);
             Internal.NativeFunctions.nwnxPushInt(bPersist ? 1 : 0);
             Internal.NativeFunctions.nwnxPushInt(nHand);
             Internal.NativeFunctions.nwnxPushInt(nOverride);
@@ -1101,10 +1109,11 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        public static int GetCriticalRangeOverride(uint oCreature, int nHand = 0)
+        public static int GetCriticalRangeOverride(uint oCreature, int nHand = 0, BaseItem baseItemType = BaseItem.Invalid)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCriticalRangeOverride");
 
+            Internal.NativeFunctions.nwnxPushInt((int)baseItemType);
             Internal.NativeFunctions.nwnxPushInt(nHand);
             Internal.NativeFunctions.nwnxPushObject(oCreature);
             Internal.NativeFunctions.nwnxCallFunction();

@@ -783,6 +783,10 @@ namespace SWLOR.Game.Server.Service
             {
                 var targetPlayerId = GetObjectUUID(creature);
                 var dbTargetPlayer = DB.Get<Entity.Player>(targetPlayerId);
+
+                if (dbTargetPlayer.ActiveShipId == Guid.Empty)
+                    return null;
+
                 var dbPlayerShip = dbTargetPlayer.Ships[dbTargetPlayer.ActiveShipId];
 
                 return dbPlayerShip;
@@ -923,20 +927,42 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 // Exit space mode
-                ExitSpaceMode(creature);
+                ClearCurrentTarget(creature);
+                SetCreatureAppearanceType(creature, dbPlayer.OriginalAppearanceType);
+                Enmity.RemoveCreatureEnmity(creature);
+                
+                // Remove all module feats from the player.
+                foreach (var (feat, _) in ShipModuleFeats)
+                {
+                    Creature.RemoveFeat(creature, feat);
+                }
+
+                // Load the player's hot bar.
+                if (string.IsNullOrWhiteSpace(dbPlayer.SerializedHotBar) ||
+                    !Creature.DeserializeQuickbar(creature, dbPlayer.SerializedHotBar))
+                {
+                    // Deserialization failed. Clear out the player's hot bar and start fresh.
+                    for (var slot = 0; slot <= 35; slot++)
+                    {
+                        Player.SetQuickBarSlot(creature, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
+                    }
+
+                    dbPlayer.SerializedHotBar = Creature.SerializeQuickbar(creature);
+                }
 
                 // Jump player to their respawn point.
                 var respawnArea = Cache.GetAreaByResref(dbPlayer.RespawnAreaResref);
                 var respawnLocation = Location(
                     respawnArea,
                     Vector3(
-                        dbPlayer.RespawnLocationX, 
-                        dbPlayer.RespawnLocationY, 
+                        dbPlayer.RespawnLocationX,
+                        dbPlayer.RespawnLocationY,
                         dbPlayer.RespawnLocationZ),
                     dbPlayer.RespawnLocationOrientation);
 
                 AssignCommand(creature, () =>
                 {
+                    ClearAllActions();
                     ActionJumpToLocation(respawnLocation);
                 });
 
@@ -960,9 +986,6 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void ProcessSpaceNPCAI()
         {
-            var sw = new Stopwatch();
-            sw.Start();
-
             var now = DateTime.UtcNow;
 
             foreach (var (creature, shipStatus) in _shipNPCs)
@@ -994,8 +1017,6 @@ namespace SWLOR.Game.Server.Service
                 SetCurrentTarget(creature, target);
                 foreach (var (feat, shipModule) in availableModules)
                 {
-                    Console.WriteLine($"{GetName(creature)} is using feat: {feat} which is module: {shipModule.ItemTag} on target {GetName(target)}"); // todo debug
-
                     var shipModuleDetail = _shipModules[shipModule.ItemTag];
                     var useModule = false;
                     if (shipModuleDetail.Type == ShipModuleType.ShieldRepairer)
@@ -1030,11 +1051,6 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
             }
-
-
-            sw.Stop();
-
-            Console.WriteLine($"Space AI took {sw.ElapsedMilliseconds}ms to run."); // todo debug
         }
 
         /// <summary>

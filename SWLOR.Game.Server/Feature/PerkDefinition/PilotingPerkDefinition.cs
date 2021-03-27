@@ -131,22 +131,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Energy Management")
 
                 .AddPerkLevel()
-                .Description("Reduces energy consumption of modules by 10%.")
-                .Price(3)
-                .RequirementSkill(SkillType.Piloting, 25)
+                .Description("Reduces energy consumption of modules by 20%.")
+                .Price(5)
+                .RequirementSkill(SkillType.Piloting, 20)
                 .GrantsFeat(Feat.EnergyManagement1)
 
                 .AddPerkLevel()
-                .Description("Reduces energy consumption of modules by 20%.")
-                .Price(3)
-                .RequirementSkill(SkillType.Piloting, 35)
-                .GrantsFeat(Feat.EnergyManagement2)
-
-                .AddPerkLevel()
-                .Description("Reduces energy consumption of modules by 30%.")
-                .Price(4)
-                .RequirementSkill(SkillType.Piloting, 45)
-                .GrantsFeat(Feat.EnergyManagement3);
+                .Description("Reduces energy consumption of modules by 40%.")
+                .Price(5)
+                .RequirementSkill(SkillType.Piloting, 40)
+                .GrantsFeat(Feat.EnergyManagement2);
         }
 
         private void MiningModules(PerkBuilder builder)

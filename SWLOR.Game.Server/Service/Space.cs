@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Object = SWLOR.Game.Server.Core.NWNX.Object;
@@ -547,8 +548,13 @@ namespace SWLOR.Game.Server.Service
             var shipModuleDetails = _shipModules[shipModule.Value.ItemTag];
 
             // Check capacitor requirements
-            var requiredCapacitor = shipModuleDetails.CalculateCapacitorAction?.Invoke(activator, activatorShipStatus);
-            if (requiredCapacitor != null && activatorShipStatus.Capacitor < requiredCapacitor)
+            var requiredCapacitor = shipModuleDetails.CalculateCapacitorAction?.Invoke(activator, activatorShipStatus) ?? 0;
+
+            // Perk bonuses
+            var capacitorReduction = 1.0f - Perk.GetEffectivePerkLevel(activator, PerkType.EnergyManagement) * 0.2f;
+            requiredCapacitor = (int)(requiredCapacitor * capacitorReduction);
+
+            if (activatorShipStatus.Capacitor < requiredCapacitor)
             {
                 SendMessageToPC(activator, $"Your ship does not have enough capacitor to use that module. (Required: {requiredCapacitor})");
                 return;
@@ -601,9 +607,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Reduce capacitor
-            if (requiredCapacitor != null)
+            if (requiredCapacitor > 0)
             {
-                activatorShipStatus.Capacitor -= (int) requiredCapacitor;
+                activatorShipStatus.Capacitor -= requiredCapacitor;
             }
 
             // Update changes for players. No need to update NPCs as they are already stored in memory cache.
@@ -1004,10 +1010,10 @@ namespace SWLOR.Game.Server.Service
                 var availableModules = allModules.Where(x =>
                 {
                     var shipModuleDetail = _shipModules[x.Value.ItemTag];
-                    var capacitorRequired = shipModuleDetail.CalculateCapacitorAction?.Invoke(creature, shipStatus) ?? 0;
+                    var requiredCapacitor = shipModuleDetail.CalculateCapacitorAction?.Invoke(creature, shipStatus) ?? 0;
 
                     return x.Value.RecastTime <= now &&
-                           shipStatus.Capacitor >= capacitorRequired;
+                           shipStatus.Capacitor >= requiredCapacitor;
                 });
 
                 // Keep distance from target.

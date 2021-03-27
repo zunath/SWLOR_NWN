@@ -29,16 +29,17 @@
         /// <param name="tag0_value">The tag's value for which to filter.</param>
         public static void PushPerfScope(string name, string tag0_tag = "", string tag0_value = "")
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PushPerfScope");
-            Internal.NativeFunctions.nwnxPushString(name);
+            var sFunc = "PushPerfScope";
+
+            NWNXCore.NWNX_PushArgumentString(PLUGIN_NAME, sFunc, name);
 
             if (tag0_value != "" && tag0_tag != "")
             {
-                Internal.NativeFunctions.nwnxPushString(tag0_value);
-                Internal.NativeFunctions.nwnxPushString(tag0_tag);
+                NWNXCore.NWNX_PushArgumentString(PLUGIN_NAME, sFunc, tag0_value);
+                NWNXCore.NWNX_PushArgumentString(PLUGIN_NAME, sFunc, tag0_tag);
             }
 
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNXCore.NWNX_CallFunction(PLUGIN_NAME, sFunc);
         }
 
         /// <summary>
@@ -47,8 +48,9 @@
         /// </summary>
         public static void PopPerfScope()
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PopPerfScope");
-            Internal.NativeFunctions.nwnxCallFunction();
+            var sFunc = "PopPerfScope";
+
+            NWNXCore.NWNX_CallFunction(PLUGIN_NAME, sFunc);
         }
     }
 }

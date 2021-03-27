@@ -118,10 +118,10 @@ namespace SWLOR.Game.Server.Feature
             Events.SubscribeEvent("NWNX_ON_REMOVE_ASSOCIATE_AFTER", "asso_rem_aft");
 
             // Stealth events
-            Events.SubscribeEvent("NWNX_ON_ENTER_STEALTH_BEFORE", "stlent_add_bef");
-            Events.SubscribeEvent("NWNX_ON_ENTER_STEALTH_AFTER", "stlent_add_aft");
-            Events.SubscribeEvent("NWNX_ON_EXIT_STEALTH_BEFORE", "stlex_add_bef");
-            Events.SubscribeEvent("NWNX_ON_EXIT_STEALTH_AFTER", "stlex_add_aft");
+            Events.SubscribeEvent("NWNX_ON_STEALTH_ENTER_BEFORE", "stlent_add_bef");
+            Events.SubscribeEvent("NWNX_ON_STEALTH_ENTER_AFTER", "stlent_add_aft");
+            Events.SubscribeEvent("NWNX_ON_STEALTH_EXIT_BEFORE", "stlex_add_bef");
+            Events.SubscribeEvent("NWNX_ON_STEALTH_EXIT_AFTER", "stlex_add_aft");
 
             // Examine events
             Events.SubscribeEvent("NWNX_ON_EXAMINE_OBJECT_BEFORE", "examine_reset");
@@ -440,8 +440,9 @@ namespace SWLOR.Game.Server.Feature
             Events.SubscribeEvent("NWNX_ON_INPUT_ATTACK_OBJECT_AFTER", "input_atk_aft");
 
             // Input Force Move To events
-            Events.SubscribeEvent("NWNX_ON_INPUT_FORCE_MOVE_TO_OBJECT_BEFORE", "force_move_bef");
-            Events.SubscribeEvent("NWNX_ON_INPUT_FORCE_MOVE_TO_OBJECT_AFTER", "force_move_aft");
+            // NOTE: These events are disabled because they cause NWServer to crash when a player clicks to move anywhere.
+            //Events.SubscribeEvent("NWNX_ON_INPUT_FORCE_MOVE_TO_OBJECT_BEFORE", "force_move_bef");
+            //Events.SubscribeEvent("NWNX_ON_INPUT_FORCE_MOVE_TO_OBJECT_AFTER", "force_move_aft");
 
             // Object Lock events
             Events.SubscribeEvent("NWNX_ON_OBJECT_LOCK_BEFORE", "obj_lock_bef");

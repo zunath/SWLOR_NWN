@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public PerkType EffectiveLevelPerkType { get; set; }
         public Animation AnimationType { get; set; }
         public StatusEffectType ConcentrationStatusEffectType { get; set; }
+        public bool CanBeUsedInSpace { get; set; }
 
         public AbilityDetail()
         {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -46,6 +47,7 @@ namespace SWLOR.Game.Server.Entity
             KeyItems = new Dictionary<KeyItemType, DateTime>();
             Guilds = new Dictionary<GuildType, PlayerGuild>();
             SavedOutfits = new Dictionary<int, string>();
+            Ships = new Dictionary<Guid, ShipStatus>();
         }
 
         public override string KeyPrefix => "Player";
@@ -81,6 +83,10 @@ namespace SWLOR.Game.Server.Entity
         public CharacterType CharacterType { get; set; }
         public bool IsHolonetEnabled { get; set; }
         public EmoteStyle EmoteStyle { get; set; }
+        public string SerializedHotBar { get; set; }
+        public Guid ActiveShipId { get; set; }
+        public Guid SelectedShipId { get; set; }
+        public AppearanceType OriginalAppearanceType { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }
@@ -97,6 +103,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
         public Dictionary<int, string> SavedOutfits { get; set; }
+        public Dictionary<Guid, ShipStatus> Ships { get; set; }
     }
 
     public class MapPin

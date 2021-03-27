@@ -63,6 +63,9 @@ namespace SWLOR.Game.Server.Service
         public static int ColorManaBar = Convert.ToInt32("0x00008BFF", 16);
         public static int ColorStaminaBar = Convert.ToInt32("0x008B00FF", 16);
 
+        public static int ColorShieldsBar = Convert.ToInt32("0x00AAE4FF", 16);
+        public static int ColorHullBar = Convert.ToInt32("0x8B0000FF", 16);
+        public static int ColorCapacitorBar = Convert.ToInt32("0xFFA500FF", 16);
 
         private static int ReservedIdCount;
 

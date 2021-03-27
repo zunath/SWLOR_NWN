@@ -32,5 +32,13 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
             return Internal.NativeFunctions.nwnxPopInt();
         }
+
+        public static void SetFavoredEnemyFeat(RacialType iRace, Feat iFeat)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetFavoredEnemyFeat");
+            Internal.NativeFunctions.nwnxPushInt((int)iFeat);
+            Internal.NativeFunctions.nwnxPushInt((int)iRace);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
     }
 }

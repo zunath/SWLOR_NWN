@@ -1,3 +1,4 @@
+using System.Numerics;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
@@ -1100,7 +1101,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        public static int NWNX_Creature_GetCriticalRangeOverride(uint oCreature, int nHand = 0)
+        public static int GetCriticalRangeOverride(uint oCreature, int nHand = 0)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCriticalRangeOverride");
 
@@ -1120,6 +1121,218 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxPushObject(oCreature);
 
             Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static int GetWalkAnimation(uint oCreature)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetWalkAnimation");
+
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        public static void SetWalkAnimation(uint oCreature, int nAnimation)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetWalkAnimation");
+            Internal.NativeFunctions.nwnxPushInt(nAnimation);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static void SetAttackRollOverride(uint oCreature, int nRoll, int nModifier)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAttackRollOverride");
+            Internal.NativeFunctions.nwnxPushInt(nModifier);
+            Internal.NativeFunctions.nwnxPushInt(nRoll);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static void SetParryAllAttacks(uint oCreature, bool bParry)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetParryAllAttacks");
+            Internal.NativeFunctions.nwnxPushInt(bParry ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static bool GetNoPermanentDeath(uint oCreature)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetNoPermanentDeath");
+
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt() == 1;
+        }
+
+        public static void SetNoPermanentDeath(uint oCreature, bool bNoPermanentDeath)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetNoPermanentDeath");
+            Internal.NativeFunctions.nwnxPushInt(bNoPermanentDeath ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static Vector3 ComputeSafeLocation(uint oCreature, Vector3 vPosition, float fRadius = 20.0f, bool bWalkStraightLineRequired = true)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ComputeSafeLocation"); 
+            
+            Internal.NativeFunctions.nwnxPushInt(bWalkStraightLineRequired ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushFloat(fRadius);
+            Internal.NativeFunctions.nwnxPushFloat(vPosition.X);
+            Internal.NativeFunctions.nwnxPushFloat(vPosition.Y);
+            Internal.NativeFunctions.nwnxPushFloat(vPosition.Z);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return new Vector3
+            {
+                Z = Internal.NativeFunctions.nwnxPopFloat(),
+                Y = Internal.NativeFunctions.nwnxPopFloat(),
+                X = Internal.NativeFunctions.nwnxPopFloat()
+            };
+        }
+
+        public static void DoPerceptionUpdateOnCreature(uint oCreature, uint oTargetCreature)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "DoPerceptionUpdateOnCreature");
+            Internal.NativeFunctions.nwnxPushObject(oTargetCreature);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static float GetPersonalSpace(uint oCreature)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetPersonalSpace");
+
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopFloat();
+        }
+
+        public static void SetPersonalSpace(uint oCreature, float fPerspace)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetPersonalSpace");
+            Internal.NativeFunctions.nwnxPushFloat(fPerspace);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static float GetCreaturePersonalSpace(uint oCreature)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCreaturePersonalSpace");
+
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopFloat();
+        }
+
+        public static void SetCreaturePersonalSpace(uint oCreature, float fCrePerspace)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCreaturePersonalSpace");
+            Internal.NativeFunctions.nwnxPushFloat(fCrePerspace);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static float GetHeight(uint oCreature)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetHeight");
+
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopFloat();
+        }
+
+        public static void SetHeight(uint oCreature, float fHeight)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetHeight");
+            Internal.NativeFunctions.nwnxPushFloat(fHeight);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static float GetHitDistance(uint oCreature)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetHitDistance");
+
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopFloat();
+        }
+
+        public static void SetHitDistance(uint oCreature, float fHitDist)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetHitDistance");
+            Internal.NativeFunctions.nwnxPushFloat(fHitDist);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static float GetPreferredAttackDistance(uint oCreature)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetPreferredAttackDistance");
+
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopFloat();
+        }
+
+        public static void SetPreferredAttackDistance(uint oCreature, float fPrefAtckDist)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetPreferredAttackDistance");
+            Internal.NativeFunctions.nwnxPushFloat(fPrefAtckDist);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static int GetArmorCheckPenalty(uint oCreature)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetArmorCheckPenalty");
+
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        public static int GetShieldCheckPenalty(uint oCreature)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetShieldCheckPenalty");
+
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        public static void SetBypassEffectImmunity(uint oCreature, int nImmunityType, int nChance = 100, bool bPersist = false)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetBypassEffectImmunity");
+            Internal.NativeFunctions.nwnxPushInt(bPersist ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushInt(nChance);
+            Internal.NativeFunctions.nwnxPushInt(nImmunityType);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static int GetBypassEffectImmunity(uint oCreature, int nImmunityType)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetBypassEffectImmunity");
+
+            Internal.NativeFunctions.nwnxPushInt(nImmunityType);
+            Internal.NativeFunctions.nwnxPushObject(oCreature);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
         }
     }
 }

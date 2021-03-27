@@ -182,7 +182,24 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
 
             return Internal.NativeFunctions.nwnxPopInt();
+        }
 
+        /// @brief Override the max attack distance of ranged weapons.
+        /// @param nBaseItem The baseitem id.
+        /// @param fMax The maximum attack distance. Default is 40.0f.
+        /// @param fMaxPassive The maximum passive attack distance. Default is 20.0f. Seems to be used by the engine to determine a new nearby target when needed.
+        /// @param fPreferred The preferred attack distance. See the PrefAttackDist column in baseitems.2da, default seems to be 30.0f for ranged weapons.
+        /// @note fMaxPassive should probably be lower than fMax, half of fMax seems to be a good start. fPreferred should be at least ~0.5f lower than fMax.
+        public static void SetMaxRangedAttackDistanceOverride(BaseItem nBaseItem, float fMax, float fMaxPassive, float fPreferred)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetMaxRangedAttackDistanceOverride");
+
+            Internal.NativeFunctions.nwnxPushFloat(fPreferred);
+            Internal.NativeFunctions.nwnxPushFloat(fMaxPassive);
+            Internal.NativeFunctions.nwnxPushFloat(fMax);
+            Internal.NativeFunctions.nwnxPushInt((int)nBaseItem);
+
+            Internal.NativeFunctions.nwnxCallFunction();
         }
     }
 }

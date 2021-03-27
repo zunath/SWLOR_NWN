@@ -33,7 +33,6 @@ void main()
 {
     ExecuteScript("item_on_hit", OBJECT_SELF);
 
-
    object oItem;        // The item casting triggering this spellscript
    object oSpellTarget; // On a weapon: The one being hit. On an armor: The one hitting the armor
    object oSpellOrigin; // On a weapon: The one wielding the weapon. On an armor: The one wearing an armor

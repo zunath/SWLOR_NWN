@@ -213,5 +213,32 @@ namespace SWLOR.Game.Server.Core.NWNX
             return Convert.ToBoolean(Internal.NativeFunctions.nwnxPopInt());
         }
 
-    }
+        public static void SetDawnHour(int nDawnHour)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetDawnHour");
+
+            Internal.NativeFunctions.nwnxPushInt(nDawnHour);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static void SetDuskHour(int nDuskHour)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetDuskHour");
+
+            Internal.NativeFunctions.nwnxPushInt(nDuskHour);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static HighResTimestamp GetHighResTimeStamp()
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetHighResTimeStamp");
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return new HighResTimestamp
+            {
+                Microseconds = Internal.NativeFunctions.nwnxPopInt(),
+                Seconds = Internal.NativeFunctions.nwnxPopInt()
+            };
+        }
+}
 }

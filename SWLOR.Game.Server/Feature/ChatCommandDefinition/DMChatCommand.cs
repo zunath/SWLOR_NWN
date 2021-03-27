@@ -172,6 +172,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             builder.Create("getlocalfloat")
                 .Description("Gets a local float on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .RequiresTarget()
                 .Validate((user, args) =>
                 {
                     if (args.Length < 1)
@@ -198,6 +199,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             builder.Create("getlocalint")
                 .Description("Gets a local integer on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .RequiresTarget()
                 .Validate((user, args) =>
                 {
                     if (args.Length < 1)
@@ -224,6 +226,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             builder.Create("getlocalstring")
                 .Description("Gets a local string on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .RequiresTarget()
                 .Validate((user, args) =>
                 {
                     if (args.Length < 1)
@@ -253,6 +256,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             builder.Create("setlocalfloat")
                 .Description("Sets a local float on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .RequiresTarget()
                 .Validate((user, args) =>
                 {
                     if (args.Length < 2)
@@ -287,6 +291,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             builder.Create("setlocalint")
                 .Description("Sets a local int on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .RequiresTarget()
                 .Validate((user, args) =>
                 {
                     if (args.Length < 2)
@@ -320,6 +325,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             builder.Create("setlocalstring")
                 .Description("Sets a local string on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .RequiresTarget()
                 .Validate((user, args) =>
                 {
                     if (args.Length < 1)
@@ -358,6 +364,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             builder.Create("setportrait")
                 .Description("Sets portrait of the target player using the string specified. (Remember to add po_ to the portrait)")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .RequiresTarget()
                 .Validate((user, args) =>
                 {
                     if (args.Length <= 0)

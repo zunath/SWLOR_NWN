@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Service
         PerkRefund,
         PlayerHousing,
         PlayerMarket,
-        AI
+        AI,
+        Space
     }
 
     public static class Log

@@ -120,11 +120,11 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         // Set obj's appearance. Will not update for PCs until they
         // re-enter the area.
-        public static void SetAppearance(uint obj, int app)
+        public static void SetAppearance(uint placeable, int appearance)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAppearance");
-            Internal.NativeFunctions.nwnxPushInt(app);
-            Internal.NativeFunctions.nwnxPushObject(obj);
+            Internal.NativeFunctions.nwnxPushInt(appearance);
+            Internal.NativeFunctions.nwnxPushObject(placeable);
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
@@ -261,11 +261,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         }
 
         // Export an object to the UserDirectory/nwnx folder
-        public static void Export(string sFileName, uint oObject)
+        public static void Export(uint oObject, string sFileName)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "Export");
-            Internal.NativeFunctions.nwnxPushObject(oObject);
             Internal.NativeFunctions.nwnxPushString(sFileName);
+            Internal.NativeFunctions.nwnxPushObject(oObject);
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
@@ -482,6 +482,78 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
 
             return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+
+        public static void ClearSpellEffectsOnOthers(uint oObject)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ClearSpellEffectsOnOthers");
+            Internal.NativeFunctions.nwnxPushObject(oObject);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static string PeekUUID(uint oObject)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PeekUUID");
+            Internal.NativeFunctions.nwnxPushObject(oObject);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopString();
+        }
+
+        public static void SetHasInventory(uint obj, bool bHasInventory)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetHasInventory");
+            Internal.NativeFunctions.nwnxPushInt(bHasInventory ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushObject(obj);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static int GetCurrentAnimation(uint oObject)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCurrentAnimation");
+            Internal.NativeFunctions.nwnxPushObject(oObject);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        public static int GetAILevel(uint oObject)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAILevel");
+            Internal.NativeFunctions.nwnxPushObject(oObject);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        public static void SetAILevel(uint oObject, int nLevel)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAILevel");
+            Internal.NativeFunctions.nwnxPushInt(nLevel);
+            Internal.NativeFunctions.nwnxPushObject(oObject);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static string GetMapNote(uint oObject, int nID = 0, int nGender = 0)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMapNote");
+            Internal.NativeFunctions.nwnxPushInt(nGender);
+            Internal.NativeFunctions.nwnxPushInt(nID);
+            Internal.NativeFunctions.nwnxPushObject(oObject);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopString();
+        }
+
+        public static void SetMapNote(uint oObject, string sMapNote, int nID = 0, int nGender = 0)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetMapNote");
+            Internal.NativeFunctions.nwnxPushInt(nGender);
+            Internal.NativeFunctions.nwnxPushInt(nID);
+            Internal.NativeFunctions.nwnxPushString(sMapNote);
+            Internal.NativeFunctions.nwnxPushObject(oObject);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
     }
 }

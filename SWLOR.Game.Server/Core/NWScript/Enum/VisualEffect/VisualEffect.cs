@@ -536,6 +536,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect
         Vfx_Imp_Nightmare_Head_Hit = 670,
 
 
-        Vfx_Placement_Grid = 1600,
+        Vfx_Placement_Grid = 821,
+        Vfx_Target_Marker = 822
     }
 }

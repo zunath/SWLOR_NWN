@@ -14,6 +14,13 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxPushString(evt);
             Internal.NativeFunctions.nwnxCallFunction();
         }
+        public static void UnsubscribeEvent(string evt, string script)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "UnsubscribeEvent");
+            Internal.NativeFunctions.nwnxPushString(script);
+            Internal.NativeFunctions.nwnxPushString(evt);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
 
         // Pushes event data at the provided tag, which subscribers can access with GetEventData.
         // This should be called BEFORE SignalEvent.
@@ -130,6 +137,31 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveObjectFromDispatchList");
             Internal.NativeFunctions.nwnxPushObject(oObject);
             Internal.NativeFunctions.nwnxPushString(sScript);
+            Internal.NativeFunctions.nwnxPushString(sEvent);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+
+        public static void ToggleIDWhitelist(string sEvent, bool bEnable)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ToggleIDWhitelist");
+            Internal.NativeFunctions.nwnxPushInt(bEnable ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushString(sEvent);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static void AddIDToWhitelist(string sEvent, int nID)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddIDToWhitelist");
+            Internal.NativeFunctions.nwnxPushInt(nID);
+            Internal.NativeFunctions.nwnxPushString(sEvent);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+
+        public static void RemoveIDFromWhitelist(string sEvent, int nID)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveIDFromWhitelist");
+            Internal.NativeFunctions.nwnxPushInt(nID);
             Internal.NativeFunctions.nwnxPushString(sEvent);
             Internal.NativeFunctions.nwnxCallFunction();
         }

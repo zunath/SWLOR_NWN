@@ -2,6 +2,7 @@
 using System.Numerics;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
@@ -227,10 +228,10 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         // Apply visualeffect to target that only player can see
         // Note: Only works with instant effects: VFX_COM_*, VFX_FNF_*, VFX_IMP_*
-        public static void ApplyInstantVisualEffectToObject(uint player, uint target, int visualEffect)
+        public static void ApplyInstantVisualEffectToObject(uint player, uint target, VisualEffect visualEffect)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ApplyInstantVisualEffectToObject");
-            Internal.NativeFunctions.nwnxPushInt(visualEffect);
+            Internal.NativeFunctions.nwnxPushInt((int)visualEffect);
             Internal.NativeFunctions.nwnxPushObject(target);
             Internal.NativeFunctions.nwnxPushObject(player);
             Internal.NativeFunctions.nwnxCallFunction();
@@ -313,10 +314,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Note: Only really works with looping effects: VFX_DUR_*
         //       Other types *kind* of work, they'll play when reentering the area and the object is in view
         //       or when they come back in view range.
-        public static void ApplyLoopingVisualEffectToObject(uint player, uint target, int visualEffect)
+        public static void ApplyLoopingVisualEffectToObject(uint player, uint target, VisualEffect visualEffect)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ApplyLoopingVisualEffectToObject");
-            Internal.NativeFunctions.nwnxPushInt(visualEffect);
+            Internal.NativeFunctions.nwnxPushInt((int)visualEffect);
             Internal.NativeFunctions.nwnxPushObject(target);
             Internal.NativeFunctions.nwnxPushObject(player);
             Internal.NativeFunctions.nwnxCallFunction();
@@ -593,6 +594,21 @@ namespace SWLOR.Game.Server.Core.NWNX
             return entry;
         }
 
+        public static void CloseStore(uint oPlayer)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "CloseStore");
+            Internal.NativeFunctions.nwnxPushObject(oPlayer);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
 
+        public static void SetTlkOverride(uint oPlayer, int nStrRef, string sOverride, bool bRestoreGlobal = true)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetTlkOverride");
+            Internal.NativeFunctions.nwnxPushInt(bRestoreGlobal ? 1 : 0);
+            Internal.NativeFunctions.nwnxPushString(sOverride);
+            Internal.NativeFunctions.nwnxPushInt(nStrRef);
+            Internal.NativeFunctions.nwnxPushObject(oPlayer);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
     }
 }

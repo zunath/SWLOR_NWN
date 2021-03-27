@@ -1283,5 +1283,21 @@ namespace SWLOR.Game.Server.Core.NWScript
             Internal.NativeFunctions.StackPushObject(oItem);
             Internal.NativeFunctions.CallBuiltIn(909);
         }
+
+        /// <summary>
+        /// Constructs a custom itemproperty given all the parameters explicitly.
+        /// This function can be used in place of all the other ItemPropertyXxx constructors
+        /// Use GetItemProperty{Type,SubType,CostTableValue,Param1Value} to see the values for a given itemproperty.
+        /// </summary>
+        public static ItemProperty ItemPropertyCustom(ItemPropertyType nType, int nSubType = -1, int nCostTableValue = -1, int nParam1Value = -1)
+        {
+            Internal.NativeFunctions.StackPushInteger(nParam1Value);
+            Internal.NativeFunctions.StackPushInteger(nCostTableValue);
+            Internal.NativeFunctions.StackPushInteger(nSubType);
+            Internal.NativeFunctions.StackPushInteger((int)nType);
+            Internal.NativeFunctions.CallBuiltIn(954);
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+        }
+
     }
 }

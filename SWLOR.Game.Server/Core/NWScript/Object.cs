@@ -846,5 +846,20 @@ namespace SWLOR.Game.Server.Core.NWScript
             Internal.NativeFunctions.CallBuiltIn(920);
         }
 
+        /// <summary>
+        /// Sets the current hitpoints of oObject.
+        /// * You cannot destroy or revive objects or creatures with this function.
+        /// * For currently dying PCs, you can only set hitpoints in the range of -9 to 0.
+        /// * All other objects need to be alive and the range is clamped to 1 and max hitpoints.
+        /// * This is not considered damage (or healing). It circumvents all combat logic, including damage resistance and reduction.
+        /// * This is not considered a friendly or hostile combat action. It will not affect factions, nor will it trigger script events.
+        /// * This will not advise player parties in the combat log.
+        /// </summary>
+        public static void SetCurrentHitPoints(uint oObject, int nHitPoints)
+        {
+            Internal.NativeFunctions.StackPushInteger(nHitPoints);
+            Internal.NativeFunctions.StackPushObject(oObject);
+            Internal.NativeFunctions.CallBuiltIn(937);
+        }
     }
 }

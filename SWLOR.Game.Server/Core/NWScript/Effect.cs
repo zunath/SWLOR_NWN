@@ -1,3 +1,4 @@
+using System.Numerics;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
@@ -1467,5 +1468,77 @@ namespace SWLOR.Game.Server.Core.NWScript
             Internal.NativeFunctions.CallBuiltIn(150);
             return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
         }
+
+
+        /// <summary>
+        ///  Get the integer parameter of eEffect at nIndex.
+        ///  nIndex bounds: 0 to 7 inclusive
+        ///  Some experimentation will be needed to find the right index for the value you wish to determine.
+        ///  Returns: the value or 0 on error/when not set.
+        /// </summary>
+        public static int GetEffectInteger(Effect eEffect, int nIndex)
+        {
+            Internal.NativeFunctions.StackPushInteger(nIndex);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int) EngineStructure.Effect, eEffect.Handle);
+            Internal.NativeFunctions.CallBuiltIn(939);
+            return Internal.NativeFunctions.StackPopInteger();
+        }
+
+        /// <summary>
+        /// Get the float parameter of eEffect at nIndex.
+        /// * nIndex bounds: 0 to 3 inclusive
+        /// * Some experimentation will be needed to find the right index for the value you wish to determine.
+        /// Returns: the value or 0.0f on error/when not set.
+        /// </summary>
+        public static float GetEffectFloat(Effect eEffect, int nIndex)
+        {
+            Internal.NativeFunctions.StackPushInteger(nIndex);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect.Handle);
+            Internal.NativeFunctions.CallBuiltIn(940);
+            return Internal.NativeFunctions.StackPopFloat();
+        }
+
+        /// <summary>
+        /// Get the string parameter of eEffect at nIndex.
+        /// * nIndex bounds: 0 to 5 inclusive
+        /// * Some experimentation will be needed to find the right index for the value you wish to determine.
+        /// Returns: the value or "" on error/when not set.
+        /// </summary>
+        public static string GetEffectString(Effect eEffect, int nIndex)
+        {
+            Internal.NativeFunctions.StackPushInteger(nIndex);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect.Handle);
+            Internal.NativeFunctions.CallBuiltIn(941);
+            return Internal.NativeFunctions.StackPopString();
+        }
+        
+        /// <summary>
+        /// Get the object parameter of eEffect at nIndex.
+        /// * nIndex bounds: 0 to 3 inclusive
+        /// * Some experimentation will be needed to find the right index for the value you wish to determine.
+        /// Returns: the value or OBJECT_INVALID on error/when not set.
+        /// </summary>
+        public static uint GetEffectObject(Effect eEffect, int nIndex)
+        {
+            Internal.NativeFunctions.StackPushInteger(nIndex);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect.Handle);
+            Internal.NativeFunctions.CallBuiltIn(942);
+            return Internal.NativeFunctions.StackPopObject();
+        }
+
+        /// <summary>
+        /// Get the vector parameter of eEffect at nIndex.
+        /// * nIndex bounds: 0 to 1 inclusive
+        /// * Some experimentation will be needed to find the right index for the value you wish to determine.
+        /// Returns: the value or {0.0f, 0.0f, 0.0f} on error/when not set.
+        /// </summary>
+        public static Vector3 GetEffectVector(Effect eEffect, int nIndex)
+        {
+            Internal.NativeFunctions.StackPushInteger(nIndex);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect.Handle);
+            Internal.NativeFunctions.CallBuiltIn(943);
+            return Internal.NativeFunctions.StackPopVector();
+        }
+
     }
 }

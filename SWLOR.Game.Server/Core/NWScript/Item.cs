@@ -428,5 +428,20 @@ namespace SWLOR.Game.Server.Core.NWScript
             Internal.NativeFunctions.CallBuiltIn(155);
             return Internal.NativeFunctions.StackPopObject();
         }
+
+        /// <summary>
+        /// Check if nBaseItemType fits in oTarget's inventory.
+        /// Note: Does not check inside any container items possessed by oTarget.
+        /// * nBaseItemType: a BASE_ITEM_* constant.
+        /// * oTarget: a valid creature, placeable or item.
+        /// Returns: TRUE if the baseitem type fits, FALSE if not or on error.
+        /// </summary>
+        public static bool GetBaseItemFitsInInventory(BaseItem baseItemType, uint target)
+        {
+            Internal.NativeFunctions.StackPushObject(target);
+            Internal.NativeFunctions.StackPushInteger((int) baseItemType);
+            Internal.NativeFunctions.CallBuiltIn(944);
+            return Internal.NativeFunctions.StackPopInteger() == 1;
+        }
     }
 }

@@ -67572,6 +67572,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Barinium Asteroid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "asteroid_bariniu"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bisteiss Vein"
                     },
                     "RESREF": {
@@ -67737,6 +67748,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Currian Asteroid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "asteroid_currian"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Docking Point: <Location>"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "spc_dock"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Door Control"
                     },
                     "RESREF": {
@@ -67858,6 +67891,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Gostian Asteroid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "asteroid_gostian"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Growing Plant"
                     },
                     "RESREF": {
@@ -67896,6 +67940,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "hemorgite_vein"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Idailia Asteroid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "asteroid_idailia"
                     }
                   },
                   {
@@ -67995,6 +68050,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "c_tower_medium"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Minable Asteroid (change name)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "spc_asteroid"
                     }
                   },
                   {
@@ -68446,6 +68512,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "temp_loc_check"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tilarium Asteroid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "spc_asteroid_til"
                     }
                   },
                   {

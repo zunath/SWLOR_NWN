@@ -5241,6 +5241,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Barinium Ore"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ore_barinium"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Basic Carbosyrup"
                     },
                     "RESREF": {
@@ -5708,6 +5719,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "p_crystal_red_qs"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Currian Ore"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ore_currian"
                     }
                   },
                   {
@@ -6341,6 +6363,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Gostian Ore"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ore_gostian"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Greel Tree Seeds"
                     },
                     "RESREF": {
@@ -6566,6 +6599,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "hzzuntil"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Idailia Ore"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ore_idailia"
                     }
                   },
                   {
@@ -8854,6 +8898,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tiger_blood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tilarium Ore"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ore_tilarium"
                     }
                   },
                   {
@@ -11363,11 +11418,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Basic Hull Repairer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hull_rep_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Basic Ion Cannon"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "ion_cann_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Mining Laser"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "min_laser_b"
                     }
                   },
                   {
@@ -11390,6 +11467,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shld_boost_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Shield Repairer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shld_rep_b"
                     }
                   },
                   {
@@ -11693,6 +11781,50 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hull Repairer I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hull_rep_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hull Repairer II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hull_rep_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hull Repairer III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hull_rep_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hull Repairer IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hull_rep_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Ion Cannon I"
                     },
                     "RESREF": {
@@ -11731,6 +11863,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ion_cann_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mining Laser I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "min_laser_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mining Laser II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "min_laser_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mining Laser III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "min_laser_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mining Laser IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "min_laser_4"
                     }
                   },
                   {
@@ -11841,6 +12017,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shld_boost_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shield Repairer I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shld_rep_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shield Repairer II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shld_rep_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shield Repairer III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shld_rep_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shield Repairer IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shld_rep_4"
                     }
                   },
                   {

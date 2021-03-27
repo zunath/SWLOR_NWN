@@ -477,5 +477,47 @@ namespace SWLOR.Game.Server.Service
         {
             BaseItem.Longbow
         };
+
+        /// <summary>
+        /// Retrieves the list of One-Handed weapon types.
+        /// These are the weapons which are held in one hand and not necessarily associated with the One-Handed skill.
+        /// </summary>
+        public static List<BaseItem> OneHandedMeleeItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.BastardSword,
+            BaseItem.Longsword,
+            BaseItem.Katana,
+            BaseItem.Scimitar,
+            BaseItem.BattleAxe,
+            BaseItem.Dagger,
+            BaseItem.Rapier,
+            BaseItem.ShortSword,
+            BaseItem.Kukri,
+            BaseItem.Sickle,
+            BaseItem.Whip,
+            BaseItem.HandAxe,
+            BaseItem.Lightsaber,
+            BaseItem.ShortSpear,
+            BaseItem.Knuckles,
+        };
+
+        /// <summary>
+        /// Retrieves the list of Two-Handed melee weapon types.
+        /// These are the weapons which are held in two hand and not necessarily associated with the Two-Handed skill.
+        /// </summary>
+        public static List<BaseItem> TwoHandedMeleeItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.GreatAxe,
+            BaseItem.GreatSword,
+            BaseItem.DwarvenWarAxe,
+            BaseItem.Halberd,
+            BaseItem.Scythe,
+            BaseItem.Trident,
+            BaseItem.DoubleAxe,
+            BaseItem.TwoBladedSword,
+            BaseItem.Saberstaff,
+            BaseItem.QuarterStaff,
+            BaseItem.LightMace,
+        };
     }
 }

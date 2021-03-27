@@ -44,10 +44,57 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Doublehand")
                 
                 .AddPerkLevel()
-                .Description("Increases damage of one-handed weapons when no off-hand item is equipped.")
+                .Description("Increases damage of one-handed weapons to 1.5xSTR when no off-hand item is equipped.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 15)
-                .GrantsFeat(Feat.Doublehand);
+                .GrantsFeat(Feat.Doublehand)
+                .TriggerEquippedItem((player, item, slot, type, level) =>
+                {
+                    var rightHand = GetItemInSlot(InventorySlot.RightHand, player);
+                    var leftHand = GetItemInSlot(InventorySlot.LeftHand, player);
+
+                    // Item is going to right hand and no item is in left hand.
+                    if (slot == InventorySlot.RightHand && !GetIsObjectValid(leftHand))
+                    {
+                        Weapon.SetOneHalfStrength(item, true, true);
+                    }
+
+                    // Item is going to left hand and an item is already in the right hand.
+                    if (slot == InventorySlot.LeftHand && GetIsObjectValid(rightHand))
+                    {
+                        Weapon.SetOneHalfStrength(rightHand, false, true);
+                    }
+                })
+                .TriggerUnequippedItem((player, item, slot, type, level) =>
+                {
+                    var itemType = GetBaseItemType(item);
+                    var rightHand = GetItemInSlot(InventorySlot.RightHand, player);
+                    var rightType = GetBaseItemType(rightHand);
+                    var leftHand = GetItemInSlot(InventorySlot.LeftHand, player);
+                    var leftType = GetBaseItemType(leftHand);
+
+                    // Item is being unequipped from right hand and there's a weapon in left hand.
+                    if (slot == InventorySlot.RightHand &&
+                        GetIsObjectValid(leftHand) &&
+                        Item.OneHandedMeleeItemTypes.Contains(leftType))
+                    {
+                        Weapon.SetOneHalfStrength(leftHand, true, true);
+                    }
+
+                    // Item is being unequipped from left hand and there's a weapon in the right hand.
+                    if(slot == InventorySlot.LeftHand &&
+                       GetIsObjectValid(rightHand) &&
+                       Item.OneHandedMeleeItemTypes.Contains(rightType))
+                    {
+                        Weapon.SetOneHalfStrength(rightHand, true, true);
+                    }
+
+                    // Always remove the item's one-half bonus
+                    if (Item.OneHandedMeleeItemTypes.Contains(itemType))
+                    {
+                        Weapon.SetOneHalfStrength(item, false, true);
+                    }
+                });
         }
 
         private void DualWield(PerkBuilder builder)

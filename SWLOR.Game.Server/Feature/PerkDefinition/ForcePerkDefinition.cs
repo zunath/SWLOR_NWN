@@ -103,39 +103,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Throw Lightsaber")
 
                 .AddPerkLevel()
-                .Description("Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 100%")
+                .Description("Throw your equipped lightsaber up to 15m for (1d6 + INT modifier + 50% WIS modifier). Can hit up to 1 targets along the path thrown.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(Feat.ThrowLightsaber1)
 
                 .AddPerkLevel()
-                .Description("Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 125%")
+                .Description("Throw your equipped lightsaber up to 15m for (1d8 + INT modifier + 50% WIS modifier). Can hit up to 2 targets along the path thrown.")
                 .Price(3)
-                .RequirementSkill(SkillType.Force, 20)
+                .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(Feat.ThrowLightsaber2)
 
                 .AddPerkLevel()
-                .Description("Throw your equipped lightsaber up to 15m for (saber damage + INT modifier) * 160%")
-                .Price(3)
-                .RequirementSkill(SkillType.Force, 30)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.ThrowLightsaber3)
-
-                .AddPerkLevel()
-                .Description("Throw your equipped lightsaber up to 15m for (saber damage +INT modifier) *200 %. This will chain to a second target within 5m of the first.")
+                .Description("Throw your equipped lightsaber up to 15m for (1d10 + INT modifier + 50% WIS modifier). Can hit up to 3 targets along the path thrown.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.ThrowLightsaber4)
-
-                .AddPerkLevel()
-                .Description("Throw your equipped lightsaber up to 15m for (saber damage +INT modifier) *250 %. This will chain to a second and third target within 5m of the first.")
-                .Price(3)
-                .RequirementSkill(SkillType.Force, 50)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.ThrowLightsaber5);
+                .GrantsFeat(Feat.ThrowLightsaber3);
         }
 
         private void ForceStun(PerkBuilder builder)

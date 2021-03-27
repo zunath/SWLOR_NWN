@@ -19,8 +19,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ThrowLightsaber1(builder);
             ThrowLightsaber2(builder);
             ThrowLightsaber3(builder);
-            ThrowLightsaber4(builder);
-            ThrowLightsaber5(builder);
 
             return builder.Build();
         }
@@ -28,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static string Validation(uint activator, uint target, int level)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand);
-            float distance = GetDistanceBetween(activator, target);
+            var distance = GetDistanceBetween(activator, target);
 
             if (distance > 15)
                 return "You must be within 15 meters of your target.";
@@ -39,12 +37,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ImpactAction(uint activator, uint target, int level)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
-            
-            int iDamage = GetAbilityModifier(AbilityType.Intelligence, activator) + (int) (GetAbilityModifier(AbilityType.Wisdom, activator) * 0.5f);
-            int iRange = 15;
-            int iCount = 1;
-            float fDelay = GetDistanceBetween(activator, target) / 10.0f;
+            var iDamage = GetAbilityModifier(AbilityType.Intelligence, activator) + (int) (GetAbilityModifier(AbilityType.Wisdom, activator) * 0.5f);
+            var iRange = 15;
+            var iCount = 1;
+            var fDelay = GetDistanceBetween(activator, target) / 10.0f;
             var oTargetObject = target;
 
             // If activator is in stealth mode, force them out of stealth mode.
@@ -115,17 +111,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Throw Lightsaber I")
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
                 .HasActivationDelay(2.0f)
-                .RequirementFP(3)
+                .RequirementFP(2)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasCustomValidation(Validation)
+                .HasImpactAction(ImpactAction);
         }
         private static void ThrowLightsaber2(AbilityBuilder builder)
         {
@@ -133,17 +123,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Throw Lightsaber II")
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
                 .HasActivationDelay(2.0f)
-                .RequirementFP(3)
+                .RequirementFP(4)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasCustomValidation(Validation)
+                .HasImpactAction(ImpactAction);
         }
         private static void ThrowLightsaber3(AbilityBuilder builder)
         {
@@ -151,53 +135,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Throw Lightsaber III")
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
                 .HasActivationDelay(2.0f)
-                .RequirementFP(4)
+                .RequirementFP(6)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
-        }
-        private static void ThrowLightsaber4(AbilityBuilder builder)
-        {
-            builder.Create(Feat.ThrowLightsaber4, PerkType.ThrowLightsaber)
-                .Name("Throw Lightsaber IV")
-                .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
-                .HasActivationDelay(2.0f)
-                .RequirementFP(5)
-                .IsCastedAbility()
-                .DisplaysVisualEffectWhenActivating()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
-        }
-        private static void ThrowLightsaber5(AbilityBuilder builder)
-        {
-            builder.Create(Feat.ThrowLightsaber5, PerkType.ThrowLightsaber)
-                .Name("Throw Lightsaber V")
-                .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
-                .HasActivationDelay(2.0f)
-                .RequirementFP(5)
-                .IsCastedAbility()
-                .DisplaysVisualEffectWhenActivating()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasCustomValidation(Validation)
+                .HasImpactAction(ImpactAction);
         }
     }
 }

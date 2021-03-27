@@ -69,9 +69,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 selectedShipInfo = ColorToken.Green("Active Ship: ") + selectedShip.Name + $" [{shipDetail.Name}]\n";
 
                 // Ensure the player has the necessary perks to use the ship and all modules.
-                if (Space.CanPlayerUseShip(player, dbPlayer.SelectedShipId))
+                if (Space.CanPlayerUseShip(player, selectedShip))
                 {
                     displayUndock = true;
+                }
+                else
+                {
+                    selectedShipInfo += ColorToken.Red("You do not have the necessary perks to undock this ship.\n");
                 }
             }
 

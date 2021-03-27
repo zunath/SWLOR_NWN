@@ -393,19 +393,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Determines if player can still use their ship.
+        /// Determines if player can use the specified ship.
         /// </summary>
         /// <param name="player">The player to check</param>
-        /// <param name="playerShipId">The Id of the player's ship to check</param>
+        /// <param name="playerShip">The player ship status to check</param>
         /// <returns>true if all requirements are met, false otherwise</returns>
-        public static bool CanPlayerUseShip(uint player, Guid playerShipId)
+        public static bool CanPlayerUseShip(uint player, ShipStatus playerShip)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Entity.Player>(playerId);
-
-            if (!dbPlayer.Ships.ContainsKey(playerShipId)) return false;
-
-            var playerShip = dbPlayer.Ships[playerShipId];
+            
             var shipDetails = _ships[playerShip.ItemTag];
 
             // Check ship requirements

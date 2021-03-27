@@ -88,18 +88,27 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Precision Aim")
 
                 .AddPerkLevel()
-                .Description("Your attacks deal +0.5 damage per dexterity modifier.")
+                .Description("Improves critical multiplier by 1.")
                 .Price(5)
                 .RequirementSkill(SkillType.Ranged, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(Feat.PrecisionAim1)
 
                 .AddPerkLevel()
-                .Description("Your attacks deal +0.75 damage per dexterity modifier.")
+                .Description("Improves critical multiplier by 2.")
                 .Price(6)
                 .RequirementSkill(SkillType.Ranged, 45)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.PrecisionAim2);
+                .GrantsFeat(Feat.PrecisionAim2)
+
+                .TriggerPurchase((player, type, level) =>
+                {
+                    Creature.SetCriticalMultiplierModifier(player, level, 0, true);
+                })
+                .TriggerRefund((player, type, level) =>
+                {
+                    Creature.SetCriticalMultiplierModifier(player, 0, 0, true);
+                });
         }
 
         private void PointBlankShot(PerkBuilder builder)

@@ -191,21 +191,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Mining yield improves by 1 unit per cycle.")
-                .Price(3)
-                .RequirementSkill(SkillType.Piloting, 10)
+                .Price(5)
+                .RequirementSkill(SkillType.Piloting, 20)
                 .GrantsFeat(Feat.StarshipMining1)
 
                 .AddPerkLevel()
                 .Description("Mining yield improves by 2 units per cycle.")
-                .Price(3)
-                .RequirementSkill(SkillType.Piloting, 20)
-                .GrantsFeat(Feat.StarshipMining2)
-
-                .AddPerkLevel()
-                .Description("Mining yield improves by 3 units per cycle.")
-                .Price(4)
-                .RequirementSkill(SkillType.Piloting, 30)
-                .GrantsFeat(Feat.StarshipMining3);
+                .Price(5)
+                .RequirementSkill(SkillType.Piloting, 40)
+                .GrantsFeat(Feat.StarshipMining2);
         }
 
     }

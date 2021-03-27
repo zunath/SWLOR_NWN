@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Random = SWLOR.Game.Server.Service.Random;
@@ -80,8 +81,16 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             return;
                         }
 
+                        remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS");
+
+                        // Perk bonuses
+                        var amountToMine = 1 + Perk.GetEffectivePerkLevel(activator, PerkType.StarshipMining);
+                        if (amountToMine > remainingUnits)
+                            amountToMine = remainingUnits;
+
+                        remainingUnits -= amountToMine;
+
                         // Refresh remaining units (could have changed since the start)
-                        remainingUnits = GetLocalInt(target, "ASTEROID_REMAINING_UNITS") - 1;
                         var oreResref = GetLocalString(target, "ASTEROID_ORE_RESREF");
 
                         // Fully deplete the rock - destroy it.
@@ -96,7 +105,11 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                             SetLocalInt(target, "ASTEROID_REMAINING_UNITS", remainingUnits);
                         }
 
-                        CreateItemOnObject(oreResref, activator);
+                        // Spawn the units.
+                        for (var count = 1; count <= amountToMine; count++)
+                        {
+                            CreateItemOnObject(oreResref, activator);
+                        }
                     });
                 });
         }

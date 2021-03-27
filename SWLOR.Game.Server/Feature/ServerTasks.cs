@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature
         // This determines what time the server will restart.
         // Restarts happen within a range of 30 seconds of this specified time. 
         // All times are in UTC.
-        private static TimeSpan RestartTime => new TimeSpan(0, 11, 0, 0); // 11 = Restarts happen at 6 AM eastern time
+        private static TimeSpan RestartTime => new TimeSpan(0, 0, 0, 0); // 0 = Restarts happen at 6 AM eastern time
 
         /// <summary>
         /// Every six seconds, the server will check to see if an automated restart is required.

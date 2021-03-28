@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.ImplantDefinition
         public Dictionary<string, ImplantDetail> BuildImplants()
         {
             TestImplant();
+            TestImplant2();
             return _builder.Build();
         }
 
@@ -27,7 +28,23 @@ namespace SWLOR.Game.Server.Feature.ImplantDefinition
                 })
                 .InstalledAction(creature =>
                 {
-                    Console.WriteLine("Installed test implant"); 
+                    Console.WriteLine("Installed test implant");
+                });
+        }
+        private void TestImplant2()
+        {
+            _builder.Create("test_implant2")
+                .Name("Test Implant 2")
+                .Description("This is a test 2")
+                .RequiredLevel(2)
+                .Slot(ImplantSlotType.Chest)
+                .ValidationAction(creature =>
+                {
+                    return string.Empty;
+                })
+                .InstalledAction(creature =>
+                {
+                    Console.WriteLine("Installed test implant");
                 });
         }
     }

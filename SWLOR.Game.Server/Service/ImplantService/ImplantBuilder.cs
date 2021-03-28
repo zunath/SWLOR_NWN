@@ -82,6 +82,18 @@ namespace SWLOR.Game.Server.Service.ImplantService
         }
 
         /// <summary>
+        /// Sets the action to run when an implant is uninstalled from a creature.
+        /// </summary>
+        /// <param name="action">The action to run when an implant is uninstalled.</param>
+        /// <returns>An implant builder with the configured settings.</returns>
+        public ImplantBuilder UninstalledAction(ImplantInstalledDelegate action)
+        {
+            _activeImplant.InstalledAction = action;
+
+            return this;
+        }
+
+        /// <summary>
         /// Sets the action to run when validating whether a creature can install the active implant.
         /// </summary>
         /// <param name="action">The action to run when an implant is being validated.</param>

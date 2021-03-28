@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Crafting
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    StatusEffect.Apply(activator, target, StatusEffectType.ImplantInstallation1, 180f);
+                    StatusEffect.Apply(activator, target, StatusEffectType.ImplantInstallation1, 1800f);
                 });
         }
         private void ImplantInstallation2()
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Crafting
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    StatusEffect.Apply(activator, target, StatusEffectType.ImplantInstallation2, 180f);
+                    StatusEffect.Apply(activator, target, StatusEffectType.ImplantInstallation2, 1800f);
                 });
         }
         private void ImplantInstallation3()
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Crafting
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    StatusEffect.Apply(activator, target, StatusEffectType.ImplantInstallation3, 180f);
+                    StatusEffect.Apply(activator, target, StatusEffectType.ImplantInstallation3, 1800f);
                 });
         }
         private void ImplantInstallation4()
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Crafting
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    StatusEffect.Apply(activator, target, StatusEffectType.ImplantInstallation4, 180f);
+                    StatusEffect.Apply(activator, target, StatusEffectType.ImplantInstallation4, 1800f);
                 });
         }
         private void ImplantInstallation5()
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Crafting
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    StatusEffect.Apply(activator, target, StatusEffectType.ImplantInstallation5, 180f);
+                    StatusEffect.Apply(activator, target, StatusEffectType.ImplantInstallation5, 1800f);
                 });
         }
 

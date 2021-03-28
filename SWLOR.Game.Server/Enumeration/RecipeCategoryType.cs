@@ -8,56 +8,98 @@ namespace SWLOR.Game.Server.Enumeration
         Invalid = 0,
         [RecipeCategory("Uncategorized", true)]
         Uncategorized = 1,
-        [RecipeCategory("Heavy Armor", true)]
-        HeavyArmor = 2,
-        [RecipeCategory("Light Armor", true)]
-        LightArmor = 3,
-        [RecipeCategory("Mystic Armor", true)]
-        MysticArmor = 4,
-        [RecipeCategory("Longsword", true)]
-        Longsword = 5,
-        [RecipeCategory("Knuckles", true)]
-        Knuckles = 6,
-        [RecipeCategory("Dagger", true)]
-        Dagger = 7,
-        [RecipeCategory("Katana", true)]
-        Katana = 8,
-        [RecipeCategory("Gunblade", true)]
-        Gunblade = 9,
-        [RecipeCategory("Rifle", true)]
-        Rifle = 10,
-        [RecipeCategory("Rapier", true)]
-        Rapier = 11,
-        [RecipeCategory("Great Sword", true)]
-        GreatSword = 12,
         [RecipeCategory("Cloak", true)]
-        Cloak = 13,
-        [RecipeCategory("Helmet", true)]
-        Helmet = 14,
-        [RecipeCategory("Boots", true)]
-        Boots = 15,
-        [RecipeCategory("Gloves", true)]
-        Gloves = 16,
+        Cloak = 2,
         [RecipeCategory("Belt", true)]
-        Belt = 17,
-        [RecipeCategory("Leather", true)]
-        Leather = 18,
-        [RecipeCategory("Potion", true)]
-        Potion = 19,
-        [RecipeCategory("FirstAid", true)]
-        Medicine = 20,
-        [RecipeCategory("Staff", true)]
-        Staff = 21,
-        [RecipeCategory("Rod", true)]
-        Rod = 22,
+        Belt = 3,
         [RecipeCategory("Ring", true)]
-        Ring = 23,
-        [RecipeCategory("Grenade", true)]
-        Grenade = 24,
-        [RecipeCategory("Ingredient", true)]
-        Ingredient = 25,
-        [RecipeCategory("Meal", true)]
-        Meal = 26,
+        Ring = 4,
+        [RecipeCategory("Necklace", true)]
+        Necklace = 5,
+        [RecipeCategory("Breastplate", true)]
+        Breastplate = 6,
+        [RecipeCategory("Helmet", true)]
+        Helmet = 7,
+        [RecipeCategory("Bracer", true)]
+        Bracer = 8,
+        [RecipeCategory("Legging", true)]
+        Legging = 9,
+        [RecipeCategory("Heavy Shield", true)]
+        HeavyShield = 10,
+        [RecipeCategory("Tunic", true)]
+        Tunic = 11,
+        [RecipeCategory("Cap", true)]
+        Cap = 12,
+        [RecipeCategory("Glove", true)]
+        Glove = 13,
+        [RecipeCategory("Boot", true)]
+        Boot = 14,
+        [RecipeCategory("Light Shield", true)]
+        LightShield = 15,
+        [RecipeCategory("Vibroblade", true)]
+        Vibroblade = 16,
+        [RecipeCategory("Finesse Vibroblade", true)]
+        FinesseVibroblade = 17,
+        [RecipeCategory("Lightsaber", true)]
+        Lightsaber = 18,
+        [RecipeCategory("Heavy Vibroblade", true)]
+        HeavyVibroblade = 19,
+        [RecipeCategory("Polearm", true)]
+        Polearm = 20,
+        [RecipeCategory("Twin Blade", true)]
+        TwinBlade = 21,
+        [RecipeCategory("Saberstaff", true)]
+        Saberstaff = 22,
+        [RecipeCategory("Knuckle", true)]
+        Knuckle = 23,
+        [RecipeCategory("Staff", true)]
+        Staff = 24,
+        [RecipeCategory("Pistol", true)]
+        Pistol = 25,
+        [RecipeCategory("Throwing", true)]
+        Throwing = 26,
+        [RecipeCategory("Cannon", true)]
+        Cannon = 27,
+        [RecipeCategory("Rifle", true)]
+        Rifle = 28,
+        [RecipeCategory("Neck Implant", true)]
+        NeckImplant = 29,
+        [RecipeCategory("Head Implant", true)]
+        HeadImplant = 30,
+        [RecipeCategory("Arm Implant", true)]
+        ArmImplant = 31,
+        [RecipeCategory("Leg Implant", true)]
+        LegImplant = 32,
+        [RecipeCategory("Foot Implant", true)]
+        FootImplant = 33,
+        [RecipeCategory("Chest Implant", true)]
+        ChestImplant = 34,
+        [RecipeCategory("Hand Implant", true)]
+        HandImplant = 35,
+        [RecipeCategory("Eye Implant", true)]
+        EyeImplant = 36,
+        [RecipeCategory("Furniture", true)]
+        Furniture = 37,
+        [RecipeCategory("Structure", true)]
+        Structure = 38,
+        [RecipeCategory("Starship", true)]
+        Starship = 39,
+        [RecipeCategory("Turret", true)]
+        Turret = 40,
+        [RecipeCategory("Reactor", true)]
+        Reactor = 41,
+        [RecipeCategory("Plating", true)]
+        Plating = 42,
+        [RecipeCategory("Mining", true)]
+        Mining = 43,
+        [RecipeCategory("Droid", true)]
+        Droid = 44,
+        [RecipeCategory("Harvester", true)]
+        Harvester = 45,
+        [RecipeCategory("Stim Pack", true)]
+        StimPack = 46,
+        [RecipeCategory("Recovery", true)]
+        Recovery = 47,
     }
 
     public class RecipeCategoryAttribute : Attribute

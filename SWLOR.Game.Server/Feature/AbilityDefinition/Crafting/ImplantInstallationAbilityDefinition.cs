@@ -16,7 +16,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Crafting
             ImplantInstallation2();
             ImplantInstallation3();
             ImplantInstallation4();
-            ImplantInstallation5();
 
             return _builder.Build();
         }
@@ -30,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Crafting
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    StatusEffect.Apply(activator, target, StatusEffectType.ImplantInstallation1, 1800f);
+                    StatusEffect.Apply(activator, target, StatusEffectType.ImplantInstallation2, 1800f);
                 });
         }
         private void ImplantInstallation2()
@@ -42,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Crafting
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    StatusEffect.Apply(activator, target, StatusEffectType.ImplantInstallation2, 1800f);
+                    StatusEffect.Apply(activator, target, StatusEffectType.ImplantInstallation3, 1800f);
                 });
         }
         private void ImplantInstallation3()
@@ -54,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Crafting
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    StatusEffect.Apply(activator, target, StatusEffectType.ImplantInstallation3, 1800f);
+                    StatusEffect.Apply(activator, target, StatusEffectType.ImplantInstallation4, 1800f);
                 });
         }
         private void ImplantInstallation4()
@@ -66,21 +65,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Crafting
                 .IsCastedAbility()
                 .HasImpactAction((activator, target, level) =>
                 {
-                    StatusEffect.Apply(activator, target, StatusEffectType.ImplantInstallation4, 1800f);
-                });
-        }
-        private void ImplantInstallation5()
-        {
-            _builder.Create(Feat.ImplantInstallation1, PerkType.ImplantInstallation)
-                .Name("Implant Installation V")
-                .HasRecastDelay(RecastGroup.ImplantInstallation, 60f)
-                .HasActivationDelay(6f)
-                .IsCastedAbility()
-                .HasImpactAction((activator, target, level) =>
-                {
                     StatusEffect.Apply(activator, target, StatusEffectType.ImplantInstallation5, 1800f);
                 });
         }
-
     }
 }

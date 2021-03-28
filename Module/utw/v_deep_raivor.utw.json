@@ -42,30 +42,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "v_deep_raivor"
+    "value": "VISCARA_DEEPMOUNTAIN_RAIVORS"
   },
   "TemplateResRef": {
     "type": "resref",
     "value": "v_deep_raivor"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SPAWN_TABLE_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "VISCARA_DEEPMOUNTAIN_RAIVORS"
-        }
-      }
-    ]
   }
 }

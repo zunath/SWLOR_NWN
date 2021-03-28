@@ -42,30 +42,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "man_leader_spwn"
+    "value": "VISCARA_MANDALORIAN_LEADER"
   },
   "TemplateResRef": {
     "type": "resref",
     "value": "man_leader_spwn"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SPAWN_TABLE_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "VISCARA_MANDALORIAN_LEADER"
-        }
-      }
-    ]
   }
 }

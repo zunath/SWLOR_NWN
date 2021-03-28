@@ -129,18 +129,12 @@ namespace SWLOR.Game.Server.Service
 
                         DestroyObject(obj);
                     }
-                    // Waypoints with a spawn table ID 
+                    // Waypoints with a spawn table ID in the tag
                     else if (type == ObjectType.Waypoint)
                     {
-                        var spawnTableId = GetLocalString(obj, "SPAWN_TABLE_ID");
-                        if (!string.IsNullOrWhiteSpace(spawnTableId))
+                        var spawnTableId = GetTag(obj);
+                        if (_spawnTables.ContainsKey(spawnTableId))
                         {
-                            if (!_spawnTables.ContainsKey(spawnTableId))
-                            {
-                                Log.Write(LogGroup.Error, $"Waypoint has an invalid spawn table Id. ({spawnTableId}) is not defined. Do you have the right spawn table Id?");
-                                continue;
-                            }
-
                             var spawnTable = _spawnTables[spawnTableId];
                             _spawns.Add(id, new SpawnDetail
                             {

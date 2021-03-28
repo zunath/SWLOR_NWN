@@ -17059,31 +17059,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mynock"
+          "value": "CZ220_MYNOCKS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "mynock_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_MYNOCKS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -17142,31 +17122,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mynock"
+          "value": "CZ220_MYNOCKS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "mynock_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_MYNOCKS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -17225,31 +17185,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mynock"
+          "value": "CZ220_MYNOCKS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "mynock_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_MYNOCKS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -17308,31 +17248,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mynock"
+          "value": "CZ220_MYNOCKS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "mynock_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_MYNOCKS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -17391,31 +17311,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mynock"
+          "value": "CZ220_MYNOCKS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "mynock_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_MYNOCKS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -17474,31 +17374,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -17557,31 +17437,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -17640,31 +17500,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -17723,31 +17563,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -17812,101 +17632,6 @@
           "type": "resref",
           "value": "ore_vein_spwn"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "ore_vein"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RULE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "OreSpawnRule"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -17969,101 +17694,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "ore_vein_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "ore_vein"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RULE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "OreSpawnRule"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -18128,101 +17758,6 @@
           "type": "resref",
           "value": "ore_vein_spwn"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "ore_vein"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RULE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "OreSpawnRule"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -18286,101 +17821,6 @@
           "type": "resref",
           "value": "ore_vein_spwn"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 64
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "ore_vein"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RULE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "OreSpawnRule"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -18438,31 +17878,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -18521,31 +17941,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -18604,31 +18004,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -18687,31 +18067,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -18770,31 +18130,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -18853,31 +18193,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -18936,31 +18256,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -19019,31 +18319,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -19102,31 +18382,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -19185,31 +18445,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -19268,31 +18508,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -19351,31 +18571,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -19434,31 +18634,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -19517,31 +18697,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -19600,31 +18760,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -19683,31 +18823,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -19766,31 +18886,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mynock"
+          "value": "CZ220_MYNOCKS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "mynock_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_MYNOCKS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -19849,31 +18949,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mynock"
+          "value": "CZ220_MYNOCKS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "mynock_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_MYNOCKS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -19932,31 +19012,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mynock"
+          "value": "CZ220_MYNOCKS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "mynock_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_MYNOCKS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -20015,31 +19075,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mynock"
+          "value": "CZ220_MYNOCKS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "mynock_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_MYNOCKS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -20098,31 +19138,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mynock"
+          "value": "CZ220_MYNOCKS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "mynock_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_MYNOCKS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -20181,31 +19201,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -20264,31 +19264,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mynock"
+          "value": "CZ220_MYNOCKS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "mynock_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_MYNOCKS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -20347,31 +19327,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -20430,31 +19390,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -20513,31 +19453,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -20596,31 +19516,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -20679,31 +19579,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -20762,31 +19642,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "colicoidexp"
+          "value": "CZ220_COLICOID_EXPERIMENT"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "colicoidexp_spn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_COLICOID_EXPERIMENT"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -20845,31 +19705,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "malfdroids_cz220"
+          "value": "CZ220_DROIDS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "malfdroids_cz220"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_DROIDS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -20932,26 +19772,6 @@
           "type": "resref",
           "value": "scrapmetal_spwn"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -21012,26 +19832,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "scrapmetal_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -21094,26 +19894,6 @@
           "type": "resref",
           "value": "scrapmetal_spwn"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -21174,26 +19954,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "scrapmetal_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -21256,26 +20016,6 @@
           "type": "resref",
           "value": "scrapmetal_spwn"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -21336,26 +20076,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "scrapmetal_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -21418,26 +20138,6 @@
           "type": "resref",
           "value": "scrapmetal_spwn"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -21498,26 +20198,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "scrapmetal_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -21580,26 +20260,6 @@
           "type": "resref",
           "value": "scrapmetal_spwn"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.9495280385017395
@@ -21660,26 +20320,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "scrapmetal_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -21742,26 +20382,6 @@
           "type": "resref",
           "value": "scrapmetal_spwn"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -21822,26 +20442,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "scrapmetal_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -22024,26 +20624,6 @@
           "type": "resref",
           "value": "scrapmetal_spwn"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -22104,26 +20684,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "scrapmetal_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -22186,26 +20746,6 @@
           "type": "resref",
           "value": "scrapmetal_spwn"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -22266,26 +20806,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "scrapmetal_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -22348,26 +20868,6 @@
           "type": "resref",
           "value": "scrapmetal_spwn"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -22428,26 +20928,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "scrapmetal_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -22510,26 +20990,6 @@
           "type": "resref",
           "value": "scrapmetal_spwn"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -22590,26 +21050,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "scrapmetal_spwn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -22672,26 +21112,6 @@
           "type": "resref",
           "value": "scrapmetal_spwn"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_JUNKPILES"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -22752,26 +21172,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "cz220_fiberplast"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_CACHES"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -22834,26 +21234,6 @@
           "type": "resref",
           "value": "cz220_fiberplast"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_CACHES"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -22914,26 +21294,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "cz220_fiberplast"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_CACHES"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -22996,26 +21356,6 @@
           "type": "resref",
           "value": "cz220_fiberplast"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_CACHES"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -23076,26 +21416,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "cz220_fiberplast"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_CACHES"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -23158,26 +21478,6 @@
           "type": "resref",
           "value": "cz220_fiberplast"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_CACHES"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -23238,26 +21538,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "cz220_fiberplast"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_CACHES"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -23320,26 +21600,6 @@
           "type": "resref",
           "value": "cz220_fiberplast"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_CACHES"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -23400,26 +21660,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "cz220_fiberplast"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_CACHES"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -23482,26 +21722,6 @@
           "type": "resref",
           "value": "cz220_fiberplast"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_CACHES"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -23563,26 +21783,6 @@
           "type": "resref",
           "value": "cz220_fiberplast"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_CACHES"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -23643,26 +21843,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "cz220_fiberplast"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "CZ220_CACHES"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",

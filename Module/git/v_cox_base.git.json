@@ -4335,31 +4335,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -4418,31 +4398,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -4501,31 +4461,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -4584,31 +4524,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -4667,31 +4587,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -4750,31 +4650,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -4833,31 +4713,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -4916,31 +4776,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -4999,31 +4839,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -5082,31 +4902,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -5165,31 +4965,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -5248,31 +5028,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -5331,31 +5091,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -5414,31 +5154,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -5497,31 +5217,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -5580,31 +5280,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -5663,31 +5343,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -5746,31 +5406,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -5829,31 +5469,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -5912,31 +5532,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -5995,31 +5595,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6078,31 +5658,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6161,31 +5721,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6244,31 +5784,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6327,31 +5847,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6410,31 +5910,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6493,31 +5973,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6576,31 +6036,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6659,31 +6099,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6742,31 +6162,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6825,31 +6225,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6908,31 +6288,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6997,26 +6357,6 @@
           "type": "resref",
           "value": "v_cox_scavenge"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "COXXION_BASE_SCAVENGE"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -7079,26 +6419,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "v_cox_scavenge"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "COXXION_BASE_SCAVENGE"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -7163,26 +6483,6 @@
           "type": "resref",
           "value": "v_cox_scavenge"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "COXXION_BASE_SCAVENGE"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -7245,26 +6545,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "v_cox_scavenge"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "COXXION_BASE_SCAVENGE"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -7329,26 +6609,6 @@
           "type": "resref",
           "value": "v_cox_scavenge"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "COXXION_BASE_SCAVENGE"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -7411,26 +6671,6 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "v_cox_scavenge"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "COXXION_BASE_SCAVENGE"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -7495,26 +6735,6 @@
           "type": "resref",
           "value": "v_cox_scavenge"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "COXXION_BASE_SCAVENGE"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -7578,26 +6798,6 @@
           "type": "resref",
           "value": "v_cox_scavenge"
         },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "COXXION_BASE_SCAVENGE"
-              }
-            }
-          ]
-        },
         "XOrientation": {
           "type": "float",
           "value": 0.0
@@ -7655,31 +6855,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_boss"
+          "value": "VISCARA_COXXION_FLESHLEADER"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_boss"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHLEADER"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -7738,31 +6918,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -7821,31 +6981,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -7904,31 +7044,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_coxx_base"
+          "value": "VISCARA_COXXION_FLESHEATERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_coxx_base"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_COXXION_FLESHEATERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",

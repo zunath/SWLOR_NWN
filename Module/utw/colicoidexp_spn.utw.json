@@ -42,30 +42,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "colicoidexp"
+    "value": "CZ220_COLICOID_EXPERIMENT"
   },
   "TemplateResRef": {
     "type": "resref",
     "value": "colicoidexp_spn"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SPAWN_TABLE_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "CZ220_COLICOID_EXPERIMENT"
-        }
-      }
-    ]
   }
 }

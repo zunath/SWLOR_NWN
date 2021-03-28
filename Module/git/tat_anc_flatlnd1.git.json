@@ -2493,31 +2493,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "tat_sandworm"
+          "value": "TATOOINE_SAND_WORM"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "tat_sandworm"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "TATOOINE_SAND_WORM"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -2892,31 +2872,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "tat_sandb"
+          "value": "TATOOINE_WRAID"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "beetle_spwn001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "TATOOINE_WRAID"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -2975,31 +2935,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "tat_sandb"
+          "value": "TATOOINE_WRAID"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "beetle_spwn001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "TATOOINE_WRAID"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -3058,31 +2998,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "tat_sandb"
+          "value": "TATOOINE_WRAID"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "beetle_spwn001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "TATOOINE_WRAID"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -3141,31 +3061,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "tat_sandb"
+          "value": "TATOOINE_WRAID"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "beetle_spwn001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "TATOOINE_WRAID"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -3224,31 +3124,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "tat_sandb"
+          "value": "TATOOINE_WRAID"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "beetle_spwn001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "TATOOINE_WRAID"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -3307,31 +3187,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "tat_sandb"
+          "value": "TATOOINE_WRAID"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "beetle_spwn001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "TATOOINE_WRAID"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -3390,31 +3250,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "tat_sandb"
+          "value": "TATOOINE_WRAID"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "beetle_spwn001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "TATOOINE_WRAID"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -3473,31 +3313,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "tat_sandb"
+          "value": "TATOOINE_WRAID"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "beetle_spwn001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "TATOOINE_WRAID"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -3556,31 +3376,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "tat_sandb"
+          "value": "TATOOINE_WRAID"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "beetle_spwn001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "TATOOINE_WRAID"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -3639,31 +3439,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "tat_sandb"
+          "value": "TATOOINE_WRAID"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "beetle_spwn001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "TATOOINE_WRAID"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -3722,31 +3502,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "tat_sandb"
+          "value": "TATOOINE_WRAID"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "beetle_spwn001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "TATOOINE_WRAID"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -3805,31 +3565,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "tat_sanddmn"
+          "value": "TATOOINE_SANDDEMON"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "tat_sandworm001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "TATOOINE_SANDDEMON"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",

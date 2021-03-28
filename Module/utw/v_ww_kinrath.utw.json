@@ -42,30 +42,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "v_ww_kinrath"
+    "value": "VISCARA_WILDWOODS_KINRATH"
   },
   "TemplateResRef": {
     "type": "resref",
     "value": "v_ww_kinrath"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SPAWN_TABLE_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "VISCARA_WILDWOODS_KINRATH"
-        }
-      }
-    ]
   }
 }

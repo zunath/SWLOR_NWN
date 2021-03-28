@@ -42,30 +42,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "mynock"
+    "value": "CZ220_MYNOCKS"
   },
   "TemplateResRef": {
     "type": "resref",
     "value": "mynock_spwn"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SPAWN_TABLE_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "CZ220_MYNOCKS"
-        }
-      }
-    ]
   }
 }

@@ -179432,31 +179432,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorist_leader"
+          "value": "MONCALA_ECOTERRORIST_LEADER"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw002"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORIST_LEADER"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -179515,31 +179495,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -179598,31 +179558,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -179681,31 +179621,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -179764,31 +179684,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -179847,31 +179747,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -179930,31 +179810,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -180013,31 +179873,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_animals"
+          "value": "MONCALA_CORAL_ISLES"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "mon_cala_animals"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_CORAL_ISLES"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -180096,31 +179936,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -180179,31 +179999,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -180262,31 +180062,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -180345,31 +180125,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -180428,31 +180188,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -180511,31 +180251,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -180594,31 +180314,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -180677,31 +180377,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -180760,31 +180440,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -180843,31 +180503,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -180926,31 +180566,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -181009,31 +180629,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -181092,31 +180692,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -181175,31 +180755,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -181258,31 +180818,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "mon_cala_eco_terrorists"
+          "value": "MONCALA_ECOTERRORISTS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "creature_spaw001"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "MONCALA_ECOTERRORISTS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",

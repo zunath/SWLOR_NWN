@@ -42,30 +42,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "v_coxx_boss"
+    "value": "VISCARA_COXXION_FLESHLEADER"
   },
   "TemplateResRef": {
     "type": "resref",
     "value": "v_coxx_boss"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SPAWN_TABLE_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "VISCARA_COXXION_FLESHLEADER"
-        }
-      }
-    ]
   }
 }

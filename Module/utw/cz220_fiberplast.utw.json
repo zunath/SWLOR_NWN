@@ -45,25 +45,5 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cz220_fiberplast"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SPAWN_TABLE_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "CZ220_CACHES"
-        }
-      }
-    ]
   }
 }

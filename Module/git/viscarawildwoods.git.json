@@ -5748,31 +5748,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -5831,31 +5811,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -5914,31 +5874,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -5997,31 +5937,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6080,31 +6000,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6163,31 +6063,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6246,31 +6126,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6329,31 +6189,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6412,31 +6252,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6495,31 +6315,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6578,31 +6378,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6661,31 +6441,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6744,31 +6504,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6827,31 +6567,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6910,31 +6630,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_gimpassa"
+          "value": "VISCARA_WILDWOODS_GIMPASSA"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_gimpassa"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_GIMPASSA"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -6993,31 +6693,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_gimpassa"
+          "value": "VISCARA_WILDWOODS_GIMPASSA"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_gimpassa"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_GIMPASSA"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -7076,31 +6756,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_gimpassa"
+          "value": "VISCARA_WILDWOODS_GIMPASSA"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_gimpassa"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_GIMPASSA"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -7159,31 +6819,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_gimpassa"
+          "value": "VISCARA_WILDWOODS_GIMPASSA"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_gimpassa"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_GIMPASSA"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -7242,31 +6882,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -7325,31 +6945,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_gimpassa"
+          "value": "VISCARA_WILDWOODS_GIMPASSA"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_gimpassa"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_GIMPASSA"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -7408,31 +7008,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -7491,31 +7071,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_gimpassa"
+          "value": "VISCARA_WILDWOODS_GIMPASSA"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_gimpassa"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_GIMPASSA"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -7574,31 +7134,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_gimpassa"
+          "value": "VISCARA_WILDWOODS_GIMPASSA"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_gimpassa"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_GIMPASSA"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -7657,31 +7197,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_gimpassa"
+          "value": "VISCARA_WILDWOODS_GIMPASSA"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_gimpassa"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_GIMPASSA"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -7740,31 +7260,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -7823,31 +7323,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -7906,31 +7386,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -7989,31 +7449,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -8072,31 +7512,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -8155,31 +7575,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -8238,31 +7638,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -8321,31 +7701,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -8404,31 +7764,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -8487,31 +7827,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -8570,31 +7890,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_wildwd_looter"
+          "value": "VISCARA_WILDWOODS_LOOTERS"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_wildwd_looter"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_LOOTERS"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -8653,31 +7953,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_kinrath"
+          "value": "VISCARA_WILDWOODS_KINRATH"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_kinrath"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_KINRATH"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -8736,31 +8016,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_kinrath"
+          "value": "VISCARA_WILDWOODS_KINRATH"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_kinrath"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_KINRATH"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -8819,31 +8079,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_kinrath"
+          "value": "VISCARA_WILDWOODS_KINRATH"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_kinrath"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_KINRATH"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -8902,31 +8142,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_kinrath"
+          "value": "VISCARA_WILDWOODS_KINRATH"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_kinrath"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_KINRATH"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -8985,31 +8205,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_kinrath"
+          "value": "VISCARA_WILDWOODS_KINRATH"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_kinrath"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_KINRATH"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -9068,31 +8268,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_kinrath"
+          "value": "VISCARA_WILDWOODS_KINRATH"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_kinrath"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_KINRATH"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -9151,31 +8331,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_kinrath"
+          "value": "VISCARA_WILDWOODS_KINRATH"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_kinrath"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_KINRATH"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -9234,31 +8394,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_kinrath"
+          "value": "VISCARA_WILDWOODS_KINRATH"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_kinrath"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_KINRATH"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -9317,31 +8457,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_kinrath"
+          "value": "VISCARA_WILDWOODS_KINRATH"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_kinrath"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_KINRATH"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -9400,31 +8520,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_kinrath"
+          "value": "VISCARA_WILDWOODS_KINRATH"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_kinrath"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_KINRATH"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -9483,31 +8583,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_kinrath"
+          "value": "VISCARA_WILDWOODS_KINRATH"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_kinrath"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_KINRATH"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",
@@ -9566,31 +8646,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "v_ww_kinrath"
+          "value": "VISCARA_WILDWOODS_KINRATH"
         },
         "TemplateResRef": {
           "type": "resref",
           "value": "v_ww_kinrath"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_WILDWOODS_KINRATH"
-              }
-            }
-          ]
         },
         "XOrientation": {
           "type": "float",

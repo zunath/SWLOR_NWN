@@ -42,30 +42,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "malfdroids_cz220"
+    "value": "CZ220_DROIDS"
   },
   "TemplateResRef": {
     "type": "resref",
     "value": "malfdroids_cz220"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SPAWN_TABLE_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "CZ220_DROIDS"
-        }
-      }
-    ]
   }
 }

@@ -276,7 +276,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return false;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Entity.Player>(playerId);
+            var dbPlayer = DB.Get<Entity.Player>(playerId) ?? new Entity.Player();
             return dbPlayer.ActiveShipId != Guid.Empty;
         }
 

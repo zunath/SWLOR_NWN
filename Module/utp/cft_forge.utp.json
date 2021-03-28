@@ -110,11 +110,11 @@
   },
   "OnHeartbeat": {
     "type": "resref",
-    "value": "script_2"
+    "value": "refinery_hb"
   },
   "OnInvDisturbed": {
     "type": "resref",
-    "value": "script_1"
+    "value": "refinery_dist"
   },
   "OnLock": {
     "type": "resref",
@@ -211,41 +211,6 @@
   "Useable": {
     "type": "byte",
     "value": 1
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Placeable.CraftingForge.OnDisturbed"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Placeable.CraftingForge.OnHeartbeat"
-        }
-      }
-    ]
   },
   "Will": {
     "type": "byte",

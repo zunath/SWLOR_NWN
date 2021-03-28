@@ -25,38 +25,32 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ImplantInstallation(PerkBuilder builder)
         {
-            builder.Create(PerkCategoryType.Weaponsmith, PerkType.ArmorModInstallation)
+            builder.Create(PerkCategoryType.Cybertech, PerkType.ImplantInstallation)
                 .Name("Implant Installation")
-
+                
                 .AddPerkLevel()
-                .Description("Enables you to install tier 1 implants on yourself or another person.")
-                .Price(1)
-                .RequirementSkill(SkillType.Cybertech, 5)
+                .Description("Grants a temporary buff which enables your target to install tier 2 implants.")
+                .Price(2)
+                .RequirementSkill(SkillType.Cybertech, 10)
                 .GrantsFeat(Feat.ImplantInstallation1)
 
                 .AddPerkLevel()
-                .Description("Enables you to install tier 2 implants on yourself or another person.")
-                .Price(1)
-                .RequirementSkill(SkillType.Cybertech, 15)
+                .Description("Grants a temporary buff which enables your target to install tier 3 implants.")
+                .Price(3)
+                .RequirementSkill(SkillType.Cybertech, 20)
                 .GrantsFeat(Feat.ImplantInstallation2)
 
                 .AddPerkLevel()
-                .Description("Enables you to install tier 3 implants on yourself or another person.")
-                .Price(2)
-                .RequirementSkill(SkillType.Cybertech, 25)
+                .Description("Grants a temporary buff which enables your target to install tier 4 implants.")
+                .Price(3)
+                .RequirementSkill(SkillType.Cybertech, 30)
                 .GrantsFeat(Feat.ImplantInstallation3)
 
                 .AddPerkLevel()
-                .Description("Enables you to install tier 4 implants on yourself or another person.")
-                .Price(3)
-                .RequirementSkill(SkillType.Cybertech, 35)
-                .GrantsFeat(Feat.ImplantInstallation4)
-
-                .AddPerkLevel()
-                .Description("Enables you to install tier 5 implants on yourself or another person.")
-                .Price(3)
-                .RequirementSkill(SkillType.Cybertech, 45)
-                .GrantsFeat(Feat.ImplantInstallation5);
+                .Description("Grants a temporary buff which enables your target to install tier 5 implants.")
+                .Price(4)
+                .RequirementSkill(SkillType.Cybertech, 40)
+                .GrantsFeat(Feat.ImplantInstallation4);
         }
 
         private void NeckImplantBlueprints(PerkBuilder builder)

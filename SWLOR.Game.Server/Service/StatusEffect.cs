@@ -176,13 +176,20 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Checks if a creature has a status effect.
+        /// If no status effect types are specified, false will be returned.
         /// </summary>
         /// <param name="creature">The creature to check.</param>
-        /// <param name="statusEffectType">The status effect type to look for.</param>
+        /// <param name="statusEffectTypes">The status effect types to look for.</param>
         /// <returns>true if creature has status effect, false otherwise</returns>
-        public static bool HasStatusEffect(uint creature, StatusEffectType statusEffectType)
+        public static bool HasStatusEffect(uint creature, params StatusEffectType[] statusEffectTypes)
         {
-            return HasStatusEffect(creature, statusEffectType, false);
+            foreach (var statusEffectType in statusEffectTypes)
+            {
+                if (HasStatusEffect(creature, statusEffectType, false))
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>

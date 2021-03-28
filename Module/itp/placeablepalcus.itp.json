@@ -67957,6 +67957,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Implant Installation Container"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_device_cont"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Implant Installation Device"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "imp_device"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Jasioclase Vein"
                     },
                     "RESREF": {

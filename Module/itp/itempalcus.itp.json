@@ -10820,6 +10820,28 @@
                   },
                   {
                     "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Test Implant"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "test_implant"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Test Implant 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "test_implant2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
                     "RESREF": {
                       "type": "resref",
                       "value": "torch"

@@ -1,5 +1,7 @@
 ﻿
+using System;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.FactionService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.QuestService
@@ -123,6 +125,51 @@ namespace SWLOR.Game.Server.Service.QuestService
         {
             var reward = Service.Guild.CalculateGPReward(player, Guild, Amount);
             Service.Guild.GiveGuildPoints(player, Guild, reward);
+        }
+    }
+
+    public class FactionStandingReward : IQuestReward
+    {
+        public bool IsSelectable { get; }
+        public string MenuName { get; }
+        public FactionType Faction { get; }
+        public int Amount { get; }
+
+        public FactionStandingReward(FactionType faction, int amount, bool isSelectable)
+        {
+            IsSelectable = isSelectable;
+            Faction = faction;
+            Amount = amount;
+
+            var factionDetail = Service.Faction.GetFactionDetail(Faction);
+            MenuName = $"{factionDetail.Name} standing";
+        }
+
+        public void GiveReward(uint player)
+        {
+            Service.Faction.AdjustPlayerFactionStanding(player, Faction, Amount);
+        }
+    }
+    public class FactionPointsReward : IQuestReward
+    {
+        public bool IsSelectable { get; }
+        public string MenuName { get; }
+        public FactionType Faction { get; }
+        public int Amount { get; }
+
+        public FactionPointsReward(FactionType faction, int amount, bool isSelectable)
+        {
+            IsSelectable = isSelectable;
+            Faction = faction;
+            Amount = Math.Abs(amount);
+
+            var factionDetail = Service.Faction.GetFactionDetail(Faction);
+            MenuName = $"{factionDetail.Name} points";
+        }
+
+        public void GiveReward(uint player)
+        {
+            Service.Faction.AdjustPlayerFactionPoints(player, Faction, Amount);
         }
     }
 }

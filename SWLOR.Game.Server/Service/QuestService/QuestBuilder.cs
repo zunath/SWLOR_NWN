@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.FactionService;
 
 namespace SWLOR.Game.Server.Service.QuestService
 {
@@ -121,10 +122,40 @@ namespace SWLOR.Game.Server.Service.QuestService
         /// <param name="guild">The type of guild GP to reward.</param>
         /// <param name="amount">The amount of GP to award</param>
         /// <param name="isSelectable">If true, player will have the option to select the GP as a reward. If false, they will receive it no matter what. If IsRepeatable() has not been called, this argument is ignored and all GP is given to the player.</param>
-        /// <returns></returns>
+        /// <returns>A QuestBuilder with the configured options.</returns>
         public QuestBuilder AddGPReward(GuildType guild, int amount, bool isSelectable = true)
         {
             var reward = new GPReward(guild, amount, isSelectable);
+            _activeQuest.Rewards.Add(reward);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a faction standing reward for completing this quest.
+        /// </summary>
+        /// <param name="faction">The type of faction to use.</param>
+        /// <param name="amount">Amount of standing to give</param>
+        /// <param name="isSelectable">If true, player will have the option to select the Standing as a reward. If false, they will receive it no matter what. If IsRepeatable() has not been called, this argument is ignored and all Standing is given to the player.</param>
+        /// <returns>A QuestBuilder with the configured options.</returns>
+        public QuestBuilder AddFactionStandingReward(FactionType faction, int amount, bool isSelectable = true)
+        {
+            var reward = new FactionStandingReward(faction, amount, isSelectable);
+            _activeQuest.Rewards.Add(reward);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a faction point reward for completing this quest.
+        /// </summary>
+        /// <param name="faction">The type of faction to use.</param>
+        /// <param name="amount">Amount of points to give</param>
+        /// <param name="isSelectable">If true, player will have the option to select the Points as a reward. If false, they will receive it no matter what. If IsRepeatable() has not been called, this argument is ignored and all Standing is given to the player.</param>
+        /// <returns>A QuestBuilder with the configured options.</returns>
+        public QuestBuilder AddFactionPointsReward(FactionType faction, int amount, bool isSelectable = true)
+        {
+            var reward = new FactionPointsReward(faction, amount, isSelectable);
             _activeQuest.Rewards.Add(reward);
 
             return this;

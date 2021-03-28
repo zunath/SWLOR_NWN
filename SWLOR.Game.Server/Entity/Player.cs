@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.ImplantService;
 using SWLOR.Game.Server.Service.SpaceService;
 
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Entity
             SavedOutfits = new Dictionary<int, string>();
             Ships = new Dictionary<Guid, ShipStatus>();
             Implants = new Dictionary<ImplantSlotType, PlayerImplant>();
+            Factions = new Dictionary<FactionType, PlayerFactionStanding>();
         }
 
         public override string KeyPrefix => "Player";
@@ -107,6 +109,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<int, string> SavedOutfits { get; set; }
         public Dictionary<Guid, ShipStatus> Ships { get; set; }
         public Dictionary<ImplantSlotType, PlayerImplant> Implants { get; set; }
+        public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }
     }
 
     public class MapPin
@@ -162,5 +165,11 @@ namespace SWLOR.Game.Server.Entity
     {
         public string ItemId { get; set; }
         public string ItemSerializedData { get; set; }
+    }
+
+    public class PlayerFactionStanding
+    {
+        public int Standing { get; set; }
+        public int Points { get; set; }
     }
 }

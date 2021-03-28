@@ -7,17 +7,19 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
+using SWLOR.Game.Server.Service.FactionService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Faction = SWLOR.Game.Server.Service.Faction;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
     public class DMChatCommand: IChatCommandListDefinition
     {
+        private readonly ChatCommandBuilder _builder = new ChatCommandBuilder();
+
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
-            var builder = new ChatCommandBuilder();
-
-            builder.Create("copyitem")
+            _builder.Create("copyitem")
                 .Description("Copies the targeted item.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
@@ -32,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     SendMessageToPC(user, "Item copied successfully.");
                 });
 
-            builder.Create("day")
+            _builder.Create("day")
                 .Description("Sets the world time to 8 AM.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
@@ -40,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     SetTime(8, 0, 0, 0);
                 });
 
-            builder.Create("night")
+            _builder.Create("night")
                 .Description("Sets the world time to 8 PM.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
@@ -48,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     SetTime(20, 0, 0, 0);
                 });
 
-            builder.Create("getplot")
+            _builder.Create("getplot")
                 .Description("Gets whether an object is marked plot.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
@@ -57,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 })
                 .RequiresTarget();
 
-            builder.Create("kill")
+            _builder.Create("kill")
                 .Description("Kills your target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
@@ -68,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 })
                 .RequiresTarget();
 
-            builder.Create("name")
+            _builder.Create("name")
                 .Description("Renames your target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Validate((user, args) => args.Length <= 0 ? "Please enter a name. Example: /name My Creature" : string.Empty)
@@ -90,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 })
                 .RequiresTarget();
 
-            builder.Create("rez")
+            _builder.Create("rez")
                 .Description("Revives you, heals you to full, and restores all FP/STM.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
@@ -105,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     Stat.RestoreStamina(user, Stat.GetMaxStamina(user));
                 });
 
-            builder.Create("spawngold")
+            _builder.Create("spawngold")
                 .Description("Spawns gold of a specific quantity on your character. Example: /spawngold 33")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Validate((user, args) =>
@@ -131,7 +133,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     GiveGoldToCreature(user, quantity);
                 });
 
-            builder.Create("tpwp")
+            _builder.Create("tpwp")
                 .Description("Teleports you to a waypoint with a specified tag.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Validate((user, args) =>
@@ -157,21 +159,23 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     AssignCommand(user, () => ActionJumpToLocation(GetLocation(wp)));
                 });
 
-            GetLocalVariable(builder);
-            SetLocalVariable(builder);
-            SetPortrait(builder);
-            SpawnItem(builder);
-            GiveRPXP(builder);
-            ResetPerkCooldown(builder);
-            PlayVFX(builder);
-            ResetAbilityRecastTimers(builder);
+            GetLocalVariable();
+            SetLocalVariable();
+            SetPortrait();
+            SpawnItem();
+            GiveRPXP();
+            ResetPerkCooldown();
+            PlayVFX();
+            ResetAbilityRecastTimers();
+            AdjustFactionStanding();
+            GetFactionStanding();
             
-            return builder.Build();
+            return _builder.Build();
         }
 
-        private static void GetLocalVariable(ChatCommandBuilder builder)
+        private void GetLocalVariable()
         {
-            builder.Create("getlocalfloat")
+            _builder.Create("getlocalfloat")
                 .Description("Gets a local float on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .RequiresTarget()
@@ -198,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     SendMessageToPC(user, variableName + " = " + value);
                 });
 
-            builder.Create("getlocalint")
+            _builder.Create("getlocalint")
                 .Description("Gets a local integer on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .RequiresTarget()
@@ -225,7 +229,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     SendMessageToPC(user, variableName + " = " + value);
                 });
 
-            builder.Create("getlocalstring")
+            _builder.Create("getlocalstring")
                 .Description("Gets a local string on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .RequiresTarget()
@@ -253,9 +257,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
-        private static void SetLocalVariable(ChatCommandBuilder builder)
+        private void SetLocalVariable()
         {
-            builder.Create("setlocalfloat")
+            _builder.Create("setlocalfloat")
                 .Description("Sets a local float on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .RequiresTarget()
@@ -290,7 +294,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
 
 
-            builder.Create("setlocalint")
+            _builder.Create("setlocalint")
                 .Description("Sets a local int on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .RequiresTarget()
@@ -324,7 +328,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     SendMessageToPC(user, "Local integer set: " + variableName + " = " + value);
                 });
 
-            builder.Create("setlocalstring")
+            _builder.Create("setlocalstring")
                 .Description("Sets a local string on a target.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .RequiresTarget()
@@ -361,9 +365,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
-        private static void SetPortrait(ChatCommandBuilder builder)
+        private void SetPortrait()
         {
-            builder.Create("setportrait")
+            _builder.Create("setportrait")
                 .Description("Sets portrait of the target player using the string specified. (Remember to add po_ to the portrait)")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .RequiresTarget()
@@ -394,9 +398,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
-        private static void SpawnItem(ChatCommandBuilder builder)
+        private void SpawnItem()
         {
-            builder.Create("spawnitem")
+            _builder.Create("spawnitem")
                 .Description("Spawns an item of a specific quantity on your character. Example: /spawnitem my_item 3")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Validate((user, args) =>
@@ -433,11 +437,11 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
-        private static void GiveRPXP(ChatCommandBuilder builder)
+        private void GiveRPXP()
         {
             const int MaxAmount = 10000;
             
-            builder.Create("giverpxp")
+            _builder.Create("giverpxp")
                 .Description("Gives Roleplay XP to a target player.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .RequiresTarget()
@@ -481,9 +485,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
-        private static void ResetPerkCooldown(ChatCommandBuilder builder)
+        private void ResetPerkCooldown()
         {
-            builder.Create("resetperkcooldown")
+            _builder.Create("resetperkcooldown")
                 .Description("Resets a player's perk refund cooldowns.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .RequiresTarget()
@@ -504,9 +508,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
-        private static void PlayVFX(ChatCommandBuilder builder)
+        private void PlayVFX()
         {
-            builder.Create("playvfx")
+            _builder.Create("playvfx")
                 .Description("Plays a visual effect from visualeffects.2da.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .RequiresTarget()
@@ -542,9 +546,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
-        private static void ResetAbilityRecastTimers(ChatCommandBuilder builder)
+        private void ResetAbilityRecastTimers()
         {
-            builder.Create("resetcooldown", "resetcooldowns")
+            _builder.Create("resetcooldown", "resetcooldowns")
                 .Description("Resets a player's ability cooldowns.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .RequiresTarget()
@@ -566,5 +570,84 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     SendMessageToPC(target, "A DM has reset all of your cooldowns.");
                 });
         }
+
+        private void AdjustFactionStanding()
+        {
+            _builder.Create("adjustfactionstanding")
+                .Description($"Modifies a player's standing toward a particular faction. Scale ranges from {Faction.MinimumFaction} to {Faction.MaximumFaction}")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .RequiresTarget()
+                .Validate((user, args) =>
+                {
+                    if(!int.TryParse(args[0], out var factionId) ||
+                       ((FactionType)factionId) == FactionType.Invalid)
+                    {
+                        var error = "Invalid faction Id. Must be one of the following values:";
+                        foreach (var (faction, detail) in Faction.GetAllFactions())
+                        {
+                            error += $"{(int) faction} = {detail.Name}";
+                        }
+
+                        return error;
+                    }
+
+                    if(!int.TryParse(args[1], out var amount))
+                    {
+                        return $"Invalid amount. Must be a value ranging from {Faction.MinimumFaction} to {Faction.MaximumFaction}";
+                    }
+
+                    if (amount < Faction.MinimumFaction || amount > Faction.MaximumFaction)
+                    {
+                        return $"Invalid amount. Must be a value ranging from {Faction.MinimumFaction} to {Faction.MaximumFaction}";
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsPC(target) || GetIsDM(target))
+                    {
+                        SendMessageToPC(user, "Only players may be targeted with this command.");
+                        return;
+                    }
+
+                    var playerId = GetObjectUUID(target);
+                    var dbPlayer = DB.Get<Player>(playerId);
+
+                    foreach (var (faction, standingDetail) in dbPlayer.Factions)
+                    {
+                        var factionDetail = Faction.GetFactionDetail(faction);
+
+                        SendMessageToPC(user, $"{factionDetail.Name}: {standingDetail.Standing}");
+                    }
+                });
+        }
+
+        private void GetFactionStanding()
+        {
+            _builder.Create("getfactionstanding")
+                .Description($"Retrieves a player's standing towards all factions. Scale ranges from {Faction.MinimumFaction} to {Faction.MaximumFaction}")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .RequiresTarget()
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsPC(target) || GetIsDM(target))
+                    {
+                        SendMessageToPC(user, "Only players may be targeted with this command.");
+                        return;
+                    }
+
+                    var playerId = GetObjectUUID(target);
+                    var dbPlayer = DB.Get<Player>(playerId);
+
+                    foreach (var (faction, standingDetail) in dbPlayer.Factions)
+                    {
+                        var factionDetail = Faction.GetFactionDetail(faction);
+
+                        SendMessageToPC(user, $"{factionDetail.Name}: {standingDetail.Standing}");
+                    }
+                });
+        }
+
     }
 }

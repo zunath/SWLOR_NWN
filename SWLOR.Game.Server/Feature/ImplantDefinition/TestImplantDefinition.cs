@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.ImplantDefinition
                 .Name("Test Implant")
                 .Description("This is a test")
                 .RequiredLevel(1)
-                .Slot(ImplantSlotType.Chest)
+                .Slot(ImplantSlotType.Body)
                 .ValidationAction(creature =>
                 {
                     return string.Empty;
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.ImplantDefinition
                 .Name("Test Implant 2")
                 .Description("This is a test 2")
                 .RequiredLevel(2)
-                .Slot(ImplantSlotType.Chest)
+                .Slot(ImplantSlotType.Body)
                 .ValidationAction(creature =>
                 {
                     return string.Empty;

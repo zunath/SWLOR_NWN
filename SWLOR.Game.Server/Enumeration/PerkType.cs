@@ -153,7 +153,7 @@
         ArmImplantBlueprints = 147,
         LegImplantBlueprints = 148,
         FootImplantBlueprints = 149,
-        ChestImplantBlueprints = 150,
+        BodyImplantBlueprints = 150,
         HandImplantBlueprints = 151,
         EyeImplantBlueprints = 152,
         FurnitureBlueprints = 153,

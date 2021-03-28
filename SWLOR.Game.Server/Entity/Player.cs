@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Entity
                 {AbilityType.Intelligence, 0},
                 {AbilityType.Wisdom, 0}
             };
-            AdjustedStats = new Dictionary<AbilityType, float>
+            SkillAdjustedStats = new Dictionary<AbilityType, float>
             {
                 {AbilityType.Constitution, 0f},
                 {AbilityType.Strength, 0f},
@@ -32,10 +32,21 @@ namespace SWLOR.Game.Server.Entity
                 {AbilityType.Intelligence, 0f},
                 {AbilityType.Wisdom, 0f}
             };
+            ImplantAdjustedStats = new Dictionary<AbilityType, int>
+            {
+                {AbilityType.Constitution, 0},
+                {AbilityType.Strength, 0},
+                {AbilityType.Charisma, 0},
+                {AbilityType.Dexterity, 0},
+                {AbilityType.Intelligence, 0},
+                {AbilityType.Wisdom, 0}
+            };
+
             ShowHelmet = true;
             IsUsingDualPistolMode = false;
             IsHolonetEnabled = true;
             EmoteStyle = EmoteStyle.Regular;
+            MovementRate = 1.0f;
             MapPins = new Dictionary<string, List<MapPin>>();
             MapProgressions = new Dictionary<string, string>();
             RoleplayProgress = new RoleplayProgress();
@@ -91,10 +102,12 @@ namespace SWLOR.Game.Server.Entity
         public Guid ActiveShipId { get; set; }
         public Guid SelectedShipId { get; set; }
         public AppearanceType OriginalAppearanceType { get; set; }
+        public float MovementRate { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }
-        public Dictionary<AbilityType, float> AdjustedStats { get; set; }
+        public Dictionary<AbilityType, float> SkillAdjustedStats { get; set; }
+        public Dictionary<AbilityType, int> ImplantAdjustedStats { get; set; }
         public RoleplayProgress RoleplayProgress { get; set; }
         public Dictionary<string, List<MapPin>> MapPins { get; set; }
         public Dictionary<string, string> MapProgressions { get; set; }

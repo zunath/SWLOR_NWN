@@ -103,12 +103,14 @@ namespace SWLOR.Game.Server.Service
                 // Apply primary/secondary stat increases if applicable to this skill.
                 if (details.PrimaryStat != AbilityType.Invalid)
                 {
-                    Stat.AdjustPlayerAttribute(dbPlayer, player, details.PrimaryStat, PrimaryStatIncrease);
+                    dbPlayer.SkillAdjustedStats[details.PrimaryStat] += PrimaryStatIncrease;
+                    Stat.ApplyPlayerStat(dbPlayer, player, details.PrimaryStat);
                 }
 
                 if (details.SecondaryStat != AbilityType.Invalid)
                 {
-                    Stat.AdjustPlayerAttribute(dbPlayer, player, details.SecondaryStat, SecondaryStatIncrease);
+                    dbPlayer.SkillAdjustedStats[details.SecondaryStat] += SecondaryStatIncrease;
+                    Stat.ApplyPlayerStat(dbPlayer, player, details.SecondaryStat);
                 }
 
                 requiredXP = GetRequiredXP(pcSkill.Rank);

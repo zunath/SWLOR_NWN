@@ -181,8 +181,23 @@ namespace SWLOR.Game.Server.Service
                     ItemSerializedData = Object.Serialize(item)
                 };
 
+                // Adjust stats
+                Stat.AdjustPlayerMaxHP(dbPlayer, player, implantDetail.HPAdjustment);
+                Stat.AdjustPlayerMaxFP(dbPlayer, implantDetail.FPAdjustment);
+                Stat.AdjustPlayerMaxSTM(dbPlayer, implantDetail.STMAdjustment);
+
+                Stat.AdjustPlayerMovementRate(dbPlayer, player, implantDetail.MovementRateAdjustment);
+
+                // Adjust ability scores
+                foreach (var (ability, amount) in implantDetail.StatAdjustments)
+                {
+                    dbPlayer.ImplantAdjustedStats[ability] += amount;
+                    Stat.ApplyPlayerStat(dbPlayer, player, ability);
+                }
+
                 // Run the installation action, if any.
                 implantDetail.InstalledAction?.Invoke(player);
+
             }
             else if (type == DisturbType.Removed)
             {
@@ -203,6 +218,20 @@ namespace SWLOR.Game.Server.Service
                 if (implant != null)
                 {
                     dbPlayer.Implants.Remove(slot);
+                }
+
+                // Adjust stats
+                Stat.AdjustPlayerMaxHP(dbPlayer, player, -implantDetail.HPAdjustment);
+                Stat.AdjustPlayerMaxFP(dbPlayer, -implantDetail.FPAdjustment);
+                Stat.AdjustPlayerMaxSTM(dbPlayer, -implantDetail.STMAdjustment);
+
+                Stat.AdjustPlayerMovementRate(dbPlayer, player, -implantDetail.MovementRateAdjustment);
+
+                // Revert ability score changes
+                foreach (var (ability, amount) in implantDetail.StatAdjustments)
+                {
+                    dbPlayer.ImplantAdjustedStats[ability] -= amount;
+                    Stat.ApplyPlayerStat(dbPlayer, player, ability);
                 }
 
                 // Run the uninstallation action, if any.

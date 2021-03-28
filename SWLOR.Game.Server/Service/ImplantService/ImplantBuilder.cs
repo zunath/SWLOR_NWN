@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.ImplantService
 {
@@ -70,6 +71,65 @@ namespace SWLOR.Game.Server.Service.ImplantService
         }
 
         /// <summary>
+        /// Specifies that this implant will adjust HP by a certain amount when installed or uninstalled.
+        /// </summary>
+        /// <param name="adjustBy">The amount to adjust by.</param>
+        /// <returns>An implant builder with the configured settings.</returns>
+        public ImplantBuilder ModifyHP(int adjustBy)
+        {
+            _activeImplant.HPAdjustment = adjustBy;
+
+            return this;
+        }
+        /// <summary>
+        /// Specifies that this implant will adjust FP by a certain amount when installed or uninstalled.
+        /// </summary>
+        /// <param name="adjustBy">The amount to adjust by.</param>
+        /// <returns>An implant builder with the configured settings.</returns>
+        public ImplantBuilder ModifyFP(int adjustBy)
+        {
+            _activeImplant.FPAdjustment = adjustBy;
+
+            return this;
+        }
+        /// <summary>
+        /// Specifies that this implant will adjust STM by a certain amount when installed or uninstalled.
+        /// </summary>
+        /// <param name="adjustBy">The amount to adjust by.</param>
+        /// <returns>An implant builder with the configured settings.</returns>
+        public ImplantBuilder ModifySTM(int adjustBy)
+        {
+            _activeImplant.STMAdjustment = adjustBy;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies that this implant will adjust a specific ability score when installed or uninstalled.
+        /// </summary>
+        /// <param name="ability">The ability type</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        /// <returns>An implant builder with the configured settings.</returns>
+        public ImplantBuilder ModifyAbilityScore(AbilityType ability, int adjustBy)
+        {
+            _activeImplant.StatAdjustments[ability] = adjustBy;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies that this implant will adjust the movement rate of the creature when installed or uninstalled.
+        /// </summary>
+        /// <param name="adjustBy">The amount to adjust by.</param>
+        /// <returns></returns>
+        public ImplantBuilder ModifyMovementRate(float adjustBy)
+        {
+            _activeImplant.MovementRateAdjustment = adjustBy;
+
+            return this;
+        }
+
+        /// <summary>
         /// Sets the action to run when an implant is installed to a creature.
         /// </summary>
         /// <param name="action">The action to run when an implant is installed.</param>
@@ -86,9 +146,9 @@ namespace SWLOR.Game.Server.Service.ImplantService
         /// </summary>
         /// <param name="action">The action to run when an implant is uninstalled.</param>
         /// <returns>An implant builder with the configured settings.</returns>
-        public ImplantBuilder UninstalledAction(ImplantInstalledDelegate action)
+        public ImplantBuilder UninstalledAction(ImplantUninstalledDelegate action)
         {
-            _activeImplant.InstalledAction = action;
+            _activeImplant.UninstalledAction = action;
 
             return this;
         }

@@ -25,30 +25,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Harvesting")
 
                 .AddPerkLevel()
-                .Description("You can harvest Veldite.")
+                .Description("You can use tier 1 harvesters.")
                 .Price(1)
                 .GrantsFeat(Feat.Harvesting1)
 
                 .AddPerkLevel()
-                .Description("You can harvest Veldite and Scordspar.")
+                .Description("You can use tier 2 harvesters.")
                 .Price(1)
                 .RequirementSkill(SkillType.Gathering, 10)
                 .GrantsFeat(Feat.Harvesting2)
 
                 .AddPerkLevel()
-                .Description("You can harvest Veldite, Scordspar, and Plagionite.")
+                .Description("You can use tier 3 harvesters.")
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, 20)
                 .GrantsFeat(Feat.Harvesting3)
 
                 .AddPerkLevel()
-                .Description("You can harvest Veldite, Scordspar, Plagionite, and Keromber.")
+                .Description("You can use tier 4 harvesters.")
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 30)
                 .GrantsFeat(Feat.Harvesting4)
 
                 .AddPerkLevel()
-                .Description("You can harvest Veldite, Scordspar, Plagionite, Keromber, and Jasioclase.")
+                .Description("You can use tier 5 harvesters.")
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 40)
                 .GrantsFeat(Feat.Harvesting5);
@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         private void HardLook(PerkBuilder builder)
         {
             builder.Create(PerkCategoryType.Gathering, PerkType.HardLook)
-                .Name("Scavenging")
+                .Name("Hard Look")
 
                 .AddPerkLevel()
                 .Description("Grants a 10% chance to search a second time at each search site.")

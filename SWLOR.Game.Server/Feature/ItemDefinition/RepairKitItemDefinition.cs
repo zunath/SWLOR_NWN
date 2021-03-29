@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     })
                     .ApplyAction((user, item, target, location) =>
                     {
-                        Application(user, target, durabilityRepair, maxDurabilityLoss, SkillType.Armorsmith, tier);
+                        Application(user, target, durabilityRepair, maxDurabilityLoss, SkillType.Smithery, tier);
                     });
             }
 
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     })
                     .ApplyAction((user, item, target, location) =>
                     {
-                        Application(user, target, durabilityRepair, maxDurabilityLoss, SkillType.Weaponsmith, tier);
+                        Application(user, target, durabilityRepair, maxDurabilityLoss, SkillType.Smithery, tier);
                     });
             }
 

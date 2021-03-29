@@ -98,25 +98,15 @@ namespace SWLOR.Game.Server.Enumeration
 
         // Crafting
         [Skill(SkillCategoryType.Crafting, 
-            "Weaponsmith", 
+            "Smithery", 
             50, 
             true, 
-            "Ability to create weapons like vibroblades, polearms, and blasters.", 
+            "Ability to create weapons and armor like vibroblades, blasters, and helmets.", 
             true, 
             AbilityType.Invalid, 
             AbilityType.Invalid)]
-        Weaponsmith = 9,
-
-        [Skill(SkillCategoryType.Crafting, 
-            "Armorsmith", 
-            50, 
-            true, 
-            "Ability to create equipment like helmets, belts, and armor.", 
-            true, 
-            AbilityType.Invalid, 
-            AbilityType.Invalid)]
-        Armorsmith = 10,
-
+        Smithery = 9,
+        
         [Skill(SkillCategoryType.Crafting,
             "Cybertech", 
             50,

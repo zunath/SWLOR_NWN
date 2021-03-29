@@ -87,15 +87,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.Header = "Please select a skill.";
 
-            page.AddResponse(Skill.GetSkillDetails(SkillType.Weaponsmith).Name, () =>
+            page.AddResponse(Skill.GetSkillDetails(SkillType.Smithery).Name, () =>
             {
-                model.SelectedSkill = SkillType.Weaponsmith;
-                ChangePage(CategoryPageId);
-            });
-
-            page.AddResponse(Skill.GetSkillDetails(SkillType.Armorsmith).Name, () =>
-            {
-                model.SelectedSkill = SkillType.Armorsmith;
+                model.SelectedSkill = SkillType.Smithery;
                 ChangePage(CategoryPageId);
             });
 

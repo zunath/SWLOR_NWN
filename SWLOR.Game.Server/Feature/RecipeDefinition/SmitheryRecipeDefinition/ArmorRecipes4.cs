@@ -2,9 +2,9 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.CraftService;
 
-namespace SWLOR.Game.Server.Feature.RecipeDefinition.WeaponsmithRecipeDefinition
+namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 {
-    public class WeaponsmithRecipes5 : IRecipeListDefinition
+    public class ArmorRecipes4 : IRecipeListDefinition
     {
         public Dictionary<RecipeType, RecipeDetail> BuildRecipes()
         {

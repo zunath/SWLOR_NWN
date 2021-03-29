@@ -76,20 +76,17 @@ namespace SWLOR.Game.Server.Enumeration
         [PerkCategory("First Aid", true)]
         FirstAid = 23,
 
-        [PerkCategory("Weaponsmith", true)]
-        Weaponsmith = 24,
-
-        [PerkCategory("Armorsmith", true)]
-        Armorsmith = 25,
+        [PerkCategory("Smithery", true)]
+        Smithery = 24,
 
         [PerkCategory("Cybertech", true)]
-        Cybertech = 26,
+        Cybertech = 25,
 
         [PerkCategory("Fabrication", true)]
-        Fabrication = 27,
+        Fabrication = 26,
 
         [PerkCategory("Gathering", true)]
-        Gathering = 28
+        Gathering = 27
     }
 
     public class PerkCategoryAttribute : Attribute

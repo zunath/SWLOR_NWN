@@ -577,26 +577,11 @@
         "__struct_id": 0,
         "InventoryRes": {
           "type": "resref",
-          "value": "pil_justinablade"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 0
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 1,
-        "InventoryRes": {
-          "type": "resref",
           "value": "pil_justinahelm"
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 2
+          "value": 0
         },
         "Repos_Posy": {
           "type": "word",

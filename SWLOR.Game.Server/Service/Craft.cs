@@ -32,6 +32,8 @@ namespace SWLOR.Game.Server.Service
             CacheCategories();
             CacheRecipes();
             CacheCraftSkillToAbilities();
+
+            Console.WriteLine($"Loaded {_recipes.Count} recipes.");
         }
 
         /// <summary>

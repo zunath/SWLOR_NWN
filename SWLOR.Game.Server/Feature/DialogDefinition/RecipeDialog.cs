@@ -139,6 +139,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 foreach (var (key, value) in Craft.GetRecipesBySkillAndCategory(model.SelectedSkill, model.SelectedCategory))
                 {
                     var itemName = Cache.GetItemNameByResref(value.Resref);
+                    if (string.IsNullOrWhiteSpace(itemName))
+                    {
+                        Log.Write(LogGroup.Error, $"Recipe {key} has an invalid Resref or the name of the item is blank.");
+                        continue;
+                    }
+
                     var canCraft = CanPlayerCraftRecipe(key);
 
                     if (canCraft)
@@ -158,6 +164,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 foreach (var (key, value) in Craft.GetRecipesBySkillAndCategory(model.SelectedSkill, model.SelectedCategory))
                 {
                     var itemName = Cache.GetItemNameByResref(value.Resref);
+                    if (string.IsNullOrWhiteSpace(itemName))
+                    {
+                        Log.Write(LogGroup.Error, $"Recipe {key} has an invalid Resref or the name of the item is blank.");
+                        continue;
+                    }
+
                     var canCraft = CanPlayerCraftRecipe(key);
                     var optionText = canCraft ? ColorToken.Green(itemName) : ColorToken.Red(itemName);
 

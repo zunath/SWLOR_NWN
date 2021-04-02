@@ -136,14 +136,14 @@
         ArmorBlueprints = 132,
         AccessoryBlueprints = 133,
         ImplantInstallation = 140,
-        NeckImplantBlueprints = 141,
+        
         HeadImplantBlueprints = 142,
         ArmImplantBlueprints = 143,
         LegImplantBlueprints = 144,
         FootImplantBlueprints = 145,
         BodyImplantBlueprints = 146,
-        HandImplantBlueprints = 147,
-        EyeImplantBlueprints = 148,
+        
+        
         FurnitureBlueprints = 149,
         StructureBlueprints = 150,
         StarshipBlueprints = 151,

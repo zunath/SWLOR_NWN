@@ -14,16 +14,8 @@ namespace SWLOR.Game.Server.Entity
         public Player()
         {
             Settings = new PlayerSettings();
+            ImplantStats = new PlayerImplantStats();
             BaseStats = new Dictionary<AbilityType, int>
-            {
-                {AbilityType.Constitution, 0},
-                {AbilityType.Strength, 0},
-                {AbilityType.Charisma, 0},
-                {AbilityType.Dexterity, 0},
-                {AbilityType.Intelligence, 0},
-                {AbilityType.Wisdom, 0}
-            };
-            ImplantAdjustedStats = new Dictionary<AbilityType, int>
             {
                 {AbilityType.Constitution, 0},
                 {AbilityType.Strength, 0},
@@ -96,8 +88,8 @@ namespace SWLOR.Game.Server.Entity
         public float MovementRate { get; set; }
 
         public PlayerSettings Settings { get; set; }
+        public PlayerImplantStats ImplantStats { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }
-        public Dictionary<AbilityType, int> ImplantAdjustedStats { get; set; }
         public RoleplayProgress RoleplayProgress { get; set; }
         public Dictionary<string, List<MapPin>> MapPins { get; set; }
         public Dictionary<string, string> MapProgressions { get; set; }
@@ -174,5 +166,26 @@ namespace SWLOR.Game.Server.Entity
     {
         public int Standing { get; set; }
         public int Points { get; set; }
+    }
+
+    public class PlayerImplantStats
+    {
+        public Dictionary<AbilityType, int> Attributes { get; set; }
+        public int HPRegen { get; set; }
+        public int FPRegen { get; set; }
+        public int STMRegen { get; set; }
+
+        public PlayerImplantStats()
+        {
+            Attributes = new Dictionary<AbilityType, int>
+            {
+                {AbilityType.Constitution, 0},
+                {AbilityType.Strength, 0},
+                {AbilityType.Charisma, 0},
+                {AbilityType.Dexterity, 0},
+                {AbilityType.Intelligence, 0},
+                {AbilityType.Wisdom, 0}
+            };
+        }
     }
 }

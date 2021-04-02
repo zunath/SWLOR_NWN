@@ -436,7 +436,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (ability == AbilityType.Invalid) return;
 
-            var totalStat = entity.BaseStats[ability] + entity.ImplantAdjustedStats[ability];
+            var totalStat = entity.BaseStats[ability] + entity.ImplantStats.Attributes[ability];
             Creature.SetRawAbilityScore(player, ability, totalStat);
         }
     }

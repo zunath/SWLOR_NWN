@@ -187,11 +187,14 @@ namespace SWLOR.Game.Server.Service
                 Stat.AdjustPlayerMaxSTM(dbPlayer, implantDetail.STMAdjustment);
 
                 Stat.AdjustPlayerMovementRate(dbPlayer, player, implantDetail.MovementRateAdjustment);
+                dbPlayer.ImplantStats.HPRegen += implantDetail.HPRegenAdjustment;
+                dbPlayer.ImplantStats.FPRegen += implantDetail.FPRegenAdjustment;
+                dbPlayer.ImplantStats.STMRegen += implantDetail.STMRegenAdjustment;
 
                 // Adjust ability scores
                 foreach (var (ability, amount) in implantDetail.StatAdjustments)
                 {
-                    dbPlayer.ImplantAdjustedStats[ability] += amount;
+                    dbPlayer.ImplantStats.Attributes[ability] += amount;
                     Stat.ApplyPlayerStat(dbPlayer, player, ability);
                 }
 
@@ -230,7 +233,7 @@ namespace SWLOR.Game.Server.Service
                 // Revert ability score changes
                 foreach (var (ability, amount) in implantDetail.StatAdjustments)
                 {
-                    dbPlayer.ImplantAdjustedStats[ability] -= amount;
+                    dbPlayer.ImplantStats.Attributes[ability] -= amount;
                     Stat.ApplyPlayerStat(dbPlayer, player, ability);
                 }
 

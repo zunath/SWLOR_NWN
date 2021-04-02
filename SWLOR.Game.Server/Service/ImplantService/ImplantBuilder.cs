@@ -81,6 +81,19 @@ namespace SWLOR.Game.Server.Service.ImplantService
 
             return this;
         }
+
+        /// <summary>
+        /// Specifies that this implant will adjust HP regen by a certain amount when installed or uninstalled.
+        /// </summary>
+        /// <param name="adjustBy">The amount to adjust by.</param>
+        /// <returns>An implant builder with the configured settings.</returns>
+        public ImplantBuilder ModifyHPRegen(int adjustBy)
+        {
+            _activeImplant.HPRegenAdjustment = adjustBy;
+
+            return this;
+        }
+
         /// <summary>
         /// Specifies that this implant will adjust FP by a certain amount when installed or uninstalled.
         /// </summary>
@@ -92,6 +105,19 @@ namespace SWLOR.Game.Server.Service.ImplantService
 
             return this;
         }
+
+        /// <summary>
+        /// Specifies that this implant will adjust FP regen by a certain amount when installed or uninstalled.
+        /// </summary>
+        /// <param name="adjustBy">The amount to adjust by.</param>
+        /// <returns>An implant builder with the configured settings.</returns>
+        public ImplantBuilder ModifyFPRegen(int adjustBy)
+        {
+            _activeImplant.FPRegenAdjustment = adjustBy;
+
+            return this;
+        }
+
         /// <summary>
         /// Specifies that this implant will adjust STM by a certain amount when installed or uninstalled.
         /// </summary>
@@ -100,6 +126,18 @@ namespace SWLOR.Game.Server.Service.ImplantService
         public ImplantBuilder ModifySTM(int adjustBy)
         {
             _activeImplant.STMAdjustment = adjustBy;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Specifies that this implant will adjust STM regen by a certain amount when installed or uninstalled.
+        /// </summary>
+        /// <param name="adjustBy">The amount to adjust by.</param>
+        /// <returns>An implant builder with the configured settings.</returns>
+        public ImplantBuilder ModifySTMRegen(int adjustBy)
+        {
+            _activeImplant.STMRegenAdjustment = adjustBy;
 
             return this;
         }

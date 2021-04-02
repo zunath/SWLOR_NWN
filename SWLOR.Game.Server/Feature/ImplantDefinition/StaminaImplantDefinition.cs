@@ -61,10 +61,11 @@ namespace SWLOR.Game.Server.Feature.ImplantDefinition
             // Legs
             _builder.Create("l_imp_stm2")
                 .Name("Stamina")
-                .Description("+4 STM, -2 FP")
+                .Description("+4 STM, +1 STM Regen, -2 FP")
                 .RequiredLevel(2)
                 .Slot(ImplantSlotType.Legs)
                 .ModifySTM(4)
+                .ModifySTMRegen(1)
                 .ModifyFP(-2);
 
             // Arms
@@ -91,10 +92,11 @@ namespace SWLOR.Game.Server.Feature.ImplantDefinition
             // Legs
             _builder.Create("l_imp_stm3")
                 .Name("Stamina")
-                .Description("+5 STM, -3 FP")
+                .Description("+5 STM, +1 STM Regen, -3 FP")
                 .RequiredLevel(3)
                 .Slot(ImplantSlotType.Legs)
                 .ModifySTM(5)
+                .ModifySTMRegen(1)
                 .ModifyFP(-3);
             
             // Arms
@@ -120,10 +122,11 @@ namespace SWLOR.Game.Server.Feature.ImplantDefinition
             // Legs
             _builder.Create("l_imp_stm4")
                 .Name("Stamina")
-                .Description("+6 STM, -4 FP")
+                .Description("+6 STM, +1 STM Regen, -4 FP")
                 .RequiredLevel(4)
                 .Slot(ImplantSlotType.Legs)
                 .ModifySTM(6)
+                .ModifySTMRegen(1)
                 .ModifyFP(-4);
 
             // Arms
@@ -149,10 +152,11 @@ namespace SWLOR.Game.Server.Feature.ImplantDefinition
             // Legs
             _builder.Create("l_imp_stm5")
                 .Name("Stamina")
-                .Description("+7 STM, -5 FP")
+                .Description("+7 STM, +1 STM Regen, -5 FP")
                 .RequiredLevel(5)
                 .Slot(ImplantSlotType.Legs)
                 .ModifySTM(7)
+                .ModifySTMRegen(1)
                 .ModifyFP(-5);
 
             // Arms

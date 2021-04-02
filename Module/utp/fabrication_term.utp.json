@@ -94,7 +94,7 @@
   },
   "OnClosed": {
     "type": "resref",
-    "value": ""
+    "value": "craft_on_closed"
   },
   "OnDamaged": {
     "type": "resref",
@@ -114,7 +114,7 @@
   },
   "OnInvDisturbed": {
     "type": "resref",
-    "value": ""
+    "value": "craft_on_disturb"
   },
   "OnLock": {
     "type": "resref",
@@ -126,7 +126,7 @@
   },
   "OnOpen": {
     "type": "resref",
-    "value": ""
+    "value": "craft_on_open"
   },
   "OnSpellCastAt": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "OnUsed": {
     "type": "resref",
-    "value": "script_1"
+    "value": ""
   },
   "OnUserDefined": {
     "type": "resref",
@@ -219,22 +219,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "SCRIPT_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Placeable.CraftingDevice.OnUsed"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "CRAFT_DEVICE_ID"
+          "value": "CRAFTING_SKILL_TYPE_ID"
         },
         "Type": {
           "type": "dword",
@@ -242,7 +227,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 5
+          "value": 12
         }
       }
     ]

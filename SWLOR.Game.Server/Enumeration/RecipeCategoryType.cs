@@ -50,10 +50,10 @@ namespace SWLOR.Game.Server.Enumeration
         TwinBlade = 21,
         [RecipeCategory("Saberstaff", true)]
         Saberstaff = 22,
-        [RecipeCategory("Knuckle", true)]
-        Knuckle = 23,
-        [RecipeCategory("Staff", true)]
-        Staff = 24,
+        [RecipeCategory("Martial", true)]
+        Martial = 23,
+        [RecipeCategory("Baton", true)]
+        Baton = 24,
         [RecipeCategory("Pistol", true)]
         Pistol = 25,
         [RecipeCategory("Throwing", true)]

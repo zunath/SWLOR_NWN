@@ -41,17 +41,6 @@ namespace SWLOR.Game.Server.Service.CraftService
         }
 
         /// <summary>
-        /// Sets the name of a recipe which will be displayed to the player.
-        /// </summary>
-        /// <param name="name">The name of the recipe.</param>
-        /// <returns>A recipe builder with the configured options</returns>
-        public RecipeBuilder Name(string name)
-        {
-            _activeRecipe.Name = name;
-            return this;
-        }
-
-        /// <summary>
         /// Sets the level of the recipe which is used for success calculation.
         /// </summary>
         /// <param name="level">The level of the recipe.</param>
@@ -59,17 +48,6 @@ namespace SWLOR.Game.Server.Service.CraftService
         public RecipeBuilder Level(int level)
         {
             _activeRecipe.Level = level;
-            return this;
-        }
-
-        /// <summary>
-        /// Sets the description of a recipe which will be displayed to the player.
-        /// </summary>
-        /// <param name="description">The description of the recipe.</param>
-        /// <returns>A recipe builder with the configured options</returns>
-        public RecipeBuilder Description(string description)
-        {
-            _activeRecipe.Description = description;
             return this;
         }
 

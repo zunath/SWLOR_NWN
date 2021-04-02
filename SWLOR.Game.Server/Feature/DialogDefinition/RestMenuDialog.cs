@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using Dialog = SWLOR.Game.Server.Service.Dialog;
@@ -49,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var totalSkillCount = dbPlayer.TotalSPAcquired;
 
             var playerName = GetName(player);
-            string header = ColorToken.Green("Name: ") + playerName + "\n";
+            var header = ColorToken.Green("Name: ") + playerName + "\n";
             header += ColorToken.Green("Skill Points: ") + totalSkillCount + " / " + Skill.SkillCap + "\n";
             header += ColorToken.Green("Unallocated SP: ") + dbPlayer.UnallocatedSP + "\n";
             header += ColorToken.Green("Unallocated XP: ") + dbPlayer.UnallocatedXP + "\n";
@@ -59,7 +60,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             page.AddResponse("View Skills", () => SwitchConversation(nameof(ViewSkillsDialog)));
             page.AddResponse("View Perks", () => SwitchConversation(nameof(ViewPerksDialog)));
             page.AddResponse("View Achievements", () => SwitchConversation(nameof(ViewAchievementsDialog)));
-            page.AddResponse("View Recipes", () => SwitchConversation(nameof(RecipeDialog)));
+            page.AddResponse("View Recipes", () =>
+            {
+                var craftingState = Craft.GetPlayerCraftingState(player);
+                craftingState.DeviceSkillType = SkillType.Invalid;
+                SwitchConversation(nameof(RecipeDialog));
+            });
             page.AddResponse("View Key Items", () => SwitchConversation(nameof(ViewKeyItemsDialog)));
             page.AddResponse("Modify Item Appearance", () => SwitchConversation(nameof(ModifyItemAppearanceDialog)));
             page.AddResponse("Player Settings", () => SwitchConversation(nameof(PlayerSettingsDialog)));

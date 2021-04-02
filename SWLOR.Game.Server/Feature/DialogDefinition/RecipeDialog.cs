@@ -14,7 +14,6 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             public RecipeCategoryType SelectedCategory { get; set; }
             public RecipeType SelectedRecipe { get; set; }
             public bool IsFabricator { get; set; }
-            public bool IsCrafting { get; set; }
         }
 
         private const string MainPageId = "MAIN_PAGE";
@@ -87,15 +86,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.Header = "Please select a skill.";
 
-            page.AddResponse(Skill.GetSkillDetails(SkillType.Weaponsmith).Name, () =>
+            page.AddResponse(Skill.GetSkillDetails(SkillType.Smithery).Name, () =>
             {
-                model.SelectedSkill = SkillType.Weaponsmith;
-                ChangePage(CategoryPageId);
-            });
-
-            page.AddResponse(Skill.GetSkillDetails(SkillType.Armorsmith).Name, () =>
-            {
-                model.SelectedSkill = SkillType.Armorsmith;
+                model.SelectedSkill = SkillType.Smithery;
                 ChangePage(CategoryPageId);
             });
 
@@ -139,14 +132,72 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var model = GetDataModel<Model>();
             page.Header = "Please select a recipe.";
 
-            foreach (var (key, value) in Craft.GetRecipesBySkillAndCategory(model.SelectedSkill, model.SelectedCategory))
+            // Currently in the crafting menu.
+            // Display only the recipes the player knows.
+            if (model.IsFabricator)
             {
-                page.AddResponse(value.Name, () =>
+                foreach (var (key, value) in Craft.GetRecipesBySkillAndCategory(model.SelectedSkill, model.SelectedCategory))
                 {
-                    model.SelectedRecipe = key;
-                    ChangePage(RecipePageId);
-                });
+                    var itemName = Cache.GetItemNameByResref(value.Resref);
+                    if (string.IsNullOrWhiteSpace(itemName))
+                    {
+                        Log.Write(LogGroup.Error, $"Recipe {key} has an invalid Resref or the name of the item is blank.");
+                        continue;
+                    }
+
+                    var canCraft = CanPlayerCraftRecipe(key);
+
+                    if (canCraft)
+                    {
+                        page.AddResponse(ColorToken.Green(itemName), () =>
+                        {
+                            model.SelectedRecipe = key;
+                            ChangePage(RecipePageId);
+                        });
+                    }
+                }
             }
+            // Currently in the recipe menu.
+            // Display all recipes, highlighting the text in green or red depending on whether the player knows it.
+            else
+            {
+                foreach (var (key, value) in Craft.GetRecipesBySkillAndCategory(model.SelectedSkill, model.SelectedCategory))
+                {
+                    var itemName = Cache.GetItemNameByResref(value.Resref);
+                    if (string.IsNullOrWhiteSpace(itemName))
+                    {
+                        Log.Write(LogGroup.Error, $"Recipe {key} has an invalid Resref or the name of the item is blank.");
+                        continue;
+                    }
+
+                    var canCraft = CanPlayerCraftRecipe(key);
+                    var optionText = canCraft ? ColorToken.Green(itemName) : ColorToken.Red(itemName);
+
+                    page.AddResponse(optionText, () =>
+                    {
+                        model.SelectedRecipe = key;
+                        ChangePage(RecipePageId);
+                    });
+                }
+            }
+
+        }
+
+        private bool CanPlayerCraftRecipe(RecipeType recipeType)
+        {
+            var player = GetPC();
+            var recipe = Craft.GetRecipe(recipeType);
+            if (recipe.Requirements.Count <= 0) return true;
+
+            foreach (var requirement in recipe.Requirements)
+            {
+                if (!string.IsNullOrWhiteSpace(requirement.CheckRequirements(player)))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         private void RecipePageInit(DialogPage page)
@@ -160,9 +211,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 var recipe = Craft.GetRecipe(model.SelectedRecipe);
                 var category = Craft.GetCategoryDetail(recipe.Category);
                 var skill = Skill.GetSkillDetails(recipe.Skill);
+                var itemName = Cache.GetItemNameByResref(recipe.Resref);
 
                 // Recipe quantity and name.
-                var header = $"{ColorToken.Green("Recipe:")} {recipe.Quantity}x {recipe.Name} \n";
+                var header = $"{ColorToken.Green("Recipe:")} {recipe.Quantity}x {itemName} \n";
 
                 // Associated skill
                 header += $"{ColorToken.Green("Craft:")} {skill.Name}\n";
@@ -170,14 +222,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 // Associated category
                 header += $"{ColorToken.Green("Category:")} {category.Name}\n";
 
-                // Recipe's description, if available.
-                if (!string.IsNullOrWhiteSpace(recipe.Description))
-                {
-                    header += $"{ColorToken.Green("Description:")} {recipe.Description} \n";
-                }
-
                 // Chance to craft
-                header += $"{ColorToken.Green("Chance to Auto-Craft:")} {Craft.CalculateChanceToCraft(player, model.SelectedRecipe)}%";
+                header += $"{ColorToken.Green("Success Chance:")} {Craft.CalculateChanceToCraft(player, model.SelectedRecipe)}%";
 
                 // List of requirements, if applicable.
                 if (recipe.Requirements.Count > 0)

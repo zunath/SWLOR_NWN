@@ -66,7 +66,8 @@ namespace SWLOR.Game.Server.Feature
 
                 var recipeDetail = Craft.GetRecipe(recipeType);
                 var skillDetail = Skill.GetSkillDetails(recipeDetail.Skill);
-                SendMessageToPC(user, $"You learn the {skillDetail.Name} recipe: {recipeDetail.Name}.");
+                var itemName = Cache.GetItemNameByResref(recipeDetail.Resref);
+                SendMessageToPC(user, $"You learn the {skillDetail.Name} recipe: {itemName}.");
             }
 
             // Player didn't learn any recipes. Let them know but don't destroy the item.

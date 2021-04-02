@@ -16,8 +16,11 @@ namespace SWLOR.Game.Server.Service.ImplantService
         public ImplantSlotType Slot { get; set; }
         public int RequiredLevel { get; set; }
         public int HPAdjustment { get; set; }
+        public int HPRegenAdjustment { get; set; }
         public int FPAdjustment { get; set; }
+        public int FPRegenAdjustment { get; set; }
         public int STMAdjustment { get; set; }
+        public int STMRegenAdjustment { get; set; }
         public float MovementRateAdjustment { get; set; }
         public Dictionary<AbilityType, int> StatAdjustments { get; set; }
         public ImplantInstalledDelegate InstalledAction { get; set; }

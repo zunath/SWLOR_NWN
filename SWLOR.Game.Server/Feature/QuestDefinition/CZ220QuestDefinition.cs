@@ -14,10 +14,9 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         {
             var builder = new QuestBuilder();
             SelansRequest(builder);
-            SuppliesWeaponsmith(builder);
+            SuppliesSmithery(builder);
             SuppliesScavenging(builder);
             SuppliesFabrication(builder);
-            SuppliesArmorsmith(builder);
             DatapadRetrieval(builder);
             MynockMayhem(builder);
             OreCollection(builder);
@@ -52,12 +51,12 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        private static void SuppliesWeaponsmith(QuestBuilder builder)
+        private static void SuppliesSmithery(QuestBuilder builder)
         {
-            builder.Create("cz220_weaponsmith", "CZ-220 Supplies - Weaponsmith")
+            builder.Create("cz220_smithery", "CZ-220 Supplies - Smithery")
 
                 .AddState()
-                .SetStateJournalText("The Crafting Terminal Droid operator has requested you create a single unit of Basic Baton C. You will need to purchase the \"Weaponsmith Blueprints\" perk in order to create this item. Once you have the perk you can use any weaponsmith terminal to make the item. You will find the necessary resources down on the maintenance level.")
+                .SetStateJournalText("The Crafting Terminal Droid operator has requested you create a single unit of Basic Baton C. You will need to purchase the \"One-Handed Blueprints\" perk in order to create this item. Once you have the perk you can use any smithery terminal to make the item. You will find the necessary resources down on the maintenance level.")
                 .AddCollectItemObjective("club_b", 1)
 
                 .AddState()
@@ -105,29 +104,6 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("The Crafting Terminal Droid operator has requested you create a single unit of Power Core. You can use any fabrication terminal to make the item. You will find the necessary resources down on the maintenance level.")
                 .AddCollectItemObjective("power_core", 1)
-
-                .AddState()
-                .SetStateJournalText("Speak to the Crafting Terminal Droid operator for your reward.")
-
-                .AddGoldReward(50)
-                .AddKeyItemReward(KeyItemType.CraftingTerminalDroidOperatorsWorkReceipt)
-
-                .OnAcceptAction((player, sourceObject) =>
-                {
-                    KeyItem.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
-                })
-                .OnCompleteAction((player, sourceObject) =>
-                {
-                    KeyItem.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
-                });
-        }
-        private static void SuppliesArmorsmith(QuestBuilder builder)
-        {
-            builder.Create("cz220_armorsmith", "CZ-220 Supplies - Armorsmith")
-
-                .AddState()
-                .SetStateJournalText("The Crafting Terminal Droid operator has requested you create a single unit of Fiberplast Padding. You can use any armorsmith terminal to make the item. You will find the necessary resources down on the maintenance level.")
-                .AddCollectItemObjective("padding_fiber", 1)
 
                 .AddState()
                 .SetStateJournalText("Speak to the Crafting Terminal Droid operator for your reward.")

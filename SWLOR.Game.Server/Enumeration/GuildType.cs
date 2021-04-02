@@ -10,10 +10,8 @@ namespace SWLOR.Game.Server.Enumeration
         HuntersGuild = 1,
         [Guild("Engineering Guild", true)]
         EngineeringGuild = 2,
-        [Guild("Weaponsmith Guild", true)]
-        WeaponsmithGuild = 3,
-        [Guild("Armorsmith Guild", true)]
-        ArmorsmithGuild = 4
+        [Guild("Smithery Guild", true)]
+        SmitheryGuild = 3
     }
 
     public class GuildAttribute : Attribute

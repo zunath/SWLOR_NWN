@@ -23,7 +23,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             CapProficiency(builder);
             GloveProficiency(builder);
             BootProficiency(builder);
-            LightShieldProficiency(builder);
 
             return builder.Build();
         }
@@ -310,37 +309,37 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void HeavyShieldProficiency(PerkBuilder builder)
         {
-            builder.Create(PerkCategoryType.ArmorHeavy, PerkType.HeavyShields)
-                .Name("Heavy Shield Proficiency")
+            builder.Create(PerkCategoryType.ArmorHeavy, PerkType.Shields)
+                .Name("Shield Proficiency")
 
                 .AddPerkLevel()
-                .Description("Grants the ability to equip tier 1 Heavy Shields")
+                .Description("Grants the ability to equip tier 1 Shields")
                 .Price(2)
-                .GrantsFeat(Feat.HeavyShieldProficiency1)
+                .GrantsFeat(Feat.ShieldProficiency1)
 
                 .AddPerkLevel()
-                .Description("Grants the ability to equip tier 2 Heavy Shields")
+                .Description("Grants the ability to equip tier 2 Shields")
                 .Price(2)
                 .RequirementSkill(SkillType.Armor, 10)
-                .GrantsFeat(Feat.HeavyShieldProficiency2)
+                .GrantsFeat(Feat.ShieldProficiency2)
 
                 .AddPerkLevel()
-                .Description("Grants the ability to equip tier 3 Heavy Shields")
+                .Description("Grants the ability to equip tier 3 Shields")
                 .Price(2)
                 .RequirementSkill(SkillType.Armor, 20)
-                .GrantsFeat(Feat.HeavyShieldProficiency3)
+                .GrantsFeat(Feat.ShieldProficiency3)
 
                 .AddPerkLevel()
-                .Description("Grants the ability to equip tier 4 Heavy Shields")
+                .Description("Grants the ability to equip tier 4 Shields")
                 .Price(2)
                 .RequirementSkill(SkillType.Armor, 30)
-                .GrantsFeat(Feat.HeavyShieldProficiency4)
+                .GrantsFeat(Feat.ShieldProficiency4)
 
                 .AddPerkLevel()
-                .Description("Grants the ability to equip tier 5 Heavy Shields")
+                .Description("Grants the ability to equip tier 5 Shields")
                 .Price(2)
                 .RequirementSkill(SkillType.Armor, 40)
-                .GrantsFeat(Feat.HeavyShieldProficiency5);
+                .GrantsFeat(Feat.ShieldProficiency5);
         }
 
         private void TunicProficiency(PerkBuilder builder)
@@ -482,41 +481,5 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Armor, 40)
                 .GrantsFeat(Feat.BootProficiency5);
         }
-
-        private void LightShieldProficiency(PerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.ArmorLight, PerkType.LightShields)
-                .Name("Light Shield Proficiency")
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 1 Light Shields")
-                .Price(2)
-                .GrantsFeat(Feat.LightShieldProficiency1)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 2 Light Shields")
-                .Price(2)
-                .RequirementSkill(SkillType.Armor, 10)
-                .GrantsFeat(Feat.LightShieldProficiency2)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 3 Light Shields")
-                .Price(2)
-                .RequirementSkill(SkillType.Armor, 20)
-                .GrantsFeat(Feat.LightShieldProficiency3)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 4 Light Shields")
-                .Price(2)
-                .RequirementSkill(SkillType.Armor, 30)
-                .GrantsFeat(Feat.LightShieldProficiency4)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 5 Light Shields")
-                .Price(2)
-                .RequirementSkill(SkillType.Armor, 40)
-                .GrantsFeat(Feat.LightShieldProficiency5);
-        }
-
     }
 }

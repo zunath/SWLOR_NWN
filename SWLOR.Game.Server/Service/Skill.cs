@@ -13,17 +13,7 @@ namespace SWLOR.Game.Server.Service
         /// This is the maximum number of skill points a single character can have at any time.
         /// </summary>
         public const int SkillCap = 300;
-
-        /// <summary>
-        /// This determines how much of a primary stat is granted to a player when a skill levels up.
-        /// </summary>
-        public const float PrimaryStatIncrease = 0.1f;
-
-        /// <summary>
-        /// This determines how much of a secondary stat is granted to a player when a skill levels up.
-        /// </summary>
-        public const float SecondaryStatIncrease = 0.1f;
-
+        
         /// <summary>
         /// Gives XP towards a specific skill to a player.
         /// </summary>
@@ -99,19 +89,6 @@ namespace SWLOR.Game.Server.Service
 
                 pcSkill.Rank++;
                 FloatingTextStringOnCreature($"Your {details.Name} skill level increased to rank {pcSkill.Rank}!", player, false);
-
-                // Apply primary/secondary stat increases if applicable to this skill.
-                if (details.PrimaryStat != AbilityType.Invalid)
-                {
-                    dbPlayer.SkillAdjustedStats[details.PrimaryStat] += PrimaryStatIncrease;
-                    Stat.ApplyPlayerStat(dbPlayer, player, details.PrimaryStat);
-                }
-
-                if (details.SecondaryStat != AbilityType.Invalid)
-                {
-                    dbPlayer.SkillAdjustedStats[details.SecondaryStat] += SecondaryStatIncrease;
-                    Stat.ApplyPlayerStat(dbPlayer, player, details.SecondaryStat);
-                }
 
                 requiredXP = GetRequiredXP(pcSkill.Rank);
                 if (pcSkill.Rank >= details.MaxRank && pcSkill.XP >= requiredXP)
@@ -224,9 +201,6 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.Skills[decaySkill.Key].Rank = decaySkill.Value.Rank;
                 dbPlayer.Skills[decaySkill.Key].XP = decaySkill.Value.XP;
             }
-
-            // Perform a full recalc on the player's stats 
-            Stat.RecalculateAllPlayerStats(player, dbPlayer);
 
             // Save all changes made.
             DB.Set(playerId, dbPlayer);

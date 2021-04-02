@@ -116,8 +116,8 @@ namespace SWLOR.Game.Server.Feature
 
         private static IEnumerable<uint> SpawnLoot(uint creature, string lootTableName, int chance, int attempts)
         {
-            var gilfinderLevel = GetLocalInt(creature, "CREDITFINDER_LEVEL");
-            var gilPercentIncrease = gilfinderLevel * 0.2f;
+            var creditFinderLevel = GetLocalInt(creature, "CREDITFINDER_LEVEL");
+            var creditPercentIncrease = creditFinderLevel * 0.2f;
             var treasureHunterLevel = GetLocalInt(creature, "TREASURE_HUNTER_LEVEL");
 
             var table = GetLootTableByName(lootTableName);
@@ -128,10 +128,10 @@ namespace SWLOR.Game.Server.Feature
                 var item = table.GetRandomItem(treasureHunterLevel);
                 var quantity = Random.Next(item.MaxQuantity) + 1;
 
-                // Gilfinder perk - Increase the quantity of gold found.
+                // CreditFinder perk - Increase the quantity of gold found.
                 if (item.Resref == "nw_it_gold001")
                 {
-                    quantity += (int)(quantity * gilPercentIncrease);
+                    quantity += (int)(quantity * creditPercentIncrease);
                 }
 
                 yield return CreateItemOnObject(item.Resref, creature, quantity);
@@ -221,15 +221,15 @@ namespace SWLOR.Game.Server.Feature
             var target = GetSpellTargetObject();
             if (GetIsPC(target) || GetIsDM(target)) return;
 
-            var currentGilfinder = GetLocalInt(target, "CREDITFINDER_LEVEL");
+            var currentCreditFinder = GetLocalInt(target, "CREDITFINDER_LEVEL");
             var currentTreasureHunter = GetLocalInt(target, "TREASURE_HUNTER_LEVEL");
 
-            var effectiveGilfinderLevel = Perk.GetEffectivePerkLevel(player, PerkType.CreditFinder);
+            var effectiveCreditFinderLevel = Perk.GetEffectivePerkLevel(player, PerkType.CreditFinder);
             var effectiveTreasureHunterLevel = Perk.GetEffectivePerkLevel(player, PerkType.TreasureHunter);
 
-            if (effectiveGilfinderLevel > currentGilfinder)
+            if (effectiveCreditFinderLevel > currentCreditFinder)
             {
-                SetLocalInt(target, "CREDITFINDER_LEVEL", effectiveGilfinderLevel);
+                SetLocalInt(target, "CREDITFINDER_LEVEL", effectiveCreditFinderLevel);
             }
 
             if (effectiveTreasureHunterLevel > currentTreasureHunter)

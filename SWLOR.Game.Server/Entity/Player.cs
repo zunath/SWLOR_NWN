@@ -23,15 +23,6 @@ namespace SWLOR.Game.Server.Entity
                 {AbilityType.Intelligence, 0},
                 {AbilityType.Wisdom, 0}
             };
-            SkillAdjustedStats = new Dictionary<AbilityType, float>
-            {
-                {AbilityType.Constitution, 0f},
-                {AbilityType.Strength, 0f},
-                {AbilityType.Charisma, 0f},
-                {AbilityType.Dexterity, 0f},
-                {AbilityType.Intelligence, 0f},
-                {AbilityType.Wisdom, 0f}
-            };
             ImplantAdjustedStats = new Dictionary<AbilityType, int>
             {
                 {AbilityType.Constitution, 0},
@@ -106,7 +97,6 @@ namespace SWLOR.Game.Server.Entity
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }
-        public Dictionary<AbilityType, float> SkillAdjustedStats { get; set; }
         public Dictionary<AbilityType, int> ImplantAdjustedStats { get; set; }
         public RoleplayProgress RoleplayProgress { get; set; }
         public Dictionary<string, List<MapPin>> MapPins { get; set; }

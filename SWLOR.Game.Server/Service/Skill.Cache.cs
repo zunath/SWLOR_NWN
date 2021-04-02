@@ -30,9 +30,6 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<SkillCategoryType, List<SkillType>> _activeSkillsByCategory = new Dictionary<SkillCategoryType, List<SkillType>>();
         private static readonly Dictionary<SkillType, SkillAttribute> _activeSkillsContributingToCap = new Dictionary<SkillType, SkillAttribute>();
 
-        // Skills which have primary and/or secondary stat increases
-        private static readonly Dictionary<SkillType, SkillAttribute> _skillsWithAttributeIncreases = new Dictionary<SkillType, SkillAttribute>();
-
         /// <summary>
         /// When the module loads, skills and categories are organized into dictionaries for quick look-ups later on.
         /// </summary>
@@ -96,12 +93,6 @@ namespace SWLOR.Game.Server.Service
                 if (skillDetail.IsActive && categoryDetail.IsActive)
                 {
                     _activeCategories[skillDetail.Category] = categoryDetail;
-                }
-
-                // Add to the attribute cache if skill has a primary and/or secondary attribute increase.
-                if (skillDetail.PrimaryStat != AbilityType.Invalid || skillDetail.SecondaryStat != AbilityType.Invalid)
-                {
-                    _skillsWithAttributeIncreases[skillType] = skillDetail;
                 }
 
                 // Add to the skills by category cache.
@@ -222,17 +213,6 @@ namespace SWLOR.Game.Server.Service
         public static SkillCategoryAttribute GetSkillCategoryDetails(SkillCategoryType category)
         {
             return _allCategories[category];
-        }
-
-        /// <summary>
-        /// Retrieves all of the skills which have a primary and/or secondary attribute to increase.
-        /// Note that you still need to check if either one is invalid because it's possible the skill is configured
-        /// for one and not the other.
-        /// </summary>
-        /// <returns>A dictionary containing all of the skills which increase primary and/or secondary stats.</returns>
-        public static Dictionary<SkillType, SkillAttribute> GetAllSkillsWhichIncreaseStats()
-        {
-            return _skillsWithAttributeIncreases.ToDictionary(x => x.Key, y => y.Value);
         }
     }
 }

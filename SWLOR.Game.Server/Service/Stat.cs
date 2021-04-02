@@ -436,66 +436,8 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (ability == AbilityType.Invalid) return;
 
-            var totalStat = (int)(entity.BaseStats[ability] + entity.SkillAdjustedStats[ability] + entity.ImplantAdjustedStats[ability]);
+            var totalStat = entity.BaseStats[ability] + entity.ImplantAdjustedStats[ability];
             Creature.SetRawAbilityScore(player, ability, totalStat);
-        }
-
-        /// <summary>
-        /// This will manually recalculate all stats.
-        /// This should be used sparingly because it can be a heavy call.
-        /// This method will not persist the changes so be sure your call DB.Set after calling this.
-        /// </summary>
-        public static void RecalculateAllPlayerStats(uint player, Player dbPlayer)
-        {
-            // Reset all adjusted stat values.
-            foreach (var adjustedStat in dbPlayer.SkillAdjustedStats)
-            {
-                dbPlayer.SkillAdjustedStats[adjustedStat.Key] = 0.0f;
-            }
-
-            // Apply adjusted stat increases based on the player's skill ranks.
-            // We use a pre-filtered list of skills for this to cut down on the number of iterations.
-            var skills = Skill.GetAllSkillsWhichIncreaseStats();
-            foreach (var (type, value) in skills)
-            {
-                var primaryIncrease = dbPlayer.Skills[type].Rank * Skill.PrimaryStatIncrease;
-                var secondaryIncrease = dbPlayer.Skills[type].Rank * Skill.SecondaryStatIncrease;
-
-                if (value.PrimaryStat == AbilityType.Strength)
-                    dbPlayer.SkillAdjustedStats[AbilityType.Strength] += primaryIncrease;
-                if (value.PrimaryStat == AbilityType.Dexterity)
-                    dbPlayer.SkillAdjustedStats[AbilityType.Dexterity] += primaryIncrease;
-                if (value.PrimaryStat == AbilityType.Constitution)
-                    dbPlayer.SkillAdjustedStats[AbilityType.Constitution] += primaryIncrease;
-                if (value.PrimaryStat == AbilityType.Wisdom)
-                    dbPlayer.SkillAdjustedStats[AbilityType.Wisdom] += primaryIncrease;
-                if (value.PrimaryStat == AbilityType.Intelligence)
-                    dbPlayer.SkillAdjustedStats[AbilityType.Intelligence] += primaryIncrease;
-                if (value.PrimaryStat == AbilityType.Charisma)
-                    dbPlayer.SkillAdjustedStats[AbilityType.Charisma] += primaryIncrease;
-
-                if (value.SecondaryStat == AbilityType.Strength)
-                    dbPlayer.SkillAdjustedStats[AbilityType.Strength] += secondaryIncrease;
-                if (value.SecondaryStat == AbilityType.Dexterity)
-                    dbPlayer.SkillAdjustedStats[AbilityType.Dexterity] += secondaryIncrease;
-                if (value.SecondaryStat == AbilityType.Constitution)
-                    dbPlayer.SkillAdjustedStats[AbilityType.Constitution] += secondaryIncrease;
-                if (value.SecondaryStat == AbilityType.Wisdom)
-                    dbPlayer.SkillAdjustedStats[AbilityType.Wisdom] += secondaryIncrease;
-                if (value.SecondaryStat == AbilityType.Intelligence)
-                    dbPlayer.SkillAdjustedStats[AbilityType.Intelligence] += secondaryIncrease;
-                if (value.SecondaryStat == AbilityType.Charisma)
-                    dbPlayer.SkillAdjustedStats[AbilityType.Charisma] += secondaryIncrease;
-            }
-
-            // We now have all of the correct values. Apply them to the player object.
-            foreach (var (ability, skillAdjustedStat) in dbPlayer.SkillAdjustedStats)
-            {
-                var baseStat = dbPlayer.BaseStats[ability];
-                var implantAdjustedStat = dbPlayer.ImplantAdjustedStats[ability];
-                var totalStat = (int)(baseStat + skillAdjustedStat + implantAdjustedStat);
-                Creature.SetRawAbilityScore(player, ability, totalStat);
-            }
         }
     }
 }

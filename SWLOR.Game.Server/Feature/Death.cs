@@ -133,14 +133,18 @@ namespace SWLOR.Game.Server.Feature
             var dbPlayer = DB.Get<Player>(playerId);
             int multiplier;
 
+            // 300+
             if (dbPlayer.TotalSPAcquired >= 300)
-                multiplier = 300;
+                multiplier = 45;
+            // 200 - 299
             else if (dbPlayer.TotalSPAcquired >= 200)
-                multiplier = 200;
+                multiplier = 35;
+            // 50 - 199
             else if (dbPlayer.TotalSPAcquired >= 50)
-                multiplier = 100;
+                multiplier = 25;
+            // 0 - 49
             else
-                multiplier = 50;
+                multiplier = 15;
             
             dbPlayer.XPDebt = dbPlayer.TotalSPAcquired * multiplier;
             DB.Set(playerId, dbPlayer);

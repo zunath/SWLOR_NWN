@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service.QuestService
     {
         public int Amount { get; }
         public bool IsSelectable { get; }
-        public string MenuName => Amount + " Gil";
+        public string MenuName => Amount + " Credits";
 
         public GoldReward(int amount, bool isSelectable)
         {

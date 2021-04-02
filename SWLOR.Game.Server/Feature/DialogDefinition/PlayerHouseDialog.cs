@@ -142,11 +142,11 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 DB.Set(playerId, playerHouse);
 
                 FloatingTextStringOnCreature("You've purchased a new home!", player, false);
-                Log.Write(LogGroup.PlayerHousing, $"Player {GetName(player)} (ID = '{playerId}') bought property type {layoutDetail.Name} for {layoutDetail.Price} gil.");
+                Log.Write(LogGroup.PlayerHousing, $"Player {GetName(player)} (ID = '{playerId}') bought property type {layoutDetail.Name} for {layoutDetail.Price} credits.");
             }
 
             page.Header = ColorToken.Green("Layout: ") + layoutDetail.Name + "\n" +
-                ColorToken.Green("Price: ") + layoutDetail.Price + " gil\n" +
+                ColorToken.Green("Price: ") + layoutDetail.Price + " credits\n" +
                 ColorToken.Green("Furniture Limit: ") + layoutDetail.FurnitureLimit + " items";
 
             page.AddResponse("Preview", () =>
@@ -173,14 +173,14 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 // Is confirming purchase
                 if (model.IsConfirmingPurchase)
                 {
-                    page.AddResponse($"CONFIRM PURCHASE ({layoutDetail.Price} gil)", () =>
+                    page.AddResponse($"CONFIRM PURCHASE ({layoutDetail.Price} credits)", () =>
                     {
                         model.IsConfirmingPurchase = false;
 
                         // Need to check gold again, in case they dropped money to the ground while the conversation was open.
                         if (GetGold(player) < layoutDetail.Price)
                         {
-                            FloatingTextStringOnCreature("You do not have enough gil to purchase this home.", player, false);
+                            FloatingTextStringOnCreature("You do not have enough credits to purchase this home.", player, false);
                             return;
                         }
 
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 }
                 else
                 {
-                    page.AddResponse($"Purchase ({layoutDetail.Price} gil)", () =>
+                    page.AddResponse($"Purchase ({layoutDetail.Price} credits)", () =>
                     {
                         model.IsConfirmingPurchase = true;
                     });
@@ -212,10 +212,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var model = GetDataModel<Model>();
 
             var houseDetail = Housing.GetHouseTypeDetail(dbHouse.HouseType);
-            var gil = houseDetail.Price / 2;
+            var price = houseDetail.Price / 2;
             page.Header = ColorToken.Red("WARNING: ") + "You are about to sell your property. All items contained inside will be permanently lost!\n\n" +
                           "It is highly recommended you pick up all items and furniture inside before selling the property.\n\n" +
-                ColorToken.Green($"You will receive {gil} gil for the sale of this property. Are you sure you wish to sell it?");
+                ColorToken.Green($"You will receive {price} credits for the sale of this property. Are you sure you wish to sell it?");
 
             if (model.IsConfirmingSell)
             {
@@ -223,11 +223,11 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 {
                     DB.Delete<PlayerHouse>(playerId);
 
-                    GiveGoldToCreature(player, gil);
-                    FloatingTextStringOnCreature($"Property sold successfully for {gil} gil.", player, false);
+                    GiveGoldToCreature(player, price);
+                    FloatingTextStringOnCreature($"Property sold successfully for {price} credits.", player, false);
                     EndConversation();
 
-                    Log.Write(LogGroup.PlayerHousing, $"Player {GetName(player)} (ID = '{playerId}') sold their property for {gil} gil.");
+                    Log.Write(LogGroup.PlayerHousing, $"Player {GetName(player)} (ID = '{playerId}') sold their property for {price} credits.");
                 });
             }
             else

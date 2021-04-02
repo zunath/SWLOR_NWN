@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (GetBaseItemType(item) == BaseItem.Gold)
             {
-                CancelEvent(player, "Gil cannot be placed inside.");
+                CancelEvent(player, "Credits cannot be placed inside.");
                 return;
             }
 

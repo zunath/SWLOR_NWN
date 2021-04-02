@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             // The Till will be filled only if the player sold an item.
             if (dbPlayerStore.Till > 0)
             {
-                page.AddResponse(ColorToken.Green($"Retrieve {dbPlayerStore.Till} Gil"), () =>
+                page.AddResponse(ColorToken.Green($"Retrieve {dbPlayerStore.Till} Credits"), () =>
                 {
                     GiveGoldToCreature(player, dbPlayerStore.Till);
                     dbPlayerStore.Till = 0;
@@ -240,7 +240,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             foreach (var (itemId, item) in dbPlayerStore.ItemsForSale)
             {
-                var responseName = $"{item.StackSize}x {item.Name} [{item.Price} gil]";
+                var responseName = $"{item.StackSize}x {item.Name} [{item.Price} credits]";
 
                 page.AddResponse(responseName, () =>
                 {
@@ -305,44 +305,44 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 });
             }
 
-            page.AddResponse("Increase by 10,000 gil", () =>
+            page.AddResponse("Increase by 10,000 credits", () =>
             {
                 AdjustPrice(10000);
             });
-            page.AddResponse("Increase by 1,000 gil", () =>
+            page.AddResponse("Increase by 1,000 credits", () =>
             {
                 AdjustPrice(1000);
             });
-            page.AddResponse("Increase by 100 gil", () =>
+            page.AddResponse("Increase by 100 credits", () =>
             {
                 AdjustPrice(100);
             });
-            page.AddResponse("Increase by 10 gil", () =>
+            page.AddResponse("Increase by 10 credits", () =>
             {
                 AdjustPrice(10);
             });
-            page.AddResponse("Increase by 1 gil", () =>
+            page.AddResponse("Increase by 1 credit", () =>
             {
                 AdjustPrice(1);
             });
 
-            page.AddResponse("Decrease by 10,000 gil", () =>
+            page.AddResponse("Decrease by 10,000 credits", () =>
             {
                 AdjustPrice(-10000);
             });
-            page.AddResponse("Decrease by 1,000 gil", () =>
+            page.AddResponse("Decrease by 1,000 credits", () =>
             {
                 AdjustPrice(-1000);
             });
-            page.AddResponse("Decrease by 100 gil", () =>
+            page.AddResponse("Decrease by 100 credits", () =>
             {
                 AdjustPrice(-100);
             });
-            page.AddResponse("Decrease by 10 gil", () =>
+            page.AddResponse("Decrease by 10 credits", () =>
             {
                 AdjustPrice(-10);
             });
-            page.AddResponse("Decrease by 1 gil", () =>
+            page.AddResponse("Decrease by 1 credit", () =>
             {
                 AdjustPrice(-1);
             });
@@ -399,7 +399,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             }
 
             page.Header = ColorToken.Green("Lease Expires: ") + GetLeaseStatus() + "\n\n" +
-                $"Your store lease can be extended up to 30 days at a rate of {PricePerDay} gil per day.";
+                $"Your store lease can be extended up to 30 days at a rate of {PricePerDay} credits per day.";
 
             if (model.IsConfirmingExtendMaximum)
             {
@@ -420,14 +420,14 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             if (model.IsConfirmingExtend7Days)
             {
-                page.AddResponse($"CONFIRM EXTEND BY 7 DAYS ({PricePerDay * 7} GIL)", () =>
+                page.AddResponse($"CONFIRM EXTEND BY 7 DAYS ({PricePerDay * 7} CREDITS)", () =>
                 {
                     ExtendLease(7);
                 });
             }
             else
             {
-                page.AddResponse($"Extend by 7 days ({PricePerDay * 7} gil)", () =>
+                page.AddResponse($"Extend by 7 days ({PricePerDay * 7} credits)", () =>
                 {
                     model.IsConfirmingExtendMaximum = false;
                     model.IsConfirmingExtend7Days = true;
@@ -437,14 +437,14 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             if (model.IsConfirmingExtend1Day)
             {
-                page.AddResponse($"CONFIRM EXTEND BY 1 DAY ({PricePerDay * 1} GIL)", () =>
+                page.AddResponse($"CONFIRM EXTEND BY 1 DAY ({PricePerDay * 1} CREDITS)", () =>
                 {
                     ExtendLease(1);
                 });
             }
             else
             {
-                page.AddResponse($"Extend by 1 day ({PricePerDay * 1} gil)", () =>
+                page.AddResponse($"Extend by 1 day ({PricePerDay * 1} credits)", () =>
                 {
                     model.IsConfirmingExtendMaximum = false;
                     model.IsConfirmingExtend7Days = false;

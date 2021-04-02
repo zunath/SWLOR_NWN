@@ -253,7 +253,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a player buys an item, deposit that gil into their store till and remove the item from the database.
+        /// When a player buys an item, deposit that credits into their store till and remove the item from the database.
         /// </summary>
         [NWNEventHandler("store_buy_aft")]
         public static void PlayerShopBuyItem()
@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Service
             var itemId = GetObjectUUID(item);
 
             // Audit the purchase.
-            Log.Write(LogGroup.PlayerMarket, $"{GetName(buyer)} purchased item '{GetName(item)}' x{GetItemStackSize(item)} for {price} gil from {dbPlayer.Name}'s store.");
+            Log.Write(LogGroup.PlayerMarket, $"{GetName(buyer)} purchased item '{GetName(item)}' x{GetItemStackSize(item)} for {price} credits from {dbPlayer.Name}'s store.");
 
             var taxed = price - (int)(price * dbPlayerStore.TaxRate);
             if (taxed < 1)

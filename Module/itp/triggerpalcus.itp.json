@@ -33,6 +33,17 @@
                 "type": "resref",
                 "value": "anti_spawn_trigg"
               }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Rest Trigger"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "rest_trigger"
+              }
             }
           ]
         },

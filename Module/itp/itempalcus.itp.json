@@ -5208,6 +5208,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ancient Wood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ancient_wood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Aracia Wood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aracia_wood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Arvvina"
                     },
                     "RESREF": {
@@ -6022,6 +6044,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Fine Wood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fine_wood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Flawed Blue Crystal"
                     },
                     "RESREF": {
@@ -6588,6 +6621,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "hyperdrive"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hyphae Wood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hyphae_wood"
                     }
                   },
                   {
@@ -9261,6 +9305,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "womprattooth"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wood"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wood"
                     }
                   },
                   {

@@ -1275,15 +1275,15 @@
         "__struct_id": 1,
         "Tile_AnimLoop1": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tile_AnimLoop2": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tile_AnimLoop3": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tile_Height": {
           "type": "int",
@@ -1291,7 +1291,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 19
+          "value": 2178
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -1709,7 +1709,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 11
+    "value": 12
   },
   "Width": {
     "type": "int",

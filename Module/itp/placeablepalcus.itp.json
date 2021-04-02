@@ -75177,17 +75177,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Armorsmith Bench"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "armorsmith_bench"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Barrel"
                     },
                     "RESREF": {
@@ -75243,22 +75232,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Desk"
+                      "value": "Cybertech Terminal"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "elm_barrel004"
+                      "value": "cybertech_termin"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Engineering Bench"
+                      "value": "Desk"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "engineer_bench"
+                      "value": "elm_barrel004"
                     }
                   },
                   {
@@ -75309,11 +75298,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Weaponsmith Bench"
+                      "value": "Smithery Bench"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "weapon_bench"
+                      "value": "smithery_bench"
                     }
                   }
                 ]

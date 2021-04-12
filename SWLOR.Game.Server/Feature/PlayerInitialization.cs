@@ -278,7 +278,10 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="dbPlayer">The database entity</param>
         private static void AssignRacialAppearance(uint player, Player dbPlayer)
         {
-            Race.SetDefaultRaceAppearance(player);
+            DelayCommand(0.1f, () =>
+            {
+                Race.SetDefaultRaceAppearance(player);
+            });
             dbPlayer.OriginalAppearanceType = GetAppearanceType(player);
         }
 

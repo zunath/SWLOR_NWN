@@ -15886,6 +15886,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "lightsaber"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "NPC Lightsaber (Keyan)"
                           },
                           "RESREF": {

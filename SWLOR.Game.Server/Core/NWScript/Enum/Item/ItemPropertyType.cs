@@ -92,8 +92,6 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         FPBonus = 91,
         STMBonus = 92,
         UseLimitationPerk = 100,
-        Durability = 108,
-        MaxDurability = 109,
         ArmorClass = 117,
     }
 }

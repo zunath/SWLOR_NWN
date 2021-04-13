@@ -134,6 +134,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             builder.Create(itemTag)
                 .TargetsLocation()
                 .UserFacesTarget()
+                .ReducesItemCharge()
                 .MaxDistance((user, item, target, location) =>
                 {
                     return 10f + 2f * GetAbilityModifier(AbilityType.Strength, user);
@@ -206,12 +207,6 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                             }
                         });
                     });
-                    
-                    // Decay the grenade item by 1 point.
-                    if (GetObjectType(user) == ObjectType.Creature)
-                    {
-                        Durability.RunItemDecay(user, item, 1.0f);
-                    }
                 });
         }
 

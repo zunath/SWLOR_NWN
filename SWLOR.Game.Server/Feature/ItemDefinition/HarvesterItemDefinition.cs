@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .PlaysAnimation(Animation.LoopingGetMid)
                 .UserFacesTarget()
                 .MaxDistance(3.0f)
+                .ReducesItemCharge()
                 .ValidationAction((user, item, target, location) =>
                 {
                     var perkLevel = Perk.GetEffectivePerkLevel(user, PerkType.Harvesting);
@@ -87,8 +88,6 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     {
                         SetLocalInt(target, "RESOURCE_COUNT", resourceCount);
                     }
-
-                    Durability.RunItemDecay(user, item, 0.01f);
                 });
         }
     }

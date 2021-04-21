@@ -132,7 +132,7 @@
     "id": 12835,
     "type": "cexolocstring",
     "value": {
-      "0": "Leather Tunic I"
+      "0": "Tunic I"
     }
   },
   "Metal1Color": {
@@ -162,11 +162,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 42
+          "value": 41
         },
         "CostValue": {
           "type": "word",
-          "value": 8
+          "value": 3
         },
         "Param1": {
           "type": "byte",
@@ -178,38 +178,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 109
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 33
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 5
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 100
+          "value": 117
         },
         "Subtype": {
           "type": "word",

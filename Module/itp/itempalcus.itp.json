@@ -845,11 +845,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Basic Battlemaster Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bb_helm_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Channeler Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cn_cap_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Duelist Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "du_helm_b"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Basic Force Helmet"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "helmet_fb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Basic Gunslinger Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gn_cap_b"
                     }
                   },
                   {
@@ -872,6 +916,94 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "helmet_lb"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Battlemaster Helmet I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bb_helm_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Battlemaster Helmet II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bb_helm_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Battlemaster Helmet III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bb_helm_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Battlemaster Helmet IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bb_helm_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Channeler Cap I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cn_cap_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Channeler Cap II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cn_cap_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Channeler Cap III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cn_cap_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Channeler Cap IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cn_cap_4"
                     }
                   },
                   {
@@ -916,6 +1048,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ter_vectenh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Duelist Helmet I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "du_helm_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Duelist Helmet II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "du_helm_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Duelist Helmet III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "du_helm_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Duelist Helmet IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "du_helm_4"
                     }
                   },
                   {
@@ -971,6 +1147,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "helmet_f4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gunslinger Cap I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gn_cap_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gunslinger Cap II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gn_cap_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gunslinger Cap III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gn_cap_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gunslinger Cap IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gn_cap_4"
                     }
                   },
                   {
@@ -1356,22 +1576,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Basic Leather Tunic"
+                      "value": "Basic Leather Tunic Variant B"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "leather_tunic_b"
+                      "value": "leather_tunic002"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Basic Leather Tunic Variant B"
+                      "value": "Basic Tunic"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "leather_tunic002"
+                      "value": "leather_tunic_b"
                     }
                   },
                   {
@@ -1532,50 +1752,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Leather Tunic I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "leather_tunic_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leather Tunic II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "leather_tunic_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leather Tunic III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "leather_tunic_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leather Tunic IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "leather_tunic_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Prima's Garbs"
                     },
                     "RESREF": {
@@ -1636,6 +1812,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sithrobe_female"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunic I"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "leather_tunic_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunic II"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "leather_tunic_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunic III"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "leather_tunic_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tunic IV"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "leather_tunic_4"
                     }
                   },
                   {
@@ -4609,11 +4829,55 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Basic Battlemaster Legging"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bm_legging_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Basic Channeler Boot"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cn_boot_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Basic Duelist Legging"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "du_legging_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Basic Force Boots"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "force_boots_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Basic Gunslinger Boot"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gn_boot_b"
                           }
                         },
                         {
@@ -4636,6 +4900,138 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "light_boots_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Battlemaster Legging I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bm_legging_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Battlemaster Legging II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bm_legging_002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Battlemaster Legging III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bm_legging_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Battlemaster Legging IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bm_legging_4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Channeler Boot I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cn_boot_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Channeler Boot II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cn_boot_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Channeler Boot III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cn_boot_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Channeler Boot IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cn_boot_4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Duelist Legging I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "du_legging_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Duelist Legging II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "du_legging_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Duelist Legging III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "du_legging_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Duelist Legging IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "du_legging_4"
                           }
                         },
                         {
@@ -4680,6 +5076,50 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "force_boots_4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gunslinger Boot I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gn_boot_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gunslinger Boot II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gn_boot_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gunslinger Boot III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gn_boot_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gunslinger Boot IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gn_boot_4"
                           }
                         },
                         {
@@ -4790,6 +5230,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Basic Battlemaster Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bm_bracer_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Basic Duelist Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "du_bracer_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Basic Force Bracer"
                           },
                           "RESREF": {
@@ -4817,6 +5279,94 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "bracer_light_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Battlemaster Bracer I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bm_bracer_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Battlemaster Bracer II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bm_bracer_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Battlemaster Bracer III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bm_bracer_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Battlemaster Bracer IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bm_bracer_4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Duelist Bracer I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "du_bracer_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Duelist Bracer II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "du_bracer_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Duelist Bracer III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "du_bracer_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Duelist Bracer IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "du_bracer_4"
                           }
                         },
                         {
@@ -5020,6 +5570,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Basic Channeler Glove"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cn_glove_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Basic Gunslinger Glove"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gn_glove_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Basic Power Glove"
                           },
                           "RESREF": {
@@ -5042,11 +5614,99 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Channeler Glove I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cn_glove_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Channeler Glove II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cn_glove_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Channeler Glove III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cn_glove_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Channeler Glove IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cn_glove_4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Fist"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "fist"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gunslinger Glove I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gn_glove_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gunslinger Glove II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gn_glove_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gunslinger Glove III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gn_glove_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gunslinger Glove IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "gn_glove_4"
                           }
                         },
                         {

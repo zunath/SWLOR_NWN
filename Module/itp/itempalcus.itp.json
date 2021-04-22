@@ -3664,55 +3664,55 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Large Shield"
+                            "value": "Basic Shield"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "large_shield_b"
+                            "value": "shield_b"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Large Shield I"
+                            "value": "Shield I"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "large_shield_1"
+                            "value": "shield_1"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Large Shield II"
+                            "value": "Shield II"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "large_shield_2"
+                            "value": "shield_2"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Large Shield III"
+                            "value": "Shield III"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "large_shield_3"
+                            "value": "shield_3"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Large Shield IV"
+                            "value": "Shield IV"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "large_shield_4"
+                            "value": "shield_4"
                           }
                         }
                       ]
@@ -3735,77 +3735,11 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Small Shield"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "small_shield_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Byysk Shield"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "byysk_shield"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Flesheater Shield"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "small_shield_fle"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Small Shield I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "small_shield_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Small Shield II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "small_shield_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Small Shield III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "small_shield_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Small Shield IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "small_shield_4"
                           }
                         }
                       ]
@@ -3820,66 +3754,6 @@
                     "ID": {
                       "type": "byte",
                       "value": 12
-                    },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Tower Shield"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "tower_shield_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Tower Shield I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "tower_shield_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Tower Shield II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "tower_shield_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Tower Shield III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "tower_shield_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Tower Shield IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "tower_shield_4"
-                          }
-                        }
-                      ]
                     },
                     "STRREF": {
                       "type": "dword",

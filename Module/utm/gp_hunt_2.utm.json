@@ -184,7 +184,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "large_shield_1"
+                "value": "heavy_boots_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -203,7 +203,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "small_shield_1"
+                "value": "force_boots_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -222,7 +222,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "tower_shield_1"
+                "value": "light_boots_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -241,7 +241,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "heavy_boots_1"
+                "value": "powerglove_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -250,63 +250,6 @@
               "Repos_Posy": {
                 "type": "word",
                 "value": 3
-              }
-            },
-            {
-              "__struct_id": 10,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "force_boots_1"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 6
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 4
-              }
-            },
-            {
-              "__struct_id": 11,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "light_boots_1"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 2
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 5
-              }
-            },
-            {
-              "__struct_id": 12,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "powerglove_1"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 4
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 5
               }
             }
           ]

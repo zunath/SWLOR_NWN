@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 14
+    "value": 56
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 29
+    "value": 70
   },
   "Cursed": {
     "type": "byte",
@@ -30,28 +30,26 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Identified": {
     "type": "byte",
     "value": 1
   },
   "LocalizedName": {
-    "id": 179,
+    "id": 1550,
     "type": "cexolocstring",
     "value": {
-      "0": "Small Shield II"
+      "0": "Basic Shield"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 45
+    "value": 49
   },
   "PaletteID": {
     "type": "byte",
-    "value": 10
+    "value": 11
   },
   "Plot": {
     "type": "byte",
@@ -68,58 +66,27 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 42
+          "value": 0
         },
         "CostValue": {
+          "type": "word",
+          "value": 0
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
           "type": "word",
           "value": 12
         },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 109
-        },
         "Subtype": {
           "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 33
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 15
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 100
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
+          "value": 1739
         }
       }
     ]
@@ -134,10 +101,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "small_shield_2"
+    "value": "shield_b"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "small_shield_2"
+    "value": "shield_b"
   }
 }

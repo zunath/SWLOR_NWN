@@ -184,7 +184,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "large_shield_2"
+                "value": "force_belt_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -203,7 +203,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "small_shield_2"
+                "value": "heavy_belt_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -222,7 +222,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "tower_shield_2"
+                "value": "light_belt_1"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -241,11 +241,11 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "force_belt_1"
+                "value": "force_boots_2"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 8
+                "value": 4
               },
               "Repos_Posy": {
                 "type": "word",
@@ -260,7 +260,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "heavy_belt_1"
+                "value": "heavy_boots_2"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -268,7 +268,7 @@
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 4
+                "value": 3
               }
             },
             {
@@ -279,7 +279,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "light_belt_1"
+                "value": "light_boots_2"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -287,7 +287,7 @@
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 4
+                "value": 3
               }
             },
             {
@@ -298,72 +298,15 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "force_boots_2"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 2
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 5
-              }
-            },
-            {
-              "__struct_id": 13,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "heavy_boots_2"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 4
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 5
-              }
-            },
-            {
-              "__struct_id": 14,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "light_boots_2"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 6
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 5
-              }
-            },
-            {
-              "__struct_id": 15,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
                 "value": "powerglove_2"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 8
+                "value": 0
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 5
+                "value": 4
               }
             }
           ]

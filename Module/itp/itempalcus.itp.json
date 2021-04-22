@@ -10492,6 +10492,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Basic Quickness Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "qck_ring_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Byysk Berserker Ring"
                           },
                           "RESREF": {
@@ -10640,6 +10651,50 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "prism_ring_t"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Quickness Ring I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "qck_ring_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Quickness Ring II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "qck_ring_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Quickness Ring III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "qck_ring_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Quickness Ring IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "qck_ring_4"
                           }
                         }
                       ]

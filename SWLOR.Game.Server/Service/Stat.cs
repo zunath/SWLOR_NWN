@@ -439,5 +439,16 @@ namespace SWLOR.Game.Server.Service
             var totalStat = entity.BaseStats[ability] + entity.ImplantStats.Attributes[ability];
             Creature.SetRawAbilityScore(player, ability, totalStat);
         }
+
+        /// <summary>
+        /// Modifies the ability recast reduction of a player by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The player entity</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustPlayerRecastReduction(Player entity, int adjustBy)
+        {
+            entity.AbilityRecastReduction += adjustBy;
+        }
     }
 }

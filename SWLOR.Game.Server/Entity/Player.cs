@@ -86,6 +86,7 @@ namespace SWLOR.Game.Server.Entity
         public Guid SelectedShipId { get; set; }
         public AppearanceType OriginalAppearanceType { get; set; }
         public float MovementRate { get; set; }
+        public int AbilityRecastReduction { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public PlayerImplantStats ImplantStats { get; set; }

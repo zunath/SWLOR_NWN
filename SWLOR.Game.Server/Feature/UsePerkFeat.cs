@@ -319,11 +319,11 @@ namespace SWLOR.Game.Server.Feature
         {
             if (!GetIsObjectValid(activator) || group == RecastGroup.Invalid || delaySeconds <= 0.0f) return;
 
-            var recastDate = DateTime.UtcNow.AddSeconds(delaySeconds);
 
             // NPCs and DM-possessed NPCs
             if (!GetIsPC(activator) || GetIsDMPossessed(activator))
             {
+                var recastDate = DateTime.UtcNow.AddSeconds(delaySeconds);
                 var recastDateString = recastDate.ToString("yyyy-MM-dd hh:mm:ss");
                 SetLocalString(activator, $"ABILITY_RECAST_ID_{(int)group}", recastDateString);
             }
@@ -332,6 +332,14 @@ namespace SWLOR.Game.Server.Feature
             {
                 var playerId = GetObjectUUID(activator);
                 var dbPlayer = DB.Get<Entity.Player>(playerId);
+
+                var recastPercentage = dbPlayer.AbilityRecastReduction * 0.01f;
+                if (recastPercentage > 0.5f)
+                    recastPercentage = 0.5f;
+
+                delaySeconds -= delaySeconds * recastPercentage;
+
+                var recastDate = DateTime.UtcNow.AddSeconds(delaySeconds);
                 dbPlayer.RecastTimes[group] = recastDate;
 
                 DB.Set(playerId, dbPlayer);

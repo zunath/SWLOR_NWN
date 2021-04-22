@@ -93,5 +93,6 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         STMBonus = 92,
         UseLimitationPerk = 100,
         ArmorClass = 117,
+        AbilityRecastReduction = 118,
     }
 }

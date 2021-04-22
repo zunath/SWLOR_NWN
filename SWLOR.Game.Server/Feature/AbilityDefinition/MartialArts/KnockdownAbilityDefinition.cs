@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
     {
         private readonly AbilityBuilder _builder = new AbilityBuilder();
 
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             Knockdown();
 
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 
         private void Knockdown()
         {
-            _builder.Create(Feat.Knockdown, PerkType.Knockdown)
+            _builder.Create(FeatType.Knockdown, PerkType.Knockdown)
                 .Name("Knockdown")
                 .HasRecastDelay(RecastGroup.Knockdown, 60f)
                 .IsWeaponAbility()

@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var activator = OBJECT_SELF;
             var target = StringToObject(Events.GetEventData("TARGET_OBJECT_ID"));
-            var feat = (Feat)Convert.ToInt32(Events.GetEventData("FEAT_ID"));
+            var feat = (FeatType)Convert.ToInt32(Events.GetEventData("FEAT_ID"));
             if (!Ability.IsFeatRegistered(feat)) return;
             var ability = Ability.GetAbilityDetail(feat);
             
@@ -233,7 +233,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="ability">The ability details</param>
         /// <param name="feat">The feat being activated</param>
         /// <param name="effectivePerkLevel">The activator's effective perk level</param>
-        private static void QueueWeaponAbility(uint activator, AbilityDetail ability, Feat feat, int effectivePerkLevel)
+        private static void QueueWeaponAbility(uint activator, AbilityDetail ability, FeatType feat, int effectivePerkLevel)
         {
             var abilityId = Guid.NewGuid().ToString();
             // Assign local variables which will be picked up on the next weapon OnHit event by this player.
@@ -279,7 +279,7 @@ namespace SWLOR.Game.Server.Feature
             // If this method was triggered by our own armor (from getting hit), return. 
             if (GetBaseItemType(item) == BaseItem.Armor) return;
 
-            var activeWeaponAbility = (Feat)GetLocalInt(activator, ActiveAbilityName);
+            var activeWeaponAbility = (FeatType)GetLocalInt(activator, ActiveAbilityName);
             var activeAbilityEffectivePerkLevel = GetLocalInt(activator, ActiveAbilityEffectivePerkLevelName);
 
             if (!Ability.IsFeatRegistered(activeWeaponAbility)) return;

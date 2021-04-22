@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ForceStunAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             ForceStun1(builder);
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceStun1(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceStun1, PerkType.ForceStun)
+            builder.Create(FeatType.ForceStun1, PerkType.ForceStun)
                 .Name("Force Stun I")
                 .HasRecastDelay(RecastGroup.ForceStun, 60f * 5f)
                 .HasActivationDelay(2.0f)
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceStun2(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceStun2, PerkType.ForceStun)
+            builder.Create(FeatType.ForceStun2, PerkType.ForceStun)
                 .Name("Force Stun II")
                 .HasRecastDelay(RecastGroup.ForceStun, 60f * 5f)
                 .HasActivationDelay(2.0f)
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceStun3(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceStun3, PerkType.ForceStun)
+            builder.Create(FeatType.ForceStun3, PerkType.ForceStun)
                 .Name("Force Stun III")
                 .HasRecastDelay(RecastGroup.ForceStun, 60f * 5f)
                 .HasActivationDelay(2.0f)

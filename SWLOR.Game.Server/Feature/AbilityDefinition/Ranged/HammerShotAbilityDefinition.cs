@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
     public class HammerShotAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             HammerShot1(builder);
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
         private static void HammerShot1(AbilityBuilder builder)
         {
-            builder.Create(Feat.HammerShot1, PerkType.HammerShot)
+            builder.Create(FeatType.HammerShot1, PerkType.HammerShot)
                 .Name("Hammer Shot I")
                 .HasRecastDelay(RecastGroup.HammerShot, 60f)
                 .HasActivationDelay(2.0f)
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         }
         private static void HammerShot2(AbilityBuilder builder)
         {
-            builder.Create(Feat.HammerShot2, PerkType.HammerShot)
+            builder.Create(FeatType.HammerShot2, PerkType.HammerShot)
                 .Name("Hammer Shot II")
                 .HasRecastDelay(RecastGroup.HammerShot, 60f)
                 .HasActivationDelay(2.0f)
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         }
         private static void HammerShot3(AbilityBuilder builder)
         {
-            builder.Create(Feat.HammerShot3, PerkType.HammerShot)
+            builder.Create(FeatType.HammerShot3, PerkType.HammerShot)
                 .Name("Hammer Shot III")
                 .HasRecastDelay(RecastGroup.HammerShot, 60f)
                 .HasActivationDelay(2.0f)

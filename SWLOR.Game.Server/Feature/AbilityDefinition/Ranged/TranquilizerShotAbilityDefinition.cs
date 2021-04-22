@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
     public class TranquilizerShotAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             TranquilizerShot1(builder);
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
         private static void TranquilizerShot1(AbilityBuilder builder)
         {
-            builder.Create(Feat.TranquilizerShot1, PerkType.TranquilizerShot)
+            builder.Create(FeatType.TranquilizerShot1, PerkType.TranquilizerShot)
                 .Name("Tranquilizer Shot I")
                 .HasRecastDelay(RecastGroup.TranquilizerShot, 30f)
                 .HasActivationDelay(2.0f)
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         }
         private static void TranquilizerShot2(AbilityBuilder builder)
         {
-            builder.Create(Feat.TranquilizerShot2, PerkType.TranquilizerShot)
+            builder.Create(FeatType.TranquilizerShot2, PerkType.TranquilizerShot)
                 .Name("Tranquilizer Shot II")
                 .HasRecastDelay(RecastGroup.TranquilizerShot, 30f)
                 .HasActivationDelay(2.0f)
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         }
         private static void TranquilizerShot3(AbilityBuilder builder)
         {
-            builder.Create(Feat.TranquilizerShot3, PerkType.TranquilizerShot)
+            builder.Create(FeatType.TranquilizerShot3, PerkType.TranquilizerShot)
                 .Name("Tranquilizer Shot III")
                 .HasRecastDelay(RecastGroup.TranquilizerShot, 30f)
                 .HasActivationDelay(2.0f)

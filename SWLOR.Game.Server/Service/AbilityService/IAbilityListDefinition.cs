@@ -5,6 +5,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
 {
     public interface IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities();
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities();
     }
 }

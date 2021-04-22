@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
     public class PiercingTossAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             PiercingToss1(builder);
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
         private static void PiercingToss1(AbilityBuilder builder)
         {
-            builder.Create(Feat.PiercingToss1, PerkType.PiercingToss)
+            builder.Create(FeatType.PiercingToss1, PerkType.PiercingToss)
                 .Name("Piercing Toss I")
                 .HasRecastDelay(RecastGroup.PiercingToss, 60f)
                 .HasActivationDelay(2.0f)
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         }
         private static void PiercingToss2(AbilityBuilder builder)
         {
-            builder.Create(Feat.PiercingToss2, PerkType.PiercingToss)
+            builder.Create(FeatType.PiercingToss2, PerkType.PiercingToss)
                 .Name("Piercing Toss II")
                 .HasRecastDelay(RecastGroup.PiercingToss, 60f)
                 .HasActivationDelay(2.0f)
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         }
         private static void PiercingToss3(AbilityBuilder builder)
         {
-            builder.Create(Feat.PiercingToss3, PerkType.PiercingToss)
+            builder.Create(FeatType.PiercingToss3, PerkType.PiercingToss)
                 .Name("Piercing Toss III")
                 .HasRecastDelay(RecastGroup.PiercingToss, 60f)
                 .HasActivationDelay(2.0f)

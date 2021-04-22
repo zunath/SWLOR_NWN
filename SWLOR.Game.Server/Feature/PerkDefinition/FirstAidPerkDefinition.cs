@@ -28,27 +28,27 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Increases the range you can use recovery items and stim packs by 1 meter.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 15)
-                .GrantsFeat(Feat.RangedHealing1)
+                .GrantsFeat(FeatType.RangedHealing1)
 
                 .AddPerkLevel()
                 .Description("Increases the range you can use recovery items and stim packs by 2 meter.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 25)
-                .GrantsFeat(Feat.RangedHealing2)
+                .GrantsFeat(FeatType.RangedHealing2)
 
                 .AddPerkLevel()
                 .Description("Increases the range you can use recovery items and stim packs by 3 meter.")
                 .Price(5)
                 .RequirementSkill(SkillType.FirstAid, 35)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.RangedHealing3)
+                .GrantsFeat(FeatType.RangedHealing3)
 
                 .AddPerkLevel()
                 .Description("Increases the range you can use recovery items and stim packs by 4 meter.")
                 .Price(6)
                 .RequirementSkill(SkillType.FirstAid, 45)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.RangedHealing4);
+                .GrantsFeat(FeatType.RangedHealing4);
         }
 
         private void FrugalMedic(PerkBuilder builder)
@@ -60,21 +60,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("10% chance to use a recovery item or stim pack without consuming a charge.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 10)
-                .GrantsFeat(Feat.FrugalMedic1)
+                .GrantsFeat(FeatType.FrugalMedic1)
 
                 .AddPerkLevel()
                 .Description("20% chance to use a recovery item or stim pack without consuming a charge.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 25)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.FrugalMedic2)
+                .GrantsFeat(FeatType.FrugalMedic2)
 
                 .AddPerkLevel()
                 .Description("30% chance to use a recovery item or stim pack without consuming a charge.")
                 .Price(5)
                 .RequirementSkill(SkillType.FirstAid, 40)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.FrugalMedic3);
+                .GrantsFeat(FeatType.FrugalMedic3);
         }
 
         private void RecoveryItems(PerkBuilder builder)
@@ -85,31 +85,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Enables you to use tier 1 recovery items.")
                 .Price(1)
-                .GrantsFeat(Feat.RecoveryItems1)
+                .GrantsFeat(FeatType.RecoveryItems1)
 
                 .AddPerkLevel()
                 .Description("Enables you to use tier 2 recovery items.")
                 .Price(1)
                 .RequirementSkill(SkillType.FirstAid, 10)
-                .GrantsFeat(Feat.RecoveryItems2)
+                .GrantsFeat(FeatType.RecoveryItems2)
 
                 .AddPerkLevel()
                 .Description("Enables you to use tier 3 recovery items.")
                 .Price(2)
                 .RequirementSkill(SkillType.FirstAid, 20)
-                .GrantsFeat(Feat.RecoveryItems3)
+                .GrantsFeat(FeatType.RecoveryItems3)
 
                 .AddPerkLevel()
                 .Description("Enables you to use tier 4 recovery items.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 30)
-                .GrantsFeat(Feat.RecoveryItems4)
+                .GrantsFeat(FeatType.RecoveryItems4)
 
                 .AddPerkLevel()
                 .Description("Enables you to use tier 5 recovery items.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 40)
-                .GrantsFeat(Feat.RecoveryItems5);
+                .GrantsFeat(FeatType.RecoveryItems5);
         }
 
         private void StimPacks(PerkBuilder builder)
@@ -120,31 +120,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Enables you to use tier 1 stim packs.")
                 .Price(1)
-                .GrantsFeat(Feat.StimPacks1)
+                .GrantsFeat(FeatType.StimPacks1)
 
                 .AddPerkLevel()
                 .Description("Enables you to use tier 2 stim packs.")
                 .Price(1)
                 .RequirementSkill(SkillType.FirstAid, 10)
-                .GrantsFeat(Feat.StimPacks2)
+                .GrantsFeat(FeatType.StimPacks2)
 
                 .AddPerkLevel()
                 .Description("Enables you to use tier 3 stim packs.")
                 .Price(2)
                 .RequirementSkill(SkillType.FirstAid, 20)
-                .GrantsFeat(Feat.StimPacks3)
+                .GrantsFeat(FeatType.StimPacks3)
 
                 .AddPerkLevel()
                 .Description("Enables you to use tier 4 stim packs.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 30)
-                .GrantsFeat(Feat.StimPacks4)
+                .GrantsFeat(FeatType.StimPacks4)
 
                 .AddPerkLevel()
                 .Description("Enables you to use tier 5 stim packs.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 40)
-                .GrantsFeat(Feat.StimPacks5);
+                .GrantsFeat(FeatType.StimPacks5);
         }
     }
 }

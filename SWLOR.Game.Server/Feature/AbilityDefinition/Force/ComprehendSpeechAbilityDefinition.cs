@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ComprehendSpeechAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             ComprehendSpeech1(builder);
@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ComprehendSpeech1(AbilityBuilder builder)
         {
-            builder.Create(Feat.ComprehendSpeech1, PerkType.ComprehendSpeech)
+            builder.Create(FeatType.ComprehendSpeech1, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech I")
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 60f)
                 .HasActivationDelay(2.0f)
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         }
         private static void ComprehendSpeech2(AbilityBuilder builder)
         {
-            builder.Create(Feat.ComprehendSpeech2, PerkType.ComprehendSpeech)
+            builder.Create(FeatType.ComprehendSpeech2, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech II")
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 60f)
                 .HasActivationDelay(2.0f)
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         }
         private static void ComprehendSpeech3(AbilityBuilder builder)
         {
-            builder.Create(Feat.ComprehendSpeech2, PerkType.ComprehendSpeech)
+            builder.Create(FeatType.ComprehendSpeech2, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech II")
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 60f)
                 .HasActivationDelay(2.0f)
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         }
         private static void ComprehendSpeech4(AbilityBuilder builder)
         {
-            builder.Create(Feat.ComprehendSpeech2, PerkType.ComprehendSpeech)
+            builder.Create(FeatType.ComprehendSpeech2, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech II")
                 .HasRecastDelay(RecastGroup.ComprehendSpeech, 60f)
                 .HasActivationDelay(2.0f)

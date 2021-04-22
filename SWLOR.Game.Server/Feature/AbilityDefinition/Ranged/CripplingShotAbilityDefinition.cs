@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
     public class CripplingShotAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             CripplingShot1(builder);
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
         private static void CripplingShot1(AbilityBuilder builder)
         {
-            builder.Create(Feat.CripplingShot1, PerkType.CripplingShot)
+            builder.Create(FeatType.CripplingShot1, PerkType.CripplingShot)
                 .Name("Crippling Shot I")
                 .HasRecastDelay(RecastGroup.CripplingShot, 60f)
                 .HasActivationDelay(2.0f)
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         }
         private static void CripplingShot2(AbilityBuilder builder)
         {
-            builder.Create(Feat.CripplingShot2, PerkType.CripplingShot)
+            builder.Create(FeatType.CripplingShot2, PerkType.CripplingShot)
                 .Name("Crippling Shot II")
                 .HasRecastDelay(RecastGroup.CripplingShot, 60f)
                 .HasActivationDelay(2.0f)
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         }
         private static void CripplingShot3(AbilityBuilder builder)
         {
-            builder.Create(Feat.CripplingShot3, PerkType.CripplingShot)
+            builder.Create(FeatType.CripplingShot3, PerkType.CripplingShot)
                 .Name("Crippling Shot III")
                 .HasRecastDelay(RecastGroup.CripplingShot, 60f)
                 .HasActivationDelay(2.0f)

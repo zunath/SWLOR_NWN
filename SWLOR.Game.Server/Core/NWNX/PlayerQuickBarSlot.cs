@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// </summary>
         /// <param name="nFeat"></param>
         /// <returns></returns>
-        public static QuickBarSlot UseFeat(Feat nFeat)
+        public static QuickBarSlot UseFeat(FeatType nFeat)
         {
             var qbs = Empty(QuickBarSlotType.Feat);
 

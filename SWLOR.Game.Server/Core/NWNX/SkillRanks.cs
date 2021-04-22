@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Core.NWNX
     {
         private const string PLUGIN_NAME = "NWNX_SkillRanks";
 
-        public static int GetSkillFeatCountForSkill(Feat feat)
+        public static int GetSkillFeatCountForSkill(FeatType feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSkillFeatCountForSkill");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             return Internal.NativeFunctions.nwnxPopInt();
         }
 
-        public static SkillFeat GetSkillFeatForSkillByIndex(Feat feat, Skill skill)
+        public static SkillFeat GetSkillFeatForSkillByIndex(FeatType feat, Skill skill)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSkillFeatForSkillByIndex");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             };
         }
 
-        public static SkillFeat GetSkillFeat(Feat feat, Skill skill)
+        public static SkillFeat GetSkillFeat(FeatType feat, Skill skill)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSkillFeat");
             Internal.NativeFunctions.nwnxPushInt((int)feat);

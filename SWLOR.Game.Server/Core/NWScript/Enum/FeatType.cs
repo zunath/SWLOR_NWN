@@ -1,6 +1,6 @@
 namespace SWLOR.Game.Server.Core.NWScript.Enum
 {
-    public enum Feat
+    public enum FeatType
     {
         Invalid = -1,
         Alertness = 0,
@@ -1715,5 +1715,10 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         ForceHeal3 = 1736,
         ForceHeal4 = 1737,
         ForceHeal5 = 1738,
+        ShieldConcealment1 = 1739,
+        ShieldConcealment2 = 1740,
+        ShieldConcealment3 = 1741,
+        ShieldConcealment4 = 1742,
+        ShieldConcealment5 = 1743,
     }
 }

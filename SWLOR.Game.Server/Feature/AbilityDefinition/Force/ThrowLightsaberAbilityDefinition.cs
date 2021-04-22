@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ThrowLightsaberAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             ThrowLightsaber1(builder);
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ThrowLightsaber1(AbilityBuilder builder)
         {
-            builder.Create(Feat.ThrowLightsaber1, PerkType.ThrowLightsaber)
+            builder.Create(FeatType.ThrowLightsaber1, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber I")
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
                 .HasActivationDelay(2.0f)
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         }
         private static void ThrowLightsaber2(AbilityBuilder builder)
         {
-            builder.Create(Feat.ThrowLightsaber2, PerkType.ThrowLightsaber)
+            builder.Create(FeatType.ThrowLightsaber2, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber II")
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
                 .HasActivationDelay(2.0f)
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         }
         private static void ThrowLightsaber3(AbilityBuilder builder)
         {
-            builder.Create(Feat.ThrowLightsaber3, PerkType.ThrowLightsaber)
+            builder.Create(FeatType.ThrowLightsaber3, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber III")
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
                 .HasActivationDelay(2.0f)

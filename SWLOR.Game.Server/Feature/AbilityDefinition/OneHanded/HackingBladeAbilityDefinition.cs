@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
     public class HackingBladeAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             HackingBlade1(builder);
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
         private static void HackingBlade1(AbilityBuilder builder)
         {
-            builder.Create(Feat.HackingBlade1, PerkType.HackingBlade)
+            builder.Create(FeatType.HackingBlade1, PerkType.HackingBlade)
                 .Name("Hacking Blade I")
                 .HasRecastDelay(RecastGroup.HackingBlade, 30f)
                 .HasActivationDelay(2.0f)
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         }
         private static void HackingBlade2(AbilityBuilder builder)
         {
-            builder.Create(Feat.HackingBlade2, PerkType.HackingBlade)
+            builder.Create(FeatType.HackingBlade2, PerkType.HackingBlade)
                 .Name("Hacking Blade II")
                 .HasRecastDelay(RecastGroup.HackingBlade, 30f)
                 .HasActivationDelay(2.0f)
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         }
         private static void HackingBlade3(AbilityBuilder builder)
         {
-            builder.Create(Feat.HackingBlade3, PerkType.HackingBlade)
+            builder.Create(FeatType.HackingBlade3, PerkType.HackingBlade)
                 .Name("Hacking Blade III")
                 .HasRecastDelay(RecastGroup.HackingBlade, 30f)
                 .HasActivationDelay(2.0f)

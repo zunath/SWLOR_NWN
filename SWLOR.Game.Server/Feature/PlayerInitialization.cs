@@ -148,25 +148,25 @@ namespace SWLOR.Game.Server.Feature
 
         private static void GrantBasicFeats(uint player)
         {
-            Creature.AddFeatByLevel(player, Feat.ArmorProficiencyLight, 1);
-            Creature.AddFeatByLevel(player, Feat.ArmorProficiencyMedium, 1);
-            Creature.AddFeatByLevel(player, Feat.ArmorProficiencyHeavy, 1);
-            Creature.AddFeatByLevel(player, Feat.ShieldProficiency, 1);
-            Creature.AddFeatByLevel(player, Feat.WeaponProficiencyExotic, 1);
-            Creature.AddFeatByLevel(player, Feat.WeaponProficiencyMartial, 1);
-            Creature.AddFeatByLevel(player, Feat.WeaponProficiencySimple, 1);
-            Creature.AddFeatByLevel(player, Feat.UncannyDodge1, 1);
-            Creature.AddFeatByLevel(player, Feat.OpenRestMenu, 1);
-            Creature.AddFeatByLevel(player, Feat.ChatCommandTargeter, 1);
-            Creature.AddFeatByLevel(player, Feat.StructureTool, 1);
-            Creature.AddFeatByLevel(player, Feat.Rest, 1);
+            Creature.AddFeatByLevel(player, FeatType.ArmorProficiencyLight, 1);
+            Creature.AddFeatByLevel(player, FeatType.ArmorProficiencyMedium, 1);
+            Creature.AddFeatByLevel(player, FeatType.ArmorProficiencyHeavy, 1);
+            Creature.AddFeatByLevel(player, FeatType.ShieldProficiency, 1);
+            Creature.AddFeatByLevel(player, FeatType.WeaponProficiencyExotic, 1);
+            Creature.AddFeatByLevel(player, FeatType.WeaponProficiencyMartial, 1);
+            Creature.AddFeatByLevel(player, FeatType.WeaponProficiencySimple, 1);
+            Creature.AddFeatByLevel(player, FeatType.UncannyDodge1, 1);
+            Creature.AddFeatByLevel(player, FeatType.OpenRestMenu, 1);
+            Creature.AddFeatByLevel(player, FeatType.ChatCommandTargeter, 1);
+            Creature.AddFeatByLevel(player, FeatType.StructureTool, 1);
+            Creature.AddFeatByLevel(player, FeatType.Rest, 1);
         }
 
 
         private static void InitializeHotBar(uint player)
         {
-            var openRestMenu = PlayerQuickBarSlot.UseFeat(Feat.OpenRestMenu);
-            var chatCommandTargeter = PlayerQuickBarSlot.UseFeat(Feat.ChatCommandTargeter);
+            var openRestMenu = PlayerQuickBarSlot.UseFeat(FeatType.OpenRestMenu);
+            var chatCommandTargeter = PlayerQuickBarSlot.UseFeat(FeatType.ChatCommandTargeter);
 
             Core.NWNX.Player.SetQuickBarSlot(player, 0, openRestMenu);
             Core.NWNX.Player.SetQuickBarSlot(player, 1, chatCommandTargeter);

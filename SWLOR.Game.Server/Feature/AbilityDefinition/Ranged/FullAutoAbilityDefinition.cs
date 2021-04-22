@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
     public class FullAutoAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             FullAuto1(builder);
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
         private static void FullAuto1(AbilityBuilder builder)
         {
-            builder.Create(Feat.FullAuto1, PerkType.FullAuto)
+            builder.Create(FeatType.FullAuto1, PerkType.FullAuto)
                 .Name("Full Auto I")
                 .HasRecastDelay(RecastGroup.FullAuto, 30f)
                 .HasActivationDelay(2.0f)
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         }
         private static void FullAuto2(AbilityBuilder builder)
         {
-            builder.Create(Feat.FullAuto2, PerkType.FullAuto)
+            builder.Create(FeatType.FullAuto2, PerkType.FullAuto)
                 .Name("Full Auto II")
                 .HasRecastDelay(RecastGroup.FullAuto, 30f)
                 .HasActivationDelay(2.0f)
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         }
         private static void FullAuto3(AbilityBuilder builder)
         {
-            builder.Create(Feat.FullAuto3, PerkType.FullAuto)
+            builder.Create(FeatType.FullAuto3, PerkType.FullAuto)
                 .Name("Full Auto III")
                 .HasRecastDelay(RecastGroup.FullAuto, 30f)
                 .HasActivationDelay(2.0f)

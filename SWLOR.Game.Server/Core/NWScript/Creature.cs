@@ -416,7 +416,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - oCreature: creature to modify
         ///   - nFeat: constant FEAT_*
         /// </summary>
-        public static void IncrementRemainingFeatUses(uint oCreature, Feat nFeat)
+        public static void IncrementRemainingFeatUses(uint oCreature, FeatType nFeat)
         {
             Internal.NativeFunctions.StackPushInteger((int)nFeat);
             Internal.NativeFunctions.StackPushObject(oCreature);

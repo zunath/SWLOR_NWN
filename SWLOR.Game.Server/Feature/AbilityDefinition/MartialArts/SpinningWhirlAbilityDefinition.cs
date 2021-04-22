@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 {
     public class SpinningWhirlAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             SpinningWhirl1(builder);
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 
         private static void SpinningWhirl1(AbilityBuilder builder)
         {
-            builder.Create(Feat.SpinningWhirl1, PerkType.SpinningWhirl)
+            builder.Create(FeatType.SpinningWhirl1, PerkType.SpinningWhirl)
                 .Name("Spinning Whirl I")
                 .HasRecastDelay(RecastGroup.SpinningWhirl, 30f)
                 .HasActivationDelay(2.0f)
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         }
         private static void SpinningWhirl2(AbilityBuilder builder)
         {
-            builder.Create(Feat.SpinningWhirl2, PerkType.SpinningWhirl)
+            builder.Create(FeatType.SpinningWhirl2, PerkType.SpinningWhirl)
                 .Name("Spinning Whirl II")
                 .HasRecastDelay(RecastGroup.SpinningWhirl, 30f)
                 .HasActivationDelay(2.0f)
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         }
         private static void SpinningWhirl3(AbilityBuilder builder)
         {
-            builder.Create(Feat.SpinningWhirl3, PerkType.SpinningWhirl)
+            builder.Create(FeatType.SpinningWhirl3, PerkType.SpinningWhirl)
                 .Name("Spinning Whirl III")
                 .HasRecastDelay(RecastGroup.SpinningWhirl, 30f)
                 .HasActivationDelay(2.0f)

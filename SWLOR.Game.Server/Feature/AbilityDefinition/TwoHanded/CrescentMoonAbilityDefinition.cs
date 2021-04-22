@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
     public class CrescentMoonAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             CrescentMoon1(builder);
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
         private static void CrescentMoon1(AbilityBuilder builder)
         {
-            builder.Create(Feat.CrescentMoon1, PerkType.CrescentMoon)
+            builder.Create(FeatType.CrescentMoon1, PerkType.CrescentMoon)
                 .Name("Crescent Moon I")
                 .HasRecastDelay(RecastGroup.CrescentMoon, 30f)
                 .HasActivationDelay(2.0f)
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         }
         private static void CrescentMoon2(AbilityBuilder builder)
         {
-            builder.Create(Feat.CrescentMoon2, PerkType.CrescentMoon)
+            builder.Create(FeatType.CrescentMoon2, PerkType.CrescentMoon)
                 .Name("Crescent Moon II")
                 .HasRecastDelay(RecastGroup.CrescentMoon, 30f)
                 .HasActivationDelay(2.0f)
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         }
         private static void CrescentMoon3(AbilityBuilder builder)
         {
-            builder.Create(Feat.CrescentMoon3, PerkType.CrescentMoon)
+            builder.Create(FeatType.CrescentMoon3, PerkType.CrescentMoon)
                 .Name("Crescent Moon III")
                 .HasRecastDelay(RecastGroup.CrescentMoon, 30f)
                 .HasActivationDelay(2.0f)

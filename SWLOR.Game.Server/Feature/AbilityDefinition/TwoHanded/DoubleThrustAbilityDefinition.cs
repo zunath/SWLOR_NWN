@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
     public class DoubleThrustAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             DoubleThrust1(builder);
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
         private static void DoubleThrust1(AbilityBuilder builder)
         {
-            builder.Create(Feat.DoubleThrust1, PerkType.DoubleThrust)
+            builder.Create(FeatType.DoubleThrust1, PerkType.DoubleThrust)
                 .Name("Double Thrust I")
                 .HasRecastDelay(RecastGroup.DoubleThrust, 60f)
                 .HasActivationDelay(2.0f)
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         }
         private static void DoubleThrust2(AbilityBuilder builder)
         {
-            builder.Create(Feat.DoubleThrust2, PerkType.DoubleThrust)
+            builder.Create(FeatType.DoubleThrust2, PerkType.DoubleThrust)
                 .Name("Double Thrust II")
                 .HasRecastDelay(RecastGroup.DoubleThrust, 60f)
                 .HasActivationDelay(2.0f)
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         }
         private static void DoubleThrust3(AbilityBuilder builder)
         {
-            builder.Create(Feat.DoubleThrust3, PerkType.DoubleThrust)
+            builder.Create(FeatType.DoubleThrust3, PerkType.DoubleThrust)
                 .Name("Double Thrust III")
                 .HasRecastDelay(RecastGroup.DoubleThrust, 60f)
                 .HasActivationDelay(2.0f)

@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
     public class HardSlashAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             HardSlash1(builder);
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
         private static void HardSlash1(AbilityBuilder builder)
         {
-            builder.Create(Feat.HardSlash1, PerkType.HardSlash)
+            builder.Create(FeatType.HardSlash1, PerkType.HardSlash)
                 .Name("Hard Slash I")
                 .HasRecastDelay(RecastGroup.HardSlash, 60f)
                 .HasActivationDelay(2.0f)
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         }
         private static void HardSlash2(AbilityBuilder builder)
         {
-            builder.Create(Feat.HardSlash2, PerkType.HardSlash)
+            builder.Create(FeatType.HardSlash2, PerkType.HardSlash)
                 .Name("Hard Slash II")
                 .HasRecastDelay(RecastGroup.HardSlash, 60f)
                 .HasActivationDelay(2.0f)
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         }
         private static void HardSlash3(AbilityBuilder builder)
         {
-            builder.Create(Feat.HardSlash3, PerkType.HardSlash)
+            builder.Create(FeatType.HardSlash3, PerkType.HardSlash)
                 .Name("Hard Slash III")
                 .HasRecastDelay(RecastGroup.HardSlash, 60f)
                 .HasActivationDelay(2.0f)

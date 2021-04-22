@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 {
     public class StrikingCobraAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             StrikingCobra1(builder);
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 
         private static void StrikingCobra1(AbilityBuilder builder)
         {
-            builder.Create(Feat.StrikingCobra1, PerkType.StrikingCobra)
+            builder.Create(FeatType.StrikingCobra1, PerkType.StrikingCobra)
                 .Name("Striking Cobra I")
                 .HasRecastDelay(RecastGroup.StrikingCobra, 60f)
                 .HasActivationDelay(2.0f)
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         }
         private static void StrikingCobra2(AbilityBuilder builder)
         {
-            builder.Create(Feat.StrikingCobra2, PerkType.StrikingCobra)
+            builder.Create(FeatType.StrikingCobra2, PerkType.StrikingCobra)
                 .Name("Striking Cobra II")
                 .HasRecastDelay(RecastGroup.StrikingCobra, 60f)
                 .HasActivationDelay(2.0f)
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         }
         private static void StrikingCobra3(AbilityBuilder builder)
         {
-            builder.Create(Feat.StrikingCobra3, PerkType.StrikingCobra)
+            builder.Create(FeatType.StrikingCobra3, PerkType.StrikingCobra)
                 .Name("Striking Cobra III")
                 .HasRecastDelay(RecastGroup.StrikingCobra, 60f)
                 .HasActivationDelay(2.0f)

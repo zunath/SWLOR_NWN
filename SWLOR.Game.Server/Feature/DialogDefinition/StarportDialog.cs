@@ -465,7 +465,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     return;
                 }
 
-                var assignedFeat = Feat.Invalid;
+                var assignedFeat = FeatType.Invalid;
                 // Determine which feat to assign this module to.
                 foreach (var (feat, _) in Space.ShipModuleFeats)
                 {
@@ -492,7 +492,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 }
 
                 // Safety check to ensure we found a ship module feat to use.
-                if(assignedFeat == Feat.Invalid)
+                if(assignedFeat == FeatType.Invalid)
                 {
                     Item.ReturnItem(player, item);
                     Log.Write(LogGroup.Error, $"Unable to find a free ship module feat slot. Do you need to increase the number of ship feats?");

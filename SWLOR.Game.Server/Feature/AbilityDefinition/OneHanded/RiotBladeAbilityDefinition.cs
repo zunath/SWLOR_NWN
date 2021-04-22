@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
     public class RiotBladeAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             RiotBlade1(builder);
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
         private static void RiotBlade1(AbilityBuilder builder)
         {
-            builder.Create(Feat.RiotBlade1, PerkType.RiotBlade)
+            builder.Create(FeatType.RiotBlade1, PerkType.RiotBlade)
                 .Name("Riot Blade I")
                 .HasRecastDelay(RecastGroup.RiotBlade, 30f)
                 .HasActivationDelay(2.0f)
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         }
         private static void RiotBlade2(AbilityBuilder builder)
         {
-            builder.Create(Feat.RiotBlade2, PerkType.RiotBlade)
+            builder.Create(FeatType.RiotBlade2, PerkType.RiotBlade)
                 .Name("Riot Blade II")
                 .HasRecastDelay(RecastGroup.RiotBlade, 30f)
                 .HasActivationDelay(2.0f)
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         }
         private static void RiotBlade3(AbilityBuilder builder)
         {
-            builder.Create(Feat.RiotBlade3, PerkType.RiotBlade)
+            builder.Create(FeatType.RiotBlade3, PerkType.RiotBlade)
                 .Name("Riot Blade III")
                 .HasRecastDelay(RecastGroup.RiotBlade, 30f)
                 .HasActivationDelay(2.0f)

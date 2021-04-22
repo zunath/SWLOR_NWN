@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
     public class DoubleShotAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             DoubleShot1(builder);
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
         private static void DoubleShot1(AbilityBuilder builder)
         {
-            builder.Create(Feat.DoubleShot1, PerkType.DoubleShot)
+            builder.Create(FeatType.DoubleShot1, PerkType.DoubleShot)
                 .Name("Double Shot I")
                 .HasRecastDelay(RecastGroup.DoubleShot, 60f)
                 .HasActivationDelay(2.0f)
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         }
         private static void DoubleShot2(AbilityBuilder builder)
         {
-            builder.Create(Feat.DoubleShot2, PerkType.DoubleShot)
+            builder.Create(FeatType.DoubleShot2, PerkType.DoubleShot)
                 .Name("Double Shot II")
                 .HasRecastDelay(RecastGroup.DoubleShot, 60f)
                 .HasActivationDelay(2.0f)
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         }
         private static void DoubleShot3(AbilityBuilder builder)
         {
-            builder.Create(Feat.DoubleShot3, PerkType.DoubleShot)
+            builder.Create(FeatType.DoubleShot3, PerkType.DoubleShot)
                 .Name("Double Shot III")
                 .HasRecastDelay(RecastGroup.DoubleShot, 60f)
                 .HasActivationDelay(2.0f)

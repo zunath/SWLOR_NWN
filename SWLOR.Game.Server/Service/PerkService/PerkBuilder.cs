@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         /// </summary>
         /// <param name="feat">The feat to grant</param>
         /// <returns>A perk builder with the configured options</returns>
-        public PerkBuilder GrantsFeat(Feat feat)
+        public PerkBuilder GrantsFeat(FeatType feat)
         {
             _activeLevel.GrantedFeats.Add(feat);
             return this;

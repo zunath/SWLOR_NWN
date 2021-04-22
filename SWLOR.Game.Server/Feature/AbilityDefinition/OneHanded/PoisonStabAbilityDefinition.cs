@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
     public class PoisonStabAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             PoisonStab1(builder);
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
         private static void PoisonStab1(AbilityBuilder builder)
         {
-            builder.Create(Feat.PoisonStab1, PerkType.PoisonStab)
+            builder.Create(FeatType.PoisonStab1, PerkType.PoisonStab)
                 .Name("Poison Stab I")
                 .HasRecastDelay(RecastGroup.PoisonStab, 30f)
                 .HasActivationDelay(2.0f)
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         }
         private static void PoisonStab2(AbilityBuilder builder)
         {
-            builder.Create(Feat.PoisonStab2, PerkType.PoisonStab)
+            builder.Create(FeatType.PoisonStab2, PerkType.PoisonStab)
                 .Name("Poison Stab II")
                 .HasRecastDelay(RecastGroup.PoisonStab, 30f)
                 .HasActivationDelay(2.0f)
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         }
         private static void PoisonStab3(AbilityBuilder builder)
         {
-            builder.Create(Feat.PoisonStab3, PerkType.PoisonStab)
+            builder.Create(FeatType.PoisonStab3, PerkType.PoisonStab)
                 .Name("Poison Stab III")
                 .HasRecastDelay(RecastGroup.PoisonStab, 30f)
                 .HasActivationDelay(2.0f)

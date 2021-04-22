@@ -27,31 +27,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("You can use tier 1 harvesters.")
                 .Price(1)
-                .GrantsFeat(Feat.Harvesting1)
+                .GrantsFeat(FeatType.Harvesting1)
 
                 .AddPerkLevel()
                 .Description("You can use tier 2 harvesters.")
                 .Price(1)
                 .RequirementSkill(SkillType.Gathering, 10)
-                .GrantsFeat(Feat.Harvesting2)
+                .GrantsFeat(FeatType.Harvesting2)
 
                 .AddPerkLevel()
                 .Description("You can use tier 3 harvesters.")
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, 20)
-                .GrantsFeat(Feat.Harvesting3)
+                .GrantsFeat(FeatType.Harvesting3)
 
                 .AddPerkLevel()
                 .Description("You can use tier 4 harvesters.")
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 30)
-                .GrantsFeat(Feat.Harvesting4)
+                .GrantsFeat(FeatType.Harvesting4)
 
                 .AddPerkLevel()
                 .Description("You can use tier 5 harvesters.")
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 40)
-                .GrantsFeat(Feat.Harvesting5);
+                .GrantsFeat(FeatType.Harvesting5);
         }
 
         private void Refining(PerkBuilder builder)
@@ -62,31 +62,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("You can refine Veldite.")
                 .Price(1)
-                .GrantsFeat(Feat.Refining1)
+                .GrantsFeat(FeatType.Refining1)
 
                 .AddPerkLevel()
                 .Description("You can refine Veldite and Scordspar.")
                 .Price(1)
                 .RequirementSkill(SkillType.Gathering, 10)
-                .GrantsFeat(Feat.Refining2)
+                .GrantsFeat(FeatType.Refining2)
 
                 .AddPerkLevel()
                 .Description("You can refine Veldite, Scordspar, and Plagionite.")
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, 20)
-                .GrantsFeat(Feat.Refining3)
+                .GrantsFeat(FeatType.Refining3)
 
                 .AddPerkLevel()
                 .Description("You can refine Veldite, Scordspar, Plagionite, and Keromber.")
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 30)
-                .GrantsFeat(Feat.Refining4)
+                .GrantsFeat(FeatType.Refining4)
 
                 .AddPerkLevel()
                 .Description("You can refine Veldite, Scordspar, Plagionite, Keromber, and Jasioclase.")
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 40)
-                .GrantsFeat(Feat.Refining5);
+                .GrantsFeat(FeatType.Refining5);
         }
 
         private void RefineryManagement(PerkBuilder builder)
@@ -97,37 +97,37 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Power sources last 12 seconds longer inside refineries.")
                 .Price(1)
-                .GrantsFeat(Feat.RefineryManagement1)
+                .GrantsFeat(FeatType.RefineryManagement1)
 
                 .AddPerkLevel()
                 .Description("Power sources last 18 seconds longer inside refineries.")
                 .Price(1)
                 .RequirementSkill(SkillType.Gathering, 10)
-                .GrantsFeat(Feat.RefineryManagement2)
+                .GrantsFeat(FeatType.RefineryManagement2)
 
                 .AddPerkLevel()
                 .Description("Power sources last 24 seconds longer inside refineries.")
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, 20)
-                .GrantsFeat(Feat.RefineryManagement3)
+                .GrantsFeat(FeatType.RefineryManagement3)
 
                 .AddPerkLevel()
                 .Description("Power sources last 36 seconds longer inside refineries.")
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, 30)
-                .GrantsFeat(Feat.RefineryManagement4)
+                .GrantsFeat(FeatType.RefineryManagement4)
 
                 .AddPerkLevel()
                 .Description("Power sources last 48 seconds longer inside refineries.")
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, 40)
-                .GrantsFeat(Feat.RefineryManagement5)
+                .GrantsFeat(FeatType.RefineryManagement5)
 
                 .AddPerkLevel()
                 .Description("Power sources last 60 seconds longer inside refineries.")
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, 45)
-                .GrantsFeat(Feat.RefineryManagement6);
+                .GrantsFeat(FeatType.RefineryManagement6);
         }
 
         private void Scavenging(PerkBuilder builder)
@@ -138,31 +138,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("You can scavenge tier 1 resources.")
                 .Price(1)
-                .GrantsFeat(Feat.Scavenging1)
+                .GrantsFeat(FeatType.Scavenging1)
 
                 .AddPerkLevel()
                 .Description("You can scavenge tier 2 resources.")
                 .Price(1)
                 .RequirementSkill(SkillType.Gathering, 10)
-                .GrantsFeat(Feat.Scavenging2)
+                .GrantsFeat(FeatType.Scavenging2)
 
                 .AddPerkLevel()
                 .Description("You can scavenge tier 3 resources.")
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, 20)
-                .GrantsFeat(Feat.Scavenging3)
+                .GrantsFeat(FeatType.Scavenging3)
 
                 .AddPerkLevel()
                 .Description("You can scavenge tier 4 resources.")
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 30)
-                .GrantsFeat(Feat.Scavenging4)
+                .GrantsFeat(FeatType.Scavenging4)
 
                 .AddPerkLevel()
                 .Description("You can scavenge tier 5 resources.")
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 40)
-                .GrantsFeat(Feat.Scavenging5);
+                .GrantsFeat(FeatType.Scavenging5);
         }
 
         private void HardLook(PerkBuilder builder)
@@ -173,31 +173,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants a 10% chance to search a second time at each search site.")
                 .Price(1)
-                .GrantsFeat(Feat.HardLook1)
+                .GrantsFeat(FeatType.HardLook1)
 
                 .AddPerkLevel()
                 .Description("Grants a 20% chance to search a second time at each search site.")
                 .Price(1)
                 .RequirementSkill(SkillType.Gathering, 10)
-                .GrantsFeat(Feat.HardLook2)
+                .GrantsFeat(FeatType.HardLook2)
 
                 .AddPerkLevel()
                 .Description("Grants a 30% chance to search a second time at each search site.")
                 .Price(2)
                 .RequirementSkill(SkillType.Gathering, 20)
-                .GrantsFeat(Feat.HardLook3)
+                .GrantsFeat(FeatType.HardLook3)
 
                 .AddPerkLevel()
                 .Description("Grants a 40% chance to search a second time at each search site.")
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 30)
-                .GrantsFeat(Feat.HardLook4)
+                .GrantsFeat(FeatType.HardLook4)
 
                 .AddPerkLevel()
                 .Description("Grants a 50% chance to search a second time at each search site.")
                 .Price(3)
                 .RequirementSkill(SkillType.Gathering, 40)
-                .GrantsFeat(Feat.HardLook5);
+                .GrantsFeat(FeatType.HardLook5);
         }
 
     }

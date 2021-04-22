@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Increases damage of one-handed weapons to 1.5xSTR when no off-hand item is equipped.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 15)
-                .GrantsFeat(Feat.Doublehand)
+                .GrantsFeat(FeatType.Doublehand)
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
                     var rightHand = GetItemInSlot(InventorySlot.RightHand, player);
@@ -106,20 +106,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Enables the use of two one-handed weapons at the same time at standard NWN penalties.")
                 .Price(4)
                 .RequirementSkill(SkillType.OneHanded, 25)
-                .GrantsFeat(Feat.DualWield)
+                .GrantsFeat(FeatType.DualWield)
 
                 .AddPerkLevel()
                 .Description("Grants Two-weapon Fighting feat which reduces attack penalty from -6/-10 to -4/-8 when fighting with two weapons.")
                 .Price(5)
                 .RequirementSkill(SkillType.OneHanded, 35)
-                .GrantsFeat(Feat.TwoWeaponFighting)
+                .GrantsFeat(FeatType.TwoWeaponFighting)
 
                 .AddPerkLevel()
                 .Description("Grants Ambidexterity feat which reduces the attack penalty of your off-hand weapon by 4.")
                 .Price(6)
                 .RequirementSkill(SkillType.OneHanded, 45)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.Ambidexterity);
+                .GrantsFeat(FeatType.Ambidexterity);
         }
 
         private void WeaponFinesse(PerkBuilder builder)
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("You make melee attack rolls with your DEX score if it is higher than your STR score.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 10)
-                .GrantsFeat(Feat.WeaponFinesse);
+                .GrantsFeat(FeatType.WeaponFinesse);
         }
 
         private void WeaponFocusVibroblades(PerkBuilder builder)
@@ -143,14 +143,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with vibroblades.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 5)
-                .GrantsFeat(Feat.WeaponFocusVibroblades)
+                .GrantsFeat(FeatType.WeaponFocusVibroblades)
 
                 .AddPerkLevel()
                 .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with vibroblades.")
                 .Price(4)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.WeaponSpecializationVibroblades);
+                .GrantsFeat(FeatType.WeaponSpecializationVibroblades);
         }
 
         private void ImprovedCriticalVibroblades(PerkBuilder builder)
@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.ImprovedCriticalVibroblades);
+                .GrantsFeat(FeatType.ImprovedCriticalVibroblades);
         }
 
         private void VibrobladeProficiency(PerkBuilder builder)
@@ -174,31 +174,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 1 Vibroblades.")
                 .Price(2)
-                .GrantsFeat(Feat.VibrobladeProficiency1)
+                .GrantsFeat(FeatType.VibrobladeProficiency1)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 2 Vibroblades.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 10)
-                .GrantsFeat(Feat.VibrobladeProficiency2)
+                .GrantsFeat(FeatType.VibrobladeProficiency2)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 3 Vibroblades.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 20)
-                .GrantsFeat(Feat.VibrobladeProficiency3)
+                .GrantsFeat(FeatType.VibrobladeProficiency3)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 4 Vibroblades.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 30)
-                .GrantsFeat(Feat.VibrobladeProficiency4)
+                .GrantsFeat(FeatType.VibrobladeProficiency4)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 5 Vibroblades.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 40)
-                .GrantsFeat(Feat.VibrobladeProficiency5);
+                .GrantsFeat(FeatType.VibrobladeProficiency5);
         }
 
         private void VibrobladeMastery(PerkBuilder builder)
@@ -256,21 +256,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.VibrobladeMastery1)
+                .GrantsFeat(FeatType.VibrobladeMastery1)
 
                 .AddPerkLevel()
                 .Description("Grants +2 BAB when equipped with a Vibroblade.")
                 .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 40)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.VibrobladeMastery2)
+                .GrantsFeat(FeatType.VibrobladeMastery2)
 
                 .AddPerkLevel()
                 .Description("Grants +3 BAB when equipped with a Vibroblade.")
                 .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 50)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.VibrobladeMastery3);
+                .GrantsFeat(FeatType.VibrobladeMastery3);
         }
 
         private void HackingBlade(PerkBuilder builder)
@@ -282,21 +282,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Your next attack deals an additional 1d4 damage and has a 50% chance to inflict Bleed for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 15)
-                .GrantsFeat(Feat.HackingBlade1)
+                .GrantsFeat(FeatType.HackingBlade1)
 
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 2d4 damage and has a 75% chance to inflict Bleed for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 30)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.HackingBlade2)
+                .GrantsFeat(FeatType.HackingBlade2)
 
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 3d4 damage and has a 100% chance to inflict Bleed for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 45)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.HackingBlade3);
+                .GrantsFeat(FeatType.HackingBlade3);
         }
 
         private void RiotBlade(PerkBuilder builder)
@@ -308,20 +308,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Instantly deals 1d8 damage to your target.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 5)
-                .GrantsFeat(Feat.RiotBlade1)
+                .GrantsFeat(FeatType.RiotBlade1)
 
                 .AddPerkLevel()
                 .Description("Instantly deals 2d6 damage to your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 20)
-                .GrantsFeat(Feat.RiotBlade2)
+                .GrantsFeat(FeatType.RiotBlade2)
 
                 .AddPerkLevel()
                 .Description("Instantly deals 3d6 damage to your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 35)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.RiotBlade3);
+                .GrantsFeat(FeatType.RiotBlade3);
         }
 
         private void WeaponFocusFinesseVibroblades(PerkBuilder builder)
@@ -333,14 +333,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with finesse vibroblades.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 5)
-                .GrantsFeat(Feat.WeaponFocusFinesseVibroblades)
+                .GrantsFeat(FeatType.WeaponFocusFinesseVibroblades)
 
                 .AddPerkLevel()
                 .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with finesse vibroblades.")
                 .Price(4)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.WeaponSpecializationFinesseVibroblades);
+                .GrantsFeat(FeatType.WeaponSpecializationFinesseVibroblades);
         }
 
         private void ImprovedCriticalFinesseVibroblades(PerkBuilder builder)
@@ -353,7 +353,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.ImprovedCriticalFinesseVibroblades);
+                .GrantsFeat(FeatType.ImprovedCriticalFinesseVibroblades);
         }
 
         private void FinesseVibrobladeProficiency(PerkBuilder builder)
@@ -364,31 +364,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 1 Finesse Vibroblades.")
                 .Price(2)
-                .GrantsFeat(Feat.FinesseVibrobladeProficiency1)
+                .GrantsFeat(FeatType.FinesseVibrobladeProficiency1)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 2 Finesse Vibroblades.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 10)
-                .GrantsFeat(Feat.FinesseVibrobladeProficiency2)
+                .GrantsFeat(FeatType.FinesseVibrobladeProficiency2)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 3 Finesse Vibroblades.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 20)
-                .GrantsFeat(Feat.FinesseVibrobladeProficiency3)
+                .GrantsFeat(FeatType.FinesseVibrobladeProficiency3)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 4 Finesse Vibroblades.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 30)
-                .GrantsFeat(Feat.FinesseVibrobladeProficiency4)
+                .GrantsFeat(FeatType.FinesseVibrobladeProficiency4)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 5 Finesse Vibroblades.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 40)
-                .GrantsFeat(Feat.FinesseVibrobladeProficiency5);
+                .GrantsFeat(FeatType.FinesseVibrobladeProficiency5);
         }
 
         private void FinesseVibrobladeMastery(PerkBuilder builder)
@@ -446,21 +446,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.FinesseVibrobladeMastery1)
+                .GrantsFeat(FeatType.FinesseVibrobladeMastery1)
 
                 .AddPerkLevel()
                 .Description("Grants +2 BAB when equipped with a Finesse Vibroblade.")
                 .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 40)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.FinesseVibrobladeMastery2)
+                .GrantsFeat(FeatType.FinesseVibrobladeMastery2)
 
                 .AddPerkLevel()
                 .Description("Grants +3 BAB when equipped with a Finesse Vibroblade.")
                 .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 50)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.FinesseVibrobladeMastery3);
+                .GrantsFeat(FeatType.FinesseVibrobladeMastery3);
         }
 
         private void PoisonStab(PerkBuilder builder)
@@ -472,21 +472,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Your next attack deals an additional 1d6 damage and has a 50% chance to inflict Poison for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 15)
-                .GrantsFeat(Feat.PoisonStab1)
+                .GrantsFeat(FeatType.PoisonStab1)
 
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 2d6 damage and has a 75% chance to inflict Poison for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 30)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.PoisonStab2)
+                .GrantsFeat(FeatType.PoisonStab2)
 
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 3d6 damage and has a 100% chance to inflict Poison for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 45)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.PoisonStab3);
+                .GrantsFeat(FeatType.PoisonStab3);
         }
 
         private void Backstab(PerkBuilder builder)
@@ -498,21 +498,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Deals 2d8 damage to your target when dealt from behind. Damage is halved if not behind target.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 5)
-                .GrantsFeat(Feat.Backstab1)
+                .GrantsFeat(FeatType.Backstab1)
 
                 .AddPerkLevel()
                 .Description("Deals 3d8 damage to your target when dealt from behind. Damage is halved if not behind target.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 20)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.Backstab2)
+                .GrantsFeat(FeatType.Backstab2)
 
                 .AddPerkLevel()
                 .Description("Deals 4d8 damage to your target when dealt from behind. Damage is halved if not behind target.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 35)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(Feat.Backstab3);
+                .GrantsFeat(FeatType.Backstab3);
         }
 
         private void WeaponFocusLightsabers(PerkBuilder builder)
@@ -525,14 +525,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.WeaponFocusLightsabers)
+                .GrantsFeat(FeatType.WeaponFocusLightsabers)
 
                 .AddPerkLevel()
                 .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with lightsabers.")
                 .Price(4)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.WeaponSpecializationLightsabers);
+                .GrantsFeat(FeatType.WeaponSpecializationLightsabers);
         }
 
         private void ImprovedCriticalLightsabers(PerkBuilder builder)
@@ -545,7 +545,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.ImprovedCriticalLightsabers);
+                .GrantsFeat(FeatType.ImprovedCriticalLightsabers);
         }
 
         private void LightsaberProficiency(PerkBuilder builder)
@@ -557,35 +557,35 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Grants the ability to equip tier 1 Lightsabers.")
                 .Price(2)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.LightsaberProficiency1)
+                .GrantsFeat(FeatType.LightsaberProficiency1)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 2 Lightsabers.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.LightsaberProficiency2)
+                .GrantsFeat(FeatType.LightsaberProficiency2)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 3 Lightsabers.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.LightsaberProficiency3)
+                .GrantsFeat(FeatType.LightsaberProficiency3)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 4 Lightsabers.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.LightsaberProficiency4)
+                .GrantsFeat(FeatType.LightsaberProficiency4)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 5 Lightsabers.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.LightsaberProficiency5);
+                .GrantsFeat(FeatType.LightsaberProficiency5);
         }
 
         private void LightsaberMastery(PerkBuilder builder)
@@ -643,21 +643,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.LightsaberMastery1)
+                .GrantsFeat(FeatType.LightsaberMastery1)
 
                 .AddPerkLevel()
                 .Description("Grants +2 BAB when equipped with a Lightsaber.")
                 .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.LightsaberMastery2)
+                .GrantsFeat(FeatType.LightsaberMastery2)
 
                 .AddPerkLevel()
                 .Description("Grants +3 BAB when equipped with a Lightsaber.")
                 .Price(8)
                 .RequirementSkill(SkillType.OneHanded, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.LightsaberMastery3);
+                .GrantsFeat(FeatType.LightsaberMastery3);
         }
 
         private void ForceLeap(PerkBuilder builder)
@@ -670,21 +670,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.ForceLeap1)
+                .GrantsFeat(FeatType.ForceLeap1)
 
                 .AddPerkLevel()
                 .Description("Leap to a distant target instantly, inflicting 1d6 damage and stunning for 2 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.ForceLeap2)
+                .GrantsFeat(FeatType.ForceLeap2)
 
                 .AddPerkLevel()
                 .Description("Leap to a distant target instantly, inflicting 2d4 damage and stunning for 2 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.ForceLeap3);
+                .GrantsFeat(FeatType.ForceLeap3);
         }
 
         private void SaberStrike(PerkBuilder builder)
@@ -697,21 +697,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.SaberStrike1)
+                .GrantsFeat(FeatType.SaberStrike1)
 
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 2d6 damage and has a 75% chance to inflict Breach for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.SaberStrike2)
+                .GrantsFeat(FeatType.SaberStrike2)
 
                 .AddPerkLevel()
                 .Description("Your next attack deals an additional 3d6 damage and has a 100% chance to inflict Breach for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(Feat.SaberStrike3);
+                .GrantsFeat(FeatType.SaberStrike3);
         }
     }
 }

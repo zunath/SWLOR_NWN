@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, ShipStatus> _shipNPCs = new Dictionary<uint, ShipStatus>();
         private static readonly Dictionary<uint, ShipStatus> _spaceObjectInstances = new Dictionary<uint, ShipStatus>();
 
-        public static Dictionary<Feat, ShipModuleFeat> ShipModuleFeats { get; } = ShipModuleFeat.GetAll();
+        public static Dictionary<FeatType, ShipModuleFeat> ShipModuleFeats { get; } = ShipModuleFeat.GetAll();
 
         /// <summary>
         /// When the module loads, cache all space data into memory.
@@ -339,7 +339,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player who will receive the overrides.</param>
         /// <param name="shipModuleDetail">The ship module detail whose name, description, and graphic will be loaded.</param>
         /// <param name="feat">The ship module feat</param>
-        private static void ApplyShipModuleFeat(uint player, ShipModuleDetail shipModuleDetail, Feat feat)
+        private static void ApplyShipModuleFeat(uint player, ShipModuleDetail shipModuleDetail, FeatType feat)
         {
             if (!GetIsObjectValid(player)) return;
             if (!ShipModuleFeats.ContainsKey(feat)) return;
@@ -513,7 +513,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("feat_use_bef")]
         public static void HandleShipModuleFeats()
         {
-            var feat = (Feat)Convert.ToInt32(Events.GetEventData("FEAT_ID"));
+            var feat = (FeatType)Convert.ToInt32(Events.GetEventData("FEAT_ID"));
 
             if (!ShipModuleFeats.ContainsKey(feat)) return;
             

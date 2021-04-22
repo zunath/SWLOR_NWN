@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Core.NWNX
         private const string PLUGIN_NAME = "NWNX_Creature";
 
         // Gives the provided creature the provided feat.
-        public static void AddFeat(uint creature, Feat feat)
+        public static void AddFeat(uint creature, FeatType feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddFeat");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         // Gives the provided creature the provided feat.
         // Adds the feat to the stat list at the provided level.
-        public static void AddFeatByLevel(uint creature, Feat feat, int level)
+        public static void AddFeatByLevel(uint creature, FeatType feat, int level)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddFeatByLevel");
             Internal.NativeFunctions.nwnxPushInt(level);
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Core.NWNX
         }
 
         // Removes from the provided creature the provided feat.
-        public static void RemoveFeat(uint creature, Feat feat)
+        public static void RemoveFeat(uint creature, FeatType feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveFeat");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        public static bool GetKnowsFeat(uint creature, Feat feat)
+        public static bool GetKnowsFeat(uint creature, FeatType feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetKnowsFeat");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -60,14 +60,14 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         // Returns the feat learned at the provided level at the provided index.
         // Index bounds: 0 <= index < GetFeatCountByLevel(creature, level).
-        public static Feat GetFeatByLevel(uint creature, int level, int index)
+        public static FeatType GetFeatByLevel(uint creature, int level, int index)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFeatByLevel");
             Internal.NativeFunctions.nwnxPushInt(index);
             Internal.NativeFunctions.nwnxPushInt(level);
             Internal.NativeFunctions.nwnxPushObject(creature);
             Internal.NativeFunctions.nwnxCallFunction();
-            return (Feat)Internal.NativeFunctions.nwnxPopInt();
+            return (FeatType)Internal.NativeFunctions.nwnxPopInt();
         }
 
         // Returns the total number of feats known by creature
@@ -81,17 +81,17 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         // Returns the creature's feat at a given index
         // Index bounds: 0 <= index < GetFeatCount(creature);
-        public static Feat GetFeatByIndex(uint creature, int index)
+        public static FeatType GetFeatByIndex(uint creature, int index)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFeatByIndex");
             Internal.NativeFunctions.nwnxPushInt(index);
             Internal.NativeFunctions.nwnxPushObject(creature);
             Internal.NativeFunctions.nwnxCallFunction();
-            return (Feat)Internal.NativeFunctions.nwnxPopInt();
+            return (FeatType)Internal.NativeFunctions.nwnxPopInt();
         }
 
         // Returns TRUE if creature meets all requirements to take given feat
-        public static bool GetMeetsFeatRequirements(uint creature, Feat feat)
+        public static bool GetMeetsFeatRequirements(uint creature, FeatType feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMeetsFeatRequirements");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -681,7 +681,7 @@ namespace SWLOR.Game.Server.Core.NWNX
         }
 
         // Get feat remaining uses of a creature
-        public static int GetFeatRemainingUses(uint creature, Feat feat)
+        public static int GetFeatRemainingUses(uint creature, FeatType feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFeatRemainingUses");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -691,7 +691,7 @@ namespace SWLOR.Game.Server.Core.NWNX
         }
 
         // Get feat total uses of a creature
-        public static int GetFeatTotalUses(uint creature, Feat feat)
+        public static int GetFeatTotalUses(uint creature, FeatType feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFeatTotalUses");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -701,7 +701,7 @@ namespace SWLOR.Game.Server.Core.NWNX
         }
 
         // Set feat remaining uses of a creature
-        public static void SetFeatRemainingUses(uint creature, Feat feat, int uses)
+        public static void SetFeatRemainingUses(uint creature, FeatType feat, int uses)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetFeatRemainingUses");
             Internal.NativeFunctions.nwnxPushInt(uses);

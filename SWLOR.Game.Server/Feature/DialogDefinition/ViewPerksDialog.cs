@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 }
             }
 
-            void AddFeatToHotBar(Feat feat)
+            void AddFeatToHotBar(FeatType feat)
             {
                 var qbs = PlayerQuickBarSlot.UseFeat(feat);
 

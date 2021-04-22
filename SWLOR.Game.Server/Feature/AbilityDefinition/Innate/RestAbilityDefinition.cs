@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Innate
 {
     public class RestAbilityDefinition: IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             Rest(builder);
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Innate
 
         private void Rest(AbilityBuilder builder)
         {
-            builder.Create(Feat.Rest, PerkType.Invalid)
+            builder.Create(FeatType.Rest, PerkType.Invalid)
                 .Name("Rest")
                 .IsCastedAbility()
                 .HasRecastDelay(RecastGroup.Rest, 30f)

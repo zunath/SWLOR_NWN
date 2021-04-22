@@ -414,7 +414,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     else
                     {
                         var activeConcentration = Ability.GetActiveConcentration(user);
-                        if (activeConcentration.Feat == Feat.Invalid)
+                        if (activeConcentration.Feat == FeatType.Invalid)
                         {
                             SendMessageToPC(user, "No concentration ability is currently active.");
                         }

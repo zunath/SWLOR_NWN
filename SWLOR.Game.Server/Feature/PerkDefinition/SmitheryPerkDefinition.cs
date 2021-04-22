@@ -30,31 +30,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants access to tier 1 One-Handed blueprints.")
                 .Price(1)
-                .GrantsFeat(Feat.OneHandedBlueprints1)
+                .GrantsFeat(FeatType.OneHandedBlueprints1)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 2 One-Handed blueprints.")
                 .Price(1)
                 .RequirementSkill(SkillType.Smithery, 10)
-                .GrantsFeat(Feat.OneHandedBlueprints2)
+                .GrantsFeat(FeatType.OneHandedBlueprints2)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 3 One-Handed blueprints.")
                 .Price(2)
                 .RequirementSkill(SkillType.Smithery, 20)
-                .GrantsFeat(Feat.OneHandedBlueprints3)
+                .GrantsFeat(FeatType.OneHandedBlueprints3)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 4 One-Handed blueprints.")
                 .Price(3)
                 .RequirementSkill(SkillType.Smithery, 30)
-                .GrantsFeat(Feat.OneHandedBlueprints4)
+                .GrantsFeat(FeatType.OneHandedBlueprints4)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 5 One-Handed blueprints.")
                 .Price(3)
                 .RequirementSkill(SkillType.Smithery, 40)
-                .GrantsFeat(Feat.OneHandedBlueprints5);
+                .GrantsFeat(FeatType.OneHandedBlueprints5);
         }
 
         private void TwoHandedBlueprints(PerkBuilder builder)
@@ -65,31 +65,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants access to tier 1 Two-Handed blueprints.")
                 .Price(1)
-                .GrantsFeat(Feat.TwoHandedBlueprints1)
+                .GrantsFeat(FeatType.TwoHandedBlueprints1)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 2 Two-Handed blueprints.")
                 .Price(1)
                 .RequirementSkill(SkillType.Smithery, 10)
-                .GrantsFeat(Feat.TwoHandedBlueprints2)
+                .GrantsFeat(FeatType.TwoHandedBlueprints2)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 3 Two-Handed blueprints.")
                 .Price(2)
                 .RequirementSkill(SkillType.Smithery, 20)
-                .GrantsFeat(Feat.TwoHandedBlueprints3)
+                .GrantsFeat(FeatType.TwoHandedBlueprints3)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 4 Two-Handed blueprints.")
                 .Price(3)
                 .RequirementSkill(SkillType.Smithery, 30)
-                .GrantsFeat(Feat.TwoHandedBlueprints4)
+                .GrantsFeat(FeatType.TwoHandedBlueprints4)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 5 Two-Handed blueprints.")
                 .Price(3)
                 .RequirementSkill(SkillType.Smithery, 40)
-                .GrantsFeat(Feat.TwoHandedBlueprints5);
+                .GrantsFeat(FeatType.TwoHandedBlueprints5);
         }
 
         private void MartialBlueprints(PerkBuilder builder)
@@ -100,31 +100,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants access to tier 1 Martial blueprints.")
                 .Price(1)
-                .GrantsFeat(Feat.MartialBlueprints1)
+                .GrantsFeat(FeatType.MartialBlueprints1)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 2 Martial blueprints.")
                 .Price(1)
                 .RequirementSkill(SkillType.Smithery, 10)
-                .GrantsFeat(Feat.MartialBlueprints2)
+                .GrantsFeat(FeatType.MartialBlueprints2)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 3 Martial blueprints.")
                 .Price(2)
                 .RequirementSkill(SkillType.Smithery, 20)
-                .GrantsFeat(Feat.MartialBlueprints3)
+                .GrantsFeat(FeatType.MartialBlueprints3)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 4 Martial blueprints.")
                 .Price(3)
                 .RequirementSkill(SkillType.Smithery, 30)
-                .GrantsFeat(Feat.MartialBlueprints4)
+                .GrantsFeat(FeatType.MartialBlueprints4)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 5 Martial blueprints.")
                 .Price(3)
                 .RequirementSkill(SkillType.Smithery, 40)
-                .GrantsFeat(Feat.MartialBlueprints5);
+                .GrantsFeat(FeatType.MartialBlueprints5);
         }
 
         private void RangedBlueprints(PerkBuilder builder)
@@ -135,31 +135,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants access to tier 1 Ranged blueprints.")
                 .Price(1)
-                .GrantsFeat(Feat.RangedBlueprints1)
+                .GrantsFeat(FeatType.RangedBlueprints1)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 2 Ranged blueprints.")
                 .Price(1)
                 .RequirementSkill(SkillType.Smithery, 10)
-                .GrantsFeat(Feat.RangedBlueprints2)
+                .GrantsFeat(FeatType.RangedBlueprints2)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 3 Ranged blueprints.")
                 .Price(2)
                 .RequirementSkill(SkillType.Smithery, 20)
-                .GrantsFeat(Feat.RangedBlueprints3)
+                .GrantsFeat(FeatType.RangedBlueprints3)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 4 Ranged blueprints.")
                 .Price(3)
                 .RequirementSkill(SkillType.Smithery, 30)
-                .GrantsFeat(Feat.RangedBlueprints4)
+                .GrantsFeat(FeatType.RangedBlueprints4)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 5 Ranged blueprints.")
                 .Price(3)
                 .RequirementSkill(SkillType.Smithery, 40)
-                .GrantsFeat(Feat.RangedBlueprints5);
+                .GrantsFeat(FeatType.RangedBlueprints5);
         }
 
         private void ArmorBlueprints(PerkBuilder builder)
@@ -170,31 +170,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants access to tier 1 Armor blueprints.")
                 .Price(1)
-                .GrantsFeat(Feat.ArmorBlueprints1)
+                .GrantsFeat(FeatType.ArmorBlueprints1)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 2 Armor blueprints.")
                 .Price(1)
                 .RequirementSkill(SkillType.Smithery, 10)
-                .GrantsFeat(Feat.ArmorBlueprints2)
+                .GrantsFeat(FeatType.ArmorBlueprints2)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 3 Armor blueprints.")
                 .Price(2)
                 .RequirementSkill(SkillType.Smithery, 20)
-                .GrantsFeat(Feat.ArmorBlueprints3)
+                .GrantsFeat(FeatType.ArmorBlueprints3)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 4 Armor blueprints.")
                 .Price(3)
                 .RequirementSkill(SkillType.Smithery, 30)
-                .GrantsFeat(Feat.ArmorBlueprints4)
+                .GrantsFeat(FeatType.ArmorBlueprints4)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 5 Armor blueprints.")
                 .Price(3)
                 .RequirementSkill(SkillType.Smithery, 40)
-                .GrantsFeat(Feat.ArmorBlueprints5);
+                .GrantsFeat(FeatType.ArmorBlueprints5);
         }
 
         private void AccessoryBlueprints(PerkBuilder builder)
@@ -205,31 +205,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants access to tier 1 Accessory blueprints.")
                 .Price(1)
-                .GrantsFeat(Feat.AccessoryBlueprints1)
+                .GrantsFeat(FeatType.AccessoryBlueprints1)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 2 Accessory blueprints.")
                 .Price(1)
                 .RequirementSkill(SkillType.Smithery, 10)
-                .GrantsFeat(Feat.AccessoryBlueprints2)
+                .GrantsFeat(FeatType.AccessoryBlueprints2)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 3 Accessory blueprints.")
                 .Price(2)
                 .RequirementSkill(SkillType.Smithery, 20)
-                .GrantsFeat(Feat.AccessoryBlueprints3)
+                .GrantsFeat(FeatType.AccessoryBlueprints3)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 4 Accessory blueprints.")
                 .Price(3)
                 .RequirementSkill(SkillType.Smithery, 30)
-                .GrantsFeat(Feat.AccessoryBlueprints4)
+                .GrantsFeat(FeatType.AccessoryBlueprints4)
 
                 .AddPerkLevel()
                 .Description("Grants access to tier 5 Accessory blueprints.")
                 .Price(3)
                 .RequirementSkill(SkillType.Smithery, 40)
-                .GrantsFeat(Feat.AccessoryBlueprints5);
+                .GrantsFeat(FeatType.AccessoryBlueprints5);
         }
 
 

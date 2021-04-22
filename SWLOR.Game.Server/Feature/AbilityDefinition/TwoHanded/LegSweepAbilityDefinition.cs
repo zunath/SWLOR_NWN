@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
     public class LegSweepAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             LegSweep1(builder);
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
         private static void LegSweep1(AbilityBuilder builder)
         {
-            builder.Create(Feat.LegSweep1, PerkType.LegSweep)
+            builder.Create(FeatType.LegSweep1, PerkType.LegSweep)
                 .Name("Leg Sweep I")
                 .HasRecastDelay(RecastGroup.LegSweep, 30f)
                 .HasActivationDelay(2.0f)
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         }
         private static void LegSweep2(AbilityBuilder builder)
         {
-            builder.Create(Feat.LegSweep2, PerkType.LegSweep)
+            builder.Create(FeatType.LegSweep2, PerkType.LegSweep)
                 .Name("Leg Sweep II")
                 .HasRecastDelay(RecastGroup.LegSweep, 30f)
                 .HasActivationDelay(2.0f)
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         }
         private static void LegSweep3(AbilityBuilder builder)
         {
-            builder.Create(Feat.LegSweep3, PerkType.LegSweep)
+            builder.Create(FeatType.LegSweep3, PerkType.LegSweep)
                 .Name("Leg Sweep III")
                 .HasRecastDelay(RecastGroup.LegSweep, 30f)
                 .HasActivationDelay(2.0f)

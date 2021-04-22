@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
     public class DoubleStrikeAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             DoubleStrike1(builder);
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
         private static void DoubleStrike1(AbilityBuilder builder)
         {
-            builder.Create(Feat.DoubleStrike1, PerkType.DoubleStrike)
+            builder.Create(FeatType.DoubleStrike1, PerkType.DoubleStrike)
                 .Name("Double Strike I")
                 .HasRecastDelay(RecastGroup.DoubleStrike, 60f)
                 .HasActivationDelay(2.0f)
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         }
         private static void DoubleStrike2(AbilityBuilder builder)
         {
-            builder.Create(Feat.DoubleStrike2, PerkType.DoubleStrike)
+            builder.Create(FeatType.DoubleStrike2, PerkType.DoubleStrike)
                 .Name("Double Strike II")
                 .HasRecastDelay(RecastGroup.DoubleStrike, 60f)
                 .HasActivationDelay(2.0f)
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         }
         private static void DoubleStrike3(AbilityBuilder builder)
         {
-            builder.Create(Feat.DoubleStrike3, PerkType.DoubleStrike)
+            builder.Create(FeatType.DoubleStrike3, PerkType.DoubleStrike)
                 .Name("Double Strike III")
                 .HasRecastDelay(RecastGroup.DoubleStrike, 60f)
                 .HasActivationDelay(2.0f)

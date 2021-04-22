@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ForceMindAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             ForceMind1(builder);
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceMind1(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceMind1, PerkType.ForceMind)
+            builder.Create(FeatType.ForceMind1, PerkType.ForceMind)
                 .Name("Force Mind I")
                 .HasRecastDelay(RecastGroup.ForceMind, 60f * 5f)
                 .HasActivationDelay(2.0f)
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceMind2(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceMind2, PerkType.ForceMind)
+            builder.Create(FeatType.ForceMind2, PerkType.ForceMind)
                 .Name("Force Mind II")
                 .HasRecastDelay(RecastGroup.ForceMind, 60f * 5f)
                 .HasActivationDelay(2.0f)

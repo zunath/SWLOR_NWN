@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
     public class ForceLeapAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             ForceLeap1(builder);
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
         private static void ForceLeap1(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceLeap1, PerkType.ForceLeap)
+            builder.Create(FeatType.ForceLeap1, PerkType.ForceLeap)
                 .Name("Force Leap I")
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
                 .HasActivationDelay(2.0f)
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         }
         private static void ForceLeap2(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceLeap2, PerkType.ForceLeap)
+            builder.Create(FeatType.ForceLeap2, PerkType.ForceLeap)
                 .Name("Force Leap II")
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
                 .HasActivationDelay(2.0f)
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         }
         private static void ForceLeap3(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceLeap3, PerkType.ForceLeap)
+            builder.Create(FeatType.ForceLeap3, PerkType.ForceLeap)
                 .Name("Force Leap III")
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
                 .HasActivationDelay(2.0f)

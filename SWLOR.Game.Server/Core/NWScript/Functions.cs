@@ -1736,7 +1736,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - nFeat: FEAT_*
         ///   - oCreature
         /// </summary>
-        public static bool GetHasFeat(Feat nFeat, uint oCreature = OBJECT_INVALID)
+        public static bool GetHasFeat(FeatType nFeat, uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger((int)nFeat);
@@ -1762,7 +1762,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - nFeat: FEAT_*
         ///   - oTarget
         /// </summary>
-        public static void ActionUseFeat(Feat nFeat, uint oTarget)
+        public static void ActionUseFeat(FeatType nFeat, uint oTarget)
         {
             Internal.NativeFunctions.StackPushObject(oTarget);
             Internal.NativeFunctions.StackPushInteger((int)nFeat);
@@ -1926,7 +1926,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Create a Feat Talent.
         ///   - nFeat: FEAT_*
         /// </summary>
-        public static Talent TalentFeat(Feat nFeat)
+        public static Talent TalentFeat(FeatType nFeat)
         {
             Internal.NativeFunctions.StackPushInteger((int)nFeat);
             Internal.NativeFunctions.CallBuiltIn(302);

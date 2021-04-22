@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
 {
     public class AbilityBuilder
     {
-        private readonly Dictionary<Feat, AbilityDetail> _abilities = new Dictionary<Feat, AbilityDetail>();
+        private readonly Dictionary<FeatType, AbilityDetail> _abilities = new Dictionary<FeatType, AbilityDetail>();
         private AbilityDetail _activeAbility;
 
         /// <summary>
@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// <param name="featType">The type of feat to link this ability to.</param>
         /// <param name="effectiveLevelPerkType">The type of perk used for determining effective level.</param>
         /// <returns>An ability builder with the configured options</returns>
-        public AbilityBuilder Create(Feat featType, PerkType effectiveLevelPerkType)
+        public AbilityBuilder Create(FeatType featType, PerkType effectiveLevelPerkType)
         {
             _activeAbility = new AbilityDetail();
             _activeAbility.EffectiveLevelPerkType = effectiveLevelPerkType;
@@ -232,7 +232,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// Returns a built list of abilities.
         /// </summary>
         /// <returns>A list of built abilities.</returns>
-        public Dictionary<Feat, AbilityDetail> Build()
+        public Dictionary<FeatType, AbilityDetail> Build()
         {
             return _abilities;
         }

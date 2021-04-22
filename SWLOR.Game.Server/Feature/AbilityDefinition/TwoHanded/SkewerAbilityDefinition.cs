@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
     public class SkewerAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             Skewer1(builder);
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
         private static void Skewer1(AbilityBuilder builder)
         {
-            builder.Create(Feat.Skewer1, PerkType.Skewer)
+            builder.Create(FeatType.Skewer1, PerkType.Skewer)
                 .Name("Skewer I")
                 .HasRecastDelay(RecastGroup.Skewer, 30f)
                 .HasActivationDelay(2.0f)
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         }
         private static void Skewer2(AbilityBuilder builder)
         {
-            builder.Create(Feat.Skewer2, PerkType.Skewer)
+            builder.Create(FeatType.Skewer2, PerkType.Skewer)
                 .Name("Skewer II")
                 .HasRecastDelay(RecastGroup.Skewer, 30f)
                 .HasActivationDelay(2.0f)
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         }
         private static void Skewer3(AbilityBuilder builder)
         {
-            builder.Create(Feat.Skewer3, PerkType.Skewer)
+            builder.Create(FeatType.Skewer3, PerkType.Skewer)
                 .Name("Skewer III")
                 .HasRecastDelay(RecastGroup.Skewer, 30f)
                 .HasActivationDelay(2.0f)

@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class BurstOfSpeedAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             BurstOfSpeed1(builder);
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void BurstOfSpeed1(AbilityBuilder builder)
         {
-            builder.Create(Feat.BurstOfSpeed1, PerkType.BurstOfSpeed)
+            builder.Create(FeatType.BurstOfSpeed1, PerkType.BurstOfSpeed)
                 .Name("Burst of Speed I")
                 .HasRecastDelay(RecastGroup.BurstOfSpeed, 20f)
                 .HasActivationDelay(2.0f)
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         }
         private static void BurstOfSpeed2(AbilityBuilder builder)
         {
-            builder.Create(Feat.BurstOfSpeed2, PerkType.BurstOfSpeed)
+            builder.Create(FeatType.BurstOfSpeed2, PerkType.BurstOfSpeed)
                 .Name("Burst of Speed II")
                 .HasRecastDelay(RecastGroup.BurstOfSpeed, 20f)
                 .HasActivationDelay(2.0f)
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         }
         private static void BurstOfSpeed3(AbilityBuilder builder)
         {
-            builder.Create(Feat.BurstOfSpeed3, PerkType.BurstOfSpeed)
+            builder.Create(FeatType.BurstOfSpeed3, PerkType.BurstOfSpeed)
                 .Name("Burst of Speed III")
                 .HasRecastDelay(RecastGroup.BurstOfSpeed, 20f)
                 .HasActivationDelay(2.0f)
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         }
         private static void BurstOfSpeed4(AbilityBuilder builder)
         {
-            builder.Create(Feat.BurstOfSpeed4, PerkType.BurstOfSpeed)
+            builder.Create(FeatType.BurstOfSpeed4, PerkType.BurstOfSpeed)
                 .Name("Burst of Speed IV")
                 .HasRecastDelay(RecastGroup.BurstOfSpeed, 20f)
                 .HasActivationDelay(2.0f)
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         }
         private static void BurstOfSpeed5(AbilityBuilder builder)
         {
-            _ = builder.Create(Feat.BurstOfSpeed5, PerkType.BurstOfSpeed)
+            _ = builder.Create(FeatType.BurstOfSpeed5, PerkType.BurstOfSpeed)
                 .Name("Burst of Speed V")
                 .HasRecastDelay(RecastGroup.BurstOfSpeed, 20f)
                 .HasActivationDelay(2.0f)

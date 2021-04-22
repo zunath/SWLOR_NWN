@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ForceLightningAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             ForceLightning1(builder);
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceLightning1(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceLightning1, PerkType.ForceLightning)
+            builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
                 .Name("Force Lightning I")
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
                 .HasActivationDelay(2.0f)
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceLightning2(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceLightning2, PerkType.ForceLightning)
+            builder.Create(FeatType.ForceLightning2, PerkType.ForceLightning)
                 .Name("Force Lightning II")
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
                 .HasActivationDelay(2.0f)
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceLightning3(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceLightning3, PerkType.ForceLightning)
+            builder.Create(FeatType.ForceLightning3, PerkType.ForceLightning)
                 .Name("Force Lightning III")
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
                 .HasActivationDelay(2.0f)
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceLightning4(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceLightning4, PerkType.ForceLightning)
+            builder.Create(FeatType.ForceLightning4, PerkType.ForceLightning)
                 .Name("Force Lightning IV")
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
                 .HasActivationDelay(4.0f)

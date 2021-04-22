@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         /// <param name="target">The creature's target</param>
         /// <param name="allies">Allies associated with this creature. Should also include this creature.</param>
         /// <returns>A feat and target</returns>
-        public static (Feat, uint) DeterminePerkAbility(uint self, uint target, HashSet<uint> allies)
+        public static (FeatType, uint) DeterminePerkAbility(uint self, uint target, HashSet<uint> allies)
         {
             static float CalculateAverageHP(uint creature)
             {
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             var selfRace = GetRacialType(self);
             var lowestHPAllyRace = GetRacialType(lowestHPAlly);
 
-            return (Feat.Invalid, OBJECT_INVALID);
+            return (FeatType.Invalid, OBJECT_INVALID);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
         /// <param name="perkType">The type of perk to check</param>
         /// <param name="condition">The custom condition to check</param>
         /// <returns>true if feat can be used, false otherwise</returns>
-        private static bool CheckIfCanUseFeat(uint creature, uint target, Feat feat, PerkType perkType, Func<bool> condition = null)
+        private static bool CheckIfCanUseFeat(uint creature, uint target, FeatType feat, PerkType perkType, Func<bool> condition = null)
         {
             if (!GetHasFeat(feat, creature)) return false;
             if (condition != null && !condition()) return false;

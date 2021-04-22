@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
     public class ExplosiveTossAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             ExplosiveToss1(builder);
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
         private static void ExplosiveToss1(AbilityBuilder builder)
         {
-            builder.Create(Feat.ExplosiveToss1, PerkType.ExplosiveToss)
+            builder.Create(FeatType.ExplosiveToss1, PerkType.ExplosiveToss)
                 .Name("Explosive Toss I")
                 .HasRecastDelay(RecastGroup.ExplosiveToss, 30f)
                 .HasActivationDelay(2.0f)
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         }
         private static void ExplosiveToss2(AbilityBuilder builder)
         {
-            builder.Create(Feat.ExplosiveToss2, PerkType.ExplosiveToss)
+            builder.Create(FeatType.ExplosiveToss2, PerkType.ExplosiveToss)
                 .Name("Explosive Toss II")
                 .HasRecastDelay(RecastGroup.ExplosiveToss, 30f)
                 .HasActivationDelay(2.0f)
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         }
         private static void ExplosiveToss3(AbilityBuilder builder)
         {
-            builder.Create(Feat.ExplosiveToss3, PerkType.ExplosiveToss)
+            builder.Create(FeatType.ExplosiveToss3, PerkType.ExplosiveToss)
                 .Name("Explosive Toss III")
                 .HasRecastDelay(RecastGroup.ExplosiveToss, 30f)
                 .HasActivationDelay(2.0f)

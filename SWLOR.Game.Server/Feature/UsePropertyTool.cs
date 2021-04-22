@@ -19,9 +19,9 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("feat_use_bef")]
         public static void PropertyTool()
         {
-            var feat = (Feat)Convert.ToInt32(Events.GetEventData("FEAT_ID"));
+            var feat = (FeatType)Convert.ToInt32(Events.GetEventData("FEAT_ID"));
 
-            if (feat != Feat.StructureTool) return;
+            if (feat != FeatType.StructureTool) return;
 
             var player = OBJECT_SELF;
             var playerId = GetObjectUUID(player);

@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 {
     public class ElectricFistAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             ElectricFist1(builder);
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 
         private static void ElectricFist1(AbilityBuilder builder)
         {
-            builder.Create(Feat.ElectricFist1, PerkType.ElectricFist)
+            builder.Create(FeatType.ElectricFist1, PerkType.ElectricFist)
                 .Name("Electric Fist I")
                 .HasRecastDelay(RecastGroup.ElectricFist, 30f)
                 .HasActivationDelay(2.0f)
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         }
         private static void ElectricFist2(AbilityBuilder builder)
         {
-            builder.Create(Feat.ElectricFist2, PerkType.ElectricFist)
+            builder.Create(FeatType.ElectricFist2, PerkType.ElectricFist)
                 .Name("Electric Fist II")
                 .HasRecastDelay(RecastGroup.ElectricFist, 30f)
                 .HasActivationDelay(2.0f)
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         }
         private static void ElectricFist3(AbilityBuilder builder)
         {
-            builder.Create(Feat.ElectricFist3, PerkType.ElectricFist)
+            builder.Create(FeatType.ElectricFist3, PerkType.ElectricFist)
                 .Name("Electric Fist III")
                 .HasRecastDelay(RecastGroup.ElectricFist, 30f)
                 .HasActivationDelay(2.0f)

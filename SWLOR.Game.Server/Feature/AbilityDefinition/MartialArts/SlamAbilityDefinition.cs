@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 {
     public class SlamAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             Slam1(builder);
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 
         private static void Slam1(AbilityBuilder builder)
         {
-            builder.Create(Feat.Slam1, PerkType.Slam)
+            builder.Create(FeatType.Slam1, PerkType.Slam)
                 .Name("Slam I")
                 .HasRecastDelay(RecastGroup.Slam, 30f)
                 .HasActivationDelay(2.0f)
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         }
         private static void Slam2(AbilityBuilder builder)
         {
-            builder.Create(Feat.Slam2, PerkType.Slam)
+            builder.Create(FeatType.Slam2, PerkType.Slam)
                 .Name("Slam II")
                 .HasRecastDelay(RecastGroup.Slam, 30f)
                 .HasActivationDelay(2.0f)
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         }
         private static void Slam3(AbilityBuilder builder)
         {
-            builder.Create(Feat.Slam3, PerkType.Slam)
+            builder.Create(FeatType.Slam3, PerkType.Slam)
                 .Name("Slam III")
                 .HasRecastDelay(RecastGroup.Slam, 30f)
                 .HasActivationDelay(2.0f)

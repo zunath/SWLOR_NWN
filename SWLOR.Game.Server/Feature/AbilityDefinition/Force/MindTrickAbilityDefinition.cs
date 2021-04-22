@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class MindTrickAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             MindTrick1(builder);
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void MindTrick1(AbilityBuilder builder)
         {
-            builder.Create(Feat.MindTrick1, PerkType.MindTrick)
+            builder.Create(FeatType.MindTrick1, PerkType.MindTrick)
                 .Name("Mind Trick I")
                 .HasRecastDelay(RecastGroup.MindTrick, 60f)
                 .HasActivationDelay(2.0f)
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void MindTrick2(AbilityBuilder builder)
         {
-            builder.Create(Feat.MindTrick2, PerkType.MindTrick)
+            builder.Create(FeatType.MindTrick2, PerkType.MindTrick)
                 .Name("Mind Trick II")
                 .HasRecastDelay(RecastGroup.MindTrick, 60f)
                 .HasActivationDelay(2.0f)

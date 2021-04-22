@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Crafting
     {
         private readonly AbilityBuilder _builder = new AbilityBuilder();
 
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             ImplantInstallation1();
             ImplantInstallation2();
@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Crafting
 
         private void ImplantInstallation1()
         {
-            _builder.Create(Feat.ImplantInstallation1, PerkType.ImplantInstallation)
+            _builder.Create(FeatType.ImplantInstallation1, PerkType.ImplantInstallation)
                 .Name("Implant Installation I")
                 .HasRecastDelay(RecastGroup.ImplantInstallation, 60f)
                 .HasActivationDelay(6f)
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Crafting
         }
         private void ImplantInstallation2()
         {
-            _builder.Create(Feat.ImplantInstallation1, PerkType.ImplantInstallation)
+            _builder.Create(FeatType.ImplantInstallation1, PerkType.ImplantInstallation)
                 .Name("Implant Installation II")
                 .HasRecastDelay(RecastGroup.ImplantInstallation, 60f)
                 .HasActivationDelay(6f)
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Crafting
         }
         private void ImplantInstallation3()
         {
-            _builder.Create(Feat.ImplantInstallation1, PerkType.ImplantInstallation)
+            _builder.Create(FeatType.ImplantInstallation1, PerkType.ImplantInstallation)
                 .Name("Implant Installation III")
                 .HasRecastDelay(RecastGroup.ImplantInstallation, 60f)
                 .HasActivationDelay(6f)
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Crafting
         }
         private void ImplantInstallation4()
         {
-            _builder.Create(Feat.ImplantInstallation1, PerkType.ImplantInstallation)
+            _builder.Create(FeatType.ImplantInstallation1, PerkType.ImplantInstallation)
                 .Name("Implant Installation IV")
                 .HasRecastDelay(RecastGroup.ImplantInstallation, 60f)
                 .HasActivationDelay(6f)

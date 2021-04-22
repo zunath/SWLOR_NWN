@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
     public class CircleSlashAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             CircleSlash1(builder);
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
         private static void CircleSlash1(AbilityBuilder builder)
         {
-            builder.Create(Feat.CircleSlash1, PerkType.CircleSlash)
+            builder.Create(FeatType.CircleSlash1, PerkType.CircleSlash)
                 .Name("Circle Slash I")
                 .HasRecastDelay(RecastGroup.CircleSlash, 30f)
                 .HasActivationDelay(2.0f)
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         }
         private static void CircleSlash2(AbilityBuilder builder)
         {
-            builder.Create(Feat.CircleSlash2, PerkType.CircleSlash)
+            builder.Create(FeatType.CircleSlash2, PerkType.CircleSlash)
                 .Name("Circle Slash II")
                 .HasRecastDelay(RecastGroup.CircleSlash, 30f)
                 .HasActivationDelay(2.0f)
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         }
         private static void CircleSlash3(AbilityBuilder builder)
         {
-            builder.Create(Feat.CircleSlash3, PerkType.CircleSlash)
+            builder.Create(FeatType.CircleSlash3, PerkType.CircleSlash)
                 .Name("Circle Slash III")
                 .HasRecastDelay(RecastGroup.CircleSlash, 30f)
                 .HasActivationDelay(2.0f)

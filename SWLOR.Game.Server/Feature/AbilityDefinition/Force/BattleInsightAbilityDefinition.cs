@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class BattleInsightAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             BattleInsight1(builder);
@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void BattleInsight1(AbilityBuilder builder)
         {
-            builder.Create(Feat.BattleInsight1, PerkType.BattleInsight)
+            builder.Create(FeatType.BattleInsight1, PerkType.BattleInsight)
                 .Name("Battle Insight I")
                 .HasRecastDelay(RecastGroup.BattleInsight, 60f)
                 .HasActivationDelay(2.0f)
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         }
         private static void BattleInsight2(AbilityBuilder builder)
         {
-            builder.Create(Feat.BattleInsight2, PerkType.BattleInsight)
+            builder.Create(FeatType.BattleInsight2, PerkType.BattleInsight)
                 .Name("Battle Insight II")
                 .HasRecastDelay(RecastGroup.BattleInsight, 60f)
                 .HasActivationDelay(2.0f)

@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ForceBodyAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             ForceBody1(builder);
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceBody1(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceBody1, PerkType.ForceBody)
+            builder.Create(FeatType.ForceBody1, PerkType.ForceBody)
                 .Name("Force Body I")
                 .HasRecastDelay(RecastGroup.ForceBody, 60f * 5f)
                 .HasActivationDelay(2.0f)
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceBody2(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceBody2, PerkType.ForceBody)
+            builder.Create(FeatType.ForceBody2, PerkType.ForceBody)
                 .Name("Force Body II")
                 .HasRecastDelay(RecastGroup.ForceBody, 60f * 5f)
                 .HasActivationDelay(2.0f)

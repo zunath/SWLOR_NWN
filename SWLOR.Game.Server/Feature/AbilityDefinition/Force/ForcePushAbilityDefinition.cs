@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ForcePushAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             ForcePush1(builder);
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForcePush1(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForcePush1, PerkType.ForcePush)
+            builder.Create(FeatType.ForcePush1, PerkType.ForcePush)
                 .Name("Force Push I")
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasActivationDelay(2.0f)
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForcePush2(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForcePush2, PerkType.ForcePush)
+            builder.Create(FeatType.ForcePush2, PerkType.ForcePush)
                 .Name("Force Push II")
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasActivationDelay(2.0f)
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForcePush3(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForcePush3, PerkType.ForcePush)
+            builder.Create(FeatType.ForcePush3, PerkType.ForcePush)
                 .Name("Force Push III")
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasActivationDelay(2.0f)
@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForcePush4(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForcePush4, PerkType.ForcePush)
+            builder.Create(FeatType.ForcePush4, PerkType.ForcePush)
                 .Name("Force Push IV")
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasActivationDelay(4.0f)

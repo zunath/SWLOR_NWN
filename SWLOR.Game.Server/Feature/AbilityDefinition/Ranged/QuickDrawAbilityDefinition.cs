@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 {
     public class QuickDrawAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             QuickDraw1(builder);
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
 
         private static void QuickDraw1(AbilityBuilder builder)
         {
-            builder.Create(Feat.QuickDraw1, PerkType.QuickDraw)
+            builder.Create(FeatType.QuickDraw1, PerkType.QuickDraw)
                 .Name("Quick Draw I")
                 .HasRecastDelay(RecastGroup.QuickDraw, 30f)
                 .HasActivationDelay(2.0f)
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         }
         private static void QuickDraw2(AbilityBuilder builder)
         {
-            builder.Create(Feat.QuickDraw2, PerkType.QuickDraw)
+            builder.Create(FeatType.QuickDraw2, PerkType.QuickDraw)
                 .Name("Quick Draw II")
                 .HasRecastDelay(RecastGroup.QuickDraw, 30f)
                 .HasActivationDelay(2.0f)
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
         }
         private static void QuickDraw3(AbilityBuilder builder)
         {
-            builder.Create(Feat.QuickDraw3, PerkType.QuickDraw)
+            builder.Create(FeatType.QuickDraw3, PerkType.QuickDraw)
                 .Name("Quick Draw III")
                 .HasRecastDelay(RecastGroup.QuickDraw, 30f)
                 .HasActivationDelay(2.0f)

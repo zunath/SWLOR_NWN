@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 {
     public class CrossCutAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             CrossCut1(builder);
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
         private static void CrossCut1(AbilityBuilder builder)
         {
-            builder.Create(Feat.CrossCut1, PerkType.CrossCut)
+            builder.Create(FeatType.CrossCut1, PerkType.CrossCut)
                 .Name("Cross Cut I")
                 .HasRecastDelay(RecastGroup.CrossCut, 60f)
                 .HasActivationDelay(2.0f)
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         }
         private static void CrossCut2(AbilityBuilder builder)
         {
-            builder.Create(Feat.CrossCut2, PerkType.CrossCut)
+            builder.Create(FeatType.CrossCut2, PerkType.CrossCut)
                 .Name("Cross Cut II")
                 .HasRecastDelay(RecastGroup.CrossCut, 60f)
                 .HasActivationDelay(2.0f)
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
         }
         private static void CrossCut3(AbilityBuilder builder)
         {
-            builder.Create(Feat.CrossCut3, PerkType.CrossCut)
+            builder.Create(FeatType.CrossCut3, PerkType.CrossCut)
                 .Name("Cross Cut III")
                 .HasRecastDelay(RecastGroup.CrossCut, 60f)
                 .HasActivationDelay(2.0f)

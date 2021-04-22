@@ -7,12 +7,12 @@ namespace SWLOR.Game.Server.Service.PerkService
     {
         public int Price { get; set; }
         public string Description { get; set; }
-        public List<Feat> GrantedFeats { get; set; }
+        public List<FeatType> GrantedFeats { get; set; }
         public List<IPerkRequirement> Requirements { get; set; }
 
         public PerkLevel()
         {
-            GrantedFeats = new List<Feat>();
+            GrantedFeats = new List<FeatType>();
             Requirements = new List<IPerkRequirement>();
         }
     }

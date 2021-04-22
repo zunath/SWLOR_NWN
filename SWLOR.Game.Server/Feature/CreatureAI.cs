@@ -233,7 +233,7 @@ namespace SWLOR.Game.Server.Feature
                 allies.Add(self);
 
                 var (feat, featTarget) = GenericAIDefinition.DeterminePerkAbility(self, target, allies);
-                if (feat != Feat.Invalid && GetIsObjectValid(featTarget))
+                if (feat != FeatType.Invalid && GetIsObjectValid(featTarget))
                 {
                     ClearAllActions();
                     ActionUseFeat(feat, featTarget);

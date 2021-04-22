@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Ability
     {
-        private static readonly Dictionary<Feat, AbilityDetail> _abilities = new Dictionary<Feat, AbilityDetail>();
+        private static readonly Dictionary<FeatType, AbilityDetail> _abilities = new Dictionary<FeatType, AbilityDetail>();
 
         private static readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new Dictionary<uint, ActiveConcentrationAbility>();
         
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="featType">The type of feat to check.</param>
         /// <returns>true if feat is registered to an ability. false otherwise.</returns>
-        public static bool IsFeatRegistered(Feat featType)
+        public static bool IsFeatRegistered(FeatType featType)
         {
             return _abilities.ContainsKey(featType);
         }
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="featType">The type of feat</param>
         /// <returns>The ability detail</returns>
-        public static AbilityDetail GetAbilityDetail(Feat featType)
+        public static AbilityDetail GetAbilityDetail(FeatType featType)
         {
             if(!_abilities.ContainsKey(featType))
                 throw new KeyNotFoundException($"Feat '{featType}' is not registered to an ability.");
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="abilityType">The type of ability to use.</param>
         /// <param name="effectivePerkLevel">The activator's effective perk level.</param>
         /// <returns>true if successful, false otherwise</returns>
-        public static bool CanUseAbility(uint activator, uint target, Feat abilityType, int effectivePerkLevel)
+        public static bool CanUseAbility(uint activator, uint target, FeatType abilityType, int effectivePerkLevel)
         {
             var ability = GetAbilityDetail(abilityType);
 
@@ -192,7 +192,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature who will perform the concentration.</param>
         /// <param name="feat">The type of ability to activate.</param>
         /// <param name="statusEffectType">The concentration status effect to apply.</param>
-        public static void StartConcentrationAbility(uint creature, Feat feat, StatusEffectType statusEffectType)
+        public static void StartConcentrationAbility(uint creature, FeatType feat, StatusEffectType statusEffectType)
         {
             _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(feat, statusEffectType);
             StatusEffect.Apply(creature, creature, statusEffectType, 0.0f);
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Service
                 return _activeConcentrationAbilities[creature];
             }
 
-            return new ActiveConcentrationAbility(Feat.Invalid, StatusEffectType.Invalid);
+            return new ActiveConcentrationAbility(FeatType.Invalid, StatusEffectType.Invalid);
         }
         
         /// <summary>

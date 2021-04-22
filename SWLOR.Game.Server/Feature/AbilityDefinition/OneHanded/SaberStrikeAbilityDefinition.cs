@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
     public class SaberStrikeAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             SaberStrike1(builder);
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
         private static void SaberStrike1(AbilityBuilder builder)
         {
-            builder.Create(Feat.SaberStrike1, PerkType.SaberStrike)
+            builder.Create(FeatType.SaberStrike1, PerkType.SaberStrike)
                 .Name("Saber Strike I")
                 .HasRecastDelay(RecastGroup.SaberStrike, 30f)
                 .HasActivationDelay(2.0f)
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         }
         private static void SaberStrike2(AbilityBuilder builder)
         {
-            builder.Create(Feat.SaberStrike2, PerkType.SaberStrike)
+            builder.Create(FeatType.SaberStrike2, PerkType.SaberStrike)
                 .Name("Saber Strike II")
                 .HasRecastDelay(RecastGroup.SaberStrike, 30f)
                 .HasActivationDelay(2.0f)
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         }
         private static void SaberStrike3(AbilityBuilder builder)
         {
-            builder.Create(Feat.SaberStrike3, PerkType.SaberStrike)
+            builder.Create(FeatType.SaberStrike3, PerkType.SaberStrike)
                 .Name("Saber Strike III")
                 .HasRecastDelay(RecastGroup.SaberStrike, 30f)
                 .HasActivationDelay(2.0f)

@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ForceDrainAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             ForceDrain1(builder);
@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceDrain1(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceDrain1, PerkType.ForceDrain)
+            builder.Create(FeatType.ForceDrain1, PerkType.ForceDrain)
                 .Name("Force Drain 1")
                 .HasRecastDelay(RecastGroup.ForceDrain, 60f)
                 .HasActivationDelay(2.0f)
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceDrain2(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceDrain2, PerkType.ForceDrain)
+            builder.Create(FeatType.ForceDrain2, PerkType.ForceDrain)
                 .Name("Force Drain II")
                 .HasRecastDelay(RecastGroup.ForceDrain, 60f)
                 .HasActivationDelay(2.0f)
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceDrain3(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceDrain3, PerkType.ForceDrain)
+            builder.Create(FeatType.ForceDrain3, PerkType.ForceDrain)
                 .Name("Force Drain III")
                 .HasRecastDelay(RecastGroup.ForceDrain, 60f)
                 .HasActivationDelay(2.0f)
@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceDrain4(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceDrain4, PerkType.ForceDrain)
+            builder.Create(FeatType.ForceDrain4, PerkType.ForceDrain)
                 .Name("Force Drain IV")
                 .HasRecastDelay(RecastGroup.ForceDrain, 60f)
                 .HasActivationDelay(4.0f)
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceDrain5(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceDrain5, PerkType.ForceDrain)
+            builder.Create(FeatType.ForceDrain5, PerkType.ForceDrain)
                 .Name("Force Drain V")
                 .HasRecastDelay(RecastGroup.ForceDrain, 60f)
                 .HasActivationDelay(4.0f)

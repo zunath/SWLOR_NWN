@@ -5,13 +5,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
 {
     public class ActiveConcentrationAbility
     {
-        public ActiveConcentrationAbility(Feat feat, StatusEffectType statusEffectType)
+        public ActiveConcentrationAbility(FeatType feat, StatusEffectType statusEffectType)
         {
             Feat = feat;
             StatusEffectType = statusEffectType;
         }
 
-        public Feat Feat { get; set; }
+        public FeatType Feat { get; set; }
         public StatusEffectType StatusEffectType { get; set; }
     }
 }

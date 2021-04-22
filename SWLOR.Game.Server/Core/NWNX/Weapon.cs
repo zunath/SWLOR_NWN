@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Set Event Data Constants
         private const int DC_Bypass = 0; // Set Devastating Critical Bypass
 
-        public static void SetWeaponFocusFeat(BaseItem baseItem, Feat feat)
+        public static void SetWeaponFocusFeat(BaseItem baseItem, FeatType feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetWeaponFocusFeat");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        public static void SetEpicWeaponFocusFeat(BaseItem baseItem, Feat feat)
+        public static void SetEpicWeaponFocusFeat(BaseItem baseItem, FeatType feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetEpicWeaponFocusFeat");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        public static void SetGreaterWeaponFocusFeat(BaseItem baseItem, Feat feat)
+        public static void SetGreaterWeaponFocusFeat(BaseItem baseItem, FeatType feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetGreaterWeaponFocusFeat");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        public static void SetWeaponImprovedCriticalFeat(BaseItem baseItem, Feat feat)
+        public static void SetWeaponImprovedCriticalFeat(BaseItem baseItem, FeatType feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetWeaponImprovedCriticalFeat");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        public static void SetWeaponSpecializationFeat(BaseItem baseItem, Feat feat)
+        public static void SetWeaponSpecializationFeat(BaseItem baseItem, FeatType feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetWeaponSpecializationFeat");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        public static void SetGreaterWeaponSpecializationFeat(BaseItem baseItem, Feat feat)
+        public static void SetGreaterWeaponSpecializationFeat(BaseItem baseItem, FeatType feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetGreaterWeaponSpecializationFeat");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        public static void SetEpicWeaponSpecializationFeat(BaseItem baseItem, Feat feat)
+        public static void SetEpicWeaponSpecializationFeat(BaseItem baseItem, FeatType feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetEpicWeaponSpecializationFeat");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        public static void SetEpicWeaponOverwhelmingCriticalFeat(BaseItem baseItem, Feat feat)
+        public static void SetEpicWeaponOverwhelmingCriticalFeat(BaseItem baseItem, FeatType feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetEpicWeaponOverwhelmingCriticalFeat");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        public static void SetEpicWeaponDevastatingCriticalFeat(BaseItem baseItem, Feat feat)
+        public static void SetEpicWeaponDevastatingCriticalFeat(BaseItem baseItem, FeatType feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetEpicWeaponDevastatingCriticalFeat");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
-        public static void SetWeaponOfChoiceFeat(BaseItem baseItem, Feat feat)
+        public static void SetWeaponOfChoiceFeat(BaseItem baseItem, FeatType feat)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetWeaponOfChoiceFeat");
             Internal.NativeFunctions.nwnxPushInt((int)feat);

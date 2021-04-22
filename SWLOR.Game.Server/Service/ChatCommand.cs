@@ -83,16 +83,16 @@ namespace SWLOR.Game.Server.Service
                 SetLocalString(sender, "CHAT_COMMAND_ARGS", args);
                 SendMessageToPC(sender, "Please use your 'Chat Command Targeter' feat to select the target of this chat command.");
 
-                if (!GetHasFeat(Feat.ChatCommandTargeter, sender) || GetIsDM(sender) || GetIsDMPossessed(sender))
+                if (!GetHasFeat(FeatType.ChatCommandTargeter, sender) || GetIsDM(sender) || GetIsDMPossessed(sender))
                 {
-                    Creature.AddFeatByLevel(sender, Feat.ChatCommandTargeter, 1);
+                    Creature.AddFeatByLevel(sender, FeatType.ChatCommandTargeter, 1);
 
                     if (GetIsDM(sender) || GetIsDMPossessed(sender))
                     {
                         var qbs = Player.GetQuickBarSlot(sender, 11);
                         if (qbs.ObjectType == QuickBarSlotType.Empty)
                         {
-                            Player.SetQuickBarSlot(sender, 11, PlayerQuickBarSlot.UseFeat(Feat.ChatCommandTargeter));
+                            Player.SetQuickBarSlot(sender, 11, PlayerQuickBarSlot.UseFeat(FeatType.ChatCommandTargeter));
                         }
                     }
                 }
@@ -214,8 +214,8 @@ namespace SWLOR.Game.Server.Service
         public static void UseOpenRestMenuFeat()
         {
             var player = OBJECT_SELF;
-            var feat = (Feat)Convert.ToInt32(Events.GetEventData("FEAT_ID"));
-            if (feat != Feat.ChatCommandTargeter) return;
+            var feat = (FeatType)Convert.ToInt32(Events.GetEventData("FEAT_ID"));
+            if (feat != FeatType.ChatCommandTargeter) return;
 
             var target = StringToObject(Events.GetEventData("TARGET_OBJECT_ID"));
             var area = StringToObject(Events.GetEventData("AREA_OBJECT_ID"));

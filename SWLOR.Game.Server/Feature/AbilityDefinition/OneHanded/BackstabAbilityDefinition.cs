@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
     public class BackstabAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             Backstab1(builder);
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
         private static void Backstab1(AbilityBuilder builder)
         {
-            builder.Create(Feat.Backstab1, PerkType.Backstab)
+            builder.Create(FeatType.Backstab1, PerkType.Backstab)
                 .Name("Backstab I")
                 .HasRecastDelay(RecastGroup.Backstab, 30f)
                 .HasActivationDelay(2.0f)
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         }
         private static void Backstab2(AbilityBuilder builder)
         {
-            builder.Create(Feat.Backstab2, PerkType.Backstab)
+            builder.Create(FeatType.Backstab2, PerkType.Backstab)
                 .Name("Backstab II")
                 .HasRecastDelay(RecastGroup.Backstab, 30f)
                 .HasActivationDelay(2.0f)
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         }
         private static void Backstab3(AbilityBuilder builder)
         {
-            builder.Create(Feat.Backstab3, PerkType.Backstab)
+            builder.Create(FeatType.Backstab3, PerkType.Backstab)
                 .Name("Backstab III")
                 .HasRecastDelay(RecastGroup.Backstab, 30f)
                 .HasActivationDelay(2.0f)

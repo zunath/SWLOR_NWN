@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public class ForceBreachAbilityDefinition : IAbilityListDefinition
     {
-        public Dictionary<Feat, AbilityDetail> BuildAbilities()
+        public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
             ForceBreach1(builder);
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceBreach1(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceBreach1, PerkType.ForceBreach)
+            builder.Create(FeatType.ForceBreach1, PerkType.ForceBreach)
                 .Name("Force Breach I")
                 .HasRecastDelay(RecastGroup.ForceBreach, 30f)
                 .HasActivationDelay(2.0f)
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceBreach2(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceBreach2, PerkType.ForceBreach)
+            builder.Create(FeatType.ForceBreach2, PerkType.ForceBreach)
                 .Name("Force Breach II")
                 .HasRecastDelay(RecastGroup.ForceBreach, 30f)
                 .HasActivationDelay(2.0f)
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceBreach3(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceBreach3, PerkType.ForceBreach)
+            builder.Create(FeatType.ForceBreach3, PerkType.ForceBreach)
                 .Name("Force Breach III")
                 .HasRecastDelay(RecastGroup.ForceBreach, 30f)
                 .HasActivationDelay(2.0f)
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ForceBreach4(AbilityBuilder builder)
         {
-            builder.Create(Feat.ForceBreach4, PerkType.ForceBreach)
+            builder.Create(FeatType.ForceBreach4, PerkType.ForceBreach)
                 .Name("Force Breach IV")
                 .HasRecastDelay(RecastGroup.ForceBreach, 30f)
                 .HasActivationDelay(4.0f)

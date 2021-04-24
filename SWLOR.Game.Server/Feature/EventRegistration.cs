@@ -150,6 +150,10 @@ namespace SWLOR.Game.Server.Feature
             Events.SubscribeEvent("NWNX_ON_ITEM_SCROLL_LEARN_BEFORE", "scroll_lrn_bef");
             Events.SubscribeEvent("NWNX_ON_ITEM_SCROLL_LEARN_AFTER", "scroll_lrn_aft");
 
+            // Validate Item Equip events
+            Events.SubscribeEvent("NWNX_ON_VALIDATE_ITEM_EQUIP_BEFORE", "item_val_bef");
+            Events.SubscribeEvent("NWNX_ON_VALIDATE_ITEM_EQUIP_AFTER", "item_val_aft");
+
             // Item Equip events
             Events.SubscribeEvent("NWNX_ON_ITEM_EQUIP_BEFORE", "item_eqp_bef");
             Events.SubscribeEvent("NWNX_ON_ITEM_EQUIP_AFTER", "item_eqp_aft");

@@ -83,13 +83,6 @@
           "type": "resref",
           "value": "zhettarobe"
         }
-      },
-      {
-        "__struct_id": 64,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "basicscarf001"
-        }
       }
     ]
   },

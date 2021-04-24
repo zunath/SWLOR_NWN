@@ -175,13 +175,6 @@
           "type": "resref",
           "value": "directoroutfit"
         }
-      },
-      {
-        "__struct_id": 64,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "basicscarf"
-        }
       }
     ]
   },

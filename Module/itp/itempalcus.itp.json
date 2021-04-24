@@ -4555,132 +4555,165 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Force Belt I"
+                            "value": "Basic Might Belt"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "force_belt_1"
+                            "value": "mght_belt_b"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Force Belt II"
+                            "value": "Basic Thief Belt"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "force_belt_2"
+                            "value": "thf_belt_b"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Force Belt III"
+                            "value": "Basic Warrior Belt"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "force_belt_3"
+                            "value": "war_belt_b"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Heavy Belt I"
+                            "value": "Might Belt I"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "heavy_belt_1"
+                            "value": "mght_belt_1"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Heavy Belt II"
+                            "value": "Might Belt II"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "heavy_belt_2"
+                            "value": "mght_belt_2"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Heavy Belt III"
+                            "value": "Might Belt III"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "heavy_belt_3"
+                            "value": "mght_belt_3"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Belt I"
+                            "value": "Might Belt IV"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "light_belt_1"
+                            "value": "mght_belt_4"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Belt II"
+                            "value": "Thief Belt I"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "light_belt_2"
+                            "value": "thf_belt_1"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Belt III"
+                            "value": "Thief Belt II"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "light_belt_3"
+                            "value": "thf_belt_2"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Prismatic Force Belt"
+                            "value": "Thief Belt III"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "prism_belt_f"
+                            "value": "thf_belt_3"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Prismatic Heavy Belt"
+                            "value": "Thief Belt IV"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "prism_belt_h"
+                            "value": "thf_belt_4"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Prismatic Light Belt"
+                            "value": "Warrior Belt I"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "prism_belt_l"
+                            "value": "war_belt_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Warrior Belt II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "war_belt_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Warrior Belt III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "war_belt_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Warrior Belt IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "war_belt_4"
                           }
                         }
                       ]
@@ -4736,44 +4769,11 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Force Boots"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "force_boots_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Basic Gunslinger Boot"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "gn_boot_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Heavy Boots"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "heavy_boots_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Light Boots"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "light_boots_b"
                           }
                         },
                         {
@@ -4912,50 +4912,6 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Force Boots I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "force_boots_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Force Boots II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "force_boots_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Force Boots III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "force_boots_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Force Boots IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "force_boots_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Gunslinger Boot I"
                           },
                           "RESREF": {
@@ -4994,94 +4950,6 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "gn_boot_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Boots I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "heavy_boots_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Boots II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "heavy_boots_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Boots III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "heavy_boots_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Boots IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "heavy_boots_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Light Boots I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "light_boots_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Light Boots II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "light_boots_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Light Boots III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "light_boots_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Light Boots IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "light_boots_4"
                           }
                         }
                       ]
@@ -5242,138 +5110,6 @@
                             "type": "resref",
                             "value": "du_bracer_4"
                           }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Force Bracer I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bracer_force_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Force Bracer II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bracer_force_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Force Bracer III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bracer_force_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Force Bracer IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bracer_force_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Bracer I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bracer_heavy_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Bracer II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bracer_heavy_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Bracer III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bracer_heavy_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Bracer IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bracer_heavy_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Light Bracer I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bracer_light_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Light Bracer II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bracer_light_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Light Bracer III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bracer_light_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Light Bracer IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bracer_light_4"
-                          }
                         }
                       ]
                     },
@@ -5395,22 +5131,165 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Scarf"
+                            "value": "Basic Might Cloak"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "basicscarf"
+                            "value": "mght_cloak_b"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Scarf"
+                            "value": "Basic Thief Cloak"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "basicscarf001"
+                            "value": "thf_cloak_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Basic Warrior Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "war_cloak_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Might Cloak I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mght_cloak_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Might Cloak II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mght_cloak_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Might Cloak III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mght_cloak_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Might Cloak IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mght_cloak_4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Thief Cloak I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "thf_cloak_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Thief Cloak II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "thf_cloak_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Thief Cloak III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "thf_cloak_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Thief Cloak IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "thf_cloak_4"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Warrior Cloak I"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "war_cloak_1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Warrior Cloak II"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "war_cloak_2"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Warrior Cloak III"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "war_cloak_3"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Warrior Cloak IV"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "war_cloak_4"
                           }
                         }
                       ]
@@ -5460,17 +5339,6 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "gn_glove_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Power Glove"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "powerglove_b"
                           }
                         },
                         {
@@ -5581,50 +5449,6 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "gn_glove_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Power Glove I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "powerglove_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Power Glove II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "powerglove_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Power Glove III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "powerglove_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Power Glove IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "powerglove_4"
                           }
                         },
                         {
@@ -10223,209 +10047,55 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Force Necklace I"
+                            "value": "Basic Necklace"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "force_neck_1"
+                            "value": "necklace_b"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Force Necklace II"
+                            "value": "Necklace I"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "force_neck_2"
+                            "value": "necklace_1"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Force Necklace III"
+                            "value": "Necklace II"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "force_neck_3"
+                            "value": "necklace_2"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Force Necklace IV"
+                            "value": "Necklace III"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "force_neck_4"
+                            "value": "necklace_3"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Heavy Crest I"
+                            "value": "Necklace IV"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "h_crest_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Crest II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "h_crest_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Crest III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "h_crest_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Crest IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "h_crest_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Light Choker I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "lt_choker_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Light Choker II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "lt_choker_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Light Choker III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "lt_choker_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Light Choker IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "lt_choker_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Miner's Medallion I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "miner_medal_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Miner's Medallion II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "miner_medal_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Miner's Medallion III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "miner_medal_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Miner's Medallion IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "miner_medal_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Prismatic Force Necklace"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "prism_neck_f"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Prismatic Heavy Necklace"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "prism_neck_h"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Prismatic Light Necklace"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "prism_neck_l"
+                            "value": "necklace_4"
                           }
                         },
                         {

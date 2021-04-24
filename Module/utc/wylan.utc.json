@@ -175,13 +175,6 @@
         }
       },
       {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "lightsaber_g"
-        }
-      },
-      {
         "__struct_id": 128,
         "EquippedRes": {
           "type": "resref",

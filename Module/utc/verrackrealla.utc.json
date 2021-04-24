@@ -175,13 +175,6 @@
           "type": "resref",
           "value": "verracrobe"
         }
-      },
-      {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "lightsaber_npc_v"
-        }
       }
     ]
   },

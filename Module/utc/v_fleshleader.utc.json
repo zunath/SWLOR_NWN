@@ -87,15 +87,7 @@
   },
   "Equip_ItemList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "lightsaber_npc_r"
-        }
-      }
-    ]
+    "value": []
   },
   "FactionID": {
     "type": "word",

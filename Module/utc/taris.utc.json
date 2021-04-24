@@ -885,21 +885,6 @@
           "type": "word",
           "value": 0
         }
-      },
-      {
-        "__struct_id": 2,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "tarissaber"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 4
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
       }
     ]
   },

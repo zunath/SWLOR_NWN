@@ -175,20 +175,6 @@
           "type": "resref",
           "value": "nephsdiggs"
         }
-      },
-      {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "nephsaber"
-        }
-      },
-      {
-        "__struct_id": 32,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "nephsaber2"
-        }
       }
     ]
   },

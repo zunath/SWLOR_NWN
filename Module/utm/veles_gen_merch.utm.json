@@ -563,25 +563,6 @@
                 "type": "word",
                 "value": 7
               }
-            },
-            {
-              "__struct_id": 23,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "elec_foil"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 4
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 10
-              }
             }
           ]
         }

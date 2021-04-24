@@ -173,13 +173,6 @@
           "type": "resref",
           "value": "npc_hood"
         }
-      },
-      {
-        "__struct_id": 2,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "force_robe_b"
-        }
       }
     ]
   },

@@ -89,7 +89,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "helmet_fb"
+                "value": "leather_tunic_b"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -108,91 +108,15 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "helmet_hb"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 4
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 3,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "helmet_lb"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 6
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 4,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "leather_tunic_b"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 8
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 5,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
                 "value": "leather_tunic002"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 2
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 2
-              }
-            },
-            {
-              "__struct_id": 6,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "force_robe_b"
-              },
-              "Repos_PosX": {
-                "type": "word",
                 "value": 4
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 2
+                "value": 0
               }
             }
           ]

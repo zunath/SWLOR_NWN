@@ -166,15 +166,7 @@
   },
   "Equip_ItemList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 2,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "force_robe_1"
-        }
-      }
-    ]
+    "value": []
   },
   "FactionID": {
     "type": "word",

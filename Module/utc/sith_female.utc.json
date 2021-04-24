@@ -202,13 +202,6 @@
           "type": "resref",
           "value": "sithrobe_female"
         }
-      },
-      {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "sith_twinblade"
-        }
       }
     ]
   },

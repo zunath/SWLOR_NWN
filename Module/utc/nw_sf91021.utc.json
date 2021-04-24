@@ -238,26 +238,11 @@
         "__struct_id": 0,
         "InventoryRes": {
           "type": "resref",
-          "value": "artssaberstaff"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 0
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 1,
-        "InventoryRes": {
-          "type": "resref",
           "value": "artshood"
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 1
+          "value": 0
         },
         "Repos_Posy": {
           "type": "word",

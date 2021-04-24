@@ -197,13 +197,6 @@
           "type": "resref",
           "value": "vet_togejawa002"
         }
-      },
-      {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "cac_vibrolame01"
-        }
       }
     ]
   },

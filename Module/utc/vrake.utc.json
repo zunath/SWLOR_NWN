@@ -180,13 +180,6 @@
           "type": "resref",
           "value": "robe_sand_m001"
         }
-      },
-      {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "saberstaff_y_001"
-        }
       }
     ]
   },

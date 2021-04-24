@@ -15602,6 +15602,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Rudimentary Heavy Vibroblade GA"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "greataxe_r"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Trandoshan Heavy Vibroblade GA"
                           },
                           "RESREF": {
@@ -15656,6 +15667,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "byyskwarrioraxe"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rudimentary Vibroblade BA"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "battleaxe_r"
                           }
                         },
                         {
@@ -15739,6 +15761,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "bst_sword_b"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rudimentary Vibroblade BS"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bst_sword_b001"
                           }
                         },
                         {
@@ -15882,6 +15915,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Rudimentary Finesse Vibroblade D"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dagger_r"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Survival Knife"
                           },
                           "RESREF": {
@@ -15980,6 +16024,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "greatsword_mando"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rudimentary Heavy Vibroblade GS"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "greatsword_r"
                           }
                         },
                         {
@@ -16238,6 +16293,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "longsword_mando"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rudimentary Vibroblade LS"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "longsword_r"
                           }
                         },
                         {
@@ -16601,6 +16667,28 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Rudimentary Finesse Vibroblade R"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "rapier_r"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rudimentary Vibroblade K"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "katana_r"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Vibroblade K1"
                           },
                           "RESREF": {
@@ -16738,6 +16826,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Rudimentary Finesse Vibroblade SS"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "shortsword_r"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Sith Blade"
                           },
                           "RESREF": {
@@ -16854,6 +16953,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Rudimentary Baton C"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "club_r"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Security Officer Baton"
                           },
                           "RESREF": {
@@ -16964,6 +17074,17 @@
                             "type": "resref",
                             "value": "mace_4"
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rudimentary Baton M"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mace_r"
+                          }
                         }
                       ]
                     },
@@ -17046,6 +17167,17 @@
                             "type": "resref",
                             "value": "morningstar_cox"
                           }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rudimentary Baton MS"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "morningstar_r"
+                          }
                         }
                       ]
                     },
@@ -17074,77 +17206,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Art's Saberstaff"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "artssaberstaff"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Assassin Saberstaff"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_a"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Basic Quarterstaff"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "quarterstaff_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Training Foil Staff"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Training Foil Staff"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_g_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Training Foil Staff"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_r_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Training Foil Staff"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_y_b"
                     }
                   },
                   {
@@ -17173,17 +17239,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Berserker Twin Vibroblade"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "doubleaxe_z"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Byysk Quarterstaff"
                     },
                     "RESREF": {
@@ -17200,28 +17255,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "doubleaxe_cox"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Nulaa's Saber"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "item002"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Nulaa's Saber"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "pil_nulaasaber"
                     }
                   },
                   {
@@ -17272,198 +17305,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Sentinel Saberstaff"
+                      "value": "Rudimentary Quarterstaff"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "saberstaff_s"
+                      "value": "quarterstaff_r"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Sith Twin Blade"
+                      "value": "Rudimentary Twin Vibroblade DA"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "sith_twinblade"
+                      "value": "doubleaxe_r"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Training Foil Staff I"
+                      "value": "Rudimentary Twin Vibroblade TS"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "saberstaff_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Training Foil Staff I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_g_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Training Foil Staff I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_r_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Training Foil Staff I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_y_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Training Foil Staff II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Training Foil Staff II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_g_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Training Foil Staff II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_r_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Training Foil Staff II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_y_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Training Foil Staff III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Training Foil Staff III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_g_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Training Foil Staff III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_r_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Training Foil Staff III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_y_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Training Foil Staff IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Training Foil Staff IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_g_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Training Foil Staff IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_r_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Training Foil Staff IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_y_4"
+                      "value": "twinblade_r"
                     }
                   },
                   {
@@ -17563,17 +17431,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "twinblade_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Varke's Saberstaff"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "saberstaff_y_001"
                     }
                   }
                 ]
@@ -17684,22 +17541,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Trandoshan Finesse Vibroblade K"
+                      "value": "Rudimentary Finesse Vibroblade K"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "kukri_tran"
+                      "value": "kukri_r"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Vibro katana"
+                      "value": "Trandoshan Finesse Vibroblade K"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "cac_vibrolame01"
+                      "value": "kukri_tran"
                     }
                   }
                 ]
@@ -17920,6 +17777,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "spear_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rudimentary Polearm H"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "halberd_r"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rudimentary Polearm S"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "spear_r"
                     }
                   },
                   {
@@ -18166,6 +18045,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Rudimentary Blaster Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "blaster_r"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Smuggler Blaster Pistol"
                           },
                           "RESREF": {
@@ -18275,6 +18165,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "republictrooperb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rudimentary Blaster Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "rifle_r"
                           }
                         },
                         {
@@ -18914,6 +18815,39 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "grenade_ion005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rudimentary Dart"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dart_r"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rudimentary Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shuriken_r"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rudimentary Throwing Axe"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "axe_r"
                     }
                   },
                   {

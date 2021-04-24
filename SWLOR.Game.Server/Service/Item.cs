@@ -442,7 +442,9 @@ namespace SWLOR.Game.Server.Service
         public static List<BaseItem> StaffBaseItemTypes { get; } = new List<BaseItem>
         {
             BaseItem.QuarterStaff,
-            BaseItem.LightMace
+            BaseItem.LightMace,
+            BaseItem.Club,
+            BaseItem.MorningStar
         };
 
         /// <summary>

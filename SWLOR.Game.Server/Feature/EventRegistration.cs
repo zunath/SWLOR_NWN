@@ -155,8 +155,8 @@ namespace SWLOR.Game.Server.Feature
             Events.SubscribeEvent("NWNX_ON_VALIDATE_ITEM_EQUIP_AFTER", "item_val_aft");
 
             // Item Equip events
-            Events.SubscribeEvent("NWNX_ON_ITEM_EQUIP_BEFORE", "item_eqp_bef");
-            Events.SubscribeEvent("NWNX_ON_ITEM_EQUIP_AFTER", "item_eqp_aft");
+            Events.SubscribeEvent("NWNX_ON_ITEM_EQUIP_BEFORE", "item_eqpval_bef");
+            Events.SubscribeEvent("NWNX_ON_ITEM_EQUIP_AFTER", "item_eqpval_aft");
 
             // Item Unequip events
             Events.SubscribeEvent("NWNX_ON_ITEM_UNEQUIP_BEFORE", "item_uneqp_bef");
@@ -514,6 +514,7 @@ namespace SWLOR.Game.Server.Feature
                 Events.SignalEvent("APPLICATION_SHUTDOWN", GetModule());
             };
 
+            Events.SubscribeEvent("SWLOR_ITEM_EQUIP_VALID_BEFORE", "item_eqp_bef");
             Events.SubscribeEvent("SWLOR_BUY_PERK", "swlor_buy_perk");
             Events.SubscribeEvent("SWLOR_GAIN_SKILL_POINT", "swlor_gain_skill");
             Events.SubscribeEvent("SWLOR_COMPLETE_QUEST", "swlor_comp_qst");

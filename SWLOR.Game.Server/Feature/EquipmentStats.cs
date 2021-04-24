@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
 using ItemProperty = SWLOR.Game.Server.Core.ItemProperty;
@@ -29,13 +31,27 @@ namespace SWLOR.Game.Server.Feature
         /// When an item is equipped, if it has any custom status, apply them now.
         /// This should be run in the "after" event because any restrictions should be checked first.
         /// </summary>
-        [NWNEventHandler("item_eqp_aft")]
+        [NWNEventHandler("item_eqp_bef")]
         public static void ApplyStats()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var item = StringToObject(Events.GetEventData("ITEM"));
+            var slot = (InventorySlot)Convert.ToInt32(Events.GetEventData("SLOT"));
+
+            // The unequip event doesn't fire if an item is being swapped out.
+            // If there's an item in the slot, run the stat removals first.
+            var existingItemInSlot = GetItemInSlot(slot, player);
+            if (GetIsObjectValid(existingItemInSlot))
+            {
+                for (var ip = GetFirstItemProperty(existingItemInSlot); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(existingItemInSlot))
+                {
+                    var type = GetItemPropertyType(ip);
+                    if (!_statChangeActions.ContainsKey(type)) continue;
+                    _statChangeActions[type](player, existingItemInSlot, ip, false);
+                }
+            }
 
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
@@ -48,7 +64,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When an item is unequipped, if it has any custom stats, remove them now.
         /// </summary>
-        [NWNEventHandler("item_uneqp_aft")]
+        [NWNEventHandler("item_uneqp_bef")]
         public static void RemoveStats()
         {
             var player = OBJECT_SELF;

@@ -31,20 +31,26 @@ namespace SWLOR.Game.Server.Feature
         /// When an item is equipped, check the custom rules to see if the item can be equipped by the player.
         /// If not able to be used, an error message will be sent and item will not be equipped.
         /// </summary>
-        [NWNEventHandler("item_eqp_bef")]
+        [NWNEventHandler("item_eqpval_bef")]
         public static void ValidateItemEquip()
         {
             var creature = OBJECT_SELF;
             var item = StringToObject(Events.GetEventData("ITEM"));
+            var slot = (InventorySlot)Convert.ToInt32(Events.GetEventData("SLOT"));
 
-            var error = CanItemBeUsed(creature, item);
-            if (string.IsNullOrWhiteSpace(error))
+            var canUseItem = CanItemBeUsed(creature, item);
+            var canDualWield = ValidateDualWield(item, slot);
+
+            if (string.IsNullOrWhiteSpace(canUseItem) &&
+                canDualWield)
             {
-                ApplyEquipTriggers();
+                Events.PushEventData("ITEM", ObjectToString(item));
+                Events.PushEventData("SLOT", Convert.ToString((int)slot));
+                Events.SignalEvent("SWLOR_ITEM_EQUIP_VALID_BEFORE", creature);
                 return;
             }
 
-            SendMessageToPC(creature, ColorToken.Red(error));
+            SendMessageToPC(creature, ColorToken.Red(canUseItem));
             Events.SkipEvent();
         }
 
@@ -52,16 +58,13 @@ namespace SWLOR.Game.Server.Feature
         /// When an item is equipped, check if the item is going to be dual wielded. If it is, ensure player has
         /// at least level 1 of the Dual Wield perk. If they don't, skip the equip event with an error message.
         /// </summary>
-        [NWNEventHandler("item_eqp_bef")]
-        public static void ValidateDualWield()
+        public static bool ValidateDualWield(uint item, InventorySlot slot)
         {
             var creature = OBJECT_SELF;
-            var item = StringToObject(Events.GetEventData("ITEM"));
-            var slot = (InventorySlot)Convert.ToInt32(Events.GetEventData("SLOT"));
 
             // Not equipping to the left hand, or there's nothing equipped in the right hand.
-            if (slot != InventorySlot.LeftHand) return;
-            if (!GetIsObjectValid(GetItemInSlot(InventorySlot.RightHand, creature))) return;
+            if (slot != InventorySlot.LeftHand) return true;
+            if (!GetIsObjectValid(GetItemInSlot(InventorySlot.RightHand, creature))) return true;
             
             var baseItem = GetBaseItemType(item);
             var dualWieldWeapons = new[]
@@ -82,14 +85,18 @@ namespace SWLOR.Game.Server.Feature
                 BaseItem.Scimitar,
                 BaseItem.Sickle
             };
-            if (!dualWieldWeapons.Contains(baseItem)) return;
+            if (!dualWieldWeapons.Contains(baseItem)) return true;
 
             var dualWieldLevel = Perk.GetEffectivePerkLevel(creature, PerkType.DualWield);
             if (dualWieldLevel <= 0)
             {
                 SendMessageToPC(creature, ColorToken.Red("Equipping two weapons requires the Dual Wield perk."));
                 Events.SkipEvent();
+
+                return false;
             }
+
+            return true;
         }
 
         /// <summary>
@@ -132,7 +139,8 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When an item is equipped, if any of a player's perks has an Equipped Trigger, run those actions now.
         /// </summary>
-        private static void ApplyEquipTriggers()
+        [NWNEventHandler("item_eqp_bef")]
+        public static void ApplyEquipTriggers()
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;

@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.UnallocatedSP = 10;
             dbPlayer.Version = 1;
             dbPlayer.Name = GetName(player);
-            Stat.AdjustPlayerMaxHP(dbPlayer, player, 10);
+            Stat.AdjustPlayerMaxHP(dbPlayer, player, 40);
             Stat.AdjustPlayerMaxSTM(dbPlayer, 10);
             Creature.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);

@@ -9,13 +9,13 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Queries the current value of the appearance settings on an item. The parameters are
         ///   identical to those of CopyItemAndModify().
         /// </summary>
-        public static ItemAppearance GetItemAppearance(uint oItem, ItemAppearanceType nType, int nIndex)
+        public static int GetItemAppearance(uint oItem, ItemAppearanceType nType, int nIndex)
         {
             Internal.NativeFunctions.StackPushInteger(nIndex);
             Internal.NativeFunctions.StackPushInteger((int)nType);
             Internal.NativeFunctions.StackPushObject(oItem);
             Internal.NativeFunctions.CallBuiltIn(732);
-            return (ItemAppearance)Internal.NativeFunctions.StackPopInteger();
+            return Internal.NativeFunctions.StackPopInteger();
         }
 
         /// <summary>

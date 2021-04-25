@@ -15121,7 +15121,7 @@
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "lightsaber_blue"
+                            "value": "lightsaber"
                           }
                         },
                         {
@@ -15952,6 +15952,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "twinblade_r"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "saberstaff"
                     }
                   },
                   {

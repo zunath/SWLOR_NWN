@@ -1116,7 +1116,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Helmet models and simple items ignore iIndex.
         ///   iType                            iIndex                              iNewValue
         ///   ITEM_APPR_TYPE_SIMPLE_MODEL      [Ignored]                           Model #
-        ///   ITEM_APPR_TYPE_WEAPON_COLOR      ITEM_APPR_WEAPON_COLOR_*            1-4
+        ///   ITEM_APPR_TYPE_WEAPON_COLOR      ITEM_APPR_WEAPON_COLOR_*            1-9
         ///   ITEM_APPR_TYPE_WEAPON_MODEL      ITEM_APPR_WEAPON_MODEL_*            Model #
         ///   ITEM_APPR_TYPE_ARMOR_MODEL       ITEM_APPR_ARMOR_MODEL_*             Model #
         ///   ITEM_APPR_TYPE_ARMOR_COLOR       ITEM_APPR_ARMOR_COLOR_* [0]         0-175 [1]

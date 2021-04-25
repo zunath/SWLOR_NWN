@@ -7508,149 +7508,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Reassembled Blue Crystal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ass_bluecry"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Reassembled Electronics"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ass_electronics"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Reassembled Fiberplast"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ass_fiberplast"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Reassembled Green Crystal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ass_greencry"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Reassembled Herb"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ass_herb"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Reassembled Leather"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ass_leather"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Reassembled Meat"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ass_meat"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Reassembled Metal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ass_metal"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Reassembled Organic Material"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ass_organic"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Reassembled Power Crystal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ass_powcry"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Reassembled Red Crystal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ass_redcry"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Reassembled Yellow Crystal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ass_yellowcry"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Reassembly Power Unit"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ass_power"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Red Coonlank"
                     },
                     "RESREF": {
@@ -10339,6 +10196,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dirty Bag"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bag_dirty"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Duskhaven Keycard"
                     },
                     "RESREF": {
@@ -10905,28 +10773,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "starcharts_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Test Implant"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "test_implant"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Test Implant 2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "test_implant2"
                     }
                   },
                   {

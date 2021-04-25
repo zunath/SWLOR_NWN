@@ -142,7 +142,7 @@
   },
   "OnUsed": {
     "type": "resref",
-    "value": "script_1"
+    "value": "dialog_start"
   },
   "OnUserDefined": {
     "type": "resref",
@@ -219,21 +219,6 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "SCRIPT_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Placeable.MarketTerminal.OnUsed"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
           "value": "GTN_REGION_ID"
         },
         "Type": {
@@ -243,6 +228,21 @@
         "Value": {
           "type": "int",
           "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "CONVERSATION"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "PlayerMarketDialog"
         }
       }
     ]

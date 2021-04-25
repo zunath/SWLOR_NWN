@@ -212,7 +212,6 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var player = GetPC();
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
             var dbPlayerStore = DB.Get<PlayerStore>(playerId);
             var model = GetDataModel<Model>();
             var itemLimit = 20;
@@ -224,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 if (dbPlayerStore.ItemsForSale.Count >= itemLimit)
                 {
-                    FloatingTextStringOnCreature("You have reached your listing limit. Increase your SeeD rank or remove another listing.", player, false);
+                    FloatingTextStringOnCreature("You have reached your listing limit.", player, false);
                     return;
                 }
 

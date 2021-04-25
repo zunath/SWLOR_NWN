@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Service
             });
 
             DB.Set(playerId, dbPlayerStore);
-            NWScript.DestroyObject(item);
+            DestroyObject(item);
 
             SendMessageToPC(player, $"Listing limit: {dbPlayerStore.ItemsForSale.Count} / {listingLimit}");
         }
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a player's shop is opened, 
+        /// When a player's shop is opened, mark it as such.
         /// </summary>
         [NWNEventHandler("plyr_shop_open")]
         public static void PlayerShopOpened()
@@ -232,7 +232,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a player's shop is closed, 
+        /// When a player's shop is closed, mark it as closed.
         /// </summary>
         [NWNEventHandler("plyr_shop_closed")]
         public static void PlayerShopClosed()
@@ -248,12 +248,12 @@ namespace SWLOR.Game.Server.Service
                 StoreMerchants.Remove(sellerPlayerId);
                 StoresOpen.Remove(sellerPlayerId);
 
-                NWScript.DestroyObject(store);
+                DestroyObject(store);
             }
         }
 
         /// <summary>
-        /// When a player buys an item, deposit that credits into their store till and remove the item from the database.
+        /// When a player buys an item, deposit those credits into the owner's store till and remove the item from the database.
         /// </summary>
         [NWNEventHandler("store_buy_aft")]
         public static void PlayerShopBuyItem()
@@ -281,15 +281,18 @@ namespace SWLOR.Game.Server.Service
             dbPlayerStore.ItemsForSale.Remove(itemId);
             DB.Set(sellerPlayerId, dbPlayerStore);
 
-            // Set pricing back to normal
-            var originalBaseGPValue = GetLocalInt(item, "ORIGINAL_BASE_GP_VALUE");
-            var originalAdditionalGPValue = GetLocalInt(item, "ORIGINAL_ADDITIONAL_GP_VALUE");
+            DelayCommand(0.1f, () =>
+            {
+                // Set pricing back to normal
+                var originalBaseGPValue = GetLocalInt(item, "ORIGINAL_BASE_GP_VALUE");
+                var originalAdditionalGPValue = GetLocalInt(item, "ORIGINAL_ADDITIONAL_GP_VALUE");
 
-            Core.NWNX.Item.SetBaseGoldPieceValue(item, originalBaseGPValue);
-            Core.NWNX.Item.SetAddGoldPieceValue(item, originalAdditionalGPValue);
+                Core.NWNX.Item.SetBaseGoldPieceValue(item, originalBaseGPValue);
+                Core.NWNX.Item.SetAddGoldPieceValue(item, originalAdditionalGPValue);
 
-            DeleteLocalInt(item, "ORIGINAL_BASE_GP_VALUE");
-            DeleteLocalInt(item, "ORIGINAL_ADDITIONAL_GP_VALUE");
+                DeleteLocalInt(item, "ORIGINAL_BASE_GP_VALUE");
+                DeleteLocalInt(item, "ORIGINAL_ADDITIONAL_GP_VALUE");
+            });
         }
 
     }

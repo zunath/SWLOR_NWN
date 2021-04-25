@@ -1,21 +1,25 @@
-﻿using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.DialogDefinition;
+using SWLOR.Game.Server.Service.ItemService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Dialog = SWLOR.Game.Server.Service.Dialog;
 
 namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
-    public class DestroyItemDefinition
+    public class DestroyItemDefinition: IItemListDefinition
     {
-        [NWNEventHandler("destroy_item")]
-        public static void StartDestroyItemConversation()
-        {
-            var player = OBJECT_SELF;
-            var item = StringToObject(Events.GetEventData("ITEM_OBJECT_ID"));
+        private readonly ItemBuilder _builder = new ItemBuilder();
 
-            SetLocalObject(player, "DESTROY_ITEM", item);
-            Dialog.StartConversation(player, player, nameof(DestroyItemDialog));
+        public Dictionary<string, ItemDetail> BuildItems()
+        {
+            _builder.Create("player_guide", "survival_knife")
+                .ApplyAction((user, item, target, location) =>
+                {
+                    SetLocalObject(user, "DESTROY_ITEM", item);
+                    Dialog.StartConversation(user, user, nameof(DestroyItemDialog));
+                });
+
+            return _builder.Build();
         }
     }
 }

@@ -40,11 +40,11 @@
   },
   "OnOpenStore": {
     "type": "resref",
-    "value": ""
+    "value": "plyr_shop_open"
   },
   "OnStoreClosed": {
     "type": "resref",
-    "value": ""
+    "value": "plyr_shop_closed"
   },
   "ResRef": {
     "type": "resref",

@@ -221,7 +221,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "SCRIPT_1"
+          "value": "SCAVENGE_POINT_LOOT_TABLE_NAME"
         },
         "Type": {
           "type": "dword",
@@ -229,22 +229,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "Placeable.ScavengePoint.OnOpened"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCAVENGE_POINT_LOOT_TABLE_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 11
+          "value": "CZ220_LOOT_JUNK_PILES"
         }
       },
       {
@@ -259,52 +244,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT_3"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Placeable.ScavengePoint.OnDisturbed"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT_4"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Placeable.ScavengePoint.OnClosed"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCAVENGE_POINT_ALWAYS_DESTROYS"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1
+          "value": 0
         }
       }
     ]

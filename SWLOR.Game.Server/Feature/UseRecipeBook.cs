@@ -77,6 +77,7 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
+            DB.Set(playerId, dbPlayer);
             DestroyObject(item);
         }
     }

@@ -649,52 +649,52 @@
         "__struct_id": 4,
         "Spell": {
           "type": "word",
-          "value": 842
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 842
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 842
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 0
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
           "value": 301
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 842
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 842
+        },
+        "SpellCasterLevel": {
+          "type": "byte",
+          "value": 0
+        },
+        "SpellFlags": {
+          "type": "byte",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Spell": {
+          "type": "word",
+          "value": 842
         },
         "SpellCasterLevel": {
           "type": "byte",
@@ -742,7 +742,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_ID_1"
+          "value": "QUEST_NPC_GROUP_ID"
         },
         "Type": {
           "type": "dword",
@@ -750,82 +750,37 @@
         },
         "Value": {
           "type": "int",
-          "value": 22
+          "value": 5
         }
       },
       {
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_CHANCE_1"
+          "value": "LOOT_TABLE_1"
         },
         "Type": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Value": {
-          "type": "int",
-          "value": 100
+          "type": "cexostring",
+          "value": "VISCARA_MANDALORIAN_LEADER,95,1"
         }
       },
       {
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_CHANCE_2"
+          "value": "LOOT_TABLE_2"
         },
         "Type": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Value": {
-          "type": "int",
-          "value": 40
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_ID_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 22
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_ATTEMPTS_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 2
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "BONUS_XP_PERCENTAGE"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 2
-        },
-        "Value": {
-          "type": "float",
-          "value": 0.2000000029802322
+          "value": "VISCARA_MANDALORIAN_LEADER,30,1"
         }
       }
     ]

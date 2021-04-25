@@ -520,22 +520,22 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_ID_1"
+          "value": "LOOT_TABLE_1"
         },
         "Type": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Value": {
-          "type": "int",
-          "value": 46
+          "type": "cexostring",
+          "value": "VISCARA_CRYSTAL_SPIDER,30,2"
         }
       },
       {
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_CHANCE_"
+          "value": "QUEST_NPC_GROUP_ID"
         },
         "Type": {
           "type": "dword",
@@ -543,7 +543,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 45
+          "value": 16
         }
       }
     ]

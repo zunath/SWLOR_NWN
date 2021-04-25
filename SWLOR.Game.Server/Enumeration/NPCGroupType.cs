@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Enumeration
         Tatooine_Womprat = 23,
         [NPCGroup("Sandswimmer")]
         Tatooine_Sandswimmer = 24,
-        [NPCGroup("Wraid")]
+        [NPCGroup("Sand Beetle")]
         Tatooine_Wraid = 25,
         [NPCGroup("Sand Demon")]
         Tatooine_SandDemon = 26,

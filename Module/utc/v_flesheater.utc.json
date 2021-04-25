@@ -528,22 +528,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_ID_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 39
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "NPC_GROUP"
+          "value": "QUEST_NPC_GROUP_ID"
         },
         "Type": {
           "type": "dword",
@@ -558,45 +543,15 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_ID_2"
+          "value": "LOOT_TABLE_1"
         },
         "Type": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Value": {
-          "type": "int",
-          "value": 39
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_CHANCE_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 100
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "LOOT_TABLE_CHANCE_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 25
+          "value": "VISCARA_VELLEN_FLESHEATER,40,2"
         }
       }
     ]

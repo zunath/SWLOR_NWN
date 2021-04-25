@@ -92083,7 +92083,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -92186,7 +92186,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -92291,7 +92291,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.054830652228101e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -92394,7 +92394,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.402699762789142e-042
                     },
                     "XPosition": {
                       "type": "float",
@@ -92499,7 +92499,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.006659400913138e-042
                     },
                     "XPosition": {
                       "type": "float",
@@ -92604,7 +92604,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.019161963161748e-019
                     },
                     "XPosition": {
                       "type": "float",
@@ -92917,7 +92917,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.386715991985667e-038
                     },
                     "XPosition": {
                       "type": "float",

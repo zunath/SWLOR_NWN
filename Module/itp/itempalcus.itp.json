@@ -845,6 +845,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bandit Mask"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bandit_mask"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Basic Battlemaster Helmet"
                     },
                     "RESREF": {
@@ -1114,6 +1125,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "gn_cap_4"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "helmet"
                     }
                   },
                   {
@@ -4103,39 +4125,6 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "du_bracer_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Force Bracer"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bracer_force_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Heavy Bracer"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bracer_heavy_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Light Bracer"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bracer_light_b"
                           }
                         },
                         {

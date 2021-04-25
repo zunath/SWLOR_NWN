@@ -38,11 +38,44 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Hutlar General Store"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "hutlar_gen_merch"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Mon Cala General Store"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "moncala_gen_merc"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Starting Items"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "startingitems"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Tatooine General Store"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "tat_gen_merch"
               }
             },
             {

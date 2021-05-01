@@ -261,3 +261,6 @@ paket-files/
 __pycache__/
 *.pyc
 /SWLOR.Game.Server/Data/Migrations/2020-06-24.1.sql
+
+# Milliorn
+.vscode/settings.json

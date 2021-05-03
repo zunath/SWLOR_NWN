@@ -54,16 +54,6 @@ namespace SWLOR.Game.Server.Feature
             Events.SkipEvent();
         }
 
-        [NWNEventHandler("item_eqpval_bef")]
-        public static void OnEquipNoGearChange()
-        {
-            if (GetIsInCombat(OBJECT_SELF) && GetIsPC(OBJECT_SELF))
-            {
-                Events.SkipEvent();
-                SendMessageToPC(OBJECT_SELF, "You may not equip an item while in combat.");
-            }
-        }
-
         /// <summary>
         /// When an item is equipped, check if the item is going to be dual wielded. If it is, ensure player has
         /// at least level 1 of the Dual Wield perk. If they don't, skip the equip event with an error message.
@@ -226,5 +216,30 @@ namespace SWLOR.Game.Server.Feature
             RunUnequipTriggers(player, item);
         }
 
+        /// <summary>
+        /// Prevent player from swapping equipment if they're in combat.
+        /// </summary>
+        [NWNEventHandler("item_eqpval_bef")]
+        public static void OnEquipNoGearChange()
+        {
+            if (GetIsInCombat(OBJECT_SELF) && GetIsPC(OBJECT_SELF))
+            {
+                Events.SkipEvent();
+                SendMessageToPC(OBJECT_SELF, "You may not equip an item while in combat.");
+            }
+        }
+
+        /// <summary>
+        /// Prevent player from swapping equipment if they're in combat.
+        /// </summary>
+        [NWNEventHandler("item_uneqp_bef")]
+        public static void OnUnEquipNoGearChange()
+        {
+            if (GetIsInCombat(OBJECT_SELF) && GetIsPC(OBJECT_SELF))
+            {
+                Events.SkipEvent();
+                SendMessageToPC(OBJECT_SELF, "You may not un-equip an item while in combat.");
+            }
+        }
     }
 }

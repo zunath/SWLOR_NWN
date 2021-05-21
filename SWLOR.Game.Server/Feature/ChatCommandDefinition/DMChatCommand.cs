@@ -649,5 +649,40 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
+        private void RestartServer()
+        {
+            _builder.Create("restartserver")
+                .Description("Restarts the server. Requires CD Key to be entered. Example: /restartserver XXXXYYYY")
+                .Permissions(AuthorizationLevel.Admin, AuthorizationLevel.DM)
+                .Validate((user, args) =>
+                {
+                    if (args.Length < 0)
+                    {
+                        return "Requires CD Key to be entered. Example: /restartserver XXXXYYYY";
+                    }
+                    else if (String.IsNullOrWhiteSpace(args[0]))
+                    {
+                        return "Please enter your public CD Key to confirm the server reset. Use /cdkey to retrieve this. E.G: /restartserver XXXXYYYY";
+                    }
+                    else if (GetPCPublicCDKey(user) != args[0])
+                    {
+                        return $"Invalid public CD Key. {args[0]} does not match your CDKey:{GetPCPublicCDKey(user)}. Try again. E.G: /restartserver XXXXYYYY";
+                    }
+                    else
+                    {
+                        return string.Empty;
+                    }
+                })
+                .Action((user, target, location, args) =>
+                {
+                    uint player = GetFirstPC();
+                    while (player != OBJECT_INVALID)
+                    {
+                        BootPC(player, "The server is restarting.");
+                        player = GetNextPC();
+                    }
+                    Core.NWNX.Administration.ShutdownServer();
+                });
+        }
     }
 }

@@ -5650,6 +5650,44 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 18.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Elite Sith Trooper"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "elite_sith_troop"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 13.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Exchange Enforcer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "exchangeenforcer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 0.3333333432674408
                     },
                     "FACTION": {
@@ -5916,6 +5954,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 13.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rodian Exchange Enforcer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "exchangeenfor001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 75.0
                     },
                     "FACTION": {
@@ -5929,6 +5986,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sithpatroldroi"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 15.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Officer"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithofficer001"
                     }
                   },
                   {
@@ -6422,6 +6498,44 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 137.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Darth Gravius"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "darthgravius"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 5.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Doctor Ipol"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "doctor_ipol"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 3.0
                     },
                     "FACTION": {
@@ -6454,6 +6568,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "npc_rodianfem01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 53.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Giles"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "giles"
                     }
                   },
                   {
@@ -6574,6 +6707,63 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 5.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Knuckle Duster Goon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "knuckleduster001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 5.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Knuckle Duster Thug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "knuckleduster002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 5.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Knuckle Duster Thug"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "knuckledusterthu"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 0.3333333432674408
                     },
                     "FACTION": {
@@ -6644,6 +6834,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nulaaaldette"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 93.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Ro Solus"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "rosolus001"
                     }
                   },
                   {
@@ -6726,6 +6935,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 32.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vreego"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vreego"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 3.0
                     },
                     "FACTION": {
@@ -6739,6 +6967,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "weequay_pirate"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 114.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Yshren"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "yshren"
                     }
                   }
                 ]

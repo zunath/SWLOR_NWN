@@ -286,7 +286,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Knuckle Duster Thug"
+      "0": "Knuckle Duster Goon"
     }
   },
   "fortbonus": {
@@ -685,7 +685,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "KnuckleDusterThug"
+    "value": "KnuckleDusterGoon"
   },
   "Tail_New": {
     "type": "dword",

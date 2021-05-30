@@ -186,6 +186,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Crystal's Council Attire"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crystal_council"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dancer Female 1"
                     },
                     "RESREF": {
@@ -3423,6 +3434,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Spice Dealer's Coat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "spicedealer"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Taris' Armor"
                     },
                     "RESREF": {
@@ -3560,6 +3582,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "valerobe"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vendor Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vendoroutfit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vendor Outfit 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "vendoroutfit001"
                     }
                   },
                   {

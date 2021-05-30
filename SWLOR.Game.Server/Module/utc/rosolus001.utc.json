@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 93.0
+    "value": 85.0
   },
   "ClassList": {
     "type": "list",
@@ -178,6 +178,13 @@
   "Equip_ItemList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "solus_outfit"
+        }
+      },
       {
         "__struct_id": 16,
         "EquippedRes": {
@@ -463,6 +470,21 @@
         "Repos_PosX": {
           "type": "word",
           "value": 0
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 1,
+        "InventoryRes": {
+          "type": "resref",
+          "value": "solus_ring_001"
+        },
+        "Repos_PosX": {
+          "type": "word",
+          "value": 1
         },
         "Repos_Posy": {
           "type": "word",

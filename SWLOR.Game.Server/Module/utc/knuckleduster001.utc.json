@@ -171,7 +171,7 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "npc_looter_m_2"
+          "value": "spicedealer"
         }
       }
     ]
@@ -286,7 +286,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Knuckle Duster Goon"
+      "0": "Knuckle Duster Pusher"
     }
   },
   "fortbonus": {
@@ -343,26 +343,11 @@
         "__struct_id": 1,
         "InventoryRes": {
           "type": "resref",
-          "value": "criminal001"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 2
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 2,
-        "InventoryRes": {
-          "type": "resref",
           "value": "longsword_4"
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 4
+          "value": 2
         },
         "Repos_Posy": {
           "type": "word",
@@ -700,7 +685,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "KnuckleDusterThug"
+    "value": "KnuckleDusterPusher"
   },
   "Tail_New": {
     "type": "dword",

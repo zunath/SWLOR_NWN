@@ -2,11 +2,11 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 61
+    "value": 41
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 6
+    "value": 1
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -22,7 +22,7 @@
   },
   "BodyPart_LBicep": {
     "type": "byte",
-    "value": 1
+    "value": 2
   },
   "BodyPart_LFArm": {
     "type": "byte",
@@ -62,7 +62,7 @@
   },
   "BodyPart_RFArm": {
     "type": "byte",
-    "value": 1
+    "value": 2
   },
   "BodyPart_RHand": {
     "type": "byte",
@@ -110,19 +110,19 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 97
+    "value": 144
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 1
+    "value": 9
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 36
+    "value": 24
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 30
+    "value": 86
   },
   "Comment": {
     "type": "cexostring",
@@ -171,7 +171,7 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "criminal001"
+          "value": "criminal002"
         }
       }
     ]
@@ -286,7 +286,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Knuckle Duster Goon"
+      "0": "Knuckle Duster Brute"
     }
   },
   "fortbonus": {
@@ -295,7 +295,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "GoodEvil": {
     "type": "byte",
@@ -328,7 +328,7 @@
         "__struct_id": 0,
         "InventoryRes": {
           "type": "resref",
-          "value": "club_cox"
+          "value": "npc_pistol"
         },
         "Repos_PosX": {
           "type": "word",
@@ -343,11 +343,11 @@
         "__struct_id": 1,
         "InventoryRes": {
           "type": "resref",
-          "value": "npc_pistol"
+          "value": "shortsword_4"
         },
         "Repos_PosX": {
           "type": "word",
-          "value": 1
+          "value": 2
         },
         "Repos_Posy": {
           "type": "word",
@@ -665,7 +665,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 118
+    "value": 915
   },
   "SpecAbilityList": {
     "type": "list",
@@ -685,7 +685,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "KnuckleDusterGoon"
+    "value": "KnuckleDusterThug"
   },
   "Tail_New": {
     "type": "dword",
@@ -697,11 +697,11 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "knuckledusterthu"
+    "value": "knuckleduster003"
   },
   "WalkRate": {
     "type": "int",
-    "value": 4
+    "value": 7
   },
   "willbonus": {
     "type": "short",

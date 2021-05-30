@@ -1518,7 +1518,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.50600942561141e-006
+          "value": 1.267590846509847e-006
         },
         "YPosition": {
           "type": "float",
@@ -2997,19 +2997,19 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 201.8800048828125
+          "value": 204.9617156982422
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.50600942561141e-006
+          "value": 1.267590846509847e-006
         },
         "YPosition": {
           "type": "float",
-          "value": 124.9100036621094
+          "value": 124.9819869995117
         },
         "ZPosition": {
           "type": "float",
-          "value": 1.200000047683716
+          "value": 1.000005722045898
         }
       },
       {
@@ -3576,7 +3576,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -1.748454678818234e-007
+          "value": -1.748454963035329e-007
         },
         "XPosition": {
           "type": "float",
@@ -4410,7 +4410,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": 3.250437430324382e-006
+          "value": 2.773600272121257e-006
         },
         "XPosition": {
           "type": "float",
@@ -5252,7 +5252,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 7.907536314633035e-007
+          "value": 6.715443419125222e-007
         },
         "YPosition": {
           "type": "float",
@@ -6086,7 +6086,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.50600942561141e-006
+          "value": 1.267590846509847e-006
         },
         "YPosition": {
           "type": "float",
@@ -25592,7 +25592,9 @@
         "LocName": {
           "id": 68853,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "Surface Access"
+          }
         },
         "OnClick": {
           "type": "resref",
@@ -25648,7 +25650,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -25672,7 +25674,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -25712,7 +25714,57 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "DESTINATION"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Veles_Gate_Sewer"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.WarpDevice.OnUsed"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "VISUAL_EFFECT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -25817,7 +25869,9 @@
         "LocName": {
           "id": 68853,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "Surface Access"
+          }
         },
         "OnClick": {
           "type": "resref",
@@ -25873,7 +25927,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -25897,7 +25951,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -25937,7 +25991,57 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "DESTINATION"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Veles_Apartments_Sewer"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.WarpDevice.OnUsed"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "VISUAL_EFFECT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -25945,15 +26049,15 @@
         },
         "X": {
           "type": "float",
-          "value": 65.05778503417969
+          "value": 65.05699157714844
         },
         "Y": {
           "type": "float",
-          "value": 92.80960083007813
+          "value": 92.827880859375
         },
         "Z": {
           "type": "float",
-          "value": -0.09000000357627869
+          "value": -0.0900019109249115
         }
       },
       {
@@ -26042,7 +26146,9 @@
         "LocName": {
           "id": 68853,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "Surface Access"
+          }
         },
         "OnClick": {
           "type": "resref",
@@ -26098,7 +26204,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -26122,7 +26228,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -26162,7 +26268,57 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "DESTINATION"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "VelesFreightYard"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.WarpDevice.OnUsed"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "VISUAL_EFFECT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -26267,7 +26423,9 @@
         "LocName": {
           "id": 68853,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "Surface Access"
+          }
         },
         "OnClick": {
           "type": "resref",
@@ -26323,7 +26481,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -26347,7 +26505,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -26387,7 +26545,57 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "DESTINATION"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Veles_Bank_Sewer"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.WarpDevice.OnUsed"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "VISUAL_EFFECT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -26492,7 +26700,9 @@
         "LocName": {
           "id": 68853,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "Surface Access"
+          }
         },
         "OnClick": {
           "type": "resref",
@@ -26548,7 +26758,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -26572,7 +26782,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -26612,7 +26822,57 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "DESTINATION"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Veles_MedCenter_Sewer"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.WarpDevice.OnUsed"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "VISUAL_EFFECT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -26717,7 +26977,9 @@
         "LocName": {
           "id": 68853,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "Surface Access"
+          }
         },
         "OnClick": {
           "type": "resref",
@@ -26773,7 +27035,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -26797,7 +27059,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -26837,7 +27099,57 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "DESTINATION"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "V_CzerkaTower"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.WarpDevice.OnUsed"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "VISUAL_EFFECT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -26942,7 +27254,9 @@
         "LocName": {
           "id": 68853,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "Surface Access"
+          }
         },
         "OnClick": {
           "type": "resref",
@@ -26998,7 +27312,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": ""
+          "value": "script_1"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -27022,7 +27336,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tag": {
           "type": "cexostring",
@@ -27062,7 +27376,57 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 0
+          "value": 1
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "DESTINATION"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Veles_Cantina_Sewer"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.WarpDevice.OnUsed"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "VISUAL_EFFECT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 0
+              }
+            }
+          ]
         },
         "Will": {
           "type": "byte",
@@ -58282,23 +58646,23 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -1.748454678818234e-007
+          "value": -1.748454963035329e-007
         },
         "XPosition": {
           "type": "float",
-          "value": 114.5936584472656
+          "value": 114.6900024414063
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.0
+          "value": -1.0
         },
         "YPosition": {
           "type": "float",
-          "value": 155.0552978515625
+          "value": 154.6300048828125
         },
         "ZPosition": {
           "type": "float",
-          "value": 8.344650268554688e-007
+          "value": 0.0
         }
       },
       {
@@ -58344,23 +58708,23 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -1.748454678818234e-007
+          "value": -1.748454963035329e-007
         },
         "XPosition": {
           "type": "float",
-          "value": 135.0286865234375
+          "value": 135.2599945068359
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.0
+          "value": -1.0
         },
         "YPosition": {
           "type": "float",
-          "value": 124.4027404785156
+          "value": 125.0800018310547
         },
         "ZPosition": {
           "type": "float",
-          "value": 8.344650268554688e-007
+          "value": 0.0
         }
       },
       {
@@ -58408,23 +58772,23 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -1.748454678818234e-007
+          "value": -1.748454963035329e-007
         },
         "XPosition": {
           "type": "float",
-          "value": 165.5050506591797
+          "value": 164.8912506103516
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.0
+          "value": -1.0
         },
         "YPosition": {
           "type": "float",
-          "value": 144.6616058349609
+          "value": 144.9855194091797
         },
         "ZPosition": {
           "type": "float",
-          "value": -1.192092895507813e-007
+          "value": -6.794929504394531e-006
         }
       },
       {
@@ -58448,7 +58812,9 @@
         "LocalizedName": {
           "id": 14817,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "Waypoint"
+          }
         },
         "MapNote": {
           "type": "cexolocstring",
@@ -58470,11 +58836,11 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -1.748454678818234e-007
+          "value": -1.748454963035329e-007
         },
         "XPosition": {
           "type": "float",
-          "value": 115.1742248535156
+          "value": 115.1074981689453
         },
         "YOrientation": {
           "type": "float",
@@ -58482,11 +58848,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 14.5220947265625
+          "value": 14.60050106048584
         },
         "ZPosition": {
           "type": "float",
-          "value": -1.072883605957031e-006
+          "value": -6.794929504394531e-006
         }
       },
       {
@@ -58510,7 +58876,9 @@
         "LocalizedName": {
           "id": 14817,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "Waypoint"
+          }
         },
         "MapNote": {
           "type": "cexolocstring",
@@ -58532,23 +58900,23 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -1.748454678818234e-007
+          "value": -1.748454963035329e-007
         },
         "XPosition": {
           "type": "float",
-          "value": 64.64901733398438
+          "value": 64.95498657226563
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.0
+          "value": -1.0
         },
         "YPosition": {
           "type": "float",
-          "value": 144.5525665283203
+          "value": 144.9684295654297
         },
         "ZPosition": {
           "type": "float",
-          "value": 8.344650268554688e-007
+          "value": -6.794929504394531e-006
         }
       },
       {
@@ -58594,11 +58962,11 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -1.748454678818234e-007
+          "value": -1.748454963035329e-007
         },
         "XPosition": {
           "type": "float",
-          "value": 64.78044128417969
+          "value": 65.06854248046875
         },
         "YOrientation": {
           "type": "float",
@@ -58606,11 +58974,11 @@
         },
         "YPosition": {
           "type": "float",
-          "value": 95.256103515625
+          "value": 95.13018035888672
         },
         "ZPosition": {
           "type": "float",
-          "value": 8.344650268554688e-007
+          "value": -6.794929504394531e-006
         }
       },
       {
@@ -58634,7 +59002,9 @@
         "LocalizedName": {
           "id": 14817,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "Veles Bank"
+          }
         },
         "MapNote": {
           "type": "cexolocstring",
@@ -58656,23 +59026,23 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -1.748454678818234e-007
+          "value": -1.748454963035329e-007
         },
         "XPosition": {
           "type": "float",
-          "value": 84.82931518554688
+          "value": 84.9263916015625
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.0
+          "value": -1.0
         },
         "YPosition": {
           "type": "float",
-          "value": 135.0496368408203
+          "value": 135.0236663818359
         },
         "ZPosition": {
           "type": "float",
-          "value": 8.344650268554688e-007
+          "value": -6.794929504394531e-006
         }
       },
       {
@@ -58719,7 +59089,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -1.748454678818234e-007
+          "value": -1.748454963035329e-007
         },
         "XPosition": {
           "type": "float",
@@ -58782,7 +59152,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -1.748454678818234e-007
+          "value": -1.748454963035329e-007
         },
         "XPosition": {
           "type": "float",
@@ -58845,7 +59215,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -1.748454678818234e-007
+          "value": -1.748454963035329e-007
         },
         "XPosition": {
           "type": "float",

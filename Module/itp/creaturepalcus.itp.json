@@ -3145,6 +3145,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bank Teller"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bankemployee"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 2.0
                     },
                     "FACTION": {
@@ -3253,6 +3272,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "civilian"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Councilwoman Crystal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crystal_council"
                     }
                   },
                   {
@@ -3913,6 +3951,25 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hot Dog Vendor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "streetvendor003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Hunter's Guild Master"
                     },
                     "RESREF": {
@@ -4412,6 +4469,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "maureenliagri"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Medical Center Reception Droid"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "receptiondroid"
                     }
                   },
                   {
@@ -4977,6 +5053,25 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Street Food Vendor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "streetvendor001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Szaan"
                     },
                     "RESREF": {
@@ -5020,6 +5115,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tat_militia004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tech Vendor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "streetvendor002"
                     }
                   },
                   {
@@ -5115,6 +5229,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "tranny_male"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Treats Vendor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "streetvendor"
                     }
                   },
                   {
@@ -6715,7 +6848,45 @@
                     },
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Knuckle Duster Brute"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "knuckleduster003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 5.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Knuckle Duster Goon"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "knuckledusterthu"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 5.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Knuckle Duster Pusher"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -6739,25 +6910,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "knuckleduster002"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 5.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Knuckle Duster Thug"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "knuckledusterthu"
                     }
                   },
                   {
@@ -6840,7 +6992,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 93.0
+                      "value": 85.0
                     },
                     "FACTION": {
                       "type": "cexostring",

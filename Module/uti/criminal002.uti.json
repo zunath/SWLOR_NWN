@@ -90,7 +90,7 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 23
+    "value": 124
   },
   "Cloth2Color": {
     "type": "byte",
@@ -128,7 +128,7 @@
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 22
+    "value": 23
   },
   "LocalizedName": {
     "type": "cexolocstring",

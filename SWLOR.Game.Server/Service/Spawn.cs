@@ -433,6 +433,7 @@ namespace SWLOR.Game.Server.Service
                 var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
                 AssignCommand(deserialized, () => SetFacing(facing));
                 SetLocalString(deserialized, "SPAWN_ID", spawnId.ToString());
+                // Note: AI flag is not set here as the builder is expected to specify this as a local variable if they are hand-placing spawns.
 
                 return deserialized;
             }
@@ -441,7 +442,7 @@ namespace SWLOR.Game.Server.Service
             else if(!string.IsNullOrWhiteSpace(detail.SpawnTableId))
             {
                 var spawnTable = _spawnTables[detail.SpawnTableId];
-                var (objectType, resref) = spawnTable.GetNextSpawnResref();
+                var (objectType, resref, aiFlag) = spawnTable.GetNextSpawn();
 
                 // It's possible that the rules of the spawn table don't have a spawn ready to be created.
                 // In this case, exit early.
@@ -459,6 +460,7 @@ namespace SWLOR.Game.Server.Service
 
                 var spawn = CreateObject(objectType, resref, location);
                 SetLocalString(spawn, "SPAWN_ID", spawnId.ToString());
+                AI.SetAIFlag(spawn, aiFlag);
 
                 return spawn;
             }

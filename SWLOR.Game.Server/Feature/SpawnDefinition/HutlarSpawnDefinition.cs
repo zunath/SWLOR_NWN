@@ -20,9 +20,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             builder.Create("HUTLAR_BYYSK", "Byysk")
                 .AddSpawn(ObjectType.Creature, "byysk_warrior")
                 .WithFrequency(10)
+                .RandomlyWalks()
 
                 .AddSpawn(ObjectType.Creature, "byysk_warrior2")
-                .WithFrequency(10);
+                .WithFrequency(10)
+                .RandomlyWalks();
         }
 
         private void QionAnimals(SpawnTableBuilder builder)
@@ -30,9 +32,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             builder.Create("HUTLAR_QION_ANIMALS", "Qion Animals")
                 .AddSpawn(ObjectType.Creature, "qion_slug")
                 .WithFrequency(10)
+                .RandomlyWalks()
 
                 .AddSpawn(ObjectType.Creature, "qion_tiger")
-                .WithFrequency(8);
+                .WithFrequency(8)
+                .RandomlyWalks();
         }
     }
 }

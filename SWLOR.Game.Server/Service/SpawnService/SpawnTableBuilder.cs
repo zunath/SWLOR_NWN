@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Service.AIService;
 
 namespace SWLOR.Game.Server.Service.SpawnService
 {
@@ -114,6 +115,17 @@ namespace SWLOR.Game.Server.Service.SpawnService
         {
             ActiveSpawn.GameHourStartRestriction = startHour;
             ActiveSpawn.GameHourEndRestriction = endHour;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Indicates that this spawn object will randomly walk when not in combat.
+        /// </summary>
+        /// <returns>A spawn table builder with the configured settings.</returns>
+        public SpawnTableBuilder RandomlyWalks()
+        {
+            ActiveSpawn.AIFlags |= AIFlag.RandomWalk;
 
             return this;
         }

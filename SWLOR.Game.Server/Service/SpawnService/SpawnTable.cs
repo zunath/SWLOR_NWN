@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Service.AIService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.SpawnService
@@ -21,16 +21,16 @@ namespace SWLOR.Game.Server.Service.SpawnService
         }
 
         /// <summary>
-        /// Retrieves the next spawn resref and object type based on the rules for this specific spawn table.
+        /// Retrieves the next spawn resref, object type, and AI flags based on the rules for this specific spawn table.
         /// </summary>
         /// <returns>A tuple containing the object type and resref to spawn.</returns>
-        public Tuple<ObjectType, string> GetNextSpawnResref()
+        public (ObjectType, string, AIFlag) GetNextSpawn()
         {
             var selectedObject = SelectRandomSpawnObject();
             if (selectedObject == null)
-                return new Tuple<ObjectType, string>(ObjectType.All, string.Empty);
+                return (ObjectType.All, string.Empty, AIFlag.None);
 
-            return new Tuple<ObjectType, string>(selectedObject.Type, selectedObject.Resref);
+            return (selectedObject.Type, selectedObject.Resref, selectedObject.AIFlags);
         }
 
         /// <summary>

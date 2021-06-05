@@ -23,42 +23,48 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             builder.Create("TATOOINE_WOMPRATS", "Womprats")
                 .AddSpawn(ObjectType.Creature, "womprat")
-                .WithFrequency(50);
+                .WithFrequency(50)
+                .RandomlyWalks();
         }
 
         private void Sandswimmers(SpawnTableBuilder builder)
         {
             builder.Create("TATOOINE_SANDSWIMMERS", "Sandswimmers")
                 .AddSpawn(ObjectType.Creature, "sandswimmer")
-                .WithFrequency(50);
+                .WithFrequency(50)
+                .RandomlyWalks();
         }
 
         private void Wraid(SpawnTableBuilder builder)
         {
             builder.Create("TATOOINE_WRAID", "Wraid")
                 .AddSpawn(ObjectType.Creature, "sandbeetle")
-                .WithFrequency(50);
+                .WithFrequency(50)
+                .RandomlyWalks();
         }
 
         private void SandDemon(SpawnTableBuilder builder)
         {
             builder.Create("TATOOINE_SANDDEMON", "Sand Demon")
                 .AddSpawn(ObjectType.Creature, "sanddemon")
-                .WithFrequency(50);
+                .WithFrequency(50)
+                .RandomlyWalks();
         }
 
         private void TuskenRaider(SpawnTableBuilder builder)
         {
             builder.Create("TATOOINE_TUSKEN_RAIDER", "Tusken Raiders")
                 .AddSpawn(ObjectType.Creature, "ext_tusken_tr003")
-                .WithFrequency(50);
+                .WithFrequency(50)
+                .RandomlyWalks();
         }
 
         private void SandWorm(SpawnTableBuilder builder)
         {
             builder.Create("TATOOINE_SAND_WORM", "Sand Worm")
                 .AddSpawn(ObjectType.Creature, "sandworm")
-                .WithFrequency(50);
+                .WithFrequency(50)
+                .RandomlyWalks();
         }
     }
 }

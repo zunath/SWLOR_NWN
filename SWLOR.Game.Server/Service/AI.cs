@@ -3,12 +3,12 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Feature.AIDefinition;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AIService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
-namespace SWLOR.Game.Server.Feature
+namespace SWLOR.Game.Server.Service
 {
-    public static class CreatureAI
+    public static class AI
     {
         private static readonly Dictionary<uint, HashSet<uint>> _creatureAllies = new Dictionary<uint, HashSet<uint>>();
 
@@ -18,6 +18,8 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("crea_heartbeat")]
         public static void CreatureHeartbeat()
         {
+            RestoreCreatureStats();
+            ProcessRandomWalkFlag();
             ExecuteScript("cdef_c2_default1", OBJECT_SELF);
         }
 
@@ -301,8 +303,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// When a creature's heartbeat fires, restore their STM and FP.
         /// </summary>
-        [NWNEventHandler("crea_heartbeat")]
-        public static void RestoreCreatureStats()
+        private static void RestoreCreatureStats()
         {
             var self = OBJECT_SELF;
             var maxFP = Stat.GetMaxFP(self);
@@ -317,6 +318,26 @@ namespace SWLOR.Game.Server.Feature
 
             SetLocalInt(self, "FP", fp);
             SetLocalInt(self, "STAMINA", stm);
+        }
+
+        /// <summary>
+        /// When a creature's heartbeat fires, if they have the RandomWalk AI flag,
+        /// and they are not currently preoccupied (combat, talking, etc.) force them to randomly walk.
+        /// </summary>
+        private static void ProcessRandomWalkFlag()
+        {
+            var self = OBJECT_SELF;
+            var aiFlags = GetAIFlag(self);
+            if (!aiFlags.HasFlag(AIFlag.RandomWalk) ||
+                IsInConversation(self) ||
+                GetIsInCombat(self) ||
+                GetCurrentAction(self) == ActionType.RandomWalk)
+                return;
+
+            if (Random.D100(1) <= 40)
+            {
+                AssignCommand(self, ActionRandomWalk);
+            }
         }
 
         /// <summary>
@@ -375,6 +396,28 @@ namespace SWLOR.Game.Server.Feature
             }
 
             _creatureAllies.Remove(self);
+        }
+
+        /// <summary>
+        /// Sets a set of AI flags onto a particular creature as a local variable.
+        /// </summary>
+        /// <param name="creature">The creature to set the flags onto.</param>
+        /// <param name="flags">The flags to set.</param>
+        public static void SetAIFlag(uint creature, AIFlag flags)
+        {
+            var flagValue = (int) flags;
+            SetLocalInt(creature, "AI_FLAGS", flagValue);
+        }
+
+        /// <summary>
+        /// Retrieves a set of AI flags from a particular creature. If <see cref="SetAIFlag"/> has not been called, this will return no flags.
+        /// </summary>
+        /// <param name="creature">The creature to retrieve from.</param>
+        /// <returns>A set of AIFlags specified on a creature.</returns>
+        public static AIFlag GetAIFlag(uint creature)
+        {
+            var flagValue = GetLocalInt(creature, "AI_FLAGS");
+            return (AIFlag) flagValue;
         }
     }
 }

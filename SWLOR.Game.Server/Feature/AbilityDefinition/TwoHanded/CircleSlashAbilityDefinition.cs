@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
         private static string Validation(uint activator, uint target, int level)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand);
+            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
             if (!Item.SaberstaffBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {

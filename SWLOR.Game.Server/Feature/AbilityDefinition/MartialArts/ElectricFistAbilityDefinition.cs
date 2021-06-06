@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 
         private static string Validation(uint activator, uint target, int level)
         {
-            var weapon = GetItemInSlot(InventorySlot.LeftHand);
+            var weapon = GetItemInSlot(InventorySlot.LeftHand, activator);
 
             if (!Item.KnucklesBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {

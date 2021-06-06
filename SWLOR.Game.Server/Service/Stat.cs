@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 var statModifier = GetAbilityModifier(AbilityType.Constitution, creature);
-                var stm = statModifier * 4;
+                var stm = 30 + statModifier * 4;
 
                 return stm;
             }

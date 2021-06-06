@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 
         private static string Validation(uint activator, uint target, int level)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand);
+            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
             if (Item.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon))
                 && (GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.SmallShield ||

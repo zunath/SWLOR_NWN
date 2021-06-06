@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Feature
             // All other abilities are funneled through the same process.
             else
             {
-                Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} begins casting {ability.Name} on {GetName(target)}.");
+                Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name} on {GetName(target)}.");
                 ActivateAbility(activator, target, ability, effectivePerkLevel);
             }
         }

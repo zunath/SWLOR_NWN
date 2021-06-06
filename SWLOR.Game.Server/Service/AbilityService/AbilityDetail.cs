@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityDetail()
         {
             ActivationVisualEffect = VisualEffect.None;
-            AnimationType = Animation.LoopingConjure1;
+            AnimationType = Animation.Invalid;
             Requirements = new List<IAbilityActivationRequirement>();
             ConcentrationStatusEffectType = StatusEffectType.Invalid;
         }

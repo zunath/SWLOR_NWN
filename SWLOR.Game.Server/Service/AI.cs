@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -207,16 +208,16 @@ namespace SWLOR.Game.Server.Service
             // Petrified - do nothing else.
             if (GetHasEffect(EffectTypeScript.Petrify, self)) return;
 
+            // Attempt to target the highest enmity creature.
+            // If no target can be determined, exit early.
+            var target = GetTarget();
+            if (!GetIsObjectValid(target)) return;
+
             // If currently randomly walking, clear all actions.
             if (GetCurrentAction(self) == ActionType.RandomWalk)
             {
                 ClearAllActions();
             }
-
-            // Attempt to target the highest enmity creature.
-            // If no target can be determined, exit early.
-            var target = GetTarget();
-            if (!GetIsObjectValid(target)) return;
 
             // Switch targets if necessary
             if (target != GetAttackTarget(self) ||
@@ -237,6 +238,8 @@ namespace SWLOR.Game.Server.Service
                 var (feat, featTarget) = GenericAIDefinition.DeterminePerkAbility(self, target, allies);
                 if (feat != FeatType.Invalid && GetIsObjectValid(featTarget))
                 {
+                    Console.WriteLine($"{GetName(self)}: Feat = {feat}"); // todo debug
+
                     ClearAllActions();
                     ActionUseFeat(feat, featTarget);
                 }

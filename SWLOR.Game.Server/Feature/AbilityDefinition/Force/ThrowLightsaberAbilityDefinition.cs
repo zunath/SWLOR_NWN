@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static string Validation(uint activator, uint target, int level)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand);
+            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var distance = GetDistanceBetween(activator, target);
 
             if (distance > 15)

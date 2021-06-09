@@ -103,6 +103,21 @@ namespace SWLOR.Game.Server.Service.QuestService
         }
 
         /// <summary>
+        /// Adds an XP reward for completing this quest.
+        /// </summary>
+        /// <param name="amount">The amount of XP to give.</param>
+        /// <param name="isSelectable">If true, player will have the option to select XP as a reward. If false, they will receive it no matter what.
+        /// If IsRepeatable() has not been called, this argument is ignored and all XP is given to the player</param>
+        /// <returns>A QuestBuilder with the configured options.</returns>
+        public QuestBuilder AddXPReward(int amount, bool isSelectable = true)
+        {
+            var reward = new XPReward(amount, isSelectable);
+            _activeQuest.Rewards.Add(reward);
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds a key item reward for completing this quest.
         /// </summary>
         /// <param name="keyItemType">The type of key item to award.</param>

@@ -1,5 +1,6 @@
 ﻿
 using System;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.FactionService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -43,6 +44,29 @@ namespace SWLOR.Game.Server.Service.QuestService
         public void GiveReward(uint player)
         {
             GiveGoldToCreature(player, Amount);
+        }
+    }
+
+    public class XPReward : IQuestReward
+    {
+        public int Amount { get; }
+        public bool IsSelectable { get; }
+        public string MenuName => Amount + " XP";
+
+        public XPReward(int amount, bool isSelectable)
+        {
+            Amount = amount;
+            IsSelectable = isSelectable;
+        }
+
+        public void GiveReward(uint player)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            dbPlayer.UnallocatedXP += Amount;
+
+            DB.Set(playerId, dbPlayer);
+            SendMessageToPC(player, $"You earned {Amount} XP!");
         }
     }
 

@@ -34,6 +34,9 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             WarWithTheMandalorianWarriors(builder);
             KathHoundPartCollection(builder);
             TheAbandonedStation(builder);
+            CullingThePopulace(builder);
+            CullingThePopulacePartTwo(builder);
+            CullingtheHerd(builder);
 
             return builder.Build();
         }
@@ -445,6 +448,51 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("Return to Telford Brelnak to report your findings.")
 
                 .AddGoldReward(4000);
+        }
+
+        private static void CullingThePopulace(QuestBuilder builder)
+        {
+            builder.Create("culling_one", "Culling The Populace")
+
+                .AddState()
+                .SetStateJournalText("I have been tasked to kill five Kath Hounds.")
+                .AddKillObjective(NPCGroupType.Viscara_WildlandKathHounds, 5)
+
+                .AddState()
+                .SetStateJournalText("Return to Saroph Wildanter in Racin' Jims for your reward.")
+
+                .AddGoldReward(10);
+        }
+
+        private static void CullingThePopulacePartTwo(QuestBuilder builder)
+        { 
+            builder.Create("culling_two", "Culling The Populace Part Two")
+                .PrerequisiteQuest("culling_one")
+
+                .AddState()
+                .SetStateJournalText("The pay is not great but it anything to help, now it is five Warocas to kill.")
+                .AddKillObjective(NPCGroupType.Viscara_WildlandsWarocas, 5)
+
+                .AddState()
+                .SetStateJournalText("I've killed the Warocas, back to Saroph with me. Maybe this will be worth it...")
+
+                .AddGoldReward(1000);
+        }
+
+        private static void CullingtheHerd(QuestBuilder builder)
+        {
+            builder.Create("culling_secret_one", "Something is not quite right here...")
+                .PrerequisiteQuest("culling_one")
+
+                .AddState()
+                .SetStateJournalText("Saroph tasked me to kill two Gimpassas and then some Kinrath.")
+                .AddKillObjective(NPCGroupType.Viscara_WildwoodsGimpassas, 2)
+                .AddKillObjective(NPCGroupType.Viscara_WildwoodsKinraths, 10)
+                
+                .AddState()
+                .SetStateJournalText("I have gotten the kills required, now to return to Saroph.")
+
+                .AddGoldReward(100);
         }
     }
 }

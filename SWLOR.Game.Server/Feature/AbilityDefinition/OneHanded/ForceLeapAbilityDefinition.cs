@@ -1,11 +1,11 @@
-﻿//using Random = SWLOR.Game.Server.Service.Random;
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
@@ -24,17 +24,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         private static string Validation(uint activator, uint target, int level)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
-
-            if (Item.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon))
-                && (GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.SmallShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.LargeShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.TowerShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == Core.NWScript.Enum.Item.BaseItem.Invalid))
+            var offHand = GetItemInSlot(InventorySlot.LeftHand, activator);
+            var rightHandBaseItemType = GetBaseItemType(weapon);
+            var leftHandBaseItemType = GetBaseItemType(offHand);
+            
+            if (rightHandBaseItemType == BaseItem.Lightsaber
+                && (leftHandBaseItemType == BaseItem.SmallShield ||
+                    leftHandBaseItemType == BaseItem.LargeShield ||
+                    leftHandBaseItemType == BaseItem.TowerShield ||
+                    leftHandBaseItemType == BaseItem.Invalid))
             {
                 return "This is a one-handed ability.";
             }
-            else 
-                return string.Empty;
+
+            return string.Empty;
         }
 
         private static void ImpactAction(uint activator, uint target, int level)
@@ -47,22 +50,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             switch (level)
             {
                 case 1:
-                    damage = d4();
+                    damage = Random.D4(1);
                     break;
                 case 2:
-                    damage = d6();
+                    damage = Random.D6(1);
                     break;
                 case 3:
-                    damage = d4();
+                    damage = Random.D4(2);
                     break;
                 default:
                     break;
             }
 
+            const float Delay = 3f;
             ClearAllActions();
-            ApplyEffectToObject(DurationType.Instant, EffectDisappearAppear(GetLocation(target)), activator, 2f);
+            ApplyEffectToObject(DurationType.Temporary, EffectDisappearAppear(GetLocation(target)), activator, Delay);
 
-            DelayCommand(2f, () =>
+            DelayCommand(Delay, () =>
             {                
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Sonic), target);
                 ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, 2f);
@@ -80,14 +84,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasCustomValidation(Validation)
+                .HasImpactAction(ImpactAction);
         }
         private static void ForceLeap2(AbilityBuilder builder)
         {
@@ -97,14 +95,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasCustomValidation(Validation)
+                .HasImpactAction(ImpactAction);
         }
         private static void ForceLeap3(AbilityBuilder builder)
         {
@@ -114,14 +106,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasCustomValidation(Validation)
+                .HasImpactAction(ImpactAction);
         }
     }
 }

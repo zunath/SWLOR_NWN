@@ -68529,6 +68529,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Taxi Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "taxi_terminal"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Temporary Structure Location Check"
                     },
                     "RESREF": {

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.ImplantService;
 using SWLOR.Game.Server.Service.SpaceService;
+using SWLOR.Game.Server.Service.TaxiService;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -46,6 +47,7 @@ namespace SWLOR.Game.Server.Entity
             Ships = new Dictionary<Guid, ShipStatus>();
             Implants = new Dictionary<ImplantSlotType, PlayerImplant>();
             Factions = new Dictionary<FactionType, PlayerFactionStanding>();
+            TaxiDestinations = new Dictionary<int, List<TaxiDestinationType>>();
         }
 
         public override string KeyPrefix => "Player";
@@ -106,6 +108,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<Guid, ShipStatus> Ships { get; set; }
         public Dictionary<ImplantSlotType, PlayerImplant> Implants { get; set; }
         public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }
+        public Dictionary<int, List<TaxiDestinationType>> TaxiDestinations { get; set; }
     }
 
     public class MapPin

@@ -26,12 +26,12 @@ namespace SWLOR.Game.Server.Core.NWNX
         {
             const string Function = "SetFeatModifier";
 
-            NWNXCore.NWNX_PushArgumentInt(PluginName, Function, (int)param4);
-            NWNXCore.NWNX_PushArgumentInt(PluginName, Function, (int)param3);
-            NWNXCore.NWNX_PushArgumentInt(PluginName, Function, (int)param2);
-            NWNXCore.NWNX_PushArgumentInt(PluginName, Function, (int)param1);
-            NWNXCore.NWNX_PushArgumentInt(PluginName, Function, (int)modifierType);
-            NWNXCore.NWNX_PushArgumentInt(PluginName, Function, (int)featType);
+            NWNXCore.NWNX_PushArgumentInt((int)param4);
+            NWNXCore.NWNX_PushArgumentInt((int)param3);
+            NWNXCore.NWNX_PushArgumentInt((int)param2);
+            NWNXCore.NWNX_PushArgumentInt((int)param1);
+            NWNXCore.NWNX_PushArgumentInt((int)modifierType);
+            NWNXCore.NWNX_PushArgumentInt((int)featType);
 
             NWNXCore.NWNX_CallFunction(PluginName, Function);
         }

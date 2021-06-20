@@ -31,12 +31,12 @@
         {
             var sFunc = "PushPerfScope";
 
-            NWNXCore.NWNX_PushArgumentString(PLUGIN_NAME, sFunc, name);
+            NWNXCore.NWNX_PushArgumentString(name);
 
             if (tag0_value != "" && tag0_tag != "")
             {
-                NWNXCore.NWNX_PushArgumentString(PLUGIN_NAME, sFunc, tag0_value);
-                NWNXCore.NWNX_PushArgumentString(PLUGIN_NAME, sFunc, tag0_tag);
+                NWNXCore.NWNX_PushArgumentString(tag0_value);
+                NWNXCore.NWNX_PushArgumentString(tag0_tag);
             }
 
             NWNXCore.NWNX_CallFunction(PLUGIN_NAME, sFunc);

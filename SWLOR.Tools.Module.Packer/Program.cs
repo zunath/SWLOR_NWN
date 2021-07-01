@@ -4,16 +4,28 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace SWLOR.Tools.Module.Packer
 {
     class Program
     {
+        private static AppConfig _appConfig;
+
         static void Main(string[] args)
         {
             if (args.Length <= 0)
             {
                 Console.WriteLine("Must pass either 'p' to pack the module or 'u' to unpack the module.");
+                return;
+            }
+
+            var json = File.ReadAllText("./config.json");
+            _appConfig = JsonConvert.DeserializeObject<AppConfig>(json);
+
+            if (string.IsNullOrWhiteSpace(_appConfig.ModuleFileName))
+            {
+                Console.WriteLine("Module file name is not specified in config.json. Please specify the file.");
                 return;
             }
 
@@ -83,7 +95,7 @@ namespace SWLOR.Tools.Module.Packer
 
             // Finally, use nwn_erf to build a .mod file from the files inside the packing directory.
             Console.WriteLine("Building module...");
-            RunProcess($"nwn_erf -e MOD -c \"./packing/\" -f \"Star Wars LOR.mod\"");
+            RunProcess($"nwn_erf -e MOD -c \"./packing/\" -f \"{_appConfig.ModuleFileName}\"");
             
             // Clean up the packing directory.
             Directory.Delete("./packing/", true);
@@ -111,7 +123,7 @@ namespace SWLOR.Tools.Module.Packer
 
             // Run the extraction process.
             Console.WriteLine("Extracting module...");
-            RunProcess("nwn_erf -f \"Star Wars LOR.mod\" -x");
+            RunProcess($"nwn_erf -f \"{_appConfig.ModuleFileName}\" -x");
 
             // Get all of the files we just unpacked.
             Console.WriteLine("Getting files...");

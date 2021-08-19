@@ -39,8 +39,8 @@ namespace SWLOR.Game.Server.Feature
         public static void UseFeat()
         {
             var activator = OBJECT_SELF;
-            var target = StringToObject(Events.GetEventData("TARGET_OBJECT_ID"));
-            var feat = (FeatType)Convert.ToInt32(Events.GetEventData("FEAT_ID"));
+            var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
+            var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
             if (!Ability.IsFeatRegistered(feat)) return;
             var ability = Ability.GetAbilityDetail(feat);
             

@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 GrantFeats();
                 ApplyPurchasePerkTriggers(dbPlayer.Perks[model.SelectedPerk]);
 
-                Events.SignalEvent("SWLOR_BUY_PERK", player);
+                EventsPlugin.SignalEvent("SWLOR_BUY_PERK", player);
             }
 
             void GrantFeats()
@@ -206,7 +206,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     var abilityDetail = Ability.GetAbilityDetail(feat);
                     if (abilityDetail.ImpactAction == null) continue;
 
-                    Creature.AddFeatByLevel(player, feat, 1);
+                    CreaturePlugin.AddFeatByLevel(player, feat, 1);
                     AddFeatToHotBar(feat);
                 }
             }

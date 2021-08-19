@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Core.NWNX
         public int nGridY; /// The tile's grid y position
     };
 
-    public static class Area
+    public static class AreaPlugin
     {
         private const string PLUGIN_NAME = "NWNX_Area";
 

@@ -103,11 +103,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .TriggerPurchase((player, type, level) =>
                 {
-                    Creature.SetCriticalMultiplierModifier(player, level, 0, true);
+                    CreaturePlugin.SetCriticalMultiplierModifier(player, level, 0, true);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
-                    Creature.SetCriticalMultiplierModifier(player, 0, 0, true);
+                    CreaturePlugin.SetCriticalMultiplierModifier(player, 0, 0, true);
                 });
         }
 
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.PistolBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.PistolBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
 
                 })
@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.PistolBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + 1;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerRefund((player, type, level) =>
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.PistolBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
 
@@ -392,7 +392,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -403,7 +403,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
 
                 })
@@ -415,7 +415,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + 1;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerRefund((player, type, level) =>
@@ -426,7 +426,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
 
@@ -583,7 +583,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.CannonBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -594,7 +594,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.CannonBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
 
                 })
@@ -606,7 +606,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.CannonBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + 1;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerRefund((player, type, level) =>
@@ -617,7 +617,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.CannonBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
 
@@ -773,7 +773,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.RifleBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -784,7 +784,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.RifleBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
 
                 })
@@ -796,7 +796,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.RifleBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + 1;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerRefund((player, type, level) =>
@@ -807,7 +807,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.RifleBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
 

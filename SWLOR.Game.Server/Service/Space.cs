@@ -210,14 +210,14 @@ namespace SWLOR.Game.Server.Service
             var player = OBJECT_SELF;
 
             if (!IsPlayerInSpaceMode(player)) return;
-            Events.SkipEvent();
+            EventsPlugin.SkipEvent();
 
             // Clicking enemies will cause this flag to be true (and we should proceed with target selection)
             // Being attacked by enemies will have this flag set to false (and we should exit without doing anything else)
-            var clearAllActions = Convert.ToInt32(Events.GetEventData("CLEAR_ALL_ACTIONS"));
+            var clearAllActions = Convert.ToInt32(EventsPlugin.GetEventData("CLEAR_ALL_ACTIONS"));
             if (clearAllActions == 0) return;
 
-            var target = StringToObject(Events.GetEventData("TARGET"));
+            var target = StringToObject(EventsPlugin.GetEventData("TARGET"));
             var (currentTarget, _) = GetCurrentTarget(player);
             
             // Targeted the same object - remove it.
@@ -296,7 +296,7 @@ namespace SWLOR.Game.Server.Service
             SetCreatureAppearanceType(player, shipDetail.Appearance);
 
             // Set active ship Id and serialize the player's hot bar.
-            dbPlayer.SerializedHotBar = Creature.SerializeQuickbar(player);
+            dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
             dbPlayer.ActiveShipId = shipId;
 
             // Load ship modules as feats.
@@ -310,7 +310,7 @@ namespace SWLOR.Game.Server.Service
                 if (shipModuleDetail.Type == ShipModuleType.Passive) continue;
 
                 // Convert current ship module to feat.
-                Creature.AddFeat(player, feat);
+                CreaturePlugin.AddFeat(player, feat);
 
                 // Rename the feat to match the configured name on the ship module.
                 ApplyShipModuleFeat(player, shipModuleDetail, feat);
@@ -318,7 +318,7 @@ namespace SWLOR.Game.Server.Service
 
             // Load the player's ship hot bar.
             if (string.IsNullOrWhiteSpace(dbPlayerShip.SerializedHotBar) ||
-                !Creature.DeserializeQuickbar(player, dbPlayerShip.SerializedHotBar))
+                !CreaturePlugin.DeserializeQuickbar(player, dbPlayerShip.SerializedHotBar))
             {
                 // Deserialization failed. Clear out the player's hot bar and start fresh.
                 for (var slot = 0; slot <= 35; slot++)
@@ -326,7 +326,7 @@ namespace SWLOR.Game.Server.Service
                     Player.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
                 }
 
-                dbPlayer.Ships[shipId].SerializedHotBar = Creature.SerializeQuickbar(player);
+                dbPlayer.Ships[shipId].SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
             }
 
             DB.Set(playerId, dbPlayer);
@@ -367,18 +367,18 @@ namespace SWLOR.Game.Server.Service
             Enmity.RemoveCreatureEnmity(player);
 
             // Save the ship's hot bar and unassign the active ship Id.
-            dbPlayer.Ships[shipId].SerializedHotBar = Creature.SerializeQuickbar(player);
+            dbPlayer.Ships[shipId].SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
             dbPlayer.ActiveShipId = Guid.Empty;
 
             // Remove all module feats from the player.
             foreach (var (feat, _) in ShipModuleFeats)
             {
-                Creature.RemoveFeat(player, feat);
+                CreaturePlugin.RemoveFeat(player, feat);
             }
 
             // Load the player's hot bar.
             if (string.IsNullOrWhiteSpace(dbPlayer.SerializedHotBar) ||
-                !Creature.DeserializeQuickbar(player, dbPlayer.SerializedHotBar))
+                !CreaturePlugin.DeserializeQuickbar(player, dbPlayer.SerializedHotBar))
             {
                 // Deserialization failed. Clear out the player's hot bar and start fresh.
                 for (var slot = 0; slot <= 35; slot++)
@@ -386,7 +386,7 @@ namespace SWLOR.Game.Server.Service
                     Player.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
                 }
 
-                dbPlayer.SerializedHotBar = Creature.SerializeQuickbar(player);
+                dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
             }
             
             DB.Set(playerId, dbPlayer);
@@ -457,7 +457,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("examine_bef")]
         public static void ExamineShipModuleItem()
         {
-            var item = StringToObject(Events.GetEventData("EXAMINEE_OBJECT_ID"));
+            var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
 
             // Must be an item
             if (GetObjectType(item) != ObjectType.Item) return;
@@ -490,7 +490,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("examine_bef")]
         public static void ExamineShipItem()
         {
-            var item = StringToObject(Events.GetEventData("EXAMINEE_OBJECT_ID"));
+            var item = StringToObject(EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID"));
 
             // Must be an item
             if (GetObjectType(item) != ObjectType.Item) return;
@@ -513,7 +513,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("feat_use_bef")]
         public static void HandleShipModuleFeats()
         {
-            var feat = (FeatType)Convert.ToInt32(Events.GetEventData("FEAT_ID"));
+            var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
 
             if (!ShipModuleFeats.ContainsKey(feat)) return;
             
@@ -940,12 +940,12 @@ namespace SWLOR.Game.Server.Service
                 // Remove all module feats from the player.
                 foreach (var (feat, _) in ShipModuleFeats)
                 {
-                    Creature.RemoveFeat(creature, feat);
+                    CreaturePlugin.RemoveFeat(creature, feat);
                 }
 
                 // Load the player's hot bar.
                 if (string.IsNullOrWhiteSpace(dbPlayer.SerializedHotBar) ||
-                    !Creature.DeserializeQuickbar(creature, dbPlayer.SerializedHotBar))
+                    !CreaturePlugin.DeserializeQuickbar(creature, dbPlayer.SerializedHotBar))
                 {
                     // Deserialization failed. Clear out the player's hot bar and start fresh.
                     for (var slot = 0; slot <= 35; slot++)
@@ -953,7 +953,7 @@ namespace SWLOR.Game.Server.Service
                         Player.SetQuickBarSlot(creature, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
                     }
 
-                    dbPlayer.SerializedHotBar = Creature.SerializeQuickbar(creature);
+                    dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(creature);
                 }
 
                 // Jump player to their respawn point.

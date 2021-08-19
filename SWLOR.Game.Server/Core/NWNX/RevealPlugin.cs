@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Core.NWNX
         Seen
     }
 
-    public static class Reveal
+    public static class RevealPlugin
     {
         private const string PLUGIN_NAME = "NWNX_Reveal";
 

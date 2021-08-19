@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
-    public static class Visibility
+    public static class VisibilityPlugin
     {
         private const string PLUGIN_NAME = "NWNX_Visibility";
 

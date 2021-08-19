@@ -2,7 +2,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
-    public class Rename
+    public class RenamePlugin
     {
         private const string PLUGIN_NAME = "NWNX_Rename";
 

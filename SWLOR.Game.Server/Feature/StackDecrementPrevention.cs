@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature
                 itemType == BaseItem.Dart ||
                 itemType == BaseItem.ThrowingAxe)
             {
-                Events.SkipEvent();
+                EventsPlugin.SkipEvent();
             }
         }
     }

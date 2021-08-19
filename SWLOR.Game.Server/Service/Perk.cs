@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Service
         {
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
-            var item = StringToObject(Events.GetEventData("ITEM_OBJECT_ID"));
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
             if (GetResRef(item) != "refund_tome") return;
 
             SetLocalObject(player, "PERK_REFUND_OBJECT", item);
@@ -108,8 +108,8 @@ namespace SWLOR.Game.Server.Service
             Dialog.StartConversation(player, player, nameof(PerkRefundDialog));
 
             // Don't display the "You cannot use this item" message. Skip the event.
-            Events.SetEventResult("1"); 
-            Events.SkipEvent();
+            EventsPlugin.SetEventResult("1"); 
+            EventsPlugin.SkipEvent();
         }
 
         /// <summary>

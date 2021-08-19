@@ -12,8 +12,8 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("mod_load")]
         public static void ConfigureFeedbackMessages()
         {
-            Feedback.SetFeedbackMessageHidden(FeedbackMessageTypes.UseitemCantUse, true);
-            Feedback.SetFeedbackMessageHidden(FeedbackMessageTypes.CombatRunningOutOfAmmo, true);
+            FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.UseitemCantUse, true);
+            FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.CombatRunningOutOfAmmo, true);
         }
     }
 }

@@ -169,16 +169,16 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         [NWNEventHandler("on_nwnx_chat")]
         public static void ListenForStoreName()
         {
-            var player = Chat.GetSender();
+            var player = ChatPlugin.GetSender();
             if (!GetLocalBool(player, "IS_SETTING_STORE_NAME")) return;
 
-            var message = Chat.GetMessage();
+            var message = ChatPlugin.GetMessage();
 
             if (message.Length > 30)
                 message = message.Substring(0, 30);
 
             SetLocalString(player, "NEW_STORE_NAME", message);
-            Chat.SkipMessage();
+            ChatPlugin.SkipMessage();
 
             FloatingTextStringOnCreature("Press 'Refresh' in the chat window to see the changes.", player, false);
         }

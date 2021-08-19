@@ -13,11 +13,11 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("mod_load")]
         public static void ConfigureFeats()
         {
-            Feat.SetFeatModifier(FeatType.ShieldConcealment1, FeatModifierType.Concealment, 5);
-            Feat.SetFeatModifier(FeatType.ShieldConcealment2, FeatModifierType.Concealment, 10);
-            Feat.SetFeatModifier(FeatType.ShieldConcealment3, FeatModifierType.Concealment, 15);
-            Feat.SetFeatModifier(FeatType.ShieldConcealment4, FeatModifierType.Concealment, 20);
-            Feat.SetFeatModifier(FeatType.ShieldConcealment5, FeatModifierType.Concealment, 25);
+            FeatPlugin.SetFeatModifier(FeatType.ShieldConcealment1, FeatModifierType.Concealment, 5);
+            FeatPlugin.SetFeatModifier(FeatType.ShieldConcealment2, FeatModifierType.Concealment, 10);
+            FeatPlugin.SetFeatModifier(FeatType.ShieldConcealment3, FeatModifierType.Concealment, 15);
+            FeatPlugin.SetFeatModifier(FeatType.ShieldConcealment4, FeatModifierType.Concealment, 20);
+            FeatPlugin.SetFeatModifier(FeatType.ShieldConcealment5, FeatModifierType.Concealment, 25);
         }
     }
 }

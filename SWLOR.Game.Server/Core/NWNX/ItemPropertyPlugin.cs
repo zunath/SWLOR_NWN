@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
-    public static class ItemProperty
+    public static class ItemPropertyPlugin
     {
         private const string PLUGIN_NAME = "NWNX_ItemProperty";
 

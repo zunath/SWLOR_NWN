@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature
         public static void SetBarteringFlag()
         {
             var player1 = OBJECT_SELF;
-            var player2 = StringToObject(Events.GetEventData("BARTER_TARGET"));
+            var player2 = StringToObject(EventsPlugin.GetEventData("BARTER_TARGET"));
 
             SetLocalBool(player1, "IS_BARTERING", true);
             SetLocalBool(player2, "IS_BARTERING", true);
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature
         public static void RemoveBarteringFlag()
         {
             var player1 = OBJECT_SELF;
-            var player2 = StringToObject(Events.GetEventData("BARTER_TARGET"));
+            var player2 = StringToObject(EventsPlugin.GetEventData("BARTER_TARGET"));
 
             DeleteLocalBool(player1, "IS_BARTERING");
             DeleteLocalBool(player2, "IS_BARTERING");

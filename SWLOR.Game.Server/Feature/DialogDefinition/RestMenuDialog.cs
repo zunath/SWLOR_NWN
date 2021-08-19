@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         [NWNEventHandler("feat_use_bef")]
         public static void UseOpenRestMenuFeat()
         {
-            var feat = (FeatType)Convert.ToInt32(Events.GetEventData("FEAT_ID"));
+            var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
             if (feat != FeatType.OpenRestMenu) return;
 
             Dialog.StartConversation(OBJECT_SELF, OBJECT_SELF, nameof(RestMenuDialog));

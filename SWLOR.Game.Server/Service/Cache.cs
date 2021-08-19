@@ -60,12 +60,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void CacheItemNamesByResref()
         {
-            var resref = Util.GetFirstResRef(ResRefType.Item);
+            var resref = UtilPlugin.GetFirstResRef(ResRefType.Item);
 
             while (!string.IsNullOrWhiteSpace(resref))
             {
                 CacheItemNameByResref(resref);
-                resref = Util.GetNextResRef();
+                resref = UtilPlugin.GetNextResRef();
             }
         }
 

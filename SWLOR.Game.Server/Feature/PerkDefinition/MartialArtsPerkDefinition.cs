@@ -80,11 +80,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 
                 .TriggerPurchase((player, type, level) =>
                 {
-                    Creature.SetCriticalRangeModifier(player, -level, 0, true, BaseItem.Gloves);
+                    CreaturePlugin.SetCriticalRangeModifier(player, -level, 0, true, BaseItem.Gloves);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
-                    Creature.SetCriticalRangeModifier(player, 0, 0, true, BaseItem.Gloves);
+                    CreaturePlugin.SetCriticalRangeModifier(player, 0, 0, true, BaseItem.Gloves);
                 });
         }
 
@@ -180,7 +180,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.KnucklesBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.KnucklesBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
 
                 })
@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.KnucklesBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + 1;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerRefund((player, type, level) =>
@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.KnucklesBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
 
@@ -370,7 +370,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.StaffBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -381,7 +381,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.StaffBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
 
                 })
@@ -393,7 +393,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.StaffBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + 1;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerRefund((player, type, level) =>
@@ -404,7 +404,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.StaffBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
 

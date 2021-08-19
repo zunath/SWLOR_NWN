@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
 
-            Creature.SetMovementRateFactor(player, dbPlayer.MovementRate);
+            CreaturePlugin.SetMovementRateFactor(player, dbPlayer.MovementRate);
         }
 
         /// <summary>
@@ -338,7 +338,7 @@ namespace SWLOR.Game.Server.Service
             for (var nwnLevel = 1; nwnLevel <= nwnLevelCount; nwnLevel++)
             {
                 hpToApply--;
-                Creature.SetMaxHitPointsByLevel(player, nwnLevel, 1);
+                CreaturePlugin.SetMaxHitPointsByLevel(player, nwnLevel, 1);
             }
 
             // It's possible for the MaxHP value to be a negative if builders misuse item properties, etc.
@@ -351,12 +351,12 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (hpToApply > MaxHPPerLevel) // Levels can only contain a max of 255 HP
                     {
-                        Creature.SetMaxHitPointsByLevel(player, nwnLevel, 255);
+                        CreaturePlugin.SetMaxHitPointsByLevel(player, nwnLevel, 255);
                         hpToApply -= 254;
                     }
                     else // Remaining value gets set to the level. (<255 hp)
                     {
-                        Creature.SetMaxHitPointsByLevel(player, nwnLevel, hpToApply + 1);
+                        CreaturePlugin.SetMaxHitPointsByLevel(player, nwnLevel, hpToApply + 1);
                         break;
                     }
                 }
@@ -422,7 +422,7 @@ namespace SWLOR.Game.Server.Service
         public static void AdjustPlayerMovementRate(Player entity, uint player, float adjustBy)
         {
             entity.MovementRate += adjustBy;
-            Creature.SetMovementRateFactor(player, entity.MovementRate);
+            CreaturePlugin.SetMovementRateFactor(player, entity.MovementRate);
         }
         
         /// <summary>
@@ -437,7 +437,7 @@ namespace SWLOR.Game.Server.Service
             if (ability == AbilityType.Invalid) return;
 
             var totalStat = entity.BaseStats[ability] + entity.ImplantStats.Attributes[ability];
-            Creature.SetRawAbilityScore(player, ability, totalStat);
+            CreaturePlugin.SetRawAbilityScore(player, ability, totalStat);
         }
 
         /// <summary>

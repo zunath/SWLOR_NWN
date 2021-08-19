@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
-    public static class Feat
+    public static class FeatPlugin
     {
         private const string PluginName = "NWNX_Feat";
 

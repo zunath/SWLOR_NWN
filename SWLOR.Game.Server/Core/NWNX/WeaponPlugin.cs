@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
-    public static class Weapon
+    public static class WeaponPlugin
     {
         private const string PLUGIN_NAME = "NWNX_Weapon";
 

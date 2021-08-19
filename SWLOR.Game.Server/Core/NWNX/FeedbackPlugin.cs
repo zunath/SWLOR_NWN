@@ -2,7 +2,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
-    public static class Feedback
+    public static class FeedbackPlugin
     {
         private const string PLUGIN_NAME = "NWNX_Feedback";
 

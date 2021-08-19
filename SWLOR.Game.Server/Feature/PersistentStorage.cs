@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature
             var container = OBJECT_SELF;
             if (GetResRef(container) != "bank_chest" || GetLocalBool(container, "IS_DESERIALIZING")) return;
 
-            var item = StringToObject(Events.GetEventData("ITEM"));
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var player = GetItemPossessor(item);
             var playerId = GetObjectUUID(player);
             var storageId = GetStorageID();
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Feature
             if (IsLoading) return;
 
             var container = OBJECT_SELF;
-            var item = StringToObject(Events.GetEventData("ITEM"));
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var player = GetItemPossessor(item);
             var limit = GetItemLimit();
             var count = Item.GetInventoryItemCount(container);
@@ -242,7 +242,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="message">The message sent</param>
         private static void CancelEvent(uint player, string message)
         {
-            Events.SkipEvent();
+            EventsPlugin.SkipEvent();
             SendMessageToPC(player, message);
         }
 

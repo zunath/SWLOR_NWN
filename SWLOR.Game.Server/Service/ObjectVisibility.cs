@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Service
             // Toggle visibility of all hidden objects 
             foreach (var hiddenObject in _defaultHiddenObjects)
             {
-                Visibility.SetVisibilityOverride(player, hiddenObject, VisibilityType.Hidden);
+                VisibilityPlugin.SetVisibilityOverride(player, hiddenObject, VisibilityType.Hidden);
             }
 
             // Now iterate over the player's objects and adjust visibility.
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 var obj = _visibilityObjects[visibility.Key];
-                Visibility.SetVisibilityOverride(player, obj, visibility.Value);
+                VisibilityPlugin.SetVisibilityOverride(player, obj, visibility.Value);
             }
         }
 
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Service
             dbVisibility.ObjectVisibilities[visibilityObjectID] = type;
             DB.Set(playerId, dbVisibility);
 
-            Visibility.SetVisibilityOverride(player, target, type);
+            VisibilityPlugin.SetVisibilityOverride(player, target, type);
         }
 
         /// <summary>

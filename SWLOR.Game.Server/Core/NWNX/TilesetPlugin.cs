@@ -3,7 +3,7 @@ using static SWLOR.Game.Server.Core.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
-    public static class Tileset
+    public static class TilesetPlugin
     {
         private const string NWNX_Tileset = "NWNX_Tileset";
 

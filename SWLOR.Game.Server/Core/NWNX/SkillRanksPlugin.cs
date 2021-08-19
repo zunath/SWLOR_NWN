@@ -3,7 +3,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
-    public static class SkillRanks
+    public static class SkillRanksPlugin
     {
         private const string PLUGIN_NAME = "NWNX_SkillRanks";
 

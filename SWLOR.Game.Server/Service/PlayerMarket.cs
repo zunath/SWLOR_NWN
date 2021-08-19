@@ -103,14 +103,14 @@ namespace SWLOR.Game.Server.Service
                 var deserialized = Object.Deserialize(item.Value.Data);
                 Object.AcquireItem(merchant, deserialized);
 
-                var originalBaseGPValue = Core.NWNX.Item.GetBaseGoldPieceValue(deserialized);
-                var originalAdditionalGPValue = Core.NWNX.Item.GetAddGoldPieceValue(deserialized);
+                var originalBaseGPValue = Core.NWNX.ItemPlugin.GetBaseGoldPieceValue(deserialized);
+                var originalAdditionalGPValue = Core.NWNX.ItemPlugin.GetAddGoldPieceValue(deserialized);
 
                 SetLocalInt(deserialized, "ORIGINAL_BASE_GP_VALUE", originalBaseGPValue);
                 SetLocalInt(deserialized, "ORIGINAL_ADDITIONAL_GP_VALUE", originalAdditionalGPValue);
 
-                Core.NWNX.Item.SetBaseGoldPieceValue(deserialized, item.Value.Price);
-                Core.NWNX.Item.SetAddGoldPieceValue(deserialized, 0);
+                Core.NWNX.ItemPlugin.SetBaseGoldPieceValue(deserialized, item.Value.Price);
+                Core.NWNX.ItemPlugin.SetAddGoldPieceValue(deserialized, 0);
             }
 
             return merchant;
@@ -259,9 +259,9 @@ namespace SWLOR.Game.Server.Service
         public static void PlayerShopBuyItem()
         {
             var buyer = OBJECT_SELF;
-            var item = StringToObject(Events.GetEventData("ITEM"));
-            var price = Convert.ToInt32(Events.GetEventData("PRICE"));
-            var store = StringToObject(Events.GetEventData("STORE"));
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            var price = Convert.ToInt32(EventsPlugin.GetEventData("PRICE"));
+            var store = StringToObject(EventsPlugin.GetEventData("STORE"));
 
             if (GetResRef(store) != "player_store") return;
 
@@ -287,8 +287,8 @@ namespace SWLOR.Game.Server.Service
                 var originalBaseGPValue = GetLocalInt(item, "ORIGINAL_BASE_GP_VALUE");
                 var originalAdditionalGPValue = GetLocalInt(item, "ORIGINAL_ADDITIONAL_GP_VALUE");
 
-                Core.NWNX.Item.SetBaseGoldPieceValue(item, originalBaseGPValue);
-                Core.NWNX.Item.SetAddGoldPieceValue(item, originalAdditionalGPValue);
+                Core.NWNX.ItemPlugin.SetBaseGoldPieceValue(item, originalBaseGPValue);
+                Core.NWNX.ItemPlugin.SetAddGoldPieceValue(item, originalAdditionalGPValue);
 
                 DeleteLocalInt(item, "ORIGINAL_BASE_GP_VALUE");
                 DeleteLocalInt(item, "ORIGINAL_ADDITIONAL_GP_VALUE");

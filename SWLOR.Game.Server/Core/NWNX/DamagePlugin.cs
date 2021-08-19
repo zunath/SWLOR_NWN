@@ -3,7 +3,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
-    public static class Damage
+    public static class DamagePlugin
     {
         private const string PLUGIN_NAME = "NWNX_Damage";
 

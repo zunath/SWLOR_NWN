@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
-    public static class Creature
+    public static class CreaturePlugin
     {
         private const string PLUGIN_NAME = "NWNX_Creature";
 

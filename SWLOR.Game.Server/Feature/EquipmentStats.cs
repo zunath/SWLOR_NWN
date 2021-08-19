@@ -37,8 +37,8 @@ namespace SWLOR.Game.Server.Feature
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
-            var item = StringToObject(Events.GetEventData("ITEM"));
-            var slot = (InventorySlot)Convert.ToInt32(Events.GetEventData("SLOT"));
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
 
             // The unequip event doesn't fire if an item is being swapped out.
             // If there's an item in the slot, run the stat removals first.
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
-            var item = StringToObject(Events.GetEventData("ITEM"));
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
 
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {

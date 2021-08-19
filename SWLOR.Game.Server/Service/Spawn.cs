@@ -265,7 +265,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) && !GetIsDM(player)) return;
             
             var area = OBJECT_SELF;
-            var playerCount = Area.GetNumberOfPlayersInArea(area);
+            var playerCount = AreaPlugin.GetNumberOfPlayersInArea(area);
             if (playerCount > 0) return;
 
             var now = DateTime.UtcNow;
@@ -382,7 +382,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var (area, despawnTime) = _queuedAreaDespawns.ElementAt(index);
                 // Players have entered this area. Remove it and move to the next entry.
-                if (Area.GetNumberOfPlayersInArea(area) > 0)
+                if (AreaPlugin.GetNumberOfPlayersInArea(area) > 0)
                 {
                     _queuedAreaDespawns.Remove(area);
                     continue;

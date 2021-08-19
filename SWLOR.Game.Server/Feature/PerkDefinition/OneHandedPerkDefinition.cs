@@ -56,13 +56,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     // Item is going to right hand and no item is in left hand.
                     if (slot == InventorySlot.RightHand && !GetIsObjectValid(leftHand))
                     {
-                        Weapon.SetOneHalfStrength(item, true, true);
+                        WeaponPlugin.SetOneHalfStrength(item, true, true);
                     }
 
                     // Item is going to left hand and an item is already in the right hand.
                     if (slot == InventorySlot.LeftHand && GetIsObjectValid(rightHand))
                     {
-                        Weapon.SetOneHalfStrength(rightHand, false, true);
+                        WeaponPlugin.SetOneHalfStrength(rightHand, false, true);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                         GetIsObjectValid(leftHand) &&
                         Item.OneHandedMeleeItemTypes.Contains(leftType))
                     {
-                        Weapon.SetOneHalfStrength(leftHand, true, true);
+                        WeaponPlugin.SetOneHalfStrength(leftHand, true, true);
                     }
 
                     // Item is being unequipped from left hand and there's a weapon in the right hand.
@@ -86,13 +86,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                        GetIsObjectValid(rightHand) &&
                        Item.OneHandedMeleeItemTypes.Contains(rightType))
                     {
-                        Weapon.SetOneHalfStrength(rightHand, true, true);
+                        WeaponPlugin.SetOneHalfStrength(rightHand, true, true);
                     }
 
                     // Always remove the item's one-half bonus
                     if (Item.OneHandedMeleeItemTypes.Contains(itemType))
                     {
-                        Weapon.SetOneHalfStrength(item, false, true);
+                        WeaponPlugin.SetOneHalfStrength(item, false, true);
                     }
                 });
         }
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.VibrobladeBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.VibrobladeBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
 
                 })
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.VibrobladeBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + 1;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerRefund((player, type, level) =>
@@ -247,7 +247,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.VibrobladeBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
 
@@ -403,7 +403,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -414,7 +414,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
 
                 })
@@ -426,7 +426,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + 1;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerRefund((player, type, level) =>
@@ -437,7 +437,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
 
@@ -600,7 +600,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.LightsaberBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -611,7 +611,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.LightsaberBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
 
                 })
@@ -623,7 +623,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.LightsaberBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + 1;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerRefund((player, type, level) =>
@@ -634,7 +634,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.LightsaberBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
 

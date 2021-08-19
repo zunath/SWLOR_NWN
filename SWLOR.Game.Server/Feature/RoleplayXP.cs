@@ -74,11 +74,11 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("on_nwnx_chat")]
         public static void ProcessRPMessage()
         {
-            var channel = Chat.GetChannel();
-            var player = Chat.GetSender();
+            var channel = ChatPlugin.GetChannel();
+            var player = ChatPlugin.GetSender();
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
-            var message = Chat.GetMessage().Trim();
+            var message = ChatPlugin.GetMessage().Trim();
             var now = DateTime.UtcNow;
 
             var isInCharacterChat =

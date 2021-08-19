@@ -284,8 +284,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     SetPlotFlag(tile, true);
                     ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Placement_Grid), tile);
 
-                    Visibility.SetVisibilityOverride(OBJECT_INVALID, tile, VisibilityType.Hidden);
-                    Visibility.SetVisibilityOverride(player, tile, VisibilityType.Visible);
+                    VisibilityPlugin.SetVisibilityOverride(OBJECT_INVALID, tile, VisibilityType.Hidden);
+                    VisibilityPlugin.SetVisibilityOverride(player, tile, VisibilityType.Visible);
                     model.GridTiles.Add(tile);
                 }
 

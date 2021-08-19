@@ -67,24 +67,24 @@ namespace SWLOR.Game.Server.Service
                 DelayCommand(0.1f, () => CheckPosition(actionUser, actionId, originalPosition));
             }
 
-            var item = StringToObject(Events.GetEventData("ITEM_OBJECT_ID"));
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
             var itemTag = GetTag(item);
 
             // Not in the cache. Skip.
             if (!_items.ContainsKey(itemTag))
                 return;
 
-            var target = StringToObject(Events.GetEventData("TARGET_OBJECT_ID"));
+            var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
             var area = GetArea(user);
-            var targetPositionX = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_X"));
-            var targetPositionY = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Y"));
-            var targetPositionZ = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Z"));
+            var targetPositionX = (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_X"));
+            var targetPositionY = (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Y"));
+            var targetPositionZ = (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Z"));
             var targetPosition = GetIsObjectValid(target) ? GetPosition(target) : Vector3(targetPositionX, targetPositionY, targetPositionZ);
             var targetLocation = GetIsObjectValid(target) ? GetLocation(target) : Location(area, targetPosition, 0.0f);
             var userPosition = GetPosition(user);
 
             // Bypass the NWN "item use" animation.
-            Events.SkipEvent();
+            EventsPlugin.SkipEvent();
 
             // Check item property requirements.
             if (!CanCreatureUseItem(user, item))

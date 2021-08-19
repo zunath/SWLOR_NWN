@@ -18,21 +18,21 @@ namespace SWLOR.Game.Server.Feature
         {
             var player = OBJECT_SELF;
             var area = GetArea(player);
-            var item = StringToObject(Events.GetEventData("ITEM_OBJECT_ID"));
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
 
             if (!Housing.CanPlaceFurniture(player, item))
             {
                 return;
             }
 
-            Events.SkipEvent();
+            EventsPlugin.SkipEvent();
 
             var furnitureTypeId = (int)Housing.GetFurnitureTypeFromItem(item);
             var targetLocation = Location(area,
                 Vector3(
-                    (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_X")),
-                    (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Y")),
-                    (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Z"))),
+                    (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_X")),
+                    (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Y")),
+                    (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Z"))),
                 0.0f);
 
             SetLocalInt(player, "TEMP_FURNITURE_TYPE_ID", furnitureTypeId);

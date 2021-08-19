@@ -21,10 +21,10 @@ namespace SWLOR.Game.Server.Feature
         public static void ValidateItemUse()
         {
             var creature = OBJECT_SELF;
-            var item = StringToObject(Events.GetEventData("ITEM_OBJECT_ID"));
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
 
-            Events.SetEventResult(string.IsNullOrWhiteSpace(CanItemBeUsed(creature, item)) ? "1" : "0");
-            Events.SkipEvent();
+            EventsPlugin.SetEventResult(string.IsNullOrWhiteSpace(CanItemBeUsed(creature, item)) ? "1" : "0");
+            EventsPlugin.SkipEvent();
         }
 
         /// <summary>
@@ -35,8 +35,8 @@ namespace SWLOR.Game.Server.Feature
         public static void ValidateItemEquip()
         {
             var creature = OBJECT_SELF;
-            var item = StringToObject(Events.GetEventData("ITEM"));
-            var slot = (InventorySlot)Convert.ToInt32(Events.GetEventData("SLOT"));
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
 
             var canUseItem = CanItemBeUsed(creature, item);
             var canDualWield = ValidateDualWield(item, slot);
@@ -44,14 +44,14 @@ namespace SWLOR.Game.Server.Feature
             if (string.IsNullOrWhiteSpace(canUseItem) &&
                 canDualWield)
             {
-                Events.PushEventData("ITEM", ObjectToString(item));
-                Events.PushEventData("SLOT", Convert.ToString((int)slot));
-                Events.SignalEvent("SWLOR_ITEM_EQUIP_VALID_BEFORE", creature);
+                EventsPlugin.PushEventData("ITEM", ObjectToString(item));
+                EventsPlugin.PushEventData("SLOT", Convert.ToString((int)slot));
+                EventsPlugin.SignalEvent("SWLOR_ITEM_EQUIP_VALID_BEFORE", creature);
                 return;
             }
 
             SendMessageToPC(creature, ColorToken.Red(canUseItem));
-            Events.SkipEvent();
+            EventsPlugin.SkipEvent();
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature
             if (dualWieldLevel <= 0)
             {
                 SendMessageToPC(creature, ColorToken.Red("Equipping two weapons requires the Dual Wield perk."));
-                Events.SkipEvent();
+                EventsPlugin.SkipEvent();
 
                 return false;
             }
@@ -145,8 +145,8 @@ namespace SWLOR.Game.Server.Feature
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
-            var item = StringToObject(Events.GetEventData("ITEM"));
-            var slot = (InventorySlot)Convert.ToInt32(Events.GetEventData("SLOT"));
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
+            var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
             
             // The unequip event doesn't fire if an item is being swapped out. 
             // If there's an item in the slot, run the unequip triggers first.
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Feature
             var player = OBJECT_SELF;
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
-            var item = StringToObject(Events.GetEventData("ITEM"));
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             RunUnequipTriggers(player, item);
         }
 

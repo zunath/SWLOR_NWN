@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Service
         public static void HandleChatMessage()
         {
             var sender = OBJECT_SELF;
-            var originalMessage = Chat.GetMessage().Trim();
+            var originalMessage = ChatPlugin.GetMessage().Trim();
 
             if (!CanHandleChat(sender, originalMessage))
             {
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Service
             var command = split[0].Substring(1, split[0].Length - 1);
             split.RemoveAt(0);
 
-            Chat.SkipMessage();
+            ChatPlugin.SkipMessage();
 
             if (!_chatCommands.ContainsKey(command))
             {
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (!GetHasFeat(FeatType.ChatCommandTargeter, sender) || GetIsDM(sender) || GetIsDMPossessed(sender))
                 {
-                    Creature.AddFeatByLevel(sender, FeatType.ChatCommandTargeter, 1);
+                    CreaturePlugin.AddFeatByLevel(sender, FeatType.ChatCommandTargeter, 1);
 
                     if (GetIsDM(sender) || GetIsDMPossessed(sender))
                     {
@@ -214,14 +214,14 @@ namespace SWLOR.Game.Server.Service
         public static void UseOpenRestMenuFeat()
         {
             var player = OBJECT_SELF;
-            var feat = (FeatType)Convert.ToInt32(Events.GetEventData("FEAT_ID"));
+            var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
             if (feat != FeatType.ChatCommandTargeter) return;
 
-            var target = StringToObject(Events.GetEventData("TARGET_OBJECT_ID"));
-            var area = StringToObject(Events.GetEventData("AREA_OBJECT_ID"));
-            var targetX = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_X"));
-            var targetY = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Y"));
-            var targetZ = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Z"));
+            var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
+            var area = StringToObject(EventsPlugin.GetEventData("AREA_OBJECT_ID"));
+            var targetX = (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_X"));
+            var targetY = (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Y"));
+            var targetZ = (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Z"));
 
             var targetLocation = Location(area, new Vector3(targetX, targetY, targetZ), 0.0f);
             var command = GetLocalString(player, "CHAT_COMMAND");

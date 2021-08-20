@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ImpactAction(uint activator, uint target, int level)
         {
-            var iDamage = GetAbilityModifier(AbilityType.Intelligence, activator) + (int) (GetAbilityModifier(AbilityType.Wisdom, activator) * 0.5f);
+            var iDamage = GetAbilityModifier(AbilityType.Willpower, activator);
             var iRange = 15;
             var iCount = 1;
             var fDelay = GetDistanceBetween(activator, target) / 10.0f;
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             }
 
             // apply to target
-            if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
+            if (!Ability.GetAbilityResisted(activator, target))
             {
                 DelayCommand(fDelay, () =>
                 {                    
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     fDelay = GetDistanceBetween(activator, oTargetObject) / 10.0f;
                     //var creature = oTargetObject;
                     // apply to target
-                    if (!Ability.GetAbilityResisted(activator, oTargetObject, AbilityType.Intelligence, AbilityType.Wisdom))
+                    if (!Ability.GetAbilityResisted(activator, oTargetObject))
                     {
                         DelayCommand(fDelay, () =>
                         {

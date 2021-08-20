@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(13) // 13 = Confused
                 .GrantAction((source, target, length) =>
                 {
-                    if (!Ability.GetAbilityResisted(source, target, AbilityType.Intelligence, AbilityType.Wisdom))
+                    if (!Ability.GetAbilityResisted(source, target))
                     {
                         var effect = EffectConfused();
                         effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S));
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .GrantAction((source, target, length) =>
                 {
                     const float radiusSize = RadiusSize.Medium;
-                    if (!Ability.GetAbilityResisted(source, target, AbilityType.Intelligence, AbilityType.Wisdom))
+                    if (!Ability.GetAbilityResisted(source, target))
                     {
                         var effect = EffectConfused();
                         effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S));

@@ -50,9 +50,9 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         return;
                     }
 
-                    var hpAmount = 1 + GetAbilityModifier(AbilityType.Constitution, target) / 2;
-                    var stmAmount = 1 + GetAbilityModifier(AbilityType.Dexterity, target) / 2;
-                    var fpAmount = 1 + GetAbilityModifier(AbilityType.Charisma, target) / 2;
+                    var hpAmount = 1 + GetAbilityModifier(AbilityType.Vitality, target) / 2;
+                    var stmAmount = 1 + GetAbilityModifier(AbilityType.Perception, target) / 2;
+                    var fpAmount = 1 + GetAbilityModifier(AbilityType.Diplomacy, target) / 2;
 
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(hpAmount), target);
                     Stat.RestoreStamina(target, stmAmount);

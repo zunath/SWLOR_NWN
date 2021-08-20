@@ -29,23 +29,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             switch (level)
             {
                 case 1:
-                    damage = 10 + GetAbilityModifier(AbilityType.Intelligence);
+                    damage = 10 + GetAbilityModifier(AbilityType.Willpower);
                     break;
                 case 2:
-                    damage = 15 + GetAbilityModifier(AbilityType.Intelligence);
+                    damage = 15 + GetAbilityModifier(AbilityType.Willpower);
                     break;
                 case 3:
-                    damage = (int)(20 + GetAbilityModifier(AbilityType.Intelligence) * 1.5);
+                    damage = (int)(20 + GetAbilityModifier(AbilityType.Willpower) * 1.5);
                     break;
                 case 4:
-                    damage = (int)(25 + GetAbilityModifier(AbilityType.Intelligence) * 1.75);
+                    damage = (int)(25 + GetAbilityModifier(AbilityType.Willpower) * 1.75);
                     break;
                 default:
                     damage = 0;
                     break;
             }
 
-            if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
+            if (!Ability.GetAbilityResisted(activator, target))
             {
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
                 ActionCastFakeSpellAtObject((int)Spell.LightningBolt, target);

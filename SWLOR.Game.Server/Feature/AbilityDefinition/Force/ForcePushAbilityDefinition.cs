@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ImpactAction(uint activator, uint target, int level)
         {
-            if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
+            if (!Ability.GetAbilityResisted(activator, target))
             {
                 ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f);
             }

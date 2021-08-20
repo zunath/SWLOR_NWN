@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(17) // 17 = Dazed
                 .GrantAction((source, target, length) =>
                 {
-                    if (!Ability.GetAbilityResisted(source, target, AbilityType.Intelligence, AbilityType.Wisdom))
+                    if (!Ability.GetAbilityResisted(source, target))
                     {
                         var effect = EffectDazed();
                         effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .GrantAction((source, target, length) =>
                 {
                     const float radiusSize = RadiusSize.Medium;
-                    if (!Ability.GetAbilityResisted(source, target, AbilityType.Intelligence, AbilityType.Wisdom))
+                    if (!Ability.GetAbilityResisted(source, target))
                     {
                         var effect = EffectDazed();
                         effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .GrantAction((source, target, length) =>
                 {
                     const float radiusSize = RadiusSize.Medium;
-                    if (!Ability.GetAbilityResisted(source, target, AbilityType.Intelligence, AbilityType.Wisdom))
+                    if (!Ability.GetAbilityResisted(source, target))
                     {
                         var effect = EffectDazed();
                         effect = EffectLinkEffects(effect, EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));

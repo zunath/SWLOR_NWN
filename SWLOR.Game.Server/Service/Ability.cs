@@ -238,11 +238,11 @@ namespace SWLOR.Game.Server.Service
         /// /// <param name="target"></param>
         /// /// <param name="primaryAbilityType"></param>
         /// /// <param name="secondaryAbilityType"></param>
-        public static bool GetAbilityResisted(uint activator, uint target, AbilityType primaryAbilityType, AbilityType secondaryAbilityType)
+        public static bool GetAbilityResisted(uint activator, uint target)
         {
-            if (GetAbilityModifier(primaryAbilityType, activator) + GetAbilityModifier(secondaryAbilityType, activator) * 0.5 + d20(1)
+            if (GetAbilityModifier(AbilityType.Willpower, activator) * 0.5 + d20(1)
                 >
-                GetAbilityModifier(primaryAbilityType, target) + GetAbilityModifier(secondaryAbilityType, target) * 0.5 + d20(1)
+                GetAbilityModifier(AbilityType.Willpower, target) * 0.5 + d20(1)
                 )
             {
                 

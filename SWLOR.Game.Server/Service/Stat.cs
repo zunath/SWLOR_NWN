@@ -56,17 +56,14 @@ namespace SWLOR.Game.Server.Service
                     dbPlayer = DB.Get<Player>(playerId);
                 }
                 var baseFP = dbPlayer.MaxFP;
-                var intModifier = GetAbilityModifier(AbilityType.Intelligence, creature);
-                var wisModifier = GetAbilityModifier(AbilityType.Wisdom, creature);
-                var modifier = intModifier > wisModifier ? intModifier : wisModifier;
-
+                var modifier = GetAbilityModifier(AbilityType.Willpower, creature);
+                
                 return baseFP + (modifier * 2);
             }
             // NPCs
             else
             {
-                var statModifier = GetAbilityModifier(AbilityType.Intelligence, creature) +
-                              GetAbilityModifier(AbilityType.Wisdom, creature);
+                var statModifier = GetAbilityModifier(AbilityType.Willpower, creature);
                 var fp = statModifier * 3;
                 if (fp < 0) fp = 0;
 
@@ -119,14 +116,14 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 var baseStamina = dbPlayer.MaxStamina;
-                var conModifier = GetAbilityModifier(AbilityType.Constitution, creature);
+                var conModifier = GetAbilityModifier(AbilityType.Vitality, creature);
 
                 return baseStamina + (conModifier * 2);
             }
             // NPCs
             else
             {
-                var statModifier = GetAbilityModifier(AbilityType.Constitution, creature);
+                var statModifier = GetAbilityModifier(AbilityType.Vitality, creature);
                 var stm = 30 + statModifier * 4;
 
                 return stm;

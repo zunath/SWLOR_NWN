@@ -26,25 +26,22 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 {
                     var ability = AbilityType.Invalid;
                     
-                    switch (Random.D6(1))
+                    switch (Random.Next(5) + 1)
                     {
                         case 1:
-                            ability = AbilityType.Charisma;
+                            ability = AbilityType.Diplomacy;
                             break;
                         case 2:
-                            ability = AbilityType.Constitution;
+                            ability = AbilityType.Vitality;
                             break;
                         case 3:
-                            ability = AbilityType.Dexterity;
+                            ability = AbilityType.Perception;
                             break;
                         case 4:
-                            ability = AbilityType.Intelligence;
+                            ability = AbilityType.Might;
                             break;
                         case 5:
-                            ability = AbilityType.Strength;
-                            break;
-                        case 6:
-                            ability = AbilityType.Wisdom;
+                            ability = AbilityType.Willpower;
                             break;
                     }
 

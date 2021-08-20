@@ -80,7 +80,9 @@ namespace SWLOR.Game.Server.Entity
         public string RespawnAreaResref { get; set; }
         public int UnallocatedXP { get; set; }
         public int UnallocatedSP { get; set; }
+        public int UnallocatedAP { get; set; }
         public int TotalSPAcquired { get; set; }
+        public int TotalAPAcquired { get; set; }
         public int RegenerationTick { get; set; }
         public int XPDebt { get; set; }
         public bool IsDeleted { get; set; }
@@ -116,6 +118,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<Guid, ShipStatus> Ships { get; set; }
         public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }
         public Dictionary<int, List<TaxiDestinationType>> TaxiDestinations { get; set; }
+        public Dictionary<int, int> AbilityPointsByLevel { get; set; }
     }
 
     public class MapPin

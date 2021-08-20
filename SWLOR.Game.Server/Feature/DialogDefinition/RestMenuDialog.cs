@@ -53,9 +53,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var header = ColorToken.Green("Name: ") + playerName + "\n";
             header += ColorToken.Green("Skill Points: ") + totalSkillCount + " / " + Skill.SkillCap + "\n";
             header += ColorToken.Green("Unallocated SP: ") + dbPlayer.UnallocatedSP + "\n";
+            header += ColorToken.Green("Unallocated AP: ") + dbPlayer.UnallocatedAP + "\n";
             header += ColorToken.Green("Unallocated XP: ") + dbPlayer.UnallocatedXP + "\n";
 
             page.Header = header;
+
+            if (dbPlayer.UnallocatedAP > 0)
+            {
+                page.AddResponse("Distribute Attribute Points", () => SwitchConversation(nameof(DistributeAbilityPointsDialog)));
+            }
 
             page.AddResponse("View Skills", () => SwitchConversation(nameof(ViewSkillsDialog)));
             page.AddResponse("View Perks", () => SwitchConversation(nameof(ViewPerksDialog)));

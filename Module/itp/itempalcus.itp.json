@@ -16062,6 +16062,94 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Archetype Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "arc_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Basic Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "b_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Carbide Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "car_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ceramic Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "crm_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Cermet Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cer_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Delta Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "del_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ophidian Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "oph_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Proto Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "proto_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Republic Sniper Blaster Rifle"
                           },
                           "RESREF": {
@@ -16078,6 +16166,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "republictrooperb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Striker Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "str_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Titan Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tit_rifle"
                           }
                         },
                         {

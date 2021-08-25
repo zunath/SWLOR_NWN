@@ -1373,54 +1373,7 @@
         },
         "CreatureList": {
           "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Appearance": {
-                "type": "int",
-                "value": 512
-              },
-              "Comment": {
-                "type": "cexostring",
-                "value": ""
-              },
-              "CR": {
-                "type": "float",
-                "value": 0.125
-              },
-              "ResRef": {
-                "type": "resref",
-                "value": "dro_gonk_002"
-              },
-              "SingleSpawn": {
-                "type": "byte",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Appearance": {
-                "type": "int",
-                "value": 3
-              },
-              "Comment": {
-                "type": "cexostring",
-                "value": ""
-              },
-              "CR": {
-                "type": "float",
-                "value": 2.0
-              },
-              "ResRef": {
-                "type": "resref",
-                "value": "dro_mecano002"
-              },
-              "SingleSpawn": {
-                "type": "byte",
-                "value": 1
-              }
-            }
-          ]
+          "value": []
         },
         "Difficulty": {
           "type": "int",
@@ -1653,46 +1606,7 @@
         },
         "CreatureList": {
           "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Appearance": {
-                "type": "int",
-                "value": 512
-              },
-              "CR": {
-                "type": "float",
-                "value": 0.125
-              },
-              "ResRef": {
-                "type": "resref",
-                "value": "dro_gonk_002"
-              },
-              "SingleSpawn": {
-                "type": "byte",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Appearance": {
-                "type": "int",
-                "value": 3
-              },
-              "CR": {
-                "type": "float",
-                "value": 2.0
-              },
-              "ResRef": {
-                "type": "resref",
-                "value": "dro_mecano002"
-              },
-              "SingleSpawn": {
-                "type": "byte",
-                "value": 1
-              }
-            }
-          ]
+          "value": []
         },
         "Difficulty": {
           "type": "int",
@@ -1711,6 +1625,10 @@
           "value": [
             {
               "__struct_id": 1,
+              "Comment": {
+                "type": "cexostring",
+                "value": ""
+              },
               "X": {
                 "type": "float",
                 "value": -1.310213088989258
@@ -1726,6 +1644,10 @@
             },
             {
               "__struct_id": 1,
+              "Comment": {
+                "type": "cexostring",
+                "value": ""
+              },
               "X": {
                 "type": "float",
                 "value": 1.583179473876953
@@ -1862,7 +1784,7 @@
               "__struct_id": 2,
               "Orientation": {
                 "type": "float",
-                "value": -3.092495203018189
+                "value": -3.092494249343872
               },
               "X": {
                 "type": "float",
@@ -1927,46 +1849,7 @@
         },
         "CreatureList": {
           "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Appearance": {
-                "type": "int",
-                "value": 512
-              },
-              "CR": {
-                "type": "float",
-                "value": 0.125
-              },
-              "ResRef": {
-                "type": "resref",
-                "value": "dro_gonk_002"
-              },
-              "SingleSpawn": {
-                "type": "byte",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Appearance": {
-                "type": "int",
-                "value": 3
-              },
-              "CR": {
-                "type": "float",
-                "value": 2.0
-              },
-              "ResRef": {
-                "type": "resref",
-                "value": "dro_mecano002"
-              },
-              "SingleSpawn": {
-                "type": "byte",
-                "value": 1
-              }
-            }
-          ]
+          "value": []
         },
         "Difficulty": {
           "type": "int",
@@ -2192,46 +2075,7 @@
         },
         "CreatureList": {
           "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Appearance": {
-                "type": "int",
-                "value": 512
-              },
-              "CR": {
-                "type": "float",
-                "value": 0.125
-              },
-              "ResRef": {
-                "type": "resref",
-                "value": "dro_gonk_002"
-              },
-              "SingleSpawn": {
-                "type": "byte",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Appearance": {
-                "type": "int",
-                "value": 3
-              },
-              "CR": {
-                "type": "float",
-                "value": 2.0
-              },
-              "ResRef": {
-                "type": "resref",
-                "value": "dro_mecano002"
-              },
-              "SingleSpawn": {
-                "type": "byte",
-                "value": 1
-              }
-            }
-          ]
+          "value": []
         },
         "Difficulty": {
           "type": "int",
@@ -2477,46 +2321,7 @@
         },
         "CreatureList": {
           "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Appearance": {
-                "type": "int",
-                "value": 512
-              },
-              "CR": {
-                "type": "float",
-                "value": 0.125
-              },
-              "ResRef": {
-                "type": "resref",
-                "value": "dro_gonk_002"
-              },
-              "SingleSpawn": {
-                "type": "byte",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Appearance": {
-                "type": "int",
-                "value": 3
-              },
-              "CR": {
-                "type": "float",
-                "value": 2.0
-              },
-              "ResRef": {
-                "type": "resref",
-                "value": "dro_mecano002"
-              },
-              "SingleSpawn": {
-                "type": "byte",
-                "value": 1
-              }
-            }
-          ]
+          "value": []
         },
         "Difficulty": {
           "type": "int",
@@ -2702,46 +2507,7 @@
         },
         "CreatureList": {
           "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Appearance": {
-                "type": "int",
-                "value": 512
-              },
-              "CR": {
-                "type": "float",
-                "value": 0.125
-              },
-              "ResRef": {
-                "type": "resref",
-                "value": "dro_gonk_002"
-              },
-              "SingleSpawn": {
-                "type": "byte",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Appearance": {
-                "type": "int",
-                "value": 3
-              },
-              "CR": {
-                "type": "float",
-                "value": 2.0
-              },
-              "ResRef": {
-                "type": "resref",
-                "value": "dro_mecano002"
-              },
-              "SingleSpawn": {
-                "type": "byte",
-                "value": 1
-              }
-            }
-          ]
+          "value": []
         },
         "Difficulty": {
           "type": "int",
@@ -2941,7 +2707,7 @@
               "__struct_id": 2,
               "Orientation": {
                 "type": "float",
-                "value": -3.117039442062378
+                "value": -3.117038249969482
               },
               "X": {
                 "type": "float",
@@ -3006,46 +2772,7 @@
         },
         "CreatureList": {
           "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Appearance": {
-                "type": "int",
-                "value": 512
-              },
-              "CR": {
-                "type": "float",
-                "value": 0.125
-              },
-              "ResRef": {
-                "type": "resref",
-                "value": "dro_gonk_002"
-              },
-              "SingleSpawn": {
-                "type": "byte",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Appearance": {
-                "type": "int",
-                "value": 3
-              },
-              "CR": {
-                "type": "float",
-                "value": 2.0
-              },
-              "ResRef": {
-                "type": "resref",
-                "value": "dro_mecano002"
-              },
-              "SingleSpawn": {
-                "type": "byte",
-                "value": 1
-              }
-            }
-          ]
+          "value": []
         },
         "Difficulty": {
           "type": "int",
@@ -3264,7 +2991,7 @@
               "__struct_id": 2,
               "Orientation": {
                 "type": "float",
-                "value": 2.748885869979858
+                "value": 2.748885154724121
               },
               "X": {
                 "type": "float",
@@ -3310,46 +3037,7 @@
         },
         "CreatureList": {
           "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Appearance": {
-                "type": "int",
-                "value": 512
-              },
-              "CR": {
-                "type": "float",
-                "value": 0.125
-              },
-              "ResRef": {
-                "type": "resref",
-                "value": "dro_gonk_002"
-              },
-              "SingleSpawn": {
-                "type": "byte",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Appearance": {
-                "type": "int",
-                "value": 3
-              },
-              "CR": {
-                "type": "float",
-                "value": 2.0
-              },
-              "ResRef": {
-                "type": "resref",
-                "value": "dro_mecano002"
-              },
-              "SingleSpawn": {
-                "type": "byte",
-                "value": 1
-              }
-            }
-          ]
+          "value": []
         },
         "Difficulty": {
           "type": "int",
@@ -3584,46 +3272,7 @@
         },
         "CreatureList": {
           "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Appearance": {
-                "type": "int",
-                "value": 512
-              },
-              "CR": {
-                "type": "float",
-                "value": 0.125
-              },
-              "ResRef": {
-                "type": "resref",
-                "value": "dro_gonk_002"
-              },
-              "SingleSpawn": {
-                "type": "byte",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Appearance": {
-                "type": "int",
-                "value": 3
-              },
-              "CR": {
-                "type": "float",
-                "value": 2.0
-              },
-              "ResRef": {
-                "type": "resref",
-                "value": "dro_mecano002"
-              },
-              "SingleSpawn": {
-                "type": "byte",
-                "value": 1
-              }
-            }
-          ]
+          "value": []
         },
         "Difficulty": {
           "type": "int",
@@ -3763,7 +3412,7 @@
               "__struct_id": 2,
               "Orientation": {
                 "type": "float",
-                "value": -2.871604204177856
+                "value": -2.871602773666382
               },
               "X": {
                 "type": "float",

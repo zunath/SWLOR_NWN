@@ -59,7 +59,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 43
+    "value": 200
   },
   "Plot": {
     "type": "byte",

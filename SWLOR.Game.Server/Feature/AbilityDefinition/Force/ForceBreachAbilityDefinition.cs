@@ -1,6 +1,7 @@
 ﻿//using Random = SWLOR.Game.Server.Service.Random;
 
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private static void ImpactAction(uint activator, uint target, int level)
+        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             int damage;
 
@@ -65,10 +66,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(2)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasImpactAction(ImpactAction);
         }
 
         private static void ForceBreach2(AbilityBuilder builder)
@@ -80,10 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(3)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasImpactAction(ImpactAction);
         }
 
         private static void ForceBreach3(AbilityBuilder builder)
@@ -95,10 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(4)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasImpactAction(ImpactAction);
         }
 
         private static void ForceBreach4(AbilityBuilder builder)
@@ -110,10 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(5)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasImpactAction(ImpactAction);
         }
     }
 }

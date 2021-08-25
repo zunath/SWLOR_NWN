@@ -91,8 +91,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         Rest = 41,
         [RecastGroup("Knockdown", "Knockdown")]
         Knockdown = 42,
-        [RecastGroup("Implant Installation", "Imp. Install")]
-        ImplantInstallation = 43,
     }
 
     public class RecastGroupAttribute: Attribute

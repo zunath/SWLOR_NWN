@@ -1,6 +1,7 @@
 ﻿//using Random = SWLOR.Game.Server.Service.Random;
 
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level)
+        private static string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
@@ -29,14 +30,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             {
                 return "This is a staff ability.";
             }
-            else 
+            else
                 return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level)
+        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
-            var damage = 0;
+            var dmg = 0.0f;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
@@ -44,13 +44,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             switch (level)
             {
                 case 1:
-                    damage = d8();
+                    dmg = 5.5f;
                     break;
                 case 2:
-                    damage = d6(2);
+                    dmg = 10.5f;
                     break;
                 case 3:
-                    damage = d6(3);
+                    dmg = 15.5f;
                     break;
                 default:
                     break;
@@ -60,14 +60,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true, ObjectType.Creature);
             while (GetIsObjectValid(creature) && count < 3)
             {
+
+                var might = GetAbilityModifier(AbilityType.Might, activator);
+                var defense = Combat.CalculateDefense(creature);
+                var vitality = GetAbilityModifier(AbilityType.Vitality, creature);
+                var damage = Combat.CalculateDamage(dmg, might, defense, vitality, false);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Bludgeoning), target);
 
+                CombatPoint.AddCombatPoint(activator, creature, SkillType.MartialArts, 2);
                 creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true, ObjectType.Creature);
                 count++;
-            }            
-
-            Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.MartialArts, 3);
+            }
         }
 
         private static void SpinningWhirl1(AbilityBuilder builder)
@@ -78,14 +81,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasCustomValidation(Validation)
+                .HasImpactAction(ImpactAction);
         }
         private static void SpinningWhirl2(AbilityBuilder builder)
         {
@@ -95,14 +92,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasCustomValidation(Validation)
+                .HasImpactAction(ImpactAction);
         }
         private static void SpinningWhirl3(AbilityBuilder builder)
         {
@@ -112,14 +103,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasCustomValidation(Validation)
+                .HasImpactAction(ImpactAction);
         }
     }
 }

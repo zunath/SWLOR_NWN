@@ -1,6 +1,7 @@
 ﻿//using Random = SWLOR.Game.Server.Service.Random;
 
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level)
+        private static string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
@@ -29,16 +30,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             {
                 return "This is a rifle ability.";
             }
-            else 
+            else
                 return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level)
+        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
-            var damage = 0;
-            var duration = 0f;
-            var inflict = false;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
@@ -46,32 +43,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             switch (level)
             {
                 case 1:
-                    damage = d4(2);
-                    inflict = true;
-                    duration = 12f;
-
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-                    if (inflict) StatusEffect.Apply(activator, target, StatusEffectType.Tranquilize, duration);
+                    Enmity.ModifyEnmity(activator, target, 30);
+                    StatusEffect.Apply(activator, target, StatusEffectType.Tranquilize, 12f);
+                    CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
                     break;
                 case 2:
-                    damage = d4(3);
-                    inflict = true;
-                    duration = 24f;
-
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-                    if (inflict) StatusEffect.Apply(activator, target, StatusEffectType.Tranquilize, duration);
+                    Enmity.ModifyEnmity(activator, target, 60);
+                    StatusEffect.Apply(activator, target, StatusEffectType.Tranquilize, 24f);
+                    CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
                     break;
                 case 3:
-                    damage = d2(4);
-                    inflict = true;
-                    duration = 12f;
-
                     var count = 0;
                     var creature = GetFirstObjectInShape(Shape.Cone, RadiusSize.Colossal, GetLocation(target), true, ObjectType.Creature);
                     while (GetIsObjectValid(creature) && count < 3)
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
-                        if (inflict) StatusEffect.Apply(activator, target, StatusEffectType.Tranquilize, duration);
+
+                        Enmity.ModifyEnmity(activator, creature, 30);
+                        StatusEffect.Apply(activator, creature, StatusEffectType.Tranquilize, 12f);
+                        CombatPoint.AddCombatPoint(activator, creature, SkillType.Ranged, 3);
                         count++;
 
                         creature = GetNextObjectInShape(Shape.Cone, RadiusSize.Colossal, GetLocation(target), true, ObjectType.Creature);
@@ -81,8 +70,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                     break;
             }
 
-            Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
 
         private static void TranquilizerShot1(AbilityBuilder builder)
@@ -93,14 +80,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasCustomValidation(Validation)
+                .HasImpactAction(ImpactAction);
         }
         private static void TranquilizerShot2(AbilityBuilder builder)
         {
@@ -110,14 +91,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasCustomValidation(Validation)
+                .HasImpactAction(ImpactAction);
         }
         private static void TranquilizerShot3(AbilityBuilder builder)
         {
@@ -127,14 +102,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasCustomValidation(Validation)
+                .HasImpactAction(ImpactAction);
         }
     }
 }

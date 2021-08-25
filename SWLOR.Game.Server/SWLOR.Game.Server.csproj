@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <Folder Include="Feature\AbilityDefinition\Crafting\" />
-    <Folder Include="Feature\AbilityDefinition\Professions\" />
   </ItemGroup>
 
   <Target Name="NWN" AfterTargets="Build">

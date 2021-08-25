@@ -1,6 +1,7 @@
 ﻿//using Random = SWLOR.Game.Server.Service.Random;
 
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -19,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level)
+        private static string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             if (GetRacialType(target) == RacialType.Cyborg || GetRacialType(target) == RacialType.Robot)
             {
@@ -35,10 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.MindTrick, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(3)
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
+                .HasCustomValidation(Validation)
                 .IsConcentrationAbility(StatusEffectType.MindTrick1)
                 .DisplaysVisualEffectWhenActivating(); 
         }
@@ -50,10 +48,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.MindTrick, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(5)
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
+                .HasCustomValidation(Validation)
                 .IsConcentrationAbility(StatusEffectType.MindTrick2)
                 .DisplaysVisualEffectWhenActivating();
         }

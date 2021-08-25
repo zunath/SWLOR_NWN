@@ -8,7 +8,7 @@ using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
 {
-    public class KnockdownAbilityDefinition: IAbilityListDefinition
+    public class KnockdownAbilityDefinition : IAbilityListDefinition
     {
         private readonly AbilityBuilder _builder = new AbilityBuilder();
 
@@ -26,12 +26,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasRecastDelay(RecastGroup.Knockdown, 60f)
                 .IsWeaponAbility()
                 .RequirementStamina(6)
-                .HasImpactAction((activator, target, level) =>
+                .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     var isHit = Random.D100(1) <= 60;
                     if (!isHit) return;
 
                     ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 12f);
+                    CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
+                    Enmity.ModifyEnmity(activator, target, 18);
                 });
         }
     }

@@ -1,6 +1,7 @@
 ﻿//using Random = SWLOR.Game.Server.Service.Random;
 
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level)
+        private static string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
@@ -33,10 +34,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level)
+        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var damage = 0;
-            var amount = 0;
+            var dmg = 0.0f;
+            var acLoss = 0;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
@@ -44,26 +45,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             switch (level)
             {
                 case 1:
-                    damage = d4();
-                    amount = 2;
+                    dmg = 4.0f;
+                    acLoss = 2;
                     break;
                 case 2:
-                    damage = d4(2);
-                    amount = 4;
+                    dmg = 9.0f;
+                    acLoss = 4;
                     break;
                 case 3:
-                    damage = d4(3);
-                    amount = 6;
+                    dmg = 14.0f;
+                    acLoss = 6;
                     break;
                 default:
                     break;
             }
 
+            var might = GetAbilityModifier(AbilityType.Might, activator);
+            var defense = Combat.CalculateDefense(target);
+            var vitality = GetAbilityModifier(AbilityType.Vitality, target);
+            var damage = Combat.CalculateDamage(dmg, might, defense, vitality, false);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(amount), target, 60f);
-
-            Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.TwoHanded, 3);
+            ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(acLoss), target, 60f);
+            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
         }
 
         private static void CrossCut1(AbilityBuilder builder)
@@ -74,14 +77,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level) =>
+                .HasCustomValidation(Validation)
+                .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                    ImpactAction(activator, target, level);
+                    ImpactAction(activator, target, level, targetLocation);
+                    ImpactAction(activator, target, level, targetLocation);
                 });
         }
         private static void CrossCut2(AbilityBuilder builder)
@@ -92,14 +92,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level) =>
+                .HasCustomValidation(Validation)
+                .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                    ImpactAction(activator, target, level);
+                    ImpactAction(activator, target, level, targetLocation);
+                    ImpactAction(activator, target, level, targetLocation);
                 });
         }
         private static void CrossCut3(AbilityBuilder builder)
@@ -110,14 +107,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(8)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level) =>
+                .HasCustomValidation(Validation)
+                .HasImpactAction((activator, target, level, targetLocation) =>
                 {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                    ImpactAction(activator, target, level);
+                    ImpactAction(activator, target, level, targetLocation);
+                    ImpactAction(activator, target, level, targetLocation);
                 });
         }
     }

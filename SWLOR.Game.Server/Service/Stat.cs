@@ -423,7 +423,7 @@ namespace SWLOR.Game.Server.Service
         }
         
         /// <summary>
-        /// Calculates a player's stat based on their skill bonuses, implants, etc. and applies the changes to one ability score.
+        /// Calculates a player's stat based on their skill bonuses, upgrades, etc. and applies the changes to one ability score.
         /// </summary>
         /// <param name="entity">The player entity</param>
         /// <param name="player">The player object</param>
@@ -433,7 +433,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (ability == AbilityType.Invalid) return;
 
-            var totalStat = entity.BaseStats[ability] + entity.ImplantStats.Attributes[ability];
+            var totalStat = entity.BaseStats[ability] + entity.UpgradedStats[ability];
             CreaturePlugin.SetRawAbilityScore(player, ability, totalStat);
         }
 
@@ -447,5 +447,45 @@ namespace SWLOR.Game.Server.Service
         {
             entity.AbilityRecastReduction += adjustBy;
         }
+
+        /// <summary>
+        /// Modifies a player's HP Regen by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustHPRegen(Player entity, int adjustBy)
+        {
+            // Note: It's possible for HP Regen to drop to a negative number. This is expected to ensure calculations stay in sync.
+            // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
+            entity.HPRegen += adjustBy;
+        }
+
+        /// <summary>
+        /// Modifies a player's FP Regen by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustFPRegen(Player entity, int adjustBy)
+        {
+            // Note: It's possible for FP Regen to drop to a negative number. This is expected to ensure calculations stay in sync.
+            // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
+            entity.FPRegen += adjustBy;
+        }
+
+        /// <summary>
+        /// Modifies a player's STM Regen by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustSTMRegen(Player entity, int adjustBy)
+        {
+            // Note: It's possible for STM Regen to drop to a negative number. This is expected to ensure calculations stay in sync.
+            // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
+            entity.STMRegen += adjustBy;
+        }
+
     }
 }

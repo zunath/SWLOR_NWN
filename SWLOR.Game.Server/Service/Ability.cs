@@ -40,6 +40,8 @@ namespace SWLOR.Game.Server.Service
                     _abilities[feat] = ability;
                 }
             }
+
+            Console.WriteLine($"Loaded {_abilities.Count} abilities.");
         }
 
         /// <summary>
@@ -68,6 +70,7 @@ namespace SWLOR.Game.Server.Service
         }
 
 
+
         /// <summary>
         /// Checks whether a creature can activate the perk feat.
         /// </summary>
@@ -75,8 +78,14 @@ namespace SWLOR.Game.Server.Service
         /// <param name="target">The target of the perk feat.</param>
         /// <param name="abilityType">The type of ability to use.</param>
         /// <param name="effectivePerkLevel">The activator's effective perk level.</param>
+        /// <param name="targetLocation">The target location of the perk feat.</param>
         /// <returns>true if successful, false otherwise</returns>
-        public static bool CanUseAbility(uint activator, uint target, FeatType abilityType, int effectivePerkLevel)
+        public static bool CanUseAbility(
+            uint activator,
+            uint target,
+            FeatType abilityType,
+            int effectivePerkLevel,
+            Location targetLocation)
         {
             var ability = GetAbilityDetail(abilityType);
 
@@ -128,7 +137,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Perk-specific custom validation logic.
-            var customValidationResult = ability.CustomValidation == null ? string.Empty : ability.CustomValidation(activator, target, effectivePerkLevel);
+            var customValidationResult = ability.CustomValidation == null ? string.Empty : ability.CustomValidation(activator, target, effectivePerkLevel, targetLocation);
             if (!string.IsNullOrWhiteSpace(customValidationResult))
             {
                 SendMessageToPC(activator, customValidationResult);
@@ -146,6 +155,46 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+
+        /// <summary>
+        /// Checks whether a creature can activate the perk feat.
+        /// </summary>
+        /// <param name="activator">The activator of the perk feat.</param>
+        /// <param name="abilityType">The type of ability to use.</param>
+        /// <returns>true if successful, false otherwise</returns>
+        public static bool CanUseConcentration(
+            uint activator,
+            FeatType abilityType)
+        {
+            var ability = GetAbilityDetail(abilityType);
+
+            // Activator is dead.
+            if (GetCurrentHitPoints(activator) <= 0)
+            {
+                SendMessageToPC(activator, "You are dead.");
+                return false;
+            }
+
+            // Not commandable
+            if (!GetCommandable(activator))
+            {
+                SendMessageToPC(activator, "You cannot take actions at this time.");
+                return false;
+            }
+
+            // Perk-specific requirement checks
+            foreach (var req in ability.Requirements)
+            {
+                var requirementError = req.CheckRequirements(activator);
+                if (!string.IsNullOrWhiteSpace(requirementError))
+                {
+                    SendMessageToPC(activator, requirementError);
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// Each tick, creatures with a concentration effect will be processed.
@@ -167,10 +216,9 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 var ability = GetAbilityDetail(concentrationAbility.Feat);
-                var effectiveLevel = Perk.GetEffectivePerkLevel(creature, ability.EffectiveLevelPerkType);
-                
+
                 // Move to next creature if requirements aren't met.
-                if (!CanUseAbility(creature, creature, concentrationAbility.Feat, effectiveLevel))
+                if (!CanUseConcentration(creature, concentrationAbility.Feat))
                 {
                     EndConcentrationAbility(creature);
                     continue;
@@ -194,8 +242,8 @@ namespace SWLOR.Game.Server.Service
         {
             _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(feat, statusEffectType);
             StatusEffect.Apply(creature, creature, statusEffectType, 0.0f);
-            
-            SendMessageToPC(creature, "You begin concentrating...");
+
+            Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} begins concentrating...");
         }
 
         /// <summary>

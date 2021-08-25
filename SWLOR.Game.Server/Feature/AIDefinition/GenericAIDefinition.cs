@@ -460,9 +460,10 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             if (condition != null && !condition()) return false;
             if (!GetIsObjectValid(target)) return false;
 
+            var targetLocation = GetLocation(target);
             var abilityDetail = Ability.GetAbilityDetail(feat);
             var effectiveLevel = Perk.GetEffectivePerkLevel(creature, abilityDetail.EffectiveLevelPerkType);
-            return Ability.CanUseAbility(creature, target, feat, effectiveLevel);
+            return Ability.CanUseAbility(creature, target, feat, effectiveLevel, targetLocation);
         }
 
     }

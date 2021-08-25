@@ -14,7 +14,6 @@ namespace SWLOR.Game.Server.Entity
         public Player()
         {
             Settings = new PlayerSettings();
-            ImplantStats = new PlayerImplantStats();
             BaseStats = new Dictionary<AbilityType, int>
             {
                 {AbilityType.Vitality, 0},
@@ -84,6 +83,9 @@ namespace SWLOR.Game.Server.Entity
         public int TotalSPAcquired { get; set; }
         public int TotalAPAcquired { get; set; }
         public int RegenerationTick { get; set; }
+        public int HPRegen { get; set; }
+        public int FPRegen { get; set; }
+        public int STMRegen { get; set; }
         public int XPDebt { get; set; }
         public bool IsDeleted { get; set; }
         public bool ShowHelmet { get; set; }
@@ -100,7 +102,6 @@ namespace SWLOR.Game.Server.Entity
         public int AbilityRecastReduction { get; set; }
 
         public PlayerSettings Settings { get; set; }
-        public PlayerImplantStats ImplantStats { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }
         public Dictionary<AbilityType, int> UpgradedStats { get; set; }
         public RoleplayProgress RoleplayProgress { get; set; }
@@ -170,36 +171,9 @@ namespace SWLOR.Game.Server.Entity
         public int Points { get; set; }
     }
 
-    public class PlayerImplant
-    {
-        public string ItemId { get; set; }
-        public string ItemSerializedData { get; set; }
-    }
-
     public class PlayerFactionStanding
     {
         public int Standing { get; set; }
         public int Points { get; set; }
-    }
-
-    public class PlayerImplantStats
-    {
-        public Dictionary<AbilityType, int> Attributes { get; set; }
-        public int HPRegen { get; set; }
-        public int FPRegen { get; set; }
-        public int STMRegen { get; set; }
-
-        public PlayerImplantStats()
-        {
-            Attributes = new Dictionary<AbilityType, int>
-            {
-                {AbilityType.Vitality, 0},
-                {AbilityType.Might, 0},
-                {AbilityType.Diplomacy, 0},
-                {AbilityType.Perception, 0},
-                {AbilityType.Unused, 0},
-                {AbilityType.Willpower, 0}
-            };
-        }
     }
 }

@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Innate
                 .Name("Rest")
                 .IsCastedAbility()
                 .HasRecastDelay(RecastGroup.Rest, 30f)
-                .HasCustomValidation((activator, target, level) =>
+                .HasCustomValidation((activator, target, level, targetLocation) =>
                 {
                     var area = GetArea(activator);
                     // Is the activator in a dungeon?
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Innate
 
                     return string.Empty;
                 })
-                .HasImpactAction((activator, target, level) =>
+                .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     AssignCommand(activator, () =>
                     {

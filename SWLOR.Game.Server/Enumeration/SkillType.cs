@@ -86,14 +86,6 @@ namespace SWLOR.Game.Server.Enumeration
             true)]
         Smithery = 9,
         
-        [Skill(SkillCategoryType.Crafting,
-            "Cybertech", 
-            50,
-            true,
-            "Ability to create and install implants.",
-            true)]
-        Cybertech = 11,
-
         [Skill(SkillCategoryType.Crafting, 
             "Fabrication", 
             50, 

@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
         {
             var weapon = GetItemInSlot(InventorySlot.LeftHand, activator);
 
-            if (!Item.KnucklesBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!Item.KatarBaseItemTypes.Contains(GetBaseItemType(weapon)))
             {
                 return "This is a knuckles ability.";
             }

@@ -326,7 +326,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.DoubleAxe,
             BaseItem.TwoBladedSword,
             BaseItem.Saberstaff,
-            BaseItem.Knuckles,
+            BaseItem.Katar,
             BaseItem.QuarterStaff,
             BaseItem.LightMace,
             BaseItem.Pistol,
@@ -429,11 +429,11 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
-        /// Retrieves the list of Knuckles base item types.
+        /// Retrieves the list of Katar base item types.
         /// </summary>
-        public static List<BaseItem> KnucklesBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> KatarBaseItemTypes { get; } = new List<BaseItem>
         {
-            BaseItem.Knuckles
+            BaseItem.Katar
         };
 
         /// <summary>
@@ -501,7 +501,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.HandAxe,
             BaseItem.Lightsaber,
             BaseItem.ShortSpear,
-            BaseItem.Knuckles,
+            BaseItem.Katar,
         };
 
         /// <summary>

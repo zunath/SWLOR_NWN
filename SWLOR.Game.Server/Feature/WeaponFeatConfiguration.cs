@@ -14,8 +14,6 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("mod_load")]
         public static void ConfigureWeaponFeats()
         {
-            ConfigureMartialArts();
-
             // Weapon Focus, Specialization, Improved Critical
             ConfigureVibroblades();
             ConfigureFinesseVibroblades();
@@ -30,15 +28,7 @@ namespace SWLOR.Game.Server.Feature
             ConfigureThrowingWeapons();
             ConfigureRifles();
         }
-
-        private static void ConfigureMartialArts()
-        {
-            WeaponPlugin.SetWeaponIsMonkWeapon(BaseItem.Club);
-            WeaponPlugin.SetWeaponIsMonkWeapon(BaseItem.QuarterStaff);
-            WeaponPlugin.SetWeaponIsMonkWeapon(BaseItem.Knuckles);
-            WeaponPlugin.SetWeaponIsMonkWeapon(BaseItem.LightMace);
-        }
-
+        
         private static void ConfigureVibroblades()
         {
             foreach (var itemType in Item.VibrobladeBaseItemTypes)
@@ -111,7 +101,7 @@ namespace SWLOR.Game.Server.Feature
 
         private static void ConfigureKnuckles()
         {
-            foreach (var itemType in Item.KnucklesBaseItemTypes)
+            foreach (var itemType in Item.KatarBaseItemTypes)
             {
                 WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusKatars);
                 WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationKatars);

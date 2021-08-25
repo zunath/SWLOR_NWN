@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (slot != InventorySlot.RightHand) return;
 
                     var itemType = GetBaseItemType(item);
-                    if (Item.KnucklesBaseItemTypes.Contains(itemType))
+                    if (Item.KatarBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + level;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (slot != InventorySlot.RightHand) return;
 
                     var itemType = GetBaseItemType(item);
-                    if (Item.KnucklesBaseItemTypes.Contains(itemType))
+                    if (Item.KatarBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
@@ -200,7 +200,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     var itemType = GetBaseItemType(item);
 
-                    if (Item.KnucklesBaseItemTypes.Contains(itemType))
+                    if (Item.KatarBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + 1;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     var itemType = GetBaseItemType(item);
 
-                    if (Item.KnucklesBaseItemTypes.Contains(itemType))
+                    if (Item.KatarBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);

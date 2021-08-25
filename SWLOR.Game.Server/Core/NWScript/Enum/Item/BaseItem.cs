@@ -99,8 +99,9 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         CraftBase = 112,
         OffHandPistol = 213,
 
+        Katar = 310,
+
         Saberstaff = 511,
         Lightsaber = 512,
-        Knuckles = 524,
     }
 }

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Feature.AIDefinition;
 using SWLOR.Game.Server.Service.AIService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -283,13 +285,33 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a creature spawns, store their STM and FP as local variables.
+        /// When a creature spawns, store their STM and EP as local variables.
+        /// Also load their HP per their skin, if specified.
         /// </summary>
         private static void LoadCreatureStats()
         {
             var self = OBJECT_SELF;
-            
-            SetLocalInt(self, "FP", Stat.GetMaxFP(self));
+            var skin = GetItemInSlot(InventorySlot.CreatureArmor, self);
+
+            var maxHP = 0;
+            for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.NPCHP)
+                {
+                    maxHP += GetItemPropertyCostTableValue(ip);
+                }
+            }
+
+            if (maxHP > 30000)
+                maxHP = 30000;
+
+            if (maxHP > 0)
+            {
+                ObjectPlugin.SetMaxHitPoints(self, maxHP);
+                ObjectPlugin.SetCurrentHitPoints(self, maxHP);
+            }
+
+            SetLocalInt(self, "EP", Stat.GetMaxFP(self));
             SetLocalInt(self, "STAMINA", Stat.GetMaxStamina(self));
         }
 

@@ -24,8 +24,6 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void LoadItemToSkillMapping()
         {
-            Console.WriteLine("Loading item to skill mappings.");
-
             // One-Handed Skills
             _itemToSkillMapping[BaseItem.BastardSword] = SkillType.OneHanded;
             _itemToSkillMapping[BaseItem.BattleAxe] = SkillType.OneHanded;
@@ -66,6 +64,7 @@ namespace SWLOR.Game.Server.Service
             _itemToSkillMapping[BaseItem.Bracer] = SkillType.MartialArts;
             _itemToSkillMapping[BaseItem.Gloves] = SkillType.MartialArts;
             _itemToSkillMapping[BaseItem.QuarterStaff] = SkillType.MartialArts;
+            _itemToSkillMapping[BaseItem.Katar] = SkillType.MartialArts;
 
             // Ranged Skills
             _itemToSkillMapping[BaseItem.Cannon] = SkillType.Ranged;
@@ -86,7 +85,7 @@ namespace SWLOR.Game.Server.Service
             _itemToSkillMapping[BaseItem.LargeShield] = SkillType.Armor;
             _itemToSkillMapping[BaseItem.TowerShield] = SkillType.Armor;
 
-            Console.WriteLine("Completed item to skill mappings successfully.");
+            Console.WriteLine($"Loaded {_itemToSkillMapping.Count} item to skill mappings.");
         }
 
         /// <summary>

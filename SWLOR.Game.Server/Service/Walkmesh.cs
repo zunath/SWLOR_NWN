@@ -24,12 +24,12 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("mod_load")]
         public static void LoadWalkmeshes()
         {
-            Console.WriteLine("Baking areas...");
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
                 BakeArea(area);
             }
-            Console.WriteLine("Finished baking areas.");
+
+            Console.WriteLine($"Baked {_walkmeshesByArea.Count} areas.");
         }
 
         // Area baking process
@@ -75,8 +75,6 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
             }
-
-            Console.WriteLine("Area walkmesh up to date: " + GetName(area));
         }
 
         /// <summary>

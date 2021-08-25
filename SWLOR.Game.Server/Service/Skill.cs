@@ -141,6 +141,7 @@ namespace SWLOR.Game.Server.Service
             Apply(40, 6);
             Apply(50, 6);
         }
+
         /// <summary>
         /// Handles applying skill XP decay when a player has reached the skill cap.
         /// If decay cannot be applied, false will be returned.

@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Name of the texture used for the GUI elements.
         /// </summary>
-        public const string FontName = "fnt_es_gui";
+        public const string GuiFontName = "fnt_es_gui";
 
         /// <summary>
         /// Name of the texture used for the GUI text.
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Service
         public static int ColorPurple = Convert.ToInt32("0x800080FF", 16);
 
         public static int ColorHealthBar = Convert.ToInt32("0x8B0000FF", 16);
-        public static int ColorManaBar = Convert.ToInt32("0x00008BFF", 16);
+        public static int ColorFPBar = Convert.ToInt32("0x00008BFF", 16);
         public static int ColorStaminaBar = Convert.ToInt32("0x008B00FF", 16);
 
         public static int ColorShieldsBar = Convert.ToInt32("0x00AAE4FF", 16);
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void Draw(uint player, string message, int x, int y, ScreenAnchor anchor, int id, float lifeTime = 10.0f)
         {
-            PostString(player, message, x, y, anchor, lifeTime, ColorWhite, ColorWhite, id, FontName);
+            PostString(player, message, x, y, anchor, lifeTime, ColorWhite, ColorWhite, id, GuiFontName);
         }
 
         /// <summary>

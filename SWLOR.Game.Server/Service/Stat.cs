@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -37,10 +38,9 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the maximum FP on a creature.
         /// For players:
-        /// INT and WIS modifiers will be checked. The higher one is used for calculations.
-        /// Each modifier grants +2 to max FP.
+        /// Each Vitality modifier grants +2 to max FP.
         /// For NPCs:
-        /// INT and WIS modifiers are added together. Each modifier grants +3 to max FP.
+        /// FP is read from their skin.
         /// </summary>
         /// <param name="creature">The creature object</param>
         /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
@@ -56,18 +56,25 @@ namespace SWLOR.Game.Server.Service
                     dbPlayer = DB.Get<Player>(playerId);
                 }
                 var baseFP = dbPlayer.MaxFP;
-                var modifier = GetAbilityModifier(AbilityType.Willpower, creature);
-                
-                return baseFP + (modifier * 2);
+                var modifier = GetAbilityModifier(AbilityType.Vitality, creature);
+
+                return baseFP + (modifier * 10);
             }
             // NPCs
             else
             {
-                var statModifier = GetAbilityModifier(AbilityType.Willpower, creature);
-                var fp = statModifier * 3;
-                if (fp < 0) fp = 0;
+                var skin = GetItemInSlot(InventorySlot.CreatureArmor, creature);
 
-                return fp;
+                var ep = 0;
+                for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
+                {
+                    if (GetItemPropertyType(ip) == ItemPropertyType.NPCEP)
+                    {
+                        ep += GetItemPropertyCostTableValue(ip);
+                    }
+                }
+
+                return ep;
             }
         }
 
@@ -123,8 +130,16 @@ namespace SWLOR.Game.Server.Service
             // NPCs
             else
             {
-                var statModifier = GetAbilityModifier(AbilityType.Vitality, creature);
-                var stm = 30 + statModifier * 4;
+                var skin = GetItemInSlot(InventorySlot.CreatureArmor, creature);
+
+                var stm = 0;
+                for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
+                {
+                    if (GetItemPropertyType(ip) == ItemPropertyType.NPCSTM)
+                    {
+                        stm += GetItemPropertyCostTableValue(ip);
+                    }
+                }
 
                 return stm;
             }

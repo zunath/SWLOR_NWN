@@ -113,8 +113,8 @@ namespace SWLOR.Game.Server.Service
         private static void CacheCraftSkillToAbilities()
         {
             _craftSkillToAbility[SkillType.Smithery] = new Tuple<AbilityType, AbilityType>(AbilityType.Perception, AbilityType.Might);
-            _craftSkillToAbility[SkillType.Fabrication] = new Tuple<AbilityType, AbilityType>(AbilityType.Perception, AbilityType.Vitality);
-            _craftSkillToAbility[SkillType.FirstAid] = new Tuple<AbilityType, AbilityType>(AbilityType.Perception, AbilityType.Willpower);
+            _craftSkillToAbility[SkillType.Fabrication] = new Tuple<AbilityType, AbilityType>(AbilityType.Might, AbilityType.Vitality);
+            _craftSkillToAbility[SkillType.FirstAid] = new Tuple<AbilityType, AbilityType>(AbilityType.Vitality, AbilityType.Perception);
         }
 
         /// <summary>

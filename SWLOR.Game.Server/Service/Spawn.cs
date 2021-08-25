@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         _spawns.Add(id, new SpawnDetail
                         {
-                            SerializedObject = Core.NWNX.ObjectPlugin.Serialize(obj),
+                            SerializedObject = ObjectPlugin.Serialize(obj),
                             X = position.X,
                             Y = position.Y,
                             Z = position.Z,
@@ -424,11 +424,11 @@ namespace SWLOR.Game.Server.Service
             // Deserialize and add it to the area.
             if (!string.IsNullOrWhiteSpace(detail.SerializedObject))
             {
-                var deserialized = Core.NWNX.ObjectPlugin.Deserialize(detail.SerializedObject);
+                var deserialized = ObjectPlugin.Deserialize(detail.SerializedObject);
                 var position = detail.UseRandomSpawnLocation ?
                     GetPositionFromLocation(Walkmesh.GetRandomLocation(detail.Area)) :
                     new Vector3(detail.X, detail.Y, detail.Z);
-                Core.NWNX.ObjectPlugin.AddToArea(deserialized, detail.Area, position);
+                ObjectPlugin.AddToArea(deserialized, detail.Area, position);
 
                 var facing = detail.UseRandomSpawnLocation ? Random.Next(360) : detail.Facing;
                 AssignCommand(deserialized, () => SetFacing(facing));

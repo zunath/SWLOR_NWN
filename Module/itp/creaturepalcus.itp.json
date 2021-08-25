@@ -12,6 +12,183 @@
               "__struct_id": 0,
               "ID": {
                 "type": "byte",
+                "value": 214
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859840
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 211
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859837
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 212
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859838
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 213
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859839
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 215
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859841
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 201
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859827
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 200
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859826
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 202
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859828
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 219
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859842
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 216
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859843
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 217
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859844
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 204
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859830
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 203
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859829
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 205
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859831
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 210
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859836
+              }
+            }
+          ]
+        },
+        "NAME": {
+          "type": "cexostring",
+          "value": "Faction Creatures\r\n"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "LIST": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
                 "value": 132
               },
               "LIST": {
@@ -6601,6 +6778,13 @@
           "value": [
             {
               "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": ""
+              }
+            },
+            {
+              "__struct_id": 0,
               "ID": {
                 "type": "byte",
                 "value": 0
@@ -9911,6 +10095,73 @@
         "STRREF": {
           "type": "dword",
           "value": 6732
+        }
+      },
+      {
+        "__struct_id": 0,
+        "LIST": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 218
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859845
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 209
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859835
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 206
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859832
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 207
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859833
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 208
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859834
+              }
+            }
+          ]
+        },
+        "NAME": {
+          "type": "cexostring",
+          "value": "World Creatures"
         }
       }
     ]

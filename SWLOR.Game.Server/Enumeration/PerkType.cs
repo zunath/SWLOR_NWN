@@ -129,10 +129,12 @@
         FrugalMedic = 123,
         RecoveryItems = 124,
         StimPacks = 125,
+
         OneHandedBlueprints = 127,
         TwoHandedBlueprints = 128,
         MartialBlueprints = 129,
         RangedBlueprints = 130,
+
         ArmorBlueprints = 132,
         AccessoryBlueprints = 133,
         

@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using Item = SWLOR.Game.Server.Service.Item;
-using Object = SWLOR.Game.Server.Core.NWNX.Object;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
@@ -217,7 +216,7 @@ namespace SWLOR.Game.Server.Feature
 
             var items = DB.GetList<InventoryItem>(key, keyPrefix) ?? new EntityList<InventoryItem>();
             var itemID = Guid.Parse(GetObjectUUID(item));
-            var data = Object.Serialize(item);
+            var data = ObjectPlugin.Serialize(item);
 
             items.Add(new InventoryItem
             {
@@ -292,8 +291,8 @@ namespace SWLOR.Game.Server.Feature
             IsLoading = true;
             foreach (var entity in items)
             {
-                var deserializedItem = Object.Deserialize(entity.Data);
-                Object.AcquireItem(container, deserializedItem);
+                var deserializedItem = ObjectPlugin.Deserialize(entity.Data);
+                ObjectPlugin.AcquireItem(container, deserializedItem);
             }
 
             IsLoading = false;

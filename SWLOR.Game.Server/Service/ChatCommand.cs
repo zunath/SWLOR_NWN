@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using Player = SWLOR.Game.Server.Core.NWNX.Player;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -89,10 +88,10 @@ namespace SWLOR.Game.Server.Service
 
                     if (GetIsDM(sender) || GetIsDMPossessed(sender))
                     {
-                        var qbs = Player.GetQuickBarSlot(sender, 11);
+                        var qbs = PlayerPlugin.GetQuickBarSlot(sender, 11);
                         if (qbs.ObjectType == QuickBarSlotType.Empty)
                         {
-                            Player.SetQuickBarSlot(sender, 11, PlayerQuickBarSlot.UseFeat(FeatType.ChatCommandTargeter));
+                            PlayerPlugin.SetQuickBarSlot(sender, 11, PlayerQuickBarSlot.UseFeat(FeatType.ChatCommandTargeter));
                         }
                     }
                 }

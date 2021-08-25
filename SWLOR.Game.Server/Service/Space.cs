@@ -11,8 +11,6 @@ using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using Object = SWLOR.Game.Server.Core.NWNX.Object;
-using Player = SWLOR.Game.Server.Core.NWNX.Player;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -168,7 +166,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsObjectValid(target) &&
                 GetIsPC(creature))
             {
-                Player.ApplyLoopingVisualEffectToObject(creature, target, vfx);
+                PlayerPlugin.ApplyLoopingVisualEffectToObject(creature, target, vfx);
             }
             SetLocalObject(creature, "SPACE_TARGET", target);
         }
@@ -195,7 +193,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsObjectValid(target) &&
                 GetIsPC(creature))
             {
-                Player.ApplyLoopingVisualEffectToObject(creature, target, VisualEffect.None);
+                PlayerPlugin.ApplyLoopingVisualEffectToObject(creature, target, VisualEffect.None);
             }
 
             DeleteLocalObject(creature, "SPACE_TARGET");
@@ -323,7 +321,7 @@ namespace SWLOR.Game.Server.Service
                 // Deserialization failed. Clear out the player's hot bar and start fresh.
                 for (var slot = 0; slot <= 35; slot++)
                 {
-                    Player.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
+                    PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
                 }
 
                 dbPlayer.Ships[shipId].SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
@@ -346,8 +344,8 @@ namespace SWLOR.Game.Server.Service
 
             var shipModuleFeat = ShipModuleFeats[feat];
 
-            Player.SetTlkOverride(player, shipModuleFeat.NameTlkId, shipModuleFeat.SlotName + ":" + shipModuleDetail.Name);
-            Player.SetTlkOverride(player, shipModuleFeat.DescriptionTlkId, shipModuleDetail.Description);
+            PlayerPlugin.SetTlkOverride(player, shipModuleFeat.NameTlkId, shipModuleFeat.SlotName + ":" + shipModuleDetail.Name);
+            PlayerPlugin.SetTlkOverride(player, shipModuleFeat.DescriptionTlkId, shipModuleDetail.Description);
 
             SetTextureOverride(shipModuleFeat.TextureName, shipModuleDetail.Texture, player);
         }
@@ -383,7 +381,7 @@ namespace SWLOR.Game.Server.Service
                 // Deserialization failed. Clear out the player's hot bar and start fresh.
                 for (var slot = 0; slot <= 35; slot++)
                 {
-                    Player.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
+                    PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
                 }
 
                 dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
@@ -916,7 +914,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (Random.D100(1) <= ChanceToDropModule)
                     {
-                        var deserialized = Object.Deserialize(shipModule.SerializedItem);
+                        var deserialized = ObjectPlugin.Deserialize(shipModule.SerializedItem);
                         CopyObject(deserialized, deathLocation);
                         DestroyObject(deserialized);
                     }
@@ -926,7 +924,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (Random.D100(1) <= ChanceToDropModule)
                     {
-                        var deserialized = Object.Deserialize(shipModule.SerializedItem);
+                        var deserialized = ObjectPlugin.Deserialize(shipModule.SerializedItem);
                         CopyObject(deserialized, deathLocation);
                         DestroyObject(deserialized);
                     }
@@ -950,7 +948,7 @@ namespace SWLOR.Game.Server.Service
                     // Deserialization failed. Clear out the player's hot bar and start fresh.
                     for (var slot = 0; slot <= 35; slot++)
                     {
-                        Player.SetQuickBarSlot(creature, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
+                        PlayerPlugin.SetQuickBarSlot(creature, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
                     }
 
                     dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(creature);

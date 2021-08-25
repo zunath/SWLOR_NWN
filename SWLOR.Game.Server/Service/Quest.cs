@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Service
                     var quest = _quests[questId];
                     var state = quest.States[playerQuest.CurrentState];
 
-                    Core.NWNX.Player.AddCustomJournalEntry(player, new JournalEntry
+                    Core.NWNX.PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
                     {
                         Name = quest.Name,
                         Text = state.JournalText,

@@ -216,28 +216,28 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 var qbs = PlayerQuickBarSlot.UseFeat(feat);
 
                 // Try to add the new feat to the player's hotbar.
-                if (Core.NWNX.Player.GetQuickBarSlot(player, 0).ObjectType == QuickBarSlotType.Empty)
-                    Core.NWNX.Player.SetQuickBarSlot(player, 0, qbs);
-                else if (Core.NWNX.Player.GetQuickBarSlot(player, 1).ObjectType == QuickBarSlotType.Empty)
-                    Core.NWNX.Player.SetQuickBarSlot(player, 1, qbs);
-                else if (Core.NWNX.Player.GetQuickBarSlot(player, 2).ObjectType == QuickBarSlotType.Empty)
-                    Core.NWNX.Player.SetQuickBarSlot(player, 2, qbs);
-                else if (Core.NWNX.Player.GetQuickBarSlot(player, 3).ObjectType == QuickBarSlotType.Empty)
-                    Core.NWNX.Player.SetQuickBarSlot(player, 3, qbs);
-                else if (Core.NWNX.Player.GetQuickBarSlot(player, 4).ObjectType == QuickBarSlotType.Empty)
-                    Core.NWNX.Player.SetQuickBarSlot(player, 4, qbs);
-                else if (Core.NWNX.Player.GetQuickBarSlot(player, 5).ObjectType == QuickBarSlotType.Empty)
-                    Core.NWNX.Player.SetQuickBarSlot(player, 5, qbs);
-                else if (Core.NWNX.Player.GetQuickBarSlot(player, 6).ObjectType == QuickBarSlotType.Empty)
-                    Core.NWNX.Player.SetQuickBarSlot(player, 6, qbs);
-                else if (Core.NWNX.Player.GetQuickBarSlot(player, 7).ObjectType == QuickBarSlotType.Empty)
-                    Core.NWNX.Player.SetQuickBarSlot(player, 7, qbs);
-                else if (Core.NWNX.Player.GetQuickBarSlot(player, 8).ObjectType == QuickBarSlotType.Empty)
-                    Core.NWNX.Player.SetQuickBarSlot(player, 8, qbs);
-                else if (Core.NWNX.Player.GetQuickBarSlot(player, 9).ObjectType == QuickBarSlotType.Empty)
-                    Core.NWNX.Player.SetQuickBarSlot(player, 9, qbs);
-                else if (Core.NWNX.Player.GetQuickBarSlot(player, 10).ObjectType == QuickBarSlotType.Empty)
-                    Core.NWNX.Player.SetQuickBarSlot(player, 10, qbs);
+                if (Core.NWNX.PlayerPlugin.GetQuickBarSlot(player, 0).ObjectType == QuickBarSlotType.Empty)
+                    Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 0, qbs);
+                else if (Core.NWNX.PlayerPlugin.GetQuickBarSlot(player, 1).ObjectType == QuickBarSlotType.Empty)
+                    Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 1, qbs);
+                else if (Core.NWNX.PlayerPlugin.GetQuickBarSlot(player, 2).ObjectType == QuickBarSlotType.Empty)
+                    Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 2, qbs);
+                else if (Core.NWNX.PlayerPlugin.GetQuickBarSlot(player, 3).ObjectType == QuickBarSlotType.Empty)
+                    Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 3, qbs);
+                else if (Core.NWNX.PlayerPlugin.GetQuickBarSlot(player, 4).ObjectType == QuickBarSlotType.Empty)
+                    Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 4, qbs);
+                else if (Core.NWNX.PlayerPlugin.GetQuickBarSlot(player, 5).ObjectType == QuickBarSlotType.Empty)
+                    Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 5, qbs);
+                else if (Core.NWNX.PlayerPlugin.GetQuickBarSlot(player, 6).ObjectType == QuickBarSlotType.Empty)
+                    Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 6, qbs);
+                else if (Core.NWNX.PlayerPlugin.GetQuickBarSlot(player, 7).ObjectType == QuickBarSlotType.Empty)
+                    Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 7, qbs);
+                else if (Core.NWNX.PlayerPlugin.GetQuickBarSlot(player, 8).ObjectType == QuickBarSlotType.Empty)
+                    Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 8, qbs);
+                else if (Core.NWNX.PlayerPlugin.GetQuickBarSlot(player, 9).ObjectType == QuickBarSlotType.Empty)
+                    Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 9, qbs);
+                else if (Core.NWNX.PlayerPlugin.GetQuickBarSlot(player, 10).ObjectType == QuickBarSlotType.Empty)
+                    Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 10, qbs);
             }
 
             // Applies any Purchase triggers associated with this perk.

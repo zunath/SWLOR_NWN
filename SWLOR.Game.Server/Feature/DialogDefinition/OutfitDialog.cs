@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         return;
                     }
 
-                    var serialized = Object.Serialize(armor);
+                    var serialized = ObjectPlugin.Serialize(armor);
                     dbPlayer.SavedOutfits[slot] = serialized;
 
                     DB.Set(playerId, dbPlayer);
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
                     // Get the temporary storage placeable and deserialize the outfit into it.
                     var tempStorage = GetObjectByTag("OUTFIT_BARREL");
-                    var deserialized = Object.Deserialize(outfit);
+                    var deserialized = ObjectPlugin.Deserialize(outfit);
                     var copy = CopyItem(armor, tempStorage, true);
 
                     copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep), true);

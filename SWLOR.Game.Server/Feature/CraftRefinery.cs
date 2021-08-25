@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using Player = SWLOR.Game.Server.Core.NWNX.Player;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Feature
                     AssignCommand(player, () => ActionPlayAnimation(Animation.LoopingGetMid, 1.0f, DelaySeconds));
 
                     // Display the timing bar and finish the process when the delay elapses.
-                    Player.StartGuiTimingBar(player, DelaySeconds);
+                    PlayerPlugin.StartGuiTimingBar(player, DelaySeconds);
                     DelayCommand(DelaySeconds, () =>
                     {
                         // Spawn the refined item onto the player.

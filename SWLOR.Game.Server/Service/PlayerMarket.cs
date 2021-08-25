@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
-using Object = SWLOR.Game.Server.Core.NWNX.Object;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -100,8 +99,8 @@ namespace SWLOR.Game.Server.Service
             {
                 if (item.Value.Price <= 0) continue;
 
-                var deserialized = Object.Deserialize(item.Value.Data);
-                Object.AcquireItem(merchant, deserialized);
+                var deserialized = ObjectPlugin.Deserialize(item.Value.Data);
+                ObjectPlugin.AcquireItem(merchant, deserialized);
 
                 var originalBaseGPValue = Core.NWNX.ItemPlugin.GetBaseGoldPieceValue(deserialized);
                 var originalAdditionalGPValue = Core.NWNX.ItemPlugin.GetAddGoldPieceValue(deserialized);
@@ -162,7 +161,7 @@ namespace SWLOR.Game.Server.Service
             var dbPlayerStore = DB.Get<PlayerStore>(playerId);
             var item = GetInventoryDisturbItem();
             var itemId = GetObjectUUID(item);
-            var serialized = Object.Serialize(item);
+            var serialized = ObjectPlugin.Serialize(item);
             var listingLimit = 20;
 
             if (dbPlayerStore.ItemsForSale.Count >= listingLimit || // Listing limit reached.

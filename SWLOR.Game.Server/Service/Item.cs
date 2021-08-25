@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     Activity.ClearBusy(actionUser);
                     SendMessageToPC(actionUser, "You move and interrupt your action.");
-                    Player.StopGuiTimingBar(actionUser, string.Empty);
+                    PlayerPlugin.StopGuiTimingBar(actionUser, string.Empty);
                     return;
                 }
 
@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.Service
             if (delay > 0.0f &&
                 GetIsPC(user))
             {
-                Player.StartGuiTimingBar(user, delay);
+                PlayerPlugin.StartGuiTimingBar(user, delay);
             }
 
             // Apply the item's action if specified.

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -8,7 +9,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using Object = SWLOR.Game.Server.Core.NWNX.Object;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
@@ -394,14 +394,14 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             foreach (var (_, module) in playerShip.HighPowerModules)
             {
-                var item = Object.Deserialize(module.SerializedItem);
-                Object.AcquireItem(container, item);
+                var item = ObjectPlugin.Deserialize(module.SerializedItem);
+                ObjectPlugin.AcquireItem(container, item);
             }
 
             foreach (var (_, module) in playerShip.LowPowerModules)
             {
-                var item = Object.Deserialize(module.SerializedItem);
-                Object.AcquireItem(container, item);
+                var item = ObjectPlugin.Deserialize(module.SerializedItem);
+                ObjectPlugin.AcquireItem(container, item);
             }
 
             SetUseableFlag(container, false);
@@ -506,7 +506,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     dbPlayer.Ships[playerShipId].HighPowerModules.Add(assignedFeat, new ShipStatus.ShipStatusModule
                     {
                         ItemInstanceId = itemId,
-                        SerializedItem = Object.Serialize(item),
+                        SerializedItem = ObjectPlugin.Serialize(item),
                         ItemTag = itemTag,
                         RecastTime = DateTime.MinValue
                     });
@@ -517,7 +517,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     dbPlayer.Ships[playerShipId].LowPowerModules.Add(assignedFeat, new ShipStatus.ShipStatusModule
                     {
                         ItemInstanceId = itemId,
-                        SerializedItem = Object.Serialize(item),
+                        SerializedItem = ObjectPlugin.Serialize(item),
                         ItemTag = itemTag,
                         RecastTime = DateTime.MinValue
                     });

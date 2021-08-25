@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
-    public class Player
+    public class PlayerPlugin
     {
         private const string PLUGIN_NAME = "NWNX_Player";
 

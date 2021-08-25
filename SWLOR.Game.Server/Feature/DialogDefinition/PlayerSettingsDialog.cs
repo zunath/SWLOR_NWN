@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             page.AddResponse(ColorToken.Green("Use Area Theme"), () =>
             {
                 dbPlayer.Settings.BattleThemeId = null;
-                Core.NWNX.Player.MusicBattleChange(player, 0);
+                Core.NWNX.PlayerPlugin.MusicBattleChange(player, 0);
                 DB.Set(playerId, dbPlayer);
             });
 
@@ -118,8 +118,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 model.CurrentDayTimeTheme = MusicBackgroundGetDayTrack(area);
                 model.CurrentNightTimeTheme = MusicBackgroundGetNightTrack(area);
 
-                Core.NWNX.Player.MusicBackgroundChangeTimeToggle(player, model.SelectedBattleThemeId, false);
-                Core.NWNX.Player.MusicBackgroundChangeTimeToggle(player, model.SelectedBattleThemeId, true);
+                Core.NWNX.PlayerPlugin.MusicBackgroundChangeTimeToggle(player, model.SelectedBattleThemeId, false);
+                Core.NWNX.PlayerPlugin.MusicBackgroundChangeTimeToggle(player, model.SelectedBattleThemeId, true);
             });
 
             page.AddResponse("Select Song", () =>
@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 dbPlayer.Settings.BattleThemeId = model.SelectedBattleThemeId;
                 DB.Set(playerId, dbPlayer);
 
-                Core.NWNX.Player.MusicBattleChange(player, model.SelectedBattleThemeId);
+                Core.NWNX.PlayerPlugin.MusicBattleChange(player, model.SelectedBattleThemeId);
             });
         }
 
@@ -137,16 +137,16 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             var player = GetPC();
             var model = GetDataModel<Model>();
-            Core.NWNX.Player.MusicBackgroundChangeTimeToggle(player, model.CurrentDayTimeTheme, false);
-            Core.NWNX.Player.MusicBackgroundChangeTimeToggle(player, model.CurrentNightTimeTheme, true);
+            Core.NWNX.PlayerPlugin.MusicBackgroundChangeTimeToggle(player, model.CurrentDayTimeTheme, false);
+            Core.NWNX.PlayerPlugin.MusicBackgroundChangeTimeToggle(player, model.CurrentNightTimeTheme, true);
         }
 
         private void EndAction()
         {
             var player = GetPC();
             var model = GetDataModel<Model>();
-            Core.NWNX.Player.MusicBackgroundChangeTimeToggle(player, model.CurrentDayTimeTheme, false);
-            Core.NWNX.Player.MusicBackgroundChangeTimeToggle(player, model.CurrentNightTimeTheme, true);
+            Core.NWNX.PlayerPlugin.MusicBackgroundChangeTimeToggle(player, model.CurrentDayTimeTheme, false);
+            Core.NWNX.PlayerPlugin.MusicBackgroundChangeTimeToggle(player, model.CurrentNightTimeTheme, true);
         }
     }
 }

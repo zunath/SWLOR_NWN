@@ -261,7 +261,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     state.SelectedRecipe = model.SelectedRecipe;
 
                     EndConversation();
-                    Player.ForcePlaceableInventoryWindow(player, OBJECT_SELF);
+                    PlayerPlugin.ForcePlaceableInventoryWindow(player, OBJECT_SELF);
                 });
             }
         }

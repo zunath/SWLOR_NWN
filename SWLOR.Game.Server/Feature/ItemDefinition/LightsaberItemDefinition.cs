@@ -67,8 +67,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 })
                 .ApplyAction((user, lightsaber1, lightsaber2, location) =>
                 {
-                    var lightsaber1Serialized = Object.Serialize(lightsaber1);
-                    var lightsaber2Serialized = Object.Serialize(lightsaber2);
+                    var lightsaber1Serialized = ObjectPlugin.Serialize(lightsaber1);
+                    var lightsaber2Serialized = ObjectPlugin.Serialize(lightsaber2);
 
                     var level = GetLightsaberLevel(lightsaber1) + 1;
                     var saberstaff = CreateItemOnObject("saberstaff", user);
@@ -119,11 +119,11 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 })
                 .ApplyAction((user, item, target, location) =>
                 {
-                    var saber1 = Object.Deserialize(GetLocalString(item, "LIGHTSABER_1"));
-                    var saber2 = Object.Deserialize(GetLocalString(item, "LIGHTSABER_2"));
+                    var saber1 = ObjectPlugin.Deserialize(GetLocalString(item, "LIGHTSABER_1"));
+                    var saber2 = ObjectPlugin.Deserialize(GetLocalString(item, "LIGHTSABER_2"));
 
-                    Object.AcquireItem(user, saber1);
-                    Object.AcquireItem(user, saber2);
+                    ObjectPlugin.AcquireItem(user, saber1);
+                    ObjectPlugin.AcquireItem(user, saber2);
 
                     DestroyObject(item);
 

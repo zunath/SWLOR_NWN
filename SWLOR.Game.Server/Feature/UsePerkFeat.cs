@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.Feature
                 {
                     RemoveEffectByTag(activator, "ACTIVATION_VFX");
 
-                    Player.StopGuiTimingBar(activator, string.Empty);
+                    PlayerPlugin.StopGuiTimingBar(activator, string.Empty);
                     SendMessageToPC(activator, "Your ability has been interrupted.");
                     return;
                 }
@@ -237,7 +237,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 if (activationDelay > 0.0f)
                 {
-                    Player.StartGuiTimingBar(activator, activationDelay, string.Empty);
+                    PlayerPlugin.StartGuiTimingBar(activator, activationDelay, string.Empty);
                 }
             }
 

@@ -170,10 +170,10 @@ namespace SWLOR.Game.Server.Feature
             var restAbility = PlayerQuickBarSlot.UseFeat(FeatType.Rest);
             var structureTool = PlayerQuickBarSlot.UseFeat(FeatType.StructureTool);
 
-            Core.NWNX.Player.SetQuickBarSlot(player, 0, openRestMenu);
-            Core.NWNX.Player.SetQuickBarSlot(player, 1, chatCommandTargeter);
-            Core.NWNX.Player.SetQuickBarSlot(player, 2, restAbility);
-            Core.NWNX.Player.SetQuickBarSlot(player, 3, structureTool);
+            Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 0, openRestMenu);
+            Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 1, chatCommandTargeter);
+            Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 2, restAbility);
+            Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 3, structureTool);
         }
 
         /// <summary>

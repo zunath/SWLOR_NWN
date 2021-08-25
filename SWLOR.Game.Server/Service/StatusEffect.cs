@@ -79,7 +79,7 @@ namespace SWLOR.Game.Server.Service
             // Add the status effect icon if there is one.
             if (statusEffectDetail.EffectIconId > 0)
             {
-                Core.NWNX.Object.AddIconEffect(creature, statusEffectDetail.EffectIconId);
+                Core.NWNX.ObjectPlugin.AddIconEffect(creature, statusEffectDetail.EffectIconId);
             }
 
             Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} receives the effect of {statusEffectDetail.Name}.");
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Service
 
             if (statusEffectDetail.EffectIconId > 0)
             {
-                Core.NWNX.Object.RemoveIconEffect(creature, statusEffectDetail.EffectIconId);
+                Core.NWNX.ObjectPlugin.RemoveIconEffect(creature, statusEffectDetail.EffectIconId);
             }
 
             Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)}'s {statusEffectDetail.Name} effect has worn off.");

@@ -285,8 +285,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 page.AddResponse(ColorToken.Red("CONFIRM REMOVE ITEM"), () =>
                 {
-                    var inWorldItem = Core.NWNX.Object.Deserialize(item.Data);
-                    Core.NWNX.Object.AcquireItem(player, inWorldItem);
+                    var inWorldItem = Core.NWNX.ObjectPlugin.Deserialize(item.Data);
+                    Core.NWNX.ObjectPlugin.AcquireItem(player, inWorldItem);
                     dbPlayerStore.ItemsForSale.Remove(model.SelectedItemId);
 
                     DB.Set(playerId, dbPlayerStore);

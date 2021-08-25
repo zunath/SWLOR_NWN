@@ -414,34 +414,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 return (FeatType.PiercingToss1, target);
             }
 
-            // Full Auto
-            if (CheckIfCanUseFeat(self, target, FeatType.FullAuto3))
-            {
-                return (FeatType.FullAuto3, target);
-            }
-            if (CheckIfCanUseFeat(self, target, FeatType.FullAuto2))
-            {
-                return (FeatType.FullAuto2, target);
-            }
-            if (CheckIfCanUseFeat(self, target, FeatType.FullAuto1))
-            {
-                return (FeatType.FullAuto1, target);
-            }
-
-            // Hammer Shot
-            if (CheckIfCanUseFeat(self, self, FeatType.HammerShot3))
-            {
-                return (FeatType.HammerShot3, self);
-            }
-            if (CheckIfCanUseFeat(self, self, FeatType.HammerShot2))
-            {
-                return (FeatType.HammerShot2, self);
-            }
-            if (CheckIfCanUseFeat(self, self, FeatType.HammerShot1))
-            {
-                return (FeatType.HammerShot1, self);
-            }
-
             // Tranquilizer Shot
             if (CheckIfCanUseFeat(self, self, FeatType.TranquilizerShot3))
             {

@@ -28,7 +28,6 @@ namespace SWLOR.Game.Server.Feature
             ConfigureStaves();
             ConfigurePistols();
             ConfigureThrowingWeapons();
-            ConfigureCannons();
             ConfigureRifles();
         }
 
@@ -114,9 +113,9 @@ namespace SWLOR.Game.Server.Feature
         {
             foreach (var itemType in Item.KnucklesBaseItemTypes)
             {
-                WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusKnuckles);
-                WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationKnuckles);
-                WeaponPlugin.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalKnuckles);
+                WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusKatars);
+                WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationKatars);
+                WeaponPlugin.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalKatars);
             }
         }
 
@@ -146,16 +145,6 @@ namespace SWLOR.Game.Server.Feature
                 WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusThrowingWeapons);
                 WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationThrowingWeapons);
                 WeaponPlugin.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalThrowingWeapons);
-            }
-        }
-
-        private static void ConfigureCannons()
-        {
-            foreach (var itemType in Item.CannonBaseItemTypes)
-            {
-                WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusCannons);
-                WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationCannons);
-                WeaponPlugin.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalCannons);
             }
         }
 

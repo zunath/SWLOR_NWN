@@ -110,14 +110,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with knuckles.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 5)
-                .GrantsFeat(FeatType.WeaponFocusKnuckles)
+                .GrantsFeat(FeatType.WeaponFocusKatars)
 
                 .AddPerkLevel()
                 .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with knuckles.")
                 .Price(4)
                 .RequirementSkill(SkillType.MartialArts, 15)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.WeaponSpecializationKnuckles);
+                .GrantsFeat(FeatType.WeaponSpecializationKatars);
         }
 
         private void ImprovedCriticalKnuckles(PerkBuilder builder)
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 25)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.ImprovedCriticalKnuckles);
+                .GrantsFeat(FeatType.ImprovedCriticalKatars);
         }
 
         private void KnucklesProficiency(PerkBuilder builder)
@@ -141,31 +141,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 1 Knuckles.")
                 .Price(2)
-                .GrantsFeat(FeatType.KnucklesProficiency1)
+                .GrantsFeat(FeatType.KatarProficiency1)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 2 Knuckles.")
                 .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 10)
-                .GrantsFeat(FeatType.KnucklesProficiency2)
+                .GrantsFeat(FeatType.KatarProficiency2)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 3 Knuckles.")
                 .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 20)
-                .GrantsFeat(FeatType.KnucklesProficiency3)
+                .GrantsFeat(FeatType.KatarProficiency3)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 4 Knuckles.")
                 .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 30)
-                .GrantsFeat(FeatType.KnucklesProficiency4)
+                .GrantsFeat(FeatType.KatarProficiency4)
 
                 .AddPerkLevel()
                 .Description("Grants the ability to equip tier 5 Knuckles.")
                 .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 40)
-                .GrantsFeat(FeatType.KnucklesProficiency5);
+                .GrantsFeat(FeatType.KatarProficiency5);
         }
 
         private void KnucklesMastery(PerkBuilder builder)
@@ -223,21 +223,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(8)
                 .RequirementSkill(SkillType.MartialArts, 25)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.KnucklesMastery1)
+                .GrantsFeat(FeatType.KatarMastery1)
 
                 .AddPerkLevel()
                 .Description("Grants +2 BAB when equipped with a Knuckles.")
                 .Price(8)
                 .RequirementSkill(SkillType.MartialArts, 40)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.KnucklesMastery2)
+                .GrantsFeat(FeatType.KatarMastery2)
 
                 .AddPerkLevel()
                 .Description("Grants +3 BAB when equipped with a Knuckles.")
                 .Price(8)
                 .RequirementSkill(SkillType.MartialArts, 50)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.KnucklesMastery3);
+                .GrantsFeat(FeatType.KatarMastery3);
         }
 
         private void ElectricFist(PerkBuilder builder)

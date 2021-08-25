@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Feature\AbilityDefinition\Crafting\" />
     <Folder Include="Feature\AbilityDefinition\Professions\" />
   </ItemGroup>
 

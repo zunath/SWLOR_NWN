@@ -1081,94 +1081,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Armorsmith Uniform I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "arm_uniform_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armorsmith Uniform II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "arm_uniform_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armorsmith Uniform III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "arm_uniform_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Armorsmith Uniform IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "arm_uniform_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Armorsmith Uniform"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "arm_uniform_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Engineering Uniform"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "eng_uniform_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Leather Tunic Variant B"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "leather_tunic002"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Weaponsmith Uniform"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wpn_uniform_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Byysk Tunic"
                     },
                     "RESREF": {
@@ -1196,50 +1108,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "ecot_lthr_drop"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Engineering Uniform I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "eng_uniform_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Engineering Uniform II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "eng_uniform_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Engineering Uniform III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "eng_uniform_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Engineering Uniform IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "eng_uniform_4"
                     }
                   },
                   {
@@ -1328,50 +1196,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sith_officer_uni"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Weaponsmith Uniform I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wpn_uniform_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Weaponsmith Uniform II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wpn_uniform_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Weaponsmith Uniform III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wpn_uniform_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Weaponsmith Uniform IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "wpn_uniform_4"
                     }
                   }
                 ]

@@ -59,11 +59,11 @@ namespace SWLOR.Game.Server.Feature
             var wis = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Willpower);
             var cha = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Diplomacy);
 
-            GiveXPToCreature(player, 10000);
+            GiveXPToCreature(player, 800000);
+            var @class = GetClassByPosition(1, player);
 
-            for(var level = 1; level <= 5; level++)
+            for (var level = 1; level <= 40; level++)
             {
-                var @class = GetClassByPosition(1, player);
                 LevelUpHenchman(player, @class);
             }
 
@@ -170,10 +170,10 @@ namespace SWLOR.Game.Server.Feature
             var restAbility = PlayerQuickBarSlot.UseFeat(FeatType.Rest);
             var structureTool = PlayerQuickBarSlot.UseFeat(FeatType.StructureTool);
 
-            Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 0, openRestMenu);
-            Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 1, chatCommandTargeter);
-            Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 2, restAbility);
-            Core.NWNX.PlayerPlugin.SetQuickBarSlot(player, 3, structureTool);
+            PlayerPlugin.SetQuickBarSlot(player, 0, openRestMenu);
+            PlayerPlugin.SetQuickBarSlot(player, 1, chatCommandTargeter);
+            PlayerPlugin.SetQuickBarSlot(player, 2, restAbility);
+            PlayerPlugin.SetQuickBarSlot(player, 3, structureTool);
         }
 
         /// <summary>
@@ -187,6 +187,7 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.Version = 1;
             dbPlayer.Name = GetName(player);
             Stat.AdjustPlayerMaxHP(dbPlayer, player, 40);
+            Stat.AdjustPlayerMaxFP(dbPlayer, 10);
             Stat.AdjustPlayerMaxSTM(dbPlayer, 10);
             CreaturePlugin.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);

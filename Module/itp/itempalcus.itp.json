@@ -697,83 +697,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Basic Breastplate"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "breastplate_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Breastplate I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "breastplate_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Breastplate II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "breastplate_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Breastplate III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "breastplate_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Breastplate IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "breastplate_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Byysk Breastplate"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "breastplate_byys"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Coxxion Breastplate"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "breastplate_cox"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Justina's Armor"
                     },
                     "RESREF": {
@@ -867,138 +790,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Basic Battlemaster Helmet"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "bb_helm_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Channeler Cap"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cn_cap_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Duelist Helmet"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "du_helm_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Gunslinger Cap"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "gn_cap_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Battlemaster Helmet I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "bb_helm_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Battlemaster Helmet II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "bb_helm_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Battlemaster Helmet III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "bb_helm_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Battlemaster Helmet IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "bb_helm_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Channeler Cap I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cn_cap_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Channeler Cap II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cn_cap_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Channeler Cap III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cn_cap_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Channeler Cap IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cn_cap_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Coxxion Headwrap"
                     },
                     "RESREF": {
@@ -1043,50 +834,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Duelist Helmet I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "du_helm_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Duelist Helmet II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "du_helm_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Duelist Helmet III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "du_helm_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Duelist Helmet IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "du_helm_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Elite Sith Trooper Helmet"
                     },
                     "RESREF": {
@@ -1103,50 +850,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "enfvisor"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Gunslinger Cap I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "gn_cap_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Gunslinger Cap II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "gn_cap_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Gunslinger Cap III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "gn_cap_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Gunslinger Cap IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "gn_cap_4"
                     }
                   },
                   {
@@ -1455,33 +1158,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Basic Tunic"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "leather_tunic_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Basic Weaponsmith Uniform"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "wpn_uniform_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Byysk Robes"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "force_robe_byysk"
                     }
                   },
                   {
@@ -1504,17 +1185,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cox_armor"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Coxxion Force Robes"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "force_robe_coxxi"
                     }
                   },
                   {
@@ -1658,50 +1328,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sith_officer_uni"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tunic I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "leather_tunic_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tunic II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "leather_tunic_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tunic III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "leather_tunic_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tunic IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "leather_tunic_4"
                     }
                   },
                   {
@@ -2769,17 +2395,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Smuggler"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "naia"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Smuggler Outfit"
                     },
                     "RESREF": {
@@ -3024,66 +2639,6 @@
                     "ID": {
                       "type": "byte",
                       "value": 11
-                    },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Shield"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "shield_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Shield I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "shield_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Shield II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "shield_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Shield III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "shield_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Shield IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "shield_4"
-                          }
-                        }
-                      ]
                     },
                     "STRREF": {
                       "type": "dword",
@@ -3916,176 +3471,6 @@
                       "type": "byte",
                       "value": 16
                     },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Might Belt"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mght_belt_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Thief Belt"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thf_belt_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Warrior Belt"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "war_belt_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Might Belt I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mght_belt_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Might Belt II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mght_belt_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Might Belt III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mght_belt_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Might Belt IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mght_belt_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Thief Belt I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thf_belt_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Thief Belt II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thf_belt_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Thief Belt III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thf_belt_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Thief Belt IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thf_belt_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Warrior Belt I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "war_belt_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Warrior Belt II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "war_belt_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Warrior Belt III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "war_belt_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Warrior Belt IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "war_belt_4"
-                          }
-                        }
-                      ]
-                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6745
@@ -4097,231 +3482,6 @@
                       "type": "byte",
                       "value": 15
                     },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Battlemaster Legging"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bm_legging_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Channeler Boot"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "cn_boot_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Duelist Legging"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "du_legging_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Gunslinger Boot"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "gn_boot_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Battlemaster Legging I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bm_legging_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Battlemaster Legging II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bm_legging_002"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Battlemaster Legging III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bm_legging_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Battlemaster Legging IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bm_legging_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Channeler Boot I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "cn_boot_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Channeler Boot II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "cn_boot_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Channeler Boot III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "cn_boot_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Channeler Boot IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "cn_boot_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Duelist Legging I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "du_legging_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Duelist Legging II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "du_legging_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Duelist Legging III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "du_legging_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Duelist Legging IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "du_legging_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Gunslinger Boot I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "gn_boot_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Gunslinger Boot II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "gn_boot_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Gunslinger Boot III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "gn_boot_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Gunslinger Boot IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "gn_boot_4"
-                          }
-                        }
-                      ]
-                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 1520
@@ -4332,121 +3492,6 @@
                     "ID": {
                       "type": "byte",
                       "value": 17
-                    },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Battlemaster Bracer"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bm_bracer_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Duelist Bracer"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "du_bracer_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Battlemaster Bracer I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bm_bracer_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Battlemaster Bracer II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bm_bracer_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Battlemaster Bracer III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bm_bracer_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Battlemaster Bracer IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bm_bracer_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Duelist Bracer I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "du_bracer_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Duelist Bracer II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "du_bracer_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Duelist Bracer III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "du_bracer_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Duelist Bracer IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "du_bracer_4"
-                          }
-                        }
-                      ]
                     },
                     "STRREF": {
                       "type": "dword",
@@ -4462,39 +3507,6 @@
                     "LIST": {
                       "type": "list",
                       "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Might Cloak"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mght_cloak_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Thief Cloak"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thf_cloak_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Warrior Cloak"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "war_cloak_b"
-                          }
-                        },
                         {
                           "__struct_id": 0,
                           "NAME": {
@@ -4515,138 +3527,6 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "jeweled_cloak"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Might Cloak I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mght_cloak_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Might Cloak II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mght_cloak_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Might Cloak III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mght_cloak_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Might Cloak IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mght_cloak_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Thief Cloak I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thf_cloak_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Thief Cloak II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thf_cloak_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Thief Cloak III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thf_cloak_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Thief Cloak IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thf_cloak_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Warrior Cloak I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "war_cloak_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Warrior Cloak II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "war_cloak_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Warrior Cloak III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "war_cloak_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Warrior Cloak IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "war_cloak_4"
                           }
                         }
                       ]
@@ -4680,83 +3560,6 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Channeler Glove"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "cn_glove_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Gunslinger Glove"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "gn_glove_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Byysk Power Glove"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "powerglove_byysk"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Channeler Glove I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "cn_glove_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Channeler Glove II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "cn_glove_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Channeler Glove III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "cn_glove_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Channeler Glove IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "cn_glove_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Fist"
                           },
                           "RESREF": {
@@ -4768,66 +3571,11 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Gunslinger Glove I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "gn_glove_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Gunslinger Glove II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "gn_glove_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Gunslinger Glove III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "gn_glove_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Gunslinger Glove IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "gn_glove_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Teras Kasi Master's Glove"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "primaglove"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Teras Kasi Power Glove"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "powerglove_t"
                           }
                         }
                       ]
@@ -9261,110 +8009,11 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Necklace"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "necklace_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Necklace I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "necklace_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Necklace II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "necklace_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Necklace III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "necklace_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Necklace IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "necklace_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Ro Solus Disguise Amulet"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "solusdisguise001"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Starry Chain I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "starry_chain_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Starry Chain II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "starry_chain_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Starry Chain III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "starry_chain_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Starry Chain IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "starry_chain_4"
                           }
                         }
                       ]
@@ -9387,17 +8036,6 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Quickness Ring"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "qck_ring_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Byysk Berserker Ring"
                           },
                           "RESREF": {
@@ -9414,39 +8052,6 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "byysk_def_ring"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Fighter Ring I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "warrior_ring_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Fighter Ring II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "warrior_ring_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Fighter Ring III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "warrior_ring_3"
                           }
                         },
                         {
@@ -9486,39 +8091,6 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Light Ring I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thief_ring_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Light Ring II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thief_ring_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Light Ring III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "thief_ring_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Prismatic Fighter Ring"
                           },
                           "RESREF": {
@@ -9546,50 +8118,6 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "prism_ring_t"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Quickness Ring I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "qck_ring_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Quickness Ring II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "qck_ring_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Quickness Ring III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "qck_ring_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Quickness Ring IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "qck_ring_4"
                           }
                         },
                         {
@@ -14688,99 +13216,6 @@
                       "type": "byte",
                       "value": 32
                     },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Heavy Vibroblade GA"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "greataxe_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Coxxion Heavy Vibroblade  GA"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "greataxe_cox"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Vibroblade GA1"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "greataxe_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Vibroblade GA2"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "greataxe_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Vibroblade GA3"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "greataxe_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Vibroblade GA4"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "greataxe_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Rudimentary Heavy Vibroblade GA"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "greataxe_r"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Trandoshan Heavy Vibroblade GA"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "greataxe_tran"
-                          }
-                        }
-                      ]
-                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6762
@@ -14802,88 +13237,6 @@
                     "ID": {
                       "type": "byte",
                       "value": 31
-                    },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Vibroblade BA"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "battleaxe_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "byyskwarrioraxe"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "byyskwarrioraxe"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Rudimentary Vibroblade BA"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "battleaxe_r"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Vibroblade BA1"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "battleaxe_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Vibroblade BA2"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "battleaxe_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Vibroblade BA3"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "battleaxe_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Vibroblade BA4"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "battleaxe_4"
-                          }
-                        }
-                      ]
                     },
                     "STRREF": {
                       "type": "dword",
@@ -14915,88 +13268,11 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Vibroblade BS"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bst_sword_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Elite Sith Vibroblade"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "elitesithvibro"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Rudimentary Vibroblade BS"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bst_sword_b001"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Trandoshan Vibroblade BS"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bst_sword_tran"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Vibroblade BS1"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bst_sword_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Vibroblade BS2"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bst_sword_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Vibroblade BS3"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bst_sword_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Vibroblade BS4"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "bst_sword_4"
                           }
                         }
                       ]
@@ -15019,88 +13295,11 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Finesse Vibroblade D"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "dagger_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Coxxion Vibroblade D"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "dagger_cox"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Finesse Vibroblade D1"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "dagger_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Finesse Vibroblade D2"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "dagger_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Finesse Vibroblade D3"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "dagger_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Finesse Vibroblade D4"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "dagger_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Ro Solus's Knife"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "solusknife"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Rudimentary Finesse Vibroblade D"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "dagger_r"
                           }
                         },
                         {
@@ -15149,99 +13348,6 @@
                       "type": "byte",
                       "value": 35
                     },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Heavy Vibroblade GS"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "greatsword_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Vibroblade GS1"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "greatsword_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Vibroblade GS2"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "greatsword_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Vibroblade GS3"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "greatsword_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Heavy Vibroblade GS4"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "greatsword_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Mandalorian Warblade"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "greatsword_mando"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Rudimentary Heavy Vibroblade GS"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "greatsword_r"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Soldier Heavy Vibroblade"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "greatsword_s"
-                          }
-                        }
-                      ]
-                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6766
@@ -15256,39 +13362,6 @@
                     "LIST": {
                       "type": "list",
                       "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Vibroblade LS"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "longsword_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Byysk Vibroblade"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "longsword_byysk"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Coxxion Vibroblade LS"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "longsword_cox"
-                          }
-                        },
                         {
                           "__struct_id": 0,
                           "NAME": {
@@ -15321,61 +13394,6 @@
                             "type": "resref",
                             "value": "lightsaber"
                           }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Rudimentary Vibroblade LS"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "longsword_r"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Vibroblade LS1"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "longsword_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Vibroblade LS2"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "longsword_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Vibroblade LS3"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "longsword_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Vibroblade LS4"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "longsword_4"
-                          }
                         }
                       ]
                     },
@@ -15397,154 +13415,11 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Finesse Vibroblade R"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rapier_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Vibroblade K"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "katana_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Coxxion Vibroblade K"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "katana_cox"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Finesse Vibroblade R1"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rapier_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Finesse Vibroblade R2"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rapier_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Finesse Vibroblade R3"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rapier_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Finesse Vibroblade R4"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rapier_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Jolee's Lightsaber"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "pil_joleesaber"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Rudimentary Finesse Vibroblade R"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rapier_r"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Rudimentary Vibroblade K"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "katana_r"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Vibroblade K1"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "katana_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Vibroblade K2"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "katana_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Vibroblade K3"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "katana_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Vibroblade K4"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "katana_4"
                           }
                         }
                       ]
@@ -15567,88 +13442,11 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Finesse Vibroblade SS"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "shortsword_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Byysk Warrior Sword"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "byyskwarriorswor"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Coxxion Vibroblade SS"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "shortsword_cox"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Finesse Vibroblade SS1"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "shortsword_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Finesse Vibroblade SS2"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "shortsword_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Finesse Vibroblade SS3"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "shortsword_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Finesse Vibroblade SS4"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "shortsword_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Rudimentary Finesse Vibroblade SS"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "shortsword_r"
                           }
                         },
                         {
@@ -15701,94 +13499,6 @@
                     "LIST": {
                       "type": "list",
                       "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Baton C"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "club_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Baton C1"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "club_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Baton C2"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "club_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Baton C3"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "club_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Baton C4"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "club_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Coxxion Baton C"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "club_cox"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Rudimentary Baton C"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "club_r"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Security Officer Baton"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "club_s"
-                          }
-                        },
                         {
                           "__struct_id": 0,
                           "NAME": {
@@ -15846,77 +13556,6 @@
                       "type": "byte",
                       "value": 42
                     },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Baton M"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mace_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Baton M1"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mace_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Baton M2"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mace_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Baton M3"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mace_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Baton M4"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mace_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Rudimentary Baton M"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mace_r"
-                          }
-                        }
-                      ]
-                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6772
@@ -15927,88 +13566,6 @@
                     "ID": {
                       "type": "byte",
                       "value": 61
-                    },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Basic Baton MS"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "morningstar_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Baton MS1"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "morningstar_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Baton MS2"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "morningstar_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Baton MS3"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "morningstar_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Baton MS4"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "morningstar_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Coxxion Baton MS"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "morningstar_cox"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Rudimentary Baton MS"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "morningstar_r"
-                          }
-                        }
-                      ]
                     },
                     "STRREF": {
                       "type": "dword",
@@ -16035,242 +13592,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Basic Quarterstaff"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "quarterstaff_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Twin Vibroblade DA"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "doubleaxe_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Twin Vibroblade TS"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "twinblade_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Byysk Quarterstaff"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "quarterstaff_byy"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Coxxion Twin Vibroblade DA"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "doubleaxe_cox"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Quarterstaff I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "quarterstaff_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Quarterstaff II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "quarterstaff_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Quarterstaff III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "quarterstaff_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Quarterstaff IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "quarterstaff_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rudimentary Quarterstaff"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "quarterstaff_r"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rudimentary Twin Vibroblade DA"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "doubleaxe_r"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rudimentary Twin Vibroblade TS"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "twinblade_r"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Saberstaff"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "saberstaff"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Trandoshan Twin Vibroblade TS"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "twinblade_tran"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Twin Vibroblade DA1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "doubleaxe_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Twin Vibroblade DA2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "doubleaxe_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Twin Vibroblade DA3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "doubleaxe_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Twin Vibroblade DA4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "doubleaxe_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Twin Vibroblade TS1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "twinblade_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Twin Vibroblade TS2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "twinblade_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Twin Vibroblade TS3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "twinblade_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Twin Vibroblade TS4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "twinblade_4"
                     }
                   }
                 ]
@@ -16293,72 +13619,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Basic Finesse Vibroblade K"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "kukri_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Duelist Finesse Vibroblade"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "kukri_d"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Finesse Vibroblade K1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "kukri_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Finesse Vibroblade K2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "kukri_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Finesse Vibroblade K3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "kukri_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Finesse Vibroblade K4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "kukri_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Mpiandry's Soul"
                     },
                     "RESREF": {
@@ -16375,28 +13635,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mpiandrystorment"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rudimentary Finesse Vibroblade K"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "kukri_r"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Trandoshan Finesse Vibroblade K"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "kukri_tran"
                     }
                   }
                 ]
@@ -16457,22 +13695,6 @@
                 "type": "byte",
                 "value": 106
               },
-              "LIST": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Knuckles"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "knuckles_b"
-                    }
-                  }
-                ]
-              },
               "STRREF": {
                 "type": "dword",
                 "value": 16807290
@@ -16487,171 +13709,6 @@
               "LIST": {
                 "type": "list",
                 "value": [
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Polearm H"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "halberd_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Polearm S"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "spear_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Byssk Polearm"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "spear_byssk"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Coxxion Polearm S"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "spear_cox"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Polearm H1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "halberd_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Polearm H2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "halberd_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Polearm H3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "halberd_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Polearm H4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "halberd_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Polearm S1"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "spear_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Polearm S2"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "spear_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Polearm S3"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "spear_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Polearm S4"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "spear_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rudimentary Polearm H"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "halberd_r"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rudimentary Polearm S"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "spear_r"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Trandoshan Polearm H"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "halberd_tran"
-                    }
-                  },
                   {
                     "__struct_id": 0,
                     "NAME": {
@@ -16797,72 +13854,6 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Blaster Pistol"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "blaster_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Blaster Pistol I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "blaster_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Blaster Pistol II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "blaster_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Blaster Pistol III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "blaster_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Blaster Pistol IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "blaster_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Coxxion Blaster Pistol"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "blaster_cox"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Exchange Blaster Pistol"
                           },
                           "RESREF": {
@@ -16907,44 +13898,11 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Rudimentary Blaster Pistol"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "blaster_r"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Sith Officer Blaster"
                           },
                           "RESREF": {
                             "type": "resref",
                             "value": "sithoffblast"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Smuggler Blaster Pistol"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "blaster_s"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Trandoshan Blaster Pistol"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "blaster_tran"
                           }
                         }
                       ]
@@ -16967,61 +13925,6 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Blaster Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Blaster Rifle I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Blaster Rifle II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Blaster Rifle III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Blaster Rifle IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Republic Sniper Blaster Rifle"
                           },
                           "RESREF": {
@@ -17038,17 +13941,6 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "republictrooperb"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Rudimentary Blaster Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_r"
                           }
                         },
                         {
@@ -17265,17 +14157,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Basic Dart"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "dart_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Basic Flashbang"
                     },
                     "RESREF": {
@@ -17331,55 +14212,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Basic Shuriken"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "shuriken_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Basic Smoke Grenade"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "grenade_smoke001"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Basic Throwing Axe"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "axe_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Byysk Dart"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "dart_byysk"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Byysk Throwing Axe"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "axe_byysk"
                     }
                   },
                   {
@@ -17424,50 +14261,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "grenade_concu005"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Dart I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "dart_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Dart II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "dart_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Dart III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "dart_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Dart IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "dart_4"
                     }
                   },
                   {
@@ -17694,83 +14487,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Rudimentary Dart"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "dart_r"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rudimentary Shuriken"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "shuriken_r"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Rudimentary Throwing Axe"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "axe_r"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Shuriken I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "shuriken_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Shuriken II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "shuriken_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Shuriken III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "shuriken_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Shuriken IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "shuriken_4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Smoke Grenade I"
                     },
                     "RESREF": {
@@ -17809,50 +14525,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "grenade_smoke005"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Throwing Axe I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "axe_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Throwing Axe II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "axe_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Throwing Axe III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "axe_3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Throwing Axe IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "axe_4"
                     }
                   }
                 ]

@@ -85,13 +85,6 @@
         }
       },
       {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "byyskwarrioraxe"
-        }
-      },
-      {
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",

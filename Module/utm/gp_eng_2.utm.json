@@ -91,31 +91,7 @@
         "__struct_id": 2
       },
       {
-        "__struct_id": 3,
-        "ItemList": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "starry_chain_2"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 0
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 0
-              }
-            }
-          ]
-        }
+        "__struct_id": 3
       },
       {
         "__struct_id": 1,

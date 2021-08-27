@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - nTh: Which associate of the specified type to return
         ///   * Returns OBJECT_INVALID if no such associate exists.
         /// </summary>
-        public static uint GetAssociate(Type nAssociateType, uint oMaster = OBJECT_INVALID, int nTh = 1)
+        public static uint GetAssociate(AssociateType nAssociateType, uint oMaster = OBJECT_INVALID, int nTh = 1)
         {
             Internal.NativeFunctions.StackPushInteger(nTh);
             Internal.NativeFunctions.StackPushObject(oMaster);

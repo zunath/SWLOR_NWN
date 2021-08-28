@@ -612,11 +612,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         }
 
         // Sets the base saving throw of the creature
-        public static void SetBaseSavingThrow(uint creature, int which, int value)
+        public static void SetBaseSavingThrow(uint creature, SavingThrow which, int value)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetBaseSavingThrow");
             Internal.NativeFunctions.nwnxPushInt(value);
-            Internal.NativeFunctions.nwnxPushInt(which);
+            Internal.NativeFunctions.nwnxPushInt((int)which);
             Internal.NativeFunctions.nwnxPushObject(creature);
             Internal.NativeFunctions.nwnxCallFunction();
         }

@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature
             ClearInventory(player);
             AutoLevelPlayer(player);
             InitializeSkills(player);
-            InitializeSavingThrows(player);
+            InitializeSavingThrows(player, dbPlayer);
             RemoveNWNSpells(player);
             ClearFeats(player);
             GrantBasicFeats(player);
@@ -117,11 +117,16 @@ namespace SWLOR.Game.Server.Feature
         /// Initializes all player saving throws to zero.
         /// </summary>
         /// <param name="player">The player to modify</param>
-        private static void InitializeSavingThrows(uint player)
+        /// <param name="dbPlayer">The database entity</param>
+        private static void InitializeSavingThrows(uint player, Player dbPlayer)
         {
-            SetFortitudeSavingThrow(player, 0);
-            SetReflexSavingThrow(player, 0);
-            SetWillSavingThrow(player, 0);
+            dbPlayer.Fortitude = 0;
+            dbPlayer.Reflex = 0;
+            dbPlayer.Will = 0;
+
+            CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Fortitude, 0);
+            CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Will, 0);
+            CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Reflex, 0);
         }
 
         /// <summary>
@@ -186,6 +191,7 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.UnallocatedSP = 10;
             dbPlayer.Version = 1;
             dbPlayer.Name = GetName(player);
+            dbPlayer.BAB = 1;
             Stat.AdjustPlayerMaxHP(dbPlayer, player, 40);
             Stat.AdjustPlayerMaxFP(dbPlayer, 10);
             Stat.AdjustPlayerMaxSTM(dbPlayer, 10);

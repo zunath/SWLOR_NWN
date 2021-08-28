@@ -442,6 +442,12 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 return (FeatType.CripplingShot1, self);
             }
 
+            // Roar
+            if (CheckIfCanUseFeat(self, self, FeatType.Roar))
+            {
+                return (FeatType.Roar, self);
+            }
+
             return (FeatType.Invalid, OBJECT_INVALID);
         }
 

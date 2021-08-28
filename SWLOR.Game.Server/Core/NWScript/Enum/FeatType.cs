@@ -1674,5 +1674,6 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         ShieldConcealment3 = 1741,
         ShieldConcealment4 = 1742,
         ShieldConcealment5 = 1743,
+        Roar = 1744
     }
 }

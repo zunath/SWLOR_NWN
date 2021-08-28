@@ -34,7 +34,10 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 var perkLevel = GetLocalInt(creature, $"PERK_LEVEL_{(int) perkType}");
-                return perkLevel > 0 ? perkLevel : _perkMaxLevels[perkType];
+                var perkMaxLevel = perkType == PerkType.Invalid
+                    ? 1
+                    : _perkMaxLevels[perkType];
+                return perkLevel > 0 ? perkLevel : perkMaxLevel;
             }
         }
 

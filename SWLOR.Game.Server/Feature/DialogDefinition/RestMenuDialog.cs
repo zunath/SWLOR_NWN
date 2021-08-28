@@ -1,11 +1,7 @@
-﻿using System;
-using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWScript.Enum;
+﻿using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
-using Dialog = SWLOR.Game.Server.Service.Dialog;
 using Player = SWLOR.Game.Server.Entity.Player;
 using Skill = SWLOR.Game.Server.Service.Skill;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -14,18 +10,6 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
     public class RestMenuDialog : DialogBase
     {
-        /// <summary>
-        /// When a player uses the "Open Rest Menu" feat, open the rest menu dialog conversation.
-        /// </summary>
-        [NWNEventHandler("feat_use_bef")]
-        public static void UseOpenRestMenuFeat()
-        {
-            var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
-            if (feat != FeatType.OpenRestMenu) return;
-
-            Dialog.StartConversation(OBJECT_SELF, OBJECT_SELF, nameof(RestMenuDialog));
-        }
-
         private const string MainPageId = "MAIN_PAGE";
 
         public override PlayerDialog SetUp(uint player)

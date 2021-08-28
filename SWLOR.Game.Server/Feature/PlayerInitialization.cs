@@ -161,10 +161,8 @@ namespace SWLOR.Game.Server.Feature
             CreaturePlugin.AddFeatByLevel(player, FeatType.WeaponProficiencyMartial, 1);
             CreaturePlugin.AddFeatByLevel(player, FeatType.WeaponProficiencySimple, 1);
             CreaturePlugin.AddFeatByLevel(player, FeatType.UncannyDodge1, 1);
-            CreaturePlugin.AddFeatByLevel(player, FeatType.OpenRestMenu, 1);
             CreaturePlugin.AddFeatByLevel(player, FeatType.ChatCommandTargeter, 1);
             CreaturePlugin.AddFeatByLevel(player, FeatType.StructureTool, 1);
-            CreaturePlugin.AddFeatByLevel(player, FeatType.Rest, 1);
         }
 
 

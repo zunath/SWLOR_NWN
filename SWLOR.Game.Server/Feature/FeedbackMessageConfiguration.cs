@@ -14,6 +14,9 @@ namespace SWLOR.Game.Server.Feature
         {
             FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.UseitemCantUse, true);
             FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.CombatRunningOutOfAmmo, true);
+            FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.RestBeginningRest, true);
+            FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.RestFinishedRest, true);
+            FeedbackPlugin.SetFeedbackMessageHidden(FeedbackMessageTypes.RestCancelRest, true);
         }
     }
 }

@@ -93,6 +93,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         Knockdown = 42,
         [RecastGroup("Roar", "Roar")]
         Roar = 43,
+        [RecastGroup("Bite", "Bite")]
+        Bite = 44,
     }
 
     public class RecastGroupAttribute: Attribute

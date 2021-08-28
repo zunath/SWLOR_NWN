@@ -54,10 +54,6 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("CZ220_LOOT_COLICOID")
                 .AddItem("bag_dirty", 1, 1, true)
-                .AddItem("a_imp_end1", 15)
-                .AddItem("b_imp_end1", 15)
-                .AddItem("h_imp_end1", 15)
-                .AddItem("l_imp_end1", 15)
                 .AddGold(40, 20);
         }
 

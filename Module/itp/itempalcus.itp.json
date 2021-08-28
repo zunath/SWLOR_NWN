@@ -6258,33 +6258,6 @@
                   },
                   {
                     "__struct_id": 0,
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Starting Items"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "startingitems"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "CZ-220 Merchant"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "cz220_merchant"
-                          }
-                        }
-                      ]
-                    },
                     "NAME": {
                       "type": "cexostring",
                       "value": "Mandalorian Electric Cell"

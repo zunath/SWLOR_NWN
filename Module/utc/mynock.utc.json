@@ -168,7 +168,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 9
+    "value": 150
   },
   "PerceptionRange": {
     "type": "byte",

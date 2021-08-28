@@ -105,7 +105,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Viscara Swamp Raivor"
+      "0": "Raivor"
     }
   },
   "fortbonus": {
@@ -168,7 +168,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 9
+    "value": 151
   },
   "PerceptionRange": {
     "type": "byte",

@@ -3384,6 +3384,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "CZ-220 Droid Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cz220_droid_hide"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dragon Turtle Shell"
                     },
                     "RESREF": {

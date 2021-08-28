@@ -81,6 +81,13 @@
           "type": "resref",
           "value": "cz220_dr_pistol"
         }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "cz220_droid_hide"
+        }
       }
     ]
   },
@@ -173,7 +180,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 119
+    "value": 150
   },
   "PerceptionRange": {
     "type": "byte",

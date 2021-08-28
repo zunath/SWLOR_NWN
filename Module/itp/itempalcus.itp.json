@@ -9178,39 +9178,6 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Force Ring I"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mage_ring_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Force Ring II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mage_ring_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Force Ring III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "mage_ring_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Forza Ring"
                           },
                           "RESREF": {

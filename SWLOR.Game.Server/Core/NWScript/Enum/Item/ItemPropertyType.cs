@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         NPCHP = 96,
         NPCEP = 97,
         NPCSTM = 98,
+        NPCLevel = 99,
         UseLimitationPerk = 100,
         ArmorClass = 117,
         AbilityRecastReduction = 118,

@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature
             ConfigurePolearms();
             ConfigureTwinBlades();
             ConfigureSaberstaffs();
-            ConfigureKnuckles();
+            ConfigureKatars();
             ConfigureStaves();
             ConfigurePistols();
             ConfigureThrowingWeapons();
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
-        private static void ConfigureKnuckles()
+        private static void ConfigureKatars()
         {
             foreach (var itemType in Item.KatarBaseItemTypes)
             {

@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Enumeration
         [Skill(SkillCategoryType.Combat, 
             "Martial Arts", 50, 
             true, 
-            "Ability to fight using knuckles and staves in combat.", 
+            "Ability to fight using katars and staves in combat.", 
             true)]
         MartialArts = 3,
 

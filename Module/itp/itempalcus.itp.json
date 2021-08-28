@@ -3077,6 +3077,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Colidcoid Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "colicoid_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Crystal Spider Bite"
                     },
                     "RESREF": {
@@ -3323,6 +3334,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "it_creitemunf001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Hide"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "colicoid_hide"
                     }
                   },
                   {

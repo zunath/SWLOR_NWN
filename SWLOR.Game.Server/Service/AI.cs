@@ -240,8 +240,6 @@ namespace SWLOR.Game.Server.Service
                 var (feat, featTarget) = GenericAIDefinition.DeterminePerkAbility(self, target, allies);
                 if (feat != FeatType.Invalid && GetIsObjectValid(featTarget))
                 {
-                    Console.WriteLine($"{GetName(self)}: Feat = {feat}"); // todo debug
-
                     ClearAllActions();
                     ActionUseFeat(feat, featTarget);
                 }

@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         private void ApplyEffect(NWCreature creature, NWObject target, int spellTier)
         {
-            float radiusSize = RadiusSize.Small;            
+            float radiusSize = RadiusSize.Medium;            
 
             Effect confusionEffect = _.EffectConfused();
 
@@ -98,13 +98,15 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             switch (spellTier)
             {
                 case 1:
-                    if ((creature.Wisdom > _.GetAbilityModifier(AbilityType.Wisdom, target) || creature == target) && _.GetDistanceBetween(creature.Object, target) <= radiusSize)
+                    if (creature == target || (creature.Wisdom > _.GetAbilityModifier(AbilityType.Wisdom, target) && _.GetDistanceBetween(creature.Object, target) <= radiusSize))
                     {
                         creature.AssignCommand(() =>
                         {
                             _.ApplyEffectToObject(DurationType.Temporary, confusionEffect, target, 6.1f);
                             // Play VFX
                             _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S), target);
+                            // Success confirmation
+                            creature.SendMessage("Confusion successful.");
                         });
                         if (!creature.IsPlayer)
                         {
@@ -135,6 +137,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                                 _.ApplyEffectToObject(DurationType.Temporary, confusionEffect, targetCreatureCopy, 6.1f);
                                 // Play VFX
                                 _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S), targetCreatureCopy);
+                                creature.SendMessage("Confusion successful.");
                             });
 
                             if (!creature.IsPlayer)

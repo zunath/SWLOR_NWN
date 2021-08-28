@@ -3,10 +3,16 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
 {
-    public class AttributeNameOverrides
+    public class TlkOverrides
     {
         [NWNEventHandler("mod_load")]
-        public static void OverrideAttributeNames()
+        public static void OverrideTlks()
+        {
+            OverrideAttributeNames();
+            OverrideMenuNames();
+        }
+
+        private static void OverrideAttributeNames()
         {
             SetTlkOverride(131, "Diplomacy"); // Charisma
             SetTlkOverride(132, "Vitality"); // Constitution
@@ -50,5 +56,12 @@ namespace SWLOR.Game.Server.Feature
                    "Willpower: Improves your force attack and force defense.\n" +
                    "Diplomacy: Improves your ability to negotiate mission rewards.\n\n";
         }
+
+        private static void OverrideMenuNames()
+        {
+            // Spell Book - List as Unused
+            SetTlkOverride(7038, "Unused");
+        }
+
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Feature.DialogDefinition;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -163,5 +165,27 @@ namespace SWLOR.Game.Server.Service
         {
             return (windowX + (windowWidth / 2)) - ((text.Length + 2) / 2);
         }
+
+        /// <summary>
+        /// Skips the character sheet panel open event and shows the SWLOR character sheet instead.
+        /// </summary>
+        [NWNEventHandler("mod_gui_event")]
+        public static void CharacterSheetGui()
+        {
+            // todo: When NUI is released, this should build and draw the new UI for character sheets.
+            // todo: Until that happens, this will simply open the character rest menu.
+            var player = GetLastGuiEventPlayer();
+            var type = GetLastGuiEventType();
+            if (type != GuiEventType.DisabledPanelAttemptOpen) return;
+
+            var panelType = (GuiPanel)GetLastGuiEventInteger();
+            if (panelType != GuiPanel.CharacterSheet)
+                return;
+
+            AssignCommand(player, () => ClearAllActions());
+
+            Dialog.StartConversation(player, player, nameof(RestMenuDialog));
+        }
+
     }
 }

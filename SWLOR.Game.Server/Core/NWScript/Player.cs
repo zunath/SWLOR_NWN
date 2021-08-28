@@ -403,6 +403,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// * GUIEVENT_CHARACTERSHEET_FEAT_SELECT: The feat ID.
         /// * GUIEVENT_EFFECTICON_CLICK: The effect icon ID (EFFECT_ICON_*)
         /// * GUIEVENT_DISABLED_PANEL_ATTEMPT_OPEN: The GUI_PANEL_* the player attempted to open.
+        /// * GUIEVENT_QUICKCHAT_SELECT: The hotkey character representing the option
+        /// * GUIEVENT_EXAMINE_OBJECT: A GUI_PANEL_EXAMINE_* constant
         /// </summary>
         /// <returns></returns>
         public static int GetLastGuiEventInteger()

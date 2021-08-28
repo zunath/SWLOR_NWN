@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Player)
                 .Action((user, target, location, args) =>
                 {
-                    Dialog.StartConversation(user, user, nameof(RestMenu));
+                    Dialog.StartConversation(user, user, nameof(RestMenuDialog));
                 });
 
 

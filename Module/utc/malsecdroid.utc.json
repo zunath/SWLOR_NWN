@@ -79,7 +79,7 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "npc_pistol"
+          "value": "cz220_dr_pistol"
         }
       }
     ]
@@ -96,6 +96,13 @@
         "Feat": {
           "type": "word",
           "value": 27
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 392
         }
       }
     ]

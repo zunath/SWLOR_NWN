@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 0.125
+    "value": 0.5
   },
   "ClassList": {
     "type": "list",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 8
+    "value": 14
   },
   "DecayTime": {
     "type": "dword",
@@ -78,7 +78,7 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 16384,
+        "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
           "value": "mynock_claw"
@@ -122,7 +122,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 8
+    "value": 14
   },
   "Int": {
     "type": "byte",
@@ -156,7 +156,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 10
+    "value": 16
   },
   "NaturalAC": {
     "type": "byte",

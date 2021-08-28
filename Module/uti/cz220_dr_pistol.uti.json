@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 56
+    "value": 11
   },
   "Charges": {
     "type": "byte",
@@ -14,22 +14,19 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": ""
+    "value": "1"
   },
   "Cost": {
     "type": "dword",
-    "value": 50
+    "value": 60
   },
   "Cursed": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "DescIdentified": {
-    "id": 100926,
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
@@ -42,23 +39,31 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 90461,
+    "id": 171,
     "type": "cexolocstring",
     "value": {
-      "0": "Eclipse Shield"
+      "0": "CZ-220 Droid Pistol"
     }
   },
   "ModelPart1": {
     "type": "byte",
     "value": 11
   },
-  "PaletteID": {
+  "ModelPart2": {
+    "type": "byte",
+    "value": 113
+  },
+  "ModelPart3": {
     "type": "byte",
     "value": 11
   },
+  "PaletteID": {
+    "type": "byte",
+    "value": 45
+  },
   "Plot": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PropertiesList": {
     "type": "list",
@@ -71,11 +76,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 35
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 11
+          "value": 2
         },
         "Param1": {
           "type": "byte",
@@ -87,7 +92,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 94
+          "value": 93
         },
         "Subtype": {
           "type": "word",
@@ -102,11 +107,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 35
+          "value": 14
         },
         "CostValue": {
           "type": "word",
-          "value": 9
+          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -118,73 +123,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 95
+          "value": 61
         },
         "Subtype": {
           "type": "word",
           "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 37
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 8
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 90
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 33
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 5
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 100
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 110
         }
       }
     ]
@@ -195,14 +138,14 @@
   },
   "Stolen": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "Tag": {
     "type": "cexostring",
-    "value": "ec_shield"
+    "value": "cz220_dr_pistol"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "ec_shield"
+    "value": "cz220_dr_pistol"
   }
 }

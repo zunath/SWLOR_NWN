@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -54,6 +55,8 @@ namespace SWLOR.Game.Server.Entity
             Ships = new Dictionary<Guid, ShipStatus>();
             Factions = new Dictionary<FactionType, PlayerFactionStanding>();
             TaxiDestinations = new Dictionary<int, List<TaxiDestinationType>>();
+            AbilityPointsByLevel = new Dictionary<int, int>();
+            ObjectVisibilities = new Dictionary<string, VisibilityType>();
         }
 
         public override string KeyPrefix => "Player";
@@ -123,6 +126,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }
         public Dictionary<int, List<TaxiDestinationType>> TaxiDestinations { get; set; }
         public Dictionary<int, int> AbilityPointsByLevel { get; set; }
+        public Dictionary<string, VisibilityType> ObjectVisibilities { get; set; }
     }
 
     public class MapPin

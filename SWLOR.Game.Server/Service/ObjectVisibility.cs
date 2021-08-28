@@ -55,19 +55,19 @@ namespace SWLOR.Game.Server.Service
 
             // Now iterate over the player's objects and adjust visibility.
             var playerId = GetObjectUUID(player);
-            var visibilities = (DB.Get<PlayerVisibilityObject>(playerId) ?? new PlayerVisibilityObject());
+            var visibilities = (DB.Get<Player>(playerId) ?? new Player());
             for(var index = visibilities.ObjectVisibilities.Count-1; index >= 0; index--)
             {
-                var visibility = visibilities.ObjectVisibilities.ElementAt(index);
-                if (!_visibilityObjects.ContainsKey(visibility.Key))
+                var (objectId, visibilityType) = visibilities.ObjectVisibilities.ElementAt(index);
+                if (!_visibilityObjects.ContainsKey(objectId))
                 {
                     // This object is no longer tracked. Remove it from the player's data.
-                    visibilities.ObjectVisibilities.Remove(visibility.Key);
+                    visibilities.ObjectVisibilities.Remove(objectId);
                     continue;
                 }
 
-                var obj = _visibilityObjects[visibility.Key];
-                VisibilityPlugin.SetVisibilityOverride(player, obj, visibility.Value);
+                var obj = _visibilityObjects[objectId];
+                VisibilityPlugin.SetVisibilityOverride(player, obj, visibilityType);
             }
         }
 
@@ -82,16 +82,16 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (GetIsPC(target)) return;
 
-            var visibilityObjectID = GetLocalString(target, "VISIBILITY_OBJECT_ID");
-            if (string.IsNullOrWhiteSpace(visibilityObjectID))
+            var visibilityObjectId = GetLocalString(target, "VISIBILITY_OBJECT_ID");
+            if (string.IsNullOrWhiteSpace(visibilityObjectId))
             {
                 Log.Write(LogGroup.Error, $"{GetName(target)} is missing the local variable VISIBILITY_OBJECT_ID. The visibility of this object cannot be modified for player {GetName(player)}", true);
                 return;
             }
 
             var playerId = GetObjectUUID(player);
-            var dbVisibility = DB.Get<PlayerVisibilityObject>(playerId) ?? new PlayerVisibilityObject();
-            dbVisibility.ObjectVisibilities[visibilityObjectID] = type;
+            var dbVisibility = DB.Get<Player>(playerId) ?? new Player();
+            dbVisibility.ObjectVisibilities[visibilityObjectId] = type;
             DB.Set(playerId, dbVisibility);
 
             VisibilityPlugin.SetVisibilityOverride(player, target, type);

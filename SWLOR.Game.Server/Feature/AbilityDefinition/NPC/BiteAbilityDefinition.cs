@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .HasActivationDelay(2f)
                 .IsCastedAbility()
                 .RequirementStamina(6)
+                .UnaffectedByHeavyArmor()
                 .HasRecastDelay(RecastGroup.Bite, 60f)
                 .HasImpactAction((activator, target, level, location) =>
                 {

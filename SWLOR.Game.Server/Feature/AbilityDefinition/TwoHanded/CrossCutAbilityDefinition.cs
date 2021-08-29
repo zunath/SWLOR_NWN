@@ -77,6 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
+                .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
@@ -92,6 +93,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
+                .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
@@ -107,6 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(8)
                 .IsCastedAbility()
+                .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {

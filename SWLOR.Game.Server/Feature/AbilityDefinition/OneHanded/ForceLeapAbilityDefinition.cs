@@ -90,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
+                .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -101,6 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
+                .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -112,6 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
+                .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

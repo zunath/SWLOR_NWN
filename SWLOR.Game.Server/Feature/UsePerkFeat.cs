@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Feature
                 {
                     var item = GetItemInSlot((InventorySlot) slot, activator);
                     var armorType = Item.GetArmorType(item);
-                    if (armorType == ArmorType.Heavy)
+                    if (armorType == ArmorType.Heavy && !ability.IgnoreHeavyArmorPenalty)
                     {
                         armorPenalty = HeavyArmorPenalty;
                         penaltyMessage = "Heavy armor slows your activation speed by 100%.";

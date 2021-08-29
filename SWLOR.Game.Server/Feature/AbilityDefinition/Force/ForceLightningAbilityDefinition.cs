@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -25,33 +26,36 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            int damage;
+            var dmg = 0.0f;
 
             switch (level)
             {
                 case 1:
-                    damage = 10 + GetAbilityModifier(AbilityType.Willpower);
+                    dmg = 6.0f;
                     break;
                 case 2:
-                    damage = 15 + GetAbilityModifier(AbilityType.Willpower);
+                    dmg = 8.5f;
                     break;
                 case 3:
-                    damage = (int)(20 + GetAbilityModifier(AbilityType.Willpower) * 1.5);
+                    dmg = 12.0f;
                     break;
                 case 4:
-                    damage = (int)(25 + GetAbilityModifier(AbilityType.Willpower) * 1.75);
-                    break;
-                default:
-                    damage = 0;
+                    dmg = 13.5f;
                     break;
             }
 
-            if (!Ability.GetAbilityResisted(activator, target))
+            var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
+            var defense = Combat.CalculateDefense(target);
+            var targetWillpower = GetAbilityModifier(AbilityType.Willpower, target);
+            var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, false);
+            
+            AssignCommand(activator, () =>
             {
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-                ActionCastFakeSpellAtObject((int)Spell.LightningBolt, target);
-            }
-
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Beam_Lightning), target);
+            });
+            ActionCastFakeSpellAtObject((int)Spell.LightningBolt, target);
+            
             Enmity.ModifyEnmityOnAll(activator, 1);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }

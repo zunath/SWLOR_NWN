@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -29,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .HasImpactAction((activator, target, level, location) =>
                 {
                     ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Magenta), activator, 1.0f);
+                    StatusEffect.Apply(activator, activator, StatusEffectType.IronShell, 45f);
                 });
         }
     }

@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         STMBonus = 92,
         DMG = 93,
         Defense = 94,
-        EtherDefense = 95,
+        ForceDefense = 95,
         NPCHP = 96,
         NPCEP = 97,
         NPCSTM = 98,

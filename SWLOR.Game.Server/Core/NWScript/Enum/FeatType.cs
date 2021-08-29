@@ -1675,6 +1675,12 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         ShieldConcealment4 = 1742,
         ShieldConcealment5 = 1743,
         Roar = 1744,
-        Bite = 1745
+        Bite = 1745,
+        IronShell = 1746,
+        Earthquake = 1747,
+        FireBreath = 1748,
+        Spikes = 1749,
+        Venom = 1750,
+        Talon = 1751
     }
 }

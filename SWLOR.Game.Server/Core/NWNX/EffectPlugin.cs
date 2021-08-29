@@ -214,6 +214,9 @@ namespace SWLOR.Game.Server.Core.NWNX
             return Internal.NativeFunctions.nwnxPopInt();
         }
 
+        /// @brief Gets the true effect count
+        /// @param oObject The object to get the count of.
+        /// @return the number of effects (item properties and other non-exposed effects included)
         public static int GetTrueEffectCount(uint oObject)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetTrueEffectCount");
@@ -223,6 +226,10 @@ namespace SWLOR.Game.Server.Core.NWNX
             return Internal.NativeFunctions.nwnxPopInt();
         }
 
+        /// @brief Gets a specific effect on an object. This can grab effects normally hidden from developers, such as item properties.
+        /// @param oObject The object with the effect
+        /// @param nIndex The point in the array to retrieve (0 to GetTrueEffectCount())
+        /// @return A constructed NWNX_EffectUnpacked.
         public static EffectUnpacked GetTrueEffect(uint oObject, int nIndex)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetTrueEffectCount");
@@ -233,24 +240,45 @@ namespace SWLOR.Game.Server.Core.NWNX
             return ResolveUnpack(false);
         }
 
+        /// Replaces an already applied effect with another.
+        /// oObject The object with the effect to replace
+        /// nIndex The array element to be replaced
+        /// e The unpacked effect to replace it with.
+        /// Cannot replace an effect with a different type or ID.
         public static void ReplaceEffectByIndex(uint oObject, int nIndex, EffectUnpacked e)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ReplaceEffectByIndex");
-            
+
             ResolvePack(e, true);
             Internal.NativeFunctions.nwnxPushInt(nIndex);
             Internal.NativeFunctions.nwnxPushObject(oObject);
             Internal.NativeFunctions.nwnxCallFunction();
         }
 
+        /// Removes effect by ID
+        /// oObject The object to remove the effect from
+        /// sID The id of the effect, can be retrieved by unpacking effects.
+        /// FALSE/0 on failure TRUE/1 on success.
         public static int RemoveEffectById(uint oObject, string sID)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveEffectById");
-            
+
             Internal.NativeFunctions.nwnxPushString(sID);
             Internal.NativeFunctions.nwnxPushObject(oObject);
             Internal.NativeFunctions.nwnxCallFunction();
             return Internal.NativeFunctions.nwnxPopInt();
         }
-}
+
+        /// Applies an effect, bypassing any processing done by ApplyEffectToObject
+        /// eEffect The effect to be applied.
+        /// oObject The object to apply it to.
+        public static void Apply(Effect eEffect, uint oObject)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "Apply");
+
+            Internal.NativeFunctions.nwnxPushObject(oObject);
+            Internal.NativeFunctions.nwnxPushEffect(eEffect);
+            Internal.NativeFunctions.nwnxCallFunction();
+        }
+    }
 }

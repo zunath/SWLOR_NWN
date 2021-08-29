@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
@@ -9,6 +10,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.ActivityService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Item = SWLOR.Game.Server.Service.Item;
 
@@ -46,6 +48,13 @@ namespace SWLOR.Game.Server.Feature
                 (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Y")),
                 (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Z"))
             );
+
+            // If we have a valid target, use its position
+            if (GetIsObjectValid(target))
+            {
+                targetPosition = GetPosition(target);
+            }
+
             var targetLocation = Location(targetArea, targetPosition, 0.0f);
 
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
@@ -108,7 +117,7 @@ namespace SWLOR.Game.Server.Feature
 
         /// <summary>
         /// Handles casting abilities. These can be combat-related or casting-related and may or may not have a casting delay.
-        /// Requirement reductions (EP, STM, etc) are applied after the casting has completed.
+        /// Requirement reductions (FP, STM, etc) are applied after the casting has completed.
         /// In the event there is no casting delay, the reductions are applied immediately.
         /// </summary>
         /// <param name="activator">The creature activating the ability.</param>
@@ -199,7 +208,7 @@ namespace SWLOR.Game.Server.Feature
                     RemoveEffectByTag(activator, "ACTIVATION_VFX");
 
                     PlayerPlugin.StopGuiTimingBar(activator, string.Empty);
-                    SendMessageToPC(activator, "Your ability has been interrupted.");
+                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)}'s ability has been interrupted.");
                     return;
                 }
 
@@ -212,8 +221,9 @@ namespace SWLOR.Game.Server.Feature
                 DeleteLocalInt(activator, id);
 
                 // Moved during casting or activator died. Cancel the activation.
-                if (GetLocalInt(activator, id) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0) return;
-
+                if (GetLocalInt(activator, id) == (int) ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0) 
+                    return;
+                
                 ApplyRequirementEffects(activator, ability);
                 ability.ImpactAction?.Invoke(activator, target, effectivePerkLevel, targetLocation);
                 ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay);
@@ -222,6 +232,8 @@ namespace SWLOR.Game.Server.Feature
                 {
                     Ability.StartConcentrationAbility(activator, feat, ability.ConcentrationStatusEffectType);
                 }
+
+                Activity.ClearBusy(activator);
             }
 
             // Begin the main process
@@ -241,6 +253,7 @@ namespace SWLOR.Game.Server.Feature
                 }
             }
 
+            Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
             DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay));
         }
 
@@ -346,7 +359,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(activator) || GetIsDMPossessed(activator))
             {
                 var recastDate = DateTime.UtcNow.AddSeconds(delaySeconds);
-                var recastDateString = recastDate.ToString("yyyy-MM-dd hh:mm:ss");
+                var recastDateString = recastDate.ToString("yyyy-MM-dd HH:mm:ss");
                 SetLocalString(activator, $"ABILITY_RECAST_ID_{(int)group}", recastDateString);
             }
             // Players

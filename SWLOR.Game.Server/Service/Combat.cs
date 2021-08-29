@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Enumeration;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -97,19 +98,23 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            // todo: Pull defense values off effects
-
+            // Iron Shell: +20 Defense
+            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.IronShell))
+            {
+                defense += 20;
+            }
+            
             return defense;
         }
 
         /// <summary>
-        /// Retrieves a creature's total ether defense value.
+        /// Retrieves a creature's total force defense value.
         /// </summary>
         /// <param name="creature">The creature to retrieve from.</param>
         /// <returns>Total ether defense value of selected creature.</returns>
-        public static int CalculateEtherDefense(uint creature)
+        public static int CalculateForceDefense(uint creature)
         {
-            var etherDefense = 0;
+            var forceDefense = 0;
 
             // Pull defense values off equipment.
             for (var slot = 0; slot < NumberOfInventorySlots; slot++)
@@ -118,16 +123,14 @@ namespace SWLOR.Game.Server.Service
 
                 for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
                 {
-                    if (GetItemPropertyType(ip) == ItemPropertyType.EtherDefense)
+                    if (GetItemPropertyType(ip) == ItemPropertyType.ForceDefense)
                     {
-                        etherDefense += GetItemPropertyCostTableValue(ip);
+                        forceDefense += GetItemPropertyCostTableValue(ip);
                     }
                 }
             }
-
-            // todo: Pull defense values off effects
-
-            return etherDefense;
+            
+            return forceDefense;
         }
     }
 }

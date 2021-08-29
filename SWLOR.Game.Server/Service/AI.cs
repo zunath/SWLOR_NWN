@@ -43,8 +43,11 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_roundend")]
         public static void CreatureCombatRoundEnd()
         {
-            ProcessPerkAI();
-            ExecuteScript("cdef_c2_default3", OBJECT_SELF);
+            if (!Activity.IsBusy(OBJECT_SELF))
+            {
+                ProcessPerkAI();
+                ExecuteScript("cdef_c2_default3", OBJECT_SELF);
+            }
         }
 
         /// <summary>

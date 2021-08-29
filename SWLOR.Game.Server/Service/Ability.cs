@@ -125,6 +125,13 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            // Must not be busy
+            if (Activity.IsBusy(activator))
+            {
+                SendMessageToPC(activator, "You are busy.");
+                return false;
+            }
+
             // Perk-specific requirement checks
             foreach (var req in ability.Requirements)
             {

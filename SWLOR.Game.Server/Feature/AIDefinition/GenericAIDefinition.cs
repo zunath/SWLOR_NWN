@@ -454,6 +454,42 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 return (FeatType.Roar, target);
             }
 
+            // Iron Shell
+            if (CheckIfCanUseFeat(self, target, FeatType.IronShell))
+            {
+                return (FeatType.IronShell, self);
+            }
+
+            // Earthquake
+            if (CheckIfCanUseFeat(self, self, FeatType.Earthquake))
+            {
+                return (FeatType.Earthquake, target);
+            }
+
+            // Fire Breath
+            if (CheckIfCanUseFeat(self, target, FeatType.FireBreath))
+            {
+                return (FeatType.FireBreath, target);
+            }
+
+            // Spikes
+            if (CheckIfCanUseFeat(self, target, FeatType.Spikes))
+            {
+                return (FeatType.Spikes, target);
+            }
+
+            // Venom
+            if (CheckIfCanUseFeat(self, target, FeatType.Venom))
+            {
+                return (FeatType.Venom, target);
+            }
+
+            // Talon
+            if (CheckIfCanUseFeat(self, target, FeatType.Talon))
+            {
+                return (FeatType.Talon, target);
+            }
+
             return (FeatType.Invalid, OBJECT_INVALID);
         }
 

@@ -45,6 +45,7 @@
         Shock = 40,
         Tranquilize = 41,
         Burn = 42,
-        Rest = 43
+        Rest = 43,
+        IronShell = 44,
     }
 }

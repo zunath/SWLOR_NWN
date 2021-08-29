@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     if (!string.IsNullOrWhiteSpace(lastSubmission))
                     {
                         // Found one, parse it.
-                        var dateTime = DateTime.Parse(lastSubmission);
+                        var dateTime = DateTime.ParseExact(lastSubmission, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                         if (DateTime.UtcNow <= dateTime.AddSeconds(30))
                         {
                             // Player submitted a second request within 30 seconds of the last one. 

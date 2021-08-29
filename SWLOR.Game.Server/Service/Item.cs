@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.ItemService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -165,7 +166,7 @@ namespace SWLOR.Game.Server.Service
             if (itemDetail.ApplyAction != null)
             {
                 var actionId = Guid.NewGuid().ToString();
-                Activity.SetBusy(user);
+                Activity.SetBusy(user, ActivityStatusType.UseItem);
                 SetLocalBool(user, actionId, true);
                 CheckPosition(user, actionId, userPosition);
 

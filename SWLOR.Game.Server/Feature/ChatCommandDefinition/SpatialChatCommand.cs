@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     var now = DateTime.UtcNow;
-                    var nowText = now.ToString("yyyy-MM-dd hh:mm:ss");
+                    var nowText = now.ToString("yyyy-MM-dd HH:mm:ss");
 
                     SendMessageToPC(user, "Current Server Date: " + nowText);
                 });

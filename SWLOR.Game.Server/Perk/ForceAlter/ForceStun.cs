@@ -146,42 +146,45 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         private void ApplyEffect(NWCreature creature, NWObject target, int spellTier)
         {
-            const float radiusSize = 10.0f;
+            const float radiusSize = 6.0f;
             NWCreature targetCreature;
             
             switch (spellTier)
             {
                 // Tier 1 - Single target is Tranquilized or, if resisted, receives -5 to AB and AC
                 case 1:
-                    RunEffect(creature, target);
+                        RunEffect(creature, target);
                     break;
                 // Tier 2 - Target and nearest other enemy within 10m are tranquilized using tier 1 rules.
                 case 2:
                     RunEffect(creature, target);
                     
                     // Target the next nearest creature and do the same thing.
-                    targetCreature = GetFirstObjectInShape(Shape.Sphere, radiusSize, creature.Location, true);
+                    targetCreature = GetFirstObjectInShape(Shape.Sphere, radiusSize, target.Location, true);
                     while (targetCreature.IsValid)
                     {
                         if (targetCreature != target)
                         {
                             // Apply to nearest other creature, then exit loop.
-                            RunEffect(creature, target);
+                            if (_.GetIsReactionTypeHostile(creature, targetCreature)) 
+                                RunEffect(creature, targetCreature);
+                            else
                             break;
                         }
 
-                        targetCreature = GetNextObjectInShape(Shape.Sphere, radiusSize, creature.Location, true);
+                        targetCreature = GetNextObjectInShape(Shape.Sphere, radiusSize, target.Location, true);
                     }
                     break;
                 // Tier 3 - All creatures within 10m are tranquilized using tier 1 rules.
                 case 3:
                     RunEffect(creature, target);
                     
-                    targetCreature = GetFirstObjectInShape(Shape.Sphere, radiusSize, creature.Location, true);
+                    targetCreature = GetFirstObjectInShape(Shape.Sphere, radiusSize, target.Location, true);
                     while (targetCreature.IsValid)
                     {
-                        RunEffect(creature, target);
-                        targetCreature = GetNextObjectInShape(Shape.Sphere, radiusSize, creature.Location, true);
+                        if (_.GetIsReactionTypeHostile(creature, targetCreature))
+                            RunEffect(creature, targetCreature);
+                        targetCreature = GetNextObjectInShape(Shape.Sphere, radiusSize, target.Location, true);
                     }
                     break;
                 default:

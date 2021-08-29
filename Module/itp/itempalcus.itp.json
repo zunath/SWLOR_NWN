@@ -3154,6 +3154,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Raivor Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "raivor_c_claw"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sandswimmer Claw"
                     },
                     "RESREF": {
@@ -3406,6 +3417,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Kath Hound Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "k_hound_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mon Calamari Cruiser Properties"
                     },
                     "RESREF": {
@@ -3444,6 +3466,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "qionbeastskin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Raivor Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "raivor_skin"
                     }
                   },
                   {
@@ -3521,6 +3554,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "visc_shutt_props"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Warocas Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "warocas_skin"
                     }
                   }
                 ]
@@ -9877,341 +9921,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Arm Implant - Endurance I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "a_imp_end1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Arm Implant - Endurance II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "a_imp_end2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Arm Implant - Endurance III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "a_imp_end3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Arm Implant - Endurance IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "a_imp_end4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Arm Implant - Endurance V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "a_imp_end5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Arm Implant - Power I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "a_imp_pow1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Arm Implant - Power II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "a_imp_pow2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Arm Implant - Power III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "a_imp_pow3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Arm Implant - Power IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "a_imp_pow4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Arm Implant - Power V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "a_imp_pow5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Arm Implant - Stamina I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "a_imp_stm1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Arm Implant - Stamina II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "a_imp_stm2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Arm Implant - Stamina III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "a_imp_stm3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Arm Implant - Stamina IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "a_imp_stm4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Arm Implant - Stamina V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "a_imp_stm5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Basic Bag"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "bag_b"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Body Implant - Endurance I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "b_imp_end1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Body Implant - Endurance II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "b_imp_end2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Body Implant - Endurance III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "b_imp_end3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Body Implant - Endurance IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "b_imp_end4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Body Implant - Endurance V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "b_imp_end5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Body Implant - Stamina I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "b_imp_stm1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Body Implant - Stamina II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "b_imp_stm2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Body Implant - Stamina III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "b_imp_stm3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Body Implant - Stamina IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "b_imp_stm4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Body Implant - Stamina V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "b_imp_stm5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Body Implant - Toughness I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "b_imp_tgh1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Body Implant - Toughness II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "b_imp_tgh2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Body Implant - Toughness III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "b_imp_tgh3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Body Implant - Toughness IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "b_imp_tgh4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Body Implant - Toughness V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "b_imp_tgh5"
                     }
                   },
                   {
@@ -10284,451 +9998,11 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Head Implant - Charismatic I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_cha1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Charismatic II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_cha2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Charismatic III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_cha3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Charismatic IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_cha4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Charismatic V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_cha5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Endurance I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_end1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Endurance II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_end2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Endurance III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_end3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Endurance IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_end4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Endurance V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_end5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Intellect I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_int1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Intellect II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_int2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Intellect III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_int3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Intellect IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_int4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Intellect V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_int5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Intuition I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_inu1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Intuition II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_inu2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Intuition III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_inu3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Intuition IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_inu4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Head Implant - Intuition V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "h_imp_inu5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Large Bag"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "bag_lg"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Dexterous I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_dex1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Dexterous II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_dex2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Dexterous III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_dex3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Dexterous IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_dex4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Dexterous V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_dex5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Endurance I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_end1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Endurance II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_end2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Endurance III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_end3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Endurance IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_end4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Endurance V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_end5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Quickness I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_qck1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Quickness II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_qck2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Quickness III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_qck3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Quickness IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_qck4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Quickness V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_qck5"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Stamina I"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_stm1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Stamina II"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_stm2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Stamina III"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_stm3"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Stamina IV"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_stm4"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Leg Implant - Stamina V"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "l_imp_stm5"
                     }
                   },
                   {

@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 500
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 520
+    "value": 69
   },
   "Charges": {
     "type": "byte",
@@ -18,17 +18,15 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 500
+    "value": 0
   },
   "Cursed": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": "+5 CHA\n-4 DEX\n-4 INT"
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
@@ -43,16 +41,16 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Head Implant - Charismatic V"
+      "0": "Raivor Claw"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 174
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 23
+    "value": 13
   },
   "Plot": {
     "type": "byte",
@@ -60,7 +58,39 @@
   },
   "PropertiesList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 34
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 10
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 93
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      }
+    ]
   },
   "StackSize": {
     "type": "word",
@@ -72,10 +102,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "h_imp_cha5"
+    "value": "raivor_c_claw"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "h_imp_cha5"
+    "value": "raivor_c_claw"
   }
 }

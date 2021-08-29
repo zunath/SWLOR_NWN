@@ -1876,25 +1876,6 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 2.0
-                          },
-                          "FACTION": {
-                            "type": "cexostring",
-                            "value": "Hostile"
-                          },
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Colicoid Experiment"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "colicoidexp"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "CR": {
-                            "type": "float",
                             "value": 11.0
                           },
                           "FACTION": {
@@ -9145,6 +9126,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 2.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Colicoid Experiment"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "colicoidexp"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 1.0
                     },
                     "FACTION": {
@@ -9532,7 +9532,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 4.0
+                      "value": 5.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9627,7 +9627,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 5.0
+                      "value": 6.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9722,7 +9722,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 2.0
+                      "value": 0.125
                     },
                     "FACTION": {
                       "type": "cexostring",

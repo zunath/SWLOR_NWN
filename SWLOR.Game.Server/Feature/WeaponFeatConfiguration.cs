@@ -14,8 +14,6 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("mod_load")]
         public static void ConfigureWeaponFeats()
         {
-            ConfigureMartialArts();
-
             // Weapon Focus, Specialization, Improved Critical
             ConfigureVibroblades();
             ConfigureFinesseVibroblades();
@@ -24,29 +22,20 @@ namespace SWLOR.Game.Server.Feature
             ConfigurePolearms();
             ConfigureTwinBlades();
             ConfigureSaberstaffs();
-            ConfigureKnuckles();
+            ConfigureKatars();
             ConfigureStaves();
             ConfigurePistols();
             ConfigureThrowingWeapons();
-            ConfigureCannons();
             ConfigureRifles();
         }
-
-        private static void ConfigureMartialArts()
-        {
-            Weapon.SetWeaponIsMonkWeapon(BaseItem.Club);
-            Weapon.SetWeaponIsMonkWeapon(BaseItem.QuarterStaff);
-            Weapon.SetWeaponIsMonkWeapon(BaseItem.Knuckles);
-            Weapon.SetWeaponIsMonkWeapon(BaseItem.LightMace);
-        }
-
+        
         private static void ConfigureVibroblades()
         {
             foreach (var itemType in Item.VibrobladeBaseItemTypes)
             {
-                Weapon.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusVibroblades);
-                Weapon.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationVibroblades);
-                Weapon.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalVibroblades);
+                WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusVibroblades);
+                WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationVibroblades);
+                WeaponPlugin.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalVibroblades);
             }
         }
 
@@ -54,9 +43,9 @@ namespace SWLOR.Game.Server.Feature
         {
             foreach (var itemType in Item.FinesseVibrobladeBaseItemTypes)
             {
-                Weapon.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusFinesseVibroblades);
-                Weapon.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationFinesseVibroblades);
-                Weapon.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalFinesseVibroblades);
+                WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusFinesseVibroblades);
+                WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationFinesseVibroblades);
+                WeaponPlugin.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalFinesseVibroblades);
             }
         }
 
@@ -64,9 +53,9 @@ namespace SWLOR.Game.Server.Feature
         {
             foreach (var itemType in Item.LightsaberBaseItemTypes)
             {
-                Weapon.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusLightsabers);
-                Weapon.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationLightsabers);
-                Weapon.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalLightsabers);
+                WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusLightsabers);
+                WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationLightsabers);
+                WeaponPlugin.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalLightsabers);
             }
         }
 
@@ -74,9 +63,9 @@ namespace SWLOR.Game.Server.Feature
         {
             foreach (var itemType in Item.HeavyVibrobladeBaseItemTypes)
             {
-                Weapon.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusHeavyVibroblades);
-                Weapon.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationHeavyVibroblades);
-                Weapon.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalHeavyVibroblades);
+                WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusHeavyVibroblades);
+                WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationHeavyVibroblades);
+                WeaponPlugin.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalHeavyVibroblades);
             }
         }
 
@@ -84,9 +73,9 @@ namespace SWLOR.Game.Server.Feature
         {
             foreach (var itemType in Item.PolearmBaseItemTypes)
             {
-                Weapon.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusPolearms);
-                Weapon.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationPolearms);
-                Weapon.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalPolearms);
+                WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusPolearms);
+                WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationPolearms);
+                WeaponPlugin.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalPolearms);
             }
         }
 
@@ -94,9 +83,9 @@ namespace SWLOR.Game.Server.Feature
         {
             foreach (var itemType in Item.TwinBladeBaseItemTypes)
             {
-                Weapon.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusTwinBlades);
-                Weapon.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationTwinBlades);
-                Weapon.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalTwinBlades);
+                WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusTwinBlades);
+                WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationTwinBlades);
+                WeaponPlugin.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalTwinBlades);
             }
         }
 
@@ -104,19 +93,19 @@ namespace SWLOR.Game.Server.Feature
         {
             foreach (var itemType in Item.SaberstaffBaseItemTypes)
             {
-                Weapon.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusSaberstaffs);
-                Weapon.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationSaberstaffs);
-                Weapon.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalSaberstaffs);
+                WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusSaberstaffs);
+                WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationSaberstaffs);
+                WeaponPlugin.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalSaberstaffs);
             }
         }
 
-        private static void ConfigureKnuckles()
+        private static void ConfigureKatars()
         {
-            foreach (var itemType in Item.KnucklesBaseItemTypes)
+            foreach (var itemType in Item.KatarBaseItemTypes)
             {
-                Weapon.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusKnuckles);
-                Weapon.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationKnuckles);
-                Weapon.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalKnuckles);
+                WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusKatars);
+                WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationKatars);
+                WeaponPlugin.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalKatars);
             }
         }
 
@@ -124,18 +113,18 @@ namespace SWLOR.Game.Server.Feature
         {
             foreach (var itemType in Item.StaffBaseItemTypes)
             {
-                Weapon.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusStaves);
-                Weapon.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationStaves);
-                Weapon.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalStaff);
+                WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusStaves);
+                WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationStaves);
+                WeaponPlugin.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalStaff);
             }
         }
         private static void ConfigurePistols()
         {
             foreach (var itemType in Item.PistolBaseItemTypes)
             {
-                Weapon.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusPistol);
-                Weapon.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationPistol);
-                Weapon.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalPistol);
+                WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusPistol);
+                WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationPistol);
+                WeaponPlugin.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalPistol);
             }
         }
 
@@ -143,19 +132,9 @@ namespace SWLOR.Game.Server.Feature
         {
             foreach (var itemType in Item.ThrowingWeaponBaseItemTypes)
             {
-                Weapon.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusThrowingWeapons);
-                Weapon.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationThrowingWeapons);
-                Weapon.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalThrowingWeapons);
-            }
-        }
-
-        private static void ConfigureCannons()
-        {
-            foreach (var itemType in Item.CannonBaseItemTypes)
-            {
-                Weapon.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusCannons);
-                Weapon.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationCannons);
-                Weapon.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalCannons);
+                WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusThrowingWeapons);
+                WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationThrowingWeapons);
+                WeaponPlugin.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalThrowingWeapons);
             }
         }
 
@@ -163,9 +142,9 @@ namespace SWLOR.Game.Server.Feature
         {
             foreach (var itemType in Item.RifleBaseItemTypes)
             {
-                Weapon.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusRifles);
-                Weapon.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationRifles);
-                Weapon.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalRifles);
+                WeaponPlugin.SetWeaponFocusFeat(itemType, FeatType.WeaponFocusRifles);
+                WeaponPlugin.SetWeaponSpecializationFeat(itemType, FeatType.WeaponSpecializationRifles);
+                WeaponPlugin.SetWeaponImprovedCriticalFeat(itemType, FeatType.ImprovedCriticalRifles);
             }
         }
     }

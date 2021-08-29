@@ -414,34 +414,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 return (FeatType.PiercingToss1, target);
             }
 
-            // Full Auto
-            if (CheckIfCanUseFeat(self, target, FeatType.FullAuto3))
-            {
-                return (FeatType.FullAuto3, target);
-            }
-            if (CheckIfCanUseFeat(self, target, FeatType.FullAuto2))
-            {
-                return (FeatType.FullAuto2, target);
-            }
-            if (CheckIfCanUseFeat(self, target, FeatType.FullAuto1))
-            {
-                return (FeatType.FullAuto1, target);
-            }
-
-            // Hammer Shot
-            if (CheckIfCanUseFeat(self, self, FeatType.HammerShot3))
-            {
-                return (FeatType.HammerShot3, self);
-            }
-            if (CheckIfCanUseFeat(self, self, FeatType.HammerShot2))
-            {
-                return (FeatType.HammerShot2, self);
-            }
-            if (CheckIfCanUseFeat(self, self, FeatType.HammerShot1))
-            {
-                return (FeatType.HammerShot1, self);
-            }
-
             // Tranquilizer Shot
             if (CheckIfCanUseFeat(self, self, FeatType.TranquilizerShot3))
             {
@@ -470,6 +442,54 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 return (FeatType.CripplingShot1, self);
             }
 
+            // Roar
+            if (CheckIfCanUseFeat(self, self, FeatType.Roar))
+            {
+                return (FeatType.Roar, self);
+            }
+
+            // Bite
+            if (CheckIfCanUseFeat(self, target, FeatType.Bite))
+            {
+                return (FeatType.Roar, target);
+            }
+
+            // Iron Shell
+            if (CheckIfCanUseFeat(self, target, FeatType.IronShell))
+            {
+                return (FeatType.IronShell, self);
+            }
+
+            // Earthquake
+            if (CheckIfCanUseFeat(self, self, FeatType.Earthquake))
+            {
+                return (FeatType.Earthquake, target);
+            }
+
+            // Fire Breath
+            if (CheckIfCanUseFeat(self, target, FeatType.FireBreath))
+            {
+                return (FeatType.FireBreath, target);
+            }
+
+            // Spikes
+            if (CheckIfCanUseFeat(self, target, FeatType.Spikes))
+            {
+                return (FeatType.Spikes, target);
+            }
+
+            // Venom
+            if (CheckIfCanUseFeat(self, target, FeatType.Venom))
+            {
+                return (FeatType.Venom, target);
+            }
+
+            // Talon
+            if (CheckIfCanUseFeat(self, target, FeatType.Talon))
+            {
+                return (FeatType.Talon, target);
+            }
+
             return (FeatType.Invalid, OBJECT_INVALID);
         }
 
@@ -488,9 +508,10 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             if (condition != null && !condition()) return false;
             if (!GetIsObjectValid(target)) return false;
 
+            var targetLocation = GetLocation(target);
             var abilityDetail = Ability.GetAbilityDetail(feat);
             var effectiveLevel = Perk.GetEffectivePerkLevel(creature, abilityDetail.EffectiveLevelPerkType);
-            return Ability.CanUseAbility(creature, target, feat, effectiveLevel);
+            return Ability.CanUseAbility(creature, target, feat, effectiveLevel, targetLocation);
         }
 
     }

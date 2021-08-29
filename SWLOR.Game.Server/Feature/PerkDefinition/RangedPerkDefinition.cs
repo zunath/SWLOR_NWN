@@ -30,12 +30,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             ThrowingWeaponMastery(builder);
             ExplosiveToss(builder);
             PiercingToss(builder);
-            WeaponFocusCannons(builder);
-            ImprovedCriticalCannons(builder);
-            CannonProficiency(builder);
-            CannonMastery(builder);
-            FullAuto(builder);
-            HammerShot(builder);
             WeaponFocusRifles(builder);
             ImprovedCriticalRifles(builder);
             RifleProficiency(builder);
@@ -64,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Rapid Reload")
 
                 .AddPerkLevel()
-                .Description("You receive the same number of attacks with a cannon or rifle as you would if you were using a pistol.")
+                .Description("You receive the same number of attacks with a rifle as you would if you were using a pistol.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .GrantsFeat(FeatType.RapidReload);
@@ -76,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Zen Marksmanship")
 
                 .AddPerkLevel()
-                .Description("Wisdom guides your ranged attacks. If your WIS modifier is higher than DEX, it will be used when firing ranged weapons.")
+                .Description("Willpower guides your ranged attacks. If your WIL modifier is higher than PER, it will be used when firing ranged weapons.")
                 .Price(4)
                 .RequirementSkill(SkillType.Ranged, 25)
                 .GrantsFeat(FeatType.ZenArchery);
@@ -103,11 +97,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .TriggerPurchase((player, type, level) =>
                 {
-                    Creature.SetCriticalMultiplierModifier(player, level, 0, true);
+                    CreaturePlugin.SetCriticalMultiplierModifier(player, level, 0, true);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
-                    Creature.SetCriticalMultiplierModifier(player, 0, 0, true);
+                    CreaturePlugin.SetCriticalMultiplierModifier(player, 0, 0, true);
                 });
         }
 
@@ -202,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.PistolBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -213,7 +207,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.PistolBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
 
                 })
@@ -225,7 +219,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.PistolBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + 1;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerRefund((player, type, level) =>
@@ -236,7 +230,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.PistolBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
 
@@ -268,20 +262,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Quick Draw")
 
                 .AddPerkLevel()
-                .Description("Instantly deals 1d8 damage to your target.")
+                .Description("Instantly deals 2.0 DMG to your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .GrantsFeat(FeatType.QuickDraw1)
 
                 .AddPerkLevel()
-                .Description("Instantly deals 2d6 damage to your target.")
+                .Description("Instantly deals 4.5 DMG to your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.QuickDraw2)
 
                 .AddPerkLevel()
-                .Description("Instantly deals 3d6 damage to your target.")
+                .Description("Instantly deals 7.0 DMG to your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -294,19 +288,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Double Shot")
 
                 .AddPerkLevel()
-                .Description("Instantly attacks twice, each for 1d4 damage.")
+                .Description("Instantly attacks twice, each for 1.5 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .GrantsFeat(FeatType.DoubleShot1)
 
                 .AddPerkLevel()
-                .Description("Instantly attacks twice, each for 2d6 damage.")
+                .Description("Instantly attacks twice, each for 4.0 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 20)
                 .GrantsFeat(FeatType.DoubleShot2)
 
                 .AddPerkLevel()
-                .Description("Instantly attacks twice, each for 3d6 damage.")
+                .Description("Instantly attacks twice, each for 6.5 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 35)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -392,7 +386,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -403,7 +397,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
 
                 })
@@ -415,7 +409,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + 1;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerRefund((player, type, level) =>
@@ -426,7 +420,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
 
@@ -458,20 +452,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Explosive Toss")
 
                 .AddPerkLevel()
-                .Description("Your next attack damages up to 3 enemies within 3 meters of your target for 1d4 damage.")
+                .Description("Your next attack damages up to 3 enemies within 3 meters of your target for 5.5 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 15)
                 .GrantsFeat(FeatType.ExplosiveToss1)
 
                 .AddPerkLevel()
-                .Description("Your next attack damages up to 3 enemies within 3 meters of your target for 1d6 damage.")
+                .Description("Your next attack damages up to 3 enemies within 3 meters of your target for 7.5 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ExplosiveToss2)
 
                 .AddPerkLevel()
-                .Description("Your next attack damages up to 3 enemies within 3 meters of your target for 1d8 damage.")
+                .Description("Your next attack damages up to 3 enemies within 3 meters of your target for 11.0 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -484,216 +478,26 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Piercing Toss")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 1d4 damage and has a 50% chance to inflict Bleed for 30 seconds.")
+                .Description("Your next attack deals an additional 6.5 DMG and has a 50% chance to inflict Bleed for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .GrantsFeat(FeatType.PiercingToss1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 2d4 damage and has a 75% chance to inflict Bleed for 1 minute.")
+                .Description("Your next attack deals an additional 8.0 DMG and has a 75% chance to inflict Bleed for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 20)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PiercingToss2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 3d4 damage and has a 100% chance to inflict Bleed for 1 minute.")
+                .Description("Your next attack deals an additional 11.5 DMG and has a 100% chance to inflict Bleed for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PiercingToss3);
         }
-
-        private void WeaponFocusCannons(PerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.RangedCannon, PerkType.WeaponFocusCannons)
-                .Name("Weapon Focus - Cannons")
-
-                .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with cannons.")
-                .Price(3)
-                .RequirementSkill(SkillType.Ranged, 5)
-                .GrantsFeat(FeatType.WeaponFocusCannons)
-
-                .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with cannons.")
-                .Price(4)
-                .RequirementSkill(SkillType.Ranged, 15)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.WeaponSpecializationCannons);
-        }
-
-        private void ImprovedCriticalCannons(PerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.RangedCannon, PerkType.ImprovedCriticalCannons)
-                .Name("Improved Critical - Cannons")
-
-                .AddPerkLevel()
-                .Description("Improves the critical hit chance when using a cannon.")
-                .Price(3)
-                .RequirementSkill(SkillType.Ranged, 25)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.ImprovedCriticalCannons);
-        }
-
-        private void CannonProficiency(PerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.RangedCannon, PerkType.CannonProficiency)
-                .Name("Cannon Proficiency")
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 1 Cannons.")
-                .Price(2)
-                .GrantsFeat(FeatType.CannonProficiency1)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 2 Cannons.")
-                .Price(2)
-                .RequirementSkill(SkillType.Ranged, 10)
-                .GrantsFeat(FeatType.CannonProficiency2)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 3 Cannons.")
-                .Price(2)
-                .RequirementSkill(SkillType.Ranged, 20)
-                .GrantsFeat(FeatType.CannonProficiency3)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 4 Cannons.")
-                .Price(2)
-                .RequirementSkill(SkillType.Ranged, 30)
-                .GrantsFeat(FeatType.CannonProficiency4)
-
-                .AddPerkLevel()
-                .Description("Grants the ability to equip tier 5 Cannons.")
-                .Price(2)
-                .RequirementSkill(SkillType.Ranged, 40)
-                .GrantsFeat(FeatType.CannonProficiency5);
-        }
-
-        private void CannonMastery(PerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.RangedCannon, PerkType.CannonMastery)
-                .Name("Cannon Mastery")
-                .TriggerEquippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlot.RightHand) return;
-
-                    var itemType = GetBaseItemType(item);
-                    if (Item.CannonBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = GetBaseAttackBonus(player) + level;
-                        Creature.SetBaseAttackBonus(player, bab);
-                    }
-                })
-                .TriggerUnequippedItem((player, item, slot, type, level) =>
-                {
-                    if (slot != InventorySlot.RightHand) return;
-
-                    var itemType = GetBaseItemType(item);
-                    if (Item.CannonBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
-                    }
-
-                })
-                .TriggerPurchase((player, type, level) =>
-                {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.CannonBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = GetBaseAttackBonus(player) + 1;
-                        Creature.SetBaseAttackBonus(player, bab);
-                    }
-                })
-                .TriggerRefund((player, type, level) =>
-                {
-                    var item = GetItemInSlot(InventorySlot.RightHand, player);
-                    var itemType = GetBaseItemType(item);
-
-                    if (Item.CannonBaseItemTypes.Contains(itemType))
-                    {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
-                    }
-                })
-
-                .AddPerkLevel()
-                .Description("Grants +1 BAB when equipped with a Cannon.")
-                .Price(8)
-                .RequirementSkill(SkillType.Ranged, 25)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.CannonMastery1)
-
-                .AddPerkLevel()
-                .Description("Grants +2 BAB when equipped with a Cannon.")
-                .Price(8)
-                .RequirementSkill(SkillType.Ranged, 40)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.CannonMastery2)
-
-                .AddPerkLevel()
-                .Description("Grants +3 BAB when equipped with a Cannon.")
-                .Price(8)
-                .RequirementSkill(SkillType.Ranged, 50)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.CannonMastery3);
-        }
-
-        private void FullAuto(PerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.RangedCannon, PerkType.FullAuto)
-                .Name("Full Auto")
-
-                .AddPerkLevel()
-                .Description("Attacks up to 3 enemies in front of you for 1d8 of damage each.")
-                .Price(3)
-                .RequirementSkill(SkillType.Ranged, 15)
-                .GrantsFeat(FeatType.FullAuto1)
-
-                .AddPerkLevel()
-                .Description("Attacks up to 3 enemies in front of you for 2d6 of damage each.")
-                .Price(3)
-                .RequirementSkill(SkillType.Ranged, 30)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.FullAuto2)
-
-                .AddPerkLevel()
-                .Description("Attacks up to 3 enemies in front of you for 3d6 of damage each.")
-                .Price(3)
-                .RequirementSkill(SkillType.Ranged, 45)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.FullAuto3);
-        }
-
-        private void HammerShot(PerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.RangedCannon, PerkType.HammerShot)
-                .Name("Hammer Shot")
-
-                .AddPerkLevel()
-                .Description("Your next attack deals an additional 1d6 damage and has a 50% chance to inflict Breach for 30 seconds.")
-                .Price(2)
-                .RequirementSkill(SkillType.Ranged, 5)
-                .GrantsFeat(FeatType.HammerShot1)
-
-                .AddPerkLevel()
-                .Description("Your next attack deals an additional 2d6 damage and has a 75% chance to inflict Breach for 1 minute.")
-                .Price(3)
-                .RequirementSkill(SkillType.Ranged, 20)
-                .GrantsFeat(FeatType.HammerShot2)
-
-                .AddPerkLevel()
-                .Description("Your next attack deals an additional 3d6 damage and has a 100% chance to inflict Breach for 1 minute.")
-                .Price(3)
-                .RequirementSkill(SkillType.Ranged, 35)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.HammerShot3);
-        }
-
+        
         private void WeaponFocusRifles(PerkBuilder builder)
         {
             builder.Create(PerkCategoryType.RangedRifle, PerkType.WeaponFocusRifles)
@@ -773,7 +577,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.RifleBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -784,7 +588,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.RifleBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
 
                 })
@@ -796,7 +600,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.RifleBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + 1;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerRefund((player, type, level) =>
@@ -807,7 +611,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.RifleBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
 
@@ -865,20 +669,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Crippling Shot")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 1d6 damage and has a 50% chance to inflict Bind for 30 seconds.")
+                .Description("Your next attack deals an additional 7.0 DMG and has a 50% chance to inflict Bind for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Ranged, 5)
                 .GrantsFeat(FeatType.CripplingShot1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 2d6 damage and has a 75% chance to inflict Bind for 1 minute.")
+                .Description("Your next attack deals an additional 8.5 DMG and has a 75% chance to inflict Bind for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 20)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CripplingShot2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 3d6 damage and has a 100% chance to inflict Bind for 1 minute.")
+                .Description("Your next attack deals an additional 12 DMG and has a 100% chance to inflict Bind for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 35)
                 .RequirementCharacterType(CharacterType.Standard)

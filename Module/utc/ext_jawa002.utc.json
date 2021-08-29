@@ -205,21 +205,21 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 106
+          "value": 2
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 249
+          "value": 3
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 248
+          "value": 4
         }
       },
       {
@@ -240,14 +240,14 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 247
+          "value": 10
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 237
+          "value": 1076
         }
       },
       {
@@ -261,7 +261,70 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 10
+          "value": 249
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 250
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 23
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 248
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 26
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 32
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 237
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 247
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 375
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 106
         }
       },
       {
@@ -276,69 +339,6 @@
         "Feat": {
           "type": "word",
           "value": 46
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 32
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 375
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 4
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 3
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 2
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 23
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 26
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1076
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 250
         }
       }
     ]
@@ -410,7 +410,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 50
+    "value": 154
   },
   "PerceptionRange": {
     "type": "byte",
@@ -699,7 +699,7 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 3
+    "value": 4
   },
   "Str": {
     "type": "byte",

@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(25) // 25 = Haste
                 .TickAction((source, target) =>
                 {
-                    if (!Ability.GetAbilityResisted(source, target, AbilityType.Intelligence, AbilityType.Wisdom))
+                    if (!Ability.GetAbilityResisted(source, target))
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(1), target);
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(1), target);
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(25) // 25 = Haste
                 .TickAction((source, target) =>
                 {
-                    if (!Ability.GetAbilityResisted(source, target, AbilityType.Intelligence, AbilityType.Wisdom))
+                    if (!Ability.GetAbilityResisted(source, target))
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(2), target);
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(2), target);
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(25) // 25 = Haste
                 .TickAction((source, target) =>
                 {
-                    if (!Ability.GetAbilityResisted(source, target, AbilityType.Intelligence, AbilityType.Wisdom))
+                    if (!Ability.GetAbilityResisted(source, target))
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(3), target);
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(3), target);
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(25) // 25 = Haste
                 .TickAction((source, target) =>
                 {
-                    if (!Ability.GetAbilityResisted(source, target, AbilityType.Intelligence, AbilityType.Wisdom))
+                    if (!Ability.GetAbilityResisted(source, target))
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(4), target);
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(4), target);
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(25) // 25 = Haste
                 .TickAction((source, target) =>
                 {
-                    if (!Ability.GetAbilityResisted(source, target, AbilityType.Intelligence, AbilityType.Wisdom))
+                    if (!Ability.GetAbilityResisted(source, target))
                     {
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(5), target);
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(5), target);

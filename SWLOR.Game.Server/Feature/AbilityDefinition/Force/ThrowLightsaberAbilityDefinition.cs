@@ -1,6 +1,7 @@
 ﻿//using Random = SWLOR.Game.Server.Service.Random;
 
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level)
+        private static string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var distance = GetDistanceBetween(activator, target);
@@ -35,13 +36,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             else return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level)
+        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var iDamage = GetAbilityModifier(AbilityType.Intelligence, activator) + (int) (GetAbilityModifier(AbilityType.Wisdom, activator) * 0.5f);
-            var iRange = 15;
-            var iCount = 1;
-            var fDelay = GetDistanceBetween(activator, target) / 10.0f;
-            var oTargetObject = target;
+            var dmg = 0.0f;
+            const float Range = 15.0f;
+            var count = 1;
+            var delay = GetDistanceBetween(activator, target) / 10.0f;
+            var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
 
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
@@ -56,49 +57,45 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             switch (level)
             {
                 case 1:
-                    iDamage += d6();
+                    dmg = 5.0f;
                     break;
                 case 2:
-                    iDamage += d8();
+                    dmg = 7.5f;
                     break;
                 case 3:
-                    iDamage += d10();
-                    break;
-                default:
+                    dmg = 9.0f;
                     break;
             }
 
             // apply to target
-            if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
+            DelayCommand(delay, () =>
             {
-                DelayCommand(fDelay, () =>
-                {                    
-                    ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(iDamage, DamageType.Sonic)), target);
-                });
-
-                iCount += 1;
-            }
+                var defense = Combat.CalculateDefense(target);
+                var targetWillpower = GetAbilityModifier(AbilityType.Willpower, target);
+                var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, false);
+                ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), target);
+            });
+            
             
             // apply to next nearest creature in the spellcylinder
-            oTargetObject = GetFirstObjectInShape(Shape.SpellCylinder, iRange, GetLocation(target), true, ObjectType.Creature, GetPosition(activator));
-            while (GetIsObjectValid(oTargetObject) && iCount < level)
+            var nearby = GetFirstObjectInShape(Shape.SpellCylinder, Range, GetLocation(target), true, ObjectType.Creature, GetPosition(activator));
+            while (GetIsObjectValid(nearby) && count < level)
             {
-                if (oTargetObject != target && oTargetObject != activator)
+                if (nearby != target && nearby != activator)
                 {
-                    fDelay = GetDistanceBetween(activator, oTargetObject) / 10.0f;
-                    //var creature = oTargetObject;
-                    // apply to target
-                    if (!Ability.GetAbilityResisted(activator, oTargetObject, AbilityType.Intelligence, AbilityType.Wisdom))
+                    delay = GetDistanceBetween(activator, nearby) / 10.0f;
+                    var nearbyCopy = nearby;
+                    DelayCommand(delay, () =>
                     {
-                        DelayCommand(fDelay, () =>
-                        {
-                            ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(iDamage, DamageType.Sonic)), target);
-                        });
+                        var defense = Combat.CalculateDefense(nearbyCopy);
+                        var targetWillpower = GetAbilityModifier(AbilityType.Willpower, nearbyCopy);
+                        var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, false);
+                        ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), nearbyCopy);
+                    });
 
-                        iCount += 1;
-                    }
+                    count++;
                 }
-                oTargetObject = GetNextObjectInShape(Shape.SpellCylinder, iRange, GetLocation(target), true, ObjectType.Creature, GetPosition(activator));
+                nearby = GetNextObjectInShape(Shape.SpellCylinder, Range, GetLocation(target), true, ObjectType.Creature, GetPosition(activator));
             }
 
             Enmity.ModifyEnmityOnAll(activator, 1);

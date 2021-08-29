@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Feature.DialogDefinition;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -17,7 +19,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Name of the texture used for the GUI elements.
         /// </summary>
-        public const string FontName = "fnt_es_gui";
+        public const string GuiFontName = "fnt_es_gui";
 
         /// <summary>
         /// Name of the texture used for the GUI text.
@@ -60,7 +62,7 @@ namespace SWLOR.Game.Server.Service
         public static int ColorPurple = Convert.ToInt32("0x800080FF", 16);
 
         public static int ColorHealthBar = Convert.ToInt32("0x8B0000FF", 16);
-        public static int ColorManaBar = Convert.ToInt32("0x00008BFF", 16);
+        public static int ColorFPBar = Convert.ToInt32("0x00008BFF", 16);
         public static int ColorStaminaBar = Convert.ToInt32("0x008B00FF", 16);
 
         public static int ColorShieldsBar = Convert.ToInt32("0x00AAE4FF", 16);
@@ -149,7 +151,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void Draw(uint player, string message, int x, int y, ScreenAnchor anchor, int id, float lifeTime = 10.0f)
         {
-            PostString(player, message, x, y, anchor, lifeTime, ColorWhite, ColorWhite, id, FontName);
+            PostString(player, message, x, y, anchor, lifeTime, ColorWhite, ColorWhite, id, GuiFontName);
         }
 
         /// <summary>
@@ -163,5 +165,27 @@ namespace SWLOR.Game.Server.Service
         {
             return (windowX + (windowWidth / 2)) - ((text.Length + 2) / 2);
         }
+
+        /// <summary>
+        /// Skips the character sheet panel open event and shows the SWLOR character sheet instead.
+        /// </summary>
+        [NWNEventHandler("mod_gui_event")]
+        public static void CharacterSheetGui()
+        {
+            // todo: When NUI is released, this should build and draw the new UI for character sheets.
+            // todo: Until that happens, this will simply open the character rest menu.
+            var player = GetLastGuiEventPlayer();
+            var type = GetLastGuiEventType();
+            if (type != GuiEventType.DisabledPanelAttemptOpen) return;
+
+            var panelType = (GuiPanel)GetLastGuiEventInteger();
+            if (panelType != GuiPanel.CharacterSheet)
+                return;
+
+            AssignCommand(player, () => ClearAllActions());
+
+            Dialog.StartConversation(player, player, nameof(RestMenuDialog));
+        }
+
     }
 }

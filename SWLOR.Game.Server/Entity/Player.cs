@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.FactionService;
-using SWLOR.Game.Server.Service.ImplantService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.TaxiService;
 
@@ -15,15 +15,23 @@ namespace SWLOR.Game.Server.Entity
         public Player()
         {
             Settings = new PlayerSettings();
-            ImplantStats = new PlayerImplantStats();
             BaseStats = new Dictionary<AbilityType, int>
             {
-                {AbilityType.Constitution, 0},
-                {AbilityType.Strength, 0},
-                {AbilityType.Charisma, 0},
-                {AbilityType.Dexterity, 0},
-                {AbilityType.Intelligence, 0},
-                {AbilityType.Wisdom, 0}
+                {AbilityType.Vitality, 0},
+                {AbilityType.Might, 0},
+                {AbilityType.Diplomacy, 0},
+                {AbilityType.Perception, 0},
+                {AbilityType.Unused, 0},
+                {AbilityType.Willpower, 0}
+            };
+            UpgradedStats = new Dictionary<AbilityType, int>
+            {
+                {AbilityType.Vitality, 0},
+                {AbilityType.Might, 0},
+                {AbilityType.Diplomacy, 0},
+                {AbilityType.Perception, 0},
+                {AbilityType.Unused, 0},
+                {AbilityType.Willpower, 0}
             };
 
             ShowHelmet = true;
@@ -45,9 +53,10 @@ namespace SWLOR.Game.Server.Entity
             Guilds = new Dictionary<GuildType, PlayerGuild>();
             SavedOutfits = new Dictionary<int, string>();
             Ships = new Dictionary<Guid, ShipStatus>();
-            Implants = new Dictionary<ImplantSlotType, PlayerImplant>();
             Factions = new Dictionary<FactionType, PlayerFactionStanding>();
             TaxiDestinations = new Dictionary<int, List<TaxiDestinationType>>();
+            AbilityPointsByLevel = new Dictionary<int, int>();
+            ObjectVisibilities = new Dictionary<string, VisibilityType>();
         }
 
         public override string KeyPrefix => "Player";
@@ -61,6 +70,9 @@ namespace SWLOR.Game.Server.Entity
         public int FP { get; set; }
         public int Stamina { get; set; }
         public int BAB { get; set; }
+        public int Fortitude { get; set; }
+        public int Reflex { get; set; }
+        public int Will { get; set; }
         public string LocationAreaResref { get; set; }
         public float LocationX { get; set; }
         public float LocationY { get; set; }
@@ -73,8 +85,13 @@ namespace SWLOR.Game.Server.Entity
         public string RespawnAreaResref { get; set; }
         public int UnallocatedXP { get; set; }
         public int UnallocatedSP { get; set; }
+        public int UnallocatedAP { get; set; }
         public int TotalSPAcquired { get; set; }
+        public int TotalAPAcquired { get; set; }
         public int RegenerationTick { get; set; }
+        public int HPRegen { get; set; }
+        public int FPRegen { get; set; }
+        public int STMRegen { get; set; }
         public int XPDebt { get; set; }
         public bool IsDeleted { get; set; }
         public bool ShowHelmet { get; set; }
@@ -91,8 +108,8 @@ namespace SWLOR.Game.Server.Entity
         public int AbilityRecastReduction { get; set; }
 
         public PlayerSettings Settings { get; set; }
-        public PlayerImplantStats ImplantStats { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }
+        public Dictionary<AbilityType, int> UpgradedStats { get; set; }
         public RoleplayProgress RoleplayProgress { get; set; }
         public Dictionary<string, List<MapPin>> MapPins { get; set; }
         public Dictionary<string, string> MapProgressions { get; set; }
@@ -106,9 +123,10 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
         public Dictionary<int, string> SavedOutfits { get; set; }
         public Dictionary<Guid, ShipStatus> Ships { get; set; }
-        public Dictionary<ImplantSlotType, PlayerImplant> Implants { get; set; }
         public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }
         public Dictionary<int, List<TaxiDestinationType>> TaxiDestinations { get; set; }
+        public Dictionary<int, int> AbilityPointsByLevel { get; set; }
+        public Dictionary<string, VisibilityType> ObjectVisibilities { get; set; }
     }
 
     public class MapPin
@@ -160,36 +178,9 @@ namespace SWLOR.Game.Server.Entity
         public int Points { get; set; }
     }
 
-    public class PlayerImplant
-    {
-        public string ItemId { get; set; }
-        public string ItemSerializedData { get; set; }
-    }
-
     public class PlayerFactionStanding
     {
         public int Standing { get; set; }
         public int Points { get; set; }
-    }
-
-    public class PlayerImplantStats
-    {
-        public Dictionary<AbilityType, int> Attributes { get; set; }
-        public int HPRegen { get; set; }
-        public int FPRegen { get; set; }
-        public int STMRegen { get; set; }
-
-        public PlayerImplantStats()
-        {
-            Attributes = new Dictionary<AbilityType, int>
-            {
-                {AbilityType.Constitution, 0},
-                {AbilityType.Strength, 0},
-                {AbilityType.Charisma, 0},
-                {AbilityType.Dexterity, 0},
-                {AbilityType.Intelligence, 0},
-                {AbilityType.Wisdom, 0}
-            };
-        }
     }
 }

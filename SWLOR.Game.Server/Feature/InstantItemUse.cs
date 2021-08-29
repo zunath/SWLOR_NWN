@@ -14,14 +14,14 @@ namespace SWLOR.Game.Server.Feature
         public static void OnUseItem()
         {
             var creature = OBJECT_SELF;
-            var item = StringToObject(Events.GetEventData("ITEM_OBJECT_ID"));
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
             var script = GetLocalString(item, "SCRIPT");
 
             // No script associated. Let it run the normal execution process.
             if (string.IsNullOrWhiteSpace(script)) return;
 
-            Events.SkipEvent();
-            Events.SetEventResult("0"); // Prevents the "You cannot use that item" error message from being sent.
+            EventsPlugin.SkipEvent();
+            EventsPlugin.SetEventResult("0"); // Prevents the "You cannot use that item" error message from being sent.
             ExecuteScript(script, creature);
         }
     }

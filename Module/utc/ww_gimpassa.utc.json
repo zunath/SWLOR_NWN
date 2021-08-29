@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 4.0
+    "value": 5.0
   },
   "ClassList": {
     "type": "list",
@@ -97,6 +97,20 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1747
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1746
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 289
         }
       }
@@ -105,7 +119,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Wildwoods Gimpassa"
+      "0": "Gimpassa"
     }
   },
   "fortbonus": {
@@ -168,7 +182,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 103
+    "value": 151
   },
   "PerceptionRange": {
     "type": "byte",

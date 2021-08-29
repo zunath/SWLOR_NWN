@@ -18,10 +18,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             FlurryOfBlows(builder);
             InnerStrength(builder);
             MartialFinesse(builder);
-            WeaponFocusKnuckles(builder);
-            ImprovedCriticalKnuckles(builder);
-            KnucklesProficiency(builder);
-            KnucklesMastery(builder);
+            WeaponFocusKatars(builder);
+            ImprovedCriticalKatars(builder);
+            KatarProficiency(builder);
+            KatarMastery(builder);
             ElectricFist(builder);
             StrikingCobra(builder);
             WeaponFocusStaves(builder);
@@ -77,14 +77,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.MartialArts, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.InnerStrength2)
-                
+
                 .TriggerPurchase((player, type, level) =>
                 {
-                    Creature.SetCriticalRangeModifier(player, -level, 0, true, BaseItem.Gloves);
+                    CreaturePlugin.SetCriticalRangeModifier(player, -level, 0, true, BaseItem.Gloves);
                 })
                 .TriggerRefund((player, type, level) =>
                 {
-                    Creature.SetCriticalRangeModifier(player, 0, 0, true, BaseItem.Gloves);
+                    CreaturePlugin.SetCriticalRangeModifier(player, 0, 0, true, BaseItem.Gloves);
                 });
         }
 
@@ -94,93 +94,93 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Martial Finesse")
 
                 .AddPerkLevel()
-                .Description("You make melee attack rolls with your DEX score if it is higher than your STR score.")
+                .Description("You make melee attack rolls with your PER score if it is higher than your MGT score.")
                 .Price(5)
                 .RequirementSkill(SkillType.MartialArts, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.MartialFinesse);
         }
 
-        private void WeaponFocusKnuckles(PerkBuilder builder)
+        private void WeaponFocusKatars(PerkBuilder builder)
         {
-            builder.Create(PerkCategoryType.MartialArtsKnuckles, PerkType.WeaponFocusKnuckles)
-                .Name("Weapon Focus - Knuckles")
+            builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.WeaponFocusKatars)
+                .Name("Weapon Focus - Katars")
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with knuckles.")
+                .Description("You gain the Weapon Focus feat which grants a +1 attack bonus when equipped with katars.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 5)
-                .GrantsFeat(FeatType.WeaponFocusKnuckles)
+                .GrantsFeat(FeatType.WeaponFocusKatars)
 
                 .AddPerkLevel()
-                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with knuckles.")
+                .Description("You gain the Weapon Specialization feat which grants a +2 damage when equipped with katars.")
                 .Price(4)
                 .RequirementSkill(SkillType.MartialArts, 15)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.WeaponSpecializationKnuckles);
+                .GrantsFeat(FeatType.WeaponSpecializationKatars);
         }
 
-        private void ImprovedCriticalKnuckles(PerkBuilder builder)
+        private void ImprovedCriticalKatars(PerkBuilder builder)
         {
-            builder.Create(PerkCategoryType.MartialArtsKnuckles, PerkType.ImprovedCriticalKnuckles)
-                .Name("Improved Critical - Knuckles")
+            builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.ImprovedCriticalKatars)
+                .Name("Improved Critical - Katars")
 
                 .AddPerkLevel()
-                .Description("Improves the critical hit chance when using knuckles.")
+                .Description("Improves the critical hit chance when using katars.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 25)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.ImprovedCriticalKnuckles);
+                .GrantsFeat(FeatType.ImprovedCriticalKatars);
         }
 
-        private void KnucklesProficiency(PerkBuilder builder)
+        private void KatarProficiency(PerkBuilder builder)
         {
-            builder.Create(PerkCategoryType.MartialArtsKnuckles, PerkType.KnucklesProficiency)
-                .Name("Knuckles Proficiency")
+            builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.KatarProficiency)
+                .Name("Katar Proficiency")
 
                 .AddPerkLevel()
-                .Description("Grants the ability to equip tier 1 Knuckles.")
+                .Description("Grants the ability to equip tier 1 Katars.")
                 .Price(2)
-                .GrantsFeat(FeatType.KnucklesProficiency1)
+                .GrantsFeat(FeatType.KatarProficiency1)
 
                 .AddPerkLevel()
-                .Description("Grants the ability to equip tier 2 Knuckles.")
+                .Description("Grants the ability to equip tier 2 Katars.")
                 .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 10)
-                .GrantsFeat(FeatType.KnucklesProficiency2)
+                .GrantsFeat(FeatType.KatarProficiency2)
 
                 .AddPerkLevel()
-                .Description("Grants the ability to equip tier 3 Knuckles.")
+                .Description("Grants the ability to equip tier 3 Katars.")
                 .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 20)
-                .GrantsFeat(FeatType.KnucklesProficiency3)
+                .GrantsFeat(FeatType.KatarProficiency3)
 
                 .AddPerkLevel()
-                .Description("Grants the ability to equip tier 4 Knuckles.")
+                .Description("Grants the ability to equip tier 4 Katars.")
                 .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 30)
-                .GrantsFeat(FeatType.KnucklesProficiency4)
+                .GrantsFeat(FeatType.KatarProficiency4)
 
                 .AddPerkLevel()
-                .Description("Grants the ability to equip tier 5 Knuckles.")
+                .Description("Grants the ability to equip tier 5 Katars.")
                 .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 40)
-                .GrantsFeat(FeatType.KnucklesProficiency5);
+                .GrantsFeat(FeatType.KatarProficiency5);
         }
 
-        private void KnucklesMastery(PerkBuilder builder)
+        private void KatarMastery(PerkBuilder builder)
         {
-            builder.Create(PerkCategoryType.MartialArtsKnuckles, PerkType.KnucklesMastery)
-                .Name("Knuckles Mastery")
+            builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.KatarMastery)
+                .Name("Katar Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
                     if (slot != InventorySlot.RightHand) return;
 
                     var itemType = GetBaseItemType(item);
-                    if (Item.KnucklesBaseItemTypes.Contains(itemType))
+                    if (Item.KatarBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -188,10 +188,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (slot != InventorySlot.RightHand) return;
 
                     var itemType = GetBaseItemType(item);
-                    if (Item.KnucklesBaseItemTypes.Contains(itemType))
+                    if (Item.KatarBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
 
                 })
@@ -200,10 +200,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     var itemType = GetBaseItemType(item);
 
-                    if (Item.KnucklesBaseItemTypes.Contains(itemType))
+                    if (Item.KatarBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + 1;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerRefund((player, type, level) =>
@@ -211,55 +211,55 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var item = GetItemInSlot(InventorySlot.RightHand, player);
                     var itemType = GetBaseItemType(item);
 
-                    if (Item.KnucklesBaseItemTypes.Contains(itemType))
+                    if (Item.KatarBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
 
                 .AddPerkLevel()
-                .Description("Grants +1 BAB when equipped with a Knuckles.")
+                .Description("Grants +1 BAB when equipped with a Katars.")
                 .Price(8)
                 .RequirementSkill(SkillType.MartialArts, 25)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.KnucklesMastery1)
+                .GrantsFeat(FeatType.KatarMastery1)
 
                 .AddPerkLevel()
-                .Description("Grants +2 BAB when equipped with a Knuckles.")
+                .Description("Grants +2 BAB when equipped with a Katars.")
                 .Price(8)
                 .RequirementSkill(SkillType.MartialArts, 40)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.KnucklesMastery2)
+                .GrantsFeat(FeatType.KatarMastery2)
 
                 .AddPerkLevel()
-                .Description("Grants +3 BAB when equipped with a Knuckles.")
+                .Description("Grants +3 BAB when equipped with a Katars.")
                 .Price(8)
                 .RequirementSkill(SkillType.MartialArts, 50)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.KnucklesMastery3);
+                .GrantsFeat(FeatType.KatarMastery3);
         }
 
         private void ElectricFist(PerkBuilder builder)
         {
-            builder.Create(PerkCategoryType.MartialArtsKnuckles, PerkType.ElectricFist)
+            builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.ElectricFist)
                 .Name("Electric Fist")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 1d4 damage and has a 50% chance to inflict Shock for 30 seconds.")
+                .Description("Your next attack deals an additional 4.0 DMG and has a 50% chance to inflict Shock for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 15)
                 .GrantsFeat(FeatType.ElectricFist1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 2d4 damage and has a 75% chance to inflict Shock for 1 minute.")
+                .Description("Your next attack deals an additional 6.0 DMG and has a 75% chance to inflict Shock for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ElectricFist2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 3d4 damage and has a 100% chance to inflict Shock for 1 minute.")
+                .Description("Your next attack deals an additional 9.5 DMG and has a 100% chance to inflict Shock for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -268,23 +268,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void StrikingCobra(PerkBuilder builder)
         {
-            builder.Create(PerkCategoryType.MartialArtsKnuckles, PerkType.StrikingCobra)
+            builder.Create(PerkCategoryType.MartialArtsKatars, PerkType.StrikingCobra)
                 .Name("Striking Cobra")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 1d6 damage and has a 50% chance to inflict Poison for 30 seconds.")
+                .Description("Your next attack deals an additional 4.5 DMG and has a 50% chance to inflict Poison for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 5)
                 .GrantsFeat(FeatType.StrikingCobra1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 2d6 damage and has a 75% chance to inflict Poison for 1 minute.")
+                .Description("Your next attack deals an additional 6.5 DMG and has a 75% chance to inflict Poison for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 20)
                 .GrantsFeat(FeatType.StrikingCobra2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 3d6 damage and has a 100% chance to inflict Poison for 1 minute.")
+                .Description("Your next attack deals an additional 10.0 DMG and has a 100% chance to inflict Poison for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 35)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -370,7 +370,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.StaffBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -381,7 +381,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.StaffBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
 
                 })
@@ -393,7 +393,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.StaffBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + 1;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerRefund((player, type, level) =>
@@ -404,7 +404,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.StaffBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
 
@@ -436,20 +436,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Slam")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 1d4 damage and has a 50% chance to inflict Blindness for 30 seconds.")
+                .Description("Your next attack deals an additional 2.0 DMG and has a 50% chance to inflict Blindness for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 15)
                 .GrantsFeat(FeatType.Slam1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 2d4 damage and has a 75% chance to inflict Blindness for 1 minute.")
+                .Description("Your next attack deals an additional 4.5 DMG and has a 75% chance to inflict Blindness for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Slam2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 3d4 damage and has a 100% chance to inflict Blindness for 1 minute.")
+                .Description("Your next attack deals an additional 7.0 DMG and has a 100% chance to inflict Blindness for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -462,20 +462,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Spinning Whirl")
 
                 .AddPerkLevel()
-                .Description("Attacks up to 3 nearby enemies for 1d8 of damage each.")
+                .Description("Attacks up to 3 nearby enemies for 2.0 DMG each.")
                 .Price(2)
                 .RequirementSkill(SkillType.MartialArts, 5)
                 .GrantsFeat(FeatType.SpinningWhirl1)
 
                 .AddPerkLevel()
-                .Description("Attacks up to 3 nearby enemies for 2d6 of damage each.")
+                .Description("Attacks up to 3 nearby enemies for 4.5 DMG each.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 20)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.SpinningWhirl2)
 
                 .AddPerkLevel()
-                .Description("Attacks up to 3 nearby enemies for 3d6 of damage each.")
+                .Description("Attacks up to 3 nearby enemies for 7.0 DMG each.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 35)
                 .RequirementCharacterType(CharacterType.Standard)

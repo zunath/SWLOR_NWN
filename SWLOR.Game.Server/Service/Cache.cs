@@ -23,11 +23,11 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("mod_load")]
         public static void OnModuleLoad()
         {
-            Console.WriteLine("Caching areas by resref.");
             CacheAreasByResref();
-
-            Console.WriteLine("Caching item names by resref.");
             CacheItemNamesByResref();
+
+            Console.WriteLine($"Loaded {AreasByResref.Count} areas by resref.");
+            Console.WriteLine($"Loaded {ItemNamesByResref.Count} item names by resref.");
         }
 
         /// <summary>
@@ -60,12 +60,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void CacheItemNamesByResref()
         {
-            var resref = Util.GetFirstResRef(ResRefType.Item);
+            var resref = UtilPlugin.GetFirstResRef(ResRefType.Item);
 
             while (!string.IsNullOrWhiteSpace(resref))
             {
                 CacheItemNameByResref(resref);
-                resref = Util.GetNextResRef();
+                resref = UtilPlugin.GetNextResRef();
             }
         }
 

@@ -10,7 +10,6 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
-using Object = SWLOR.Game.Server.Core.NWNX.Object;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
@@ -195,7 +194,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 else if (position.Z < -10f)
                     position.Z = -10f;
 
-                Object.SetPosition(model.Placeable, position);
+                ObjectPlugin.SetPosition(model.Placeable, position);
 
                 var furnitureId = GetLocalString(model.Placeable, "HOUSING_FURNITURE_ID");
                 var dbHouse = DB.Get<PlayerHouse>(model.OwnerUUID);
@@ -284,8 +283,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     SetPlotFlag(tile, true);
                     ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(VisualEffect.Vfx_Placement_Grid), tile);
 
-                    Visibility.SetVisibilityOverride(OBJECT_INVALID, tile, VisibilityType.Hidden);
-                    Visibility.SetVisibilityOverride(player, tile, VisibilityType.Visible);
+                    VisibilityPlugin.SetVisibilityOverride(OBJECT_INVALID, tile, VisibilityType.Hidden);
+                    VisibilityPlugin.SetVisibilityOverride(player, tile, VisibilityType.Visible);
                     model.GridTiles.Add(tile);
                 }
 

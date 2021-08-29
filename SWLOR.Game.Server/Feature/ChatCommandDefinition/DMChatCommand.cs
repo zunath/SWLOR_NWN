@@ -681,7 +681,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         BootPC(player, "The server is restarting.");
                         player = GetNextPC();
                     }
-                    Core.NWNX.Administration.ShutdownServer();
+                    Core.NWNX.AdministrationPlugin.ShutdownServer();
                 });
         }
     }

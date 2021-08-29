@@ -78,10 +78,17 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 16384,
+        "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
-          "value": "mynock_claw"
+          "value": "raivor_c_claw"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "raivor_skin"
         }
       }
     ]
@@ -97,6 +104,13 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1748
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 289
         }
       }
@@ -105,7 +119,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Viscara Raivor"
+      "0": "Raivor"
     }
   },
   "fortbonus": {
@@ -168,7 +182,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 9
+    "value": 151
   },
   "PerceptionRange": {
     "type": "byte",

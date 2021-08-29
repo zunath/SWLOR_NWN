@@ -62,22 +62,7 @@ namespace SWLOR.Game.Server.Enumeration
         Cannon = 27,
         [RecipeCategory("Rifle", true)]
         Rifle = 28,
-        [RecipeCategory("Neck Implant", true)]
-        NeckImplant = 29,
-        [RecipeCategory("Head Implant", true)]
-        HeadImplant = 30,
-        [RecipeCategory("Arm Implant", true)]
-        ArmImplant = 31,
-        [RecipeCategory("Leg Implant", true)]
-        LegImplant = 32,
-        [RecipeCategory("Foot Implant", true)]
-        FootImplant = 33,
-        [RecipeCategory("Chest Implant", true)]
-        ChestImplant = 34,
-        [RecipeCategory("Hand Implant", true)]
-        HandImplant = 35,
-        [RecipeCategory("Eye Implant", true)]
-        EyeImplant = 36,
+        
         [RecipeCategory("Furniture", true)]
         Furniture = 37,
         [RecipeCategory("Structure", true)]

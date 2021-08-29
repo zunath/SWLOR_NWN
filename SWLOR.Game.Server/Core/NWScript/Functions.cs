@@ -2454,12 +2454,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - oTarget
         ///   - nProjectilePathType: PROJECTILE_PATH_TYPE_*
         /// </summary>
-        public static void ActionCastFakeSpellAtObject(int nSpell, uint oTarget,
+        public static void ActionCastFakeSpellAtObject(Spell nSpell, uint oTarget,
             ProjectilePathType nProjectilePathType = ProjectilePathType.Default)
         {
             Internal.NativeFunctions.StackPushInteger((int)nProjectilePathType);
             Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.StackPushInteger(nSpell);
+            Internal.NativeFunctions.StackPushInteger((int)nSpell);
             Internal.NativeFunctions.CallBuiltIn(501);
         }
 
@@ -2470,12 +2470,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - lTarget
         ///   - nProjectilePathType: PROJECTILE_PATH_TYPE_*
         /// </summary>
-        public static void ActionCastFakeSpellAtLocation(int nSpell, Location lTarget,
+        public static void ActionCastFakeSpellAtLocation(Spell nSpell, Location lTarget,
             ProjectilePathType nProjectilePathType = ProjectilePathType.Default)
         {
             Internal.NativeFunctions.StackPushInteger((int)nProjectilePathType);
             Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTarget);
-            Internal.NativeFunctions.StackPushInteger(nSpell);
+            Internal.NativeFunctions.StackPushInteger((int)nSpell);
             Internal.NativeFunctions.CallBuiltIn(502);
         }
 

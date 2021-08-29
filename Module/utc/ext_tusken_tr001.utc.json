@@ -213,7 +213,21 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 106
+          "value": 2
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 3
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 4
         }
       },
       {
@@ -234,42 +248,14 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 45
+          "value": 391
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 46
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 32
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 4
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 3
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 2
+          "value": 27
         }
       },
       {
@@ -283,14 +269,28 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 391
+          "value": 32
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 27
+          "value": 106
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 45
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 46
         }
       }
     ]
@@ -386,7 +386,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 50
+    "value": 154
   },
   "PerceptionRange": {
     "type": "byte",
@@ -675,7 +675,7 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 14
+    "value": 4
   },
   "Str": {
     "type": "byte",

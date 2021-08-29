@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Doublehand")
                 
                 .AddPerkLevel()
-                .Description("Increases damage of one-handed weapons to 1.5xSTR when no off-hand item is equipped.")
+                .Description("Increases damage of one-handed weapons to 1.5xMGT when no off-hand item is equipped.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .GrantsFeat(FeatType.Doublehand)
@@ -56,13 +56,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     // Item is going to right hand and no item is in left hand.
                     if (slot == InventorySlot.RightHand && !GetIsObjectValid(leftHand))
                     {
-                        Weapon.SetOneHalfStrength(item, true, true);
+                        WeaponPlugin.SetOneHalfStrength(item, true, true);
                     }
 
                     // Item is going to left hand and an item is already in the right hand.
                     if (slot == InventorySlot.LeftHand && GetIsObjectValid(rightHand))
                     {
-                        Weapon.SetOneHalfStrength(rightHand, false, true);
+                        WeaponPlugin.SetOneHalfStrength(rightHand, false, true);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                         GetIsObjectValid(leftHand) &&
                         Item.OneHandedMeleeItemTypes.Contains(leftType))
                     {
-                        Weapon.SetOneHalfStrength(leftHand, true, true);
+                        WeaponPlugin.SetOneHalfStrength(leftHand, true, true);
                     }
 
                     // Item is being unequipped from left hand and there's a weapon in the right hand.
@@ -86,13 +86,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                        GetIsObjectValid(rightHand) &&
                        Item.OneHandedMeleeItemTypes.Contains(rightType))
                     {
-                        Weapon.SetOneHalfStrength(rightHand, true, true);
+                        WeaponPlugin.SetOneHalfStrength(rightHand, true, true);
                     }
 
                     // Always remove the item's one-half bonus
                     if (Item.OneHandedMeleeItemTypes.Contains(itemType))
                     {
-                        Weapon.SetOneHalfStrength(item, false, true);
+                        WeaponPlugin.SetOneHalfStrength(item, false, true);
                     }
                 });
         }
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Weapon Finesse")
 
                 .AddPerkLevel()
-                .Description("You make melee attack rolls with your DEX score if it is higher than your STR score.")
+                .Description("You make melee attack rolls with your PER score if it is higher than your MGT score.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 10)
                 .GrantsFeat(FeatType.WeaponFinesse);
@@ -213,7 +213,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.VibrobladeBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.VibrobladeBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
 
                 })
@@ -236,7 +236,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.VibrobladeBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + 1;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerRefund((player, type, level) =>
@@ -247,7 +247,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.VibrobladeBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
 
@@ -279,20 +279,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Hacking Blade")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 1d4 damage and has a 50% chance to inflict Bleed for 30 seconds.")
+                .Description("Your next attack deals an additional 6.5 DMG and has a 50% chance to inflict Bleed for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .GrantsFeat(FeatType.HackingBlade1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 2d4 damage and has a 75% chance to inflict Bleed for 1 minute.")
+                .Description("Your next attack deals an additional 8.0 DMG and has a 75% chance to inflict Bleed for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.HackingBlade2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 3d4 damage and has a 100% chance to inflict Bleed for 1 minute.")
+                .Description("Your next attack deals an additional 11.5 DMG and has a 100% chance to inflict Bleed for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -305,19 +305,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Riot Blade")
 
                 .AddPerkLevel()
-                .Description("Instantly deals 1d8 damage to your target.")
+                .Description("Instantly deals 2.0 DMG to your target.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 5)
                 .GrantsFeat(FeatType.RiotBlade1)
 
                 .AddPerkLevel()
-                .Description("Instantly deals 2d6 damage to your target.")
+                .Description("Instantly deals 4.5 DMG to your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 20)
                 .GrantsFeat(FeatType.RiotBlade2)
 
                 .AddPerkLevel()
-                .Description("Instantly deals 3d6 damage to your target.")
+                .Description("Instantly deals 7.0 DMG to your target.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 35)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -403,7 +403,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -414,7 +414,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
 
                 })
@@ -426,7 +426,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + 1;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerRefund((player, type, level) =>
@@ -437,7 +437,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.FinesseVibrobladeBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
 
@@ -469,20 +469,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Poison Stab")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 1d6 damage and has a 50% chance to inflict Poison for 30 seconds.")
+                .Description("Your next attack deals an additional 6.0 DMG and has a 50% chance to inflict Poison for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .GrantsFeat(FeatType.PoisonStab1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 2d6 damage and has a 75% chance to inflict Poison for 1 minute.")
+                .Description("Your next attack deals an additional 7.5 DMG and has a 75% chance to inflict Poison for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 30)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PoisonStab2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 3d6 damage and has a 100% chance to inflict Poison for 1 minute.")
+                .Description("Your next attack deals an additional 11.0 DMG and has a 100% chance to inflict Poison for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -495,20 +495,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Backstab")
 
                 .AddPerkLevel()
-                .Description("Deals 2d8 damage to your target when dealt from behind. Damage is halved if not behind target.")
+                .Description("Deals 4.0 DMG to your target when dealt from behind. Damage is halved if not behind target.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 5)
                 .GrantsFeat(FeatType.Backstab1)
 
                 .AddPerkLevel()
-                .Description("Deals 3d8 damage to your target when dealt from behind. Damage is halved if not behind target.")
+                .Description("Deals 9.0 DMG to your target when dealt from behind. Damage is halved if not behind target.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 20)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Backstab2)
 
                 .AddPerkLevel()
-                .Description("Deals 4d8 damage to your target when dealt from behind. Damage is halved if not behind target.")
+                .Description("Deals 14.0 DMG to your target when dealt from behind. Damage is halved if not behind target.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 35)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -600,7 +600,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.LightsaberBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerUnequippedItem((player, item, slot, type, level) =>
@@ -611,7 +611,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.LightsaberBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
 
                 })
@@ -623,7 +623,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.LightsaberBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) + 1;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
                 .TriggerRefund((player, type, level) =>
@@ -634,7 +634,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     if (Item.LightsaberBaseItemTypes.Contains(itemType))
                     {
                         var bab = GetBaseAttackBonus(player) - level;
-                        Creature.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
 
@@ -666,21 +666,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Leap")
 
                 .AddPerkLevel()
-                .Description("Leap to a distant target instantly, inflicting 1d4 damage and stunning for 2 seconds.")
+                .Description("Leap to a distant target instantly, inflicting 1.5 DMG and stunning for 2 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceLeap1)
 
                 .AddPerkLevel()
-                .Description("Leap to a distant target instantly, inflicting 1d6 damage and stunning for 2 seconds.")
+                .Description("Leap to a distant target instantly, inflicting 4.0 DMG and stunning for 2 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceLeap2)
 
                 .AddPerkLevel()
-                .Description("Leap to a distant target instantly, inflicting 2d4 damage and stunning for 2 seconds.")
+                .Description("Leap to a distant target instantly, inflicting 6.5 DMG and stunning for 2 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -693,21 +693,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Saber Strike")
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 1d6 damage and has a 50% chance to inflict Breach for 30 seconds.")
+                .Description("Your next attack deals an additional 6.5 DMG and has a 50% chance to inflict Breach for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.OneHanded, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.SaberStrike1)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 2d6 damage and has a 75% chance to inflict Breach for 1 minute.")
+                .Description("Your next attack deals an additional 8.0 DMG and has a 75% chance to inflict Breach for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.SaberStrike2)
 
                 .AddPerkLevel()
-                .Description("Your next attack deals an additional 3d6 damage and has a 100% chance to inflict Breach for 1 minute.")
+                .Description("Your next attack deals an additional 11.5 DMG and has a 100% chance to inflict Breach for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.OneHanded, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

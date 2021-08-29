@@ -1,6 +1,7 @@
 ﻿//using Random = SWLOR.Game.Server.Service.Random;
 
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level)
+        private static string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
@@ -33,10 +34,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level)
+        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
-            var damage = 0;
+            var dmg = 0.0f;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
@@ -44,25 +44,29 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             switch (level)
             {
                 case 1:
-                    damage = d8();
+                    dmg = 2.0f;
                     break;
                 case 2:
-                    damage = d6(2);
+                    dmg = 4.5f;
                     break;
                 case 3:
-                    damage = d6(3);
+                    dmg = 6.5f;
                     break;
                 default:
                     break;
             }
 
             var count = 0;
-            var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true, ObjectType.Creature);
+            var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true);
             while (GetIsObjectValid(creature) && count < 3)
             {
+                var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
+                var defense = Combat.CalculateDefense(target);
+                var vitality = GetAbilityModifier(AbilityType.Vitality, target);
+                var damage = Combat.CalculateDamage(dmg, willpower, defense, vitality, false);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
 
-                creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true, ObjectType.Creature);
+                creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true);
                 count++;
             }            
 
@@ -78,14 +82,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .UnaffectedByHeavyArmor()
+                .HasCustomValidation(Validation)
+                .HasImpactAction(ImpactAction);
         }
         private static void CircleSlash2(AbilityBuilder builder)
         {
@@ -95,14 +94,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .UnaffectedByHeavyArmor()
+                .HasCustomValidation(Validation)
+                .HasImpactAction(ImpactAction);
         }
         private static void CircleSlash3(AbilityBuilder builder)
         {
@@ -112,14 +106,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
-                .HasCustomValidation((activator, target, level) =>
-                {
-                    return Validation(activator, target, level);
-                })
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .UnaffectedByHeavyArmor()
+                .HasCustomValidation(Validation)
+                .HasImpactAction(ImpactAction);
         }
     }
 }

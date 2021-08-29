@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 3.0
+    "value": 2.0
   },
   "ClassList": {
     "type": "list",
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -3
+    "value": -4
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -74,7 +74,22 @@
   },
   "Equip_ItemList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 32768,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "colicoid_claw"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "colicoid_hide"
+        }
+      }
+    ]
   },
   "FactionID": {
     "type": "word",
@@ -82,7 +97,22 @@
   },
   "FeatList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1744
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 289
+        }
+      }
+    ]
   },
   "FirstName": {
     "type": "cexolocstring",
@@ -150,7 +180,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 105
+    "value": 150
   },
   "PerceptionRange": {
     "type": "byte",

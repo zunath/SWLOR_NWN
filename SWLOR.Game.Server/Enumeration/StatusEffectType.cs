@@ -46,10 +46,6 @@
         Tranquilize = 41,
         Burn = 42,
         Rest = 43,
-        ImplantInstallation1,
-        ImplantInstallation2,
-        ImplantInstallation3,
-        ImplantInstallation4,
-        ImplantInstallation5,
+        IronShell = 44,
     }
 }

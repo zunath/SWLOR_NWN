@@ -78,13 +78,6 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 2,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "breastplate_2"
-        }
-      },
-      {
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
@@ -224,7 +217,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 9
+    "value": 153
   },
   "PerceptionRange": {
     "type": "byte",

@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature
             ClearInventory(player);
             AutoLevelPlayer(player);
             InitializeSkills(player);
-            InitializeSavingThrows(player);
+            InitializeSavingThrows(player, dbPlayer);
             RemoveNWNSpells(player);
             ClearFeats(player);
             GrantBasicFeats(player);
@@ -52,28 +52,28 @@ namespace SWLOR.Game.Server.Feature
         private static void AutoLevelPlayer(uint player)
         {
             // Capture original stats before we level up the player.
-            var str = Creature.GetRawAbilityScore(player, AbilityType.Strength);
-            var con = Creature.GetRawAbilityScore(player, AbilityType.Constitution);
-            var dex = Creature.GetRawAbilityScore(player, AbilityType.Dexterity);
-            var @int = Creature.GetRawAbilityScore(player, AbilityType.Intelligence);
-            var wis = Creature.GetRawAbilityScore(player, AbilityType.Wisdom);
-            var cha = Creature.GetRawAbilityScore(player, AbilityType.Charisma);
+            var str = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Might);
+            var con = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Vitality);
+            var dex = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Perception);
+            var @int = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Unused);
+            var wis = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Willpower);
+            var cha = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Diplomacy);
 
-            GiveXPToCreature(player, 10000);
+            GiveXPToCreature(player, 800000);
+            var @class = GetClassByPosition(1, player);
 
-            for(var level = 1; level <= 5; level++)
+            for (var level = 1; level <= 40; level++)
             {
-                var @class = GetClassByPosition(1, player);
                 LevelUpHenchman(player, @class);
             }
 
             // Set stats back to how they were on entry.
-            Creature.SetRawAbilityScore(player, AbilityType.Strength, str);
-            Creature.SetRawAbilityScore(player, AbilityType.Constitution, con);
-            Creature.SetRawAbilityScore(player, AbilityType.Dexterity, dex);
-            Creature.SetRawAbilityScore(player, AbilityType.Intelligence, @int);
-            Creature.SetRawAbilityScore(player, AbilityType.Wisdom, wis);
-            Creature.SetRawAbilityScore(player, AbilityType.Charisma, cha);
+            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Might, str);
+            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Vitality, con);
+            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Perception, dex);
+            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Unused, @int);
+            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Willpower, wis);
+            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Diplomacy, cha);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature
             for (var iCurSkill = 1; iCurSkill <= 27; iCurSkill++)
             {
                 var skill = (Skill) (iCurSkill - 1);
-                Creature.SetSkillRank(player, skill, 0);
+                CreaturePlugin.SetSkillRank(player, skill, 0);
             }
         }
 
@@ -117,11 +117,16 @@ namespace SWLOR.Game.Server.Feature
         /// Initializes all player saving throws to zero.
         /// </summary>
         /// <param name="player">The player to modify</param>
-        private static void InitializeSavingThrows(uint player)
+        /// <param name="dbPlayer">The database entity</param>
+        private static void InitializeSavingThrows(uint player, Player dbPlayer)
         {
-            SetFortitudeSavingThrow(player, 0);
-            SetReflexSavingThrow(player, 0);
-            SetWillSavingThrow(player, 0);
+            dbPlayer.Fortitude = 0;
+            dbPlayer.Reflex = 0;
+            dbPlayer.Will = 0;
+
+            CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Fortitude, 0);
+            CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Will, 0);
+            CreaturePlugin.SetBaseSavingThrow(player, SavingThrow.Reflex, 0);
         }
 
         /// <summary>
@@ -133,33 +138,31 @@ namespace SWLOR.Game.Server.Feature
             var @class = GetClassByPosition(1, player);
             for (var index = 0; index <= 255; index++)
             {
-                Creature.RemoveKnownSpell(player, @class, 0, index);
+                CreaturePlugin.RemoveKnownSpell(player, @class, 0, index);
             }
         }
 
         private static void ClearFeats(uint player)
         {
-            var numberOfFeats = Creature.GetFeatCount(player);
+            var numberOfFeats = CreaturePlugin.GetFeatCount(player);
             for (var currentFeat = numberOfFeats; currentFeat >= 0; currentFeat--)
             {
-                Creature.RemoveFeat(player, Creature.GetFeatByIndex(player, currentFeat - 1));
+                CreaturePlugin.RemoveFeat(player, CreaturePlugin.GetFeatByIndex(player, currentFeat - 1));
             }
         }
 
         private static void GrantBasicFeats(uint player)
         {
-            Creature.AddFeatByLevel(player, FeatType.ArmorProficiencyLight, 1);
-            Creature.AddFeatByLevel(player, FeatType.ArmorProficiencyMedium, 1);
-            Creature.AddFeatByLevel(player, FeatType.ArmorProficiencyHeavy, 1);
-            Creature.AddFeatByLevel(player, FeatType.ShieldProficiency, 1);
-            Creature.AddFeatByLevel(player, FeatType.WeaponProficiencyExotic, 1);
-            Creature.AddFeatByLevel(player, FeatType.WeaponProficiencyMartial, 1);
-            Creature.AddFeatByLevel(player, FeatType.WeaponProficiencySimple, 1);
-            Creature.AddFeatByLevel(player, FeatType.UncannyDodge1, 1);
-            Creature.AddFeatByLevel(player, FeatType.OpenRestMenu, 1);
-            Creature.AddFeatByLevel(player, FeatType.ChatCommandTargeter, 1);
-            Creature.AddFeatByLevel(player, FeatType.StructureTool, 1);
-            Creature.AddFeatByLevel(player, FeatType.Rest, 1);
+            CreaturePlugin.AddFeatByLevel(player, FeatType.ArmorProficiencyLight, 1);
+            CreaturePlugin.AddFeatByLevel(player, FeatType.ArmorProficiencyMedium, 1);
+            CreaturePlugin.AddFeatByLevel(player, FeatType.ArmorProficiencyHeavy, 1);
+            CreaturePlugin.AddFeatByLevel(player, FeatType.ShieldProficiency, 1);
+            CreaturePlugin.AddFeatByLevel(player, FeatType.WeaponProficiencyExotic, 1);
+            CreaturePlugin.AddFeatByLevel(player, FeatType.WeaponProficiencyMartial, 1);
+            CreaturePlugin.AddFeatByLevel(player, FeatType.WeaponProficiencySimple, 1);
+            CreaturePlugin.AddFeatByLevel(player, FeatType.UncannyDodge1, 1);
+            CreaturePlugin.AddFeatByLevel(player, FeatType.ChatCommandTargeter, 1);
+            CreaturePlugin.AddFeatByLevel(player, FeatType.StructureTool, 1);
         }
 
 
@@ -170,10 +173,10 @@ namespace SWLOR.Game.Server.Feature
             var restAbility = PlayerQuickBarSlot.UseFeat(FeatType.Rest);
             var structureTool = PlayerQuickBarSlot.UseFeat(FeatType.StructureTool);
 
-            Core.NWNX.Player.SetQuickBarSlot(player, 0, openRestMenu);
-            Core.NWNX.Player.SetQuickBarSlot(player, 1, chatCommandTargeter);
-            Core.NWNX.Player.SetQuickBarSlot(player, 2, restAbility);
-            Core.NWNX.Player.SetQuickBarSlot(player, 3, structureTool);
+            PlayerPlugin.SetQuickBarSlot(player, 0, openRestMenu);
+            PlayerPlugin.SetQuickBarSlot(player, 1, chatCommandTargeter);
+            PlayerPlugin.SetQuickBarSlot(player, 2, restAbility);
+            PlayerPlugin.SetQuickBarSlot(player, 3, structureTool);
         }
 
         /// <summary>
@@ -186,19 +189,21 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.UnallocatedSP = 10;
             dbPlayer.Version = 1;
             dbPlayer.Name = GetName(player);
+            dbPlayer.BAB = 1;
             Stat.AdjustPlayerMaxHP(dbPlayer, player, 40);
+            Stat.AdjustPlayerMaxFP(dbPlayer, 10);
             Stat.AdjustPlayerMaxSTM(dbPlayer, 10);
-            Creature.SetBaseAttackBonus(player, 1);
+            CreaturePlugin.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);
             dbPlayer.FP = Stat.GetMaxFP(player, dbPlayer);
             dbPlayer.Stamina = Stat.GetMaxStamina(player, dbPlayer);
 
-            dbPlayer.BaseStats[AbilityType.Strength] = Creature.GetRawAbilityScore(player, AbilityType.Strength);
-            dbPlayer.BaseStats[AbilityType.Dexterity] = Creature.GetRawAbilityScore(player, AbilityType.Dexterity);
-            dbPlayer.BaseStats[AbilityType.Constitution] = Creature.GetRawAbilityScore(player, AbilityType.Constitution);
-            dbPlayer.BaseStats[AbilityType.Wisdom] = Creature.GetRawAbilityScore(player, AbilityType.Wisdom);
-            dbPlayer.BaseStats[AbilityType.Intelligence] = Creature.GetRawAbilityScore(player, AbilityType.Intelligence);
-            dbPlayer.BaseStats[AbilityType.Charisma] = Creature.GetRawAbilityScore(player, AbilityType.Charisma);
+            dbPlayer.BaseStats[AbilityType.Might] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Might);
+            dbPlayer.BaseStats[AbilityType.Perception] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Perception);
+            dbPlayer.BaseStats[AbilityType.Vitality] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Vitality);
+            dbPlayer.BaseStats[AbilityType.Willpower] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Willpower);
+            dbPlayer.BaseStats[AbilityType.Unused] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Unused);
+            dbPlayer.BaseStats[AbilityType.Diplomacy] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Diplomacy);
         }
 
         /// <summary>
@@ -207,8 +212,8 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player to object.</param>
         private static void AdjustAlignment(uint player)
         {
-            Creature.SetAlignmentLawChaos(player, 50);
-            Creature.SetAlignmentGoodEvil(player, 50);
+            CreaturePlugin.SetAlignmentLawChaos(player, 50);
+            CreaturePlugin.SetAlignmentGoodEvil(player, 50);
         }
 
         /// <summary>

@@ -39,6 +39,13 @@ namespace SWLOR.Game.Server.Service
             if (skill == SkillType.Invalid) return;
 
             AddCombatPoint(player, target, skill);
+
+            // Lightsabers and Saberstaffs automatically grant combat points toward Force.
+            if (baseItemType == BaseItem.Lightsaber ||
+                baseItemType == BaseItem.Saberstaff)
+            {
+                AddCombatPoint(player, target, SkillType.Force);
+            }
         }
 
         /// <summary>
@@ -69,6 +76,8 @@ namespace SWLOR.Game.Server.Service
             // This XP is distributed into skills which received the highest usage during the battle.
             static void DistributeSkillXP()
             {
+                var npc = OBJECT_SELF;
+
                 // Calculates a rank range penalty. If there's a level difference greater than 10, a penalty is applied.
                 static float CalculateRankRangePenalty(int highestSkillRank, int skillRank)
                 {
@@ -111,11 +120,27 @@ namespace SWLOR.Game.Server.Service
                     return (int)adjustedXP;
                 }
 
-                var npc = OBJECT_SELF;
+                int GetNPCLevel()
+                {
+                    var skin = GetItemInSlot(InventorySlot.CreatureArmor, npc);
+                    if (!GetIsObjectValid(skin))
+                        return 0;
+
+                    for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
+                    {
+                        if (GetItemPropertyType(ip) == ItemPropertyType.NPCLevel)
+                        {
+                            return GetItemPropertyCostTableValue(ip);
+                        }
+                    }
+
+                    return 0;
+                }
+
                 var combatPoints = _creatureCombatPointTracker.ContainsKey(npc) ? _creatureCombatPointTracker[npc] : null;
                 if (combatPoints == null) return;
 
-                var npcLevel = (int)(GetChallengeRating(npc) * 5);
+                var npcLevel = GetNPCLevel();
 
                 foreach (var (player, cpList) in combatPoints)
                 {

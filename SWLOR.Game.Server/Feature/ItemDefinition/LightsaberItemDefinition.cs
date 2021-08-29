@@ -67,8 +67,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 })
                 .ApplyAction((user, lightsaber1, lightsaber2, location) =>
                 {
-                    var lightsaber1Serialized = Object.Serialize(lightsaber1);
-                    var lightsaber2Serialized = Object.Serialize(lightsaber2);
+                    var lightsaber1Serialized = ObjectPlugin.Serialize(lightsaber1);
+                    var lightsaber2Serialized = ObjectPlugin.Serialize(lightsaber2);
 
                     var level = GetLightsaberLevel(lightsaber1) + 1;
                     var saberstaff = CreateItemOnObject("saberstaff", user);
@@ -119,11 +119,11 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 })
                 .ApplyAction((user, item, target, location) =>
                 {
-                    var saber1 = Object.Deserialize(GetLocalString(item, "LIGHTSABER_1"));
-                    var saber2 = Object.Deserialize(GetLocalString(item, "LIGHTSABER_2"));
+                    var saber1 = ObjectPlugin.Deserialize(GetLocalString(item, "LIGHTSABER_1"));
+                    var saber2 = ObjectPlugin.Deserialize(GetLocalString(item, "LIGHTSABER_2"));
 
-                    Object.AcquireItem(user, saber1);
-                    Object.AcquireItem(user, saber2);
+                    ObjectPlugin.AcquireItem(user, saber1);
+                    ObjectPlugin.AcquireItem(user, saber2);
 
                     DestroyObject(item);
 
@@ -169,19 +169,47 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 .ApplyAction((user, item, target, location) =>
                 {
                     var numberOfUpgrades = GetLightsaberLevel(target) + 1;
-                    SetLightsaberLevel(target, numberOfUpgrades);
+                    var dmgItemPropertyId = DetermineDMGValue(numberOfUpgrades);
 
-                    var bonus = 1 + numberOfUpgrades;
-                    var enhancementItemProperty = ItemPropertyEnhancementBonus(bonus);
-                    var perkRequirementItemProperty = ItemPropertyCustom(ItemPropertyType.UseLimitationPerk, (int)PerkType.LightsaberProficiency, bonus);
+                    var dmgItemProperty = ItemPropertyCustom(ItemPropertyType.DMG, -1, dmgItemPropertyId);
+                    var perkRequirementItemProperty = ItemPropertyCustom(ItemPropertyType.UseLimitationPerk, (int)PerkType.LightsaberProficiency, numberOfUpgrades+1);
 
-                    BiowareXP2.IPSafeAddItemProperty(target, enhancementItemProperty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
+                    BiowareXP2.IPSafeAddItemProperty(target, dmgItemProperty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
                     BiowareXP2.IPSafeAddItemProperty(target, perkRequirementItemProperty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
 
                     DestroyObject(item);
-                    SendMessageToPC(user, $"Your lightsaber has been upgraded to level {bonus}.");
+                    SendMessageToPC(user, $"Your lightsaber has been upgraded to level {numberOfUpgrades+1}.");
+                    SetLightsaberLevel(target, numberOfUpgrades);
                 });
 
         }
+
+        private int DetermineDMGValue(int upgradeNumber)
+        {
+            switch (upgradeNumber)
+            {
+                case 1:
+                    return 7; // 7 = 4.0
+                case 2:
+                    return 12; // 12 = 6.5
+                case 3:
+                    return 15; // 15 = 8.0
+                case 4:
+                    return 22; // 22 = 11.5
+                case 5:
+                    return 25; // 25 = 13.0
+                case 6:
+                    return 32; // 32 = 16.5
+                case 7:
+                    return 36; // 36 = 18.5
+                case 8:
+                    return 42; // 42 = 21.5
+                case 9:
+                    return 45; // 45 = 23.0
+                default:
+                    return 2; // 2 = 1.5
+            }
+        }
+
     }
 }

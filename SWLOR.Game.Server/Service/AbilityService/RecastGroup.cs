@@ -91,8 +91,22 @@ namespace SWLOR.Game.Server.Service.AbilityService
         Rest = 41,
         [RecastGroup("Knockdown", "Knockdown")]
         Knockdown = 42,
-        [RecastGroup("Implant Installation", "Imp. Install")]
-        ImplantInstallation = 43,
+        [RecastGroup("Roar", "Roar")]
+        Roar = 43,
+        [RecastGroup("Bite", "Bite")]
+        Bite = 44,
+        [RecastGroup("Iron Shell", "Iron Shell")]
+        IronShell = 45,
+        [RecastGroup("Earthquake", "Earthquake")]
+        Earthquake = 46,
+        [RecastGroup("Fire Breath", "F. Breath")]
+        FireBreath = 47,
+        [RecastGroup("Spikes", "Spikes")]
+        Spikes = 48,
+        [RecastGroup("Venom", "Venom")]
+        Venom = 49,
+        [RecastGroup("Talon", "Talon")]
+        Talon = 50
     }
 
     public class RecastGroupAttribute: Attribute

@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -20,7 +21,7 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
 
-            Creature.SetMovementRateFactor(player, dbPlayer.MovementRate);
+            CreaturePlugin.SetMovementRateFactor(player, dbPlayer.MovementRate);
         }
 
         /// <summary>
@@ -37,10 +38,9 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves the maximum FP on a creature.
         /// For players:
-        /// INT and WIS modifiers will be checked. The higher one is used for calculations.
-        /// Each modifier grants +2 to max FP.
+        /// Each Vitality modifier grants +2 to max FP.
         /// For NPCs:
-        /// INT and WIS modifiers are added together. Each modifier grants +3 to max FP.
+        /// FP is read from their skin.
         /// </summary>
         /// <param name="creature">The creature object</param>
         /// <param name="dbPlayer">The player entity. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
@@ -56,21 +56,25 @@ namespace SWLOR.Game.Server.Service
                     dbPlayer = DB.Get<Player>(playerId);
                 }
                 var baseFP = dbPlayer.MaxFP;
-                var intModifier = GetAbilityModifier(AbilityType.Intelligence, creature);
-                var wisModifier = GetAbilityModifier(AbilityType.Wisdom, creature);
-                var modifier = intModifier > wisModifier ? intModifier : wisModifier;
+                var modifier = GetAbilityModifier(AbilityType.Vitality, creature);
 
-                return baseFP + (modifier * 2);
+                return baseFP + (modifier * 10);
             }
             // NPCs
             else
             {
-                var statModifier = GetAbilityModifier(AbilityType.Intelligence, creature) +
-                              GetAbilityModifier(AbilityType.Wisdom, creature);
-                var fp = statModifier * 3;
-                if (fp < 0) fp = 0;
+                var skin = GetItemInSlot(InventorySlot.CreatureArmor, creature);
 
-                return fp;
+                var ep = 0;
+                for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
+                {
+                    if (GetItemPropertyType(ip) == ItemPropertyType.NPCEP)
+                    {
+                        ep += GetItemPropertyCostTableValue(ip);
+                    }
+                }
+
+                return ep;
             }
         }
 
@@ -119,15 +123,23 @@ namespace SWLOR.Game.Server.Service
                 }
 
                 var baseStamina = dbPlayer.MaxStamina;
-                var conModifier = GetAbilityModifier(AbilityType.Constitution, creature);
+                var conModifier = GetAbilityModifier(AbilityType.Vitality, creature);
 
                 return baseStamina + (conModifier * 2);
             }
             // NPCs
             else
             {
-                var statModifier = GetAbilityModifier(AbilityType.Constitution, creature);
-                var stm = 30 + statModifier * 4;
+                var skin = GetItemInSlot(InventorySlot.CreatureArmor, creature);
+
+                var stm = 0;
+                for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
+                {
+                    if (GetItemPropertyType(ip) == ItemPropertyType.NPCSTM)
+                    {
+                        stm += GetItemPropertyCostTableValue(ip);
+                    }
+                }
 
                 return stm;
             }
@@ -338,7 +350,7 @@ namespace SWLOR.Game.Server.Service
             for (var nwnLevel = 1; nwnLevel <= nwnLevelCount; nwnLevel++)
             {
                 hpToApply--;
-                Creature.SetMaxHitPointsByLevel(player, nwnLevel, 1);
+                CreaturePlugin.SetMaxHitPointsByLevel(player, nwnLevel, 1);
             }
 
             // It's possible for the MaxHP value to be a negative if builders misuse item properties, etc.
@@ -351,12 +363,12 @@ namespace SWLOR.Game.Server.Service
                 {
                     if (hpToApply > MaxHPPerLevel) // Levels can only contain a max of 255 HP
                     {
-                        Creature.SetMaxHitPointsByLevel(player, nwnLevel, 255);
+                        CreaturePlugin.SetMaxHitPointsByLevel(player, nwnLevel, 255);
                         hpToApply -= 254;
                     }
                     else // Remaining value gets set to the level. (<255 hp)
                     {
-                        Creature.SetMaxHitPointsByLevel(player, nwnLevel, hpToApply + 1);
+                        CreaturePlugin.SetMaxHitPointsByLevel(player, nwnLevel, hpToApply + 1);
                         break;
                     }
                 }
@@ -422,11 +434,11 @@ namespace SWLOR.Game.Server.Service
         public static void AdjustPlayerMovementRate(Player entity, uint player, float adjustBy)
         {
             entity.MovementRate += adjustBy;
-            Creature.SetMovementRateFactor(player, entity.MovementRate);
+            CreaturePlugin.SetMovementRateFactor(player, entity.MovementRate);
         }
         
         /// <summary>
-        /// Calculates a player's stat based on their skill bonuses, implants, etc. and applies the changes to one ability score.
+        /// Calculates a player's stat based on their skill bonuses, upgrades, etc. and applies the changes to one ability score.
         /// </summary>
         /// <param name="entity">The player entity</param>
         /// <param name="player">The player object</param>
@@ -436,8 +448,8 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (ability == AbilityType.Invalid) return;
 
-            var totalStat = entity.BaseStats[ability] + entity.ImplantStats.Attributes[ability];
-            Creature.SetRawAbilityScore(player, ability, totalStat);
+            var totalStat = entity.BaseStats[ability] + entity.UpgradedStats[ability];
+            CreaturePlugin.SetRawAbilityScore(player, ability, totalStat);
         }
 
         /// <summary>
@@ -450,5 +462,45 @@ namespace SWLOR.Game.Server.Service
         {
             entity.AbilityRecastReduction += adjustBy;
         }
+
+        /// <summary>
+        /// Modifies a player's HP Regen by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustHPRegen(Player entity, int adjustBy)
+        {
+            // Note: It's possible for HP Regen to drop to a negative number. This is expected to ensure calculations stay in sync.
+            // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
+            entity.HPRegen += adjustBy;
+        }
+
+        /// <summary>
+        /// Modifies a player's FP Regen by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustFPRegen(Player entity, int adjustBy)
+        {
+            // Note: It's possible for FP Regen to drop to a negative number. This is expected to ensure calculations stay in sync.
+            // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
+            entity.FPRegen += adjustBy;
+        }
+
+        /// <summary>
+        /// Modifies a player's STM Regen by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustSTMRegen(Player entity, int adjustBy)
+        {
+            // Note: It's possible for STM Regen to drop to a negative number. This is expected to ensure calculations stay in sync.
+            // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
+            entity.STMRegen += adjustBy;
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Service
@@ -126,8 +127,22 @@ namespace SWLOR.Game.Server.Service
             { -4, 38 }
         };
 
+        private static int _highestDelta;
+
+        /// <summary>
+        /// When the module loads, cache all XP chart data used for quick access.
+        /// </summary>
         [NWNEventHandler("mod_load")]
-        public static void CalculateTotalXP()
+        public static void CacheXPChartData()
+        {
+            CalculateTotalXP();
+            _highestDelta = _skillDeltaXP.Keys.Max();
+        }
+
+        /// <summary>
+        /// Determines the total XP required for each level.
+        /// </summary>
+        private static void CalculateTotalXP()
         {
             var totalXP = 0;
             foreach (var (level, xp) in _skillXPRequirements)
@@ -165,12 +180,16 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Retrieves the base XP amount by the delta of a player's skill rank versus the target's level.
-        /// If delta is outside of the valid range, zero will be returned.
+        /// If delta is above the highest delta, the highest delta will be used.
+        /// If delta is lower than the lowest delta, zero will be returned.
         /// </summary>
         /// <param name="delta">The delta to compare.</param>
-        /// <returns>The base XP amount based on the delta. Returns 0 if delta is outside the range.</returns>
+        /// <returns>The base XP amount based on the delta. Returns 0 if delta is below the lowest.</returns>
         public static int GetDeltaXP(int delta)
         {
+            if (delta > _highestDelta)
+                delta = _highestDelta;
+
             if (!_skillDeltaXP.ContainsKey(delta)) return 0;
 
             return _skillDeltaXP[delta];

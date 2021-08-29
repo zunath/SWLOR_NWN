@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             if (account.Achievements.ContainsKey(model.Type))
             {
                 var pcAchievement = account.Achievements[model.Type];
-                page.Header += ColorToken.Green("Unlocked: ") + pcAchievement.ToString("yyyy-MM-dd hh:mm:ss");
+                page.Header += ColorToken.Green("Unlocked: ") + pcAchievement.ToString("yyyy-MM-dd HH:mm:ss");
             }
             else
             {

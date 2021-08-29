@@ -156,6 +156,8 @@ namespace SWLOR.Game.Server.Feature
         public static void CleanUpExpiredRecastTimers()
         {
             var player = OBJECT_SELF;
+            if (GetIsDM(player)) return;
+
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var now = DateTime.UtcNow;

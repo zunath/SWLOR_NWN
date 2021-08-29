@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service
         public static void LoadSongList()
         {
             const string File = "ambientmusic";
-            int rowCount = Util.Get2DARowCount(File);
+            int rowCount = UtilPlugin.Get2DARowCount(File);
 
             for (int row = 0; row < rowCount; row++)
             {
@@ -74,9 +74,9 @@ namespace SWLOR.Game.Server.Service
             var area = OBJECT_SELF;
             var battleThemeId = dbPlayer.Settings.BattleThemeId ?? MusicBackgroundGetBattleTrack(area);
 
-            Player.MusicBackgroundChangeTimeToggle(player, MusicBackgroundGetDayTrack(area), false);
-            Player.MusicBackgroundChangeTimeToggle(player, MusicBackgroundGetNightTrack(area), true);
-            Player.MusicBattleChange(player, battleThemeId);
+            PlayerPlugin.MusicBackgroundChangeTimeToggle(player, MusicBackgroundGetDayTrack(area), false);
+            PlayerPlugin.MusicBackgroundChangeTimeToggle(player, MusicBackgroundGetNightTrack(area), true);
+            PlayerPlugin.MusicBattleChange(player, battleThemeId);
         }
 
         /// <summary>

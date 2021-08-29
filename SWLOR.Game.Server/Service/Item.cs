@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.ItemService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -60,31 +61,31 @@ namespace SWLOR.Game.Server.Service
                 {
                     Activity.ClearBusy(actionUser);
                     SendMessageToPC(actionUser, "You move and interrupt your action.");
-                    Player.StopGuiTimingBar(actionUser, string.Empty);
+                    PlayerPlugin.StopGuiTimingBar(actionUser, string.Empty);
                     return;
                 }
 
                 DelayCommand(0.1f, () => CheckPosition(actionUser, actionId, originalPosition));
             }
 
-            var item = StringToObject(Events.GetEventData("ITEM_OBJECT_ID"));
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
             var itemTag = GetTag(item);
 
             // Not in the cache. Skip.
             if (!_items.ContainsKey(itemTag))
                 return;
 
-            var target = StringToObject(Events.GetEventData("TARGET_OBJECT_ID"));
+            var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
             var area = GetArea(user);
-            var targetPositionX = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_X"));
-            var targetPositionY = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Y"));
-            var targetPositionZ = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Z"));
+            var targetPositionX = (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_X"));
+            var targetPositionY = (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Y"));
+            var targetPositionZ = (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Z"));
             var targetPosition = GetIsObjectValid(target) ? GetPosition(target) : Vector3(targetPositionX, targetPositionY, targetPositionZ);
             var targetLocation = GetIsObjectValid(target) ? GetLocation(target) : Location(area, targetPosition, 0.0f);
             var userPosition = GetPosition(user);
 
             // Bypass the NWN "item use" animation.
-            Events.SkipEvent();
+            EventsPlugin.SkipEvent();
 
             // Check item property requirements.
             if (!CanCreatureUseItem(user, item))
@@ -158,14 +159,14 @@ namespace SWLOR.Game.Server.Service
             if (delay > 0.0f &&
                 GetIsPC(user))
             {
-                Player.StartGuiTimingBar(user, delay);
+                PlayerPlugin.StartGuiTimingBar(user, delay);
             }
 
             // Apply the item's action if specified.
             if (itemDetail.ApplyAction != null)
             {
                 var actionId = Guid.NewGuid().ToString();
-                Activity.SetBusy(user);
+                Activity.SetBusy(user, ActivityStatusType.UseItem);
                 SetLocalBool(user, actionId, true);
                 CheckPosition(user, actionId, userPosition);
 
@@ -326,7 +327,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.DoubleAxe,
             BaseItem.TwoBladedSword,
             BaseItem.Saberstaff,
-            BaseItem.Knuckles,
+            BaseItem.Katar,
             BaseItem.QuarterStaff,
             BaseItem.LightMace,
             BaseItem.Pistol,
@@ -429,11 +430,11 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
-        /// Retrieves the list of Knuckles base item types.
+        /// Retrieves the list of Katar base item types.
         /// </summary>
-        public static List<BaseItem> KnucklesBaseItemTypes { get; } = new List<BaseItem>
+        public static List<BaseItem> KatarBaseItemTypes { get; } = new List<BaseItem>
         {
-            BaseItem.Knuckles
+            BaseItem.Katar
         };
 
         /// <summary>
@@ -464,15 +465,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Shuriken,
             BaseItem.Dart
         };
-
-        /// <summary>
-        /// Retrieves the list of Cannon base item types.
-        /// </summary>
-        public static List<BaseItem> CannonBaseItemTypes { get; } = new List<BaseItem>
-        {
-            BaseItem.Cannon
-        };
-
+        
         /// <summary>
         /// Retrieves the list of Rifle base item types.
         /// </summary>
@@ -501,7 +494,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.HandAxe,
             BaseItem.Lightsaber,
             BaseItem.ShortSpear,
-            BaseItem.Knuckles,
+            BaseItem.Katar,
         };
 
         /// <summary>

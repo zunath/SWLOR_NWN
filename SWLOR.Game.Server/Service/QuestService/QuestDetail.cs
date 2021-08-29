@@ -215,7 +215,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             }
 
             // Add the journal entry to the player.
-            Core.NWNX.Player.AddCustomJournalEntry(player, new JournalEntry
+            Core.NWNX.PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
             {
                 Name = quest.Name,
                 Text = state.JournalText,
@@ -289,7 +289,7 @@ namespace SWLOR.Game.Server.Service.QuestService
                 var nextState = GetState(playerQuest.CurrentState);
 
                 // Update the player's journal
-                Core.NWNX.Player.AddCustomJournalEntry(player, new JournalEntry
+                Core.NWNX.PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
                 {
                     Name = quest.Name,
                     Text = currentState.JournalText,
@@ -379,7 +379,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             SendMessageToPC(player, "Quest '" + Name + "' complete!");
             RemoveJournalQuestEntry(QuestId, player, false);
 
-            Events.SignalEvent("SWLOR_COMPLETE_QUEST", player);
+            EventsPlugin.SignalEvent("SWLOR_COMPLETE_QUEST", player);
         }
     }
 }

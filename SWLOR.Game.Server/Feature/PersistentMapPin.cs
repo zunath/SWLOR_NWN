@@ -28,10 +28,10 @@ namespace SWLOR.Game.Server.Feature
         {
             return new MapPin
             {
-                Id = getId ? Convert.ToInt32(Events.GetEventData("PIN_ID")) : -1,
-                Note = isDestroying ? string.Empty : Events.GetEventData("PIN_NOTE"),
-                X = isDestroying ? 0 : (float) Convert.ToDouble(Events.GetEventData("PIN_X")),
-                Y = isDestroying ? 0 : (float) Convert.ToDouble(Events.GetEventData("PIN_Y"))
+                Id = getId ? Convert.ToInt32(EventsPlugin.GetEventData("PIN_ID")) : -1,
+                Note = isDestroying ? string.Empty : EventsPlugin.GetEventData("PIN_NOTE"),
+                X = isDestroying ? 0 : (float) Convert.ToDouble(EventsPlugin.GetEventData("PIN_X")),
+                Y = isDestroying ? 0 : (float) Convert.ToDouble(EventsPlugin.GetEventData("PIN_Y"))
             };
         }
 

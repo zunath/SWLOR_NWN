@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 else
                 {
-                    var dateTime = DateTime.ParseExact(unlockDate, "yyyy-MM-dd hh:mm:ss", CultureInfo.InvariantCulture);
+                    var dateTime = DateTime.ParseExact(unlockDate, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                     var timeToWait = Time.GetTimeToWaitLongIntervals(now, dateTime, false);
                     return (now < dateTime, timeToWait);
                 }

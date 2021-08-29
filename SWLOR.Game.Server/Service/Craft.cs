@@ -112,10 +112,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void CacheCraftSkillToAbilities()
         {
-            _craftSkillToAbility[SkillType.Smithery] = new Tuple<AbilityType, AbilityType>(AbilityType.Dexterity, AbilityType.Intelligence);
-            _craftSkillToAbility[SkillType.Fabrication] = new Tuple<AbilityType, AbilityType>(AbilityType.Intelligence, AbilityType.Constitution);
-            _craftSkillToAbility[SkillType.FirstAid] = new Tuple<AbilityType, AbilityType>(AbilityType.Intelligence, AbilityType.Wisdom);
-            _craftSkillToAbility[SkillType.Cybertech] = new Tuple<AbilityType, AbilityType>(AbilityType.Dexterity, AbilityType.Wisdom);
+            _craftSkillToAbility[SkillType.Smithery] = new Tuple<AbilityType, AbilityType>(AbilityType.Perception, AbilityType.Might);
+            _craftSkillToAbility[SkillType.Fabrication] = new Tuple<AbilityType, AbilityType>(AbilityType.Might, AbilityType.Vitality);
+            _craftSkillToAbility[SkillType.FirstAid] = new Tuple<AbilityType, AbilityType>(AbilityType.Vitality, AbilityType.Perception);
         }
 
         /// <summary>
@@ -426,7 +425,7 @@ namespace SWLOR.Game.Server.Service
             var craftingDelay = CalculateAutoCraftingDelay();
 
             state.IsAutoCrafting = true;
-            Core.NWNX.Player.StartGuiTimingBar(player, craftingDelay);
+            Core.NWNX.PlayerPlugin.StartGuiTimingBar(player, craftingDelay);
             AssignCommand(player, () => ActionPlayAnimation(Animation.LoopingGetMid, 1f, craftingDelay));
             DelayCommand(craftingDelay, () =>
             {

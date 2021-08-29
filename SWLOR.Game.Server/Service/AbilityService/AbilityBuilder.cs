@@ -229,6 +229,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Indicates this ability is unaffected by heavy armor penalties.
+        /// </summary>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder UnaffectedByHeavyArmor()
+        {
+            _activeAbility.IgnoreHeavyArmorPenalty = true;
+
+            return this;
+        }
+
+        /// <summary>
         /// Returns a built list of abilities.
         /// </summary>
         /// <returns>A list of built abilities.</returns>

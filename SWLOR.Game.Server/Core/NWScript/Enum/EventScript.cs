@@ -21,14 +21,21 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Module_OnEquipItem = 3015,
         Module_OnUnequipItem = 3016,
         Module_OnPlayerChat = 3017,
+        Module_OnPlayerTarget = 3018,
+        Module_OnPlayerGuiEvent = 3019,
+        Module_OnPlayerTileEvent = 3020,
+        Module_OnNuiEvent = 3021,
+
         Area_OnHeartbeat = 4000,
         Area_OnUserDefined = 4001,
         Area_OnEnter = 4002,
         Area_OnExit = 4003,
+
         AreaOfEffect_OnHeartbeat = 11000,
         AreaOfEffect_OnUserDefined = 11001,
         AreaOfEffect_OnObjectEnter = 11002,
         AreaOfEffect_OnObjectExit = 11003,
+
         Creature_OnHeartbeat = 5000,
         Creature_OnNotice = 5001,
         Creature_OnSpellCastAt = 5002,
@@ -42,6 +49,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Creature_OnDeath = 5010,
         Creature_OnUserDefined = 5011,
         Creature_OnBlockedByDoor = 5012,
+
         Trigger_OnHeartbeat = 7000,
         Trigger_OnObjectEnter = 7001,
         Trigger_OnObjectExit = 7002,
@@ -49,6 +57,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Trigger_OnTrapTriggered = 7004,
         Trigger_OnDisarmed = 7005,
         Trigger_OnClicked = 7006,
+
         Placeable_OnClosed = 9000,
         Placeable_OnDamaged = 9001,
         Placeable_OnDeath = 9002,
@@ -65,6 +74,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Placeable_OnUserDefined = 9013,
         Placeable_OnDialogue = 9014,
         Placeable_OnLeftClick = 9015,
+        
         Door_OnOpen = 10000,
         Door_OnClose = 10001,
         Door_OnDamage = 10002,
@@ -80,11 +90,13 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Door_OnClicked = 10012,
         Door_OnDialogue = 10013,
         Door_OnFailToOpen = 10014,
+
         Encounter_OnObjectEnter = 13000,
         Encounter_OnObjectExit = 13001,
         Encounter_OnHeartbeat = 13002,
         Encounter_OnEncounterExhausted = 13003,
         Encounter_OnUserDefined = 13004,
+
         Store_OnOpen = 14000,
         Store_OnClose = 14001
     }

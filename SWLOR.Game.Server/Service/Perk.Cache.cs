@@ -48,8 +48,6 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("mod_load")]
         public static void CacheData()
         {
-            Console.WriteLine("Caching perk data.");
-
             var categories = Enum.GetValues(typeof(PerkCategoryType)).Cast<PerkCategoryType>();
             foreach (var category in categories)
             {
@@ -130,7 +128,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Console.WriteLine($"{perkCount} perks loaded successfully.");
+            Console.WriteLine($"Loaded {perkCount} perks.");
         }
 
         /// <summary>

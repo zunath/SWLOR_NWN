@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.AbilityService
 {
-    public delegate void AbilityImpactAction(uint activator, uint target, int effectivePerkLevel);
+    public delegate void AbilityImpactAction(uint activator, uint target, int effectivePerkLevel, Location targetLocation);
     public delegate float AbilityActivationDelayAction(uint activator, uint target, int effectivePerkLevel);
     public delegate float AbilityRecastDelayAction(uint activator);
-    public delegate string AbilityCustomValidationAction(uint activator, uint target, int effectivePerkLevel);
+    public delegate string AbilityCustomValidationAction(uint activator, uint target, int effectivePerkLevel, Location targetLocation);
 
     public class AbilityDetail
     {
@@ -25,6 +26,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public Animation AnimationType { get; set; }
         public StatusEffectType ConcentrationStatusEffectType { get; set; }
         public bool CanBeUsedInSpace { get; set; }
+        public bool IgnoreHeavyArmorPenalty { get; set; }
 
         public AbilityDetail()
         {

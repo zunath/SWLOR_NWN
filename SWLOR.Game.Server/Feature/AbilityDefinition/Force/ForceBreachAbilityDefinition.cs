@@ -1,6 +1,7 @@
 ﻿//using Random = SWLOR.Game.Server.Service.Random;
 
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
@@ -23,35 +24,37 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             return builder.Build();
         }
 
-        private static void ImpactAction(uint activator, uint target, int level)
+        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            int damage;
+            var dmg = 0.0f;
 
             switch (level)
             {
                 case 1:
-                    damage = 10 + GetAbilityModifier(AbilityType.Wisdom);
+                    dmg = 6.0f;
                     break;
                 case 2:
-                    damage = 15 + GetAbilityModifier(AbilityType.Wisdom);
+                    dmg = 8.5f;
                     break;
                 case 3:
-                    damage = (int)(20 + GetAbilityModifier(AbilityType.Wisdom) * 1.5);
+                    dmg = 12.0f;
                     break;
                 case 4:
-                    damage = (int)(25 + GetAbilityModifier(AbilityType.Wisdom) * 1.75);
-                    break;
-                default:
-                    damage = 0;
+                    dmg = 13.5f;
                     break;
             }
-
-            if (!Ability.GetAbilityResisted(activator, target, AbilityType.Intelligence, AbilityType.Wisdom))
+            
+            var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
+            var defense = Combat.CalculateDefense(target);
+            var targetWillpower = GetAbilityModifier(AbilityType.Willpower, target);
+            var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, false);
+            
+            AssignCommand(activator, () =>
             {
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Silence), target);
-            }
-
+            });
+            
             Enmity.ModifyEnmityOnAll(activator, 1);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
@@ -65,10 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(2)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasImpactAction(ImpactAction);
         }
 
         private static void ForceBreach2(AbilityBuilder builder)
@@ -80,10 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(3)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasImpactAction(ImpactAction);
         }
 
         private static void ForceBreach3(AbilityBuilder builder)
@@ -95,10 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(4)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasImpactAction(ImpactAction);
         }
 
         private static void ForceBreach4(AbilityBuilder builder)
@@ -110,10 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(5)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
-                .HasImpactAction((activator, target, level) =>
-                {
-                    ImpactAction(activator, target, level);
-                });
+                .HasImpactAction(ImpactAction);
         }
     }
 }

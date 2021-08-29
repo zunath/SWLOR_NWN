@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("feat_use_bef")]
         public static void PropertyTool()
         {
-            var feat = (FeatType)Convert.ToInt32(Events.GetEventData("FEAT_ID"));
+            var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
 
             if (feat != FeatType.StructureTool) return;
 
@@ -49,10 +49,10 @@ namespace SWLOR.Game.Server.Feature
             }
 
             // We have access. Set the target object and location, which will be picked up by the menu.
-            var target = StringToObject(Events.GetEventData("TARGET_OBJECT_ID"));
-            var targetPositionX = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_X"));
-            var targetPositionY = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Y"));
-            var targetPositionZ = (float)Convert.ToDouble(Events.GetEventData("TARGET_POSITION_Z"));
+            var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
+            var targetPositionX = (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_X"));
+            var targetPositionY = (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Y"));
+            var targetPositionZ = (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Z"));
 
             var location = Location(area, Vector3(targetPositionX, targetPositionY, targetPositionZ), 0.0f);
 

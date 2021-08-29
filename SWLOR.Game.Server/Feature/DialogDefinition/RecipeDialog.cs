@@ -103,12 +103,6 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 model.SelectedSkill = SkillType.FirstAid;
                 ChangePage(CategoryPageId);
             });
-
-            page.AddResponse(Skill.GetSkillDetails(SkillType.Cybertech).Name, () =>
-            {
-                model.SelectedSkill = SkillType.Cybertech;
-                ChangePage(CategoryPageId);
-            });
         }
 
 
@@ -267,7 +261,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     state.SelectedRecipe = model.SelectedRecipe;
 
                     EndConversation();
-                    Player.ForcePlaceableInventoryWindow(player, OBJECT_SELF);
+                    PlayerPlugin.ForcePlaceableInventoryWindow(player, OBJECT_SELF);
                 });
             }
         }

@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Service
                     var quest = _quests[questId];
                     var state = quest.States[playerQuest.CurrentState];
 
-                    Core.NWNX.Player.AddCustomJournalEntry(player, new JournalEntry
+                    Core.NWNX.PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
                     {
                         Name = quest.Name,
                         Text = state.JournalText,
@@ -276,6 +276,7 @@ namespace SWLOR.Game.Server.Service
                     var quest = dbPlayer.Quests[questId];
                     var questDetail = GetQuestById(questId);
                     var questState = questDetail.States[quest.CurrentState];
+                    var killRequiredForQuestAndState = false;
 
                     // Iterate over all of the quest states which call for killing this enemy.
                     foreach (var objective in questState.GetObjectives())
@@ -285,12 +286,16 @@ namespace SWLOR.Game.Server.Service
                         {
                             if (killTargetObjective.Group != npcGroupType) continue;
 
+                            killRequiredForQuestAndState = true;
                             killTargetObjective.Advance(member, questId);
                         }
                     }
 
                     // Attempt to advance the quest detail. It's possible this will fail because objectives aren't all done. This is OK.
-                    questDetail.Advance(member, creature);
+                    if (killRequiredForQuestAndState)
+                    {
+                        questDetail.Advance(member, creature);
+                    }
                 }
             }
         }

@@ -105,7 +105,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Mon Cala Aradile"
+      "0": "Aradile"
     }
   },
   "fortbonus": {
@@ -168,7 +168,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 9
+    "value": 152
   },
   "PerceptionRange": {
     "type": "byte",

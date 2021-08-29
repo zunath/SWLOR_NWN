@@ -22,9 +22,9 @@ namespace SWLOR.Game.Server.Feature
             {
                 var playerId = GetObjectUUID(player);
                 var dbPlayer = DB.Get<Player>(playerId);
-                var hpRegen = dbPlayer.ImplantStats.HPRegen;
-                var fpRegen = dbPlayer.ImplantStats.FPRegen;
-                var stmRegen = dbPlayer.ImplantStats.STMRegen;
+                var hpRegen = dbPlayer.HPRegen;
+                var fpRegen = dbPlayer.FPRegen;
+                var stmRegen = dbPlayer.STMRegen;
 
                 if (hpRegen > 0)
                 {

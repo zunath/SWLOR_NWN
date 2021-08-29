@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("on_nwnx_chat")]
         public static void ProcessChatMessage()
         {
-            var channel = Chat.GetChannel();
+            var channel = ChatPlugin.GetChannel();
 
             // - PlayerTalk, PlayerWhisper, PlayerParty, and PlayerShout are all IC channels. These channels
             //   are subject to emote coloring and language translation. (see below for more info).
@@ -75,8 +75,8 @@ namespace SWLOR.Game.Server.Service
             // Ignore messages on other channels.
             if (!inCharacterChat && !messageToDm) return;
 
-            var sender = Chat.GetSender();
-            var message = Chat.GetMessage().Trim();
+            var sender = ChatPlugin.GetSender();
+            var message = ChatPlugin.GetMessage().Trim();
 
             if (string.IsNullOrWhiteSpace(message))
             {
@@ -87,11 +87,11 @@ namespace SWLOR.Game.Server.Service
             // Echo the message back to the player.
             if (messageToDm)
             {
-                Chat.SendMessage(ChatChannel.ServerMessage, "(Sent to DM) " + message, sender, sender);
+                ChatPlugin.SendMessage(ChatChannel.ServerMessage, "(Sent to DM) " + message, sender, sender);
                 return;
             }
 
-            Chat.SkipMessage();
+            ChatPlugin.SkipMessage();
 
             if (channel == ChatChannel.PlayerShout &&
                 GetIsPC(sender) &&
@@ -367,7 +367,7 @@ namespace SWLOR.Game.Server.Service
                 // set back to original sender, if it was changed by holocom connection
                 sender = originalSender;
 
-                Chat.SendMessage(finalChannel, finalMessageColoured, sender, obj);
+                ChatPlugin.SendMessage(finalChannel, finalMessageColoured, sender, obj);
             }
         }
 

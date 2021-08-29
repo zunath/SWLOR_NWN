@@ -37,8 +37,8 @@ namespace SWLOR.Game.Server.Enumeration
         [PerkCategory("Martial Arts - General", true)]
         MartialArtsGeneral = 10,
 
-        [PerkCategory("Martial Arts - Knuckles", true)]
-        MartialArtsKnuckles = 11,
+        [PerkCategory("Martial Arts - Katars", true)]
+        MartialArtsKatars = 11,
 
         [PerkCategory("Martial Arts - Staff", true)]
         MartialArtsStaff = 12,

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             return builder.Build();
         }
 
-        private static string Validation(uint activator, uint target, int level)
+        private static string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var offHand = GetItemInSlot(InventorySlot.LeftHand, activator);
@@ -40,9 +41,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             return string.Empty;
         }
 
-        private static void ImpactAction(uint activator, uint target, int level)
+        private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var damage = 0;
+            var dmg = 0.0f;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
@@ -50,13 +51,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             switch (level)
             {
                 case 1:
-                    damage = Random.D4(1);
+                    dmg = 1.5f;
                     break;
                 case 2:
-                    damage = Random.D6(1);
+                    dmg = 4.0f;
                     break;
                 case 3:
-                    damage = Random.D4(2);
+                    dmg = 6.5f;
                     break;
                 default:
                     break;
@@ -65,6 +66,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             const float Delay = 3f;
             ClearAllActions();
             ApplyEffectToObject(DurationType.Temporary, EffectDisappearAppear(GetLocation(target)), activator, Delay);
+
+            var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
+            var defense = Combat.CalculateDefense(target);
+            var vitality = GetAbilityModifier(AbilityType.Vitality, target);
+            var damage = Combat.CalculateDamage(dmg, willpower, defense, vitality, false);
 
             DelayCommand(Delay, () =>
             {                
@@ -84,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
+                .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -95,6 +102,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
+                .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -106,6 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
+                .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

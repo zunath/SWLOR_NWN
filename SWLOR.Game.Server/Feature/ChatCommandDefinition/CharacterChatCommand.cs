@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Player)
                 .Action((user, target, location, args) =>
                 {
-                    Dialog.StartConversation(user, user, nameof(RestMenu));
+                    Dialog.StartConversation(user, user, nameof(RestMenuDialog));
                 });
 
 
@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     if (!string.IsNullOrWhiteSpace(lastSubmission))
                     {
                         // Found one, parse it.
-                        var dateTime = DateTime.Parse(lastSubmission);
+                        var dateTime = DateTime.ParseExact(lastSubmission, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                         if (DateTime.UtcNow <= dateTime.AddSeconds(30))
                         {
                             // Player submitted a second request within 30 seconds of the last one. 
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         DB.Set(playerID, entity);
 
                         BootPC(user, "Your character has been deleted.");
-                        Administration.DeletePlayerCharacter(user, true);
+                        AdministrationPlugin.DeletePlayerCharacter(user, true);
                     }
                 });
         }

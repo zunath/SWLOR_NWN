@@ -1540,5 +1540,73 @@ namespace SWLOR.Game.Server.Core.NWScript
             return Internal.NativeFunctions.StackPopVector();
         }
 
+        /// <summary>
+        /// Create a RunScript effect.
+        /// Notes: When applied as instant effect, only sOnAppliedScript will fire.
+        ///        In the scripts, OBJECT_SELF will be the object the effect is applied to.
+        /// </summary>
+        /// <param name="sOnAppliedScript">An optional script to execute when the effect is applied.</param>
+        /// <param name="sOnRemovedScript">An optional script to execute when the effect is removed.</param>
+        /// <param name="sOnIntervalScript">An optional script to execute every fInterval seconds.</param>
+        /// <param name="fInterval">The interval in seconds, must be >0.0f if an interval script is set. Very low values may have an adverse effect on performance.</param>
+        /// <param name="sData">An optional string of data saved in the effect, retrievable with GetEffectString() at index 0.</param>
+        /// <returns></returns>
+        public static Effect EffectRunScript(string sOnAppliedScript = "", string sOnRemovedScript = "", string sOnIntervalScript = "", float fInterval = 0.0f, string sData = "")
+        {
+            Internal.NativeFunctions.StackPushString(sData);
+            Internal.NativeFunctions.StackPushFloat(fInterval);
+            Internal.NativeFunctions.StackPushString(sOnIntervalScript);
+            Internal.NativeFunctions.StackPushString(sOnRemovedScript);
+            Internal.NativeFunctions.StackPushString(sOnAppliedScript);
+            Internal.NativeFunctions.CallBuiltIn(955);
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+        }
+
+        /// <summary>
+        /// Get the effect that last triggered an EffectRunScript() script.
+        /// Note: This can be used to get the creator or tag, among others, of the EffectRunScript() in one of its scripts.
+        /// </summary>
+        /// <returns>The effect that last triggered an EffectRunScript() script.</returns>
+        public static Effect GetLastRunScriptEffect()
+        {
+            Internal.NativeFunctions.CallBuiltIn(956);
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+        }
+
+        /// <summary>
+        /// Get the script type (RUNSCRIPT_EFFECT_SCRIPT_TYPE_*) of the last triggered EffectRunScript() script.
+        /// * Returns 0 when called outside of an EffectRunScript() script.
+        /// </summary>
+        /// <returns></returns>
+        public static int GetLastRunScriptEffectScriptType()
+        {
+            Internal.NativeFunctions.CallBuiltIn(957);
+            return Internal.NativeFunctions.StackPopInteger();
+        }
+
+        /// <summary>
+        /// Hides the effect icon of eEffect and of all effects currently linked to it.
+        /// </summary>
+        /// <param name="eEffect"></param>
+        /// <returns></returns>
+        public static Effect HideEffectIcon(Effect eEffect)
+        {
+            Internal.NativeFunctions.CallBuiltIn(958);
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+        }
+
+        /// <summary>
+        /// Create an Icon effect.
+        /// * nIconID: The effect icon (EFFECT_ICON_*) to display.
+        ///            Using the icon for Poison/Disease will also color the health bar green/brown, useful to simulate custom poisons/diseases.
+        /// Returns an effect of type EFFECT_TYPE_INVALIDEFFECT when nIconID is < 1 or > 255.
+        /// </summary>
+        /// <param name="eEffect"></param>
+        /// <returns></returns>
+        public static Effect EffectIcon(Effect eEffect)
+        {
+            Internal.NativeFunctions.CallBuiltIn(959);
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+        }
     }
 }

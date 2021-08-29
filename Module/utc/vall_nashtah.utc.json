@@ -104,6 +104,13 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1750
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 289
         }
       }
@@ -175,7 +182,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 107
+    "value": 151
   },
   "PerceptionRange": {
     "type": "byte",

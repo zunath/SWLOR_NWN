@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Feature.AIDefinition;
 using SWLOR.Game.Server.Service.AIService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -41,8 +43,11 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_roundend")]
         public static void CreatureCombatRoundEnd()
         {
-            ProcessPerkAI();
-            ExecuteScript("cdef_c2_default3", OBJECT_SELF);
+            if (!Activity.IsBusy(OBJECT_SELF))
+            {
+                ProcessPerkAI();
+                ExecuteScript("cdef_c2_default3", OBJECT_SELF);
+            }
         }
 
         /// <summary>
@@ -238,8 +243,6 @@ namespace SWLOR.Game.Server.Service
                 var (feat, featTarget) = GenericAIDefinition.DeterminePerkAbility(self, target, allies);
                 if (feat != FeatType.Invalid && GetIsObjectValid(featTarget))
                 {
-                    Console.WriteLine($"{GetName(self)}: Feat = {feat}"); // todo debug
-
                     ClearAllActions();
                     ActionUseFeat(feat, featTarget);
                 }
@@ -283,13 +286,33 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a creature spawns, store their STM and FP as local variables.
+        /// When a creature spawns, store their STM and EP as local variables.
+        /// Also load their HP per their skin, if specified.
         /// </summary>
         private static void LoadCreatureStats()
         {
             var self = OBJECT_SELF;
-            
-            SetLocalInt(self, "FP", Stat.GetMaxFP(self));
+            var skin = GetItemInSlot(InventorySlot.CreatureArmor, self);
+
+            var maxHP = 0;
+            for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.NPCHP)
+                {
+                    maxHP += GetItemPropertyCostTableValue(ip);
+                }
+            }
+
+            if (maxHP > 30000)
+                maxHP = 30000;
+
+            if (maxHP > 0)
+            {
+                ObjectPlugin.SetMaxHitPoints(self, maxHP);
+                ObjectPlugin.SetCurrentHitPoints(self, maxHP);
+            }
+
+            SetLocalInt(self, "EP", Stat.GetMaxFP(self));
             SetLocalInt(self, "STAMINA", Stat.GetMaxStamina(self));
         }
 
@@ -321,6 +344,15 @@ namespace SWLOR.Game.Server.Service
 
             SetLocalInt(self, "FP", fp);
             SetLocalInt(self, "STAMINA", stm);
+
+            // If out of combat - restore HP at 10% per tick.
+            if (!GetIsInCombat(self) &&
+                !GetIsObjectValid(Enmity.GetHighestEnmityTarget(self)) &&
+                GetCurrentHitPoints(self) < GetMaxHitPoints(self))
+            {
+                var hpToHeal = GetMaxHitPoints(self) * 0.1f;
+                ApplyEffectToObject(DurationType.Instant, EffectHeal((int)hpToHeal), self);
+            }
         }
 
         /// <summary>

@@ -1,3 +1,4 @@
+using System.Numerics;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Core.NWScript
@@ -325,8 +326,9 @@ namespace SWLOR.Game.Server.Core.NWScript
 
         /// <summary>
         ///   Spawn a GUI panel for the client that controls oPC.
+        ///   Will force show panels disabled with SetGuiPanelDisabled()
         ///   - oPC
-        ///   - nGUIPanel: GUI_PANEL_*
+        ///   - nGUIPanel: GUI_PANEL_*, except GUI_PANEL_COMPASS
         ///   * Nothing happens if oPC is not a player character or if an invalid value is
         ///   used for nGUIPanel.
         /// </summary>
@@ -371,6 +373,108 @@ namespace SWLOR.Game.Server.Core.NWScript
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.CallBuiltIn(918);
             return Internal.NativeFunctions.StackPopInteger();
+        }
+
+        /// <summary>
+        /// Gets the player that last triggered the module OnPlayerGuiEvent event.
+        /// </summary>
+        /// <returns></returns>
+        public static uint GetLastGuiEventPlayer()
+        {
+            Internal.NativeFunctions.CallBuiltIn(960);
+            return Internal.NativeFunctions.StackPopObject();
+        }
+
+        /// <summary>
+        /// Gets the last triggered GUIEVENT_* in the module OnPlayerGuiEvent event.
+        /// </summary>
+        /// <returns></returns>
+        public static GuiEventType GetLastGuiEventType()
+        {
+            Internal.NativeFunctions.CallBuiltIn(961);
+            return (GuiEventType)Internal.NativeFunctions.StackPopInteger();
+        }
+
+        /// <summary>
+        /// Gets an optional integer of specific gui events in the module OnPlayerGuiEvent event.
+        /// * GUIEVENT_CHATBAR_*: The selected chat channel. Does not indicate the actual used channel.
+        ///                       0 = Shout, 1 = Whisper, 2 = Talk, 3 = Party, 4 = DM
+        /// * GUIEVENT_CHARACTERSHEET_SKILL_SELECT: The skill ID.
+        /// * GUIEVENT_CHARACTERSHEET_FEAT_SELECT: The feat ID.
+        /// * GUIEVENT_EFFECTICON_CLICK: The effect icon ID (EFFECT_ICON_*)
+        /// * GUIEVENT_DISABLED_PANEL_ATTEMPT_OPEN: The GUI_PANEL_* the player attempted to open.
+        /// * GUIEVENT_QUICKCHAT_SELECT: The hotkey character representing the option
+        /// * GUIEVENT_EXAMINE_OBJECT: A GUI_PANEL_EXAMINE_* constant
+        /// </summary>
+        /// <returns></returns>
+        public static int GetLastGuiEventInteger()
+        {
+            Internal.NativeFunctions.CallBuiltIn(962);
+            return Internal.NativeFunctions.StackPopInteger();
+        }
+
+        /// <summary>
+        /// Gets an optional object of specific gui events in the module OnPlayerGuiEvent event.
+        /// * GUIEVENT_MINIMAP_MAPPIN_CLICK: The waypoint the map note is attached to.
+        /// * GUIEVENT_CHARACTERSHEET_*_SELECT: The owner of the character sheet.
+        /// * GUIEVENT_PLAYERLIST_PLAYER_CLICK: The player clicked on.
+        /// * GUIEVENT_PARTYBAR_PORTRAIT_CLICK: The creature clicked on.
+        /// * GUIEVENT_DISABLED_PANEL_ATTEMPT_OPEN: For GUI_PANEL_CHARACTERSHEET, the owner of the character sheet.
+        /// </summary>
+        /// <returns></returns>
+        public static uint GetLastGuiEventObject()
+        {
+            Internal.NativeFunctions.CallBuiltIn(963);
+            return Internal.NativeFunctions.StackPopObject();
+        }
+
+        /// <summary>
+        /// Disable a gui panel for the client that controls oPlayer.
+        /// Notes: Will close the gui panel if currently open.
+        ///        Does not persist through relogging or in savegames.
+        ///        Will fire a GUIEVENT_DISABLED_PANEL_ATTEMPT_OPEN OnPlayerGuiEvent for some gui panels if a player attempts to open them.
+        ///        You can still force show a panel with PopUpGUIPanel().
+        /// * nGuiPanel: A GUI_PANEL_* constant, except GUI_PANEL_PLAYER_DEATH.
+        /// </summary>
+        /// <param name="oPlayer"></param>
+        /// <param name="nGuiPanel"></param>
+        /// <param name="bDisabled"></param>
+        public static void SetGuiPanelDisabled(uint oPlayer, GuiPanel nGuiPanel, bool bDisabled)
+        {
+            Internal.NativeFunctions.StackPushInteger(bDisabled ? 1 : 0);
+            Internal.NativeFunctions.StackPushInteger((int)nGuiPanel);
+            Internal.NativeFunctions.StackPushObject(oPlayer);
+            Internal.NativeFunctions.CallBuiltIn(964);
+        }
+
+        /// <summary>
+        /// Gets the ID (1..8) of the last tile action performed in OnPlayerTileAction
+        /// </summary>
+        /// <returns></returns>
+        public static int GetLastTileActionId()
+        {
+            Internal.NativeFunctions.CallBuiltIn(965);
+            return Internal.NativeFunctions.StackPopInteger();
+        }
+
+        /// <summary>
+        /// Gets the target position in the module OnPlayerTileAction event.
+        /// </summary>
+        /// <returns></returns>
+        public static Vector3 GetLastTileActionPosition()
+        {
+            Internal.NativeFunctions.CallBuiltIn(966);
+            return Internal.NativeFunctions.StackPopVector();
+        }
+
+        /// <summary>
+        /// Gets the player object that triggered the OnPlayerTileAction event.
+        /// </summary>
+        /// <returns></returns>
+        public static uint GetLastPlayerToDoTileAction()
+        {
+            Internal.NativeFunctions.CallBuiltIn(967);
+            return Internal.NativeFunctions.StackPopObject();
         }
     }
 }

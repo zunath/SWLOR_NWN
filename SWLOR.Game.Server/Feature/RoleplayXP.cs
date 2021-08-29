@@ -74,11 +74,11 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("on_nwnx_chat")]
         public static void ProcessRPMessage()
         {
-            var channel = Chat.GetChannel();
-            var player = Chat.GetSender();
+            var channel = ChatPlugin.GetChannel();
+            var player = ChatPlugin.GetSender();
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
-            var message = Chat.GetMessage().Trim();
+            var message = ChatPlugin.GetMessage().Trim();
             var now = DateTime.UtcNow;
 
             var isInCharacterChat =
@@ -102,13 +102,13 @@ namespace SWLOR.Game.Server.Feature
 
             // Spam prevention
             var timestampString = GetLocalString(player, RPTimestampVariable);
-            SetLocalString(player, RPTimestampVariable, now.ToString(CultureInfo.InvariantCulture));
+            SetLocalString(player, RPTimestampVariable, now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
 
             // If there was a timestamp then we'll check for spam and prevent it from counting towards
             // the RP XP points.
             if (!string.IsNullOrWhiteSpace(timestampString))
             {
-                var lastSend = DateTime.Parse(timestampString);
+                var lastSend = DateTime.ParseExact(timestampString, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                 if (now <= lastSend.AddSeconds(1))
                 {
                     dbPlayer.RoleplayProgress.SpamMessageCount++;

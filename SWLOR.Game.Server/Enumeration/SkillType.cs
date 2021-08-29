@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Enumeration
         [Skill(SkillCategoryType.Combat, 
             "Martial Arts", 50, 
             true, 
-            "Ability to fight using knuckles and staves in combat.", 
+            "Ability to fight using katars and staves in combat.", 
             true)]
         MartialArts = 3,
 
@@ -86,14 +86,6 @@ namespace SWLOR.Game.Server.Enumeration
             true)]
         Smithery = 9,
         
-        [Skill(SkillCategoryType.Crafting,
-            "Cybertech", 
-            50,
-            true,
-            "Ability to create and install implants.",
-            true)]
-        Cybertech = 11,
-
         [Skill(SkillCategoryType.Crafting, 
             "Fabrication", 
             50, 

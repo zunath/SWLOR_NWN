@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -14,8 +15,17 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The authorization level (player, DM, or admin)</returns>
         public static AuthorizationLevel GetAuthorizationLevel(uint player)
         {
-            var dmList = DB.GetList<AuthorizedDM>("All", "AuthorizedDM") ?? new EntityList<AuthorizedDM>();
             var cdKey = GetPCPublicCDKey(player);
+
+            // Check environment variable for super admin CD Key
+            var superAdminCDKey = Environment.GetEnvironmentVariable("SWLOR_SUPER_ADMIN_CD_KEY");
+            if (!string.IsNullOrWhiteSpace(superAdminCDKey))
+            {
+                if (cdKey == superAdminCDKey)
+                    return AuthorizationLevel.Admin;
+            }
+
+            var dmList = DB.GetList<AuthorizedDM>("All", "AuthorizedDM") ?? new EntityList<AuthorizedDM>();
 
             var existing = dmList.FirstOrDefault(x => x.CDKey == cdKey);
             if (existing == null)

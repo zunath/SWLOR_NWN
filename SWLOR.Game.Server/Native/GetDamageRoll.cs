@@ -92,6 +92,17 @@ namespace SWLOR.Game.Server.Native
                 dmg = 0.5f;
             }
 
+            // Combat Mode - Power Attack (+1.0 DMG)
+            if (creature?.m_nCombatMode == 2) // 2 = Power Attack
+            {
+                dmg += 1.0f;
+            }
+            // Combat Mode - Improved Power Attack (+2.5 DMG)
+            else if (creature?.m_nCombatMode == 3) // 3 = Improved Power Attack
+            {
+                dmg += 2.5f;
+            }
+
             // Calculate total defense on the target.
             if (targetObject != null && targetObject.m_nObjectType == (int)ObjectType.Creature)
             {

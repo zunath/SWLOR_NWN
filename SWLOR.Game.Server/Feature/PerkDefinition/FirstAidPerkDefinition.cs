@@ -7,21 +7,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class FirstAidPerkDefinition : IPerkListDefinition
     {
+        private readonly PerkBuilder _builder = new PerkBuilder();
+
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
-            var builder = new PerkBuilder();
+            RangedHealing();
+            FrugalMedic();
+            RecoveryItems();
+            BactaRecovery();
+            StasisField();
+            CombatEnhancement();
 
-            RangedHealing(builder);
-            FrugalMedic(builder);
-            RecoveryItems(builder);
-            StimPacks(builder);
-
-            return builder.Build();
+            return _builder.Build();
         }
 
-        private void RangedHealing(PerkBuilder builder)
+        private void RangedHealing()
         {
-            builder.Create(PerkCategoryType.FirstAid, PerkType.RangedHealing)
+            _builder.Create(PerkCategoryType.FirstAid, PerkType.RangedHealing)
                 .Name("Ranged Healing")
 
                 .AddPerkLevel()
@@ -51,9 +53,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RangedHealing4);
         }
 
-        private void FrugalMedic(PerkBuilder builder)
+        private void FrugalMedic()
         {
-            builder.Create(PerkCategoryType.FirstAid, PerkType.FrugalMedic)
+            _builder.Create(PerkCategoryType.FirstAid, PerkType.FrugalMedic)
                 .Name("Frugal Medic")
 
                 .AddPerkLevel()
@@ -77,74 +79,54 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FrugalMedic3);
         }
 
-        private void RecoveryItems(PerkBuilder builder)
+        private void RecoveryItems()
         {
-            builder.Create(PerkCategoryType.FirstAid, PerkType.RecoveryItems)
+            _builder.Create(PerkCategoryType.FirstAid, PerkType.RecoveryItems)
                 .Name("Recovery Items")
 
                 .AddPerkLevel()
-                .Description("Enables you to use tier 1 recovery items.")
-                .Price(1)
+                .Description("Enables you to use tier 1 recovery items and stim packs.")
+                .Price(3)
                 .GrantsFeat(FeatType.RecoveryItems1)
 
                 .AddPerkLevel()
-                .Description("Enables you to use tier 2 recovery items.")
-                .Price(1)
+                .Description("Enables you to use tier 2 recovery items and stim packs.")
+                .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 10)
                 .GrantsFeat(FeatType.RecoveryItems2)
 
                 .AddPerkLevel()
-                .Description("Enables you to use tier 3 recovery items.")
-                .Price(2)
+                .Description("Enables you to use tier 3 recovery items and stim packs.")
+                .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 20)
                 .GrantsFeat(FeatType.RecoveryItems3)
 
                 .AddPerkLevel()
-                .Description("Enables you to use tier 4 recovery items.")
-                .Price(3)
+                .Description("Enables you to use tier 4 recovery items and stim packs.")
+                .Price(5)
                 .RequirementSkill(SkillType.FirstAid, 30)
                 .GrantsFeat(FeatType.RecoveryItems4)
 
                 .AddPerkLevel()
-                .Description("Enables you to use tier 5 recovery items.")
-                .Price(3)
+                .Description("Enables you to use tier 5 recovery items and stim packs.")
+                .Price(5)
                 .RequirementSkill(SkillType.FirstAid, 40)
                 .GrantsFeat(FeatType.RecoveryItems5);
         }
 
-        private void StimPacks(PerkBuilder builder)
+        private void BactaRecovery()
         {
-            builder.Create(PerkCategoryType.FirstAid, PerkType.StimPacks)
-                .Name("Stim Packs")
 
-                .AddPerkLevel()
-                .Description("Enables you to use tier 1 stim packs.")
-                .Price(1)
-                .GrantsFeat(FeatType.StimPacks1)
+        }
 
-                .AddPerkLevel()
-                .Description("Enables you to use tier 2 stim packs.")
-                .Price(1)
-                .RequirementSkill(SkillType.FirstAid, 10)
-                .GrantsFeat(FeatType.StimPacks2)
+        private void StasisField()
+        {
 
-                .AddPerkLevel()
-                .Description("Enables you to use tier 3 stim packs.")
-                .Price(2)
-                .RequirementSkill(SkillType.FirstAid, 20)
-                .GrantsFeat(FeatType.StimPacks3)
+        }
 
-                .AddPerkLevel()
-                .Description("Enables you to use tier 4 stim packs.")
-                .Price(3)
-                .RequirementSkill(SkillType.FirstAid, 30)
-                .GrantsFeat(FeatType.StimPacks4)
+        private void CombatEnhancement()
+        {
 
-                .AddPerkLevel()
-                .Description("Enables you to use tier 5 stim packs.")
-                .Price(3)
-                .RequirementSkill(SkillType.FirstAid, 40)
-                .GrantsFeat(FeatType.StimPacks5);
         }
     }
 }

@@ -448,6 +448,12 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 return (FeatType.Roar, self);
             }
 
+            // Bite
+            if (CheckIfCanUseFeat(self, target, FeatType.Bite))
+            {
+                return (FeatType.Roar, target);
+            }
+
             return (FeatType.Invalid, OBJECT_INVALID);
         }
 

@@ -7,24 +7,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class ForcePerkDefinition : IPerkListDefinition
     {
+        private readonly PerkBuilder _builder = new PerkBuilder();
+
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
-            var builder = new PerkBuilder();
+            ForcePush();
+            BurstOfSpeed();
+            ThrowLightsaber();
+            ForceStun();
+            ComprehendSpeech();
+            BattleInsight();
+            MindTrick();
+            ForceHeal();
+            ForceBreach();
+            ForceBody();
+            DrainLife();
+            ForceLightning();
+            ForceMind();
 
-            ForcePush(builder);
-            BurstOfSpeed(builder);
-            ThrowLightsaber(builder);
-            ForceStun(builder);
-            ComprehendSpeech(builder);
-            BattleInsight(builder);
-            MindTrick(builder);
-
-            return builder.Build();
+            return _builder.Build();
         }
 
-        private void ForcePush(PerkBuilder builder)
+        private void ForcePush()
         {
-            builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForcePush)
+            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForcePush)
                 .Name("Force Push")
 
                 .AddPerkLevel()
@@ -56,9 +62,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForcePush4);
         }
 
-        private void BurstOfSpeed(PerkBuilder builder)
+        private void BurstOfSpeed()
         {
-            builder.Create(PerkCategoryType.ForceUniversal, PerkType.BurstOfSpeed)
+            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.BurstOfSpeed)
                 .Name("Burst of Speed")
 
                 .AddPerkLevel()
@@ -97,63 +103,63 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.BurstOfSpeed5);
         }
 
-        private void ThrowLightsaber(PerkBuilder builder)
+        private void ThrowLightsaber()
         {
-            builder.Create(PerkCategoryType.ForceUniversal, PerkType.ThrowLightsaber)
+            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber")
 
                 .AddPerkLevel()
-                .Description("Throw your equipped lightsaber up to 15m for (1d6 + INT modifier + 50% WIS modifier). Can hit up to 1 targets along the path thrown.")
+                .Description("Throw your equipped lightsaber up to 15m for 5.0 DMG. Can hit up to 1 targets along the path thrown.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowLightsaber1)
 
                 .AddPerkLevel()
-                .Description("Throw your equipped lightsaber up to 15m for (1d8 + INT modifier + 50% WIS modifier). Can hit up to 2 targets along the path thrown.")
+                .Description("Throw your equipped lightsaber up to 15m for 7.5 DMG. Can hit up to 2 targets along the path thrown.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowLightsaber2)
 
                 .AddPerkLevel()
-                .Description("Throw your equipped lightsaber up to 15m for (1d10 + INT modifier + 50% WIS modifier). Can hit up to 3 targets along the path thrown.")
+                .Description("Throw your equipped lightsaber up to 15m for 9.0 DMG. Can hit up to 3 targets along the path thrown.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowLightsaber3);
         }
 
-        private void ForceStun(PerkBuilder builder)
+        private void ForceStun()
         {
-            builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceStun)
+            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ForceStun)
                 .Name("Force Stun")
 
                 .AddPerkLevel()
-                .Description("Single target is Tranquilized while the caster concentrates or, if resisted, gets -5 to AB and AC.")
+                .Description("Single target is Tranquilized while the caster concentrates or, if resisted, gets -5 to AB and Evasion.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceStun1)
 
                 .AddPerkLevel()
-                .Description("Target and nearest other enemy within 10m is Tranquilized while the caster concentrates or, if resisted, get -5 to AB and AC.")
+                .Description("Target and nearest other enemy within 10m is Tranquilized while the caster concentrates or, if resisted, get -5 to AB and Evasion.")
                 .Price(7)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceStun2)
 
                 .AddPerkLevel()
-                .Description("Target and all other enemies within 10 are Tranquilized while the caster concentrates or, if resisted, get -5 to AB and AC.")
+                .Description("Target and all other enemies within 10 are Tranquilized while the caster concentrates or, if resisted, get -5 to AB and Evasion.")
                 .Price(10)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceStun3);
         }
 
-        private void ComprehendSpeech(PerkBuilder builder)
+        private void ComprehendSpeech()
         {
-            builder.Create(PerkCategoryType.ForceUniversal, PerkType.ComprehendSpeech)
+            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.ComprehendSpeech)
                 .Name("Comprehend Speech")
 
                 .AddPerkLevel()
@@ -185,44 +191,74 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ComprehendSpeech4);
         }
 
-        private void BattleInsight(PerkBuilder builder)
+        private void BattleInsight()
         {
-            builder.Create(PerkCategoryType.ForceUniversal, PerkType.BattleInsight)
+            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.BattleInsight)
                 .Name("Battle Insight")
 
                 .AddPerkLevel()
-                .Description("The caster gets -5 AB & AC but nearby party members get +3 AB & AC.")
+                .Description("The caster gets -5 AB & Evasion but nearby party members get +3 AB & Evasion.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.BattleInsight1)
 
                 .AddPerkLevel()
-                .Description("The caster gets -8 AB & AC but nearby party members get +6 AB & AC.")
+                .Description("The caster gets -8 AB & Evasion but nearby party members get +6 AB & Evasion.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.BattleInsight2);
         }
 
-        private void MindTrick(PerkBuilder builder)
+        private void MindTrick()
         {
-            builder.Create(PerkCategoryType.ForceUniversal, PerkType.MindTrick)
+            _builder.Create(PerkCategoryType.ForceUniversal, PerkType.MindTrick)
                 .Name("Mind Trick")
 
                 .AddPerkLevel()
-                .Description("Applies Confusion effect to a single non-mechanical target with lower WIS than the caster, while the caster concentrates.")
+                .Description("Applies Confusion effect to a single non-mechanical target with lower WIL than the caster, while the caster concentrates.")
                 .Price(7)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.MindTrick1)
 
                 .AddPerkLevel()
-                .Description("Applies Confusion effect to all hostile non-mechanical targets within 10m with lower WIS than the caster, while the caster concentrates.")
+                .Description("Applies Confusion effect to all hostile non-mechanical targets within 10m with lower WIL than the caster, while the caster concentrates.")
                 .Price(7)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.MindTrick2);
+        }
+
+        private void ForceHeal()
+        {
+
+        }
+
+        private void ForceBreach()
+        {
+
+        }
+
+        private void ForceBody()
+        {
+
+        }
+
+        private void DrainLife()
+        {
+
+        }
+
+        private void ForceLightning()
+        {
+
+        }
+
+        private void ForceMind()
+        {
+
         }
 
     }

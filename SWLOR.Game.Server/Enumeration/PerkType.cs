@@ -128,7 +128,7 @@
         RangedHealing = 122,
         FrugalMedic = 123,
         RecoveryItems = 124,
-        StimPacks = 125,
+        
 
         OneHandedBlueprints = 127,
         TwoHandedBlueprints = 128,

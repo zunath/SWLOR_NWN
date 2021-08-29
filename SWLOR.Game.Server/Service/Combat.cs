@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Service
     public static class Combat
     {
         private static readonly Dictionary<int, float> _dmgValues = new Dictionary<int, float>();
-
+        
         /// <summary>
         /// When the module loads, cache the DMG values found in iprp_dmg.2da into memory.
         /// </summary>
@@ -73,64 +73,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             return (int)Random.NextFloat(minDamage, maxDamage);
-        }
-
-        /// <summary>
-        /// Retrieves a creature's total defense value.
-        /// </summary>
-        /// <param name="creature">The creature to retrieve from.</param>
-        /// <returns>Total defense value of selected creature.</returns>
-        public static int CalculateDefense(uint creature)
-        {
-            var defense = 0;
-
-            // Pull defense values off equipment.
-            for (var slot = 0; slot < NumberOfInventorySlots; slot++)
-            {
-                var item = GetItemInSlot((InventorySlot)slot, creature);
-
-                for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-                {
-                    if (GetItemPropertyType(ip) == ItemPropertyType.Defense)
-                    {
-                        defense += GetItemPropertyCostTableValue(ip);
-                    }
-                }
-            }
-
-            // Iron Shell: +20 Defense
-            if (StatusEffect.HasStatusEffect(creature, StatusEffectType.IronShell))
-            {
-                defense += 20;
-            }
-            
-            return defense;
-        }
-
-        /// <summary>
-        /// Retrieves a creature's total force defense value.
-        /// </summary>
-        /// <param name="creature">The creature to retrieve from.</param>
-        /// <returns>Total ether defense value of selected creature.</returns>
-        public static int CalculateForceDefense(uint creature)
-        {
-            var forceDefense = 0;
-
-            // Pull defense values off equipment.
-            for (var slot = 0; slot < NumberOfInventorySlots; slot++)
-            {
-                var item = GetItemInSlot((InventorySlot)slot, creature);
-
-                for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
-                {
-                    if (GetItemPropertyType(ip) == ItemPropertyType.ForceDefense)
-                    {
-                        forceDefense += GetItemPropertyCostTableValue(ip);
-                    }
-                }
-            }
-            
-            return forceDefense;
         }
     }
 }

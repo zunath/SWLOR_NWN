@@ -1,7 +1,10 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.CombatService;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -9,6 +12,8 @@ namespace SWLOR.Game.Server.Service
 {
     public class Stat
     {
+        private static readonly Dictionary<uint, Dictionary<CombatDamageType, int>> _npcDefenses = new Dictionary<uint, Dictionary<CombatDamageType, int>>();
+
         /// <summary>
         /// When a player enters the server, apply any temporary stats which do not persist.
         /// </summary>
@@ -170,6 +175,7 @@ namespace SWLOR.Game.Server.Service
                 return GetLocalInt(creature, "STAMINA");
             }
         }
+
         /// <summary>
         /// Restores a creature's FP by a specified amount.
         /// </summary>
@@ -502,5 +508,89 @@ namespace SWLOR.Game.Server.Service
             entity.STMRegen += adjustBy;
         }
 
+        /// <summary>
+        /// Modifies a player's defense toward a particular damage type by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="type">The type of damage</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustDefense(Player entity, CombatDamageType type, int adjustBy)
+        {
+            entity.Defenses[type] += adjustBy;
+        }
+
+        /// <summary>
+        /// When a creature spawns, load its relevant defense information based on their equipment.
+        /// </summary>
+        [NWNEventHandler("crea_spawn")]
+        public static void LoadNPCDefense()
+        {
+            var creature = OBJECT_SELF;
+            _npcDefenses[creature] = new Dictionary<CombatDamageType, int>
+            {
+                {CombatDamageType.Physical, 0},
+                {CombatDamageType.Force, 0},
+                {CombatDamageType.Fire, 0},
+                {CombatDamageType.Poison, 0},
+                {CombatDamageType.Electrical, 0},
+                {CombatDamageType.Ice, 0},
+            };
+
+            // Pull defense values off skin.
+            var skin = GetItemInSlot(InventorySlot.CreatureArmor, creature);
+            for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.Defense)
+                {
+                    var damageType = (CombatDamageType)GetItemPropertySubType(ip);
+                    if (damageType == CombatDamageType.Invalid)
+                        continue;
+
+                    _npcDefenses[creature][damageType] += GetItemPropertyCostTableValue(ip);
+                }
+            }
+        }
+
+        [NWNEventHandler("crea_death")]
+        public static void ClearNPCDefense()
+        {
+            if (_npcDefenses.ContainsKey(OBJECT_SELF))
+                _npcDefenses.Remove(OBJECT_SELF);
+        }
+        
+        /// <summary>
+        /// Retrieves the total defense toward a specific type of damage.
+        /// </summary>
+        /// <param name="creature">The creature to retrieve from.</param>
+        /// <param name="type">The type of damage to retrieve.</param>
+        /// <returns>The defense value toward a given damage type.</returns>
+        public static int GetDefense(uint creature, CombatDamageType type)
+        {
+            int defense;
+
+            if (GetIsPC(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                defense = dbPlayer.Defenses[type];
+            }
+            else
+            {
+                if (!_npcDefenses.ContainsKey(creature))
+                    return 0;
+
+                defense = _npcDefenses[creature][type];
+            }
+
+            if (type == CombatDamageType.Physical)
+            {
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.IronShell))
+                    defense += 20;
+            }
+
+            return defense;
+        }
     }
 }

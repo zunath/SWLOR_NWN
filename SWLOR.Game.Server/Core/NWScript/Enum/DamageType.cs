@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Bludgeoning = 1,
         Piercing = 2,
         Slashing = 4,
-        Magical = 8,
+        Force = 8, // Originally Magic
         Acid = 16,
         Cold = 32,
         Divine = 64,

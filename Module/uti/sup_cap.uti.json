@@ -112,7 +112,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 2
         }
       },
       {
@@ -139,11 +139,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 95
+          "value": 94
         },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 1
         }
       },
       {

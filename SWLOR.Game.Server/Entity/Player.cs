@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.FactionService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.TaxiService;
@@ -33,6 +35,16 @@ namespace SWLOR.Game.Server.Entity
                 {AbilityType.Unused, 0},
                 {AbilityType.Willpower, 0}
             };
+
+            Defenses = new Dictionary<CombatDamageType, int>
+            {
+                {CombatDamageType.Physical, 0},
+                {CombatDamageType.Force, 0},
+                {CombatDamageType.Fire, 0},
+                {CombatDamageType.Poison, 0},
+                {CombatDamageType.Electrical, 0},
+                {CombatDamageType.Ice, 0}
+            };   
 
             ShowHelmet = true;
             IsUsingDualPistolMode = false;
@@ -127,6 +139,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<int, List<TaxiDestinationType>> TaxiDestinations { get; set; }
         public Dictionary<int, int> AbilityPointsByLevel { get; set; }
         public Dictionary<string, VisibilityType> ObjectVisibilities { get; set; }
+        public Dictionary<CombatDamageType, int> Defenses { get; set; }
     }
 
     public class MapPin

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Random = SWLOR.Game.Server.Service.Random;
 
@@ -68,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             ApplyEffectToObject(DurationType.Temporary, EffectDisappearAppear(GetLocation(target)), activator, Delay);
 
             var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
-            var defense = Combat.CalculateDefense(target);
+            var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
             var damage = Combat.CalculateDamage(dmg, willpower, defense, vitality, false);
 

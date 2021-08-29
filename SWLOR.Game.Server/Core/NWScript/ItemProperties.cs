@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using Alignment = SWLOR.Game.Server.Core.NWScript.Enum.Item.Property.Alignment;
 using AlignmentGroup = SWLOR.Game.Server.Core.NWScript.Enum.Item.Property.AlignmentGroup;
-using DamageType = SWLOR.Game.Server.Core.NWScript.Enum.Item.Property.DamageType;
 using SpellSchool = SWLOR.Game.Server.Core.NWScript.Enum.SpellSchool;
 
 namespace SWLOR.Game.Server.Core.NWScript
@@ -134,7 +133,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   NOTE: Only the first 3 damage types may be used here, the 3 basic
         ///   physical types.
         /// </summary>
-        public static ItemProperty ItemPropertyACBonusVsDmgType(DamageType nDamageType, int ACBonus)
+        public static ItemProperty ItemPropertyACBonusVsDmgType(ItemPropertyDamageType nDamageType, int ACBonus)
         {
             Internal.NativeFunctions.StackPushInteger(ACBonus);
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
@@ -302,7 +301,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   NOTE: not all the damage types will work, use only the following: Acid, Bludgeoning,
         ///   Cold, Electrical, Fire, Piercing, Slashing, Sonic.
         /// </summary>
-        public static ItemProperty ItemPropertyDamageBonus(DamageType nDamageType,
+        public static ItemProperty ItemPropertyDamageBonus(ItemPropertyDamageType nDamageType,
             DamageBonus nDamage)
         {
             Internal.NativeFunctions.StackPushInteger((int)nDamage);
@@ -319,7 +318,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Cold, Electrical, Fire, Piercing, Slashing, Sonic.
         /// </summary>
         public static ItemProperty ItemPropertyDamageBonusVsAlign(AlignmentGroup nAlignGroup,
-            DamageType nDamageType, DamageBonus nDamage)
+            ItemPropertyDamageType nDamageType, DamageBonus nDamage)
         {
             Internal.NativeFunctions.StackPushInteger((int)nDamage);
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
@@ -336,7 +335,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Cold, Electrical, Fire, Piercing, Slashing, Sonic.
         /// </summary>
         public static ItemProperty ItemPropertyDamageBonusVsRace(RacialType nRace,
-            DamageType nDamageType, DamageBonus nDamage)
+            ItemPropertyDamageType nDamageType, DamageBonus nDamage)
         {
             Internal.NativeFunctions.StackPushInteger((int)nDamage);
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
@@ -353,7 +352,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Cold, Electrical, Fire, Piercing, Slashing, Sonic.
         /// </summary>
         public static ItemProperty ItemPropertyDamageBonusVsSAlign(Alignment nAlign,
-            DamageType nDamageType, DamageBonus nDamage)
+            ItemPropertyDamageType nDamageType, DamageBonus nDamage)
         {
             Internal.NativeFunctions.StackPushInteger((int)nDamage);
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
@@ -369,7 +368,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   NOTE: not all the damage types will work, use only the following: Acid, Bludgeoning,
         ///   Cold, Electrical, Fire, Piercing, Slashing, Sonic.
         /// </summary>
-        public static ItemProperty ItemPropertyDamageImmunity(DamageType nDamageType,
+        public static ItemProperty ItemPropertyDamageImmunity(ItemPropertyDamageType nDamageType,
             DamageImmunity nImmuneBonus)
         {
             Internal.NativeFunctions.StackPushInteger((int)nImmuneBonus);
@@ -410,7 +409,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   constant(IP_CONST_DAMAGETYPE_*) and the amount of HP of damage constant
         ///   (IP_CONST_DAMAGERESIST_*) that will be resisted against each round.
         /// </summary>
-        public static ItemProperty ItemPropertyDamageResistance(DamageType nDamageType,
+        public static ItemProperty ItemPropertyDamageResistance(ItemPropertyDamageType nDamageType,
             DamageResist nHPResist)
         {
             Internal.NativeFunctions.StackPushInteger((int)nHPResist);
@@ -424,7 +423,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   constant(IP_CONST_DAMAGETYPE_*) that you want the user to be extra vulnerable to
         ///   and the percentage vulnerability constant(IP_CONST_DAMAGEVULNERABILITY_*).
         /// </summary>
-        public static ItemProperty ItemPropertyDamageVulnerability(DamageType nDamageType,
+        public static ItemProperty ItemPropertyDamageVulnerability(ItemPropertyDamageType nDamageType,
             DamageVulnerability nVulnerability)
         {
             Internal.NativeFunctions.StackPushInteger((int)nVulnerability);
@@ -500,7 +499,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   here.
         ///   NOTE: It is also only applicable to melee weapons.
         /// </summary>
-        public static ItemProperty ItemPropertyExtraMeleeDamageType(DamageType nDamageType)
+        public static ItemProperty ItemPropertyExtraMeleeDamageType(ItemPropertyDamageType nDamageType)
         {
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.CallBuiltIn(645);
@@ -514,7 +513,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   here.
         ///   NOTE: It is also only applicable to ranged weapons.
         /// </summary>
-        public static ItemProperty ItemPropertyExtraRangeDamageType(DamageType nDamageType)
+        public static ItemProperty ItemPropertyExtraRangeDamageType(ItemPropertyDamageType nDamageType)
         {
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.CallBuiltIn(646);

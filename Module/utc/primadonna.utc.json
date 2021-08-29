@@ -173,13 +173,6 @@
           "type": "resref",
           "value": "primagarb"
         }
-      },
-      {
-        "__struct_id": 8,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "primaglove"
-        }
       }
     ]
   },

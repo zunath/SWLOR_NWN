@@ -4526,17 +4526,6 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Teras Kasi Master's Glove"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "primaglove"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Transcendent Gloves"
                           },
                           "RESREF": {
@@ -9271,39 +9260,6 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "gr_ring"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Prismatic Fighter Ring"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "prism_ring_w"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Prismatic Force Ring"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "prism_ring_m"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Prismatic Light Ring"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "prism_ring_t"
                           }
                         },
                         {

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using ItemProperty = SWLOR.Game.Server.Core.ItemProperty;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -25,6 +26,7 @@ namespace SWLOR.Game.Server.Feature
             _statChangeActions[ItemPropertyType.FPBonus] = ApplyFPBonus;
             _statChangeActions[ItemPropertyType.STMBonus] = ApplySTMBonus;
             _statChangeActions[ItemPropertyType.AbilityRecastReduction] = ApplyAbilityRecastReduction;
+            _statChangeActions[ItemPropertyType.Defense] = ApplyDefense;
         }
 
         /// <summary>
@@ -175,6 +177,32 @@ namespace SWLOR.Game.Server.Feature
             else
             {
                 Stat.AdjustPlayerRecastReduction(dbPlayer, -amount);
+            }
+
+            DB.Set(playerId, dbPlayer);
+        }
+
+        /// <summary>
+        /// Applies or removes defense toward a particular damage type on a player.
+        /// </summary>
+        /// <param name="player">The player to adjust</param>
+        /// <param name="item">The item being equipped or unequipped</param>
+        /// <param name="ip">The item property associated with this change</param>
+        /// <param name="isAdding">If true, we're adding the defense, if false we're removing it.</param>
+        private static void ApplyDefense(uint player, uint item, ItemProperty ip, bool isAdding)
+        {
+            var amount = GetItemPropertyCostTableValue(ip);
+            var damageType = (CombatDamageType)GetItemPropertySubType(ip);
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Entity.Player>(playerId);
+
+            if (isAdding)
+            {
+                Stat.AdjustDefense(dbPlayer, damageType, amount);
+            }
+            else
+            {
+                Stat.AdjustDefense(dbPlayer, damageType, -amount);
             }
 
             DB.Set(playerId, dbPlayer);

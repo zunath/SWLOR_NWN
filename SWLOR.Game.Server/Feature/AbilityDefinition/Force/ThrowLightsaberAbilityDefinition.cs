@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
@@ -70,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             // apply to target
             DelayCommand(delay, () =>
             {
-                var defense = Combat.CalculateDefense(target);
+                var defense = Stat.GetDefense(target, CombatDamageType.Physical);
                 var targetWillpower = GetAbilityModifier(AbilityType.Willpower, target);
                 var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, false);
                 ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), target);
@@ -87,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     var nearbyCopy = nearby;
                     DelayCommand(delay, () =>
                     {
-                        var defense = Combat.CalculateDefense(nearbyCopy);
+                        var defense = Stat.GetDefense(nearbyCopy, CombatDamageType.Physical);
                         var targetWillpower = GetAbilityModifier(AbilityType.Willpower, nearbyCopy);
                         var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, false);
                         ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), nearbyCopy);

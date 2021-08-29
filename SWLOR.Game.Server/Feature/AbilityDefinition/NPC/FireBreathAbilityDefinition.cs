@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
@@ -38,7 +39,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     {
                         if (GetIsEnemy(coneTarget, activator))
                         {
-                            var defense = Combat.CalculateDefense(target);
+                            var defense = Stat.GetDefense(target, CombatDamageType.Physical) +
+                                          Stat.GetDefense(target, CombatDamageType.Fire);
                             var vitality = GetAbilityModifier(AbilityType.Vitality, coneTarget);
                             var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, false);
 

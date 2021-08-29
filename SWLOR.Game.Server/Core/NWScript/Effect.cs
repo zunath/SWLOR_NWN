@@ -345,7 +345,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   NOTE! You *must* use the DAMAGE_BONUS_* constants! Using other values may
         ///   result in odd behaviour.
         /// </summary>
-        public static Effect EffectDamageIncrease(int nBonus, DamageType nDamageType = DamageType.Magical)
+        public static Effect EffectDamageIncrease(int nBonus, DamageType nDamageType = DamageType.Force)
         {
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.StackPushInteger(nBonus);
@@ -500,7 +500,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - nDamageType: DAMAGE_TYPE_*
         ///   - nDamagePower: DAMAGE_POWER_*
         /// </summary>
-        public static Effect EffectDamage(int nDamageAmount, DamageType nDamageType = DamageType.Magical,
+        public static Effect EffectDamage(int nDamageAmount, DamageType nDamageType = DamageType.Force,
             DamagePower nDamagePower = DamagePower.Normal)
         {
             Internal.NativeFunctions.StackPushInteger((int)nDamagePower);
@@ -955,7 +955,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - nPenalty
         ///   - nDamageType: DAMAGE_TYPE_*
         /// </summary>
-        public static Effect EffectDamageDecrease(int nPenalty, DamageType nDamageType = DamageType.Magical)
+        public static Effect EffectDamageDecrease(int nPenalty, DamageType nDamageType = DamageType.Force)
         {
             Internal.NativeFunctions.StackPushInteger((int)nDamageType);
             Internal.NativeFunctions.StackPushInteger(nPenalty);

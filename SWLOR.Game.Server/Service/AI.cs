@@ -344,6 +344,15 @@ namespace SWLOR.Game.Server.Service
 
             SetLocalInt(self, "FP", fp);
             SetLocalInt(self, "STAMINA", stm);
+
+            // If out of combat - restore HP at 10% per tick.
+            if (!GetIsInCombat(self) &&
+                !GetIsObjectValid(Enmity.GetHighestEnmityTarget(self)) &&
+                GetCurrentHitPoints(self) < GetMaxHitPoints(self))
+            {
+                var hpToHeal = GetMaxHitPoints(self) * 0.1f;
+                ApplyEffectToObject(DurationType.Instant, EffectHeal((int)hpToHeal), self);
+            }
         }
 
         /// <summary>

@@ -36,8 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
-            var damage = 0;
+            var dmg = 0.0f;
             var inflict = false;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
@@ -46,21 +45,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             switch (level)
             {
                 case 1:
-                    damage = d4(2);
+                    dmg = 2.0f;
                     if (d4()==1) inflict = true;
                     break;
                 case 2:
-                    damage = d4(3);
+                    dmg = 4.5f;
                     if (Random(100) < 40) inflict = true;
                     break;
                 case 3:
-                    damage = d2(4);
+                    dmg = 7.0f;
                     if (d4() > 2) inflict = true;
                     break;
                 default:
                     break;
             }
 
+            var might  = GetAbilityModifier(AbilityType.Might, activator);
+            var defense = Combat.CalculateDefense(target);
+            var vitality = GetAbilityModifier(AbilityType.Vitality, target);
+            var damage = Combat.CalculateDamage(dmg, might, defense, vitality, false);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
             if (inflict) ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), target, 6f);
 

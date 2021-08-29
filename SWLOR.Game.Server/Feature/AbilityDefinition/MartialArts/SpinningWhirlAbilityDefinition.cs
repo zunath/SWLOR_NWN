@@ -44,13 +44,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             switch (level)
             {
                 case 1:
-                    dmg = 5.5f;
+                    dmg = 2.0f;
                     break;
                 case 2:
-                    dmg = 10.5f;
+                    dmg = 4.5f;
                     break;
                 case 3:
-                    dmg = 15.5f;
+                    dmg = 7.0f;
                     break;
                 default:
                     break;

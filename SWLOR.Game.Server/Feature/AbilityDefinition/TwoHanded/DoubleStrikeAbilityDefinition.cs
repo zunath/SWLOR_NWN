@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            var damage = 0;
+            var dmg = 0.0f;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
@@ -44,18 +44,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             switch (level)
             {
                 case 1:
-                    damage = d4();
+                    dmg = 1.5f;
                     break;
                 case 2:
-                    damage = d6(2);
+                    dmg = 4.0f;
                     break;
                 case 3:
-                    damage = d6(3);
+                    dmg = 6.0f;
                     break;
                 default:
                     break;
             }
 
+            var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
+            var defense = Combat.CalculateDefense(target);
+            var vitality = GetAbilityModifier(AbilityType.Vitality, target);
+            var damage = Combat.CalculateDamage(dmg, willpower, defense, vitality, false);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Sonic), target);
 
             Enmity.ModifyEnmityOnAll(activator, 1);

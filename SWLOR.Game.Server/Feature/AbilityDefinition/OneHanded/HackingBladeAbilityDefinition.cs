@@ -48,15 +48,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             switch (level)
             {
                 case 1:
-                    dmg = 6.0f;
+                    dmg = 6.5f;
                     if (d2() == 1) inflictBleed = true;
                     break;
                 case 2:
-                    dmg = 11.0f;
+                    dmg = 8.0f;
                     if (d4() > 1) inflictBleed = true;
                     break;
                 case 3:
-                    dmg = 16.0f;
+                    dmg = 11.5f;
                     inflictBleed = true;
                     break;
                 default:

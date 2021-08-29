@@ -45,13 +45,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             switch (level)
             {
                 case 1:
-                    dmg = 4.5f;
+                    dmg = 1.5f;
                     break;
                 case 2:
-                    dmg = 8.5f;
+                    dmg = 4.0f;
                     break;
                 case 3:
-                    dmg = 11.5f;
+                    dmg = 6.5f;
                     break;
                 default:
                     break;

@@ -45,15 +45,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             switch (level)
             {
                 case 1:
-                    dmg = 6.5f;
+                    dmg = 7.0f;
                     if (Random(100) < 45) inflict = true;
                     break;
                 case 2:
-                    dmg = 11.5f;
+                    dmg = 8.5f;
                     if (d4() > 1) inflict = true;
                     break;
                 case 3:
-                    dmg = 16.5f;
+                    dmg = 12.0f;
                     inflict = true;
                     break;
                 default:

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWNX.Enum;
-using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.QuestService;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                     KeyItem.RemoveKeyItem(player, KeyItemType.HalronLinthsWorkReceipt);
                     KeyItem.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkReceipt);
 
-                    var cdKey = NWScript.GetPCPublicCDKey(player);
+                    var cdKey = GetPCPublicCDKey(player);
                     var dbAccount = DB.Get<Account>(cdKey) ?? new Account();
                     dbAccount.HasCompletedTutorial = true;
 
@@ -154,10 +154,15 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private static void OreCollection(QuestBuilder builder)
         {
             builder.Create("ore_collection", "Ore Collection")
+                .OnAcceptAction((player, sourceObject) =>
+                {
+                    CreateItemOnObject("harvest_r_old", player);
+                })
 
                 .AddState()
                 .SetStateJournalText("Avix Tatham needs you to head down to the maintenance level and harvest some ore. When you have ten pieces, return to him to collect the work receipt.")
                 .AddCollectItemObjective("raw_veldite", 10)
+                
 
                 .AddState()
                 .SetStateJournalText("Speak to Avix Tatham for your reward.")

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -7,6 +8,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.CombatService;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -588,6 +590,35 @@ namespace SWLOR.Game.Server.Service
             {
                 if (StatusEffect.HasStatusEffect(creature, StatusEffectType.IronShell))
                     defense += 20;
+            }
+
+            return defense;
+        }
+
+        /// <summary>
+        /// Retrieves the total defense toward a specific type of damage.
+        /// This is specifically for use with Native code and should not be referenced outside of there.
+        /// </summary>
+        /// <param name="creature">The creature to retrieve from.</param>
+        /// <param name="type">The type of damage to retrieve.</param>
+        /// <returns>The defense value toward a given damage type.</returns>
+        public static int GetDefenseNative(CNWSCreature creature, CombatDamageType type)
+        {
+            int defense;
+
+            if (creature.m_bPlayerCharacter == 1)
+            {
+                var playerId = creature.m_pUUID.m_uuid.ToString();
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                defense = dbPlayer.Defenses[type];
+            }
+            else
+            {
+                if (!_npcDefenses.ContainsKey(creature.m_idSelf))
+                    return 0;
+
+                defense = _npcDefenses[creature.m_idSelf][type];
             }
 
             return defense;

@@ -133341,6 +133341,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 3
                           },
                           "Param1": {
@@ -133357,38 +133388,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
                             "value": 1
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         },
                         {
@@ -133668,6 +133668,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 5
                           },
                           "Param1": {
@@ -133684,38 +133715,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 3
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -133995,6 +133995,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 2
                           },
                           "Param1": {
@@ -134011,7 +134042,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -134039,37 +134070,6 @@
                           "PropertyName": {
                             "type": "word",
                             "value": 91
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 3
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
                           },
                           "Subtype": {
                             "type": "word",
@@ -134322,6 +134322,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 7
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 3
                           },
                           "Param1": {
@@ -134338,38 +134369,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 7
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -134665,7 +134665,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 2
                           }
                         },
                         {
@@ -134692,11 +134692,11 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 95
+                            "value": 94
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -134789,7 +134789,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.587324068671532e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -134976,6 +134976,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 5
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 4
                           },
                           "Param1": {
@@ -134992,38 +135023,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 5
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -135245,7 +135245,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 2
                           }
                         },
                         {
@@ -135272,11 +135272,11 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 95
+                            "value": 94
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -135482,6 +135482,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 3
                           },
                           "Param1": {
@@ -135498,38 +135529,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
                             "value": 1
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         },
                         {
@@ -135622,7 +135622,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.945002268482846e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -135735,6 +135735,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 1
                           },
                           "Param1": {
@@ -135751,38 +135782,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 2
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -135988,6 +135988,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 3
                           },
                           "Param1": {
@@ -136004,38 +136035,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 2
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -136241,6 +136241,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 4
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 2
                           },
                           "Param1": {
@@ -136257,38 +136288,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 4
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -136489,7 +136489,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -136582,7 +136582,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 5.057545422459953e-007
                     },
                     "XPosition": {
                       "type": "float",
@@ -136674,6 +136674,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 3
                           },
                           "Param1": {
@@ -136690,38 +136721,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
                             "value": 1
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         },
                         {
@@ -136922,7 +136922,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -137123,7 +137123,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -137289,11 +137289,11 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 95
+                            "value": 94
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 2
                           }
                         },
                         {
@@ -137447,6 +137447,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 3
                           },
                           "Param1": {
@@ -137463,38 +137494,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
                             "value": 1
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         },
                         {
@@ -137679,6 +137679,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 3
                           },
                           "Param1": {
@@ -137695,38 +137726,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
                             "value": 1
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         },
                         {
@@ -137819,7 +137819,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 6.269967004606008e-020
                     },
                     "XPosition": {
                       "type": "float",
@@ -137911,6 +137911,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 2
                           },
                           "Param1": {
@@ -137927,38 +137958,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 3
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -138163,7 +138163,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -138256,7 +138256,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 6.269967004606008e-020
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -138368,7 +138368,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -138573,7 +138573,38 @@
                           },
                           "Subtype": {
                             "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
                             "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
                           }
                         },
                         {
@@ -138601,37 +138632,6 @@
                           "PropertyName": {
                             "type": "word",
                             "value": 91
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 1
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
                           },
                           "Subtype": {
                             "type": "word",
@@ -138793,6 +138793,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 3
                           },
                           "Param1": {
@@ -138809,38 +138840,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 2
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -139029,6 +139029,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 2
                           },
                           "Param1": {
@@ -139045,38 +139076,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 3
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -139265,6 +139265,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 3
                           },
                           "Param1": {
@@ -139281,38 +139312,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
                             "value": 1
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         },
                         {
@@ -139513,7 +139513,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -139606,7 +139606,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 5.057545422459953e-007
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -139698,6 +139698,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 3
                           },
                           "Param1": {
@@ -139714,38 +139745,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
                             "value": 1
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         },
                         {
@@ -139968,7 +139968,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -140191,7 +140191,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -140416,7 +140416,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 2
                           }
                         },
                         {
@@ -140443,11 +140443,11 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 95
+                            "value": 94
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -140540,7 +140540,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.945002268482846e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -140654,6 +140654,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 3
                           },
                           "Param1": {
@@ -140670,38 +140701,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
                             "value": 1
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         },
                         {
@@ -140908,6 +140908,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 3
                           },
                           "Param1": {
@@ -140924,38 +140955,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
                             "value": 1
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         },
                         {
@@ -141164,6 +141164,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 2
                           },
                           "Param1": {
@@ -141180,38 +141211,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 3
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -141304,7 +141304,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.587324068671532e-043
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -141412,7 +141412,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -141578,11 +141578,11 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 95
+                            "value": 94
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 2
                           }
                         },
                         {
@@ -141736,6 +141736,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 2
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 3
                           },
                           "Param1": {
@@ -141752,38 +141783,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 2
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -141968,6 +141968,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 2
                           },
                           "Param1": {
@@ -141984,38 +142015,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 3
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -142812,7 +142812,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.587324068671532e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -143336,7 +143336,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.051641081617965e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -144548,7 +144548,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.051641081617965e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -145069,7 +145069,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.587324068671532e-043
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -145693,7 +145693,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -145894,7 +145894,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -146091,11 +146091,11 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 95
+                            "value": 94
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 2
                           }
                         },
                         {
@@ -146188,7 +146188,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -146280,6 +146280,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 3
                           },
                           "Param1": {
@@ -146296,38 +146327,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
                             "value": 1
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         },
                         {
@@ -146420,7 +146420,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.051641081617965e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -146512,6 +146512,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 3
                           },
                           "Param1": {
@@ -146528,38 +146559,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
                             "value": 1
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         },
                         {
@@ -146744,6 +146744,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 2
                           },
                           "Param1": {
@@ -146760,38 +146791,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 3
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -146992,7 +146992,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -147193,7 +147193,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -147359,11 +147359,11 @@
                           },
                           "PropertyName": {
                             "type": "word",
-                            "value": 95
+                            "value": 94
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 2
                           }
                         },
                         {
@@ -147425,7 +147425,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.051641081617965e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -147517,6 +147517,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 3
                           },
                           "Param1": {
@@ -147533,38 +147564,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
                             "value": 1
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         },
                         {
@@ -147657,7 +147657,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -147749,6 +147749,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 3
                           },
                           "Param1": {
@@ -147765,38 +147796,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
                             "value": 1
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         },
                         {
@@ -147981,6 +147981,37 @@
                           },
                           "CostValue": {
                             "type": "word",
+                            "value": 3
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 94
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 2
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 35
+                          },
+                          "CostValue": {
+                            "type": "word",
                             "value": 2
                           },
                           "Param1": {
@@ -147997,38 +148028,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 35
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 3
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 95
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {

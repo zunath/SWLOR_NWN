@@ -4,6 +4,7 @@ using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = SWLOR.Game.Server.Core.NWScript.Enum.Item.EquipmentSlot;
 
@@ -32,7 +33,6 @@ namespace SWLOR.Game.Server.Native
             var targetObject = CNWSObject.FromPointer(pTarget);
             var damageFlags = creatureStats.m_pBaseCreature.GetDamageFlags();
             
-            var defense = 0f;
             var dmg = 0f;
             var attackAttribute = creatureStats.m_nStrengthBase < 10 ? 0 : creatureStats.m_nStrengthModifier;
             var damage = 0;
@@ -109,24 +109,8 @@ namespace SWLOR.Game.Server.Native
                 var target = CNWSCreature.FromPointer(pTarget);
                 var damagePower = creatureStats.m_pBaseCreature.CalculateDamagePower(target, bOffHand);
                 float vitality = target.m_pStats.m_nConstitutionModifier;
+                var defense = Stat.GetDefenseNative(target, CombatDamageType.Physical);
 
-                foreach (var slotItemId in target.m_pInventory.m_pEquipSlot)
-                {
-                    if (slotItemId != NWNXLib.OBJECT_INVALID)
-                    {
-                        var item = NWNXLib.AppManager().m_pServerExoApp.GetItemByGameObjectID(slotItemId);
-                        for (var index = 0; index < item.m_lstPassiveProperties.Count; index++)
-                        {
-                            var ip = item.GetPassiveProperty(index);
-                            if (ip != null && ip.m_nPropertyName == (ushort)ItemPropertyType.Defense)
-                            {
-                                defense += ip.m_nCostTableValue;
-                            }
-                        }
-                    }
-                }
-
-                defense += CalculateEffectDefense(target.m_idSelf);
                 damage = Combat.CalculateDamage(dmg, attackAttribute, defense, vitality, bCritical == 1);
 
                 // Plot target - zero damage
@@ -145,15 +129,5 @@ namespace SWLOR.Game.Server.Native
 
             return damage;
         }
-
-        private static int CalculateEffectDefense(uint creature)
-        {
-            var defense = 0;
-            
-            //todo: add any defense effects here
-
-            return defense;
-        }
-
     }
 }

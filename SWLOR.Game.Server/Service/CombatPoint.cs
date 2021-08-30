@@ -155,8 +155,13 @@ namespace SWLOR.Game.Server.Service
                     var dbPlayer = DB.Get<Player>(playerId);
 
                     // Filter the skills list down to just those with combat points (CP)
-                    var skillsWithCP = dbPlayer.Skills.Where(x => cpList.ContainsKey(x.Key)).ToDictionary(x => x.Key, y => y.Value);
+                    var skillsWithCP = dbPlayer
+                        .Skills
+                        .Where(x => cpList.ContainsKey(x.Key))
+                        .ToDictionary(x => x.Key, y => y.Value);
+
                     var highestRank = skillsWithCP
+                        .Where(x => x.Key != SkillType.Armor)
                         .OrderByDescending(o => o.Value.Rank)
                         .Select(s => s.Value.Rank)
                         .First();
@@ -176,11 +181,14 @@ namespace SWLOR.Game.Server.Service
                         Skill.GiveSkillXP(player, skillType, (int)adjustedXP);
                     }
 
-                    // Each armor skill receives a static portion of XP based on how many pieces of each category are equipped.
+                    // Armor XP is calculated the same way but is separate from other skills used during combat.
                     var armorPoints = CalculateArmorPoints(player);
                     if (armorPoints <= 0) return;
+                    var armorRank = dbPlayer.Skills[SkillType.Armor].Rank;
 
-                    var xp = CalculateAdjustedXP(highestRank, baseXP, SkillType.Armor, totalPoints, armorPoints, dbPlayer.Skills);
+                    delta = npcLevel - armorRank;
+                    baseXP = Skill.GetDeltaXP(delta);
+                    var xp = CalculateAdjustedXP(armorRank, baseXP, SkillType.Armor, totalPoints, armorPoints, dbPlayer.Skills);
                     Skill.GiveSkillXP(player, SkillType.Armor, xp);
                 }
 

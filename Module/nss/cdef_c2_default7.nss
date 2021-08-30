@@ -38,10 +38,10 @@ void main()
     }
 
     // Call to allies to let them know we're dead
-    SpeakString("NW_I_AM_DEAD", TALKVOLUME_SILENT_TALK);
+    //SpeakString("NW_I_AM_DEAD", TALKVOLUME_SILENT_TALK);
 
     //Shout Attack my target, only works with the On Spawn In setup
-    SpeakString("NW_ATTACK_MY_TARGET", TALKVOLUME_SILENT_TALK);
+    //SpeakString("NW_ATTACK_MY_TARGET", TALKVOLUME_SILENT_TALK);
 
     // NOTE: the OnDeath user-defined event does not
     // trigger reliably and should probably be removed

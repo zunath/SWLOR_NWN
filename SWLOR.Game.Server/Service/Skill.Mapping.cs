@@ -80,11 +80,6 @@ namespace SWLOR.Game.Server.Service
             _itemToSkillMapping[BaseItem.ThrowingAxe] = SkillType.Ranged;
             _itemToSkillMapping[BaseItem.Dart] = SkillType.Ranged;
 
-            // Armor Skills
-            _itemToSkillMapping[BaseItem.SmallShield] = SkillType.Armor;
-            _itemToSkillMapping[BaseItem.LargeShield] = SkillType.Armor;
-            _itemToSkillMapping[BaseItem.TowerShield] = SkillType.Armor;
-
             Console.WriteLine($"Loaded {_itemToSkillMapping.Count} item to skill mappings.");
         }
 

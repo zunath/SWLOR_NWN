@@ -166,9 +166,11 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                         if (targetCreature != target)
                         {
                             // Apply to nearest other creature, then exit loop.
-                            if (_.GetIsReactionTypeHostile(creature, targetCreature)) 
-                            RunEffect(creature, targetCreature);
-                            break;
+                            if (_.GetIsReactionTypeHostile(creature, targetCreature))
+                            {
+                                RunEffect(creature, targetCreature);
+                                break;
+                            }
                         }
 
                         targetCreature = GetNextObjectInShape(Shape.Sphere, radiusSize, target.Location, true);

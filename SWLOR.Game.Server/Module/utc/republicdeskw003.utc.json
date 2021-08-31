@@ -110,7 +110,7 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 1
+    "value": 3
   },
   "Color_Skin": {
     "type": "byte",
@@ -178,7 +178,14 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "republicdeskwork"
+          "value": "republicofficeru"
+        }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "republicstand001"
         }
       }
     ]
@@ -453,26 +460,6 @@
   "IsPC": {
     "type": "byte",
     "value": 0
-  },
-  "ItemList": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "InventoryRes": {
-          "type": "resref",
-          "value": "republicstand001"
-        },
-        "Repos_PosX": {
-          "type": "word",
-          "value": 0
-        },
-        "Repos_Posy": {
-          "type": "word",
-          "value": 0
-        }
-      }
-    ]
   },
   "LastName": {
     "type": "cexolocstring",

@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 11.0
+    "value": 10.0
   },
   "ClassList": {
     "type": "list",
@@ -99,18 +99,7 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 4
-        },
-        "ClassLevel": {
-          "type": "short",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 2,
-        "Class": {
-          "type": "int",
-          "value": 52
+          "value": 56
         },
         "ClassLevel": {
           "type": "short",
@@ -189,7 +178,7 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "republic_outfit"
+          "value": "republictrooper"
         }
       },
       {
@@ -348,7 +337,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 250
+    "value": 225
   },
   "NaturalAC": {
     "type": "byte",
@@ -641,7 +630,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 927
+    "value": 926
   },
   "SpecAbilityList": {
     "type": "list",
@@ -649,7 +638,7 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 4
+    "value": 147
   },
   "Str": {
     "type": "byte",

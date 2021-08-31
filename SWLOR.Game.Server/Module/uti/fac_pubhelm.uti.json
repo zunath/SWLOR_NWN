@@ -38,7 +38,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",
@@ -50,17 +52,17 @@
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 23
+    "value": 45
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Republic Trooper Helmet"
+      "0": "[NPC] Republic Trooper Helmet"
     }
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 167
+    "value": 43
   },
   "Metal2Color": {
     "type": "byte",
@@ -81,99 +83,6 @@
   "PropertiesList": {
     "type": "list",
     "value": [
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 50
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 8
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 117
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 46
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 10
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 113
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 57
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 3
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 124
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
       {
         "__struct_id": 0,
         "ChanceAppear": {

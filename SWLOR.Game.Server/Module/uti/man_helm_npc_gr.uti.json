@@ -14,7 +14,7 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 20
+    "value": 23
   },
   "Cloth2Color": {
     "type": "byte",
@@ -71,7 +71,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 51
+    "value": 113
   },
   "PaletteID": {
     "type": "byte",

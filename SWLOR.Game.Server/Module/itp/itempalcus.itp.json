@@ -823,6 +823,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Republic Trooper Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "fac_pubhelm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Alch's Hood"
                     },
                     "RESREF": {
@@ -1179,17 +1190,6 @@
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "fac_pubhelm"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Republic Trooper Helmet"
-                    },
-                    "RESREF": {
-                      "type": "resref",
                       "value": "republictrooperh"
                     }
                   },
@@ -1297,6 +1297,17 @@
               "LIST": {
                 "type": "list",
                 "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Republic Trooper Uniform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republictrooper"
+                    }
+                  },
                   {
                     "__struct_id": 0,
                     "NAME": {
@@ -1625,17 +1636,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "republicsnipe001"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Republic Trooper Uniform"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "republictrooper"
                     }
                   },
                   {
@@ -2499,6 +2499,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Bernie's Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bernieclothes"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Captains Garbs"
                     },
                     "RESREF": {
@@ -2576,11 +2587,44 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Elk's Clothes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "elk_outfit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Hohenfel"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "hohenfel"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Jedi Temple Guard Mask"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "templeguardmask"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Jedi Temple Guard Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "jeditempleguardr"
                     }
                   },
                   {
@@ -2603,6 +2647,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "katarhelmet"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Leiza's Dress"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "leizadress"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Luccia's Labcoat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "lucciacoat"
                     }
                   },
                   {
@@ -2647,6 +2713,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "directoroutfi001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Shu's Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shu_clothes"
                     }
                   },
                   {
@@ -2928,6 +3005,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Knuckle Duster Crusher Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "k_d_crusher"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Landyn's Clothing"
                     },
                     "RESREF": {
@@ -2966,6 +3054,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nw_merchguardout"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Morel's Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bobarmor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Morel's Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bobhelmet"
                     }
                   },
                   {
@@ -3302,6 +3412,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Persona's Mask"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "personamask"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Persona's Panache"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "personapimpsuit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Pirate Armor"
                     },
                     "RESREF": {
@@ -3335,11 +3467,22 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Republic Officer Helmet"
+                      "value": "Republic Officer Hat"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "republicofficerh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Officer Uniform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicofficeru"
                     }
                   },
                   {
@@ -13134,6 +13277,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Persona's Photon Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "personablade001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Republic Agent Rifle"
                     },
                     "RESREF": {
@@ -14605,6 +14759,22 @@
                 "type": "byte",
                 "value": 3
               },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "NPC Force Lightning"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sithring"
+                    }
+                  }
+                ]
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 6691
@@ -15990,6 +16160,94 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "[NPC] Lightsaber, Blue"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npcsaber1"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "[NPC] Lightsaber, Cyan"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npcsaber007"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "[NPC] Lightsaber, Green"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npcsaber002"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "[NPC] Lightsaber, Orange"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npcsaber004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "[NPC] Lightsaber, Purple"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npcsaber006"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "[NPC] Lightsaber, Red"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npcsaber003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "[NPC] Lightsaber, Yellow"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npcsaber005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "[NPC] Lord Morel's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bobsaber"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Alask's Lightsaber"
                           },
                           "RESREF": {
@@ -17073,6 +17331,94 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Jedi Temple Guard Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "templeguardstaff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Saber-staff, Blue"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npcsaberstaff002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Saber-staff, Cyan"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npcsaberstaff007"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Saber-staff, Green"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npcsaberstaff003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Saber-staff, Orange"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npcsaberstaff004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Saber-staff, Purple"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npcsaberstaff006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Saber-staff, Red"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npcsaberstaff001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Saber-staff, Yellow"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npcsaberstaff005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Art's Saberstaff"
                     },
                     "RESREF": {
@@ -17777,6 +18123,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Elk's Antler"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "elkspear001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Basic Polearm H"
                     },
                     "RESREF": {
@@ -18019,6 +18376,17 @@
                     "LIST": {
                       "type": "list",
                       "value": [
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bernie's Big Boomer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "berniegun"
+                          }
+                        },
                         {
                           "__struct_id": 0,
                           "NAME": {

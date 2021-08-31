@@ -6,35 +6,35 @@
   },
   "ArmorPart_Belt": {
     "type": "byte",
-    "value": 105
+    "value": 0
   },
   "ArmorPart_LBicep": {
     "type": "byte",
-    "value": 109
+    "value": 249
   },
   "ArmorPart_LFArm": {
     "type": "byte",
-    "value": 75
+    "value": 246
   },
   "ArmorPart_LFoot": {
     "type": "byte",
-    "value": 75
+    "value": 242
   },
   "ArmorPart_LHand": {
     "type": "byte",
-    "value": 198
+    "value": 246
   },
   "ArmorPart_LShin": {
     "type": "byte",
-    "value": 75
+    "value": 222
   },
   "ArmorPart_LShoul": {
     "type": "byte",
-    "value": 9
+    "value": 0
   },
   "ArmorPart_LThigh": {
     "type": "byte",
-    "value": 75
+    "value": 235
   },
   "ArmorPart_Neck": {
     "type": "byte",
@@ -42,23 +42,23 @@
   },
   "ArmorPart_Pelvis": {
     "type": "byte",
-    "value": 75
+    "value": 234
   },
   "ArmorPart_RBicep": {
     "type": "byte",
-    "value": 109
+    "value": 249
   },
   "ArmorPart_RFArm": {
     "type": "byte",
-    "value": 75
+    "value": 246
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 75
+    "value": 242
   },
   "ArmorPart_RHand": {
     "type": "byte",
-    "value": 198
+    "value": 246
   },
   "ArmorPart_Robe": {
     "type": "byte",
@@ -66,19 +66,19 @@
   },
   "ArmorPart_RShin": {
     "type": "byte",
-    "value": 75
+    "value": 222
   },
   "ArmorPart_RShoul": {
     "type": "byte",
-    "value": 9
+    "value": 0
   },
   "ArmorPart_RThigh": {
     "type": "byte",
-    "value": 75
+    "value": 235
   },
   "ArmorPart_Torso": {
     "type": "byte",
-    "value": 75
+    "value": 249
   },
   "BaseItem": {
     "type": "int",
@@ -90,11 +90,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 35
+    "value": 101
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 92
+    "value": 22
   },
   "Comment": {
     "type": "cexostring",
@@ -128,13 +128,13 @@
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 91
+    "value": 118
   },
   "LocalizedName": {
     "id": 12835,
     "type": "cexolocstring",
     "value": {
-      "0": "Republic Trooper Uniform"
+      "0": "[NPC] Republic Trooper Uniform"
     }
   },
   "Metal1Color": {
@@ -156,130 +156,6 @@
   "PropertiesList": {
     "type": "list",
     "value": [
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 50
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 8
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 117
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 71
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 8
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 146
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 46
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 20
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 113
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 57
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 5
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 124
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
       {
         "__struct_id": 0,
         "ChanceAppear": {
@@ -336,161 +212,6 @@
         "PropertyName": {
           "type": "word",
           "value": 109
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 0
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 0
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 130
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 0
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 0
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 130
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 0
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 0
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 130
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 0
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 0
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 130
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 0
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 0
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 130
         },
         "Subtype": {
           "type": "word",

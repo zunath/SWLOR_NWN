@@ -6,59 +6,59 @@
   },
   "ArmorPart_Belt": {
     "type": "byte",
-    "value": 156
+    "value": 0
   },
   "ArmorPart_LBicep": {
     "type": "byte",
-    "value": 186
+    "value": 247
   },
   "ArmorPart_LFArm": {
     "type": "byte",
-    "value": 3
+    "value": 244
   },
   "ArmorPart_LFoot": {
     "type": "byte",
-    "value": 4
+    "value": 200
   },
   "ArmorPart_LHand": {
     "type": "byte",
-    "value": 4
+    "value": 198
   },
   "ArmorPart_LShin": {
     "type": "byte",
-    "value": 232
+    "value": 227
   },
   "ArmorPart_LShoul": {
     "type": "byte",
-    "value": 57
+    "value": 185
   },
   "ArmorPart_LThigh": {
     "type": "byte",
-    "value": 118
+    "value": 231
   },
   "ArmorPart_Neck": {
     "type": "byte",
-    "value": 199
+    "value": 2
   },
   "ArmorPart_Pelvis": {
     "type": "byte",
-    "value": 9
+    "value": 232
   },
   "ArmorPart_RBicep": {
     "type": "byte",
-    "value": 186
+    "value": 247
   },
   "ArmorPart_RFArm": {
     "type": "byte",
-    "value": 3
+    "value": 244
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 4
+    "value": 200
   },
   "ArmorPart_RHand": {
     "type": "byte",
-    "value": 4
+    "value": 198
   },
   "ArmorPart_Robe": {
     "type": "byte",
@@ -66,19 +66,19 @@
   },
   "ArmorPart_RShin": {
     "type": "byte",
-    "value": 232
+    "value": 227
   },
   "ArmorPart_RShoul": {
     "type": "byte",
-    "value": 57
+    "value": 185
   },
   "ArmorPart_RThigh": {
     "type": "byte",
-    "value": 118
+    "value": 231
   },
   "ArmorPart_Torso": {
     "type": "byte",
-    "value": 63
+    "value": 247
   },
   "BaseItem": {
     "type": "int",
@@ -90,11 +90,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 23
+    "value": 126
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 23
+    "value": 126
   },
   "Comment": {
     "type": "cexostring",
@@ -124,11 +124,11 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 48
+    "value": 126
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 22
+    "value": 126
   },
   "LocalizedName": {
     "id": 12838,
@@ -139,11 +139,11 @@
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 5
+    "value": 6
   },
   "Metal2Color": {
     "type": "byte",
-    "value": 2
+    "value": 36
   },
   "PaletteID": {
     "type": "byte",
@@ -156,37 +156,6 @@
   "PropertiesList": {
     "type": "list",
     "value": [
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 7
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 1
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 23
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 15
-        }
-      },
       {
         "__struct_id": 0,
         "ChanceAppear": {

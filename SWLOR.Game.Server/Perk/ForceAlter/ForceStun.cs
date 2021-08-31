@@ -153,7 +153,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             {
                 // Tier 1 - Single target is Tranquilized or, if resisted, receives -5 to AB and AC
                 case 1:
-                        RunEffect(creature, target);
+                    RunEffect(creature, target);
                     break;
                 // Tier 2 - Target and nearest other enemy within 10m are tranquilized using tier 1 rules.
                 case 2:
@@ -167,8 +167,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                         {
                             // Apply to nearest other creature, then exit loop.
                             if (_.GetIsReactionTypeHostile(creature, targetCreature)) 
-                                RunEffect(creature, targetCreature);
-                            else
+                            RunEffect(creature, targetCreature);
                             break;
                         }
 
@@ -183,7 +182,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     while (targetCreature.IsValid)
                     {
                         if (_.GetIsReactionTypeHostile(creature, targetCreature))
-                            RunEffect(creature, targetCreature);
+                        RunEffect(creature, targetCreature);
                         targetCreature = GetNextObjectInShape(Shape.Sphere, radiusSize, target.Location, true);
                     }
                     break;

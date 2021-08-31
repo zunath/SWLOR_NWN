@@ -116,7 +116,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "viscararepub"
+    "value": "deepmountrepub"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -37395,15 +37395,15 @@
         "__struct_id": 1,
         "Tile_AnimLoop1": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tile_AnimLoop2": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tile_AnimLoop3": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "Tile_Height": {
           "type": "int",
@@ -37411,7 +37411,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 538
+          "value": 1628
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -44193,7 +44193,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 21
+    "value": 23
   },
   "Width": {
     "type": "int",

@@ -3449,7 +3449,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 2.0
+                      "value": 12.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -3620,7 +3620,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 2.0
+                      "value": 12.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -3728,6 +3728,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "femtwidancer2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 12.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Female Twi'lek Republic Soldier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "femtwirepsoldier"
                     }
                   },
                   {
@@ -3981,6 +4000,44 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 16.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Temple Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "templeguard_f"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 16.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Temple Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "templeguard_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 15.0
                     },
                     "FACTION": {
@@ -4057,7 +4114,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 2.0
+                      "value": 12.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4209,7 +4266,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 2.0
+                      "value": 12.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4228,7 +4285,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 2.0
+                      "value": 12.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4285,7 +4342,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 2.0
+                      "value": 12.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4336,6 +4393,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "maletranzerkargr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 12.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Male Trandoshan Republic Soldier"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mtrandrepsoldier"
                     }
                   },
                   {
@@ -4399,7 +4475,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 2.0
+                      "value": 12.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -4526,6 +4602,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "moricho_deine"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 19.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Naked Ned"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "nakedned"
                     }
                   },
                   {
@@ -5650,6 +5745,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 16.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Bernie"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bernie"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 0.5
                     },
                     "FACTION": {
@@ -5783,6 +5897,44 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 18.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Elite Sith Trooper Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "g_elite_sith"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 25.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Elk"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "elk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 13.0
                     },
                     "FACTION": {
@@ -5815,6 +5967,44 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "night_jawa"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 19.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Leiza"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "leiza"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 9.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Luccia"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "luccia"
                     }
                   },
                   {
@@ -6049,6 +6239,44 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Persona"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "persona"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Pip"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pip"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 1.0
                     },
                     "FACTION": {
@@ -6081,6 +6309,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "exchangeenfor001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 19.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shu"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shu"
                     }
                   },
                   {
@@ -6138,6 +6385,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sith_troop"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 15.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Trooper Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "g_sithtroop"
                     }
                   },
                   {
@@ -6552,6 +6818,30 @@
                 "type": "byte",
                 "value": 113
               },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 22.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Lord \"Bob\" Morel"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bobmorel"
+                    }
+                  }
+                ]
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 16808684
@@ -6834,6 +7124,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "knuckleduster003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 9.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Knuckle Duster Crusher"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "knuckleduster004"
                     }
                   },
                   {
@@ -7673,7 +7982,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 11.0
+                      "value": 10.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -9892,6 +10201,73 @@
         "STRREF": {
           "type": "dword",
           "value": 6732
+        }
+      },
+      {
+        "__struct_id": 0,
+        "LIST": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 150
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859853
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 153
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859856
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 152
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859855
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 154
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859857
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 151
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859854
+              }
+            }
+          ]
+        },
+        "NAME": {
+          "type": "cexostring",
+          "value": "World Creatures"
         }
       }
     ]

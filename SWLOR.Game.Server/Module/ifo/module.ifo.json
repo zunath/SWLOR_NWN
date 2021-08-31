@@ -1098,6 +1098,27 @@
           "type": "resref",
           "value": "ship_firstlight"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_jeditemple_ext"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_repubbase_ext"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_swamp_base"
+        }
       }
     ]
   },
@@ -1424,7 +1445,7 @@
   },
   "Mod_MinGameVer": {
     "type": "cexostring",
-    "value": "1.80"
+    "value": "1.85"
   },
   "Mod_MinPerHour": {
     "type": "byte",

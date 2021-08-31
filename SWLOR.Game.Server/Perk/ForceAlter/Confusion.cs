@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             switch (spellTier)
-            {                
+            {
                 case 1:
                     if (!oTarget.IsCreature)
                         return "This ability can only be used on living creatures.";
@@ -43,8 +43,8 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
-            if (spellTier == 1) return 300; // 5 minutes
-            else if (spellTier == 2) return 1800; // 30 minutes
+            if (spellTier == 1) return 30f; // 5 minutes
+            else if (spellTier == 2) return 300f; // 30 minutes
 
             return baseCooldownTime;
         }
@@ -90,21 +90,23 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         private void ApplyEffect(NWCreature creature, NWObject target, int spellTier)
         {
-            float radiusSize = RadiusSize.Small;            
+            float radiusSize = 10f;
 
-            Effect confusionEffect = _.EffectConfused();
+            Effect confusionEffect = _.EffectCharmed();
 
             // Handle effects for differing spellTier values
             switch (spellTier)
             {
                 case 1:
-                    if ((creature.Wisdom > _.GetAbilityModifier(AbilityType.Wisdom, target) || creature == target) && _.GetDistanceBetween(creature.Object, target) <= radiusSize)
+                    if (creature == target || (creature.Wisdom > _.GetAbilityModifier(AbilityType.Wisdom, target) && _.GetDistanceBetween(creature.Object, target) <= radiusSize))
                     {
                         creature.AssignCommand(() =>
                         {
-                            _.ApplyEffectToObject(DurationType.Temporary, confusionEffect, target, 6.1f);
+                            _.ApplyEffectToObject(DurationType.Temporary, confusionEffect, target, 18.1f);
                             // Play VFX
-                            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S), target);
+                            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Pdk_Final_Stand), target);
+                            // Success confirmation
+                            creature.SendMessage("Confusion successful.");
                         });
                         if (!creature.IsPlayer)
                         {
@@ -132,9 +134,10 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                             var targetCreatureCopy = targetCreature; // Closure can modify the iteration variable so we copy it first.
                             creature.AssignCommand(() =>
                             {
-                                _.ApplyEffectToObject(DurationType.Temporary, confusionEffect, targetCreatureCopy, 6.1f);
+                                _.ApplyEffectToObject(DurationType.Temporary, confusionEffect, targetCreatureCopy, 18.1f);
                                 // Play VFX
-                                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Confusion_S), targetCreatureCopy);
+                                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Pdk_Final_Stand), targetCreatureCopy);
+                                creature.SendMessage("Confusion successful.");
                             });
 
                             if (!creature.IsPlayer)

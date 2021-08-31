@@ -43,8 +43,8 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         public float CooldownTime(NWCreature oPC, float baseCooldownTime, int spellTier)
         {
-            if (spellTier == 1) return 30; // 5 minutes
-            else if (spellTier == 2) return 300; // 30 minutes
+            if (spellTier == 1) return 30f; // 5 minutes
+            else if (spellTier == 2) return 300f; // 30 minutes
 
             return baseCooldownTime;
         }
@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
 
         private void ApplyEffect(NWCreature creature, NWObject target, int spellTier)
         {
-            float radiusSize = 10;
+            float radiusSize = 10f;
 
             Effect confusionEffect = _.EffectCharmed();
 

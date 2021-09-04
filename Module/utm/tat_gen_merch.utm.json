@@ -4201,7 +4201,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "bandages"
+                "value": "bag_b"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -4220,11 +4220,11 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "healing_kit"
+                "value": "harvest_r_1"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 5
+                "value": 6
               },
               "Repos_Posy": {
                 "type": "word",
@@ -4239,11 +4239,11 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "treatment_kit"
+                "value": "harvest_r_2"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 7
+                "value": 8
               },
               "Repos_Posy": {
                 "type": "word",
@@ -4258,68 +4258,11 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "bag_b"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 0
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 2
-              }
-            },
-            {
-              "__struct_id": 6,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "harvest_r_1"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 2
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 2
-              }
-            },
-            {
-              "__struct_id": 7,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "harvest_r_2"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 4
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 2
-              }
-            },
-            {
-              "__struct_id": 8,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
                 "value": "harvest_r_3"
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 6
+                "value": 0
               },
               "Repos_Posy": {
                 "type": "word",

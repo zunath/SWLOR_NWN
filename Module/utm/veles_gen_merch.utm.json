@@ -1446,7 +1446,7 @@
               },
               "InventoryRes": {
                 "type": "resref",
-                "value": "bandages"
+                "value": "bag_b"
               },
               "Repos_PosX": {
                 "type": "word",
@@ -1455,63 +1455,6 @@
               "Repos_Posy": {
                 "type": "word",
                 "value": 0
-              }
-            },
-            {
-              "__struct_id": 3,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "healing_kit"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 5
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 4,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "treatment_kit"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 7
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 5,
-              "Infinite": {
-                "type": "byte",
-                "value": 1
-              },
-              "InventoryRes": {
-                "type": "resref",
-                "value": "bag_b"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 0
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 2
               }
             }
           ]

@@ -32,7 +32,7 @@
   },
   "MarkUp": {
     "type": "int",
-    "value": 400
+    "value": 350
   },
   "MaxBuyPrice": {
     "type": "int",
@@ -707,6 +707,63 @@
                 "type": "word",
                 "value": 0
               }
+            },
+            {
+              "__struct_id": 1,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "warrior_ring_2"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 1
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 2,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "mage_ring_2"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 3,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "thief_ring_2"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 3
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 0
+              }
             }
           ]
         }
@@ -746,7 +803,22 @@
   },
   "WillNotBuy": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 97869,
+        "BaseItem": {
+          "type": "int",
+          "value": 511
+        }
+      },
+      {
+        "__struct_id": 97869,
+        "BaseItem": {
+          "type": "int",
+          "value": 512
+        }
+      }
+    ]
   },
   "WillOnlyBuy": {
     "type": "list",

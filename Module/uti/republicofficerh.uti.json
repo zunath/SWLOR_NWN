@@ -14,11 +14,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 0
+    "value": 94
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 0
+    "value": 3
   },
   "Comment": {
     "type": "cexostring",
@@ -46,29 +46,29 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 23
+    "value": 101
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 0
+    "value": 135
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Republic Officer Helmet"
+      "0": "Republic Officer Hat"
     }
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 0
+    "value": 3
   },
   "Metal2Color": {
     "type": "byte",
-    "value": 0
+    "value": 3
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 47
+    "value": 108
   },
   "PaletteID": {
     "type": "byte",
@@ -92,7 +92,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "RepublicOfficerHelmet"
+    "value": "RepublicOfficerHat"
   },
   "TemplateResRef": {
     "type": "resref",

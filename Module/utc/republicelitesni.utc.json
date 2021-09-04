@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 24.0
+    "value": 18.0
   },
   "ClassList": {
     "type": "list",
@@ -103,7 +103,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 35
+          "value": 30
         }
       }
     ]
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 16
+    "value": 26
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": -5
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 197
+    "value": 60
   },
   "DecayTime": {
     "type": "dword",
@@ -158,7 +158,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 13
+    "value": 70
   },
   "Disarmable": {
     "type": "byte",
@@ -513,11 +513,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 197
+    "value": 60
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 40
   },
   "Interruptable": {
     "type": "byte",
@@ -547,11 +547,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 302
+    "value": 300
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 0
+    "value": 5
   },
   "NoPermDeath": {
     "type": "byte",
@@ -563,7 +563,7 @@
   },
   "PerceptionRange": {
     "type": "byte",
-    "value": 11
+    "value": 10
   },
   "Phenotype": {
     "type": "int",
@@ -840,7 +840,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 0
+    "value": 926
   },
   "SpecAbilityList": {
     "type": "list",
@@ -888,6 +888,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 40
   }
 }

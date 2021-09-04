@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 114.0
+    "value": 75.0
   },
   "ClassList": {
     "type": "list",
@@ -115,6 +115,17 @@
         "ClassLevel": {
           "type": "short",
           "value": 10
+        }
+      },
+      {
+        "__struct_id": 2,
+        "Class": {
+          "type": "int",
+          "value": 42
+        },
+        "ClassLevel": {
+          "type": "short",
+          "value": 5
         }
       }
     ]
@@ -149,11 +160,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": 0
+    "value": -4
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 2500
+    "value": 1400
   },
   "DecayTime": {
     "type": "dword",
@@ -575,7 +586,7 @@
   },
   "fortbonus": {
     "type": "short",
-    "value": 10
+    "value": 0
   },
   "Gender": {
     "type": "byte",
@@ -587,7 +598,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 2500
+    "value": 1400
   },
   "Int": {
     "type": "byte",
@@ -656,7 +667,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 3000
+    "value": 2000
   },
   "NaturalAC": {
     "type": "byte",
@@ -692,7 +703,7 @@
   },
   "refbonus": {
     "type": "short",
-    "value": 10
+    "value": 0
   },
   "ScriptAttacked": {
     "type": "resref",
@@ -961,7 +972,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 51
+    "value": 61
   },
   "Subrace": {
     "type": "cexostring",
@@ -989,7 +1000,7 @@
   },
   "willbonus": {
     "type": "short",
-    "value": 10
+    "value": 0
   },
   "Wings_New": {
     "type": "dword",

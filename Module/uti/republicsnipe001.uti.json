@@ -10,19 +10,19 @@
   },
   "ArmorPart_LBicep": {
     "type": "byte",
-    "value": 4
+    "value": 249
   },
   "ArmorPart_LFArm": {
     "type": "byte",
-    "value": 4
+    "value": 246
   },
   "ArmorPart_LFoot": {
     "type": "byte",
-    "value": 104
+    "value": 242
   },
   "ArmorPart_LHand": {
     "type": "byte",
-    "value": 3
+    "value": 246
   },
   "ArmorPart_LShin": {
     "type": "byte",
@@ -42,23 +42,23 @@
   },
   "ArmorPart_Pelvis": {
     "type": "byte",
-    "value": 105
+    "value": 106
   },
   "ArmorPart_RBicep": {
     "type": "byte",
-    "value": 4
+    "value": 249
   },
   "ArmorPart_RFArm": {
     "type": "byte",
-    "value": 4
+    "value": 246
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 104
+    "value": 242
   },
   "ArmorPart_RHand": {
     "type": "byte",
-    "value": 3
+    "value": 246
   },
   "ArmorPart_Robe": {
     "type": "byte",
@@ -90,11 +90,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 21
+    "value": 172
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 21
+    "value": 22
   },
   "Comment": {
     "type": "cexostring",
@@ -122,11 +122,11 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 22
+    "value": 115
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 21
+    "value": 22
   },
   "LocalizedName": {
     "type": "cexolocstring",
@@ -152,7 +152,39 @@
   },
   "PropertiesList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 2
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 10
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 1
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      }
+    ]
   },
   "StackSize": {
     "type": "word",

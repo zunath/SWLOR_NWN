@@ -807,17 +807,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Republic Heavy Gunner Armor"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "republicheavygun"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Spiritmaster Tunic"
                     },
                     "RESREF": {
@@ -1922,6 +1911,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Darth Gravius's Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "graviusrobe001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Darth Vecten Clothing"
                     },
                     "RESREF": {
@@ -1993,17 +1993,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nw_femtatcivoutf"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Gravius's Robes"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "graviusrobe001"
                     }
                   },
                   {
@@ -2103,6 +2092,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nw_merchguardout"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Morel's Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bobarmor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Morel's Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bobhelmet"
                     }
                   },
                   {
@@ -2472,11 +2483,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Republic Officer Helmet"
+                      "value": "Republic Heavy Gunner Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicheavygun"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Officer Hat"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "republicofficerh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Officer Uniform"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicofficeru"
                     }
                   },
                   {
@@ -4229,6 +4262,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "ar_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Basic Scarf"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "basicscarf"
                           }
                         },
                         {
@@ -12494,6 +12538,33 @@
                 "type": "byte",
                 "value": 3
               },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "NPC Buff Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npcbuffring"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "NPC Debuff Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npcdebuffring"
+                    }
+                  }
+                ]
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 6691
@@ -13677,6 +13748,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "[NPC] Lord Morel's Lightsaber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "bobsaber"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Archetype Longsword"
                           },
                           "RESREF": {
@@ -14623,17 +14705,6 @@
                             "type": "resref",
                             "value": "republiccomma002"
                           }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Republic Heavy Blaster Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "republicheavybla"
-                          }
                         }
                       ]
                     },
@@ -14696,6 +14767,33 @@
                     "ID": {
                       "type": "byte",
                       "value": 126
+                    },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Republic Heavy Blaster Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "republicheavybla"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Republic Sniper Blaster Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "republicsniperbl"
+                          }
+                        }
+                      ]
                     },
                     "STRREF": {
                       "type": "dword",
@@ -15000,17 +15098,6 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "proto_rifle"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Republic Sniper Blaster Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "republicsniperbl"
                           }
                         },
                         {

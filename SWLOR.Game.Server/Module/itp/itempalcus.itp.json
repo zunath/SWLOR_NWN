@@ -791,17 +791,6 @@
                       "type": "resref",
                       "value": "man_armor"
                     }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Republic Heavy Gunner Armor"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "republicheavygun"
-                    }
                   }
                 ]
               },
@@ -2862,6 +2851,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Darth Gravius's Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "graviusrobe001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Darth Vecten Clothing"
                     },
                     "RESREF": {
@@ -2933,17 +2933,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "nw_femtatcivoutf"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Gravius's Robes"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "graviusrobe001"
                     }
                   },
                   {
@@ -3461,6 +3450,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "republiccommande"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Republic Heavy Gunner Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "republicheavygun"
                     }
                   },
                   {
@@ -14762,6 +14762,28 @@
               "LIST": {
                 "type": "list",
                 "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "NPC Buff Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npcbuffring"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "NPC Debuff Ring"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "npcdebuffring"
+                    }
+                  },
                   {
                     "__struct_id": 0,
                     "NAME": {

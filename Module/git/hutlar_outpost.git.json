@@ -14757,7 +14757,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 5.090568397574444e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -15263,7 +15263,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 5.090568397574444e-039
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -15516,7 +15516,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.005002850822973e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -16022,7 +16022,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.005002850822973e-038
+                      "value": 3.96161088849269e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -16528,7 +16528,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.96161088849269e-041
+                      "value": 4.354254718196504e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -17034,7 +17034,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 4.354254718196504e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -17741,7 +17741,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.802596928649634e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -20138,7 +20138,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 7.141862933122121e-019
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -20370,7 +20370,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 7.153675072269379e-019
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -20602,7 +20602,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 7.156901076658335e-019
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -20834,7 +20834,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 7.160375235231058e-019
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -21066,7 +21066,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -21507,7 +21507,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.802596928649634e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -21948,7 +21948,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 4.591354418360263e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -22892,7 +22892,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.569454280043795e-043
+                      "value": 2.802596928649634e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -23128,7 +23128,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 9.312488692695505e-039
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -24733,7 +24733,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.142792990859769e-020
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -24987,7 +24987,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.087663601386143e-020
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -27217,7 +27217,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -27471,7 +27471,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -27727,7 +27727,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -27897,7 +27897,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.401298464324817e-044
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -28129,7 +28129,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.802596928649634e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -28361,7 +28361,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.802596928649634e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -28593,7 +28593,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.802596928649634e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -28763,7 +28763,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.802596928649634e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -28995,7 +28995,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.802596928649634e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -29227,7 +29227,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.802596928649634e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -29459,7 +29459,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.802596928649634e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -45349,7 +45349,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 5.331913584288211e-018
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -45454,7 +45454,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 5.331913584288211e-018
                     },
                     "XPosition": {
                       "type": "float",
@@ -45475,492 +45475,6 @@
                   },
                   {
                     "__struct_id": 2,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 5
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 24
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 3
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 5
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Removes the effect of \"Bleed\" from your target. Also recovers a small amount of HP. Use speed is increased based on your First Aid rank."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Bandages"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 26
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 3
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 13
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 15
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 359
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "bandages"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "bandages"
-                    },
-                    "VarTable": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "ACTION_SCRIPT"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 3
-                          },
-                          "Value": {
-                            "type": "cexostring",
-                            "value": "Medicine.Bandages"
-                          }
-                        }
-                      ]
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 0.0
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 3,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 10
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 29
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 3
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 10
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Heals a target for 2 HP every 6 seconds for a duration of 30 seconds. Length of time is increased with higher skill ranks in Medicine"
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Healing Kit I"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 70
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 3
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 13
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 15
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 329
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 5
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "healing_kit"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "healing_kit"
-                    },
-                    "VarTable": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "ACTION_SCRIPT"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 3
-                          },
-                          "Value": {
-                            "type": "cexostring",
-                            "value": "Medicine.HealingKit"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "HEALING_BONUS"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 1
-                          },
-                          "Value": {
-                            "type": "int",
-                            "value": 1
-                          }
-                        }
-                      ]
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 3.746320846587364e-018
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 4,
-                    "AddCost": {
-                      "type": "dword",
-                      "value": 10
-                    },
-                    "BaseItem": {
-                      "type": "int",
-                      "value": 29
-                    },
-                    "Charges": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Cost": {
-                      "type": "dword",
-                      "value": 10
-                    },
-                    "Cursed": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "DescIdentified": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Removes poison and disease from your target. Use speed is increased based on your Medicine rank."
-                      }
-                    },
-                    "Description": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": ""
-                      }
-                    },
-                    "Identified": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "Infinite": {
-                      "type": "byte",
-                      "value": 1
-                    },
-                    "LocalizedName": {
-                      "type": "cexolocstring",
-                      "value": {
-                        "0": "Poison Treatment Kit"
-                      }
-                    },
-                    "ModelPart1": {
-                      "type": "byte",
-                      "value": 70
-                    },
-                    "Plot": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertiesList": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 3
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 13
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 15
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 329
-                          }
-                        }
-                      ]
-                    },
-                    "Repos_PosX": {
-                      "type": "word",
-                      "value": 7
-                    },
-                    "Repos_Posy": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "StackSize": {
-                      "type": "word",
-                      "value": 1
-                    },
-                    "Stolen": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "Tag": {
-                      "type": "cexostring",
-                      "value": "treatment_kit"
-                    },
-                    "TemplateResRef": {
-                      "type": "resref",
-                      "value": "treatment_kit"
-                    },
-                    "VarTable": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "Name": {
-                            "type": "cexostring",
-                            "value": "ACTION_SCRIPT"
-                          },
-                          "Type": {
-                            "type": "dword",
-                            "value": 3
-                          },
-                          "Value": {
-                            "type": "cexostring",
-                            "value": "Medicine.PoisonTreatmentKit"
-                          }
-                        }
-                      ]
-                    },
-                    "XOrientation": {
-                      "type": "float",
-                      "value": 0.0
-                    },
-                    "XPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "YOrientation": {
-                      "type": "float",
-                      "value": 1.0
-                    },
-                    "YPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    },
-                    "ZPosition": {
-                      "type": "float",
-                      "value": -1.0
-                    }
-                  },
-                  {
-                    "__struct_id": 5,
                     "AddCost": {
                       "type": "dword",
                       "value": 485
@@ -46055,11 +45569,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 0
+                      "value": 4
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 2
+                      "value": 0
                     },
                     "StackSize": {
                       "type": "word",
@@ -46114,7 +45628,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.388022601176344e-018
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -46134,7 +45648,7 @@
                     }
                   },
                   {
-                    "__struct_id": 6,
+                    "__struct_id": 3,
                     "AddCost": {
                       "type": "dword",
                       "value": 30
@@ -46227,11 +45741,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 2
+                      "value": 6
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 2
+                      "value": 0
                     },
                     "StackSize": {
                       "type": "word",
@@ -46291,7 +45805,7 @@
                     }
                   },
                   {
-                    "__struct_id": 7,
+                    "__struct_id": 4,
                     "AddCost": {
                       "type": "dword",
                       "value": 35
@@ -46384,11 +45898,11 @@
                     },
                     "Repos_PosX": {
                       "type": "word",
-                      "value": 4
+                      "value": 8
                     },
                     "Repos_Posy": {
                       "type": "word",
-                      "value": 2
+                      "value": 0
                     },
                     "StackSize": {
                       "type": "word",
@@ -46425,6 +45939,426 @@
                           }
                         }
                       ]
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 3.746320846587364e-018
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 5,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 2
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 39
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 2
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Medical Supplies are required to use many of the First Aid perks."
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "id": 13362,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Medical Supplies"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "med_supplies"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "med_supplies"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 6,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 2
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 39
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 2
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Medical Supplies are required to use many of the First Aid perks."
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "id": 13362,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Medical Supplies x50"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 50
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "med_supplies"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "med_supplies_50"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 3.388022601176344e-018
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 7,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 2
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 39
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 2
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Stim Packs are required for many of the First Aid perks."
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "id": 13362,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Stim Pack"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 2
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 4
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "stim_pack"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "stim_pack"
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 8,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 2
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 39
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 2
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Stim Packs are required for many of the First Aid perks."
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "id": 13362,
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Stim Pack x50"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 2
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": []
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 6
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 50
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "stim_pack"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "stim_pack_50"
                     },
                     "XOrientation": {
                       "type": "float",

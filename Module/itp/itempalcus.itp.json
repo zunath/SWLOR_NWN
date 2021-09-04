@@ -9432,11 +9432,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Medical Supplies x50"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "med_supplies_50"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Stim Pack"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "stim_pack"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Stim Pack x50"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "stim_pack_50"
                     }
                   }
                 ]

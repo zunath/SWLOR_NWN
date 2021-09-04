@@ -1442,11 +1442,11 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         FrugalMedic1 = 1475,
         FrugalMedic2 = 1476,
         FrugalMedic3 = 1477,
-        RecoveryItems1 = 1478,
-        RecoveryItems2 = 1479,
-        RecoveryItems3 = 1480,
-        RecoveryItems4 = 1481,
-        RecoveryItems5 = 1482,
+        MedKit1 = 1478,
+        MedKit2 = 1479,
+        MedKit3 = 1480,
+        MedKit4 = 1481,
+        MedKit5 = 1482,
         StimPacks1 = 1483,
         StimPacks2 = 1484,
         StimPacks3 = 1485,
@@ -1681,6 +1681,31 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         FireBreath = 1748,
         Spikes = 1749,
         Venom = 1750,
-        Talon = 1751
+        Talon = 1751,
+        
+        Resuscitation1 = 1752,
+        Resuscitation2 = 1753,
+        Resuscitation3 = 1754,
+
+        TreatmentKit1 = 1755,
+        TreatmentKit2 = 1756,
+
+        Shielding1 = 1757,
+        Shielding2 = 1758,
+        Shielding3 = 1759,
+        Shielding4 = 1760,
+
+        BactaRecovery1 = 1761,
+        BactaRecovery2 = 1762,
+        BactaRecovery3 = 1763,
+
+        StasisField1 = 1764,
+        StasisField2 = 1765,
+        StasisField3 = 1766,
+
+        CombatEnhancement1 = 1767,
+        CombatEnhancement2 = 1768,
+        CombatEnhancement3 = 1769,
+
     }
 }

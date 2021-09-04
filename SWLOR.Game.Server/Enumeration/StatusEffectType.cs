@@ -47,5 +47,9 @@
         Burn = 42,
         Rest = 43,
         IronShell = 44,
+        Shielding1 = 45,
+        Shielding2 = 46,
+        Shielding3 = 47,
+        Shielding4 = 48,
     }
 }

@@ -118,7 +118,7 @@
         CapProficiency = 112,
         GloveProficiency = 113,
         BootProficiency = 114,
-
+        Resuscitation = 115,
         Starships = 116,
         DefensiveModules = 117,
         OffensiveModules = 118,
@@ -127,9 +127,9 @@
         StarshipMining = 121,
         RangedHealing = 122,
         FrugalMedic = 123,
-        RecoveryItems = 124,
-        
-
+        MedKit = 124,
+        TreatmentKit = 125,
+        Shielding = 126,
         OneHandedBlueprints = 127,
         TwoHandedBlueprints = 128,
         MartialBlueprints = 129,

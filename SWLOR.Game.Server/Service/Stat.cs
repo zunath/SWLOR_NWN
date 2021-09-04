@@ -590,6 +590,18 @@ namespace SWLOR.Game.Server.Service
             {
                 if (StatusEffect.HasStatusEffect(creature, StatusEffectType.IronShell))
                     defense += 20;
+
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding1))
+                    defense += 5;
+
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding2))
+                    defense += 10;
+
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding3))
+                    defense += 15;
+
+                if (StatusEffect.HasStatusEffect(creature, StatusEffectType.Shielding4))
+                    defense += 20;
             }
 
             return defense;
@@ -619,6 +631,24 @@ namespace SWLOR.Game.Server.Service
                     return 0;
 
                 defense = _npcDefenses[creature.m_idSelf][type];
+            }
+
+            if (type == CombatDamageType.Physical)
+            {
+                if (StatusEffect.HasStatusEffect(creature.m_idSelf, StatusEffectType.IronShell))
+                    defense += 20;
+
+                if (StatusEffect.HasStatusEffect(creature.m_idSelf, StatusEffectType.Shielding1))
+                    defense += 5;
+
+                if (StatusEffect.HasStatusEffect(creature.m_idSelf, StatusEffectType.Shielding2))
+                    defense += 10;
+
+                if (StatusEffect.HasStatusEffect(creature.m_idSelf, StatusEffectType.Shielding3))
+                    defense += 15;
+
+                if (StatusEffect.HasStatusEffect(creature.m_idSelf, StatusEffectType.Shielding4))
+                    defense += 20;
             }
 
             return defense;

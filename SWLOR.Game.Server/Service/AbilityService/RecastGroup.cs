@@ -106,7 +106,21 @@ namespace SWLOR.Game.Server.Service.AbilityService
         [RecastGroup("Venom", "Venom")]
         Venom = 49,
         [RecastGroup("Talon", "Talon")]
-        Talon = 50
+        Talon = 50,
+        [RecastGroup("Med Kit", "Med Kit")]
+        MedKit = 51,
+        [RecastGroup("Bacta Recovery", "B. Recovery")]
+        BactaRecovery = 52,
+        [RecastGroup("Resuscitation", "Resuscitation")]
+        Resuscitation = 53,
+        [RecastGroup("Treatment Kit", "Treatment Kit")]
+        TreatmentKit = 54,
+        [RecastGroup("Stasis Field", "Stasis Field")]
+        StasisField = 55,
+        [RecastGroup("Combat Enhancement", "Combat En.")]
+        CombatEnhancement = 56,
+        [RecastGroup("Shielding", "Shielding")]
+        Shielding = 57,
     }
 
     public class RecastGroupAttribute: Attribute

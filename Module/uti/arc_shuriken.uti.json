@@ -47,7 +47,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 11
+    "value": 13
   },
   "PaletteID": {
     "type": "byte",
@@ -126,7 +126,7 @@
   },
   "StackSize": {
     "type": "word",
-    "value": 50
+    "value": 1
   },
   "Stolen": {
     "type": "byte",

@@ -47,15 +47,15 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 11
+    "value": 192
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 11
+    "value": 191
   },
   "ModelPart3": {
     "type": "byte",
-    "value": 11
+    "value": 191
   },
   "PaletteID": {
     "type": "byte",

@@ -49,7 +49,7 @@
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 11
+    "value": 234
   },
   "ModelPart3": {
     "type": "byte",

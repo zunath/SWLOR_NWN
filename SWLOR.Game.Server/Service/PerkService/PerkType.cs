@@ -142,11 +142,8 @@
         FurnitureBlueprints = 149,
         StructureBlueprints = 150,
         StarshipBlueprints = 151,
-        TurretBlueprints = 152,
-        ReactorBlueprints = 153,
-        PlatingBlueprints = 154,
-        MiningBlueprints = 155,
-        DroidBlueprints = 156,
+        ModuleBlueprints = 152,
+        
         Harvesting = 157,
         Refining = 158,
         RefineryManagement = 159,

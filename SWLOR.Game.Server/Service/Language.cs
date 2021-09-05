@@ -151,8 +151,15 @@ namespace SWLOR.Game.Server.Service
 
             if (differenceInSeconds / 60 >= 2)
             {
-                var amount = Math.Max(10, Math.Min(150, snippet.Length) / 3);
                 // Reward exp towards the language - we scale this with character count, maxing at 50 exp for 150 characters.
+                // A bonus is given if listener's Social modifier is greater than zero.
+                var amount = Math.Max(10, Math.Min(150, snippet.Length) / 3);
+                var socialModifier = GetAbilityModifier(AbilityType.Social, listener);
+                if (socialModifier > 0)
+                {
+                    amount += socialModifier * 10;
+                }
+
                 Skill.GiveSkillXP(listener, language, amount);
 
                 // Grant Force XP if player is concentrating Comprehend Speech.

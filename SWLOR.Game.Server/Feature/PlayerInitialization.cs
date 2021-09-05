@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature
             var dex = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Perception);
             var @int = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Unused);
             var wis = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Willpower);
-            var cha = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Diplomacy);
+            var cha = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Social);
 
             GiveXPToCreature(player, 800000);
             var @class = GetClassByPosition(1, player);
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature
             CreaturePlugin.SetRawAbilityScore(player, AbilityType.Perception, dex);
             CreaturePlugin.SetRawAbilityScore(player, AbilityType.Unused, @int);
             CreaturePlugin.SetRawAbilityScore(player, AbilityType.Willpower, wis);
-            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Diplomacy, cha);
+            CreaturePlugin.SetRawAbilityScore(player, AbilityType.Social, cha);
         }
 
         /// <summary>
@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.BaseStats[AbilityType.Vitality] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Vitality);
             dbPlayer.BaseStats[AbilityType.Willpower] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Willpower);
             dbPlayer.BaseStats[AbilityType.Unused] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Unused);
-            dbPlayer.BaseStats[AbilityType.Diplomacy] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Diplomacy);
+            dbPlayer.BaseStats[AbilityType.Social] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Social);
         }
 
         /// <summary>

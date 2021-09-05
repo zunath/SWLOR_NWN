@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     switch (Random.Next(5) + 1)
                     {
                         case 1:
-                            ability = AbilityType.Diplomacy;
+                            ability = AbilityType.Social;
                             break;
                         case 2:
                             ability = AbilityType.Vitality;

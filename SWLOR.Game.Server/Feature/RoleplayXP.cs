@@ -2,10 +2,11 @@
 using System.Globalization;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -53,10 +54,11 @@ namespace SWLOR.Game.Server.Feature
 
             if (dbPlayer.RoleplayProgress.RPPoints >= 50)
             {
+                var socialModifier = GetAbilityModifier(AbilityType.Social, player);
                 const int BaseXP = 1500;
-                int delta = dbPlayer.RoleplayProgress.RPPoints - 50;
-                int bonusXP = delta * 25;
-                int xp = BaseXP + bonusXP;
+                var delta = dbPlayer.RoleplayProgress.RPPoints - 50;
+                var bonusXP = delta * 25;
+                var xp = BaseXP + bonusXP + socialModifier * (BaseXP / 4);
 
                 dbPlayer.RoleplayProgress.RPPoints = 0;
                 dbPlayer.RoleplayProgress.TotalRPExpGained += (ulong)xp;

@@ -9,6 +9,6 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Vitality,
         Unused,
         Willpower,
-        Diplomacy
+        Social
     }
 }

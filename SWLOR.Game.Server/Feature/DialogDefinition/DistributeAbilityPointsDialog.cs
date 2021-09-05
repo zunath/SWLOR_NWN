@@ -76,9 +76,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 ChangePage(ConfirmUpgradePageId);
             });
 
-            page.AddResponse($"Diplomacy [{dbPlayer.UpgradedStats[AbilityType.Diplomacy]}/{MaxUpgrades}]", () =>
+            page.AddResponse($"Social [{dbPlayer.UpgradedStats[AbilityType.Social]}/{MaxUpgrades}]", () =>
             {
-                model.SelectedAbility = AbilityType.Diplomacy;
+                model.SelectedAbility = AbilityType.Social;
                 ChangePage(ConfirmUpgradePageId);
             });
         }
@@ -149,8 +149,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     return "Vitality";
                 case AbilityType.Willpower:
                     return "Willpower";
-                case AbilityType.Diplomacy:
-                    return "Diplomacy";
+                case AbilityType.Social:
+                    return "Social";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(abilityType), abilityType, null);
             }

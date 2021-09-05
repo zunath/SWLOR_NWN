@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {

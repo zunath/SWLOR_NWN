@@ -186,11 +186,6 @@
         SupremeGloves = 174,
         SupremeBoots = 175,
 
-
-
-
-
-
         // Fabrication:  1001-2000
         BedRoll = 1001,
         Easel = 1002,

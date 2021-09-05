@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 {

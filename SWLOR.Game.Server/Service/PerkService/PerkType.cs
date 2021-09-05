@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Enumeration
+﻿namespace SWLOR.Game.Server.Service.PerkService
 {
     // Note: These IDs are tied to 2DAs. Don't reassign ID numbers unless you also update the 2DA files.
     public enum PerkType

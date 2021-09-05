@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service
 {

@@ -10,7 +10,7 @@ using SWLOR.Game.Server.Enumeration;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
 using Player = SWLOR.Game.Server.Entity.Player;
-using SkillType = SWLOR.Game.Server.Enumeration.SkillType;
+using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
 
 namespace SWLOR.Game.Server.Service
 {

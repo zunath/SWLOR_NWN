@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.PerkService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC

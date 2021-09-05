@@ -6,6 +6,9 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded

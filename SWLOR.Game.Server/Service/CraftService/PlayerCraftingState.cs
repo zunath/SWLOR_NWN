@@ -1,4 +1,5 @@
 ﻿using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Service.CraftService
 {

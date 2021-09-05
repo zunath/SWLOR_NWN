@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service

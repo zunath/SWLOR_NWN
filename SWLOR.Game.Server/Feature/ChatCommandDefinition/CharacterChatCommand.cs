@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
+using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Dialog = SWLOR.Game.Server.Service.Dialog;
 using HoloCom = SWLOR.Game.Server.Service.HoloCom;

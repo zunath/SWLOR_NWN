@@ -11,6 +11,8 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Item = SWLOR.Game.Server.Service.Item;
 

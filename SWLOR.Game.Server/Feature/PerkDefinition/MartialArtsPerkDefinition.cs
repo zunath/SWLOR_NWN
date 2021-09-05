@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Item = SWLOR.Game.Server.Service.Item;
 

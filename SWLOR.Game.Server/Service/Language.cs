@@ -7,8 +7,9 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.LanguageService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using SkillType = SWLOR.Game.Server.Enumeration.SkillType;
+using SkillType = SWLOR.Game.Server.Service.SkillService.SkillType;
 
 namespace SWLOR.Game.Server.Service
 {

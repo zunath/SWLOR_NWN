@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SWLOR.Game.Server.Enumeration
+namespace SWLOR.Game.Server.Service.PerkService
 {
     public enum PerkCategoryType
     {

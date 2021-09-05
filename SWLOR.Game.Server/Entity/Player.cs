@@ -7,6 +7,10 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.FactionService;
+using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.QuestService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.TaxiService;
 

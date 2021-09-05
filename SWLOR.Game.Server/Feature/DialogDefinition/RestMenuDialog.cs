@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.SkillService;
 using Player = SWLOR.Game.Server.Entity.Player;
 using Skill = SWLOR.Game.Server.Service.Skill;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;

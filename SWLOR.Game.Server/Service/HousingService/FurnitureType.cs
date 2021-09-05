@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Service.HousingService
         [Furniture("Pillar, Stone", "plc_pillar3", "", true)]
         PillarStone = 33,
         [Furniture("Statue of Lathander", "x2_plc_statue_la", "", true)]
-        StatueofLathander = 35,
+        StatueOfLathander = 35,
         [Furniture("Pillar, Flame", "plc_pillar1", "", true)]
         PillarFlame = 36,
         [Furniture("Cage", "plc_animalcage", "", true)]
@@ -179,7 +179,7 @@ namespace SWLOR.Game.Server.Service.HousingService
         [Furniture("Drow Bar", "x2_plc_drowbar", "", true)]
         DrowBar = 102,
         [Furniture("Shrine of Umberlee", "nw_plc_shrnumbr1", "", true)]
-        ShrineofUmberlee = 103,
+        ShrineOfUmberlee = 103,
         [Furniture("Rune Pillar", "x0_runepillar", "", true)]
         RunePillar = 104,
         [Furniture("Mirror", "x2_plc_mirror", "", true)]

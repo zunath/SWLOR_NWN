@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SWLOR.Game.Server.Enumeration
+namespace SWLOR.Game.Server.Service.CraftService
 {
     public enum RecipeCategoryType
     {
@@ -55,24 +55,33 @@ namespace SWLOR.Game.Server.Enumeration
         [RecipeCategory("Twin Blade", true)]
         TwinBlade = 24,
 
-        [RecipeCategory("Furniture", true)]
-        Furniture = 25,
+        [RecipeCategory("Bed", true)]
+        Beds = 25,
+        [RecipeCategory("Misc. Furniture", true)]
+        MiscellaneousFurniture = 25,
+        [RecipeCategory("Flooring", true)]
+        Flooring = 26,
+        [RecipeCategory("Seating", true)]
+        Seating = 27,
+        [RecipeCategory("Surface", true)]
+        Surfaces = 28,
+        [RecipeCategory("Statue", true)]
+        Statues = 29,
+        [RecipeCategory("Door", true)]
+        Doors = 30,
+        [RecipeCategory("Lighting", true)]
+        Lighting = 31,
+        [RecipeCategory("Fixture", true)]
+        Fixtures = 32,
+        [RecipeCategory("Electronic", true)]
+        Electronics = 33,
+
         [RecipeCategory("Structure", true)]
-        Structure = 26,
+        Structure = 34,
         [RecipeCategory("Starship", true)]
-        Starship = 27,
-        [RecipeCategory("Turret", true)]
-        Turret = 28,
-        [RecipeCategory("Reactor", true)]
-        Reactor = 29,
-        [RecipeCategory("Plating", true)]
-        Plating = 30,
-        [RecipeCategory("Mining", true)]
-        Mining = 31,
-        [RecipeCategory("Droid", true)]
-        Droid = 32,
-        [RecipeCategory("Harvester", true)]
-        Harvester = 33,
+        Starship = 35,
+        [RecipeCategory("Ship Module", true)]
+        ShipModule = 36
     }
 
     public class RecipeCategoryAttribute : Attribute

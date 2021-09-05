@@ -134,11 +134,12 @@
         TwoHandedBlueprints = 128,
         MartialBlueprints = 129,
         RangedBlueprints = 130,
-
+        CityManagement = 131,
         ArmorBlueprints = 132,
         AccessoryBlueprints = 133,
-        
-        
+        Upkeep = 134,
+        CitySpecialization = 135,
+
         FurnitureBlueprints = 149,
         StructureBlueprints = 150,
         StarshipBlueprints = 151,

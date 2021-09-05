@@ -1682,30 +1682,31 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Spikes = 1749,
         Venom = 1750,
         Talon = 1751,
-        
         Resuscitation1 = 1752,
         Resuscitation2 = 1753,
         Resuscitation3 = 1754,
-
         TreatmentKit1 = 1755,
         TreatmentKit2 = 1756,
-
         Shielding1 = 1757,
         Shielding2 = 1758,
         Shielding3 = 1759,
         Shielding4 = 1760,
-
         BactaRecovery1 = 1761,
         BactaRecovery2 = 1762,
         BactaRecovery3 = 1763,
-
         StasisField1 = 1764,
         StasisField2 = 1765,
         StasisField3 = 1766,
-
         CombatEnhancement1 = 1767,
         CombatEnhancement2 = 1768,
         CombatEnhancement3 = 1769,
+        CityManagement1 = 1770,
+        CityManagement2 = 1771,
+        CityManagement3 = 1772,
+        CityManagement4 = 1773,
+        Upkeep1 = 1774,
+        Upkeep2 = 1775,
+        CitySpecialization = 1776
 
     }
 }

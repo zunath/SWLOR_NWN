@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true, 
             "Ability to create base structures, furniture, and starships.", 
             true)]
-        Fabrication = 12,
+        Fabrication = 10,
 
         [Skill(SkillCategoryType.Crafting, 
             "Gathering", 
@@ -100,8 +100,15 @@ namespace SWLOR.Game.Server.Service.SkillService
             true, 
             "Ability to harvest raw materials and scavenge for supplies.", 
             true)]
-        Gathering = 13,
+        Gathering = 11,
 
+        [Skill(SkillCategoryType.Utility,
+            "Diplomacy",
+            20,
+            true,
+            "Ability to handle people, negotiate, and manage relations.",
+            true)]
+        Diplomacy = 12,
 
         // Languages
         [Skill(SkillCategoryType.Languages, 

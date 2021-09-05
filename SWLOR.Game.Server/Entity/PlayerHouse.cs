@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.HousingService;
 
 namespace SWLOR.Game.Server.Entity
 {

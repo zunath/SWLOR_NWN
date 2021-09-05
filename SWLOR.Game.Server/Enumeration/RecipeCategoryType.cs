@@ -24,67 +24,55 @@ namespace SWLOR.Game.Server.Enumeration
         Bracer = 8,
         [RecipeCategory("Legging", true)]
         Legging = 9,
-        [RecipeCategory("Heavy Shield", true)]
-        HeavyShield = 10,
+        [RecipeCategory("Shield", true)]
+        Shield = 10,
         [RecipeCategory("Tunic", true)]
         Tunic = 11,
         [RecipeCategory("Cap", true)]
         Cap = 12,
         [RecipeCategory("Glove", true)]
         Glove = 13,
-        [RecipeCategory("Boot", true)]
-        Boot = 14,
-        [RecipeCategory("Light Shield", true)]
-        LightShield = 15,
-        [RecipeCategory("Vibroblade", true)]
-        Vibroblade = 16,
-        [RecipeCategory("Finesse Vibroblade", true)]
-        FinesseVibroblade = 17,
-        [RecipeCategory("Lightsaber", true)]
-        Lightsaber = 18,
-        [RecipeCategory("Heavy Vibroblade", true)]
-        HeavyVibroblade = 19,
-        [RecipeCategory("Polearm", true)]
-        Polearm = 20,
-        [RecipeCategory("Twin Blade", true)]
-        TwinBlade = 21,
-        [RecipeCategory("Saberstaff", true)]
-        Saberstaff = 22,
-        [RecipeCategory("Martial", true)]
-        Martial = 23,
-        [RecipeCategory("Baton", true)]
-        Baton = 24,
+        [RecipeCategory("Boots", true)]
+        Boots = 14,
+        [RecipeCategory("Longsword", true)]
+        Longsword = 15,
+        [RecipeCategory("Knife", true)]
+        Knife = 16,
+        [RecipeCategory("Great Sword", true)]
+        GreatSword = 17,
+        [RecipeCategory("Spear", true)]
+        Spear = 18,
+        [RecipeCategory("Katar", true)]
+        Katar = 19,
+        [RecipeCategory("Staff", true)]
+        Staff = 20,
         [RecipeCategory("Pistol", true)]
-        Pistol = 25,
-        [RecipeCategory("Throwing", true)]
-        Throwing = 26,
-        [RecipeCategory("Cannon", true)]
-        Cannon = 27,
+        Pistol = 21,
+        [RecipeCategory("Shuriken", true)]
+        Shuriken = 22,
         [RecipeCategory("Rifle", true)]
-        Rifle = 28,
-        
+        Rifle = 23,
+        [RecipeCategory("Twin Blade", true)]
+        TwinBlade = 24,
+
         [RecipeCategory("Furniture", true)]
-        Furniture = 37,
+        Furniture = 25,
         [RecipeCategory("Structure", true)]
-        Structure = 38,
+        Structure = 26,
         [RecipeCategory("Starship", true)]
-        Starship = 39,
+        Starship = 27,
         [RecipeCategory("Turret", true)]
-        Turret = 40,
+        Turret = 28,
         [RecipeCategory("Reactor", true)]
-        Reactor = 41,
+        Reactor = 29,
         [RecipeCategory("Plating", true)]
-        Plating = 42,
+        Plating = 30,
         [RecipeCategory("Mining", true)]
-        Mining = 43,
+        Mining = 31,
         [RecipeCategory("Droid", true)]
-        Droid = 44,
+        Droid = 32,
         [RecipeCategory("Harvester", true)]
-        Harvester = 45,
-        [RecipeCategory("Stim Pack", true)]
-        StimPack = 46,
-        [RecipeCategory("Recovery", true)]
-        Recovery = 47,
+        Harvester = 33,
     }
 
     public class RecipeCategoryAttribute : Attribute

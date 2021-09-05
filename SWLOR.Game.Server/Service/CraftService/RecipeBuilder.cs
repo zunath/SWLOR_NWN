@@ -79,6 +79,21 @@ namespace SWLOR.Game.Server.Service.CraftService
         }
 
         /// <summary>
+        /// Sets the number of mod slots available to a recipe.
+        /// If called twice, the latest one will replace the previous one.
+        /// </summary>
+        /// <param name="type">The type of mod.</param>
+        /// <param name="slots">The number of slots</param>
+        /// <returns>A recipe builder with the configured options</returns>
+        public RecipeBuilder ModSlots(RecipeModType type, int slots)
+        {
+            _activeRecipe.ModType = type;
+            _activeRecipe.ModSlots = slots;
+
+            return this;
+        }
+
+        /// <summary>
         /// Deactivates the recipe which will prevent players from learning and crafting the item.
         /// </summary>
         /// <returns>A recipe builder with the configured options</returns>

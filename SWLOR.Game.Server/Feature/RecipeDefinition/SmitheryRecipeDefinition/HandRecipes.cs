@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             // Reginal Gloves
             _builder.Create(RecipeType.ReginalGloves, SkillType.Smithery)
                 .Category(RecipeCategoryType.Glove)
-                .Resref("viv_gloves")
+                .Resref("reg_gloves")
                 .Level(23)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             // Forza Gloves
             _builder.Create(RecipeType.ForzaGloves, SkillType.Smithery)
                 .Category(RecipeCategoryType.Glove)
-                .Resref("val_gloves")
+                .Resref("for_gloves")
                 .Level(23)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)

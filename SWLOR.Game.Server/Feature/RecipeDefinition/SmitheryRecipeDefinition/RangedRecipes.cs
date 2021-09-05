@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("wood", 2);
 
             // Titan Shuriken
-            _builder.Create(RecipeType.BasicShuriken, SkillType.Smithery)
+            _builder.Create(RecipeType.TitanShuriken, SkillType.Smithery)
                 .Category(RecipeCategoryType.Shuriken)
                 .Resref("tit_shuriken")
                 .Level(12)
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("fine_wood", 2);
 
             // Delta Shuriken
-            _builder.Create(RecipeType.BasicShuriken, SkillType.Smithery)
+            _builder.Create(RecipeType.DeltaShuriken, SkillType.Smithery)
                 .Category(RecipeCategoryType.Shuriken)
                 .Resref("del_shuriken")
                 .Level(22)
@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ancient_wood", 2);
 
             // Proto Shuriken
-            _builder.Create(RecipeType.BasicShuriken, SkillType.Smithery)
+            _builder.Create(RecipeType.ProtoShuriken, SkillType.Smithery)
                 .Category(RecipeCategoryType.Shuriken)
                 .Resref("proto_shuriken")
                 .Level(32)
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("aracia_wood", 2);
 
             // Ophidian Shuriken
-            _builder.Create(RecipeType.BasicShuriken, SkillType.Smithery)
+            _builder.Create(RecipeType.OphidianShuriken, SkillType.Smithery)
                 .Category(RecipeCategoryType.Shuriken)
                 .Resref("oph_shuriken")
                 .Level(42)

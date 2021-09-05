@@ -82,6 +82,12 @@ namespace SWLOR.Game.Server.Service
 
                 foreach (var (recipeType, recipe) in recipes)
                 {
+                    if (_recipes.ContainsKey(recipeType))
+                    {
+                        Console.WriteLine($"ERROR: Duplicate recipe detected: {recipeType}");
+                        continue;
+                    }
+
                     _recipes[recipeType] = recipe;
 
                     // Organize recipe by skill and category.

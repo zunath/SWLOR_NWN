@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
         {
             GreatSwords();
             Spears();
+            TwinBlades();
 
             return _builder.Build();
         }
@@ -130,6 +131,64 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .ModSlots(RecipeModType.Weapon, 2)
                 .Component("aracia_wood", 8)
                 .Component("hyphae_wood", 4);
+        }
+
+        private void TwinBlades()
+        {
+            // Basic Twin Blade
+            _builder.Create(RecipeType.BasicTwinBlade, SkillType.Smithery)
+                .Category(RecipeCategoryType.TwinBlade)
+                .Resref("b_twinblade")
+                .Level(8)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 1)
+                .ModSlots(RecipeModType.Weapon, 1)
+                .Component("ref_veldite", 5)
+                .Component("wood", 3);
+
+            // Titan Twin Blade
+            _builder.Create(RecipeType.TitanTwinBlade, SkillType.Smithery)
+                .Category(RecipeCategoryType.TwinBlade)
+                .Resref("tit_twinblade")
+                .Level(18)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 2)
+                .ModSlots(RecipeModType.Weapon, 1)
+                .Component("ref_scordspar", 5)
+                .Component("fine_wood", 3);
+
+            // Delta Twin Blade
+            _builder.Create(RecipeType.DeltaTwinBlade, SkillType.Smithery)
+                .Category(RecipeCategoryType.TwinBlade)
+                .Resref("del_twinblade")
+                .Level(28)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 3)
+                .ModSlots(RecipeModType.Weapon, 2)
+                .Component("ref_plagionite", 5)
+                .Component("ancient_wood", 3);
+
+            // Proto Twin Blade
+            _builder.Create(RecipeType.ProtoTwinBlade, SkillType.Smithery)
+                .Category(RecipeCategoryType.TwinBlade)
+                .Resref("proto_twinblade")
+                .Level(38)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 4)
+                .ModSlots(RecipeModType.Weapon, 2)
+                .Component("ref_keromber", 5)
+                .Component("aracia_wood", 3);
+
+            // Ophidian Twin Blade
+            _builder.Create(RecipeType.OphidianTwinBlade, SkillType.Smithery)
+                .Category(RecipeCategoryType.TwinBlade)
+                .Resref("oph_twinblade")
+                .Level(48)
+                .Quantity(1)
+                .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
+                .ModSlots(RecipeModType.Weapon, 2)
+                .Component("ref_jasioclase", 5)
+                .Component("hyphae_wood", 3);
         }
 
     }

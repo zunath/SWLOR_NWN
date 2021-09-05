@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("fiberp_flawed", 4);
 
             // Vivid Tunic
-            _builder.Create(RecipeType.SpiritmasterTunic, SkillType.Smithery)
+            _builder.Create(RecipeType.VividTunic, SkillType.Smithery)
                 .Category(RecipeCategoryType.Tunic)
                 .Resref("viv_tunic")
                 .Level(17)
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("fiberp_flawed", 4);
 
             // Valor Tunic
-            _builder.Create(RecipeType.CombatTunic, SkillType.Smithery)
+            _builder.Create(RecipeType.ValorTunic, SkillType.Smithery)
                 .Category(RecipeCategoryType.Tunic)
                 .Resref("val_tunic")
                 .Level(17)

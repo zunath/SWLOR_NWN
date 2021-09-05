@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("fiberp_flawed", 5);
 
             // Vivid Cloak
-            _builder.Create(RecipeType.TitanCloak, SkillType.Smithery)
+            _builder.Create(RecipeType.VividCloak, SkillType.Smithery)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("viv_cloak")
                 .Level(18)
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("fiberp_flawed", 5);
 
             // Valor Cloak
-            _builder.Create(RecipeType.TitanCloak, SkillType.Smithery)
+            _builder.Create(RecipeType.ValorCloak, SkillType.Smithery)
                 .Category(RecipeCategoryType.Cloak)
                 .Resref("val_cloak")
                 .Level(18)

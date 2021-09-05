@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("fiberp_good", 5);
 
             // Forza Belt
-            _builder.Create(RecipeType.QuarkBelt, SkillType.Smithery)
+            _builder.Create(RecipeType.ForzaBelt, SkillType.Smithery)
                 .Category(RecipeCategoryType.Belt)
                 .Resref("for_belt")
                 .Level(29)

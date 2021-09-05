@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             // Valor Cap
             _builder.Create(RecipeType.ValorCap, SkillType.Smithery)
                 .Category(RecipeCategoryType.Cap)
-                .Resref("com_cap")
+                .Resref("val_cap")
                 .Level(14)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)

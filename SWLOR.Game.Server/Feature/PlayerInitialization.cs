@@ -166,18 +166,13 @@ namespace SWLOR.Game.Server.Feature
             CreaturePlugin.AddFeatByLevel(player, FeatType.StructureTool, 1);
         }
 
-
         private static void InitializeHotBar(uint player)
         {
-            var openRestMenu = PlayerQuickBarSlot.UseFeat(FeatType.OpenRestMenu);
             var chatCommandTargeter = PlayerQuickBarSlot.UseFeat(FeatType.ChatCommandTargeter);
-            var restAbility = PlayerQuickBarSlot.UseFeat(FeatType.Rest);
             var structureTool = PlayerQuickBarSlot.UseFeat(FeatType.StructureTool);
-
-            PlayerPlugin.SetQuickBarSlot(player, 0, openRestMenu);
-            PlayerPlugin.SetQuickBarSlot(player, 1, chatCommandTargeter);
-            PlayerPlugin.SetQuickBarSlot(player, 2, restAbility);
-            PlayerPlugin.SetQuickBarSlot(player, 3, structureTool);
+            
+            PlayerPlugin.SetQuickBarSlot(player, 0, chatCommandTargeter);
+            PlayerPlugin.SetQuickBarSlot(player, 1, structureTool);
         }
 
         /// <summary>

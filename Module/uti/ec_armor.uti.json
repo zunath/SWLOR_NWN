@@ -22,7 +22,7 @@
   },
   "ArmorPart_LHand": {
     "type": "byte",
-    "value": 4
+    "value": 198
   },
   "ArmorPart_LShin": {
     "type": "byte",
@@ -58,11 +58,11 @@
   },
   "ArmorPart_RHand": {
     "type": "byte",
-    "value": 4
+    "value": 198
   },
   "ArmorPart_Robe": {
     "type": "byte",
-    "value": 0
+    "value": 8
   },
   "ArmorPart_RShin": {
     "type": "byte",
@@ -90,11 +90,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 19
+    "value": 23
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 16
+    "value": 124
   },
   "Comment": {
     "type": "cexostring",
@@ -126,11 +126,11 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 1
+    "value": 124
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 7
+    "value": 23
   },
   "LocalizedName": {
     "id": 12843,
@@ -141,11 +141,11 @@
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 12
+    "value": 29
   },
   "Metal2Color": {
     "type": "byte",
-    "value": 1
+    "value": 92
   },
   "PaletteID": {
     "type": "byte",

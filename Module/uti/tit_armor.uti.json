@@ -6,19 +6,19 @@
   },
   "ArmorPart_Belt": {
     "type": "byte",
-    "value": 11
+    "value": 0
   },
   "ArmorPart_LBicep": {
     "type": "byte",
-    "value": 7
+    "value": 17
   },
   "ArmorPart_LFArm": {
     "type": "byte",
-    "value": 15
+    "value": 58
   },
   "ArmorPart_LFoot": {
     "type": "byte",
-    "value": 4
+    "value": 106
   },
   "ArmorPart_LHand": {
     "type": "byte",
@@ -30,11 +30,11 @@
   },
   "ArmorPart_LShoul": {
     "type": "byte",
-    "value": 0
+    "value": 102
   },
   "ArmorPart_LThigh": {
     "type": "byte",
-    "value": 6
+    "value": 116
   },
   "ArmorPart_Neck": {
     "type": "byte",
@@ -42,19 +42,19 @@
   },
   "ArmorPart_Pelvis": {
     "type": "byte",
-    "value": 6
+    "value": 101
   },
   "ArmorPart_RBicep": {
     "type": "byte",
-    "value": 7
+    "value": 17
   },
   "ArmorPart_RFArm": {
     "type": "byte",
-    "value": 15
+    "value": 58
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 4
+    "value": 106
   },
   "ArmorPart_RHand": {
     "type": "byte",
@@ -70,15 +70,15 @@
   },
   "ArmorPart_RShoul": {
     "type": "byte",
-    "value": 0
+    "value": 100
   },
   "ArmorPart_RThigh": {
     "type": "byte",
-    "value": 6
+    "value": 116
   },
   "ArmorPart_Torso": {
     "type": "byte",
-    "value": 45
+    "value": 62
   },
   "BaseItem": {
     "type": "int",
@@ -90,11 +90,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 19
+    "value": 115
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 16
+    "value": 115
   },
   "Comment": {
     "type": "cexostring",
@@ -126,11 +126,11 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 1
+    "value": 117
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 7
+    "value": 115
   },
   "LocalizedName": {
     "id": 12843,
@@ -141,11 +141,11 @@
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 12
+    "value": 54
   },
   "Metal2Color": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "PaletteID": {
     "type": "byte",

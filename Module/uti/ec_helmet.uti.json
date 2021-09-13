@@ -14,7 +14,7 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 23
+    "value": 58
   },
   "Cloth2Color": {
     "type": "byte",
@@ -52,7 +52,7 @@
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 37
+    "value": 55
   },
   "LocalizedName": {
     "id": 90531,
@@ -63,15 +63,15 @@
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 35
+    "value": 31
   },
   "Metal2Color": {
     "type": "byte",
-    "value": 63
+    "value": 7
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 1
+    "value": 121
   },
   "PaletteID": {
     "type": "byte",

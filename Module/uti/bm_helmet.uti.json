@@ -14,11 +14,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 23
+    "value": 128
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 23
+    "value": 20
   },
   "Comment": {
     "type": "cexostring",
@@ -34,7 +34,9 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "It's rusty and junky and hard to see out of."
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -48,11 +50,11 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 23
+    "value": 20
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 37
+    "value": 20
   },
   "LocalizedName": {
     "id": 90531,
@@ -63,15 +65,15 @@
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 35
+    "value": 50
   },
   "Metal2Color": {
     "type": "byte",
-    "value": 63
+    "value": 54
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 1
+    "value": 10
   },
   "PaletteID": {
     "type": "byte",

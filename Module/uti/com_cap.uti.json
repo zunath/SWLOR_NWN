@@ -14,7 +14,7 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 23
+    "value": 20
   },
   "Cloth2Color": {
     "type": "byte",
@@ -48,7 +48,7 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 23
+    "value": 109
   },
   "Leather2Color": {
     "type": "byte",
@@ -63,7 +63,7 @@
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 35
+    "value": 39
   },
   "Metal2Color": {
     "type": "byte",
@@ -71,7 +71,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 47
+    "value": 4
   },
   "PaletteID": {
     "type": "byte",

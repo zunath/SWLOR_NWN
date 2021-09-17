@@ -130,10 +130,13 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <summary>
         /// Bind a object to a named parameter of the given prepared query.
         /// Objects are serialized, NOT stored as a reference!
-        /// Currently supported object types: Creatures, Items, Placeables, Waypoints, Stores, Doors, Triggers
+        /// // Currently supported object types: Creatures, Items, Placeables, Waypoints, Stores, Doors, Triggers, Areas (CAF format)
+        /// If bSaveObjectState is TRUE, local vars, effects, action queue, and transition info (triggers, doors) are saved out
+        /// (except for Combined Area Format, which always has object state saved out).
         /// </summary>
-        public static void SqlBindObject(IntPtr sqlQuery, string sParam, uint oObject)
+        public static void SqlBindObject(IntPtr sqlQuery, string sParam, uint oObject, bool bSaveObjectState = false)
         {
+            Internal.NativeFunctions.StackPushInteger(bSaveObjectState ? 1 : 0);
             Internal.NativeFunctions.StackPushObject(oObject);
             Internal.NativeFunctions.StackPushString(sParam);
             Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.SQLQuery, sqlQuery);
@@ -221,15 +224,48 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// Objects are serialized, NOT stored as a reference!
         /// In case of error, INVALID_OBJECT will be returned.
         /// In traditional fashion, nIndex starts at 0.
+        /// If bLoadObjectState is TRUE, local vars, effects, action queue, and transition info (triggers, doors) are read in.
         /// </summary>
-        public static uint SqlGetObject(IntPtr sqlQuery, int nIndex, IntPtr lSpawnAt, uint oInventory = OBJECT_INVALID)
+        public static uint SqlGetObject(IntPtr sqlQuery, int nIndex, IntPtr lSpawnAt, uint oInventory = OBJECT_INVALID, bool bLoadObjectState = false)
         {
+            Internal.NativeFunctions.StackPushInteger(bLoadObjectState ? 1 : 0);
             Internal.NativeFunctions.StackPushObject(oInventory);
             Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lSpawnAt);
             Internal.NativeFunctions.StackPushInteger(nIndex);
             Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.SQLQuery, sqlQuery);
             Internal.NativeFunctions.CallBuiltIn(935);
             return Internal.NativeFunctions.StackPopObject();
+        }
+
+        /// <summary>
+        /// Bind an json to a named parameter of the given prepared query.
+        /// Json values are serialised into a string.
+        /// Example:
+        ///   sqlquery v = SqlPrepareQueryObject(GetModule(), "insert into test (col) values (@myjson);");
+        ///   SqlBindJson(v, "@myjson", myJsonObject);
+        ///   SqlStep(v);
+        /// </summary>
+        public static void SqlBindJson(SQLQuery sqlQuery, string sParam, Json jValue)
+        {
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jValue);
+            Internal.NativeFunctions.StackPushString(sParam);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.SQLQuery, sqlQuery);
+            Internal.NativeFunctions.CallBuiltIn(1000);
+        }
+
+        /// <summary>
+        /// Retrieve a column cast as a json value of the currently stepped row.
+        /// You can call this after SqlStep() returned TRUE.
+        /// In case of error, a json null value will be returned.
+        /// In traditional fashion, nIndex starts at 0.
+        /// </summary>
+        public static Json SqlGetJson(SQLQuery sqlQuery, int nIndex)
+        {
+            Internal.NativeFunctions.StackPushInteger(nIndex);
+            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.SQLQuery, sqlQuery);
+            Internal.NativeFunctions.CallBuiltIn(1001);
+
+            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
         }
 
     }

@@ -328,9 +328,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Spawn a GUI panel for the client that controls oPC.
         ///   Will force show panels disabled with SetGuiPanelDisabled()
         ///   - oPC
-        ///   - nGUIPanel: GUI_PANEL_*, except GUI_PANEL_COMPASS
-        ///   * Nothing happens if oPC is not a player character or if an invalid value is
-        ///   used for nGUIPanel.
+        ///   - nGUIPanel: GUI_PANEL_*, except GUI_PANEL_COMPASS / GUI_PANEL_LEVELUP / GUI_PANEL_GOLD_* / GUI_PANEL_EXAMINE_*
+        ///   * Nothing happens if oPC is not a player character or if an invalid value is used for nGUIPanel.
         /// </summary>
         public static void PopUpGUIPanel(uint oPC, GuiPanel nGUIPanel)
         {
@@ -476,5 +475,46 @@ namespace SWLOR.Game.Server.Core.NWScript
             Internal.NativeFunctions.CallBuiltIn(967);
             return Internal.NativeFunctions.StackPopObject();
         }
+
+        /// <summary>
+        /// Gets a device property/capability as advertised by the client.
+        /// sProperty is one of PLAYER_DEVICE_PROPERTY_xxx.
+        /// Returns -1 if
+        /// - the property was never set by the client,
+        /// - the the actual value is -1,
+        /// - the player is running a older build that does not advertise device properties,
+        /// - the player has disabled sending device properties (Options->Game->Privacy).
+        /// </summary>
+        public static PlayerDevicePlatformType GetPlayerDeviceProperty(uint oPlayer, string sProperty)
+        {
+            Internal.NativeFunctions.StackPushString(sProperty);
+            Internal.NativeFunctions.StackPushObject(oPlayer);
+            Internal.NativeFunctions.CallBuiltIn(1004);
+
+            return (PlayerDevicePlatformType)Internal.NativeFunctions.StackPopInteger();
+        }
+
+        /// <summary>
+        /// Returns the LANGUAGE_xx code of the given player, or -1 if unavailable.
+        /// </summary>
+        public static PlayerLanguageType GetPlayerLanguage(uint oPlayer)
+        {
+            Internal.NativeFunctions.StackPushObject(oPlayer);
+            Internal.NativeFunctions.CallBuiltIn(1005);
+
+            return (PlayerLanguageType)Internal.NativeFunctions.StackPopInteger();
+        }
+
+        /// <summary>
+        /// Returns one of PLAYER_DEVICE_PLATFORM_xxx, or 0 if unavailable.
+        /// </summary>
+        public static PlayerDevicePlatformType GetPlayerDevicePlatform(uint oPlayer)
+        {
+            Internal.NativeFunctions.StackPushObject(oPlayer);
+            Internal.NativeFunctions.CallBuiltIn(1006);
+
+            return (PlayerDevicePlatformType)Internal.NativeFunctions.StackPopInteger();
+        }
+
     }
 }

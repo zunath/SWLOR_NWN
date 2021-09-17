@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Journal = 6,
         SpellBook = 7,
         CharacterSheet = 8,
-
+        LevelUp = 9,
         GoldInventory = 10,
         Barter = 11,
         ExamineCreature = 12,

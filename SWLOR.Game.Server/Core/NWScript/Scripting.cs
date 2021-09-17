@@ -31,10 +31,16 @@ namespace SWLOR.Game.Server.Core.NWScript
 
         /// <summary>
         ///  Returns the currently executing event (EVENT_SCRIPT_*) or 0 if not determinable.
-        /// Note: Will return 0 in DelayCommand/AssignCommand. ExecuteScript(Chunk) will inherit their event ID from their parent event.
+        /// Note: Will return 0 in DelayCommand/AssignCommand.
+        /// * bInheritParent: If TRUE, ExecuteScript(Chunk) will inherit their event ID from their parent event.
+        ///                   If FALSE, it will return the event ID of the current script, which may be 0.
+        ///
+        /// Some events can run in the same script context as a previous event (for example: CreatureOnDeath, CreatureOnDamaged)
+        /// In cases like these calling the function with bInheritParent = TRUE will return the wrong event ID.
         /// </summary>
-        public static EventScript GetCurrentlyRunningEvent()
+        public static EventScript GetCurrentlyRunningEvent(bool bInheritParent = true)
         {
+            Internal.NativeFunctions.StackPushInteger(bInheritParent ? 1 : 0);
             Internal.NativeFunctions.CallBuiltIn(938);
             return (EventScript)Internal.NativeFunctions.StackPopInteger();
         }

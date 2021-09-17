@@ -59,8 +59,28 @@ namespace SWLOR.Game.Server.Core
         public SQLQuery(IntPtr handle) => Handle = handle;
         ~SQLQuery() { Internal.NativeFunctions.FreeGameDefinedStructure((int)EngineStructure.SQLQuery, Handle); }
 
-        public static implicit operator IntPtr(SQLQuery effect) => effect.Handle;
+        public static implicit operator IntPtr(SQLQuery sqlQuery) => sqlQuery.Handle;
         public static implicit operator SQLQuery(IntPtr intPtr) => new SQLQuery(intPtr);
+    }
+
+    public partial class Cassowary
+    {
+        public IntPtr Handle;
+        public Cassowary(IntPtr handle) => Handle = handle;
+        ~Cassowary() { Internal.NativeFunctions.FreeGameDefinedStructure((int)EngineStructure.Cassowary, Handle); }
+
+        public static implicit operator IntPtr(Cassowary cassowary) => cassowary.Handle;
+        public static implicit operator Cassowary(IntPtr intPtr) => new Cassowary(intPtr);
+    }
+
+    public partial class Json
+    {
+        public IntPtr Handle;
+        public Json(IntPtr handle) => Handle = handle;
+        ~Json() { Internal.NativeFunctions.FreeGameDefinedStructure((int)EngineStructure.Json, Handle); }
+
+        public static implicit operator IntPtr(Json json) => json.Handle;
+        public static implicit operator Json(IntPtr intPtr) => new Json(intPtr);
     }
 
     public delegate void ActionDelegate();

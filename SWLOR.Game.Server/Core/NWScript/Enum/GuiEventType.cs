@@ -15,6 +15,17 @@
         JournalClose = 11,
         PlayerListPlayerClick = 12,
         PartyBarPortraitClick = 13,
-        DisabledPanelAttemptOpen = 14
+        DisabledPanelAttemptOpen = 14,
+        CompassClick = 15,
+        LevelUpCancelled = 16,
+        AreaLoadScreenFinished = 17,
+        QuickChatActivate = 18,
+        QuickChatSelect = 19,
+        QuickChatClose = 20,
+        SelectCreature = 21,
+        UnselectCreature = 22,
+        ExamineObject = 23,
+        OptionsOpen = 24,
+        OptionsClose = 25,
     }
 }

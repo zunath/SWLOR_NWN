@@ -93,6 +93,8 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Ethereal = 81,
         SpellFailure = 82,
         CutsceneGhost = 83,
-        CutsceneImmobilize = 84
+        CutsceneImmobilize = 84,
+        RunScript = 85,
+        Icon = 86,
     }
 }

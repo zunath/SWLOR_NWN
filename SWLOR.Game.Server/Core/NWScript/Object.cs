@@ -438,10 +438,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   If an owner is specified and the object is an item, it will be put into their inventory
         ///   If the object is a creature, they will be created at the location.
         ///   If a new tag is specified, it will be assigned to the new object.
+        ///   If bCopyLocalState is TRUE, local vars, effects, action queue, and transition info (triggers, doors) are copied over.
         /// </summary>
-        public static uint CopyObject(uint oSource, Location locLocation, uint oOwner = OBJECT_INVALID,
-            string sNewTag = "")
+        public static uint CopyObject(uint oSource, Location locLocation, uint oOwner = OBJECT_INVALID, string sNewTag = "", bool bCopyLocalState = false)
         {
+            Internal.NativeFunctions.StackPushInteger(bCopyLocalState ? 1 : 0);
             Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
             Internal.NativeFunctions.StackPushObject(oOwner);
             Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, locLocation);

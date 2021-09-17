@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             Internal.NativeFunctions.StackPushString(sWindowId);
             Internal.NativeFunctions.StackPushString(sResRef);
             Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(1009);
+            Internal.NativeFunctions.CallBuiltIn(1010);
 
             return Internal.NativeFunctions.StackPopInteger();
         }
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             Internal.NativeFunctions.StackPushString(sWindowId);
             Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jNui);
             Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(1010);
+            Internal.NativeFunctions.CallBuiltIn(1011);
 
             return Internal.NativeFunctions.StackPopInteger();
         }
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             Internal.NativeFunctions.StackPushString(sId);
             Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(1011);
+            Internal.NativeFunctions.CallBuiltIn(1012);
 
             return Internal.NativeFunctions.StackPopInteger();
         }
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             Internal.NativeFunctions.StackPushInteger(nUiToken);
             Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(1012);
+            Internal.NativeFunctions.CallBuiltIn(1013);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint NuiGetEventPlayer()
         {
-            Internal.NativeFunctions.CallBuiltIn(1013);
+            Internal.NativeFunctions.CallBuiltIn(1014);
 
             return Internal.NativeFunctions.StackPopObject();
         }
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int NuiGetEventWindow()
         {
-            Internal.NativeFunctions.CallBuiltIn(1014);
+            Internal.NativeFunctions.CallBuiltIn(1015);
 
             return Internal.NativeFunctions.StackPopInteger();
         }
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string NuiGetEventType()
         {
-            Internal.NativeFunctions.CallBuiltIn(1015);
+            Internal.NativeFunctions.CallBuiltIn(1016);
 
             return Internal.NativeFunctions.StackPopString();
         }
@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string NuiGetEventElement()
         {
-            Internal.NativeFunctions.CallBuiltIn(1016);
+            Internal.NativeFunctions.CallBuiltIn(1017);
 
             return Internal.NativeFunctions.StackPopString();
         }
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int NuiGetEventArrayIndex()
         {
-            Internal.NativeFunctions.CallBuiltIn(1017);
+            Internal.NativeFunctions.CallBuiltIn(1018);
 
             return Internal.NativeFunctions.StackPopInteger();
         }
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             Internal.NativeFunctions.StackPushInteger(nUiToken);
             Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(1018);
+            Internal.NativeFunctions.CallBuiltIn(1019);
 
             return Internal.NativeFunctions.StackPopString();
         }
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             Internal.NativeFunctions.StackPushString(sBindName);
             Internal.NativeFunctions.StackPushInteger(nUiToken);
             Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(1019);
+            Internal.NativeFunctions.CallBuiltIn(1020);
 
             return Internal.NativeFunctions.StackPopGameDefinedStructure((int) EngineStructure.Json);
         }
@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             Internal.NativeFunctions.StackPushString(sBindName);
             Internal.NativeFunctions.StackPushInteger(nUiToken);
             Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(1020);
+            Internal.NativeFunctions.CallBuiltIn(1021);
         }
 
         /// <summary>
@@ -184,7 +184,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             Internal.NativeFunctions.StackPushString(sElement);
             Internal.NativeFunctions.StackPushInteger(nUiToken);
             Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(1021);
+            Internal.NativeFunctions.CallBuiltIn(1022);
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             Internal.NativeFunctions.StackPushString(sBind);
             Internal.NativeFunctions.StackPushInteger(nUiToken);
             Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(1022);
+            Internal.NativeFunctions.CallBuiltIn(1023);
 
             return Internal.NativeFunctions.StackPopInteger();
         }
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             Internal.NativeFunctions.StackPushInteger(nNth);
             Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(1023);
+            Internal.NativeFunctions.CallBuiltIn(1024);
 
             return Internal.NativeFunctions.StackPopInteger();
         }
@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             Internal.NativeFunctions.StackPushInteger(bWatched ? 1 : 0);
             Internal.NativeFunctions.StackPushInteger(nToken);
             Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(1024);
+            Internal.NativeFunctions.CallBuiltIn(1025);
 
             return Internal.NativeFunctions.StackPopString();
         }
@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json NuiGetEventPayload()
         {
-            Internal.NativeFunctions.CallBuiltIn(1025);
+            Internal.NativeFunctions.CallBuiltIn(1026);
 
             return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
         }
@@ -252,7 +252,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         {
             Internal.NativeFunctions.StackPushInteger(nToken);
             Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(1026);
+            Internal.NativeFunctions.CallBuiltIn(1027);
 
             return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
         }
@@ -268,7 +268,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             Internal.NativeFunctions.StackPushGameDefinedStructure((int) EngineStructure.Json, jUserData);
             Internal.NativeFunctions.StackPushInteger(nToken);
             Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(1027);
+            Internal.NativeFunctions.CallBuiltIn(1028);
         }
 
     }

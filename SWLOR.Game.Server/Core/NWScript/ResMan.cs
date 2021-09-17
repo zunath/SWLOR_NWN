@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Core.NWScript
             Internal.NativeFunctions.StackPushInteger(nNth);
             Internal.NativeFunctions.StackPushInteger((int)nResType);
             Internal.NativeFunctions.StackPushString(sPrefix);
-            Internal.NativeFunctions.CallBuiltIn(1008);
+            Internal.NativeFunctions.CallBuiltIn(1009);
 
             return Internal.NativeFunctions.StackPopString();
         }

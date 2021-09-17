@@ -1,9 +1,9 @@
 ﻿namespace SWLOR.Game.Server.Core.Beamdog
 {
-    public enum NuiVerticalAlign
+    public static class NuiVerticalAlign
     {
-        Middle = 0,
-        Top = 1,
-        Bottom = 2
+        public const int Middle = 0;
+        public const int Top = 1;
+        public const int Bottom = 2;
     }
 }

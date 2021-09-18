@@ -31,6 +31,14 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return newChart;
         }
 
+        public GuiCheckBox AddCheckBox()
+        {
+            var newCheckBox = new GuiCheckBox();
+            Elements.Add(newCheckBox);
+
+            return newCheckBox;
+        }
+
         public GuiColorPicker AddColorPicker()
         {
             var newColorPicker = new GuiColorPicker();

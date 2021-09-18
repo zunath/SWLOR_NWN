@@ -21,11 +21,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     });
                     col.AddRow(row =>
                     {
-                        //row.AddComboBox()
-                        //    .SetSelectedIndex(1)
-                        //    .AddOption("option 1", 1)
-                        //    .AddOption("option 2", 2)
-                        //    .AddOption("option 3", 3);
+                        row.AddComboBox()
+                            .BindSelectedIndex("selected_option")
+                            .AddOption("option 1", 1)
+                            .AddOption("option 2", 2)
+                            .AddOption("option 3", 3);
 
                     });
                 });

@@ -1,9 +1,9 @@
 ﻿namespace SWLOR.Game.Server.Core.Beamdog
 {
-    public static class NuiHorizontalAlign
+    public enum NuiHorizontalAlign
     {
-        public const int Center = 0;
-        public const int Left = 1;
-        public const int Right = 2;
+        Center = 0,
+        Left = 1,
+        Right = 2,
     }
 }

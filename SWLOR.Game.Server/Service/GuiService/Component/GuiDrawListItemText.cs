@@ -18,6 +18,12 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string TextBindName { get; set; }
         private bool IsTextBound => !string.IsNullOrWhiteSpace(TextBindName);
 
+        public GuiDrawListItemText()
+        {
+            Color = new GuiColor(0, 0, 0);
+            Bounds = new GuiRectangle(0, 0, 0, 0);
+        }
+
         public GuiDrawListItemText SetColor(GuiColor color)
         {
             Color = color;

@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private List<GuiVector2> Points { get; set; }
         private string PointsBindName { get; set; }
         private bool IsPointsBound => !string.IsNullOrWhiteSpace(PointsBindName);
-
+        
         public GuiDrawListItemPolyLine SetColor(GuiColor color)
         {
             Color = color;
@@ -86,6 +86,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         public GuiDrawListItemPolyLine()
         {
             Points = new List<GuiVector2>();
+            Color = new GuiColor(0, 0, 0);
         }
 
         public override Json ToJson()

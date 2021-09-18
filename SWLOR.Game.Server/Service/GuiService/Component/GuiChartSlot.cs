@@ -72,6 +72,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         public GuiChartSlot()
         {
             Data = new List<float>();
+            Color = new GuiColor(0, 0, 0);
         }
 
         public Json ToJson()

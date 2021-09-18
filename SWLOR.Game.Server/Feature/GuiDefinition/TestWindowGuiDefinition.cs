@@ -17,7 +17,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddButton()
-                            .SetText("Click me");
+                            .SetText("regular button");
+
+                        row.AddButtonImage()
+                            .SetResref("ife_animal");
+
+                        row.AddToggleButton()
+                            .SetText("toggle button");
                     });
                     col.AddRow(row =>
                     {
@@ -26,6 +32,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .AddOption("option 1", 1)
                             .AddOption("option 2", 2)
                             .AddOption("option 3", 3);
+
+                        row.AddColorPicker();
 
                     });
                 });

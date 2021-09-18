@@ -30,6 +30,15 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string Ctrl1BindName { get; set; }
         private bool IsCtrl1Bound => !string.IsNullOrWhiteSpace(Ctrl1BindName);
 
+        public GuiDrawListItemCurve()
+        {
+            Color = new GuiColor(0, 0, 0);
+            A = new GuiVector2(0, 0);
+            B = new GuiVector2(0, 0);
+            Ctrl0 = new GuiVector2(0, 0);
+            Ctrl1 = new GuiVector2(0, 0);
+        }
+
         public GuiDrawListItemCurve SetColor(GuiColor color)
         {
             Color = color;

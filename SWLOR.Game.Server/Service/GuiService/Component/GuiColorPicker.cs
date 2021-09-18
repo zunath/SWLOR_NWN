@@ -9,6 +9,11 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string SelectedColorBindName { get; set; }
         private bool IsSelectedColorBound => !string.IsNullOrWhiteSpace(SelectedColorBindName);
 
+        public GuiColorPicker()
+        {
+            SelectedColor = new GuiColor(0, 0, 0);
+        }
+
         public GuiColorPicker SetSelectedColor(GuiColor selectedColor)
         {
             SelectedColor = selectedColor;

@@ -26,6 +26,11 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string VerticalAlignBindName { get; set; }
         private bool IsVerticalAlignBound => !string.IsNullOrWhiteSpace(VerticalAlignBindName);
 
+        public GuiDrawListItemImage()
+        {
+            Position = new GuiRectangle(0, 0, 0, 0);
+        }
+
         public GuiDrawListItemImage SetResref(string resref)
         {
             Resref = resref;

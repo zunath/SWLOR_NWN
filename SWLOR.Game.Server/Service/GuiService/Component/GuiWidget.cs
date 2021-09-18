@@ -127,7 +127,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
 
         public GuiWidget AddDrawList(Action<GuiDrawList> drawList)
         {
-            var newDrawList = new GuiDrawList(this);
+            var newDrawList = new GuiDrawList();
             DrawLists.Add(newDrawList);
             drawList(newDrawList);
             return this;
@@ -222,6 +222,12 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             else if (Color != null)
             {
                 element = Nui.StyleForegroundColor(element, Color.ToJson());
+            }
+
+            // Draw Lists
+            foreach (var drawList in DrawLists)
+            {
+                element = drawList.ToJson(element);
             }
 
             return element;

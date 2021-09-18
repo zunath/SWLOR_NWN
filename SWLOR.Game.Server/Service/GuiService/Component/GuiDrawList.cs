@@ -8,8 +8,6 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
 {
     public class GuiDrawList
     {
-        private GuiWidget Target { get; set; }
-        
         private bool IsConstrainedToTargetBounds { get; set; }
         private string IsConstrainedBindName { get; set; }
         private bool IsConstrainedBound => !string.IsNullOrWhiteSpace(IsConstrainedBindName);
@@ -83,10 +81,22 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         }
 
 
-        public GuiDrawList(GuiWidget target)
+        public GuiDrawList()
         {
-            Target = target;
             DrawItems = new List<GuiDrawListItem>();
+        }
+
+        public Json ToJson(Json targetElement)
+        {
+            var isConstrained = IsConstrainedBound ? Nui.Bind(IsConstrainedBindName) : JsonBool(IsConstrainedToTargetBounds);
+            var drawList = JsonArray();
+
+            foreach (var item in DrawItems)
+            {
+                drawList = JsonArrayInsert(drawList, item.ToJson());
+            }
+
+            return Nui.DrawList(targetElement, isConstrained, drawList);
         }
     }
 }

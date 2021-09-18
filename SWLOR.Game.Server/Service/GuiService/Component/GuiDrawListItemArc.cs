@@ -34,6 +34,12 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string AMaximumBindName { get; set; }
         private bool IsAMaximumBound => !string.IsNullOrWhiteSpace(AMaximumBindName);
 
+        public GuiDrawListItemArc()
+        {
+            Color = new GuiColor(0, 0, 0);
+            Center = new GuiVector2(0f, 0f);
+        }
+
         public GuiDrawListItemArc SetColor(GuiColor color)
         {
             Color = color;

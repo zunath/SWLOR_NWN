@@ -22,6 +22,12 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string BoundsBindName { get; set; }
         private bool IsBoundsBound => !string.IsNullOrWhiteSpace(BoundsBindName);
 
+        public GuiDrawListItemCircle()
+        {
+            Color = new GuiColor(0, 0, 0);
+            Bounds = new GuiRectangle(0, 0, 0, 0);
+        }
+
         public GuiDrawListItemCircle SetColor(GuiColor color)
         {
             Color = color;

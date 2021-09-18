@@ -24,18 +24,24 @@ namespace SWLOR.Game.Server.Feature
             var window = new GuiWindow();
             var column = new GuiColumn();
             var row = new GuiRow();
+
+            row.Elements.Add(new GuiButton
+            {
+                Text = "Button name"
+            });
+
             row.Elements.Add(new GuiLabel
             {
                 Text = "My Special Label"
             });
+
+
             column.Rows.Add(row);
 
             window.Columns.Add(column);
 
             var json = window.Build();
-
-            Console.WriteLine(JsonDump(json));
-
+            
             NuiCreate(GetLastUsedBy(), json, "test_window");
         }
 

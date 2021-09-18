@@ -511,7 +511,7 @@ namespace SWLOR.Game.Server.Core.Beamdog
         /// <param name="jPoints">Bind:Float[]    Always provide points in pairs</param>
         public static Json DrawListPolyLine(Json jEnabled, Json jColor, Json jFill, Json jLineThickness, Json jPoints)
         {
-            Json ret = NuiDrawListItem(NuiDrawListItemType.Polyline, jEnabled, jColor, jFill, jLineThickness);
+            Json ret = NuiDrawListItem(NuiDrawListItemType.PolyLine, jEnabled, jColor, jFill, jLineThickness);
             ret = JsonObjectSet(ret, "points", jPoints);
             return ret;
         }

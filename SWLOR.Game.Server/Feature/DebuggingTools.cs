@@ -2,8 +2,10 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
@@ -21,27 +23,12 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("test_window")]
         public static void TestWindow()
         {
-            var window = new GuiWindow();
-            var column = new GuiColumn();
-            var row = new GuiRow();
+            var builder = new TestWindowGuiDefinition();
+            var windows = builder.BuildWindows();
 
-            row.Elements.Add(new GuiButton
-            {
-                Text = "Button name"
-            });
+            var json = windows[GuiWindowType.TestWindow].Build();
+            Console.WriteLine(JsonDump(json));
 
-            row.Elements.Add(new GuiLabel
-            {
-                Text = "My Special Label"
-            });
-
-
-            column.Rows.Add(row);
-
-            window.Columns.Add(column);
-
-            var json = window.Build();
-            
             NuiCreate(GetLastUsedBy(), json, "test_window");
         }
 

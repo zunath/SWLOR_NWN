@@ -119,8 +119,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             }
             else if (Color != null)
             {
-                var color = Nui.Color(Color.Red, Color.Green, Color.Blue, Color.Alpha);
-                element = Nui.StyleForegroundColor(element, color);
+                element = Nui.StyleForegroundColor(element, Color.ToJson());
             }
 
             return element;

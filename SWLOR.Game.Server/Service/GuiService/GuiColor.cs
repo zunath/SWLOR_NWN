@@ -1,4 +1,7 @@
-﻿namespace SWLOR.Game.Server.Service.GuiService
+﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Beamdog;
+
+namespace SWLOR.Game.Server.Service.GuiService
 {
     public class GuiColor
     {
@@ -13,6 +16,11 @@
             Green = green;
             Blue = blue;
             Alpha = alpha;
+        }
+
+        public Json ToJson()
+        {
+            return Nui.Color(Red, Green, Blue, Alpha);
         }
     }
 }

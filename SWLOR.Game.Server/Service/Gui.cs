@@ -23,6 +23,9 @@ namespace SWLOR.Game.Server.Service
             LoadWindowTemplates();
         }
         
+        /// <summary>
+        /// Loads all of the window definitions, constructs them, and caches the data into memory.
+        /// </summary>
         private static void LoadWindowTemplates()
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()
@@ -56,6 +59,21 @@ namespace SWLOR.Game.Server.Service
                 var playerWindow = window.CreatePlayerWindowAction(player);
                 _playerWindows[player][type] = playerWindow;
             }
+        }
+
+        [NWNEventHandler("mod_nui_event")]
+        public static void HandleNuiEvents()
+        {
+            var player = NuiGetEventPlayer();
+            var windowToken = NuiGetEventWindow();
+            var windowId = NuiGetWindowId(player, windowToken);
+            var eventType = NuiGetEventType();
+            var elementId = NuiGetEventElement();
+            var arrayIndex = NuiGetEventArrayIndex();
+
+
+            Console.WriteLine($"windowToken = {windowToken}, windowId = {windowId}, eventType = {eventType}, elementId = {elementId}, arrayIndex = {arrayIndex}");
+
         }
 
         /// <summary>

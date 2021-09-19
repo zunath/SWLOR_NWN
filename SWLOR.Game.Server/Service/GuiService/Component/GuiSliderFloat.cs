@@ -7,7 +7,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
     public class GuiSliderFloat<T> : GuiWidget<T, GuiSliderFloat<T>>
-        where T: IGuiDataModel
+        where T: IGuiViewModel
     {
         private float Value { get; set; }
         private string ValueBindName { get; set; }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
     public abstract class GuiExpandableComponent<T>: GuiWidget<T, GuiExpandableComponent<T>>
-        where T: IGuiDataModel
+        where T: IGuiViewModel
     {
         public List<IGuiWidget> Elements { get; protected set; }
         

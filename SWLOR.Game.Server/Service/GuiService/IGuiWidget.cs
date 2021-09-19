@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Service.GuiService
     public interface IGuiWidget
     {
         string Id { get; }
-        Dictionary<string, GuiEventDelegate> Events { get; }
+        Dictionary<string, GuiEventDelegate<IGuiViewModel>> Events { get; }
         Json ToJson();
     }
 }

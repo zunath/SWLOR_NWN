@@ -8,7 +8,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
     public class GuiChartSlot<T>
-        where T: IGuiDataModel
+        where T: IGuiViewModel
     {
         private NuiChartType Type { get; set; }
         

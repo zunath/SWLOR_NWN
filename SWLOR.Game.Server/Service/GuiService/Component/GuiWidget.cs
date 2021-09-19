@@ -8,7 +8,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
     public abstract class GuiWidget<TDataModel, TDerived> : IGuiWidget
-        where TDataModel: IGuiDataModel
+        where TDataModel: IGuiViewModel
         where TDerived: GuiWidget<TDataModel, TDerived>
     {
         public string Id { get; protected set; }
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string ColorBindName { get; set; }
         private bool IsColorBound => !string.IsNullOrWhiteSpace(ColorBindName);
 
-        public Dictionary<string, GuiEventDelegate> Events { get; private set; }
+        public Dictionary<string, GuiEventDelegate<IGuiViewModel>> Events { get; private set; }
 
         public abstract Json BuildElement();
 
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return (TDerived)this;
         }
 
-        public TDerived OnMouseDown(GuiEventDelegate mouseDownAction)
+        public TDerived OnMouseDown(GuiEventDelegate<IGuiViewModel> mouseDownAction)
         {
             if (string.IsNullOrWhiteSpace(Id))
                 Id = Guid.NewGuid().ToString();
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return (TDerived)this;
         }
 
-        public TDerived OnMouseUp(GuiEventDelegate mouseUpAction)
+        public TDerived OnMouseUp(GuiEventDelegate<IGuiViewModel> mouseUpAction)
         {
             if (string.IsNullOrWhiteSpace(Id))
                 Id = Guid.NewGuid().ToString();
@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             IsEnabled = true;
             IsVisible = true;
             DrawLists = new List<GuiDrawList<TDataModel>>();
-            Events = new Dictionary<string, GuiEventDelegate>();
+            Events = new Dictionary<string, GuiEventDelegate<IGuiViewModel>>();
         }
 
         public virtual Json ToJson()

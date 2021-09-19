@@ -4,7 +4,7 @@ using SWLOR.Game.Server.Core.Beamdog;
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
     public class GuiGroup<T> : GuiWidget<T, GuiGroup<T>>
-        where T: IGuiDataModel
+        where T: IGuiViewModel
     {
         public IGuiWidget Child { get; set; }
         public bool ShowBorder { get; set; }

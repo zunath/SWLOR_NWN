@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Core;
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
     public abstract class GuiDrawListItem<TDataModel, TDerived>
-        where TDataModel: IGuiDataModel
+        where TDataModel: IGuiViewModel
         where TDerived : GuiDrawListItem<TDataModel, TDerived>
     {
         protected bool IsEnabled { get; set; }

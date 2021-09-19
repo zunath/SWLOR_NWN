@@ -7,7 +7,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
     public class GuiColumn<T> : GuiWidget<T, GuiColumn<T>>
-        where T: IGuiDataModel
+        where T: IGuiViewModel
     {
         public List<GuiRow<T>> Rows { get; }
 

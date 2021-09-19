@@ -5,6 +5,8 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.GuiService.Converter;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -12,8 +14,8 @@ namespace SWLOR.Game.Server.Service
     public static class Gui
     {
         private static readonly Dictionary<GuiWindowType, GuiConstructedWindow> _windowTemplates = new();
-        private static readonly Dictionary<uint, Dictionary<GuiWindowType, GuiPlayerWindow>> _playerWindows = new();
-        private static readonly Dictionary<string, Dictionary<string, GuiEventDelegate>> _elementEvents = new();
+        private static readonly Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> _playerWindows = new();
+        private static readonly Dictionary<string, GuiWindowEvents<IGuiViewModel>> _elementEvents = new();
         private static readonly Dictionary<string, GuiWindowType> _windowTypesByKey = new();
 
         /// <summary>
@@ -48,12 +50,6 @@ namespace SWLOR.Game.Server.Service
                 // Register the window template into the cache.
                 _windowTemplates[constructedWindow.Type] = constructedWindow;
                 _windowTypesByKey[BuildWindowId(constructedWindow.Type)] = constructedWindow.Type;
-
-                // Register all events into the cache.
-                foreach (var (elementId, events) in constructedWindow.Events)
-                {
-                    _elementEvents[elementId] = events;
-                }
             }
 
             Console.WriteLine($"Loaded {_windowTemplates.Count} GUI window templates.");
@@ -63,18 +59,28 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters the server, create instances of every window if they have not already been created this session.
         /// </summary>
         [NWNEventHandler("mod_enter")]
-        public static void CreatePlayerWindows()
+        public static void RefreshPlayerWindows()
         {
             var player = GetEnteringObject();
-            if (_playerWindows.ContainsKey(player))
-                return;
+            var playerId = GetObjectUUID(player);
 
-            _playerWindows[player] = new Dictionary<GuiWindowType, GuiPlayerWindow>();
+            if (_playerWindows.ContainsKey(playerId))
+                return;
+            
+            _playerWindows[playerId] = new Dictionary<GuiWindowType, GuiPlayerWindow>();
             foreach (var (type, window) in _windowTemplates)
             {
                 var playerWindow = window.CreatePlayerWindowAction(player);
-                _playerWindows[player][type] = playerWindow;
+                _playerWindows[playerId][type] = playerWindow;
             }
+        }
+
+        public static void RegisterElementEvent(string elementId, string eventName, GuiEventDelegate<IGuiViewModel> eventAction)
+        {
+            if (!_elementEvents.ContainsKey(elementId))
+                _elementEvents[elementId] = new GuiWindowEvents<IGuiViewModel>();
+
+            _elementEvents[elementId][eventName] = eventAction;
         }
 
         /// <summary>
@@ -85,6 +91,7 @@ namespace SWLOR.Game.Server.Service
         public static void HandleNuiEvents()
         {
             var player = NuiGetEventPlayer();
+            var playerId = GetObjectUUID(player);
             var windowToken = NuiGetEventWindow();
             var windowId = NuiGetWindowId(player, windowToken);
             var eventType = NuiGetEventType();
@@ -93,7 +100,7 @@ namespace SWLOR.Game.Server.Service
             var eventKey = BuildEventKey(windowId, elementId);
 
             Console.WriteLine($"windowToken = {windowToken}, windowId = {windowId}, eventType = {eventType}, elementId = {elementId}, arrayIndex = {arrayIndex}");
-            
+
             if (!_elementEvents.ContainsKey(eventKey))
                 return;
 
@@ -103,8 +110,37 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var windowType = _windowTypesByKey[windowId];
-            var playerWindow = _playerWindows[player][windowType];
-            eventGroup[eventType](playerWindow.DataModel, player, windowToken, windowId, arrayIndex);
+            var playerWindow = _playerWindows[playerId][windowType];
+            eventGroup[eventType](playerWindow.ViewModel, player, windowToken, windowId, arrayIndex);
+        }
+
+        /// <summary>
+        /// When a NUI event is fired, if it was a watch event, update the associated player's view model.
+        /// </summary>
+        [NWNEventHandler("mod_nui_event")]
+        public static void HandleNuiWatchEvent()
+        {
+            var player = NuiGetEventPlayer();
+            var playerId = GetObjectUUID(player);
+            var windowToken = NuiGetEventWindow();
+            var windowId = NuiGetWindowId(player, windowToken);
+            var eventType = NuiGetEventType();
+            var elementId = NuiGetEventElement();
+            var arrayIndex = NuiGetEventArrayIndex();
+            var eventKey = BuildEventKey(windowId, elementId);
+
+            if (eventType != "watch")
+                return;
+
+            if (!_playerWindows.ContainsKey(playerId))
+                return;
+            
+            var playerWindows = _playerWindows[playerId];
+            var windowType = _windowTypesByKey[windowId];
+            var playerWindow = playerWindows[windowType];
+
+            //playerWindow.ViewModel.UpdatePropertyFromClient();
+
         }
 
         /// <summary>
@@ -136,10 +172,11 @@ namespace SWLOR.Game.Server.Service
         /// <param name="type">The type of window to show.</param>
         public static void ShowPlayerWindow(uint player, GuiWindowType type)
         {
+            var playerId = GetObjectUUID(player);
             var template = _windowTemplates[type];
-            var playerWindow = _playerWindows[player][type];
+            var playerWindow = _playerWindows[playerId][type];
             playerWindow.WindowToken = NuiCreate(player, template.Window, template.WindowId);
-            playerWindow.DataModel.Refresh(player, playerWindow.WindowToken);
+            playerWindow.ViewModel.Bind(player, playerWindow.WindowToken);
         }
 
         public class IdReservation

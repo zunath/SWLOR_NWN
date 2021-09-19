@@ -7,7 +7,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
     public class GuiButton<T>: GuiWidget<T, GuiButton<T>>
-        where T: IGuiDataModel
+        where T: IGuiViewModel
     {
         private string Text { get; set; }
         private string TextBindName { get; set; }
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
 
-        public GuiButton<T> OnClicked(GuiEventDelegate clickAction)
+        public GuiButton<T> OnClicked(GuiEventDelegate<IGuiViewModel> clickAction)
         {
             if (string.IsNullOrWhiteSpace(Id))
                 Id = Guid.NewGuid().ToString();

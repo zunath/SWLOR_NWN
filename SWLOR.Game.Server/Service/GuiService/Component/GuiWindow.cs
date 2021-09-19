@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
     public abstract class GuiWindow { }
 
     public class GuiWindow<T> : GuiWindow
-        where T: IGuiDataModel
+        where T: IGuiViewModel
     {
         private string Title { get; set; }
         private string TitleBindName { get; set; }
@@ -143,16 +143,16 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
 
-        public GuiEventDelegate OpenedEvent { get; private set; }
-        public GuiEventDelegate ClosedEvent { get; private set; }
+        public GuiEventDelegate<IGuiViewModel> OpenedEvent { get; private set; }
+        public GuiEventDelegate<IGuiViewModel> ClosedEvent { get; private set; }
 
-        public GuiWindow<T> OnOpened(GuiEventDelegate windowOpenedAction)
+        public GuiWindow<T> OnOpened(GuiEventDelegate<IGuiViewModel> windowOpenedAction)
         {
             OpenedEvent = windowOpenedAction;
             return this;
         }
 
-        public GuiWindow<T> OnClosed(GuiEventDelegate windowClosedAction)
+        public GuiWindow<T> OnClosed(GuiEventDelegate<IGuiViewModel> windowClosedAction)
         {
             ClosedEvent = windowClosedAction;
             return this;

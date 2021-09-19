@@ -5,7 +5,7 @@ using System.Reflection;
 namespace SWLOR.Game.Server.Service.GuiService
 {
     public static class GuiHelper<T>
-        where T: IGuiDataModel
+        where T: IGuiViewModel
     {
         public static string GetPropertyName<TProperty>(Expression<Func<T, TProperty>> expression)
         {

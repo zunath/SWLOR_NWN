@@ -6,8 +6,8 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiToggleButton<T> : GuiWidget<T, GuiToggleButton<T>>
-        where T: IGuiDataModel
+    public class GuiToggleButton<TDataModel> : GuiWidget<TDataModel, GuiToggleButton<TDataModel>>
+        where TDataModel: IGuiViewModel
     {
         private string Text { get; set; }
         private string TextBindName { get; set; }
@@ -17,31 +17,31 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string IsToggledBindName { get; set; }
         private bool IsToggledBound => !string.IsNullOrWhiteSpace(IsToggledBindName);
 
-        public GuiToggleButton<T> SetText(string text)
+        public GuiToggleButton<TDataModel> SetText(string text)
         {
             Text = text;
             return this;
         }
 
-        public GuiToggleButton<T> BindText<TProperty>(Expression<Func<T, TProperty>> expression)
+        public GuiToggleButton<TDataModel> BindText<TProperty>(Expression<Func<TDataModel, TProperty>> expression)
         {
-            TextBindName = GuiHelper<T>.GetPropertyName(expression);
+            TextBindName = GuiHelper<TDataModel>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiToggleButton<T> SetIsToggled(bool isToggled)
+        public GuiToggleButton<TDataModel> SetIsToggled(bool isToggled)
         {
             IsToggled = isToggled;
             return this;
         }
 
-        public GuiToggleButton<T> BindIsToggled<TProperty>(Expression<Func<T, TProperty>> expression)
+        public GuiToggleButton<TDataModel> BindIsToggled<TProperty>(Expression<Func<TDataModel, TProperty>> expression)
         {
-            IsToggledBindName = GuiHelper<T>.GetPropertyName(expression);
+            IsToggledBindName = GuiHelper<TDataModel>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiToggleButton<T> OnClicked(GuiEventDelegate clickAction)
+        public GuiToggleButton<TDataModel> OnClicked(GuiEventDelegate<IGuiViewModel> clickAction)
         {
             if (string.IsNullOrWhiteSpace(Id))
                 Id = Guid.NewGuid().ToString();

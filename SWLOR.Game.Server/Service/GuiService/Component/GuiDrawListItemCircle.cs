@@ -7,7 +7,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
     public class GuiDrawListItemCircle<T> : GuiDrawListItem<T, GuiDrawListItemCircle<T>>, IGuiDrawListItem
-        where T: IGuiDataModel
+        where T: IGuiViewModel
     {
         private GuiColor Color { get; set; }
         private string ColorBindName { get; set; }

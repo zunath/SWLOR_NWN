@@ -7,7 +7,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
     public class GuiDrawList<T>
-        where T: IGuiDataModel
+        where T: IGuiViewModel
     {
         private bool IsConstrainedToTargetBounds { get; set; }
         private string IsConstrainedBindName { get; set; }

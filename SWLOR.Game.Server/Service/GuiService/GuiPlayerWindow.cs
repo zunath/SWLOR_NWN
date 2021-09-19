@@ -3,11 +3,11 @@
     public class GuiPlayerWindow
     {
         public int WindowToken { get; set; }
-        public IGuiDataModel DataModel { get; set; }
+        public IGuiViewModel ViewModel { get; set; }
 
-        public GuiPlayerWindow(IGuiDataModel dataModel)
+        public GuiPlayerWindow(IGuiViewModel viewModel)
         {
-            DataModel = dataModel;
+            ViewModel = viewModel;
         }
 
     }

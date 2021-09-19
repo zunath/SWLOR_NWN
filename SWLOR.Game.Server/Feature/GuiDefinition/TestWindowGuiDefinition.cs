@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.TestWindow)
                 .OnOpened((viewModel, player, token, id, index) =>
                 {
+
                     Console.WriteLine("Hello from OnOpen event.");
                 })
                 .OnClosed((viewModel, player, token, id, index) =>
@@ -26,7 +27,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddButton()
-                            .SetId(Guid.NewGuid().ToString())
                             .BindText(model => model.ButtonText)
                             .OnMouseUp((viewModel, player, token, id, index) =>
                             {
@@ -38,66 +38,54 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             })
                             .OnClicked((viewModel, player, token, id, index) =>
                             {
-                                Console.WriteLine("Hello from Click event.");
                             });
 
                         row.AddButtonImage()
-                            .SetId(Guid.NewGuid().ToString())
                             .SetResref("ife_animal");
 
                         row.AddToggleButton()
-                            .SetId(Guid.NewGuid().ToString())
                             .SetText("toggle button")
                             .BindIsToggled(model => model.IsToggled);
 
                         row.AddLabel()
-                            .SetId(Guid.NewGuid().ToString())
                             .SetText("label");
                     });
 
                     col.AddRow(row =>
                     {
                         row.AddComboBox()
-                            .SetId(Guid.NewGuid().ToString())
                             .BindSelectedIndex(model => model.SelectedComboBoxValue)
                             .AddOption("item 1", 1)
                             .AddOption("item 2", 2)
                             .AddOption("item 3", 3);
 
                         row.AddColorPicker()
-                            .SetId(Guid.NewGuid().ToString())
                             .BindSelectedColor(model => model.SelectedColor);
 
                         row.AddCheckBox()
-                            .SetId(Guid.NewGuid().ToString())
                             .SetText("checkbox")
                             .BindIsChecked(model => model.IsChecked);
 
                         row.AddImage()
-                            .SetId(Guid.NewGuid().ToString())
                             .SetResref("ife_defarrow");
                     });
 
                     col.AddRow(row =>
                     {
                         row.AddOptions()
-                            .SetId(Guid.NewGuid().ToString())
                             .BindSelectedValue(model => model.SelectedOption)
                             .AddOption("option 1")
                             .AddOption("option 2");
 
                         row.AddProgressBar()
-                            .SetId(Guid.NewGuid().ToString())
                             .SetValue(0.4f);
 
                         row.AddSliderFloat()
-                            .SetId(Guid.NewGuid().ToString())
                             .SetMaximum(100f)
                             .SetMinimum(0f)
                             .SetValue(30f);
 
                         row.AddSliderInt()
-                            .SetId(Guid.NewGuid().ToString())
                             .SetMaximum(50)
                             .SetMinimum(0)
                             .SetValue(15);
@@ -105,16 +93,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(row =>
                     {
-                        row.AddSpacer()
-                            .SetId(Guid.NewGuid().ToString());
+                        row.AddSpacer();
 
                         row.AddText()
-                            .SetId(Guid.NewGuid().ToString())
                             .SetText("text component");
 
+                    });
+
+                    col.AddRow(row =>
+                    {
                         row.AddTextEdit()
-                            .SetId(Guid.NewGuid().ToString())
-                            .SetPlaceholder("text edit")
+                            .BindPlaceholder(model => model.Placeholder)
                             .BindValue(model => model.EnteredText);
                     });
                 });

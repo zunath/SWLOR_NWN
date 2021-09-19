@@ -7,7 +7,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
     public class GuiTextEdit<T> : GuiWidget<T, GuiTextEdit<T>>
-        where T: IGuiDataModel
+        where T: IGuiViewModel
     {
         private string Placeholder { get; set; }
         private string PlaceholderBindName { get; set; }

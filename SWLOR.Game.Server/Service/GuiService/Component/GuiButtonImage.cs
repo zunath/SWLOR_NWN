@@ -6,26 +6,26 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiButtonImage<T> : GuiWidget<T, GuiButtonImage<T>>
-        where T: IGuiDataModel
+    public class GuiButtonImage<TDataModel> : GuiWidget<TDataModel, GuiButtonImage<TDataModel>>
+        where TDataModel: IGuiViewModel
     {
         private string Resref { get; set; }
         private string ResrefBindName { get; set; }
         private bool IsResrefBound => !string.IsNullOrWhiteSpace(ResrefBindName);
 
-        public GuiButtonImage<T> SetResref(string resref)
+        public GuiButtonImage<TDataModel> SetResref(string resref)
         {
             Resref = resref;
             return this;
         }
 
-        public GuiButtonImage<T> BindResref<TProperty>(Expression<Func<T, TProperty>> expression)
+        public GuiButtonImage<TDataModel> BindResref<TProperty>(Expression<Func<TDataModel, TProperty>> expression)
         {
-            ResrefBindName = GuiHelper<T>.GetPropertyName(expression);
+            ResrefBindName = GuiHelper<TDataModel>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiButtonImage<T> OnClicked(GuiEventDelegate clickAction)
+        public GuiButtonImage<TDataModel> OnClicked(GuiEventDelegate<IGuiViewModel> clickAction)
         {
             if (string.IsNullOrWhiteSpace(Id))
                 Id = Guid.NewGuid().ToString();

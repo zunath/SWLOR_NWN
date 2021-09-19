@@ -5,7 +5,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
     public class GuiListTemplateCell<T> : GuiExpandableComponent<T>
-        where T: IGuiDataModel
+        where T: IGuiViewModel
     {
         private float CellWidth { get; set; }
         private bool IsStatic { get; set; }

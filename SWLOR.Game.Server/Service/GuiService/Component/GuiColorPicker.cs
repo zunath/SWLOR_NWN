@@ -6,7 +6,7 @@ using SWLOR.Game.Server.Core.Beamdog;
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
     public class GuiColorPicker<T> : GuiWidget<T, GuiColorPicker<T>>
-        where T: IGuiDataModel
+        where T: IGuiViewModel
     {
         private GuiColor SelectedColor { get; set; }
         private string SelectedColorBindName { get; set; }

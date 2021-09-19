@@ -12,15 +12,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.TestWindow)
-                .OnOpened((viewModel, player, token, id, index) =>
-                {
-
-                    Console.WriteLine("Hello from OnOpen event.");
-                })
-                .OnClosed((viewModel, player, token, id, index) =>
-                {
-                    Console.WriteLine("Hello from OnClosed event.");
-                })
 
                 .AddColumn(col =>
                 {
@@ -28,17 +19,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddButton()
                             .BindText(model => model.ButtonText)
-                            .OnMouseUp((viewModel, player, token, id, index) =>
-                            {
-                                Console.WriteLine("Hello from MouseUp event.");
-                            })
-                            .OnMouseDown((viewModel, player, token, id, index) =>
-                            {
-                                Console.WriteLine("Hello from MouseDown event.");
-                            })
-                            .OnClicked((viewModel, player, token, id, index) =>
-                            {
-                            });
+                            .BindOnClicked(model => model.OnClickedFirstButton());
 
                         row.AddButtonImage()
                             .SetResref("ife_animal");
@@ -96,15 +77,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddSpacer();
 
                         row.AddText()
-                            .SetText("text component");
+                            .BindText(model => model.EnteredText);
 
                     });
 
                     col.AddRow(row =>
                     {
                         row.AddTextEdit()
-                            .BindPlaceholder(model => model.Placeholder)
-                            .BindValue(model => model.EnteredText);
+                            .BindPlaceholder(model => model.Placeholder);
+                        //.BindValue(model => model.EnteredText);
                     });
                 });
 

@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Core.NWScript;
+﻿using System;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
@@ -52,5 +53,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<string>();
             set => Set(value);
         }
+
+        public void Test()
+        {
+
+        }
+
+        public Action OnWindowOpen() => () =>
+        {
+            Console.WriteLine("hello from window open");
+        };
+
+        public Action OnWindowClosed() => () =>
+        {
+            Console.WriteLine("hello from window closed");
+        };
+
+        public Action OnClickedFirstButton() => () =>
+        {
+            Console.WriteLine("hello from button click");
+
+            EnteredText += "A";
+        };
+
     }
 }

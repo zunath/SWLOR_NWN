@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Feature.DialogDefinition;
@@ -15,7 +16,7 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<GuiWindowType, GuiConstructedWindow> _windowTemplates = new();
         private static readonly Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> _playerWindows = new();
-        private static readonly Dictionary<string, GuiWindowEvents<IGuiViewModel>> _elementEvents = new();
+        private static readonly Dictionary<string, Dictionary<string, MethodInfo>> _elementEvents = new();
         private static readonly Dictionary<string, GuiWindowType> _windowTypesByKey = new();
 
         /// <summary>
@@ -75,10 +76,10 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void RegisterElementEvent(string elementId, string eventName, GuiEventDelegate<IGuiViewModel> eventAction)
+        public static void RegisterElementEvent(string elementId, string eventName, MethodInfo eventAction)
         {
             if (!_elementEvents.ContainsKey(elementId))
-                _elementEvents[elementId] = new GuiWindowEvents<IGuiViewModel>();
+                _elementEvents[elementId] = new Dictionary<string, MethodInfo>();
 
             _elementEvents[elementId][eventName] = eventAction;
         }
@@ -111,7 +112,11 @@ namespace SWLOR.Game.Server.Service
 
             var windowType = _windowTypesByKey[windowId];
             var playerWindow = _playerWindows[playerId][windowType];
-            eventGroup[eventType](playerWindow.ViewModel, player, windowToken, windowId, arrayIndex);
+            var viewModel = playerWindow.ViewModel;
+            var methodInfo = eventGroup[eventType];
+            var method = viewModel.GetType().GetMethod(methodInfo.Name);
+            var action = method?.Invoke(playerWindow.ViewModel, null);
+            ((Action)action)?.Invoke();
         }
 
         /// <summary>

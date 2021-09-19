@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string ColorBindName { get; set; }
         private bool IsColorBound => !string.IsNullOrWhiteSpace(ColorBindName);
 
-        public Dictionary<string, GuiEventDelegate<IGuiViewModel>> Events { get; private set; }
+        public Dictionary<string, MethodInfo> Events { get; private set; }
 
         public abstract Json BuildElement();
 
@@ -138,22 +139,22 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return (TDerived)this;
         }
 
-        public TDerived OnMouseDown(GuiEventDelegate<IGuiViewModel> mouseDownAction)
+        public TDerived BindOnMouseDown<TMethod>(Expression<Func<TDataModel, TMethod>> expression)
         {
             if (string.IsNullOrWhiteSpace(Id))
                 Id = Guid.NewGuid().ToString();
 
-            Events["mousedown"] = mouseDownAction;
+            Events["mousedown"] = GuiHelper<TDataModel>.GetMethodInfo(expression);
 
             return (TDerived)this;
         }
 
-        public TDerived OnMouseUp(GuiEventDelegate<IGuiViewModel> mouseUpAction)
+        public TDerived BindOnMouseUp<TMethod>(Expression<Func<TDataModel, TMethod>> expression)
         {
             if (string.IsNullOrWhiteSpace(Id))
                 Id = Guid.NewGuid().ToString();
 
-            Events["mouseup"] = mouseUpAction;
+            Events["mouseup"] = GuiHelper<TDataModel>.GetMethodInfo(expression);
 
             return (TDerived)this;
         }
@@ -163,7 +164,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             IsEnabled = true;
             IsVisible = true;
             DrawLists = new List<GuiDrawList<TDataModel>>();
-            Events = new Dictionary<string, GuiEventDelegate<IGuiViewModel>>();
+            Events = new Dictionary<string, MethodInfo>();
         }
 
         public virtual Json ToJson()

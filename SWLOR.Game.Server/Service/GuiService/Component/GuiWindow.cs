@@ -143,21 +143,20 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
 
-        public GuiEventDelegate<IGuiViewModel> OpenedEvent { get; private set; }
-        public GuiEventDelegate<IGuiViewModel> ClosedEvent { get; private set; }
+        public MethodInfo OpenedEventMethodInfo { get; private set; }
+        public MethodInfo ClosedEventMethodInfo { get; private set; }
 
-        public GuiWindow<T> OnOpened(GuiEventDelegate<IGuiViewModel> windowOpenedAction)
+        public GuiWindow<T> BindOnOpened<TMethod>(Expression<Func<T, TMethod>> expression)
         {
-            OpenedEvent = windowOpenedAction;
+            OpenedEventMethodInfo = GuiHelper<T>.GetMethodInfo(expression);
             return this;
         }
 
-        public GuiWindow<T> OnClosed(GuiEventDelegate<IGuiViewModel> windowClosedAction)
+        public GuiWindow<T> BindOnClosed<TMethod>(Expression<Func<T, TMethod>> expression)
         {
-            ClosedEvent = windowClosedAction;
+            ClosedEventMethodInfo = GuiHelper<T>.GetMethodInfo(expression);
             return this;
         }
-
 
         public GuiWindow()
         {

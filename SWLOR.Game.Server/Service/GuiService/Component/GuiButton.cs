@@ -25,12 +25,12 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
 
-        public GuiButton<T> OnClicked(GuiEventDelegate<IGuiViewModel> clickAction)
+        public GuiButton<T> BindOnClicked<TMethod>(Expression<Func<T, TMethod>> expression)
         {
             if (string.IsNullOrWhiteSpace(Id))
                 Id = Guid.NewGuid().ToString();
-
-            Events["click"] = clickAction;
+            
+            Events["click"] = GuiHelper<T>.GetMethodInfo(expression);
 
             return this;
         }

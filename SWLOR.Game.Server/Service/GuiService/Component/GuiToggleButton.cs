@@ -41,12 +41,12 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
 
-        public GuiToggleButton<TDataModel> OnClicked(GuiEventDelegate<IGuiViewModel> clickAction)
+        public GuiToggleButton<TDataModel> BindOnClicked<TMethod>(Expression<Func<TDataModel, TMethod>> expression)
         {
             if (string.IsNullOrWhiteSpace(Id))
                 Id = Guid.NewGuid().ToString();
-
-            Events["click"] = clickAction;
+            
+            Events["click"] = GuiHelper<TDataModel>.GetMethodInfo(expression);
 
             return this;
         }

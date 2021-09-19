@@ -12,11 +12,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.TestWindow)
-                .OnOpened((player, token, id, index) =>
+                .OnOpened((viewModel, player, token, id, index) =>
                 {
                     Console.WriteLine("Hello from OnOpen event.");
                 })
-                .OnClosed((player, token, id, index) =>
+                .OnClosed((viewModel, player, token, id, index) =>
                 {
                     Console.WriteLine("Hello from OnClosed event.");
                 })
@@ -28,15 +28,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddButton()
                             .SetId(Guid.NewGuid().ToString())
                             .BindText(model => model.ButtonText)
-                            .OnMouseUp((player, token, id, index) =>
+                            .OnMouseUp((viewModel, player, token, id, index) =>
                             {
                                 Console.WriteLine("Hello from MouseUp event.");
                             })
-                            .OnMouseDown((player, token, id, index) =>
+                            .OnMouseDown((viewModel, player, token, id, index) =>
                             {
                                 Console.WriteLine("Hello from MouseDown event.");
                             })
-                            .OnClicked((player, token, id, index) =>
+                            .OnClicked((viewModel, player, token, id, index) =>
                             {
                                 Console.WriteLine("Hello from Click event.");
                             });

@@ -18,14 +18,9 @@ namespace SWLOR.Game.Server.Service.GuiService
             return _activeWindow;
         }
 
-        private string GetWindowId()
-        {
-            return $"GUI_WINDOW_{_type}";
-        }
-
         public Dictionary<string, Dictionary<string, GuiEventDelegate>> GetAllElementEvents()
         {
-            var windowId = GetWindowId();
+            var windowId = Gui.BuildWindowId(_type);
             var events = new Dictionary<string, Dictionary<string, GuiEventDelegate>>();
             var windowEventKey = Gui.BuildEventKey(windowId, "_window_");
 
@@ -68,7 +63,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         public GuiConstructedWindow Build()
         {
             var json = _activeWindow.Build();
-            var windowId = GetWindowId();
+            var windowId = Gui.BuildWindowId(_type);
             var events = GetAllElementEvents();
 
             var constructedWindow = new GuiConstructedWindow(

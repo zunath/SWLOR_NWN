@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<GuiWindowType, GuiConstructedWindow> _windowTemplates = new();
         private static readonly Dictionary<uint, Dictionary<GuiWindowType, GuiPlayerWindow>> _playerWindows = new();
         private static readonly Dictionary<string, Dictionary<string, GuiEventDelegate>> _elementEvents = new();
+        private static readonly Dictionary<string, GuiWindowType> _windowTypesByKey = new();
 
         /// <summary>
         /// When the module loads, cache all of the GUI windows for later retrieval.
@@ -37,9 +38,16 @@ namespace SWLOR.Game.Server.Service
             {
                 var instance = (IGuiWindowDefinition)Activator.CreateInstance(type);
                 var constructedWindow = instance.BuildWindow();
-                
+
+                // Safety check to ensure we don't try to build the same type of window more than once.
+                if (_windowTemplates.ContainsKey(constructedWindow.Type))
+                {
+                    throw new Exception($"GUI Window type '{constructedWindow.Type}' has been defined more than once.");
+                }
+
                 // Register the window template into the cache.
                 _windowTemplates[constructedWindow.Type] = constructedWindow;
+                _windowTypesByKey[BuildWindowId(constructedWindow.Type)] = constructedWindow.Type;
 
                 // Register all events into the cache.
                 foreach (var (elementId, events) in constructedWindow.Events)
@@ -94,7 +102,19 @@ namespace SWLOR.Game.Server.Service
             if (!eventGroup.ContainsKey(eventType))
                 return;
 
-            eventGroup[eventType](player, windowToken, windowId, arrayIndex);
+            var windowType = _windowTypesByKey[windowId];
+            var playerWindow = _playerWindows[player][windowType];
+            eventGroup[eventType](playerWindow.DataModel, player, windowToken, windowId, arrayIndex);
+        }
+
+        /// <summary>
+        /// Builds a window Id based on the type of window provided.
+        /// </summary>
+        /// <param name="windowType">The type of window.</param>
+        /// <returns>A key using the window type.</returns>
+        public static string BuildWindowId(GuiWindowType windowType)
+        {
+            return $"GUI_WINDOW_{windowType}";
         }
 
         /// <summary>

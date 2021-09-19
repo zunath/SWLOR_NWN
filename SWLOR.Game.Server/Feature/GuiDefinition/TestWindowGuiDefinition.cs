@@ -1,4 +1,4 @@
-﻿using SWLOR.Game.Server.Feature.GuiDefinition.DataModel;
+﻿using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public class TestWindowGuiDefinition:  IGuiWindowDefinition
     {
-        private readonly GuiWindowBuilder<TestWindowGuiDataModel> _builder = new();
+        private readonly GuiWindowBuilder<TestWindowViewModel> _builder = new();
 
         public GuiConstructedWindow BuildWindow()
         {
@@ -23,11 +23,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetResref("ife_animal");
 
                         row.AddToggleButton()
-                            .SetText("toggle button");
+                            .SetText("toggle button")
+                            .BindIsToggled(model => model.IsToggled);
 
                         row.AddLabel()
                             .SetText("label");
                     });
+
                     col.AddRow(row =>
                     {
                         row.AddComboBox()
@@ -36,10 +38,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .AddOption("item 2", 2)
                             .AddOption("item 3", 3);
 
-                        row.AddColorPicker();
+                        row.AddColorPicker()
+                            .BindSelectedColor(model => model.SelectedColor);
 
                         row.AddCheckBox()
-                            .SetText("checkbox");
+                            .SetText("checkbox")
+                            .BindIsChecked(model => model.IsChecked);
 
                         row.AddImage()
                             .SetResref("ife_defarrow");
@@ -48,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddOptions()
+                            .BindSelectedValue(model => model.SelectedOption)
                             .AddOption("option 1")
                             .AddOption("option 2");
 
@@ -73,7 +78,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("text component");
 
                         row.AddTextEdit()
-                            .SetPlaceholder("text edit");
+                            .SetPlaceholder("text edit")
+                            .BindValue(model => model.EnteredText);
                     });
                 });
 

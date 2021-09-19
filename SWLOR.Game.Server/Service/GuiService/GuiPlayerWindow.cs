@@ -1,15 +1,14 @@
 ﻿namespace SWLOR.Game.Server.Service.GuiService
 {
-    public abstract class GuiPlayerWindow { }
-    public class GuiPlayerWindow<T> : GuiPlayerWindow
-        where T: IGuiDataModel
+    public class GuiPlayerWindow
     {
         public int WindowToken { get; set; }
-        public T DataModel { get; set; }
+        public IGuiDataModel DataModel { get; set; }
 
-        public GuiPlayerWindow(T dataModel)
+        public GuiPlayerWindow(IGuiDataModel dataModel)
         {
             DataModel = dataModel;
         }
+
     }
 }

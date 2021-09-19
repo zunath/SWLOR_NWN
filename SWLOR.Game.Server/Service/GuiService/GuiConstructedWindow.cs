@@ -2,7 +2,7 @@
 
 namespace SWLOR.Game.Server.Service.GuiService
 {
-    public delegate GuiPlayerWindow CreatePlayerWindowDelegate();
+    public delegate GuiPlayerWindow CreatePlayerWindowDelegate(uint player);
     public class GuiConstructedWindow
     {
         public GuiWindowType Type { get; set; }

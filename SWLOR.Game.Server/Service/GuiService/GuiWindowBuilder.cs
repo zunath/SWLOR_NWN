@@ -22,10 +22,10 @@ namespace SWLOR.Game.Server.Service.GuiService
             var json = _activeWindow.Build();
             var windowId = $"GUI_WINDOW_{_type}";
 
-            return new GuiConstructedWindow(_type, windowId, json, () =>
+            return new GuiConstructedWindow(_type, windowId, json, (player) =>
             {
                 var dataModelInstance = Activator.CreateInstance<T>();
-                return new GuiPlayerWindow<T>(dataModelInstance);
+                return new GuiPlayerWindow(dataModelInstance);
             });
         }
     }

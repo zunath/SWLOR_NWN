@@ -18,7 +18,12 @@ namespace SWLOR.Game.Server.Service
         /// When the module loads, cache all of the GUI windows for later retrieval.
         /// </summary>
         [NWNEventHandler("mod_load")]
-        public static void LoadWindowTemplates()
+        public static void CacheData()
+        {
+            LoadWindowTemplates();
+        }
+        
+        private static void LoadWindowTemplates()
         {
             var types = AppDomain.CurrentDomain.GetAssemblies()
                 .SelectMany(s => s.GetTypes())
@@ -48,7 +53,8 @@ namespace SWLOR.Game.Server.Service
             _playerWindows[player] = new Dictionary<GuiWindowType, GuiPlayerWindow>();
             foreach (var (type, window) in _windowTemplates)
             {
-                _playerWindows[player][type] = window.CreatePlayerWindowAction();
+                var playerWindow = window.CreatePlayerWindowAction(player);
+                _playerWindows[player][type] = playerWindow;
             }
         }
 
@@ -60,7 +66,9 @@ namespace SWLOR.Game.Server.Service
         public static void ShowPlayerWindow(uint player, GuiWindowType type)
         {
             var template = _windowTemplates[type];
-            NuiCreate(player, template.Window, template.WindowId);
+            var playerWindow = _playerWindows[player][type];
+            playerWindow.WindowToken = NuiCreate(player, template.Window, template.WindowId);
+            playerWindow.DataModel.Refresh(player, playerWindow.WindowToken);
         }
 
         public class IdReservation

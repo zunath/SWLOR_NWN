@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<GuiWindowType, GuiConstructedWindow> _windowTemplates = new();
         private static readonly Dictionary<uint, Dictionary<GuiWindowType, GuiPlayerWindow>> _playerWindows = new();
+        private static readonly Dictionary<string, Dictionary<string, GuiEventDelegate>> _elementEvents = new();
 
         /// <summary>
         /// When the module loads, cache all of the GUI windows for later retrieval.
@@ -36,8 +37,15 @@ namespace SWLOR.Game.Server.Service
             {
                 var instance = (IGuiWindowDefinition)Activator.CreateInstance(type);
                 var constructedWindow = instance.BuildWindow();
-
+                
+                // Register the window template into the cache.
                 _windowTemplates[constructedWindow.Type] = constructedWindow;
+
+                // Register all events into the cache.
+                foreach (var (elementId, events) in constructedWindow.Events)
+                {
+                    _elementEvents[elementId] = events;
+                }
             }
 
             Console.WriteLine($"Loaded {_windowTemplates.Count} GUI window templates.");
@@ -61,6 +69,10 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// When a NUI event is fired, look for an associated event on the specified element
+        /// and execute the cached action.
+        /// </summary>
         [NWNEventHandler("mod_nui_event")]
         public static void HandleNuiEvents()
         {
@@ -70,10 +82,31 @@ namespace SWLOR.Game.Server.Service
             var eventType = NuiGetEventType();
             var elementId = NuiGetEventElement();
             var arrayIndex = NuiGetEventArrayIndex();
-
+            var eventKey = BuildEventKey(windowId, elementId);
 
             Console.WriteLine($"windowToken = {windowToken}, windowId = {windowId}, eventType = {eventType}, elementId = {elementId}, arrayIndex = {arrayIndex}");
+            
+            if (!_elementEvents.ContainsKey(eventKey))
+                return;
 
+            var eventGroup = _elementEvents[eventKey];
+
+            if (!eventGroup.ContainsKey(eventType))
+                return;
+
+            eventGroup[eventType](player, windowToken, windowId, arrayIndex);
+        }
+
+        /// <summary>
+        /// Builds a key based on the window Id and element Id.
+        /// This is used for event mapping.
+        /// </summary>
+        /// <param name="windowId">The Id of the Window</param>
+        /// <param name="elementId">The Id of the Element</param>
+        /// <returns>A key using the window Id and element Id.</returns>
+        public static string BuildEventKey(string windowId, string elementId)
+        {
+            return windowId + "_" + elementId;
         }
 
         /// <summary>

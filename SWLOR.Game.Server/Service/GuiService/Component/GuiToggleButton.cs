@@ -41,6 +41,16 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
 
+        public GuiToggleButton<T> OnClicked(GuiEventDelegate clickAction)
+        {
+            if (string.IsNullOrWhiteSpace(Id))
+                Id = Guid.NewGuid().ToString();
+
+            Events["click"] = clickAction;
+
+            return this;
+        }
+
         public override Json BuildElement()
         {
             var text = IsTextBound ? Nui.Bind(TextBindName) : JsonString(Text);

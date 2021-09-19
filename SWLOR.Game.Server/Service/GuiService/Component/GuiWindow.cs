@@ -41,7 +41,8 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string ShowBorderBindName { get; set; }
         private bool IsShowBorderBound => !string.IsNullOrWhiteSpace(ShowBorderBindName);
 
-        private List<GuiColumn<T>> Columns { get; set; }
+        public List<GuiColumn<T>> Columns { get; }
+
 
         public GuiWindow<T> SetTitle(string title)
         {
@@ -141,6 +142,22 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
 
             return this;
         }
+
+        public GuiEventDelegate OpenedEvent { get; private set; }
+        public GuiEventDelegate ClosedEvent { get; private set; }
+
+        public GuiWindow<T> OnOpened(GuiEventDelegate windowOpenedAction)
+        {
+            OpenedEvent = windowOpenedAction;
+            return this;
+        }
+
+        public GuiWindow<T> OnClosed(GuiEventDelegate windowClosedAction)
+        {
+            ClosedEvent = windowClosedAction;
+            return this;
+        }
+
 
         public GuiWindow()
         {

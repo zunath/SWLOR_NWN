@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Reflection;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -12,7 +11,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         where TDataModel: IGuiDataModel
         where TDerived: GuiWidget<TDataModel, TDerived>
     {
-        private string Id { get; set; }
+        public string Id { get; protected set; }
         private float Width { get; set; }
         private float Height { get; set; }
         private float AspectRatio { get; set; }
@@ -35,6 +34,8 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private GuiColor? Color { get; set; }
         private string ColorBindName { get; set; }
         private bool IsColorBound => !string.IsNullOrWhiteSpace(ColorBindName);
+
+        public Dictionary<string, GuiEventDelegate> Events { get; private set; }
 
         public abstract Json BuildElement();
 
@@ -137,11 +138,32 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return (TDerived)this;
         }
 
+        public TDerived OnMouseDown(GuiEventDelegate mouseDownAction)
+        {
+            if (string.IsNullOrWhiteSpace(Id))
+                Id = Guid.NewGuid().ToString();
+
+            Events["mousedown"] = mouseDownAction;
+
+            return (TDerived)this;
+        }
+
+        public TDerived OnMouseUp(GuiEventDelegate mouseUpAction)
+        {
+            if (string.IsNullOrWhiteSpace(Id))
+                Id = Guid.NewGuid().ToString();
+
+            Events["mouseup"] = mouseUpAction;
+
+            return (TDerived)this;
+        }
+
         protected GuiWidget()
         {
             IsEnabled = true;
             IsVisible = true;
             DrawLists = new List<GuiDrawList<TDataModel>>();
+            Events = new Dictionary<string, GuiEventDelegate>();
         }
 
         public virtual Json ToJson()

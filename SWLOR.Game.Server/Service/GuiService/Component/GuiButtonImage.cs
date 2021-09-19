@@ -25,6 +25,16 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
 
+        public GuiButtonImage<T> OnClicked(GuiEventDelegate clickAction)
+        {
+            if (string.IsNullOrWhiteSpace(Id))
+                Id = Guid.NewGuid().ToString();
+
+            Events["click"] = clickAction;
+
+            return this;
+        }
+
         public override Json BuildElement()
         {
             var resref = IsResrefBound ? Nui.Bind(ResrefBindName) : JsonString(Resref);

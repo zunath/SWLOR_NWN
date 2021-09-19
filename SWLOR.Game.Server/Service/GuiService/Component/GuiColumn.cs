@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
     public class GuiColumn<T> : GuiWidget<T, GuiColumn<T>>
         where T: IGuiDataModel
     {
-        private List<GuiRow<T>> Rows { get; set; }
+        public List<GuiRow<T>> Rows { get; }
 
         public GuiColumn<T> AddRow(Action<GuiRow<T>> row)
         {

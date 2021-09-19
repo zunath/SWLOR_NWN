@@ -113,6 +113,9 @@ namespace SWLOR.Game.Server.Service
             var windowType = _windowTypesByKey[windowId];
             var playerWindow = _playerWindows[playerId][windowType];
             var viewModel = playerWindow.ViewModel;
+
+            // Note: This section has the possibility of being slow.
+            // If it is, look into building the methods and caching them at the time of window creation.
             var methodInfo = eventGroup[eventType];
             var method = viewModel.GetType().GetMethod(methodInfo.Name);
             var action = method?.Invoke(playerWindow.ViewModel, null);

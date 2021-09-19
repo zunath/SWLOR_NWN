@@ -24,8 +24,11 @@ namespace SWLOR.Game.Server.Service.GuiService
             var windowEventKey = Gui.BuildEventKey(windowId, "_window_");
 
             // Register window events.
-            Gui.RegisterElementEvent(windowEventKey, "open", _activeWindow.OpenedEventMethodInfo);
-            Gui.RegisterElementEvent(windowEventKey, "close", _activeWindow.ClosedEventMethodInfo);
+            if(_activeWindow.OpenedEventMethodInfo != null)
+                Gui.RegisterElementEvent(windowEventKey, "open", _activeWindow.OpenedEventMethodInfo);
+
+            if(_activeWindow.ClosedEventMethodInfo != null)
+                Gui.RegisterElementEvent(windowEventKey, "close", _activeWindow.ClosedEventMethodInfo);
             
             // Iterate over every column, every row, and every element to retrieve
             // registered events.

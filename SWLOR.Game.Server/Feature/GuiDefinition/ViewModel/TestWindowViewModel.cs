@@ -1,12 +1,19 @@
 ﻿using System;
-using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class TestWindowViewModel: GuiViewModelBase
     {
+        public GuiRectangle Geometry
+        {
+            get => Get<GuiRectangle>();
+            set => Set(value);
+        }
+
         public string ButtonText
         {
             get => Get<string>();
@@ -54,24 +61,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public void Test()
+        public TestWindowViewModel()
         {
-
+            Geometry = new GuiRectangle(20, 40, 200, 600);
         }
 
         public Action OnWindowOpen() => () =>
         {
-            Console.WriteLine("hello from window open");
+            NuiSetBindWatch(Player, WindowToken, nameof(Geometry), true);
+            NuiSetBind(Player, WindowToken, nameof(Geometry), Geometry.ToJson());
         };
 
         public Action OnWindowClosed() => () =>
         {
-            Console.WriteLine("hello from window closed");
         };
 
         public Action OnClickedFirstButton() => () =>
         {
-            Console.WriteLine("hello from button click");
 
             EnteredText += "A";
         };

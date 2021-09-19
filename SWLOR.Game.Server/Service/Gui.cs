@@ -6,8 +6,6 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.GuiService.Converter;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -60,7 +58,7 @@ namespace SWLOR.Game.Server.Service
         /// When a player enters the server, create instances of every window if they have not already been created this session.
         /// </summary>
         [NWNEventHandler("mod_enter")]
-        public static void RefreshPlayerWindows()
+        public static void CreatePlayerWindows()
         {
             var player = GetEnteringObject();
             var playerId = GetObjectUUID(player);
@@ -71,7 +69,7 @@ namespace SWLOR.Game.Server.Service
             _playerWindows[playerId] = new Dictionary<GuiWindowType, GuiPlayerWindow>();
             foreach (var (type, window) in _windowTemplates)
             {
-                var playerWindow = window.CreatePlayerWindowAction(player);
+                var playerWindow = window.CreatePlayerWindowAction();
                 _playerWindows[playerId][type] = playerWindow;
             }
         }
@@ -133,12 +131,14 @@ namespace SWLOR.Game.Server.Service
             var windowToken = NuiGetEventWindow();
             var windowId = NuiGetWindowId(player, windowToken);
             var eventType = NuiGetEventType();
-            var elementId = NuiGetEventElement();
+            var propertyName = NuiGetEventElement();
             var arrayIndex = NuiGetEventArrayIndex();
-            var eventKey = BuildEventKey(windowId, elementId);
+            var eventKey = BuildEventKey(windowId, propertyName);
 
             if (eventType != "watch")
                 return;
+
+            Console.WriteLine($"windowToken = {windowToken}, windowId = {windowId}, eventType = {eventType}, propertyName = {propertyName}, arrayIndex = {arrayIndex}");
 
             if (!_playerWindows.ContainsKey(playerId))
                 return;
@@ -147,8 +147,7 @@ namespace SWLOR.Game.Server.Service
             var windowType = _windowTypesByKey[windowId];
             var playerWindow = playerWindows[windowType];
 
-            //playerWindow.ViewModel.UpdatePropertyFromClient();
-
+            playerWindow.ViewModel.UpdatePropertyFromClient(propertyName);
         }
 
         /// <summary>

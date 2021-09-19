@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Service.GuiService
                 _type,
                 windowId,
                 json,
-                (player) =>
+                () =>
             {
                 var dataModelInstance = Activator.CreateInstance<T>();
                 return new GuiPlayerWindow(dataModelInstance);

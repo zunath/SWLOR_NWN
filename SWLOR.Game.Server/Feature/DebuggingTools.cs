@@ -1,11 +1,6 @@
-﻿using System;
-using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.Beamdog;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Feature.GuiDefinition;
+﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
@@ -23,13 +18,9 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("test_window")]
         public static void TestWindow()
         {
-            var builder = new TestWindowGuiDefinition();
-            var windows = builder.BuildWindow();
+            var player = GetLastUsedBy();
 
-            var json = windows.Item2.Build();
-            Console.WriteLine(JsonDump(json));
-
-            NuiCreate(GetLastUsedBy(), json, "test_window");
+            Gui.ShowPlayerWindow(player, GuiWindowType.TestWindow);
         }
 
     }

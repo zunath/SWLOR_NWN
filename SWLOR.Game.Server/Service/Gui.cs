@@ -1,14 +1,68 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Feature.DialogDefinition;
+using SWLOR.Game.Server.Service.GuiService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Gui
     {
+        private static readonly Dictionary<GuiWindowType, GuiConstructedWindow> _windowTemplates = new();
+        private static readonly Dictionary<uint, Dictionary<GuiWindowType, GuiPlayerWindow>> _playerWindows = new();
+
+        /// <summary>
+        /// When the module loads, cache all of the GUI windows for later retrieval.
+        /// </summary>
+        [NWNEventHandler("mod_load")]
+        public static void LoadWindowTemplates()
+        {
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(w => typeof(IGuiWindowDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+
+            foreach (var type in types)
+            {
+                var instance = (IGuiWindowDefinition)Activator.CreateInstance(type);
+                var constructedWindow = instance.BuildWindow();
+
+                _windowTemplates[constructedWindow.Type] = constructedWindow;
+            }
+
+            Console.WriteLine($"Loaded {_windowTemplates.Count} GUI window templates.");
+        }
+
+        /// <summary>
+        /// When a player enters the server, create instances of every window if they have not already been created this session.
+        /// </summary>
+        [NWNEventHandler("mod_enter")]
+        public static void CreatePlayerWindows()
+        {
+            var player = GetEnteringObject();
+            if (_playerWindows.ContainsKey(player))
+                return;
+
+            _playerWindows[player] = new Dictionary<GuiWindowType, GuiPlayerWindow>();
+            foreach (var (type, window) in _windowTemplates)
+            {
+                _playerWindows[player][type] = window.CreatePlayerWindowAction();
+            }
+        }
+
+        /// <summary>
+        /// Shows a specific window for a given player.
+        /// </summary>
+        /// <param name="player">The player to show the window to.</param>
+        /// <param name="type">The type of window to show.</param>
+        public static void ShowPlayerWindow(uint player, GuiWindowType type)
+        {
+            var template = _windowTemplates[type];
+            NuiCreate(player, template.Window, template.WindowId);
+        }
+
         public class IdReservation
         {
             public int Count { get; set; }

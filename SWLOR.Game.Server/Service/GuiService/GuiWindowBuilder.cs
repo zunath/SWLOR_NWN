@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Service.GuiService
@@ -18,9 +17,16 @@ namespace SWLOR.Game.Server.Service.GuiService
             return _activeWindow;
         }
 
-        public (GuiWindowType, GuiWindow<T>) Build()
+        public GuiConstructedWindow Build()
         {
-            return (_type, _activeWindow);
+            var json = _activeWindow.Build();
+            var windowId = $"GUI_WINDOW_{_type}";
+
+            return new GuiConstructedWindow(_type, windowId, json, () =>
+            {
+                var dataModelInstance = Activator.CreateInstance<T>();
+                return new GuiPlayerWindow<T>(dataModelInstance);
+            });
         }
     }
 }

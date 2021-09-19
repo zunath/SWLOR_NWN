@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Service.GuiService.Component;
-
-namespace SWLOR.Game.Server.Service.GuiService
+﻿namespace SWLOR.Game.Server.Service.GuiService
 {
-    public interface IGuiWindowDefinition<T>
-        where T: IGuiDataModel
+    public interface IGuiWindowDefinition
     {
-        (GuiWindowType, GuiWindow<T>) BuildWindow();
+        GuiConstructedWindow BuildWindow();
     }
 }

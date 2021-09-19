@@ -4,11 +4,11 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
-    public class TestWindowGuiDefinition:  IGuiWindowDefinition<TestWindowGuiDataModel>
+    public class TestWindowGuiDefinition:  IGuiWindowDefinition
     {
-        private readonly GuiWindowBuilder<TestWindowGuiDataModel> _builder = new GuiWindowBuilder<TestWindowGuiDataModel>();
+        private readonly GuiWindowBuilder<TestWindowGuiDataModel> _builder = new();
 
-        public (GuiWindowType, GuiWindow<TestWindowGuiDataModel>) BuildWindow()
+        public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.TestWindow)
 

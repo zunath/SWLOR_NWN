@@ -1,10 +1,13 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System;
+using System.Linq.Expressions;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiToggleButton: GuiWidget
+    public class GuiToggleButton<T> : GuiWidget<T>
+        where T: IGuiDataModel
     {
         private string Text { get; set; }
         private string TextBindName { get; set; }
@@ -14,27 +17,27 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string IsToggledBindName { get; set; }
         private bool IsToggledBound => !string.IsNullOrWhiteSpace(IsToggledBindName);
 
-        public GuiToggleButton SetText(string text)
+        public GuiToggleButton<T> SetText(string text)
         {
             Text = text;
             return this;
         }
 
-        public GuiToggleButton BindText(string bindName)
+        public GuiToggleButton<T> BindText<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            TextBindName = bindName;
+            TextBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiToggleButton SetIsToggled(bool isToggled)
+        public GuiToggleButton<T> SetIsToggled(bool isToggled)
         {
             IsToggled = isToggled;
             return this;
         }
 
-        public GuiToggleButton BindIsToggled(string bindName)
+        public GuiToggleButton<T> BindIsToggled<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            IsToggledBindName = bindName;
+            IsToggledBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 

@@ -1,13 +1,15 @@
 ﻿using System;
+using System.Linq.Expressions;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiList: GuiWidget
+    public class GuiList<T> : GuiWidget<T>
+        where T: IGuiDataModel
     {
-        private GuiListTemplate Template { get; set; }
+        private GuiListTemplate<T> Template { get; set; }
 
         private int RowCount { get; set; }
         private string RowCountBindName { get; set; }
@@ -15,25 +17,25 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
 
         private float RowHeight { get; set; }
         
-        public GuiList SetRowCount(int rowCount)
+        public GuiList<T> SetRowCount(int rowCount)
         {
             RowCount = rowCount;
             return this;
         }
 
-        public GuiList BindRowCount(string bindName)
+        public GuiList<T> BindRowCount<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            RowCountBindName = bindName;
+            RowCountBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiList SetRowHeight(float rowHeight)
+        public GuiList<T> SetRowHeight(float rowHeight)
         {
             RowHeight = rowHeight;
             return this;
         }
 
-        public GuiList(GuiListTemplate template)
+        public GuiList(GuiListTemplate<T> template)
         {
             Template = template;
             RowHeight = NuiStyle.RowHeight;

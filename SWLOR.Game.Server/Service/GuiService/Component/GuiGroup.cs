@@ -3,9 +3,10 @@ using SWLOR.Game.Server.Core.Beamdog;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiGroup: GuiWidget
+    public class GuiGroup<T> : GuiWidget<T>
+        where T: IGuiDataModel
     {
-        public GuiWidget Child { get; set; }
+        public GuiWidget<T> Child { get; set; }
         public bool ShowBorder { get; set; }
         public NuiScrollbars Scrollbars { get; set; }
 

@@ -6,13 +6,14 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiColumn: GuiWidget
+    public class GuiColumn<T> : GuiWidget<T>
+        where T: IGuiDataModel
     {
-        private List<GuiRow> Rows { get; set; }
+        private List<GuiRow<T>> Rows { get; set; }
 
-        public GuiColumn AddRow(Action<GuiRow> row)
+        public GuiColumn<T> AddRow(Action<GuiRow<T>> row)
         {
-            var newRow = new GuiRow();
+            var newRow = new GuiRow<T>();
             Rows.Add(newRow);
             row(newRow);
 
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
 
         public GuiColumn()
         {
-            Rows = new List<GuiRow>();
+            Rows = new List<GuiRow<T>>();
         }
 
         public override Json BuildElement()

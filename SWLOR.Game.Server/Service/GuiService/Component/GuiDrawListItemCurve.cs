@@ -1,10 +1,13 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System;
+using System.Linq.Expressions;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiDrawListItemCurve : GuiDrawListItem
+    public class GuiDrawListItemCurve<T> : GuiDrawListItem<T>
+        where T: IGuiDataModel
     {
         private GuiColor Color { get; set; }
         private string ColorBindName { get; set; }
@@ -39,104 +42,104 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             Ctrl1 = new GuiVector2(0, 0);
         }
 
-        public GuiDrawListItemCurve SetColor(GuiColor color)
+        public GuiDrawListItemCurve<T> SetColor(GuiColor color)
         {
             Color = color;
             return this;
         }
-        public GuiDrawListItemCurve SetColor(int red, int green, int blue, int alpha = 255)
+        public GuiDrawListItemCurve<T> SetColor(int red, int green, int blue, int alpha = 255)
         {
             Color = new GuiColor(red, green, blue, alpha);
             return this;
         }
 
-        public GuiDrawListItemCurve BindColor(string bindName)
+        public GuiDrawListItemCurve<T> BindColor<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            ColorBindName = bindName;
+            ColorBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemCurve SetLineThickness(float lineThickness)
+        public GuiDrawListItemCurve<T> SetLineThickness(float lineThickness)
         {
             LineThickness = lineThickness;
             return this;
         }
 
-        public GuiDrawListItemCurve BindLineThickness(string bindName)
+        public GuiDrawListItemCurve<T> BindLineThickness<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            LineThicknessBindName = bindName;
+            LineThicknessBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemCurve SetA(GuiVector2 a)
+        public GuiDrawListItemCurve<T> SetA(GuiVector2 a)
         {
             A = a;
             return this;
         }
 
-        public GuiDrawListItemCurve SetA(float x, float y)
+        public GuiDrawListItemCurve<T> SetA(float x, float y)
         {
             A = new GuiVector2(x, y);
             return this;
         }
 
-        public GuiDrawListItemCurve BindA(string bindName)
+        public GuiDrawListItemCurve<T> BindA<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            ABindName = bindName;
+            ABindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemCurve SetB(GuiVector2 b)
+        public GuiDrawListItemCurve<T> SetB(GuiVector2 b)
         {
             B = b;
             return this;
         }
 
-        public GuiDrawListItemCurve SetB(float x, float y)
+        public GuiDrawListItemCurve<T> SetB(float x, float y)
         {
             B = new GuiVector2(x, y);
             return this;
         }
 
-        public GuiDrawListItemCurve BindB(string bindName)
+        public GuiDrawListItemCurve<T> BindB<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            BBindName = bindName;
+            BBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemCurve SetCtrl0(GuiVector2 ctrl0)
+        public GuiDrawListItemCurve<T> SetCtrl0(GuiVector2 ctrl0)
         {
             Ctrl0 = ctrl0;
             return this;
         }
 
-        public GuiDrawListItemCurve SetCtrl0(float x, float y)
+        public GuiDrawListItemCurve<T> SetCtrl0(float x, float y)
         {
             Ctrl0 = new GuiVector2(x, y);
             return this;
         }
 
-        public GuiDrawListItemCurve BindCtrl0(string bindName)
+        public GuiDrawListItemCurve<T> BindCtrl0<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            Ctrl0BindName = bindName;
+            Ctrl0BindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemCurve SetCtrl1(GuiVector2 ctrl1)
+        public GuiDrawListItemCurve<T> SetCtrl1(GuiVector2 ctrl1)
         {
             Ctrl1 = ctrl1;
             return this;
         }
 
-        public GuiDrawListItemCurve SetCtrl1(float x, float y)
+        public GuiDrawListItemCurve<T> SetCtrl1(float x, float y)
         {
             Ctrl1 = new GuiVector2(x, y);
             return this;
         }
 
-        public GuiDrawListItemCurve BindCtrl1(string bindName)
+        public GuiDrawListItemCurve<T> BindCtrl1<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            Ctrl1BindName = bindName;
+            Ctrl1BindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 

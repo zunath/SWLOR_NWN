@@ -24,9 +24,9 @@ namespace SWLOR.Game.Server.Feature
         public static void TestWindow()
         {
             var builder = new TestWindowGuiDefinition();
-            var windows = builder.BuildWindows();
+            var windows = builder.BuildWindow();
 
-            var json = windows[GuiWindowType.TestWindow].Build();
+            var json = windows.Item2.Build();
             Console.WriteLine(JsonDump(json));
 
             NuiCreate(GetLastUsedBy(), json, "test_window");

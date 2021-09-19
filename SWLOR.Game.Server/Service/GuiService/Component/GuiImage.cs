@@ -1,10 +1,13 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System;
+using System.Linq.Expressions;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiImage: GuiWidget
+    public class GuiImage<T> : GuiWidget<T>
+        where T: IGuiDataModel
     {
         private string Resref { get; set; }
         private string ResrefBindName { get; set; }
@@ -22,51 +25,51 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string VerticalAlignBindName { get; set; }
         private bool IsVerticalAlignBound => !string.IsNullOrWhiteSpace(VerticalAlignBindName);
 
-        public GuiImage SetResref(string resref)
+        public GuiImage<T> SetResref(string resref)
         {
             Resref = resref;
             return this;
         }
 
-        public GuiImage BindResref(string bindName)
+        public GuiImage<T> BindResref<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            ResrefBindName = bindName;
+            ResrefBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiImage SetAspect(NuiAspect aspect)
+        public GuiImage<T> SetAspect(NuiAspect aspect)
         {
             Aspect = aspect;
             return this;
         }
 
-        public GuiImage BindAspect(string bindName)
+        public GuiImage<T> BindAspect<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            AspectBindName = bindName;
+            AspectBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiImage SetHorizontalAlign(NuiHorizontalAlign hAlign)
+        public GuiImage<T> SetHorizontalAlign(NuiHorizontalAlign hAlign)
         {
             HorizontalAlign = hAlign;
             return this;
         }
 
-        public GuiImage BindHorizontalAlign(string bindName)
+        public GuiImage<T> BindHorizontalAlign<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            HorizontalAlignBindName = bindName;
+            HorizontalAlignBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiImage SetVerticalAlign(NuiVerticalAlign vAlign)
+        public GuiImage<T> SetVerticalAlign(NuiVerticalAlign vAlign)
         {
             VerticalAlign = vAlign;
             return this;
         }
 
-        public GuiImage BindVerticalAlign(string bindName)
+        public GuiImage<T> BindVerticalAlign<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            VerticalAlignBindName = bindName;
+            VerticalAlignBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 

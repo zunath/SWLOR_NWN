@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Reflection;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public abstract class GuiWidget
+    public abstract class GuiWidget<T>
+        where T: IGuiDataModel
     {
         private string Id { get; set; }
         private float Width { get; set; }
@@ -14,7 +17,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private float AspectRatio { get; set; }
         private float Margin { get; set; }
         private float Padding { get; set; }
-        private List<GuiDrawList> DrawLists { get; set; }
+        private List<GuiDrawList<T>> DrawLists { get; set; }
 
         private bool IsEnabled { get; set; }
         private string IsEnabledBindName { get; set; }
@@ -34,100 +37,100 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
 
         public abstract Json BuildElement();
 
-        public GuiWidget SetId(string id)
+        public GuiWidget<T> SetId(string id)
         {
             Id = id;
             return this;
         }
 
-        public GuiWidget SetWidth(float width)
+        public GuiWidget<T> SetWidth(float width)
         {
             Width = width;
             return this;
         }
 
-        public GuiWidget SetHeight(float height)
+        public GuiWidget<T> SetHeight(float height)
         {
             Height = height;
             return this;
         }
 
-        public GuiWidget SetAspectRatio(float aspectRatio)
+        public GuiWidget<T> SetAspectRatio(float aspectRatio)
         {
             AspectRatio = aspectRatio;
             return this;
         }
 
-        public GuiWidget SetMargin(float margin)
+        public GuiWidget<T> SetMargin(float margin)
         {
             Margin = margin;
             return this;
         }
 
-        public GuiWidget SetPadding(float padding)
+        public GuiWidget<T> SetPadding(float padding)
         {
             Padding = padding;
             return this;
         }
 
-        public GuiWidget SetIsEnabled(bool isEnabled)
+        public GuiWidget<T> SetIsEnabled(bool isEnabled)
         {
             IsEnabled = isEnabled;
             return this;
         }
 
-        public GuiWidget BindIsEnabled(string bindName)
+        public GuiWidget<T> BindIsEnabled<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            IsEnabledBindName = bindName;
+            IsEnabledBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
 
-        public GuiWidget SetIsVisible(bool isVisible)
+        public GuiWidget<T> SetIsVisible(bool isVisible)
         {
             IsVisible = isVisible;
             return this;
         }
 
-        public GuiWidget BindIsVisible(string bindName)
+        public GuiWidget<T> BindIsVisible<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            IsVisibleBindName = bindName;
+            IsVisibleBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiWidget SetTooltip(string tooltip)
+        public GuiWidget<T> SetTooltip(string tooltip)
         {
             Tooltip = tooltip;
             return this;
         }
 
-        public GuiWidget BindTooltip(string bindName)
+        public GuiWidget<T> BindTooltip<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            TooltipBindName = bindName;
+            TooltipBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiWidget SetColor(GuiColor color)
+        public GuiWidget<T> SetColor(GuiColor color)
         {
             Color = color;
             return this;
         }
 
-        public GuiWidget SetColor(int red, int green, int blue, int alpha = 255)
+        public GuiWidget<T> SetColor(int red, int green, int blue, int alpha = 255)
         {
             Color = new GuiColor(red, green, blue, alpha);
             return this;
         }
 
-        public GuiWidget BindColor(string bindName)
+        public GuiWidget<T> BindColor<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            ColorBindName = bindName;
+            ColorBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiWidget AddDrawList(Action<GuiDrawList> drawList)
+        public GuiWidget<T> AddDrawList(Action<GuiDrawList<T>> drawList)
         {
-            var newDrawList = new GuiDrawList();
+            var newDrawList = new GuiDrawList<T>();
             DrawLists.Add(newDrawList);
             drawList(newDrawList);
             return this;
@@ -137,7 +140,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         {
             IsEnabled = true;
             IsVisible = true;
-            DrawLists = new List<GuiDrawList>();
+            DrawLists = new List<GuiDrawList<T>>();
         }
 
         public virtual Json ToJson()

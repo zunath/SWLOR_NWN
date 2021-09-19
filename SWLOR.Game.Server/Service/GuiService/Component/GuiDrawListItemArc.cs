@@ -1,10 +1,13 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System;
+using System.Linq.Expressions;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiDrawListItemArc: GuiDrawListItem
+    public class GuiDrawListItemArc<T>: GuiDrawListItem<T>
+        where T: IGuiDataModel
     {
         private GuiColor Color { get; set; }
         private string ColorBindName { get; set; }
@@ -40,101 +43,101 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             Center = new GuiVector2(0f, 0f);
         }
 
-        public GuiDrawListItemArc SetColor(GuiColor color)
+        public GuiDrawListItemArc<T> SetColor(GuiColor color)
         {
             Color = color;
             return this;
         }
 
-        public GuiDrawListItemArc SetColor(int red, int green, int blue, int alpha= 255)
+        public GuiDrawListItemArc<T> SetColor(int red, int green, int blue, int alpha= 255)
         {
             Color = new GuiColor(red, green, blue, alpha);
             return this;
         }
 
-        public GuiDrawListItemArc BindColor(string bindName)
+        public GuiDrawListItemArc<T> BindColor<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            ColorBindName = bindName;
+            ColorBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemArc SetIsFilled(bool isFilled)
+        public GuiDrawListItemArc<T> SetIsFilled(bool isFilled)
         {
             IsFilled = isFilled;
             return this;
         }
 
-        public GuiDrawListItemArc BindIsFilled(string bindName)
+        public GuiDrawListItemArc<T> BindIsFilled<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            IsFilledBindName = bindName;
+            IsFilledBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemArc SetLineThickness(float lineThickness)
+        public GuiDrawListItemArc<T> SetLineThickness(float lineThickness)
         {
             LineThickness = lineThickness;
             return this;
         }
 
-        public GuiDrawListItemArc BindLineThickness(string bindName)
+        public GuiDrawListItemArc<T> BindLineThickness<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            LineThicknessBindName = bindName;
+            LineThicknessBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemArc SetCenter(GuiVector2 center)
+        public GuiDrawListItemArc<T> SetCenter(GuiVector2 center)
         {
             Center = center;
             return this;
         }
 
-        public GuiDrawListItemArc SetCenter(float x, float y)
+        public GuiDrawListItemArc<T> SetCenter(float x, float y)
         {
             Center = new GuiVector2(x, y);
             return this;
         }
 
-        public GuiDrawListItemArc BindCenter(string bindName)
+        public GuiDrawListItemArc<T> BindCenter<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            CenterBindName = bindName;
+            CenterBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
 
-        public GuiDrawListItemArc SetRadius(float radius)
+        public GuiDrawListItemArc<T> SetRadius(float radius)
         {
             Radius = radius;
             return this;
         }
 
-        public GuiDrawListItemArc BindRadius(string bindName)
+        public GuiDrawListItemArc<T> BindRadius<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            RadiusBindName = bindName;
+            RadiusBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
 
-        public GuiDrawListItemArc SetAMinimum(float aMinimum)
+        public GuiDrawListItemArc<T> SetAMinimum(float aMinimum)
         {
             AMinimum = aMinimum;
             return this;
         }
 
-        public GuiDrawListItemArc BindAMinimum(string bindName)
+        public GuiDrawListItemArc<T> BindAMinimum<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            AMinimumBindName = bindName;
+            AMinimumBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemArc SetAMaximum(float aMaximum)
+        public GuiDrawListItemArc<T> SetAMaximum(float aMaximum)
         {
             AMaximum = aMaximum;
             return this;
         }
 
-        public GuiDrawListItemArc BindAMaximum(string bindName)
+        public GuiDrawListItemArc<T> BindAMaximum<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            AMaximumBindName = bindName;
+            AMaximumBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 

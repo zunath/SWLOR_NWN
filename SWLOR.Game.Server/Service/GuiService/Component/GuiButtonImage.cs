@@ -1,24 +1,27 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System;
+using System.Linq.Expressions;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiButtonImage: GuiWidget
+    public class GuiButtonImage<T> : GuiWidget<T>
+        where T: IGuiDataModel
     {
         private string Resref { get; set; }
         private string ResrefBindName { get; set; }
         private bool IsResrefBound => !string.IsNullOrWhiteSpace(ResrefBindName);
 
-        public GuiButtonImage SetResref(string resref)
+        public GuiButtonImage<T> SetResref(string resref)
         {
             Resref = resref;
             return this;
         }
 
-        public GuiButtonImage BindResref(string bindName)
+        public GuiButtonImage<T> BindResref<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            ResrefBindName = bindName;
+            ResrefBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 

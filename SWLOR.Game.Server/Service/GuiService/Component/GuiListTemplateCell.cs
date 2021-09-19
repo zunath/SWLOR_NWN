@@ -4,18 +4,19 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiListTemplateCell: GuiExpandableComponent
+    public class GuiListTemplateCell<T> : GuiExpandableComponent<T>
+        where T: IGuiDataModel
     {
         private float CellWidth { get; set; }
         private bool IsStatic { get; set; }
 
-        public GuiListTemplateCell SetCellWidth(float cellWidth)
+        public GuiListTemplateCell<T> SetCellWidth(float cellWidth)
         {
             CellWidth = cellWidth;
             return this;
         }
 
-        public GuiListTemplateCell SetIsStatic(bool isStatic)
+        public GuiListTemplateCell<T> SetIsStatic(bool isStatic)
         {
             IsStatic = isStatic;
             return this;

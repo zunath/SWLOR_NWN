@@ -5,18 +5,19 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiListTemplate
+    public class GuiListTemplate<T>
+        where T: IGuiDataModel
     {
-        private List<GuiListTemplateCell> Cells { get; set; }
+        private List<GuiListTemplateCell<T>> Cells { get; set; }
 
         public GuiListTemplate()
         {
-            Cells = new List<GuiListTemplateCell>();
+            Cells = new List<GuiListTemplateCell<T>>();
         }
 
-        public GuiListTemplate AddCell(Action<GuiListTemplateCell> cell)
+        public GuiListTemplate<T> AddCell(Action<GuiListTemplateCell<T>> cell)
         {
-            var newCell = new GuiListTemplateCell();
+            var newCell = new GuiListTemplateCell<T>();
             Cells.Add(newCell);
             cell(newCell);
 

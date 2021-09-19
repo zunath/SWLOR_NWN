@@ -3,8 +3,9 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {
-    public interface IGuiWindowListDefinition
+    public interface IGuiWindowDefinition<T>
+        where T: IGuiDataModel
     {
-        Dictionary<GuiWindowType, GuiWindow> BuildWindows();
+        (GuiWindowType, GuiWindow<T>) BuildWindow();
     }
 }

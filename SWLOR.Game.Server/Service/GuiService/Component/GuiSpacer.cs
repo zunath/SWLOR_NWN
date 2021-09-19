@@ -3,7 +3,8 @@ using SWLOR.Game.Server.Core.Beamdog;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiSpacer: GuiWidget
+    public class GuiSpacer<T> : GuiWidget<T>
+        where T: IGuiDataModel
     {
         public override Json BuildElement()
         {

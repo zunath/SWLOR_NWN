@@ -6,13 +6,14 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiChart: GuiWidget
+    public class GuiChart<T> : GuiWidget<T>
+        where T: IGuiDataModel
     {
-        private List<GuiChartSlot> Slots { get; set; }
+        private List<GuiChartSlot<T>> Slots { get; set; }
 
-        public GuiChart AddSlot(Action<GuiChartSlot> slot)
+        public GuiChart<T> AddSlot(Action<GuiChartSlot<T>> slot)
         {
-            var newSlot = new GuiChartSlot();
+            var newSlot = new GuiChartSlot<T>();
             Slots.Add(newSlot);
             slot(newSlot);
 
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
 
         public GuiChart()
         {
-            Slots = new List<GuiChartSlot>();
+            Slots = new List<GuiChartSlot<T>>();
         }
         
         public override Json BuildElement()

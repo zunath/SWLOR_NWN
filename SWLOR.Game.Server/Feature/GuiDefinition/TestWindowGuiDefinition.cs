@@ -1,14 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using SWLOR.Game.Server.Feature.GuiDefinition.DataModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
-    public class TestWindowGuiDefinition: IGuiWindowListDefinition
+    public class TestWindowGuiDefinition:  IGuiWindowDefinition<TestWindowGuiDataModel>
     {
-        private readonly GuiWindowBuilder _builder = new GuiWindowBuilder();
+        private readonly GuiWindowBuilder<TestWindowGuiDataModel> _builder = new GuiWindowBuilder<TestWindowGuiDataModel>();
 
-        public Dictionary<GuiWindowType, GuiWindow> BuildWindows()
+        public (GuiWindowType, GuiWindow<TestWindowGuiDataModel>) BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.TestWindow)
 
@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddButton()
-                            .SetText("regular button");
+                            .BindText(model => model.ButtonText);
 
                         row.AddButtonImage()
                             .SetResref("ife_animal");
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddComboBox()
-                            .BindSelectedIndex("selected_option")
+                            .BindSelectedIndex(model => model.SelectedComboBoxValue)
                             .AddOption("item 1", 1)
                             .AddOption("item 2", 2)
                             .AddOption("item 3", 3);
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetPlaceholder("text edit");
                     });
                 });
-                
+
 
             return _builder.Build();
         }

@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using System.Reflection;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiWindow
+    public abstract class GuiWindow { }
+
+    public class GuiWindow<T> : GuiWindow
+        where T: IGuiDataModel
     {
         private string Title { get; set; }
         private string TitleBindName { get; set; }
@@ -36,101 +41,101 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string ShowBorderBindName { get; set; }
         private bool IsShowBorderBound => !string.IsNullOrWhiteSpace(ShowBorderBindName);
 
-        private List<GuiColumn> Columns { get; set; }
+        private List<GuiColumn<T>> Columns { get; set; }
 
-        public GuiWindow SetTitle(string title)
+        public GuiWindow<T> SetTitle(string title)
         {
             Title = title;
             return this;
         }
 
-        public GuiWindow BindTitle(string bindName)
+        public GuiWindow<T> BindTitle<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            TitleBindName = bindName;
+            TitleBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiWindow SetGeometry(float x, float y, float width, float height)
+        public GuiWindow<T> SetGeometry(float x, float y, float width, float height)
         {
             Geometry = new GuiRectangle(x, y, width, height);
             return this;
         }
 
-        public GuiWindow SetGeometry(GuiRectangle bounds)
+        public GuiWindow<T> SetGeometry(GuiRectangle bounds)
         {
             Geometry = bounds;
             return this;
         }
 
-        public GuiWindow BindGeometry(string bindName)
+        public GuiWindow<T> BindGeometry<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            GeometryBindName = bindName;
+            GeometryBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiWindow SetIsResizable(bool isResizable)
+        public GuiWindow<T> SetIsResizable(bool isResizable)
         {
             IsResizable = isResizable;
             return this;
         }
 
-        public GuiWindow BindIsResizable(string bindName)
+        public GuiWindow<T> BindIsResizable<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            IsResizableBindName = bindName;
+            IsResizableBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiWindow SetIsCollapsed(bool isCollapsed)
+        public GuiWindow<T> SetIsCollapsed(bool isCollapsed)
         {
             IsCollapsed = isCollapsed;
             return this;
         }
 
-        public GuiWindow BindIsCollapsed(string bindName)
+        public GuiWindow<T> BindIsCollapsed<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            IsCollapsedBindName = bindName;
+            IsCollapsedBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiWindow SetIsClosable(bool isClosable)
+        public GuiWindow<T> SetIsClosable(bool isClosable)
         {
             IsClosable = isClosable;
             return this;
         }
 
-        public GuiWindow BindIsClosable(string bindName)
+        public GuiWindow<T> BindIsClosable<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            IsClosableBindName = bindName;
+            IsClosableBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiWindow SetIsTransparent(bool isTransparent)
+        public GuiWindow<T> SetIsTransparent(bool isTransparent)
         {
             IsTransparent = isTransparent;
             return this;
         }
 
-        public GuiWindow BindIsTransparent(string bindName)
+        public GuiWindow<T> BindIsTransparent<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            IsTransparentBindName = bindName;
+            IsTransparentBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiWindow SetShowBorder(bool showBorder)
+        public GuiWindow<T> SetShowBorder(bool showBorder)
         {
             ShowBorder = showBorder;
             return this;
         }
 
-        public GuiWindow BindShowBorder(string bindName)
+        public GuiWindow<T> BindShowBorder<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            ShowBorderBindName = bindName;
+            ShowBorderBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiWindow AddColumn(Action<GuiColumn> col)
+        public GuiWindow<T> AddColumn(Action<GuiColumn<T>> col)
         {
-            var column = new GuiColumn();
+            var column = new GuiColumn<T>();
             Columns.Add(column);
             col(column);
 
@@ -147,7 +152,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             IsTransparent = false;
             ShowBorder = true;
 
-            Columns = new List<GuiColumn>();
+            Columns = new List<GuiColumn<T>>();
         }
 
         public Json Build()

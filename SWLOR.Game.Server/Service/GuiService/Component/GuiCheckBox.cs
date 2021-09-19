@@ -1,10 +1,13 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System;
+using System.Linq.Expressions;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiCheckBox: GuiWidget
+    public class GuiCheckBox<T> : GuiWidget<T>
+        where T: IGuiDataModel
     {
         private string Text { get; set; }
         private string TextBindName { get; set; }
@@ -14,27 +17,27 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string IsCheckedBindName { get; set; }
         private bool IsCheckedBound => !string.IsNullOrWhiteSpace(IsCheckedBindName);
 
-        public GuiCheckBox SetText(string text)
+        public GuiCheckBox<T> SetText(string text)
         {
             Text = text;
             return this;
         }
 
-        public GuiCheckBox BindText(string bindName)
+        public GuiCheckBox<T> BindText<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            TextBindName = bindName;
+            TextBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiCheckBox SetIsChecked(bool isChecked)
+        public GuiCheckBox<T> SetIsChecked(bool isChecked)
         {
             IsChecked = isChecked;
             return this;
         }
 
-        public GuiCheckBox BindIsChecked(string bindName)
+        public GuiCheckBox<T> BindIsChecked<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            IsCheckedBindName = bindName;
+            IsCheckedBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 

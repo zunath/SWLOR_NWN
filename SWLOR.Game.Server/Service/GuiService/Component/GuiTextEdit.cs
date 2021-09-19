@@ -1,10 +1,13 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System;
+using System.Linq.Expressions;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiTextEdit: GuiWidget
+    public class GuiTextEdit<T> : GuiWidget<T>
+        where T: IGuiDataModel
     {
         private string Placeholder { get; set; }
         private string PlaceholderBindName { get; set; }
@@ -17,37 +20,37 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private int MaxLength { get; set; }
         private bool IsMultiLine { get; set; }
 
-        public GuiTextEdit SetPlaceholder(string placeholder)
+        public GuiTextEdit<T> SetPlaceholder(string placeholder)
         {
             Placeholder = placeholder;
             return this;
         }
 
-        public GuiTextEdit BindPlaceholder(string bindName)
+        public GuiTextEdit<T> BindPlaceholder<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            PlaceholderBindName = bindName;
+            PlaceholderBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiTextEdit SetValue(string value)
+        public GuiTextEdit<T> SetValue(string value)
         {
             Value = value;
             return this;
         }
 
-        public GuiTextEdit BindValue(string bindName)
+        public GuiTextEdit<T> BindValue<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            ValueBindName = bindName;
+            ValueBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiTextEdit SetMaxLength(int maxLength)
+        public GuiTextEdit<T> SetMaxLength(int maxLength)
         {
             MaxLength = maxLength;
             return this;
         }
 
-        public GuiTextEdit SetIsMultiline(bool isMultiLine)
+        public GuiTextEdit<T> SetIsMultiline(bool isMultiLine)
         {
             IsMultiLine = isMultiLine;
             return this;

@@ -1,10 +1,13 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System;
+using System.Linq.Expressions;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiDrawListItemImage: GuiDrawListItem
+    public class GuiDrawListItemImage<T>: GuiDrawListItem<T>
+        where T: IGuiDataModel
     {
         private string Resref { get; set; }
         private string ResrefBindName { get; set; }
@@ -31,69 +34,69 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             Position = new GuiRectangle(0, 0, 0, 0);
         }
 
-        public GuiDrawListItemImage SetResref(string resref)
+        public GuiDrawListItemImage<T> SetResref(string resref)
         {
             Resref = resref;
             return this;
         }
 
-        public GuiDrawListItemImage BindResref(string bindName)
+        public GuiDrawListItemImage<T> BindResref<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            ResrefBindName = bindName;
+            ResrefBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemImage SetPosition(GuiRectangle position)
+        public GuiDrawListItemImage<T> SetPosition(GuiRectangle position)
         {
             Position = position;
             return this;
         }
 
-        public GuiDrawListItemImage SetPosition(float x, float y, float width, float height)
+        public GuiDrawListItemImage<T> SetPosition(float x, float y, float width, float height)
         {
             Position = new GuiRectangle(x, y, width, height);
             return this;
         }
 
-        public GuiDrawListItemImage BindPosition(string bindName)
+        public GuiDrawListItemImage<T> BindPosition<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            PositionBindName = bindName;
+            PositionBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemImage SetAspect(NuiAspect aspect)
+        public GuiDrawListItemImage<T> SetAspect(NuiAspect aspect)
         {
             Aspect = aspect;
             return this;
         }
 
-        public GuiDrawListItemImage BindAspect(string bindName)
+        public GuiDrawListItemImage<T> BindAspect<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            AspectBindName = bindName;
+            AspectBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemImage SetHorizontalAlign(NuiHorizontalAlign hAlign)
+        public GuiDrawListItemImage<T> SetHorizontalAlign(NuiHorizontalAlign hAlign)
         {
             HorizontalAlign = hAlign;
             return this;
         }
 
-        public GuiDrawListItemImage BindHorizontalAlign(string bindName)
+        public GuiDrawListItemImage<T> BindHorizontalAlign<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            HorizontalAlignBindName = bindName;
+            HorizontalAlignBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemImage SetVerticalAlign(NuiVerticalAlign vAlign)
+        public GuiDrawListItemImage<T> SetVerticalAlign(NuiVerticalAlign vAlign)
         {
             VerticalAlign = vAlign;
             return this;
         }
 
-        public GuiDrawListItemImage BindVerticalAlign(string bindName)
+        public GuiDrawListItemImage<T> BindVerticalAlign<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            VerticalAlignBindName = bindName;
+            VerticalAlignBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 

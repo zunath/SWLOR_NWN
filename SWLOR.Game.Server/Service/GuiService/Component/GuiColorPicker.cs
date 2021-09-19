@@ -1,9 +1,12 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System;
+using System.Linq.Expressions;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiColorPicker: GuiWidget
+    public class GuiColorPicker<T> : GuiWidget<T>
+        where T: IGuiDataModel
     {
         private GuiColor SelectedColor { get; set; }
         private string SelectedColorBindName { get; set; }
@@ -14,15 +17,15 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             SelectedColor = new GuiColor(0, 0, 0);
         }
 
-        public GuiColorPicker SetSelectedColor(GuiColor selectedColor)
+        public GuiColorPicker<T> SetSelectedColor(GuiColor selectedColor)
         {
             SelectedColor = selectedColor;
             return this;
         }
 
-        public GuiColorPicker BindSelectedColor(string bindName)
+        public GuiColorPicker<T> BindSelectedColor<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            SelectedColorBindName = bindName;
+            SelectedColorBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 

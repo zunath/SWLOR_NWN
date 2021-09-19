@@ -4,7 +4,8 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiRow: GuiExpandableComponent
+    public class GuiRow<T> : GuiExpandableComponent<T>
+        where T: IGuiDataModel
     {
         public override Json BuildElement()
         {

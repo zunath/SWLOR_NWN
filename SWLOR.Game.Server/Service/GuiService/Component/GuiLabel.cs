@@ -1,10 +1,13 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System;
+using System.Linq.Expressions;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiLabel: GuiWidget
+    public class GuiLabel<T> : GuiWidget<T>
+        where T: IGuiDataModel
     {
         private string Text { get; set; }
         private string TextBindName { get; set; }
@@ -18,38 +21,38 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string VerticalAlignBindName { get; set; }
         private bool IsVerticalAlignBound => !string.IsNullOrWhiteSpace(VerticalAlignBindName);
 
-        public GuiLabel SetText(string text)
+        public GuiLabel<T> SetText(string text)
         {
             Text = text;
             return this;
         }
 
-        public GuiLabel BindText(string bindName)
+        public GuiLabel<T> BindText<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            TextBindName = bindName;
+            TextBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiLabel SetHorizontalAlign(NuiHorizontalAlign hAlign)
+        public GuiLabel<T> SetHorizontalAlign(NuiHorizontalAlign hAlign)
         {
             HorizontalAlign = hAlign;
             return this;
         }
 
-        public GuiLabel BindHorizontalAlign(string bindName)
+        public GuiLabel<T> BindHorizontalAlign<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            HorizontalAlignBindName = bindName;
+            HorizontalAlignBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
-        public GuiLabel SetVerticalAlign(NuiVerticalAlign vAlign)
+        public GuiLabel<T> SetVerticalAlign(NuiVerticalAlign vAlign)
         {
             VerticalAlign = vAlign;
             return this;
         }
 
-        public GuiLabel BindVerticalAlign(string bindName)
+        public GuiLabel<T> BindVerticalAlign<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            VerticalAlignBindName = bindName;
+            VerticalAlignBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
         public GuiLabel()

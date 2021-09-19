@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiChartSlot
+    public class GuiChartSlot<T>
+        where T: IGuiDataModel
     {
         private NuiChartType Type { get; set; }
         
@@ -21,51 +24,51 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string DataBindName { get; set; }
         private bool IsDataBound => !string.IsNullOrWhiteSpace(DataBindName);
 
-        public GuiChartSlot SetType(NuiChartType type)
+        public GuiChartSlot<T> SetType(NuiChartType type)
         {
             Type = type;
             return this;
         }
 
-        public GuiChartSlot SetLegend(string legend)
+        public GuiChartSlot<T> SetLegend(string legend)
         {
             Legend = legend;
             return this;
         }
 
-        public GuiChartSlot BindLegend(string bindName)
+        public GuiChartSlot<T> BindLegend<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            LegendBindName = bindName;
+            LegendBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiChartSlot SetColor(GuiColor color)
+        public GuiChartSlot<T> SetColor(GuiColor color)
         {
             Color = color;
             return this;
         }
 
-        public GuiChartSlot SetColor(int red, int green, int blue, int alpha = 255)
+        public GuiChartSlot<T> SetColor(int red, int green, int blue, int alpha = 255)
         {
             Color = new GuiColor(red, green, blue, alpha);
             return this;
         }
 
-        public GuiChartSlot BindColor(string bindName)
+        public GuiChartSlot<T> BindColor<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            ColorBindName = bindName;
+            ColorBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiChartSlot AddDataPoint(float data)
+        public GuiChartSlot<T> AddDataPoint(float data)
         {
             Data.Add(data);
             return this;
         }
 
-        public GuiChartSlot BindData(string bindName)
+        public GuiChartSlot<T> BindData<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            DataBindName = bindName;
+            DataBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 

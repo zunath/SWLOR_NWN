@@ -1,10 +1,13 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System;
+using System.Linq.Expressions;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiSliderFloat: GuiWidget
+    public class GuiSliderFloat<T> : GuiWidget<T>
+        where T: IGuiDataModel
     {
         private float Value { get; set; }
         private string ValueBindName { get; set; }
@@ -22,52 +25,52 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string StepSizeBindName { get; set; }
         private bool IsStepSizeBound => !string.IsNullOrWhiteSpace(StepSizeBindName);
 
-        public GuiSliderFloat SetValue(float value)
+        public GuiSliderFloat<T> SetValue(float value)
         {
             Value = value;
             return this;
         }
 
-        public GuiSliderFloat BindValue(string bindName)
+        public GuiSliderFloat<T> BindValue<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            ValueBindName = bindName;
+            ValueBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiSliderFloat SetMinimum(float minimum)
+        public GuiSliderFloat<T> SetMinimum(float minimum)
         {
             Minimum = minimum;
             return this;
         }
 
-        public GuiSliderFloat BindMinimum(string bindName)
+        public GuiSliderFloat<T> BindMinimum<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            MinimumBindName = bindName;
+            MinimumBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
 
-        public GuiSliderFloat SetMaximum(float maximum)
+        public GuiSliderFloat<T> SetMaximum(float maximum)
         {
             Maximum = maximum;
             return this;
         }
 
-        public GuiSliderFloat BindMaximum(string bindName)
+        public GuiSliderFloat<T> BindMaximum<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            MaximumBindName = bindName;
+            MaximumBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiSliderFloat SetStepSize(float stepSize)
+        public GuiSliderFloat<T> SetStepSize(float stepSize)
         {
             StepSize = stepSize;
             return this;
         }
 
-        public GuiSliderFloat BindStepSize(string bindName)
+        public GuiSliderFloat<T> BindStepSize<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            StepSizeBindName = bindName;
+            StepSizeBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 

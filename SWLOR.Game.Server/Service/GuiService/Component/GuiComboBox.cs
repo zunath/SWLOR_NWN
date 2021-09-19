@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiComboBox: GuiWidget
+    public class GuiComboBox<T> : GuiWidget<T>
+        where T: IGuiDataModel
     {
         private List<GuiComboEntry> Options { get; set; }
         private string OptionsBindName { get; set; }
@@ -20,27 +23,27 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             Options = new List<GuiComboEntry>();
         }
 
-        public GuiComboBox AddOption(string label, int value)
+        public GuiComboBox<T> AddOption(string label, int value)
         {
             Options.Add(new GuiComboEntry(label, value));
             return this;
         }
 
-        public GuiComboBox BindOptions(string bindName)
+        public GuiComboBox<T> BindOptions<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            OptionsBindName = bindName;
+            OptionsBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiComboBox SetSelectedIndex(int selectedIndex)
+        public GuiComboBox<T> SetSelectedIndex(int selectedIndex)
         {
             SelectedIndex = selectedIndex;
             return this;
         }
 
-        public GuiComboBox BindSelectedIndex(string bindName)
+        public GuiComboBox<T> BindSelectedIndex<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            SelectedIndexBindName = bindName;
+            SelectedIndexBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 

@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiDrawListItemPolyLine: GuiDrawListItem
+    public class GuiDrawListItemPolyLine<T>: GuiDrawListItem<T>
+        where T: IGuiDataModel
     {
         private GuiColor Color { get; set; }
         private string ColorBindName { get; set; }
@@ -23,63 +26,63 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string PointsBindName { get; set; }
         private bool IsPointsBound => !string.IsNullOrWhiteSpace(PointsBindName);
         
-        public GuiDrawListItemPolyLine SetColor(GuiColor color)
+        public GuiDrawListItemPolyLine<T> SetColor(GuiColor color)
         {
             Color = color;
             return this;
         }
 
-        public GuiDrawListItemPolyLine SetColor(int red, int green, int blue, int alpha = 255)
+        public GuiDrawListItemPolyLine<T> SetColor(int red, int green, int blue, int alpha = 255)
         {
             Color = new GuiColor(red, green, blue, alpha);
             return this;
         }
 
-        public GuiDrawListItemPolyLine BindColor(string bindName)
+        public GuiDrawListItemPolyLine<T> BindColor<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            ColorBindName = bindName;
+            ColorBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemPolyLine SetIsFilled(bool isFilled)
+        public GuiDrawListItemPolyLine<T> SetIsFilled(bool isFilled)
         {
             IsFilled = isFilled;
             return this;
         }
 
-        public GuiDrawListItemPolyLine BindIsFilled(string bindName)
+        public GuiDrawListItemPolyLine<T> BindIsFilled<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            IsFilledBindName = bindName;
+            IsFilledBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemPolyLine SetLineThickness(float lineThickness)
+        public GuiDrawListItemPolyLine<T> SetLineThickness(float lineThickness)
         {
             LineThickness = lineThickness;
             return this;
         }
 
-        public GuiDrawListItemPolyLine BindLineThickness(string bindName)
+        public GuiDrawListItemPolyLine<T> BindLineThickness<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            LineThicknessBindName = bindName;
+            LineThicknessBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemPolyLine AddPoint(float x, float y)
+        public GuiDrawListItemPolyLine<T> AddPoint(float x, float y)
         {
             Points.Add(new GuiVector2(x, y));
             return this;
         }
 
-        public GuiDrawListItemPolyLine AddPoint(GuiVector2 point)
+        public GuiDrawListItemPolyLine<T> AddPoint(GuiVector2 point)
         {
             Points.Add(point);
             return this;
         }
 
-        public GuiDrawListItemPolyLine BindPoints(string bindName)
+        public GuiDrawListItemPolyLine<T> BindPoints<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            PointsBindName = bindName;
+            PointsBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 

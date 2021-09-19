@@ -1,10 +1,13 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System;
+using System.Linq.Expressions;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiDrawListItemCircle : GuiDrawListItem
+    public class GuiDrawListItemCircle<T> : GuiDrawListItem<T>
+        where T: IGuiDataModel
     {
         private GuiColor Color { get; set; }
         private string ColorBindName { get; set; }
@@ -28,62 +31,62 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             Bounds = new GuiRectangle(0, 0, 0, 0);
         }
 
-        public GuiDrawListItemCircle SetColor(GuiColor color)
+        public GuiDrawListItemCircle<T> SetColor(GuiColor color)
         {
             Color = color;
             return this;
         }
-        public GuiDrawListItemCircle SetColor(int red, int green, int blue, int alpha = 255)
+        public GuiDrawListItemCircle<T> SetColor(int red, int green, int blue, int alpha = 255)
         {
             Color = new GuiColor(red, green, blue, alpha);
             return this;
         }
 
-        public GuiDrawListItemCircle BindColor(string bindName)
+        public GuiDrawListItemCircle<T> BindColor<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            ColorBindName = bindName;
+            ColorBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemCircle SetIsFilled(bool isFilled)
+        public GuiDrawListItemCircle<T> SetIsFilled(bool isFilled)
         {
             IsFilled = isFilled;
             return this;
         }
 
-        public GuiDrawListItemCircle BindIsFilled(string bindName)
+        public GuiDrawListItemCircle<T> BindIsFilled<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            IsFilledBindName = bindName;
+            IsFilledBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemCircle SetLineThickness(float lineThickness)
+        public GuiDrawListItemCircle<T> SetLineThickness(float lineThickness)
         {
             LineThickness = lineThickness;
             return this;
         }
 
-        public GuiDrawListItemCircle BindLineThickness(string bindName)
+        public GuiDrawListItemCircle<T> BindLineThickness<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            LineThicknessBindName = bindName;
+            LineThicknessBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemCircle SetBounds(GuiRectangle bounds)
+        public GuiDrawListItemCircle<T> SetBounds(GuiRectangle bounds)
         {
             Bounds = bounds;
             return this;
         }
 
-        public GuiDrawListItemCircle SetBounds(float x, float y, float width, float height)
+        public GuiDrawListItemCircle<T> SetBounds(float x, float y, float width, float height)
         {
             Bounds = new GuiRectangle(x, y, width, height);
             return this;
         }
 
-        public GuiDrawListItemCircle BindBounds(string bindName)
+        public GuiDrawListItemCircle<T> BindBounds<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            BoundsBindName = bindName;
+            BoundsBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 

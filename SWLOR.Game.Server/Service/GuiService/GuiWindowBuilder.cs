@@ -4,23 +4,23 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {
-    public class GuiWindowBuilder
+    public class GuiWindowBuilder<T>
+        where T: IGuiDataModel
     {
-        private readonly Dictionary<GuiWindowType, GuiWindow> _windows = new Dictionary<GuiWindowType, GuiWindow>();
-        private GuiWindow _activeWindow;
+        private GuiWindowType _type;
+        private GuiWindow<T> _activeWindow;
 
-        public GuiWindow CreateWindow(GuiWindowType type)
+        public GuiWindow<T> CreateWindow(GuiWindowType type)
         {
-            _activeWindow = new GuiWindow();
-            _windows[type] = _activeWindow;
+            _activeWindow = new GuiWindow<T>();
+            _type = type;
 
             return _activeWindow;
         }
 
-        public Dictionary<GuiWindowType, GuiWindow> Build()
+        public (GuiWindowType, GuiWindow<T>) Build()
         {
-
-            return _windows;
+            return (_type, _activeWindow);
         }
     }
 }

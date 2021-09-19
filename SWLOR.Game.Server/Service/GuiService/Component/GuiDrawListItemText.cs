@@ -1,10 +1,13 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System;
+using System.Linq.Expressions;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiDrawListItemText : GuiDrawListItem
+    public class GuiDrawListItemText<T> : GuiDrawListItem<T>
+        where T: IGuiDataModel
     {
         private GuiColor Color { get; set; }
         private string ColorBindName { get; set; }
@@ -24,51 +27,51 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             Bounds = new GuiRectangle(0, 0, 0, 0);
         }
 
-        public GuiDrawListItemText SetColor(GuiColor color)
+        public GuiDrawListItemText<T> SetColor(GuiColor color)
         {
             Color = color;
             return this;
         }
 
-        public GuiDrawListItemText SetColor(int red, int green, int blue, int alpha = 255)
+        public GuiDrawListItemText<T> SetColor(int red, int green, int blue, int alpha = 255)
         {
             Color = new GuiColor(red, green, blue, alpha);
             return this;
         }
 
-        public GuiDrawListItemText BindColor(string bindName)
+        public GuiDrawListItemText<T> BindColor<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            ColorBindName = bindName;
+            ColorBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemText SetBounds(GuiRectangle bounds)
+        public GuiDrawListItemText<T> SetBounds(GuiRectangle bounds)
         {
             Bounds = bounds;
             return this;
         }
 
-        public GuiDrawListItemText SetBounds(float x, float y, float width, float height)
+        public GuiDrawListItemText<T> SetBounds(float x, float y, float width, float height)
         {
             Bounds = new GuiRectangle(x, y, width, height);
             return this;
         }
 
-        public GuiDrawListItemText BindBounds(string bindName)
+        public GuiDrawListItemText<T> BindBounds<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            BoundsBindName = bindName;
+            BoundsBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
-        public GuiDrawListItemText SetText(string text)
+        public GuiDrawListItemText<T> SetText(string text)
         {
             Text = text;
             return this;
         }
 
-        public GuiDrawListItemText BindText(string bindName)
+        public GuiDrawListItemText<T> BindText<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            TextBindName = bindName;
+            TextBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 

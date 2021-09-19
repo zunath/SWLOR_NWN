@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiOptions: GuiWidget
+    public class GuiOptions<T> : GuiWidget<T>
+        where T: IGuiDataModel
     {
         private NuiDirection Direction { get; set; }
         private List<string> OptionLabels { get; set; }
@@ -14,27 +17,27 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string SelectedValueBindName { get; set; }
         private bool IsSelectedValueBound => !string.IsNullOrWhiteSpace(SelectedValueBindName);
 
-        public GuiOptions SetDirection(NuiDirection direction)
+        public GuiOptions<T> SetDirection(NuiDirection direction)
         {
             Direction = direction;
             return this;
         }
 
-        public GuiOptions AddOption(string option)
+        public GuiOptions<T> AddOption(string option)
         {
             OptionLabels.Add(option);
             return this;
         }
 
-        public GuiOptions SetSelectedValue(int selectedValue)
+        public GuiOptions<T> SetSelectedValue(int selectedValue)
         {
             SelectedValue = selectedValue;
             return this;
         }
 
-        public GuiOptions BindSelectedValue(string bindName)
+        public GuiOptions<T> BindSelectedValue<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            SelectedValueBindName = bindName;
+            SelectedValueBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 

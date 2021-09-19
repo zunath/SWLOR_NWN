@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public abstract class GuiExpandableComponent<T>: GuiWidget<T>
+    public abstract class GuiExpandableComponent<T>: GuiWidget<T, GuiExpandableComponent<T>>
         where T: IGuiDataModel
     {
-        protected List<GuiWidget<T>> Elements { get; set; }
-
+        protected List<IGuiWidget> Elements { get; set; }
+        
         public GuiButton<T> AddButton()
         {
             var newButton = new GuiButton<T>();
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
 
         protected GuiExpandableComponent()
         {
-            Elements = new List<GuiWidget<T>>();
+            Elements = new List<IGuiWidget>();
         }
 
     }

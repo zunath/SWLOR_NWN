@@ -7,7 +7,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiOptions<T> : GuiWidget<T>
+    public class GuiOptions<T> : GuiWidget<T, GuiOptions<T>>
         where T: IGuiDataModel
     {
         private NuiDirection Direction { get; set; }

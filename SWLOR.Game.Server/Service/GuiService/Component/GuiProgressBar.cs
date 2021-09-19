@@ -6,7 +6,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiProgressBar<T> : GuiWidget<T>
+    public class GuiProgressBar<T> : GuiWidget<T, GuiProgressBar<T>>
         where T: IGuiDataModel
     {
         private float Value { get; set; }

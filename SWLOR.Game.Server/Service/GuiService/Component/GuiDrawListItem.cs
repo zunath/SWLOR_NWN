@@ -4,23 +4,24 @@ using SWLOR.Game.Server.Core;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public abstract class GuiDrawListItem<T>
-        where T: IGuiDataModel
+    public abstract class GuiDrawListItem<TDataModel, TDerived>
+        where TDataModel: IGuiDataModel
+        where TDerived : GuiDrawListItem<TDataModel, TDerived>
     {
         protected bool IsEnabled { get; set; }
         protected string IsEnabledBindName { get; set; }
         protected bool IsEnabledBound => !string.IsNullOrWhiteSpace(IsEnabledBindName);
 
-        public GuiDrawListItem<T> SetIsEnabled(bool isEnabled)
+        public TDerived SetIsEnabled(bool isEnabled)
         {
             IsEnabled = true;
-            return this;
+            return (TDerived)this;
         }
 
-        public GuiDrawListItem<T> BindIsEnabled<TProperty>(Expression<Func<T, TProperty>> expression)
+        public TDerived BindIsEnabled<TProperty>(Expression<Func<TDataModel, TProperty>> expression)
         {
-            IsEnabledBindName = GuiHelper<T>.GetPropertyName(expression);
-            return this;
+            IsEnabledBindName = GuiHelper<TDataModel>.GetPropertyName(expression);
+            return (TDerived)this;
         }
 
         protected GuiDrawListItem()

@@ -6,7 +6,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiSliderInt<T> : GuiWidget<T>
+    public class GuiSliderInt<T> : GuiWidget<T, GuiSliderInt<T>>
         where T: IGuiDataModel
     {
         private int Value { get; set; }

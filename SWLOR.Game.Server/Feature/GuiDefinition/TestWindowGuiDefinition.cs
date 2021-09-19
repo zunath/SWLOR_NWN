@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+﻿using System;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
@@ -17,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddButton()
+                            .SetId(Guid.NewGuid().ToString())
                             .BindText(model => model.ButtonText);
 
                         row.AddButtonImage()

@@ -7,7 +7,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiDrawListItemPolyLine<T>: GuiDrawListItem<T>
+    public class GuiDrawListItemPolyLine<T>: GuiDrawListItem<T, GuiDrawListItemPolyLine<T>>, IGuiDrawListItem
         where T: IGuiDataModel
     {
         private GuiColor Color { get; set; }

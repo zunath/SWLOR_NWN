@@ -6,7 +6,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiImage<T> : GuiWidget<T>
+    public class GuiImage<T> : GuiWidget<T, GuiImage<T>>
         where T: IGuiDataModel
     {
         private string Resref { get; set; }

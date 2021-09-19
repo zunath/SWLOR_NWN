@@ -8,8 +8,9 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public abstract class GuiWidget<T>
-        where T: IGuiDataModel
+    public abstract class GuiWidget<TDataModel, TDerived> : IGuiWidget
+        where TDataModel: IGuiDataModel
+        where TDerived: GuiWidget<TDataModel, TDerived>
     {
         private string Id { get; set; }
         private float Width { get; set; }
@@ -17,7 +18,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private float AspectRatio { get; set; }
         private float Margin { get; set; }
         private float Padding { get; set; }
-        private List<GuiDrawList<T>> DrawLists { get; set; }
+        private List<GuiDrawList<TDataModel>> DrawLists { get; set; }
 
         private bool IsEnabled { get; set; }
         private string IsEnabledBindName { get; set; }
@@ -37,110 +38,110 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
 
         public abstract Json BuildElement();
 
-        public GuiWidget<T> SetId(string id)
+        public TDerived SetId(string id)
         {
             Id = id;
-            return this;
+            return (TDerived)this;
         }
 
-        public GuiWidget<T> SetWidth(float width)
+        public TDerived SetWidth(float width)
         {
             Width = width;
-            return this;
+            return (TDerived)this;
         }
 
-        public GuiWidget<T> SetHeight(float height)
+        public TDerived SetHeight(float height)
         {
             Height = height;
-            return this;
+            return (TDerived)this;
         }
 
-        public GuiWidget<T> SetAspectRatio(float aspectRatio)
+        public TDerived SetAspectRatio(float aspectRatio)
         {
             AspectRatio = aspectRatio;
-            return this;
+            return (TDerived)this;
         }
 
-        public GuiWidget<T> SetMargin(float margin)
+        public TDerived SetMargin(float margin)
         {
             Margin = margin;
-            return this;
+            return (TDerived)this;
         }
 
-        public GuiWidget<T> SetPadding(float padding)
+        public TDerived SetPadding(float padding)
         {
             Padding = padding;
-            return this;
+            return (TDerived)this;
         }
 
-        public GuiWidget<T> SetIsEnabled(bool isEnabled)
+        public TDerived SetIsEnabled(bool isEnabled)
         {
             IsEnabled = isEnabled;
-            return this;
+            return (TDerived)this;
         }
 
-        public GuiWidget<T> BindIsEnabled<TProperty>(Expression<Func<T, TProperty>> expression)
+        public TDerived BindIsEnabled<TProperty>(Expression<Func<TDataModel, TProperty>> expression)
         {
-            IsEnabledBindName = GuiHelper<T>.GetPropertyName(expression);
-            return this;
+            IsEnabledBindName = GuiHelper<TDataModel>.GetPropertyName(expression);
+            return (TDerived)this;
         }
 
 
-        public GuiWidget<T> SetIsVisible(bool isVisible)
+        public TDerived SetIsVisible(bool isVisible)
         {
             IsVisible = isVisible;
-            return this;
+            return (TDerived)this;
         }
 
-        public GuiWidget<T> BindIsVisible<TProperty>(Expression<Func<T, TProperty>> expression)
+        public TDerived BindIsVisible<TProperty>(Expression<Func<TDataModel, TProperty>> expression)
         {
-            IsVisibleBindName = GuiHelper<T>.GetPropertyName(expression);
-            return this;
+            IsVisibleBindName = GuiHelper<TDataModel>.GetPropertyName(expression);
+            return (TDerived)this;
         }
 
-        public GuiWidget<T> SetTooltip(string tooltip)
+        public TDerived SetTooltip(string tooltip)
         {
             Tooltip = tooltip;
-            return this;
+            return (TDerived)this;
         }
 
-        public GuiWidget<T> BindTooltip<TProperty>(Expression<Func<T, TProperty>> expression)
+        public TDerived BindTooltip<TProperty>(Expression<Func<TDataModel, TProperty>> expression)
         {
-            TooltipBindName = GuiHelper<T>.GetPropertyName(expression);
-            return this;
+            TooltipBindName = GuiHelper<TDataModel>.GetPropertyName(expression);
+            return (TDerived)this;
         }
 
-        public GuiWidget<T> SetColor(GuiColor color)
+        public TDerived SetColor(GuiColor color)
         {
             Color = color;
-            return this;
+            return (TDerived)this;
         }
 
-        public GuiWidget<T> SetColor(int red, int green, int blue, int alpha = 255)
+        public TDerived SetColor(int red, int green, int blue, int alpha = 255)
         {
             Color = new GuiColor(red, green, blue, alpha);
-            return this;
+            return (TDerived)this;
         }
 
-        public GuiWidget<T> BindColor<TProperty>(Expression<Func<T, TProperty>> expression)
+        public TDerived BindColor<TProperty>(Expression<Func<TDataModel, TProperty>> expression)
         {
-            ColorBindName = GuiHelper<T>.GetPropertyName(expression);
-            return this;
+            ColorBindName = GuiHelper<TDataModel>.GetPropertyName(expression);
+            return (TDerived)this;
         }
 
-        public GuiWidget<T> AddDrawList(Action<GuiDrawList<T>> drawList)
+        public TDerived AddDrawList(Action<GuiDrawList<TDataModel>> drawList)
         {
-            var newDrawList = new GuiDrawList<T>();
+            var newDrawList = new GuiDrawList<TDataModel>();
             DrawLists.Add(newDrawList);
             drawList(newDrawList);
-            return this;
+            return (TDerived)this;
         }
 
         protected GuiWidget()
         {
             IsEnabled = true;
             IsVisible = true;
-            DrawLists = new List<GuiDrawList<T>>();
+            DrawLists = new List<GuiDrawList<TDataModel>>();
         }
 
         public virtual Json ToJson()

@@ -7,7 +7,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiComboBox<T> : GuiWidget<T>
+    public class GuiComboBox<T> : GuiWidget<T, GuiComboBox<T>>
         where T: IGuiDataModel
     {
         private List<GuiComboEntry> Options { get; set; }

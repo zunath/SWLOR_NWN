@@ -146,6 +146,14 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return newList;
         }
 
+        public GuiColumn<T> AddColumn()
+        {
+            var newColumn = new GuiColumn<T>();
+            Elements.Add(newColumn);
+
+            return newColumn;
+        }
+
         protected GuiExpandableComponent()
         {
             Elements = new List<IGuiWidget>();

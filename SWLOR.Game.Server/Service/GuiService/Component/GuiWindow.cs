@@ -180,7 +180,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
                 root = JsonArrayInsert(root, column.ToJson());
             }
 
-            root = Nui.Column(root);
+            root = Nui.Row(root);
 
             var title = IsTitleBound ? Nui.Bind(TitleBindName) : JsonString(Title);
             var geometry = IsGeometryBound ? Nui.Bind(GeometryBindName) : Geometry.ToJson();

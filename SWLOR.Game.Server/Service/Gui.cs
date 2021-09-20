@@ -184,6 +184,8 @@ namespace SWLOR.Game.Server.Service
             var playerWindow = _playerWindows[playerId][type];
             playerWindow.WindowToken = NuiCreate(player, template.Window, template.WindowId);
             playerWindow.ViewModel.Bind(player, playerWindow.WindowToken);
+
+            Console.WriteLine(JsonDump(template.Window));
         }
 
         public class IdReservation
@@ -349,8 +351,6 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("mod_gui_event")]
         public static void CharacterSheetGui()
         {
-            // todo: When NUI is released, this should build and draw the new UI for character sheets.
-            // todo: Until that happens, this will simply open the character rest menu.
             var player = GetLastGuiEventPlayer();
             var type = GetLastGuiEventType();
             if (type != GuiEventType.DisabledPanelAttemptOpen) return;
@@ -359,9 +359,7 @@ namespace SWLOR.Game.Server.Service
             if (panelType != GuiPanel.CharacterSheet)
                 return;
 
-            AssignCommand(player, () => ClearAllActions());
-
-            Dialog.StartConversation(player, player, nameof(RestMenuDialog));
+            ShowPlayerWindow(player, GuiWindowType.CharacterSheet);
         }
 
     }

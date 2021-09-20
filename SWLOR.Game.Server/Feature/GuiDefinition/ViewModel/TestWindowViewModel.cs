@@ -1,5 +1,4 @@
 ﻿using System;
-using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;

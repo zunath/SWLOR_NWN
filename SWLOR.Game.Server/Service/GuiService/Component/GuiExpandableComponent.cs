@@ -146,10 +146,11 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return newList;
         }
 
-        public GuiColumn<T> AddColumn()
+        public GuiColumn<T> AddColumn(Action<GuiColumn<T>> col)
         {
             var newColumn = new GuiColumn<T>();
             Elements.Add(newColumn);
+            col(newColumn);
 
             return newColumn;
         }

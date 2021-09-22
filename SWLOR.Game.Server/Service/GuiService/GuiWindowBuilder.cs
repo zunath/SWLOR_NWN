@@ -18,6 +18,25 @@ namespace SWLOR.Game.Server.Service.GuiService
             return _activeWindow;
         }
 
+        private void RegisterElementEvents(List<IGuiWidget> elements, string windowId)
+        {
+            foreach (var element in elements)
+            {
+                foreach (var (eventName, eventAction) in element.Events)
+                {
+                    // NWN only fires events for elements with Ids.
+                    // Skip any that don't have an Id
+                    if (!string.IsNullOrWhiteSpace(element.Id))
+                    {
+                        var eventKey = Gui.BuildEventKey(windowId, element.Id);
+                        Gui.RegisterElementEvent(eventKey, eventName, eventAction);
+                    }
+                }
+
+                RegisterElementEvents(element.Elements, windowId);
+            }
+        }
+
         public void RegisterAllElementEvents()
         {
             var windowId = Gui.BuildWindowId(_type);
@@ -30,28 +49,8 @@ namespace SWLOR.Game.Server.Service.GuiService
             if(_activeWindow.ClosedEventMethodInfo != null)
                 Gui.RegisterElementEvent(windowEventKey, "close", _activeWindow.ClosedEventMethodInfo);
             
-            // Iterate over every column, every row, and every element to retrieve
-            // registered events.
-            foreach (var column in _activeWindow.Elements)
-            {
-                foreach (var row in column.Elements)
-                {
-                    foreach (var element in row.Elements)
-                    {
-                        // NWN only fires events for elements with Ids.
-                        // Skip any that don't have an Id
-                        if (string.IsNullOrWhiteSpace(element.Id))
-                            continue;
-
-                        var eventKey = Gui.BuildEventKey(windowId, element.Id);
-
-                        foreach (var (eventName, eventAction) in element.Events)
-                        {
-                            Gui.RegisterElementEvent(eventKey, eventName, eventAction);
-                        }
-                    }
-                }
-            }
+            // Recurse over all elements in the window, looking for and registering any events
+            RegisterElementEvents(_activeWindow.Elements, windowId);
         }
 
         public GuiConstructedWindow Build()

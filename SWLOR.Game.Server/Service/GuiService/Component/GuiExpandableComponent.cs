@@ -6,8 +6,6 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
     public abstract class GuiExpandableComponent<T>: GuiWidget<T, GuiExpandableComponent<T>>
         where T: IGuiViewModel
     {
-        public List<IGuiWidget> Elements { get; protected set; }
-        
         public GuiButton<T> AddButton()
         {
             var newButton = new GuiButton<T>();
@@ -154,11 +152,5 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
 
             return newColumn;
         }
-
-        protected GuiExpandableComponent()
-        {
-            Elements = new List<IGuiWidget>();
-        }
-
     }
 }

@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
                 Id = Guid.NewGuid().ToString();
             
             Events["click"] = GuiHelper<T>.GetMethodInfo(expression);
-
+            
             return this;
         }
 

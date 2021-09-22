@@ -4,7 +4,6 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
@@ -109,37 +108,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickSkills() => () =>
         {
-
+            Gui.ShowPlayerWindow(Player, GuiWindowType.Skills);
         };
 
         public Action OnClickPerks() => () =>
         {
-
+            Gui.ShowPlayerWindow(Player, GuiWindowType.Perks);
         };
 
         public Action OnClickChangePortrait() => () =>
         {
-
+            Gui.ShowPlayerWindow(Player, GuiWindowType.ChangePortrait);
         };
 
         public Action OnClickQuests() => () =>
         {
-
+            Gui.ShowPlayerWindow(Player, GuiWindowType.Quests);
         };
 
         public Action OnClickRecipes() => () =>
         {
-
+            Gui.ShowPlayerWindow(Player, GuiWindowType.Recipes);
         };
 
         public Action OnClickKeyItems() => () =>
         {
-
+            Gui.ShowPlayerWindow(Player, GuiWindowType.KeyItems);
         };
 
         public Action OnClickAchievements() => () =>
         {
-
+            Gui.ShowPlayerWindow(Player, GuiWindowType.Achievements);
         };
 
         public Action OnLoadWindow() => () =>
@@ -163,11 +162,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(Player))), GetGender(Player));
             SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
             AP = $"{dbPlayer.TotalAPAcquired} / 30 ({dbPlayer.UnallocatedAP})";
-            
-
         };
-
-        
-
     }
 }

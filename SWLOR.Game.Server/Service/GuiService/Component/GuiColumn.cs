@@ -9,27 +9,20 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
     public class GuiColumn<T> : GuiWidget<T, GuiColumn<T>>
         where T: IGuiViewModel
     {
-        public List<GuiRow<T>> Rows { get; }
-
         public GuiColumn<T> AddRow(Action<GuiRow<T>> row)
         {
             var newRow = new GuiRow<T>();
-            Rows.Add(newRow);
+            Elements.Add(newRow);
             row(newRow);
 
             return this;
-        }
-
-        public GuiColumn()
-        {
-            Rows = new List<GuiRow<T>>();
         }
 
         public override Json BuildElement()
         {
             var column = JsonArray();
 
-            foreach (var row in Rows)
+            foreach (var row in Elements)
             {
                 column = JsonArrayInsert(column, row.ToJson());
             }

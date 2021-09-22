@@ -9,6 +9,8 @@
         Recipes = 4,
         KeyItems = 5,
         Achievements = 6,
+        Skills = 7,
+        Perks = 8,
 
         TestWindow = 99
     }

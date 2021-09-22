@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickSkills() => () =>
         {
-            Console.WriteLine(this.Geometry.ToJson());
+
         };
 
         public Action OnClickPerks() => () =>

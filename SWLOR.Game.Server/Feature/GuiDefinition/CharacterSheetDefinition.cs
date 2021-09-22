@@ -14,7 +14,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.CharacterSheet)
                 .BindGeometry(model => model.Geometry)
                 .BindOnOpened(model => model.OnLoadWindow())
-                .SetIsResizable(false)
                 .SetGeometry(0, 0, 545f, 295.5f)
                 .SetTitle("Character Sheet")
                 .AddColumn(col =>
@@ -34,20 +33,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Center)
                             .SetAspectRatio(0.8f)
-                            .SetHeight(200f)
-                            .AddDrawList(list =>
-                            {
-                                // Hide the bottom bar on portraits with a black box.
-                                // This leaves a gap but it looks better than the random colors found
-                                // on the portraits.
-                                list.AddImage(image =>
-                                {
-                                    image.SetResref("blackbox")
-                                        .SetPosition(0, 312, 256, 112)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                        .SetVerticalAlign(NuiVerticalAlign.Bottom);
-                                });
-                            });
+                            .SetHeight(200f);
                         row.AddSpacer();
                     });
 

@@ -10,7 +10,7 @@ using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class CharacterSheetViewModel: GuiViewModelBase
+    public class CharacterSheetViewModel: GuiViewModelBase<CharacterSheetViewModel>
     {
         public string PortraitResref
         {
@@ -163,8 +163,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(Player))), GetGender(Player));
             SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
             AP = $"{dbPlayer.TotalAPAcquired} / 30 ({dbPlayer.UnallocatedAP})";
-
-
+            
 
         };
 

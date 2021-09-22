@@ -34,7 +34,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Center)
                             .SetAspectRatio(0.8f)
-                            .SetHeight(200f);
+                            .SetHeight(200f)
+                            .AddDrawList(list =>
+                            {
+                                // Hide the bottom bar on portraits with a black box.
+                                // This leaves a gap but it looks better than the random colors found
+                                // on the portraits.
+                                list.AddImage(image =>
+                                {
+                                    image.SetResref("blackbox")
+                                        .SetPosition(0, 312, 256, 112)
+                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlign.Bottom);
+                                });
+                            });
                         row.AddSpacer();
                     });
 

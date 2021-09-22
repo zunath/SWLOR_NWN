@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Annotations;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -8,7 +9,8 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {
-    public abstract class GuiViewModelBase: IGuiViewModel, INotifyPropertyChanged
+    public abstract class GuiViewModelBase<TDerived>: IGuiViewModel, INotifyPropertyChanged
+        where TDerived: GuiViewModelBase<TDerived>
     {
         private class PropertyDetail
         {
@@ -88,8 +90,7 @@ namespace SWLOR.Game.Server.Service.GuiService
                 NuiSetBind(Player, WindowToken, name, json);
             }
 
-            NuiSetBindWatch(Player, WindowToken, nameof(Geometry), true);
-            NuiSetBind(Player, WindowToken, nameof(Geometry), Geometry.ToJson());
+            WatchOnClient(model => model.Geometry);
         }
 
         public void UpdatePropertyFromClient(string propertyName)
@@ -99,6 +100,16 @@ namespace SWLOR.Game.Server.Service.GuiService
             var value = _converter.ToObject(json, property.Type);
 
             _propertyValues[propertyName].Value = value;
+        }
+
+        protected void WatchOnClient<TProperty>(Expression<Func<TDerived, TProperty>> expression)
+        {
+            var propertyName = GuiHelper<TDerived>.GetPropertyName(expression);
+            var value = _propertyValues[propertyName].Value;
+            var json = _converter.ToJson(value);
+
+            NuiSetBindWatch(Player, WindowToken, propertyName, true);
+            NuiSetBind(Player, WindowToken, propertyName, json);
         }
     }
 }

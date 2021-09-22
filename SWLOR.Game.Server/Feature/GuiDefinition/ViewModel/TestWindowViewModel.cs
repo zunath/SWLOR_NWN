@@ -5,7 +5,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class TestWindowViewModel: GuiViewModelBase
+    public class TestWindowViewModel: GuiViewModelBase<TestWindowViewModel>
     {
         public GuiRectangle Geometry
         {

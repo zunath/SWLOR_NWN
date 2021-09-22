@@ -89,7 +89,13 @@ namespace SWLOR.Game.Server.Service.PerkService
         Gathering = 27,
 
         [PerkCategory("Diplomacy", true)]
-        Diplomacy = 28
+        Diplomacy = 28,
+
+        [PerkCategory("Force - Light", true)]
+        ForceLight = 29,
+
+        [PerkCategory("Force - Dark", true)]
+        ForceDark = 30
     }
 
     public class PerkCategoryAttribute : Attribute

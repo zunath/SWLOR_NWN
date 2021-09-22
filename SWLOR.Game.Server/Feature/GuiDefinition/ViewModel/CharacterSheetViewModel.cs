@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
-            PortraitResref = GetPortraitResRef(Player) + "h";
+            PortraitResref = GetPortraitResRef(Player) + "l";
 
             HP = GetCurrentHitPoints(Player) + " / " + GetMaxHitPoints(Player);
             FP = Stat.GetCurrentFP(Player, dbPlayer) + " / " + Stat.GetMaxFP(Player, dbPlayer);

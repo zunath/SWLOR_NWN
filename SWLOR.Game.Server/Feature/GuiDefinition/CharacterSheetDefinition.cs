@@ -1,7 +1,6 @@
 ﻿using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -32,7 +31,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindResref(model => model.PortraitResref)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetAspectRatio(0.8f)
+                            .SetAspect(NuiAspect.ExactScaled)
+                            .SetWidth(128f)
                             .SetHeight(200f);
                         row.AddSpacer();
                     });

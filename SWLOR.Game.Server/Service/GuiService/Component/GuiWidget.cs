@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         where TDerived: GuiWidget<TDataModel, TDerived>
     {
         public string Id { get; protected set; }
+        public List<IGuiWidget> Elements { get; }
         private float Width { get; set; }
         private float Height { get; set; }
         private float AspectRatio { get; set; }
@@ -165,6 +166,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             IsVisible = true;
             DrawLists = new List<GuiDrawList<TDataModel>>();
             Events = new Dictionary<string, MethodInfo>();
+            Elements = new List<IGuiWidget>();
         }
 
         public virtual Json ToJson()

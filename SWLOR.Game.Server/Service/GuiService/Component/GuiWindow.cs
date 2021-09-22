@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string TitleBindName { get; set; }
         private bool IsTitleBound => !string.IsNullOrWhiteSpace(TitleBindName);
         
-        private GuiRectangle Geometry { get; set; }
+        public GuiRectangle Geometry { get; private set; }
         private string GeometryBindName { get; set; }
         private bool IsGeometryBound => !string.IsNullOrWhiteSpace(GeometryBindName);
         
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string ShowBorderBindName { get; set; }
         private bool IsShowBorderBound => !string.IsNullOrWhiteSpace(ShowBorderBindName);
 
-        public List<GuiColumn<T>> Columns { get; }
+        public List<IGuiWidget> Elements { get; }
 
 
         public GuiWindow<T> SetTitle(string title)
@@ -137,11 +137,21 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         public GuiWindow<T> AddColumn(Action<GuiColumn<T>> col)
         {
             var column = new GuiColumn<T>();
-            Columns.Add(column);
+            Elements.Add(column);
             col(column);
 
             return this;
         }
+
+        public GuiWindow<T> AddRow(Action<GuiRow<T>> row)
+        {
+            var newRow = new GuiRow<T>();
+            Elements.Add(newRow);
+            row(newRow);
+
+            return this;
+        }
+
 
         public MethodInfo OpenedEventMethodInfo { get; private set; }
         public MethodInfo ClosedEventMethodInfo { get; private set; }
@@ -168,14 +178,14 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             IsTransparent = false;
             ShowBorder = true;
 
-            Columns = new List<GuiColumn<T>>();
+            Elements = new List<IGuiWidget>();
         }
 
         public Json Build()
         {
             var root = JsonArray();
 
-            foreach (var column in Columns)
+            foreach (var column in Elements)
             {
                 root = JsonArrayInsert(root, column.ToJson());
             }

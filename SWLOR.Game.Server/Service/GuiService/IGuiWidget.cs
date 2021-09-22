@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Service.GuiService
     public interface IGuiWidget
     {
         string Id { get; }
+        public List<IGuiWidget> Elements { get; }
         public Dictionary<string, MethodInfo> Events { get; }
         Json ToJson();
     }

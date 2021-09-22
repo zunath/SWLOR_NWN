@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Annotations;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService
@@ -21,6 +22,12 @@ namespace SWLOR.Game.Server.Service.GuiService
         protected int WindowToken { get; private set; }
 
         private readonly Dictionary<string, PropertyDetail> _propertyValues = new Dictionary<string, PropertyDetail>();
+
+        public GuiRectangle Geometry
+        {
+            get => Get<GuiRectangle>();
+            set => Set(value);
+        }
 
         protected T Get<T>([CallerMemberName]string propertyName = null)
         {
@@ -80,6 +87,9 @@ namespace SWLOR.Game.Server.Service.GuiService
                 var json = _converter.ToJson(propertyDetail.Value);
                 NuiSetBind(Player, WindowToken, name, json);
             }
+
+            NuiSetBindWatch(Player, WindowToken, nameof(Geometry), true);
+            NuiSetBind(Player, WindowToken, nameof(Geometry), Geometry.ToJson());
         }
 
         public void UpdatePropertyFromClient(string propertyName)

@@ -4,6 +4,11 @@
     {
         Invalid = 0,
         CharacterSheet = 1,
+        ChangePortrait = 2,
+        Quests = 3,
+        Recipes = 4,
+        KeyItems = 5,
+        Achievements = 6,
 
         TestWindow = 99
     }

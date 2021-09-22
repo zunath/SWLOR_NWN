@@ -12,30 +12,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class CharacterSheetViewModel: GuiViewModelBase
     {
-        public GuiRectangle Geometry
-        {
-            get => Get<GuiRectangle>();
-            set => Set(value);
-        }
-
-        public bool IsStatsSelected
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
-        public bool IsSkillsSelected
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
-        public bool IsPerksSelected
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
         public string PortraitResref
         {
             get => Get<string>();
@@ -131,32 +107,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public Action OnClickStats() => () =>
-        {
-            IsSkillsSelected = false;
-            IsPerksSelected = false;
-        };
-
         public Action OnClickSkills() => () =>
         {
-            IsStatsSelected = false;
-            IsPerksSelected = false;
+            Console.WriteLine(this.Geometry.ToJson());
         };
 
         public Action OnClickPerks() => () =>
         {
-            IsStatsSelected = false;
-            IsSkillsSelected = false;
+
+        };
+
+        public Action OnClickChangePortrait() => () =>
+        {
+
+        };
+
+        public Action OnClickQuests() => () =>
+        {
+
+        };
+
+        public Action OnClickRecipes() => () =>
+        {
+
+        };
+
+        public Action OnClickKeyItems() => () =>
+        {
+
+        };
+
+        public Action OnClickAchievements() => () =>
+        {
+
         };
 
         public Action OnLoadWindow() => () =>
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
-
-            Geometry = new GuiRectangle(0, 0, 300, 400);
-            PortraitResref = GetPortraitResRef(Player) + "l";
-            IsStatsSelected = true;
+            PortraitResref = GetPortraitResRef(Player) + "h";
 
             HP = GetCurrentHitPoints(Player) + " / " + GetMaxHitPoints(Player);
             FP = Stat.GetCurrentFP(Player, dbPlayer) + " / " + Stat.GetMaxFP(Player, dbPlayer);
@@ -171,9 +161,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Evasion = GetAC(Player);
             CharacterType = GetClassByPosition(1, Player) == ClassType.Standard ? "Standard" : "Force Sensitive";
             Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(Player))), GetGender(Player));
-            SP = $"SP {dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
-            AP = $"AP {dbPlayer.TotalAPAcquired} / 30 ({dbPlayer.UnallocatedAP})";
+            SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
+            AP = $"{dbPlayer.TotalAPAcquired} / 30 ({dbPlayer.UnallocatedAP})";
+
+
+
         };
+
+        
 
     }
 }

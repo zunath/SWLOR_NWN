@@ -32,9 +32,9 @@ namespace SWLOR.Game.Server.Service.GuiService
             
             // Iterate over every column, every row, and every element to retrieve
             // registered events.
-            foreach (var column in _activeWindow.Columns)
+            foreach (var column in _activeWindow.Elements)
             {
-                foreach (var row in column.Rows)
+                foreach (var row in column.Elements)
                 {
                     foreach (var element in row.Elements)
                     {
@@ -64,6 +64,7 @@ namespace SWLOR.Game.Server.Service.GuiService
                 _type,
                 windowId,
                 json,
+                _activeWindow.Geometry,
                 () =>
             {
                 var dataModelInstance = Activator.CreateInstance<T>();

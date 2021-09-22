@@ -70,6 +70,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var (type, window) in _windowTemplates)
             {
                 var playerWindow = window.CreatePlayerWindowAction();
+                playerWindow.ViewModel.Geometry = window.Geometry;
                 _playerWindows[playerId][type] = playerWindow;
             }
         }

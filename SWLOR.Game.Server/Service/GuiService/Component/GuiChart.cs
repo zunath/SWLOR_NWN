@@ -11,6 +11,10 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
     {
         private List<GuiChartSlot<T>> Slots { get; set; }
 
+        /// <summary>
+        /// Adds a slot to the chart.
+        /// </summary>
+        /// <param name="slot">The new slot</param>
         public GuiChart<T> AddSlot(Action<GuiChartSlot<T>> slot)
         {
             var newSlot = new GuiChartSlot<T>();
@@ -25,6 +29,10 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             Slots = new List<GuiChartSlot<T>>();
         }
         
+        /// <summary>
+        /// Builds the GuiChart element.
+        /// </summary>
+        /// <returns>Json representing the chart element.</returns>
         public override Json BuildElement()
         {
             var slots = JsonArray();

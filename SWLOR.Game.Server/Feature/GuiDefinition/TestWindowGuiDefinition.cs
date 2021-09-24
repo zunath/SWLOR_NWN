@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindOnClicked(model => model.OnClickedFirstButton());
 
                         row.AddButtonImage()
-                            .SetResref("ife_animal");
+                            .SetImageResref("ife_animal");
 
                         row.AddToggleButton()
                             .SetText("toggle button")

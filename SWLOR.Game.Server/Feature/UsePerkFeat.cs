@@ -241,7 +241,7 @@ namespace SWLOR.Game.Server.Feature
             // Begin the main process
             var activationId = Guid.NewGuid().ToString();
             var activationDelay = CalculateActivationDelay();
-            var recastDelay = ability.RecastDelay(activator);
+            var recastDelay = ability.RecastDelay?.Invoke(activator) ?? 0f;
             var position = GetPosition(activator);
             ProcessAnimationAndVisualEffects(activationDelay);
             CheckForActivationInterruption(activationId, position);

@@ -116,6 +116,10 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             Color = new GuiColor(0, 0, 0);
         }
 
+        /// <summary>
+        /// Builds a GuiChartSlot element.
+        /// </summary>
+        /// <returns>Json representing the chart slot.</returns>
         public Json ToJson()
         {
             var legend = IsLegendBound ? Nui.Bind(LegendBindName) : JsonString(Legend);

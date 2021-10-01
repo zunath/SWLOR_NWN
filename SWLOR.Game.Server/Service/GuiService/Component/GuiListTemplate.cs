@@ -13,6 +13,9 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        /// Serializes the list template into Json.
+        /// </summary>
         public override Json ToJson()
         {
             var template = JsonArray();

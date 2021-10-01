@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -9,6 +8,10 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
     public class GuiColumn<T> : GuiWidget<T, GuiColumn<T>>
         where T: IGuiViewModel
     {
+        /// <summary>
+        /// Adds a row to this column.
+        /// </summary>
+        /// <param name="row">An action which is used to construct the new row.</param>
         public GuiColumn<T> AddRow(Action<GuiRow<T>> row)
         {
             var newRow = new GuiRow<T>();
@@ -18,6 +21,10 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
 
+        /// <summary>
+        /// Builds the GuiColumn element.
+        /// </summary>
+        /// <returns>Json representing the column element.</returns>
         public override Json BuildElement()
         {
             var column = JsonArray();

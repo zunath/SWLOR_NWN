@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -15,18 +16,31 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         
         private List<IGuiDrawListItem> DrawItems { get; set; }
 
+        /// <summary>
+        /// Determines whether the draw list can be drawn outside the bounds of the targeted control.
+        /// </summary>
+        /// <param name="isConstrained">true if drawing should only be within the bounds of the targeted control.</param>
         public GuiDrawList<T> SetIsConstrainedToTargetBounds(bool isConstrained)
         {
             IsConstrainedToTargetBounds = isConstrained;
             return this;
         }
 
-        public GuiDrawList<T> BindIsConstrainedToTargetBounds(string bindName)
+        /// <summary>
+        /// Binds a dynamic value indicating whether the draw list can be drawn outside the bounds of the targeted control.
+        /// </summary>
+        /// <typeparam name="TProperty">The property of the view model.</typeparam>
+        /// <param name="expression">Expression to target the property.</param>
+        public GuiDrawList<T> BindIsConstrainedToTargetBounds<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            IsConstrainedBindName = bindName;
+            IsConstrainedBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
+        /// <summary>
+        /// Adds an arc to the draw list.
+        /// </summary>
+        /// <param name="arc">The arc to draw.</param>
         public GuiDrawList<T> AddArc(Action<GuiDrawListItemArc<T>> arc)
         {
             var newArc = new GuiDrawListItemArc<T>();
@@ -36,6 +50,10 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
 
+        /// <summary>
+        /// Adds a circle to the draw list.
+        /// </summary>
+        /// <param name="circle">The circle to draw.</param>
         public GuiDrawList<T> AddCircle(Action<GuiDrawListItemCircle<T>> circle)
         {
             var newCircle = new GuiDrawListItemCircle<T>();
@@ -45,6 +63,10 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
 
+        /// <summary>
+        /// Adds a curve to the draw list.
+        /// </summary>
+        /// <param name="curve">The curve to draw.</param>
         public GuiDrawList<T> AddCurve(Action<GuiDrawListItemCurve<T>> curve)
         {
             var newCurve = new GuiDrawListItemCurve<T>();
@@ -54,6 +76,10 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
 
+        /// <summary>
+        /// Adds an image to the draw list.
+        /// </summary>
+        /// <param name="image">The image to draw.</param>
         public GuiDrawList<T> AddImage(Action<GuiDrawListItemImage<T>> image)
         {
             var newImage = new GuiDrawListItemImage<T>();
@@ -63,6 +89,10 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
 
+        /// <summary>
+        /// Adds a poly line to the draw list.
+        /// </summary>
+        /// <param name="polyLine">The poly line to draw.</param>
         public GuiDrawList<T> AddPolyLine(Action<GuiDrawListItemPolyLine<T>> polyLine)
         {
             var newPolyLine = new GuiDrawListItemPolyLine<T>();
@@ -72,7 +102,11 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
 
-        public GuiDrawList<T> AddArc(Action<GuiDrawListItemText<T>> text)
+        /// <summary>
+        /// Adds text to the draw list.
+        /// </summary>
+        /// <param name="text">The text to draw.</param>
+        public GuiDrawList<T> AddText(Action<GuiDrawListItemText<T>> text)
         {
             var newText = new GuiDrawListItemText<T>();
             DrawItems.Add(newText);
@@ -87,6 +121,11 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             DrawItems = new List<IGuiDrawListItem>();
         }
 
+        /// <summary>
+        /// Builds the GuiDrawList element.
+        /// </summary>
+        /// <param name="targetElement">The element which will be drawn upon.</param>
+        /// <returns>Json representing the draw list element.</returns>
         public Json ToJson(Json targetElement)
         {
             var isConstrained = IsConstrainedBound ? Nui.Bind(IsConstrainedBindName) : JsonBool(IsConstrainedToTargetBounds);

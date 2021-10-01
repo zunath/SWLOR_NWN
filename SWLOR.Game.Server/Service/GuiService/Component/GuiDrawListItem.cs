@@ -12,12 +12,21 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         protected string IsEnabledBindName { get; set; }
         protected bool IsEnabledBound => !string.IsNullOrWhiteSpace(IsEnabledBindName);
 
+        /// <summary>
+        /// Sets a static value to determine whether the item is enabled.
+        /// </summary>
+        /// <param name="isEnabled">true if enabled, false otherwise</param>
         public TDerived SetIsEnabled(bool isEnabled)
         {
-            IsEnabled = true;
+            IsEnabled = isEnabled;
             return (TDerived)this;
         }
 
+        /// <summary>
+        /// Binds a dynamic value which determines whether the item is enabled.
+        /// </summary>
+        /// <typeparam name="TProperty">The property of the view model.</typeparam>
+        /// <param name="expression">Expression to target the property.</param>
         public TDerived BindIsEnabled<TProperty>(Expression<Func<TDataModel, TProperty>> expression)
         {
             IsEnabledBindName = GuiHelper<TDataModel>.GetPropertyName(expression);

@@ -18,9 +18,8 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private bool IsTitleBound => !string.IsNullOrWhiteSpace(TitleBindName);
         
         public GuiRectangle Geometry { get; private set; }
-        private string GeometryBindName { get; set; }
-        private bool IsGeometryBound => !string.IsNullOrWhiteSpace(GeometryBindName);
-        
+        private string GeometryBindName { get; set; } = "Geometry";
+
         private bool IsResizable { get; set; }
         private string IsResizableBindName { get; set; }
         private bool IsResizableBound => !string.IsNullOrWhiteSpace(IsResizableBindName);
@@ -56,24 +55,18 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
 
-        public GuiWindow<T> SetGeometry(float x, float y, float width, float height)
+        public GuiWindow<T> SetInitialGeometry(float x, float y, float width, float height)
         {
             Geometry = new GuiRectangle(x, y, width, height);
             return this;
         }
 
-        public GuiWindow<T> SetGeometry(GuiRectangle bounds)
+        public GuiWindow<T> SetInitialGeometry(GuiRectangle bounds)
         {
             Geometry = bounds;
             return this;
         }
-
-        public GuiWindow<T> BindGeometry<TProperty>(Expression<Func<T, TProperty>> expression)
-        {
-            GeometryBindName = GuiHelper<T>.GetPropertyName(expression);
-            return this;
-        }
-
+        
         public GuiWindow<T> SetIsResizable(bool isResizable)
         {
             IsResizable = isResizable;
@@ -151,8 +144,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
 
             return this;
         }
-
-
+        
         public MethodInfo OpenedEventMethodInfo { get; private set; }
         public MethodInfo ClosedEventMethodInfo { get; private set; }
 
@@ -193,7 +185,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             root = Nui.Row(root);
 
             var title = IsTitleBound ? Nui.Bind(TitleBindName) : JsonString(Title);
-            var geometry = IsGeometryBound ? Nui.Bind(GeometryBindName) : Geometry.ToJson();
+            var geometry = Nui.Bind(GeometryBindName);
             var isResizable = IsResizableBound ? Nui.Bind(IsResizableBindName) : JsonBool(IsResizable);
             var isCollapsed = IsCollapsedBound ? Nui.Bind(IsCollapsedBindName) : JsonBool(IsCollapsed);
             var isClosable = IsClosableBound ? Nui.Bind(IsClosableBindName) : JsonBool(IsClosable);

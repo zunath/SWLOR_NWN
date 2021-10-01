@@ -10,7 +10,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.TestWindow)
-                .BindGeometry(model => model.Geometry)
                 .BindOnOpened(model => model.OnWindowOpen())
 
                 .AddColumn(col =>

@@ -1,47 +1,40 @@
 ﻿using System;
 using System.ComponentModel;
+using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Service.GuiService.Converter;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {
     public class GuiPropertyConverter
     {
-        private readonly GuiStringConverter _stringConverter = new();
-        private readonly GuiIntConverter _intConverter = new();
-        private readonly GuiFloatConverter _floatConverter = new();
-        private readonly GuiBoolConverter _boolConverter = new();
-        private readonly GuiRectangleConverter _rectangleConverter = new();
-        private readonly GuiColorConverter _colorConverter = new();
-
         public Json ToJson(object value)
         {
             if (value is string s)
             {
-                return _stringConverter.ToJson(s);
+                return JsonString(s);
             }
             else if (value is int i)
             {
-                return _intConverter.ToJson(i);
+                return JsonInt(i);
             }
             else if (value is float f)
             {
-                return _floatConverter.ToJson(f);
+                return JsonFloat(f);
             }
             else if (value is bool b)
             {
-                return _boolConverter.ToJson(b);
+                return JsonBool(b);
             }
             else if (value is GuiRectangle rect)
             {
-                return _rectangleConverter.ToJson(rect);
+                return RectangleToJson(rect);
             }
             else if (value is GuiColor color)
             {
-                return _colorConverter.ToJson(color);
+                return ColorToJson(color);
             }
             else if (value is BindingList<string> bs)
             {
@@ -103,6 +96,16 @@ namespace SWLOR.Game.Server.Service.GuiService
 
                 return jsonArray;
             }
+            else if (value is BindingList<GuiComboEntry> ce)
+            {
+                var jsonArray = JsonArray();
+                foreach (var val in ce)
+                {
+                    jsonArray = JsonArrayInsert(jsonArray, val.ToJson());
+                }
+
+                return jsonArray;
+            }
             else
             {
                 throw new Exception($"Converter is not defined for type {value.GetType()}");
@@ -113,27 +116,27 @@ namespace SWLOR.Game.Server.Service.GuiService
         {
             if (type == typeof(string))
             {
-                return _stringConverter.ToObject(json);
+                return JsonGetString(json);
             }
             else if (type == typeof(int))
             {
-                return _intConverter.ToObject(json);
+                return JsonGetInt(json);
             }
             else if (type == typeof(float))
             {
-                return _floatConverter.ToObject(json);
+                return JsonGetFloat(json);
             }
             else if (type == typeof(bool))
             {
-                return _boolConverter.ToObject(json);
+                return JsonGetInt(json) == 1;
             }
             else if (type == typeof(GuiRectangle))
             {
-                return _rectangleConverter.ToObject(json);
+                return JsonToRectangle(json);
             }
             else if (type == typeof(GuiColor))
             {
-                return _colorConverter.ToObject(json);
+                return JsonToColor(json);
             }
             else if (type == typeof(BindingList<string>))
             {
@@ -141,7 +144,7 @@ namespace SWLOR.Game.Server.Service.GuiService
                 for (var index = 0; index <= JsonGetLength(json) - 1; index++)
                 {
                     var record = JsonArrayGet(json, index);
-                    list.Add(_stringConverter.ToObject(record));
+                    list.Add(JsonGetString(record));
                 }
 
                 return list;
@@ -152,7 +155,7 @@ namespace SWLOR.Game.Server.Service.GuiService
                 for (var index = 0; index <= JsonGetLength(json) - 1; index++)
                 {
                     var record = JsonArrayGet(json, index);
-                    list.Add(_intConverter.ToObject(record));
+                    list.Add( JsonGetInt(record));
                 }
 
                 return list;
@@ -163,7 +166,7 @@ namespace SWLOR.Game.Server.Service.GuiService
                 for (var index = 0; index <= JsonGetLength(json) - 1; index++)
                 {
                     var record = JsonArrayGet(json, index);
-                    list.Add(_floatConverter.ToObject(record));
+                    list.Add(JsonGetFloat(record));
                 }
 
                 return list;
@@ -174,7 +177,7 @@ namespace SWLOR.Game.Server.Service.GuiService
                 for (var index = 0; index <= JsonGetLength(json) - 1; index++)
                 {
                     var record = JsonArrayGet(json, index);
-                    list.Add(_boolConverter.ToObject(record));
+                    list.Add(JsonGetInt(record) == 1);
                 }
 
                 return list;
@@ -185,7 +188,7 @@ namespace SWLOR.Game.Server.Service.GuiService
                 for (var index = 0; index <= JsonGetLength(json) - 1; index++)
                 {
                     var record = JsonArrayGet(json, index);
-                    list.Add(_rectangleConverter.ToObject(record));
+                    list.Add(JsonToRectangle(record));
                 }
 
                 return list;
@@ -196,7 +199,18 @@ namespace SWLOR.Game.Server.Service.GuiService
                 for (var index = 0; index <= JsonGetLength(json) - 1; index++)
                 {
                     var record = JsonArrayGet(json, index);
-                    list.Add(_colorConverter.ToObject(record));
+                    list.Add(JsonToColor(record));
+                }
+
+                return list;
+            }
+            else if (type == typeof(BindingList<GuiComboEntry>))
+            {
+                var list = new BindingList<GuiComboEntry>();
+                for (var index = 0; index <= JsonGetLength(json) - 1; index++)
+                {
+                    var record = JsonArrayGet(json, index);
+                    //list.Add(JsonTo);
                 }
 
                 return list;
@@ -205,6 +219,48 @@ namespace SWLOR.Game.Server.Service.GuiService
             {
                 throw new Exception($"Converter is not defined for type {type}");
             }
+        }
+
+        private GuiColor JsonToColor(Json json)
+        {
+            // Using JSON.NET to parse this data. NWScript's methods were giving me recursion errors
+            // during Client UI watch updates
+            var jsonDump = JsonDump(json);
+            var data = JObject.Parse(jsonDump);
+
+            var color = new GuiColor(
+                Convert.ToInt32(data["r"]),
+                Convert.ToInt32(data["g"]),
+                Convert.ToInt32(data["b"]),
+                Convert.ToInt32(data["a"]));
+
+            return color;
+        }
+
+        private Json ColorToJson(GuiColor color)
+        {
+            return Nui.Color(color.Red, color.Green, color.Blue, color.Alpha);
+        }
+
+        private GuiRectangle JsonToRectangle(Json json)
+        {
+            // Using JSON.NET to parse this data. NWScript's methods were giving me recursion errors
+            // during Client UI watch updates
+            var jsonDump = JsonDump(json);
+            var data = JObject.Parse(jsonDump);
+
+            var rect = new GuiRectangle(
+                (float)Convert.ToDouble(data["x"]),
+                (float)Convert.ToDouble(data["y"]),
+                (float)Convert.ToDouble(data["w"]),
+                (float)Convert.ToDouble(data["h"]));
+
+            return rect;
+        }
+
+        private Json RectangleToJson(GuiRectangle rectangle)
+        {
+            return Nui.Rect(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
         }
 
     }

@@ -1,36 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Beamdog;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiListTemplate<T>
+    public class GuiListTemplate<T>: GuiExpandableComponent<T>
         where T: IGuiViewModel
     {
-        private List<GuiListTemplateCell<T>> Cells { get; set; }
-
-        public GuiListTemplate()
+        public override Json BuildElement()
         {
-            Cells = new List<GuiListTemplateCell<T>>();
+            throw new NotSupportedException();
         }
 
-        public GuiListTemplate<T> AddCell(Action<GuiListTemplateCell<T>> cell)
-        {
-            var newCell = new GuiListTemplateCell<T>();
-            Cells.Add(newCell);
-            cell(newCell);
-
-            return this;
-        }
-
-        public Json ToJson()
+        public override Json ToJson()
         {
             var template = JsonArray();
 
-            foreach (var cell in Cells)
+            foreach (var element in Elements)
             {
-                template = JsonArrayInsert(template, cell.ToJson());
+                var json = element.ToJson();
+                template = JsonArrayInsert(template, Nui.ListTemplateCell(json, 0f, true));
             }
 
             return template;

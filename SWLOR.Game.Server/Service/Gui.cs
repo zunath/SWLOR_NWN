@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all of the GUI windows for later retrieval.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler("swlor_skl_cache")]
         public static void CacheData()
         {
             LoadWindowTemplates();
@@ -80,6 +80,7 @@ namespace SWLOR.Game.Server.Service
             if (!_elementEvents.ContainsKey(elementId))
                 _elementEvents[elementId] = new Dictionary<string, MethodInfo>();
 
+            Console.WriteLine($"Registered gui event: {elementId} / {eventName}");
             _elementEvents[elementId][eventName] = eventAction;
         }
 

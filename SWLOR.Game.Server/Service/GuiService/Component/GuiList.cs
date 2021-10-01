@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
 
         public GuiList<T> BindRowCount<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            RowCountBindName = GuiHelper<T>.GetPropertyName(expression);
+            RowCountBindName = GuiHelper<T>.GetPropertyName(expression) + "_RowCount";
             return this;
         }
 
@@ -46,7 +46,8 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             var template = Template.ToJson();
             var rowCount = IsRowCountBound ? Nui.Bind(RowCountBindName) : JsonInt(RowCount);
 
-            return Nui.List(template, rowCount, RowHeight);
+            var json = Nui.List(template, rowCount, RowHeight);
+            return json;
         }
     }
 }

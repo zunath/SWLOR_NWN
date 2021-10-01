@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class SkillsViewModel : GuiViewModelBase<SkillsViewModel>
     {
+        private bool _hasLoaded;
+
+        private readonly List<SkillType> _viewableSkills;
+
         public BindingList<string> SkillNames
         {
             get => Get<BindingList<string>>();
@@ -38,12 +41,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public BindingList<bool> DecayLocks
-        {
-            get => Get<BindingList<bool>>();
-            set => Set(value);
-        }
-
         public BindingList<string> DecayLockTexts
         {
             get => Get<BindingList<string>>();
@@ -56,13 +53,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public int SelectedCategoryId
+        {
+            get => Get<int>();
+            set
+            {
+                Set(value);
+
+                if (value == 0)
+                {
+                    LoadSkills(Skill.GetAllActiveSkills());
+                }
+                else
+                {
+                    var skillsInCategory = Skill.GetActiveSkillsByCategory((SkillCategoryType)value);
+                    LoadSkills(skillsInCategory);
+                }
+            }
+        }
+
         public SkillsViewModel()
         {
+            _viewableSkills = new List<SkillType>();
             SkillNames = new BindingList<string>();
             Levels = new BindingList<int>();
             Titles = new BindingList<string>();
             Progresses = new BindingList<float>();
-            DecayLocks = new BindingList<bool>();
             DecayLockTexts = new BindingList<string>();
             DecayLockColors = new BindingList<GuiColor>();
         }
@@ -70,22 +86,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnLoadWindow() => () =>
         {
+            SelectedCategoryId = 0;
+            var sw = new Stopwatch();
+            sw.Start();
+
+            if (!_hasLoaded)
+            {
+                var skills = Skill.GetAllActiveSkills();
+                LoadSkills(skills);
+
+                _hasLoaded = true;
+            }
+
+            WatchOnClient(model => model.SelectedCategoryId);
+
+            sw.Stop();
+            Console.WriteLine($"OnLoadWindow took {sw.ElapsedMilliseconds}ms");
+        };
+
+        private void LoadSkills(Dictionary<SkillType, SkillAttribute> skills)
+        {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var skills = Skill.GetAllActiveSkills();
+
+            SkillNames.Clear();
+            Levels.Clear();
+            Titles.Clear();
+            Progresses.Clear();
+            DecayLockTexts.Clear();
+            DecayLockColors.Clear();
 
             foreach (var (type, skill) in skills)
             {
                 var playerSkill = dbPlayer.Skills[type];
+
+                _viewableSkills.Add(type);
                 SkillNames.Add(skill.Name);
                 Levels.Add(playerSkill.Rank);
                 Titles.Add(GetTitle(playerSkill.Rank));
                 Progresses.Add(CalculateProgress(playerSkill.Rank, playerSkill.XP));
-                DecayLocks.Add(playerSkill.IsLocked);
                 DecayLockTexts.Add(GetDecayLockText(playerSkill.IsLocked));
                 DecayLockColors.Add(GetDecayLockColor(playerSkill.IsLocked));
             }
-        };
+        }
 
         private string GetTitle(int rank)
         {
@@ -135,7 +178,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action ToggleDecayLock() => () =>
         {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var index = NuiGetEventArrayIndex();
+            var selectedSkill = _viewableSkills[index];
+            var isLocked = !dbPlayer.Skills[selectedSkill].IsLocked;
 
+            dbPlayer.Skills[selectedSkill].IsLocked = isLocked;
+
+            DB.Set(playerId, dbPlayer);
+
+            DecayLockColors[index] = GetDecayLockColor(isLocked);
+            DecayLockTexts[index] = GetDecayLockText(isLocked);
         };
     }
 }

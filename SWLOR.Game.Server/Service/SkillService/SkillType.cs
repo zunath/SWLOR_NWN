@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Service.SkillService
         Dosh = 20,
 
         [Skill(SkillCategoryType.Languages, 
-            "Shyriiwook (Wookieespeak)", 
+            "Shyriiwook", 
             20, 
             true, 
             "Ability to speak the Shyriiwook (Wookieespeak) language.", 

@@ -16,6 +16,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         {
             public object Value { get; set; }
             public Type Type { get; set; }
+            public bool HasEventBeenHooked { get; set; }
+            public bool IsBindingList { get; set; }
         }
 
         private static readonly GuiPropertyConverter _converter = new GuiPropertyConverter();
@@ -58,24 +60,51 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             if (!_propertyValues.ContainsKey(propertyName))
                 _propertyValues[propertyName] = new PropertyDetail();
-            
 
             _propertyValues[propertyName].Value = value;
             _propertyValues[propertyName].Type = typeof(T);
+
+            var valueType = typeof(T);
+            if (
+                (valueType == typeof(BindingList<string>) ||
+                 valueType == typeof(BindingList<int>) ||
+                 valueType == typeof(BindingList<bool>) ||
+                 valueType == typeof(BindingList<float>) ||
+                 valueType == typeof(BindingList<GuiRectangle>) ||
+                 valueType == typeof(BindingList<GuiVector2>) ||
+                 valueType == typeof(BindingList<GuiColor>))
+                && !_propertyValues[propertyName].HasEventBeenHooked)
+            {
+                var list = ((IBindingList)_propertyValues[propertyName].Value);
+                list.ListChanged += (sender, args) =>
+                {
+                    OnPropertyChanged(propertyName);
+                };
+
+                _propertyValues[propertyName].HasEventBeenHooked = true;
+                _propertyValues[propertyName].IsBindingList = true;
+            }
+
             OnPropertyChanged(propertyName);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]
-        private void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             
             var value = _propertyValues[propertyName].Value;
             var json = _converter.ToJson(value);
-
+            
             NuiSetBind(Player, WindowToken, propertyName, json);
+
+            if (_propertyValues[propertyName].IsBindingList)
+            {
+                var list = (IBindingList) value;
+                NuiSetBind(Player, WindowToken, propertyName + "_RowCount", JsonInt(list.Count));
+            }
         }
         
         public void Bind(uint player, int windowToken)
@@ -100,6 +129,9 @@ namespace SWLOR.Game.Server.Service.GuiService
             var value = _converter.ToObject(json, property.Type);
 
             _propertyValues[propertyName].Value = value;
+
+            if(propertyName != nameof(Geometry))
+                GetType().GetProperty(propertyName)?.SetValue(this, value);
         }
 
         protected void WatchOnClient<TProperty>(Expression<Func<TDerived, TProperty>> expression)

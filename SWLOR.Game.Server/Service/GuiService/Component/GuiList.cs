@@ -39,6 +39,8 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         {
             Template = template;
             RowHeight = NuiStyle.RowHeight;
+
+            Elements.Add(Template);
         }
 
         public override Json BuildElement()

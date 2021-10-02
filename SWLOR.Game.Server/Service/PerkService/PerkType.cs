@@ -1,6 +1,7 @@
 ﻿namespace SWLOR.Game.Server.Service.PerkService
 {
     // Note: These IDs are tied to 2DAs. Don't reassign ID numbers unless you also update the 2DA files.
+    // 2DA files: iprp_resperk.2da
     public enum PerkType
     {
         Invalid = 0,

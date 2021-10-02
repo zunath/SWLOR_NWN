@@ -234,32 +234,192 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceHeal()
         {
+            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceHeal)
+                .Name("Force Heal")
 
+                .AddPerkLevel()
+                .Description("Heals a single target for 2 HP every six seconds.")
+                .Price(2)
+                .RequirementSkill(SkillType.Force, 5)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceHeal1)
+
+                .AddPerkLevel()
+                .Description("Heals a single target for 4 HP every six seconds.")
+                .Price(2)
+                .RequirementSkill(SkillType.Force, 15)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceHeal2)
+
+                .AddPerkLevel()
+                .Description("Heals a single target for 6 HP every six seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 25)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceHeal3)
+
+                .AddPerkLevel()
+                .Description("Heals a single target for 8 HP every six seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 35)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceHeal4)
+
+                .AddPerkLevel()
+                .Description("Heals a single target for 10 HP every six seconds.")
+                .Price(5)
+                .RequirementSkill(SkillType.Force, 45)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceHeal5);
         }
 
         private void ForceBreach()
         {
+            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceBreach)
+                .Name("Force Breach")
 
+                .AddPerkLevel()
+                .Description("Deals 6.0 DMG to a single target.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 20)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceBreach1)
+
+                .AddPerkLevel()
+                .Description("Deals 8.5 DMG to a single target.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 30)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceBreach2)
+
+                .AddPerkLevel()
+                .Description("Deals 12.0 DMG to a single target.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 40)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceBreach3)
+
+                .AddPerkLevel()
+                .Description("Deals 13.5 DMG to a single target.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 50)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceBreach4);
         }
 
         private void ForceBody()
         {
+            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceBody)
+                .Name("Force Body")
 
+                .AddPerkLevel()
+                .Description("Converts 25% of the user's HP into FP.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 20)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceBody1)
+
+                .AddPerkLevel()
+                .Description("Converts 50% of the user's HP into FP.")
+                .Price(6)
+                .RequirementSkill(SkillType.Force, 40)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceBody2);
         }
 
         private void DrainLife()
         {
+            _builder.Create(PerkCategoryType.ForceDark, PerkType.DrainLife)
+                .Name("Drain Life")
 
+                .AddPerkLevel()
+                .Description("Steals 1 HP from a target every six seconds.")
+                .Price(2)
+                .RequirementSkill(SkillType.Force, 5)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceDrain1)
+
+                .AddPerkLevel()
+                .Description("Steals 2 HP from a target every six seconds.")
+                .Price(2)
+                .RequirementSkill(SkillType.Force, 15)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceDrain2)
+
+                .AddPerkLevel()
+                .Description("Steals 3 HP from a target every six seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 25)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceDrain3)
+
+                .AddPerkLevel()
+                .Description("Steals 4 HP from a target every six seconds.")
+                .Price(3)
+                .RequirementSkill(SkillType.Force, 35)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceDrain4)
+
+                .AddPerkLevel()
+                .Description("Steals 5 HP from a target every six seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 45)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceDrain5);
         }
 
         private void ForceLightning()
         {
+            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceLightning)
+                .Name("Force Lightning")
 
+                .AddPerkLevel()
+                .Description("Deals 6.0 DMG to a single target.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 20)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceLightning1)
+
+                .AddPerkLevel()
+                .Description("Deals 8.5 DMG to a single target.")
+                .Price(5)
+                .RequirementSkill(SkillType.Force, 30)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceLightning2)
+
+                .AddPerkLevel()
+                .Description("Deals 12.0 DMG to a single target.")
+                .Price(6)
+                .RequirementSkill(SkillType.Force, 40)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceLightning3)
+
+                .AddPerkLevel()
+                .Description("Deals 13.5 DMG to a single target.")
+                .Price(7)
+                .RequirementSkill(SkillType.Force, 50)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceLightning4);
         }
 
         private void ForceMind()
         {
+            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceMind)
+                .Name("Force Mind")
 
+                .AddPerkLevel()
+                .Description("Converts 25% of the user's FP into HP.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 20)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceMind1)
+
+                .AddPerkLevel()
+                .Description("Converts 50% of the user's FP into HP.")
+                .Price(6)
+                .RequirementSkill(SkillType.Force, 40)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceMind2);
         }
 
     }

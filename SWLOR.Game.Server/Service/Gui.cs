@@ -1,14 +1,220 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Feature.DialogDefinition;
+using SWLOR.Game.Server.Service.GuiService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Gui
     {
+        private static readonly Dictionary<GuiWindowType, GuiConstructedWindow> _windowTemplates = new();
+        private static readonly Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> _playerWindows = new();
+        private static readonly Dictionary<string, Dictionary<string, MethodInfo>> _elementEvents = new();
+        private static readonly Dictionary<string, GuiWindowType> _windowTypesByKey = new();
+
+        /// <summary>
+        /// When the module loads, cache all of the GUI windows for later retrieval.
+        /// </summary>
+        [NWNEventHandler("swlor_skl_cache")]
+        public static void CacheData()
+        {
+            LoadWindowTemplates();
+        }
+        
+        /// <summary>
+        /// Loads all of the window definitions, constructs them, and caches the data into memory.
+        /// </summary>
+        private static void LoadWindowTemplates()
+        {
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(w => typeof(IGuiWindowDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+
+            foreach (var type in types)
+            {
+                var instance = (IGuiWindowDefinition)Activator.CreateInstance(type);
+                var constructedWindow = instance.BuildWindow();
+
+                // Safety check to ensure we don't try to build the same type of window more than once.
+                if (_windowTemplates.ContainsKey(constructedWindow.Type))
+                {
+                    throw new Exception($"GUI Window type '{constructedWindow.Type}' has been defined more than once.");
+                }
+
+                // Register the window template into the cache.
+                _windowTemplates[constructedWindow.Type] = constructedWindow;
+                _windowTypesByKey[BuildWindowId(constructedWindow.Type)] = constructedWindow.Type;
+            }
+
+            Console.WriteLine($"Loaded {_windowTemplates.Count} GUI window templates.");
+        }
+
+        /// <summary>
+        /// When a player enters the server, create instances of every window if they have not already been created this session.
+        /// </summary>
+        [NWNEventHandler("mod_enter")]
+        public static void CreatePlayerWindows()
+        {
+            var player = GetEnteringObject();
+            var playerId = GetObjectUUID(player);
+
+            if (_playerWindows.ContainsKey(playerId))
+                return;
+            
+            _playerWindows[playerId] = new Dictionary<GuiWindowType, GuiPlayerWindow>();
+            foreach (var (type, window) in _windowTemplates)
+            {
+                var playerWindow = window.CreatePlayerWindowAction();
+                playerWindow.ViewModel.Geometry = window.InitialGeometry;
+                _playerWindows[playerId][type] = playerWindow;
+            }
+        }
+
+        /// <summary>
+        /// Registers an element's event information.
+        /// </summary>
+        /// <param name="elementId">The Id of the element to register.</param>
+        /// <param name="eventName">The name of the event.</param>
+        /// <param name="eventAction">The action to run when the event is raised.</param>
+        public static void RegisterElementEvent(string elementId, string eventName, MethodInfo eventAction)
+        {
+            if (!_elementEvents.ContainsKey(elementId))
+                _elementEvents[elementId] = new Dictionary<string, MethodInfo>();
+
+            Console.WriteLine($"Registered gui event: {elementId} / {eventName}");
+            _elementEvents[elementId][eventName] = eventAction;
+        }
+
+        /// <summary>
+        /// When a NUI event is fired, look for an associated event on the specified element
+        /// and execute the cached action.
+        /// </summary>
+        [NWNEventHandler("mod_nui_event")]
+        public static void HandleNuiEvents()
+        {
+            var player = NuiGetEventPlayer();
+            var playerId = GetObjectUUID(player);
+            var windowToken = NuiGetEventWindow();
+            var windowId = NuiGetWindowId(player, windowToken);
+            var eventType = NuiGetEventType();
+            var elementId = NuiGetEventElement();
+            var eventKey = BuildEventKey(windowId, elementId);
+
+            if (!_elementEvents.ContainsKey(eventKey))
+                return;
+
+            var eventGroup = _elementEvents[eventKey];
+
+            if (!eventGroup.ContainsKey(eventType))
+                return;
+
+            var windowType = _windowTypesByKey[windowId];
+            var playerWindow = _playerWindows[playerId][windowType];
+            var viewModel = playerWindow.ViewModel;
+
+            // Note: This section has the possibility of being slow.
+            // If it is, look into building the methods and caching them at the time of window creation.
+            var methodInfo = eventGroup[eventType];
+            var method = viewModel.GetType().GetMethod(methodInfo.Name);
+            var action = method?.Invoke(playerWindow.ViewModel, null);
+            ((Action)action)?.Invoke();
+        }
+
+        /// <summary>
+        /// When a NUI event is fired, if it was a watch event, update the associated player's view model.
+        /// </summary>
+        [NWNEventHandler("mod_nui_event")]
+        public static void HandleNuiWatchEvent()
+        {
+            var player = NuiGetEventPlayer();
+            var playerId = GetObjectUUID(player);
+            var windowToken = NuiGetEventWindow();
+            var windowId = NuiGetWindowId(player, windowToken);
+            var eventType = NuiGetEventType();
+            var propertyName = NuiGetEventElement();
+
+            if (eventType != "watch")
+                return;
+
+            if (!_playerWindows.ContainsKey(playerId))
+                return;
+            
+            var playerWindows = _playerWindows[playerId];
+            var windowType = _windowTypesByKey[windowId];
+            var playerWindow = playerWindows[windowType];
+
+            playerWindow.ViewModel.UpdatePropertyFromClient(propertyName);
+        }
+
+        /// <summary>
+        /// Builds a window Id based on the type of window provided.
+        /// </summary>
+        /// <param name="windowType">The type of window.</param>
+        /// <returns>A key using the window type.</returns>
+        public static string BuildWindowId(GuiWindowType windowType)
+        {
+            return $"GUI_WINDOW_{windowType}";
+        }
+
+        /// <summary>
+        /// Builds a key based on the window Id and element Id.
+        /// This is used for event mapping.
+        /// </summary>
+        /// <param name="windowId">The Id of the Window</param>
+        /// <param name="elementId">The Id of the Element</param>
+        /// <returns>A key using the window Id and element Id.</returns>
+        public static string BuildEventKey(string windowId, string elementId)
+        {
+            return windowId + "_" + elementId;
+        }
+
+        /// <summary>
+        /// Shows or hides a specific window for a given player.
+        /// </summary>
+        /// <param name="player">The player to toggle the window for.</param>
+        /// <param name="type">The type of window to toggle.</param>
+        public static void TogglePlayerWindow(uint player, GuiWindowType type)
+        {
+            var playerId = GetObjectUUID(player);
+            var template = _windowTemplates[type];
+            var playerWindow = _playerWindows[playerId][type];
+            var windowId = BuildWindowId(type);
+
+            // If the window is closed, open it.
+            if (NuiFindWindow(player, windowId) == 0)
+            {
+                playerWindow.WindowToken = NuiCreate(player, template.Window, template.WindowId);
+                playerWindow.ViewModel.Bind(player, playerWindow.WindowToken, template.InitialGeometry);
+            }
+            // Otherwise the window must already be open. Close it.
+            else
+            {
+                NuiDestroy(player, playerWindow.WindowToken);
+            }
+        }
+
+        /// <summary>
+        /// Skips the character sheet panel open event and shows the SWLOR character sheet instead.
+        /// </summary>
+        [NWNEventHandler("mod_gui_event")]
+        public static void CharacterSheetGui()
+        {
+            var player = GetLastGuiEventPlayer();
+            var type = GetLastGuiEventType();
+            if (type != GuiEventType.DisabledPanelAttemptOpen) return;
+
+            var panelType = (GuiPanel)GetLastGuiEventInteger();
+            if (panelType != GuiPanel.CharacterSheet)
+                return;
+
+            TogglePlayerWindow(player, GuiWindowType.CharacterSheet);
+        }
+
         public class IdReservation
         {
             public int Count { get; set; }
@@ -108,11 +314,11 @@ namespace SWLOR.Game.Server.Service
 
         public static void DrawWindow(uint player, int startId, ScreenAnchor anchor, int x, int y, int width, int height, float lifeTime = 10.0f)
         {
-            string top = WindowTopLeft;
-            string middle = WindowMiddleLeft;
-            string bottom = WindowBottomLeft;
+            var top = WindowTopLeft;
+            var middle = WindowMiddleLeft;
+            var bottom = WindowBottomLeft;
 
-            for (int i = 0; i < width; i++)
+            for (var i = 0; i < width; i++)
             {
                 top += WindowTopMiddle;
                 middle += WindowMiddleBlank;
@@ -164,27 +370,6 @@ namespace SWLOR.Game.Server.Service
         public static int CenterStringInWindow(string text, int windowX, int windowWidth)
         {
             return (windowX + (windowWidth / 2)) - ((text.Length + 2) / 2);
-        }
-
-        /// <summary>
-        /// Skips the character sheet panel open event and shows the SWLOR character sheet instead.
-        /// </summary>
-        [NWNEventHandler("mod_gui_event")]
-        public static void CharacterSheetGui()
-        {
-            // todo: When NUI is released, this should build and draw the new UI for character sheets.
-            // todo: Until that happens, this will simply open the character rest menu.
-            var player = GetLastGuiEventPlayer();
-            var type = GetLastGuiEventType();
-            if (type != GuiEventType.DisabledPanelAttemptOpen) return;
-
-            var panelType = (GuiPanel)GetLastGuiEventInteger();
-            if (panelType != GuiPanel.CharacterSheet)
-                return;
-
-            AssignCommand(player, () => ClearAllActions());
-
-            Dialog.StartConversation(player, player, nameof(RestMenuDialog));
         }
 
     }

@@ -468,10 +468,10 @@ namespace SWLOR.Game.Server.Core.Beamdog
         /// <param name="jLegend">Bind:String</param>
         /// <param name="jColor">Bind:NuiColor</param>
         /// <param name="jData">Bind:Float[]</param>
-        public static Json ChartSlot(int nType, Json jLegend, Json jColor, Json jData)
+        public static Json ChartSlot(NuiChartType nType, Json jLegend, Json jColor, Json jData)
         {
             Json ret = JsonObject();
-            ret = JsonObjectSet(ret, "type", JsonInt(nType));
+            ret = JsonObjectSet(ret, "type", JsonInt((int)nType));
             ret = JsonObjectSet(ret, "legend", jLegend);
             ret = JsonObjectSet(ret, "color", jColor);
             ret = JsonObjectSet(ret, "data", jData);
@@ -511,7 +511,7 @@ namespace SWLOR.Game.Server.Core.Beamdog
         /// <param name="jPoints">Bind:Float[]    Always provide points in pairs</param>
         public static Json DrawListPolyLine(Json jEnabled, Json jColor, Json jFill, Json jLineThickness, Json jPoints)
         {
-            Json ret = NuiDrawListItem(NuiDrawListItemType.Polyline, jEnabled, jColor, jFill, jLineThickness);
+            Json ret = NuiDrawListItem(NuiDrawListItemType.PolyLine, jEnabled, jColor, jFill, jLineThickness);
             ret = JsonObjectSet(ret, "points", jPoints);
             return ret;
         }

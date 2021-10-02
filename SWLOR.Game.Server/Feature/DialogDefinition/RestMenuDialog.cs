@@ -48,16 +48,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 page.AddResponse("Distribute Attribute Points", () => SwitchConversation(nameof(DistributeAbilityPointsDialog)));
             }
 
-            page.AddResponse("View Skills", () => SwitchConversation(nameof(ViewSkillsDialog)));
             page.AddResponse("View Perks", () => SwitchConversation(nameof(ViewPerksDialog)));
-            page.AddResponse("View Achievements", () => SwitchConversation(nameof(ViewAchievementsDialog)));
             page.AddResponse("View Recipes", () =>
             {
                 var craftingState = Craft.GetPlayerCraftingState(player);
                 craftingState.DeviceSkillType = SkillType.Invalid;
                 SwitchConversation(nameof(RecipeDialog));
             });
-            page.AddResponse("View Key Items", () => SwitchConversation(nameof(ViewKeyItemsDialog)));
             page.AddResponse("Modify Item Appearance", () => SwitchConversation(nameof(ModifyItemAppearanceDialog)));
             page.AddResponse("Player Settings", () => SwitchConversation(nameof(PlayerSettingsDialog)));
             page.AddResponse("Open Trash Can (Destroy Items)", () =>

@@ -219,17 +219,6 @@ namespace SWLOR.Game.Server.Service.GuiService
 
                 return list;
             }
-            else if (type == typeof(GuiBindingList<GuiComboEntry>))
-            {
-                var list = new GuiBindingList<GuiComboEntry>();
-                for (var index = 0; index <= JsonGetLength(json) - 1; index++)
-                {
-                    var record = JsonArrayGet(json, index);
-                    //list.Add(JsonTo);
-                }
-
-                return list;
-            }
             else
             {
                 throw new Exception($"Converter is not defined for type {type}");
@@ -277,6 +266,5 @@ namespace SWLOR.Game.Server.Service.GuiService
         {
             return Nui.Rect(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
         }
-
     }
 }

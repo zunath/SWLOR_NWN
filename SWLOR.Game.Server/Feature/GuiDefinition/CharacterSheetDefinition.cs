@@ -234,11 +234,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(row =>
                     {
-                        row.AddSpacer();
-                    });
-
-                    col.AddRow(row =>
-                    {
                         row.AddButton()
                             .SetText("Skills")
                             .SetHeight(32f)
@@ -259,25 +254,40 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetWidth(100f)
                             .BindOnClicked(model => model.OnClickQuests());
                         row.AddButton()
-                            .SetText("Recipes")
+                            .SetText("Appearance")
                             .SetHeight(32f)
                             .SetWidth(100f)
-                            .BindOnClicked(model => model.OnClickRecipes());
+                            .BindOnClicked(model => model.OnClickAppearance());
                     });
 
                     col.AddRow(row =>
                     {
                         row.AddButton()
+                            .SetText("Recipes")
+                            .SetHeight(32f)
+                            .SetWidth(100f)
+                            .BindOnClicked(model => model.OnClickRecipes());
+                        row.AddButton()
                             .SetText("Key Items")
                             .SetHeight(32f)
                             .SetWidth(100f)
                             .BindOnClicked(model => model.OnClickKeyItems());
+                    });
+
+                    col.AddRow(row =>
+                    {
                         row.AddButton()
                             .SetText("Achievements")
                             .SetHeight(32f)
                             .SetWidth(100f)
                             .BindOnClicked(model => model.OnClickAchievements());
+                        row.AddButton()
+                            .SetText("Settings")
+                            .SetHeight(32f)
+                            .SetWidth(100f)
+                            .BindOnClicked(model => model.OnClickSettings());
                     });
+
                 });
 
             return _builder.Build();

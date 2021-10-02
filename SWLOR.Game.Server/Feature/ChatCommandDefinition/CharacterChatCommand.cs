@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Dialog = SWLOR.Game.Server.Service.Dialog;
@@ -51,11 +52,11 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
 
             builder.Create("skills")
-                .Description("Opens the skills menu.")
+                .Description("Toggles the skills menu.")
                 .Permissions(AuthorizationLevel.Player)
                 .Action((user, target, location, args) =>
                 {
-                    Dialog.StartConversation(user, user, nameof(ViewSkillsDialog));
+                    Gui.TogglePlayerWindow(user, GuiWindowType.Skills);
                 });
 
             builder.Create("endcall")

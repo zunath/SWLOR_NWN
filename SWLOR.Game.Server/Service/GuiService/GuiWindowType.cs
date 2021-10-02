@@ -11,5 +11,8 @@
         Achievements = 6,
         Skills = 7,
         Perks = 8,
+        Settings = 9,
+        AppearanceCustomization = 10,
+
     }
 }

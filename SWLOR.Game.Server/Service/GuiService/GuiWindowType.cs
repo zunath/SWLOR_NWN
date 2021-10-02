@@ -13,6 +13,7 @@
         Perks = 8,
         Settings = 9,
         AppearanceCustomization = 10,
+        Bank = 11
 
     }
 }

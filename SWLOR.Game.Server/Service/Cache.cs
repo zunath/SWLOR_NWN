@@ -14,8 +14,11 @@ namespace SWLOR.Game.Server.Service
     /// </summary>
     public static class Cache
     {
-        private static Dictionary<string, uint> AreasByResref { get; } = new Dictionary<string, uint>();
-        private static Dictionary<string, string> ItemNamesByResref { get; } = new Dictionary<string, string>();
+        private static Dictionary<string, uint> AreasByResref { get; } = new();
+        private static Dictionary<string, string> ItemNamesByResref { get; } = new();
+        private static Dictionary<int, int> PortraitIdsByInternalId { get; } = new();
+        private static Dictionary<int, int> PortraitInternalIdsByPortraitId { get; } = new();
+        private static Dictionary<int, string> PortraitResrefByInternalId { get; } = new();
 
         /// <summary>
         /// Handles caching data into server memory for quicker lookup later.
@@ -25,9 +28,11 @@ namespace SWLOR.Game.Server.Service
         {
             CacheAreasByResref();
             CacheItemNamesByResref();
+            CachePortraitsById();
 
             Console.WriteLine($"Loaded {AreasByResref.Count} areas by resref.");
             Console.WriteLine($"Loaded {ItemNamesByResref.Count} item names by resref.");
+            Console.WriteLine($"Loaded {PortraitIdsByInternalId.Count} portraits by Id.");
         }
 
         /// <summary>
@@ -95,6 +100,65 @@ namespace SWLOR.Game.Server.Service
             }
 
             return ItemNamesByResref[resref];
+        }
+
+        /// <summary>
+        /// Retrieves the number of portraits registered in the system.
+        /// </summary>
+        public static int PortraitCount => PortraitIdsByInternalId.Count;
+
+        private static void CachePortraitsById()
+        {
+            const string Portraits2DA = "portraits";
+            var twoDACount = UtilPlugin.Get2DARowCount(Portraits2DA);
+            var internalId = 1;
+
+            for (var row = 0; row < twoDACount; row++)
+            {
+                var baseResref = Get2DAString(Portraits2DA, "BaseResRef", row);
+                var race = Get2DAString(Portraits2DA, "Race", row);
+
+                if (!string.IsNullOrWhiteSpace(baseResref) &&
+                    !string.IsNullOrWhiteSpace(race))
+                {
+                    PortraitIdsByInternalId[internalId] = row;
+                    PortraitInternalIdsByPortraitId[row] = internalId;
+                    PortraitResrefByInternalId[internalId] = "po_" + baseResref;
+                    internalId++;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the portrait 2DA Id from the internal Id of the portrait.
+        /// The value returned by this method can be used with NWScript.SetPortrait
+        /// </summary>
+        /// <param name="portraitInternalId">The internal portrait Id to retrieve.</param>
+        /// <returns>The 2DA Id of the portrait.</returns>
+        public static int GetPortraitByInternalId(int portraitInternalId)
+        {
+            return PortraitIdsByInternalId[portraitInternalId];
+        }
+
+        /// <summary>
+        /// Retrieves the internal Id of a portrait by its NWN 2DA Id.
+        /// </summary>
+        /// <param name="portraitId">The NWN portrait 2DA Id.</param>
+        /// <returns>The internal Id of the portrait.</returns>
+        public static int GetPortraitInternalId(int portraitId)
+        {
+            return PortraitInternalIdsByPortraitId[portraitId];
+        }
+
+        /// <summary>
+        /// Retrieves the resref of the portrait by the internal portrait Id.
+        /// The size of the portrait needs to be appended to the end of this result.
+        /// </summary>
+        /// <param name="portraitInternalId">The internal portrait Id</param>
+        /// <returns>The resref of the portrait, excluding the size.</returns>
+        public static string GetPortraitResrefByInternalId(int portraitInternalId)
+        {
+            return PortraitResrefByInternalId[portraitInternalId];
         }
     }
 }

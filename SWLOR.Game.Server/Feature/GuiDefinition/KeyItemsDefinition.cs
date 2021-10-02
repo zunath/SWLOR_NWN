@@ -37,12 +37,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddLabel()
                             .SetText("Name")
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
                             .SetVerticalAlign(NuiVerticalAlign.Top);
 
                         row.AddLabel()
                             .SetText("Type")
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
                             .SetVerticalAlign(NuiVerticalAlign.Top);
 
                         row.SetHeight(20f);

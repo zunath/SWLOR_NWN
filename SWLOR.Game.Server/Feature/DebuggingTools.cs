@@ -1,6 +1,6 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -41,6 +41,13 @@ namespace SWLOR.Game.Server.Feature
             KeyItem.GiveKeyItem(player, KeyItemType.OldTome);
             KeyItem.GiveKeyItem(player, KeyItemType.CoxxionBaseKey);
             KeyItem.GiveKeyItem(player, KeyItemType.TaxiHailingDevice);
+
+
+            Achievement.GiveAchievement(player, AchievementType.CompleteQuests1);
+            Achievement.GiveAchievement(player, AchievementType.CraftItems1);
+            Achievement.GiveAchievement(player, AchievementType.GainSkills1);
+            Achievement.GiveAchievement(player, AchievementType.KillEnemies1);
+            Achievement.GiveAchievement(player, AchievementType.LearnPerks1);
         }
 
     }

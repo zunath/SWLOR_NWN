@@ -84,6 +84,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves an achievement detail by its type.
+        /// </summary>
+        /// <param name="type">The type of achievement to retrieve.</param>
+        /// <returns>An achievement detail of the specified type.</returns>
+        public static AchievementAttribute GetAchievement(AchievementType type)
+        {
+            return _activeAchievements[type];
+        }
+
+        /// <summary>
         /// Retrieves all of the active achievements.
         /// </summary>
         /// <returns>A dictionary containing all of the active achievements.</returns>

@@ -15,13 +15,5 @@ namespace SWLOR.Game.Server.Feature
             Space.ApplyShipDamage(player, player, 999);
         }
 
-        [NWNEventHandler("test_window")]
-        public static void TestWindow()
-        {
-            var player = GetLastUsedBy();
-
-            Gui.TogglePlayerWindow(player, GuiWindowType.TestWindow);
-        }
-
     }
 }

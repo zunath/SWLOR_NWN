@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             public object Value { get; set; }
             public Type Type { get; set; }
             public bool HasEventBeenHooked { get; set; }
-            public bool IsBindingList { get; set; }
+            public bool IsGuiList { get; set; }
         }
 
         private static readonly GuiPropertyConverter _converter = new GuiPropertyConverter();
@@ -76,31 +76,51 @@ namespace SWLOR.Game.Server.Service.GuiService
             if (!_propertyValues.ContainsKey(propertyName))
                 _propertyValues[propertyName] = new PropertyDetail();
 
+            // List has already been bound, but the new value is a different object.
+            // Unsubscribe the event and reset the flag.
+            if (_propertyValues.ContainsKey(propertyName) &&
+                _propertyValues[propertyName].IsGuiList &&
+                _propertyValues[propertyName].HasEventBeenHooked &&
+                !ReferenceEquals(value, _propertyValues[propertyName].Value))
+            {
+                var list = ((IGuiBindingList)_propertyValues[propertyName].Value);
+                list.PropertyName = propertyName;
+                list.ListChanged -= OnListChanged;
+                _propertyValues[propertyName].HasEventBeenHooked = false;
+            }
+
+            // Update the type and value for this entry.
             _propertyValues[propertyName].Value = value;
             _propertyValues[propertyName].Type = typeof(T);
 
+            // Binding lists - The ListChanged event must also be hooked in order to raise
+            // the OnPropertyChanged event.
             var valueType = typeof(T);
             if (
-                (valueType == typeof(BindingList<string>) ||
-                 valueType == typeof(BindingList<int>) ||
-                 valueType == typeof(BindingList<bool>) ||
-                 valueType == typeof(BindingList<float>) ||
-                 valueType == typeof(BindingList<GuiRectangle>) ||
-                 valueType == typeof(BindingList<GuiVector2>) ||
-                 valueType == typeof(BindingList<GuiColor>))
-                && !_propertyValues[propertyName].HasEventBeenHooked)
+                (valueType == typeof(GuiBindingList<string>) ||
+                 valueType == typeof(GuiBindingList<int>) ||
+                 valueType == typeof(GuiBindingList<bool>) ||
+                 valueType == typeof(GuiBindingList<float>) ||
+                 valueType == typeof(GuiBindingList<GuiRectangle>) ||
+                 valueType == typeof(GuiBindingList<GuiVector2>) ||
+                 valueType == typeof(GuiBindingList<GuiColor>)))
             {
-                var list = ((IBindingList)_propertyValues[propertyName].Value);
-                list.ListChanged += (sender, args) =>
-                {
-                    OnPropertyChanged(propertyName);
-                };
+                var list = ((IGuiBindingList)_propertyValues[propertyName].Value);
+                list.PropertyName = propertyName;
+
+                list.ListChanged += OnListChanged;
 
                 _propertyValues[propertyName].HasEventBeenHooked = true;
-                _propertyValues[propertyName].IsBindingList = true;
+                _propertyValues[propertyName].IsGuiList = true;
             }
 
             OnPropertyChanged(propertyName);
+        }
+
+        private void OnListChanged(object sender, ListChangedEventArgs e)
+        {
+            var list = ((IGuiBindingList) sender);
+            OnPropertyChanged(list.PropertyName);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -119,9 +139,9 @@ namespace SWLOR.Game.Server.Service.GuiService
             
             NuiSetBind(Player, WindowToken, propertyName, json);
 
-            if (_propertyValues[propertyName].IsBindingList)
+            if (_propertyValues[propertyName].IsGuiList)
             {
-                var list = (IBindingList) value;
+                var list = (IGuiBindingList) value;
                 NuiSetBind(Player, WindowToken, propertyName + "_RowCount", JsonInt(list.Count));
             }
         }

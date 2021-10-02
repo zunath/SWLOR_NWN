@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -13,49 +12,47 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class SkillsViewModel : GuiViewModelBase<SkillsViewModel>
     {
-        private bool _hasLoaded;
-
         private readonly List<SkillType> _viewableSkills;
 
-        public BindingList<string> SkillNames
+        public GuiBindingList<string> SkillNames
         {
-            get => Get<BindingList<string>>();
+            get => Get<GuiBindingList<string>>();
             set => Set(value);
         }
 
-        public BindingList<int> Levels
+        public GuiBindingList<int> Levels
         {
-            get => Get<BindingList<int>>();
+            get => Get<GuiBindingList<int>>();
             set => Set(value);
         }
 
-        public BindingList<string> Titles
+        public GuiBindingList<string> Titles
         {
-            get => Get<BindingList<string>>();
+            get => Get<GuiBindingList<string>>();
             set => Set(value);
         }
 
-        public BindingList<float> Progresses
+        public GuiBindingList<float> Progresses
         {
-            get => Get<BindingList<float>>();
+            get => Get<GuiBindingList<float>>();
             set => Set(value);
         }
 
-        public BindingList<string> DecayLockTexts
+        public GuiBindingList<string> DecayLockTexts
         {
-            get => Get<BindingList<string>>();
+            get => Get<GuiBindingList<string>>();
             set => Set(value);
         }
 
-        public BindingList<GuiColor> DecayLockColors
+        public GuiBindingList<GuiColor> DecayLockColors
         {
-            get => Get<BindingList<GuiColor>>();
+            get => Get<GuiBindingList<GuiColor>>();
             set => Set(value);
         }
 
-        public BindingList<bool> DecayLockButtonEnabled
+        public GuiBindingList<bool> DecayLockButtonEnabled
         {
-            get => Get<BindingList<bool>>();
+            get => Get<GuiBindingList<bool>>();
             set => Set(value);
         }
 
@@ -78,16 +75,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
+
         public SkillsViewModel()
         {
             _viewableSkills = new List<SkillType>();
-            SkillNames = new BindingList<string>();
-            Levels = new BindingList<int>();
-            Titles = new BindingList<string>();
-            Progresses = new BindingList<float>();
-            DecayLockTexts = new BindingList<string>();
-            DecayLockColors = new BindingList<GuiColor>();
-            DecayLockButtonEnabled = new BindingList<bool>();
+            SkillNames = new GuiBindingList<string>();
+            Levels = new GuiBindingList<int>();
+            Titles = new GuiBindingList<string>();
+            Progresses = new GuiBindingList<float>();
+            DecayLockTexts = new GuiBindingList<string>();
+            DecayLockColors = new GuiBindingList<GuiColor>();
+            DecayLockButtonEnabled = new GuiBindingList<bool>();
         }
 
 
@@ -97,13 +95,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var sw = new Stopwatch();
             sw.Start();
 
-            if (!_hasLoaded)
-            {
-                var skills = Skill.GetAllActiveSkills();
-                LoadSkills(skills);
-
-                _hasLoaded = true;
-            }
+            var skills = Skill.GetAllActiveSkills();
+            LoadSkills(skills);
 
             WatchOnClient(model => model.SelectedCategoryId);
 
@@ -116,26 +109,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            SkillNames.Clear();
-            Levels.Clear();
-            Titles.Clear();
-            Progresses.Clear();
-            DecayLockTexts.Clear();
-            DecayLockColors.Clear();
-
+            _viewableSkills.Clear();
+            var skillNames = new GuiBindingList<string>();
+            var levels = new GuiBindingList<int>();
+            var titles = new GuiBindingList<string>();
+            var progresses = new GuiBindingList<float>();
+            var decayLockTexts = new GuiBindingList<string>();
+            var decayLockColors = new GuiBindingList<GuiColor>();
+            var decayLockButtonEnabled = new GuiBindingList<bool>();
+            
             foreach (var (type, skill) in skills)
             {
                 var playerSkill = dbPlayer.Skills[type];
 
                 _viewableSkills.Add(type);
-                SkillNames.Add(skill.Name);
-                Levels.Add(playerSkill.Rank);
-                Titles.Add(GetTitle(playerSkill.Rank));
-                Progresses.Add(CalculateProgress(playerSkill.Rank, playerSkill.XP));
-                DecayLockTexts.Add(GetDecayLockText(playerSkill.IsLocked, skill.ContributesToSkillCap));
-                DecayLockColors.Add(GetDecayLockColor(playerSkill.IsLocked, skill.ContributesToSkillCap));
-                DecayLockButtonEnabled.Add(skill.ContributesToSkillCap);
+                skillNames.Add(skill.Name);
+                levels.Add(playerSkill.Rank);
+                titles.Add(GetTitle(playerSkill.Rank));
+                progresses.Add(CalculateProgress(playerSkill.Rank, playerSkill.XP));
+                decayLockTexts.Add(GetDecayLockText(playerSkill.IsLocked, skill.ContributesToSkillCap));
+                decayLockColors.Add(GetDecayLockColor(playerSkill.IsLocked, skill.ContributesToSkillCap));
+                decayLockButtonEnabled.Add(skill.ContributesToSkillCap);
             }
+
+            SkillNames = skillNames;
+            Levels = levels;
+            Titles = titles;
+            Progresses = progresses;
+            DecayLockTexts = decayLockTexts;
+            DecayLockColors = decayLockColors;
+            DecayLockButtonEnabled = decayLockButtonEnabled;
         }
 
         private string GetTitle(int rank)

@@ -86,7 +86,6 @@ namespace SWLOR.Game.Server.Service
             if (!_elementEvents.ContainsKey(elementId))
                 _elementEvents[elementId] = new Dictionary<string, MethodInfo>();
 
-            Console.WriteLine($"Registered gui event: {elementId} / {eventName}");
             _elementEvents[elementId][eventName] = eventAction;
         }
 

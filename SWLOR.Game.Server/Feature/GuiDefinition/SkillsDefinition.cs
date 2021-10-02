@@ -85,7 +85,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             template.AddButton()
                                 .BindText(model => model.DecayLockTexts)
                                 .BindColor(model => model.DecayLockColors)
-                                .BindOnClicked(model => model.ToggleDecayLock());
+                                .BindOnClicked(model => model.ToggleDecayLock())
+                                .BindIsEnabled(model => model.DecayLockButtonEnabled);
                         })
                             .BindRowCount(model => model.SkillNames);
                     });

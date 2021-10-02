@@ -53,6 +53,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public BindingList<bool> DecayLockButtonEnabled
+        {
+            get => Get<BindingList<bool>>();
+            set => Set(value);
+        }
+
         public int SelectedCategoryId
         {
             get => Get<int>();
@@ -81,6 +87,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Progresses = new BindingList<float>();
             DecayLockTexts = new BindingList<string>();
             DecayLockColors = new BindingList<GuiColor>();
+            DecayLockButtonEnabled = new BindingList<bool>();
         }
 
 
@@ -125,8 +132,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Levels.Add(playerSkill.Rank);
                 Titles.Add(GetTitle(playerSkill.Rank));
                 Progresses.Add(CalculateProgress(playerSkill.Rank, playerSkill.XP));
-                DecayLockTexts.Add(GetDecayLockText(playerSkill.IsLocked));
-                DecayLockColors.Add(GetDecayLockColor(playerSkill.IsLocked));
+                DecayLockTexts.Add(GetDecayLockText(playerSkill.IsLocked, skill.ContributesToSkillCap));
+                DecayLockColors.Add(GetDecayLockColor(playerSkill.IsLocked, skill.ContributesToSkillCap));
+                DecayLockButtonEnabled.Add(skill.ContributesToSkillCap);
             }
         }
 
@@ -163,13 +171,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return nextLevelXP / xp;
         }
 
-        private string GetDecayLockText(bool isLocked)
+        private string GetDecayLockText(bool isLocked, bool contributesToSkillCap)
         {
+            if (!contributesToSkillCap)
+                return "N/A";
+
             return isLocked ? "LOCKED" : "UNLOCKED";
         }
 
-        private GuiColor GetDecayLockColor(bool isLocked)
+        private GuiColor GetDecayLockColor(bool isLocked, bool contributesToSkillCap)
         {
+            if (!contributesToSkillCap)
+                return new GuiColor(169, 169, 169);
+
             if (isLocked)
                 return new GuiColor(255, 0, 0);
             else
@@ -188,8 +202,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             DB.Set(playerId, dbPlayer);
 
-            DecayLockColors[index] = GetDecayLockColor(isLocked);
-            DecayLockTexts[index] = GetDecayLockText(isLocked);
+            DecayLockColors[index] = GetDecayLockColor(isLocked, true);
+            DecayLockTexts[index] = GetDecayLockText(isLocked, true);
         };
     }
 }

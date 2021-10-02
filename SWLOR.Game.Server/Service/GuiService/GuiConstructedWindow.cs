@@ -9,19 +9,19 @@ namespace SWLOR.Game.Server.Service.GuiService
         public string WindowId { get; set; }
         public Json Window { get; set; }
         public CreatePlayerWindowDelegate CreatePlayerWindowAction { get; set; }
-        public GuiRectangle Geometry { get; set; }
+        public GuiRectangle InitialGeometry { get; set; }
 
         public GuiConstructedWindow(
             GuiWindowType type, 
             string windowId, 
             Json window,
-            GuiRectangle geometry,
+            GuiRectangle initialGeometry,
             CreatePlayerWindowDelegate createPlayerWindowAction)
         {
             Type = type;
             WindowId = windowId;
             Window = window;
-            Geometry = geometry;
+            InitialGeometry = initialGeometry;
             CreatePlayerWindowAction = createPlayerWindowAction;
         }
     }

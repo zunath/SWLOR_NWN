@@ -125,16 +125,25 @@ namespace SWLOR.Game.Server.Service.GuiService
                 NuiSetBind(Player, WindowToken, propertyName + "_RowCount", JsonInt(list.Count));
             }
         }
-        
+
         /// <summary>
         /// Binds a player and window with the associated view model.
         /// </summary>
         /// <param name="player">The player to bind.</param>
         /// <param name="windowToken">The window token to bind.</param>
-        public void Bind(uint player, int windowToken)
+        /// <param name="initialGeometry">The initial geometry to use in the event the window dimensions aren't set.</param>
+        public void Bind(uint player, int windowToken, GuiRectangle initialGeometry)
         {
             Player = player;
             WindowToken = windowToken;
+
+            if (Geometry.X == 0.0f &&
+                Geometry.Y == 0.0f &&
+                Geometry.Width == 0.0f &&
+                Geometry.Height == 0.0f)
+            {
+                Geometry = initialGeometry;
+            }
 
             // Rebind any existing properties (in the event the window was closed and reopened)
             foreach (var (name, propertyDetail) in _propertyValues)

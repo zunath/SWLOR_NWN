@@ -108,37 +108,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickSkills() => () =>
         {
-            Gui.ShowPlayerWindow(Player, GuiWindowType.Skills);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Skills);
         };
 
         public Action OnClickPerks() => () =>
         {
-            Gui.ShowPlayerWindow(Player, GuiWindowType.Perks);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Perks);
         };
 
         public Action OnClickChangePortrait() => () =>
         {
-            Gui.ShowPlayerWindow(Player, GuiWindowType.ChangePortrait);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.ChangePortrait);
         };
 
         public Action OnClickQuests() => () =>
         {
-            Gui.ShowPlayerWindow(Player, GuiWindowType.Quests);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Quests);
         };
 
         public Action OnClickRecipes() => () =>
         {
-            Gui.ShowPlayerWindow(Player, GuiWindowType.Recipes);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Recipes);
         };
 
         public Action OnClickKeyItems() => () =>
         {
-            Gui.ShowPlayerWindow(Player, GuiWindowType.KeyItems);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.KeyItems);
         };
 
         public Action OnClickAchievements() => () =>
         {
-            Gui.ShowPlayerWindow(Player, GuiWindowType.Achievements);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Achievements);
         };
 
         public Action OnLoadWindow() => () =>

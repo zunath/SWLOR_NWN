@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var player = GetLastUsedBy();
 
-            Gui.ShowPlayerWindow(player, GuiWindowType.TestWindow);
+            Gui.TogglePlayerWindow(player, GuiWindowType.TestWindow);
         }
 
     }

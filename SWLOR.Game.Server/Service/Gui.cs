@@ -70,11 +70,17 @@ namespace SWLOR.Game.Server.Service
             foreach (var (type, window) in _windowTemplates)
             {
                 var playerWindow = window.CreatePlayerWindowAction();
-                playerWindow.ViewModel.Geometry = window.Geometry;
+                playerWindow.ViewModel.Geometry = window.InitialGeometry;
                 _playerWindows[playerId][type] = playerWindow;
             }
         }
 
+        /// <summary>
+        /// Registers an element's event information.
+        /// </summary>
+        /// <param name="elementId">The Id of the element to register.</param>
+        /// <param name="eventName">The name of the event.</param>
+        /// <param name="eventAction">The action to run when the event is raised.</param>
         public static void RegisterElementEvent(string elementId, string eventName, MethodInfo eventAction)
         {
             if (!_elementEvents.ContainsKey(elementId))
@@ -97,10 +103,7 @@ namespace SWLOR.Game.Server.Service
             var windowId = NuiGetWindowId(player, windowToken);
             var eventType = NuiGetEventType();
             var elementId = NuiGetEventElement();
-            var arrayIndex = NuiGetEventArrayIndex();
             var eventKey = BuildEventKey(windowId, elementId);
-
-            Console.WriteLine($"windowToken = {windowToken}, windowId = {windowId}, eventType = {eventType}, elementId = {elementId}, arrayIndex = {arrayIndex}");
 
             if (!_elementEvents.ContainsKey(eventKey))
                 return;
@@ -134,13 +137,9 @@ namespace SWLOR.Game.Server.Service
             var windowId = NuiGetWindowId(player, windowToken);
             var eventType = NuiGetEventType();
             var propertyName = NuiGetEventElement();
-            var arrayIndex = NuiGetEventArrayIndex();
-            var eventKey = BuildEventKey(windowId, propertyName);
 
             if (eventType != "watch")
                 return;
-
-            Console.WriteLine($"windowToken = {windowToken}, windowId = {windowId}, eventType = {eventType}, propertyName = {propertyName}, arrayIndex = {arrayIndex}");
 
             if (!_playerWindows.ContainsKey(playerId))
                 return;
@@ -175,19 +174,45 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Shows a specific window for a given player.
+        /// Shows or hides a specific window for a given player.
         /// </summary>
-        /// <param name="player">The player to show the window to.</param>
-        /// <param name="type">The type of window to show.</param>
-        public static void ShowPlayerWindow(uint player, GuiWindowType type)
+        /// <param name="player">The player to toggle the window for.</param>
+        /// <param name="type">The type of window to toggle.</param>
+        public static void TogglePlayerWindow(uint player, GuiWindowType type)
         {
             var playerId = GetObjectUUID(player);
             var template = _windowTemplates[type];
             var playerWindow = _playerWindows[playerId][type];
-            playerWindow.WindowToken = NuiCreate(player, template.Window, template.WindowId);
-            playerWindow.ViewModel.Bind(player, playerWindow.WindowToken);
+            var windowId = BuildWindowId(type);
 
-            Console.WriteLine(JsonDump(template.Window));
+            // If the window is closed, open it.
+            if (NuiFindWindow(player, windowId) == 0)
+            {
+                playerWindow.WindowToken = NuiCreate(player, template.Window, template.WindowId);
+                playerWindow.ViewModel.Bind(player, playerWindow.WindowToken, template.InitialGeometry);
+            }
+            // Otherwise the window must already be open. Close it.
+            else
+            {
+                NuiDestroy(player, playerWindow.WindowToken);
+            }
+        }
+
+        /// <summary>
+        /// Skips the character sheet panel open event and shows the SWLOR character sheet instead.
+        /// </summary>
+        [NWNEventHandler("mod_gui_event")]
+        public static void CharacterSheetGui()
+        {
+            var player = GetLastGuiEventPlayer();
+            var type = GetLastGuiEventType();
+            if (type != GuiEventType.DisabledPanelAttemptOpen) return;
+
+            var panelType = (GuiPanel)GetLastGuiEventInteger();
+            if (panelType != GuiPanel.CharacterSheet)
+                return;
+
+            TogglePlayerWindow(player, GuiWindowType.CharacterSheet);
         }
 
         public class IdReservation
@@ -289,11 +314,11 @@ namespace SWLOR.Game.Server.Service
 
         public static void DrawWindow(uint player, int startId, ScreenAnchor anchor, int x, int y, int width, int height, float lifeTime = 10.0f)
         {
-            string top = WindowTopLeft;
-            string middle = WindowMiddleLeft;
-            string bottom = WindowBottomLeft;
+            var top = WindowTopLeft;
+            var middle = WindowMiddleLeft;
+            var bottom = WindowBottomLeft;
 
-            for (int i = 0; i < width; i++)
+            for (var i = 0; i < width; i++)
             {
                 top += WindowTopMiddle;
                 middle += WindowMiddleBlank;
@@ -345,23 +370,6 @@ namespace SWLOR.Game.Server.Service
         public static int CenterStringInWindow(string text, int windowX, int windowWidth)
         {
             return (windowX + (windowWidth / 2)) - ((text.Length + 2) / 2);
-        }
-
-        /// <summary>
-        /// Skips the character sheet panel open event and shows the SWLOR character sheet instead.
-        /// </summary>
-        [NWNEventHandler("mod_gui_event")]
-        public static void CharacterSheetGui()
-        {
-            var player = GetLastGuiEventPlayer();
-            var type = GetLastGuiEventType();
-            if (type != GuiEventType.DisabledPanelAttemptOpen) return;
-
-            var panelType = (GuiPanel)GetLastGuiEventInteger();
-            if (panelType != GuiPanel.CharacterSheet)
-                return;
-
-            ShowPlayerWindow(player, GuiWindowType.CharacterSheet);
         }
 
     }

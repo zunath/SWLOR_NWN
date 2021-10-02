@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <summary>
         /// Converts an object to the Json representation.
         /// Only the following types are allowed:
-        /// string, int, float, bool, GuiRectangle, GuiColor, BindingList
+        /// string, int, float, bool, GuiRectangle, GuiColor, GuiBindingList
         /// </summary>
         /// <param name="value">The object to convert.</param>
         /// <returns>Json representation of the object.</returns>
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             {
                 return ColorToJson(color);
             }
-            else if (value is BindingList<string> bs)
+            else if (value is GuiBindingList<string> bs)
             {
                 var jsonArray = JsonArray();
                 foreach (var val in bs)
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Service.GuiService
 
                 return jsonArray;
             }
-            else if (value is BindingList<int> bi)
+            else if (value is GuiBindingList<int> bi)
             {
                 var jsonArray = JsonArray();
                 foreach (var val in bi)
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Service.GuiService
 
                 return jsonArray;
             }
-            else if (value is BindingList<float> bf)
+            else if (value is GuiBindingList<float> bf)
             {
                 var jsonArray = JsonArray();
                 foreach (var val in bf)
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Service.GuiService
 
                 return jsonArray;
             }
-            else if (value is BindingList<bool> bb)
+            else if (value is GuiBindingList<bool> bb)
             {
                 var jsonArray = JsonArray();
                 foreach (var val in bb)
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Service.GuiService
 
                 return jsonArray;
             }
-            else if (value is BindingList<GuiRectangle> br)
+            else if (value is GuiBindingList<GuiRectangle> br)
             {
                 var jsonArray = JsonArray();
                 foreach (var val in br)
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Service.GuiService
 
                 return jsonArray;
             }
-            else if (value is BindingList<GuiColor> bc)
+            else if (value is GuiBindingList<GuiColor> bc)
             {
                 var jsonArray = JsonArray();
                 foreach (var val in bc)
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Service.GuiService
 
                 return jsonArray;
             }
-            else if (value is BindingList<GuiComboEntry> ce)
+            else if (value is GuiBindingList<GuiComboEntry> ce)
             {
                 var jsonArray = JsonArray();
                 foreach (var val in ce)
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <summary>
         /// Converts json to the specified type of object.
         /// Only the following types are allowed:
-        /// string, int, float, bool, GuiRectangle, GuiColor, BindingList
+        /// string, int, float, bool, GuiRectangle, GuiColor, GuiBindingList
         /// </summary>
         /// <param name="json">The Json to convert.</param>
         /// <param name="type">The type of object to create</param>
@@ -153,9 +153,9 @@ namespace SWLOR.Game.Server.Service.GuiService
             {
                 return JsonToColor(json);
             }
-            else if (type == typeof(BindingList<string>))
+            else if (type == typeof(GuiBindingList<string>))
             {
-                var list = new BindingList<string>();
+                var list = new GuiBindingList<string>();
                 for (var index = 0; index <= JsonGetLength(json) - 1; index++)
                 {
                     var record = JsonArrayGet(json, index);
@@ -164,9 +164,9 @@ namespace SWLOR.Game.Server.Service.GuiService
 
                 return list;
             }
-            else if (type == typeof(BindingList<int>))
+            else if (type == typeof(GuiBindingList<int>))
             {
-                var list = new BindingList<int>();
+                var list = new GuiBindingList<int>();
                 for (var index = 0; index <= JsonGetLength(json) - 1; index++)
                 {
                     var record = JsonArrayGet(json, index);
@@ -175,9 +175,9 @@ namespace SWLOR.Game.Server.Service.GuiService
 
                 return list;
             }
-            else if (type == typeof(BindingList<float>))
+            else if (type == typeof(GuiBindingList<float>))
             {
-                var list = new BindingList<float>();
+                var list = new GuiBindingList<float>();
                 for (var index = 0; index <= JsonGetLength(json) - 1; index++)
                 {
                     var record = JsonArrayGet(json, index);
@@ -186,9 +186,9 @@ namespace SWLOR.Game.Server.Service.GuiService
 
                 return list;
             }
-            else if (type == typeof(BindingList<bool>))
+            else if (type == typeof(GuiBindingList<bool>))
             {
-                var list = new BindingList<bool>();
+                var list = new GuiBindingList<bool>();
                 for (var index = 0; index <= JsonGetLength(json) - 1; index++)
                 {
                     var record = JsonArrayGet(json, index);
@@ -197,9 +197,9 @@ namespace SWLOR.Game.Server.Service.GuiService
 
                 return list;
             }
-            else if (type == typeof(BindingList<GuiRectangle>))
+            else if (type == typeof(GuiBindingList<GuiRectangle>))
             {
-                var list = new BindingList<GuiRectangle>();
+                var list = new GuiBindingList<GuiRectangle>();
                 for (var index = 0; index <= JsonGetLength(json) - 1; index++)
                 {
                     var record = JsonArrayGet(json, index);
@@ -208,9 +208,9 @@ namespace SWLOR.Game.Server.Service.GuiService
 
                 return list;
             }
-            else if (type == typeof(BindingList<GuiColor>))
+            else if (type == typeof(GuiBindingList<GuiColor>))
             {
-                var list = new BindingList<GuiColor>();
+                var list = new GuiBindingList<GuiColor>();
                 for (var index = 0; index <= JsonGetLength(json) - 1; index++)
                 {
                     var record = JsonArrayGet(json, index);
@@ -219,9 +219,9 @@ namespace SWLOR.Game.Server.Service.GuiService
 
                 return list;
             }
-            else if (type == typeof(BindingList<GuiComboEntry>))
+            else if (type == typeof(GuiBindingList<GuiComboEntry>))
             {
-                var list = new BindingList<GuiComboEntry>();
+                var list = new GuiBindingList<GuiComboEntry>();
                 for (var index = 0; index <= JsonGetLength(json) - 1; index++)
                 {
                     var record = JsonArrayGet(json, index);

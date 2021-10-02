@@ -92,16 +92,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnLoadWindow() => () =>
         {
             SelectedCategoryId = 0;
-            var sw = new Stopwatch();
-            sw.Start();
-
-            var skills = Skill.GetAllActiveSkills();
-            LoadSkills(skills);
-
+            LoadSkills(Skill.GetAllActiveSkills());
             WatchOnClient(model => model.SelectedCategoryId);
-
-            sw.Stop();
-            Console.WriteLine($"OnLoadWindow took {sw.ElapsedMilliseconds}ms");
         };
 
         private void LoadSkills(Dictionary<SkillType, SkillAttribute> skills)

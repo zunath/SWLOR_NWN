@@ -76,6 +76,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Gets a key item category's detail by its type.
+        /// </summary>
+        /// <param name="type">The type of key item category to retrieve.</param>
+        /// <returns>A key item category detail.</returns>
+        public static KeyItemCategoryAttribute GetKeyItemCategory(KeyItemCategoryType type)
+        {
+            return _allCategories[type];
+        }
+
+        /// <summary>
         /// Gets a key item's detail by its type.
         /// </summary>
         /// <param name="keyItem">The type of key item to retrieve.</param>

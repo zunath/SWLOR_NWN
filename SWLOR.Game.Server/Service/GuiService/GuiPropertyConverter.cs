@@ -10,6 +10,13 @@ namespace SWLOR.Game.Server.Service.GuiService
 {
     public class GuiPropertyConverter
     {
+        /// <summary>
+        /// Converts an object to the Json representation.
+        /// Only the following types are allowed:
+        /// string, int, float, bool, GuiRectangle, GuiColor, BindingList
+        /// </summary>
+        /// <param name="value">The object to convert.</param>
+        /// <returns>Json representation of the object.</returns>
         public Json ToJson(object value)
         {
             if (value is string s)
@@ -112,6 +119,14 @@ namespace SWLOR.Game.Server.Service.GuiService
             }
         }
 
+        /// <summary>
+        /// Converts json to the specified type of object.
+        /// Only the following types are allowed:
+        /// string, int, float, bool, GuiRectangle, GuiColor, BindingList
+        /// </summary>
+        /// <param name="json">The Json to convert.</param>
+        /// <param name="type">The type of object to create</param>
+        /// <returns>A converted object.</returns>
         public object ToObject(Json json, Type type)
         {
             if (type == typeof(string))

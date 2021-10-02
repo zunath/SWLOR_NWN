@@ -18,6 +18,11 @@ namespace SWLOR.Game.Server.Service.GuiService
             return _activeWindow;
         }
 
+        /// <summary>
+        /// Registers events found on the list of elements provided.
+        /// </summary>
+        /// <param name="elements">The elements to register.</param>
+        /// <param name="windowId">The window to register under.</param>
         private void RegisterElementEvents(List<IGuiWidget> elements, string windowId)
         {
             foreach (var element in elements)
@@ -37,6 +42,9 @@ namespace SWLOR.Game.Server.Service.GuiService
             }
         }
 
+        /// <summary>
+        /// Registers all events on all elements for a given window.
+        /// </summary>
         public void RegisterAllElementEvents()
         {
             var windowId = Gui.BuildWindowId(_type);
@@ -53,6 +61,10 @@ namespace SWLOR.Game.Server.Service.GuiService
             RegisterElementEvents(_activeWindow.Elements, windowId);
         }
 
+        /// <summary>
+        /// Builds the window and registers all associated events.
+        /// </summary>
+        /// <returns>A constructed window.</returns>
         public GuiConstructedWindow Build()
         {
             var json = _activeWindow.Build();

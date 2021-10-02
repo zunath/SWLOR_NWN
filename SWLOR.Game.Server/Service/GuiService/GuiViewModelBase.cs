@@ -27,12 +27,21 @@ namespace SWLOR.Game.Server.Service.GuiService
 
         private readonly Dictionary<string, PropertyDetail> _propertyValues = new Dictionary<string, PropertyDetail>();
 
+        /// <summary>
+        /// The window geometry. This is automatically bound for all windows.
+        /// </summary>
         public GuiRectangle Geometry
         {
             get => Get<GuiRectangle>();
             set => Set(value);
         }
 
+        /// <summary>
+        /// Retrieves a property's value and handles notification to subscribers.
+        /// </summary>
+        /// <typeparam name="T">The type of data to retrieve</typeparam>
+        /// <param name="propertyName">The name of the property.</param>
+        /// <returns>The retrieved object.</returns>
         protected T Get<T>([CallerMemberName]string propertyName = null)
         {
             if (string.IsNullOrWhiteSpace(propertyName))
@@ -44,6 +53,12 @@ namespace SWLOR.Game.Server.Service.GuiService
             return default(T);
         }
 
+        /// <summary>
+        /// Sets a property's value and handles notification to subscribers.
+        /// </summary>
+        /// <typeparam name="T">The type of data to set.</typeparam>
+        /// <param name="value">The new value to set.</param>
+        /// <param name="propertyName">The name of the property.</param>
         protected void Set<T>(T value, [CallerMemberName]string propertyName = null)
         {
             if (string.IsNullOrWhiteSpace(propertyName))
@@ -90,6 +105,10 @@ namespace SWLOR.Game.Server.Service.GuiService
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// Notifies subscribers of changes.
+        /// </summary>
+        /// <param name="propertyName">The name of the property to notify about.</param>
         [NotifyPropertyChangedInvocator]
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
@@ -107,6 +126,11 @@ namespace SWLOR.Game.Server.Service.GuiService
             }
         }
         
+        /// <summary>
+        /// Binds a player and window with the associated view model.
+        /// </summary>
+        /// <param name="player">The player to bind.</param>
+        /// <param name="windowToken">The window token to bind.</param>
         public void Bind(uint player, int windowToken)
         {
             Player = player;
@@ -122,6 +146,10 @@ namespace SWLOR.Game.Server.Service.GuiService
             WatchOnClient(model => model.Geometry);
         }
 
+        /// <summary>
+        /// Handles updating the view model with changes received from the player's client.
+        /// </summary>
+        /// <param name="propertyName">The name of the property to update.</param>
         public void UpdatePropertyFromClient(string propertyName)
         {
             var property = _propertyValues[propertyName];
@@ -134,6 +162,11 @@ namespace SWLOR.Game.Server.Service.GuiService
                 GetType().GetProperty(propertyName)?.SetValue(this, value);
         }
 
+        /// <summary>
+        /// Watches a property on the client.
+        /// </summary>
+        /// <typeparam name="TProperty">The property of the view model.</typeparam>
+        /// <param name="expression">Expression to target the property.</param>
         protected void WatchOnClient<TProperty>(Expression<Func<TDerived, TProperty>> expression)
         {
             var propertyName = GuiHelper<TDerived>.GetPropertyName(expression);

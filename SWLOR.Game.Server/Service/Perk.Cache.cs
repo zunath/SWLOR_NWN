@@ -11,42 +11,56 @@ namespace SWLOR.Game.Server.Service
     public static partial class Perk
     {
         // All categories, including inactive
-        private static readonly Dictionary<PerkCategoryType, PerkCategoryAttribute> _allCategories = new Dictionary<PerkCategoryType, PerkCategoryAttribute>();
+        private static readonly Dictionary<PerkCategoryType, PerkCategoryAttribute> _allCategories = new();
 
         // Active categories only
-        private static readonly Dictionary<PerkCategoryType, PerkCategoryAttribute> _activeCategories = new Dictionary<PerkCategoryType, PerkCategoryAttribute>();
+        private static readonly Dictionary<PerkCategoryType, PerkCategoryAttribute> _activeCategories = new();
 
         // All perks, including inactive
-        private static readonly Dictionary<PerkType, PerkDetail> _allPerks = new Dictionary<PerkType, PerkDetail>();
-        private static readonly Dictionary<PerkCategoryType, List<PerkType>> _allPerksByCategory = new Dictionary<PerkCategoryType, List<PerkType>>();
+        private static readonly Dictionary<PerkType, PerkDetail> _allPerks = new();
+        private static readonly Dictionary<PerkCategoryType, List<PerkType>> _allPerksByCategory = new();
 
         // Active perks only
-        private static readonly Dictionary<PerkType, PerkDetail> _activePerks = new Dictionary<PerkType, PerkDetail>();
-        private static readonly Dictionary<PerkCategoryType, List<PerkType>> _activePerksByCategory = new Dictionary<PerkCategoryType, List<PerkType>>();
+        private static readonly Dictionary<PerkType, PerkDetail> _activePerks = new();
+        private static readonly Dictionary<PerkCategoryType, Dictionary<PerkType, PerkDetail>> _activePerksByCategory = new();
 
         // Trigger Actions
-        private static readonly Dictionary<PerkType, List<PerkTriggerEquippedAction>> _equipTriggers = new Dictionary<PerkType, List<PerkTriggerEquippedAction>>();
-        private static readonly Dictionary<PerkType, List<PerkTriggerUnequippedAction>> _unequipTriggers = new Dictionary<PerkType, List<PerkTriggerUnequippedAction>>();
-        private static readonly Dictionary<PerkType, List<PerkTriggerPurchasedRefundedAction>> _purchaseTriggers = new Dictionary<PerkType, List<PerkTriggerPurchasedRefundedAction>>();
-        private static readonly Dictionary<PerkType, List<PerkTriggerPurchasedRefundedAction>> _refundTriggers = new Dictionary<PerkType, List<PerkTriggerPurchasedRefundedAction>>();
+        private static readonly Dictionary<PerkType, List<PerkTriggerEquippedAction>> _equipTriggers = new();
+        private static readonly Dictionary<PerkType, List<PerkTriggerUnequippedAction>> _unequipTriggers = new();
+        private static readonly Dictionary<PerkType, List<PerkTriggerPurchasedRefundedAction>> _purchaseTriggers = new();
+        private static readonly Dictionary<PerkType, List<PerkTriggerPurchasedRefundedAction>> _refundTriggers = new();
 
         // Perks with unlock requirements
-        private static readonly Dictionary<PerkType, PerkDetail> _perksWithUnlockRequirements = new Dictionary<PerkType, PerkDetail>();
+        private static readonly Dictionary<PerkType, PerkDetail> _perksWithUnlockRequirements = new();
 
-        private static readonly Dictionary<PerkType, int> _perkMaxLevels = new Dictionary<PerkType, int>();
+        private static readonly Dictionary<PerkType, int> _perkMaxLevels = new();
+
+        private static readonly Dictionary<CharacterType, CharacterTypeAttribute> _characterTypes = new();
 
         /// <summary>
         /// Gets the list of heavy armor perks
         /// </summary>
-        public static List<PerkType> HeavyArmorPerks { get; } = new List<PerkType>();
+        public static List<PerkType> HeavyArmorPerks { get; } = new();
 
         /// <summary>
         /// Gets the list of light armor perks
         /// </summary>
-        public static List<PerkType> LightArmorPerks { get; } = new List<PerkType>();
+        public static List<PerkType> LightArmorPerks { get; } = new();
 
+        /// <summary>
+        /// When the module loads, cache all perk and character type information.
+        /// </summary>
         [NWNEventHandler("mod_load")]
         public static void CacheData()
+        {
+            CachePerks();
+            CacheCharacterTypes();
+        }
+
+        /// <summary>
+        /// Caches perk information into various dictionaries for quicker look-ups later.
+        /// </summary>
+        private static void CachePerks()
         {
             var categories = Enum.GetValues(typeof(PerkCategoryType)).Cast<PerkCategoryType>();
             foreach (var category in categories)
@@ -57,7 +71,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (categoryDetail.IsActive)
                 {
-                    _activePerksByCategory[category] = new List<PerkType>();
+                    _activePerksByCategory[category] = new Dictionary<PerkType, PerkDetail>();
                 }
             }
 
@@ -66,12 +80,10 @@ namespace SWLOR.Game.Server.Service
                 .SelectMany(s => s.GetTypes())
                 .Where(w => typeof(IPerkListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 
-            var perkCount = 0;
             foreach (var type in types)
             {
                 var instance = (IPerkListDefinition) Activator.CreateInstance(type);
                 var perks = instance.BuildPerks();
-                perkCount += perks.Count;
 
                 foreach (var (perkType, perkDetail) in perks)
                 {
@@ -85,10 +97,10 @@ namespace SWLOR.Game.Server.Service
                     {
                         _activePerks[perkType] = perkDetail;
 
-                        if(!_activePerksByCategory.ContainsKey(perkDetail.Category))
-                            _activePerksByCategory[perkDetail.Category] = new List<PerkType>();
+                        if (!_activePerksByCategory.ContainsKey(perkDetail.Category))
+                            _activePerksByCategory[perkDetail.Category] = new Dictionary<PerkType, PerkDetail>();
 
-                        _activePerksByCategory[perkDetail.Category].Add(perkType);
+                        _activePerksByCategory[perkDetail.Category][perkType] = perkDetail;
 
                         if (perkDetail.Category == PerkCategoryType.ArmorHeavy)
                         {
@@ -128,7 +140,22 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Console.WriteLine($"Loaded {perkCount} perks.");
+            Console.WriteLine($"Loaded {_allPerks.Count} perks.");
+        }
+
+        /// <summary>
+        /// Caches character type information.
+        /// </summary>
+        private static void CacheCharacterTypes()
+        {
+            var categories = Enum.GetValues(typeof(CharacterType)).Cast<CharacterType>();
+            foreach (var type in categories)
+            {
+                var characterTypeDetail = type.GetAttribute<CharacterType, CharacterTypeAttribute>();
+                _characterTypes[type] = characterTypeDetail;
+            }
+
+            Console.WriteLine($"Loaded {_characterTypes.Count} character types.");
         }
 
         /// <summary>
@@ -248,6 +275,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves a list of all active perks by the specified category.
+        /// </summary>
+        /// <param name="category">The category to search by.</param>
+        /// <returns>A list of all active perks in the specified category.</returns>
+        public static Dictionary<PerkType, PerkDetail> GetActivePerksInCategory(PerkCategoryType category)
+        {
+            return _activePerksByCategory[category].ToDictionary(x => x.Key, y => y.Value);
+        }
+
+        /// <summary>
         /// Retrieves details about an individual perk.
         /// </summary>
         /// <param name="perkType">The type of perk to retrieve.</param>
@@ -265,6 +302,16 @@ namespace SWLOR.Game.Server.Service
         public static PerkCategoryAttribute GetPerkCategoryDetails(PerkCategoryType categoryType)
         {
             return _allCategories[categoryType];
+        }
+
+        /// <summary>
+        /// Retrieves the detail about a specific character type.
+        /// </summary>
+        /// <param name="characterType">The character type to retrieve.</param>
+        /// <returns>A character type detail.</returns>
+        public static CharacterTypeAttribute GetCharacterType(CharacterType characterType)
+        {
+            return _characterTypes[characterType];
         }
     }
 }

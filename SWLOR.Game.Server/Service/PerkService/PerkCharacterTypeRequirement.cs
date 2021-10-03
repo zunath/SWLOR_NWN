@@ -26,6 +26,6 @@ namespace SWLOR.Game.Server.Service.PerkService
             return string.Empty;
         }
 
-        public string RequirementText => $"Character Type: {_requiredCharacterType}";
+        public string RequirementText => $"Character Type: {Perk.GetCharacterType(_requiredCharacterType).Name}";
     }
 }

@@ -14,6 +14,5 @@
         Settings = 9,
         AppearanceCustomization = 10,
         Bank = 11
-
     }
 }

@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     // Main section - filters, list, buttons, etc.
                     col.AddRow(row =>
                     {
+                        row.AddSpacer();
                         var combo = row.AddComboBox()
                             .BindSelectedIndex(model => model.SelectedPerkCategoryId)
                             .SetWidth(200f);
@@ -44,9 +45,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             combo.AddOption(detail.Name, (int)type);
                         }
 
-                        row.AddCheckBox()
-                            .SetText("Show All")
-                            .BindIsChecked(model => model.ShowAll);
+                        row.AddSpacer();
                     }).BindIsVisible(model => model.IsInMainView);
 
                     col.AddRow(row =>
@@ -130,6 +129,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             });
                         });
                     }).BindIsVisible(model => model.IsInMainView);
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddButton()
+                            .SetText("<")
+                            .SetWidth(32f)
+                            .SetHeight(35f)
+                            .BindOnClicked(model => model.OnClickPreviousPage());
+
+                        row.AddComboBox()
+                            .BindOptions(model => model.PageNumbers)
+                            .BindSelectedIndex(model => model.SelectedPage);
+
+                        row.AddButton()
+                            .SetText(">")
+                            .SetWidth(32f)
+                            .SetHeight(35f)
+                            .BindOnClicked(model => model.OnClickNextPage());
+
+                        row.AddSpacer();
+                    });
 
                     col.AddRow(row =>
                     {

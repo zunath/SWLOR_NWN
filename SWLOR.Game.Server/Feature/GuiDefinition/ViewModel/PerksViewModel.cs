@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -10,19 +11,26 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class PerksViewModel: GuiViewModelBase<PerksViewModel>
+    public class PerksViewModel : GuiViewModelBase<PerksViewModel>
     {
-        private static GuiColor RedColor = new GuiColor(255, 0, 0);
-        private static GuiColor GreenColor = new GuiColor(0, 255, 0);
-        private static GuiColor WhiteColor = new GuiColor(255, 255, 255);
+        private static readonly GuiColor _redColor = new GuiColor(255, 0, 0);
+        private static readonly GuiColor _greenColor = new GuiColor(0, 255, 0);
 
-        public bool ShowAll
+        private const int ItemsPerPage = 30;
+        private int _pages;
+
+        public GuiBindingList<GuiComboEntry> PageNumbers
         {
-            get => Get<bool>();
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+
+        public int SelectedPage
+        {
+            get => Get<int>();
             set
             {
                 Set(value);
-                SelectedPerkIndex = -1;
                 LoadPerks();
             }
         }
@@ -48,7 +56,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string SearchText
         {
             get => Get<string>();
-            set => Set(value);
+            set
+            {
+                Set(value);
+                SelectedPerkIndex = -1;
+                LoadPerks();
+            }
         }
 
         public int SelectedPerkCategoryId
@@ -76,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _selectedPerkIndex = value;
             }
 
-        } 
+        }
         private readonly List<PerkType> _filteredPerks;
 
         public GuiBindingList<GuiColor> PerkButtonColors
@@ -96,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<GuiBindingList<bool>>();
             set => Set(value);
         }
-        
+
         public string SelectedDetails
         {
             get => Get<string>();
@@ -172,16 +185,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsConfirmingUpgrade = false;
             IsConfirmingRefund = false;
             SelectedPerkCategoryId = 0;
-            ShowAll = false;
             SearchText = string.Empty;
             BuyText = "Buy Upgrade";
+            SelectedPage = 1;
 
             LoadCharacterDetails();
             LoadPerks();
 
             WatchOnClient(model => model.SelectedPerkCategoryId);
-            WatchOnClient(model => model.ShowAll);
             WatchOnClient(model => model.SearchText);
+            WatchOnClient(model => model.SelectedPage);
         };
 
         private void LoadCharacterDetails()
@@ -203,19 +216,43 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadPerks()
         {
-            var sw = new Stopwatch();
-            sw.Start();
-
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
 
             _filteredPerks.Clear();
+
+            var sw = new Stopwatch();
+            sw.Start();
+            
             var perkColors = new GuiBindingList<GuiColor>();
             var perkDetails = new GuiBindingList<string>();
             var perkDetailsSelected = new GuiBindingList<bool>();
+            var pageNumbers = new GuiBindingList<GuiComboEntry>();
+
             var perkList = SelectedPerkCategoryId == 0
                 ? Perk.GetAllActivePerks()
-                : Perk.GetActivePerksInCategory((PerkCategoryType) SelectedPerkCategoryId);
+                : Perk.GetActivePerksInCategory((PerkCategoryType)SelectedPerkCategoryId);
+
+
+            // Filter down to just perks with a name partially matching the search text
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                perkList = perkList.Where(x => x.Value.Name.ToLower().Contains(SearchText.ToLower()))
+                    .ToDictionary(x => x.Key, y => y.Value);
+            }
+
+            _pages = perkList.Count / ItemsPerPage + (perkList.Count % ItemsPerPage == 0 ? 0 : 1);
+
+            for (var x = 1; x <= _pages; x++)
+            {
+                pageNumbers.Add(new GuiComboEntry($"Page {x}", x));
+            }
+
+            // Paginate the results
+            perkList = perkList
+                .Skip((SelectedPage - 1) * ItemsPerPage)
+                .Take(ItemsPerPage)
+                .ToDictionary(x => x.Key, y => y.Value);
 
             foreach (var (type, detail) in perkList)
             {
@@ -239,22 +276,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
                 }
 
-                if (ShowAll || !ShowAll && meetsRequirements)
-                {
-                    _filteredPerks.Add(type);
-                    perkDetails.Add($"{detail.Name} ({playerRank} / {detail.PerkLevels.Count})");
-                    perkDetailsSelected.Add(false);
-                    perkColors.Add(meetsRequirements ? GreenColor : RedColor);
-                }
+                _filteredPerks.Add(type);
+                perkDetails.Add($"{detail.Name} ({playerRank} / {detail.PerkLevels.Count})");
+                perkDetailsSelected.Add(false);
+                perkColors.Add(meetsRequirements ? _greenColor : _redColor);
             }
-
 
             PerkButtonColors = perkColors;
             PerkButtonTexts = perkDetails;
             PerkDetailSelected = perkDetailsSelected;
+            PageNumbers = pageNumbers;
 
             sw.Stop();
-            Console.WriteLine($"LoadPerks(): {sw.ElapsedMilliseconds}ms");
+            Console.WriteLine($"LoadPerks: {sw.ElapsedMilliseconds}ms");
         }
 
         public Action OnSelectPerk() => () =>
@@ -314,11 +348,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     if (string.IsNullOrWhiteSpace(req.CheckRequirements(Player)))
                     {
-                        requirementColors.Add(GreenColor);
+                        requirementColors.Add(_greenColor);
                     }
                     else
                     {
-                        requirementColors.Add(RedColor);
+                        requirementColors.Add(_redColor);
                         meetsRequirements = false;
                     }
                 }
@@ -326,7 +360,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (nextUpgrade.Requirements.Count <= 0)
                 {
                     requirements.Add("None");
-                    requirementColors.Add(GreenColor);
+                    requirementColors.Add(_greenColor);
                 }
 
                 SelectedRequirements = requirements;
@@ -336,7 +370,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             BuyText = nextUpgrade != null
                 ? $"Buy Upgrade ({nextUpgrade.Price} SP)"
                 : "Buy Upgrade";
-            IsBuyEnabled = nextUpgrade != null && 
+            IsBuyEnabled = nextUpgrade != null &&
                            dbPlayer.UnallocatedSP >= nextUpgrade.Price &&
                            meetsRequirements;
 
@@ -369,5 +403,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         };
 
+        public Action OnClickPreviousPage() => () =>
+        {
+            var newPage = SelectedPage - 1;
+            if (newPage < 1)
+                newPage = 1;
+
+            SelectedPage = newPage;
+        };
+
+        public Action OnClickNextPage() => () =>
+        {
+            var newPage = SelectedPage + 1;
+            if (newPage > _pages)
+                newPage = _pages;
+
+            SelectedPage = newPage;
+        };
     }
 }

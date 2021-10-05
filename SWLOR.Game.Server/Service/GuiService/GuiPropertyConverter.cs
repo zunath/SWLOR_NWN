@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.Service.GuiService
                 for (var index = 0; index <= JsonGetLength(json) - 1; index++)
                 {
                     var record = JsonArrayGet(json, index);
-                    list.Add( JsonGetInt(record));
+                    list.Add(JsonGetInt(record));
                 }
 
                 return list;

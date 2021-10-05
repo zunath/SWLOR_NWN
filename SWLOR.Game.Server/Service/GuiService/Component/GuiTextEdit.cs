@@ -16,8 +16,8 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string Value { get; set; }
         private string ValueBindName { get; set; }
         private bool IsValueBound => !string.IsNullOrWhiteSpace(ValueBindName);
-        
-        private int MaxLength { get; set; }
+
+        private int MaxLength { get; set; } = 32;
         private bool IsMultiLine { get; set; }
 
         /// <summary>

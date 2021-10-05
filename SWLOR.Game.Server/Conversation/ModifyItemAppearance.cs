@@ -471,11 +471,11 @@ namespace SWLOR.Game.Server.Conversation
                             break;
                         // Shortbow = Blaster Pistol
                         case BaseItem.ShortBow:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 19, 21, 23, 24, 25 };
+                            parts = new[] { 1, 2, 3, 4, 10, 11, 12, 13, 14, 15, 16, 18, 19, 21, 23, 24, 25 };
                             break;
                         // Light Crossbow = Blaster Rifle
                         case BaseItem.LightCrossbow:
-                            parts = new[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+                            parts = new[] { 1, 2, 3, 4 };
                             break;
                         case BaseItem.ThrowingAxe:
                             parts = new[] { 1, 2, 3, 4 };

@@ -400,11 +400,11 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         break;
                     // Shortbow = Blaster Pistol
                     case BaseItem.Pistol:
-                        model.PartSelection = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
+                        model.PartSelection = new[] { 1, 2, 3, 4, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25 };
                         break;
                     // Light Crossbow = Blaster Rifle
                     case BaseItem.Rifle:
-                        model.PartSelection = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25 };
+                        model.PartSelection = new[] { 1, 2, 3, 4, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 24, 25 };
                         break;
                     case BaseItem.ThrowingAxe:
                         model.PartSelection = new[] { 1, 2, 3, 4 };

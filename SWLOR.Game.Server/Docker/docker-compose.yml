@@ -41,7 +41,7 @@ services:
             - INFLUXDB_UDP_BIND_ADDRESS=:8089
             - INFLUXDB_UDP_DATABASE=metrics
         volumes:
-        - ${PWD-.}/NWServer/Data/influxdb:/var/lib/influxdb
+        - ${PWD-.}/influxdb:/var/lib/influxdb
         logging:
             driver: "none"
         networks:

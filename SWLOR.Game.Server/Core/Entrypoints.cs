@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -30,8 +31,7 @@ namespace SWLOR.Game.Server.Core
 
         private static Dictionary<string, List<ActionScript>> _scripts;
         private static Dictionary<string, List<ConditionalScript>> _conditionalScripts;
-
-        private static readonly NWTask.TaskRunner _taskRunner = new NWTask.TaskRunner();
+        
         public static event Action OnScriptContextBegin;
         public static event Action OnScriptContextEnd;
 
@@ -46,9 +46,9 @@ namespace SWLOR.Game.Server.Core
             {
                 using (new Profiler($"{nameof(Entrypoints)}:TaskRunner"))
                 {
-                    _taskRunner.Process();
+                    NwTask.MainThreadSynchronizationContext.Update();
                 }
-
+                
                 using (new Profiler($"{nameof(Entrypoints)}:Scheduler.Process()"))
                 {
                     Scheduler.Process();

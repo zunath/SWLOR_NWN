@@ -12,10 +12,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// NB: The parsed string needs to be in game-local encoding, but the generated json structure
         ///     will contain UTF-8 data.
         /// </summary>
-        public static Json JsonParse(Json jValue, int nIndent = -1)
+        public static Json JsonParse(string jValue, int nIndent = -1)
         {
             Internal.NativeFunctions.StackPushInteger(nIndent);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int) EngineStructure.Json, jValue);
+            Internal.NativeFunctions.StackPushString(jValue);
             Internal.NativeFunctions.CallBuiltIn(968);
 
             return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);

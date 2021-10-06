@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<GuiWindowType, GuiConstructedWindow> _windowTemplates = new();
         private static readonly Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> _playerWindows = new();
+        private static readonly Dictionary<string, Dictionary<GuiWindowType, GuiPlayerWindow>> _playerModals = new();
         private static readonly Dictionary<string, Dictionary<string, MethodInfo>> _elementEvents = new();
         private static readonly Dictionary<string, GuiWindowType> _windowTypesByKey = new();
 
@@ -49,6 +50,7 @@ namespace SWLOR.Game.Server.Service
                 // Register the window template into the cache.
                 _windowTemplates[constructedWindow.Type] = constructedWindow;
                 _windowTypesByKey[BuildWindowId(constructedWindow.Type)] = constructedWindow.Type;
+                _windowTypesByKey[BuildWindowId(constructedWindow.Type) + "_MODAL"] = constructedWindow.Type;
             }
 
             Console.WriteLine($"Loaded {_windowTemplates.Count} GUI window templates.");
@@ -67,11 +69,19 @@ namespace SWLOR.Game.Server.Service
                 return;
             
             _playerWindows[playerId] = new Dictionary<GuiWindowType, GuiPlayerWindow>();
+            _playerModals[playerId] = new Dictionary<GuiWindowType, GuiPlayerWindow>();
+
             foreach (var (type, window) in _windowTemplates)
             {
+                // Add the window
                 var playerWindow = window.CreatePlayerWindowAction();
                 playerWindow.ViewModel.Geometry = window.InitialGeometry;
                 _playerWindows[playerId][type] = playerWindow;
+
+                // All windows also get a separate modal window added to the cache.
+                var modalWindow = _windowTemplates[GuiWindowType.Modal].CreatePlayerWindowAction();
+                modalWindow.ViewModel.Geometry = window.InitialGeometry;
+                _playerModals[playerId][type] = modalWindow;
             }
         }
 
@@ -100,6 +110,16 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var windowToken = NuiGetEventWindow();
             var windowId = NuiGetWindowId(player, windowToken);
+            var parentWindowType = GuiWindowType.Invalid;
+
+            var isModal = windowId.EndsWith("_MODAL");
+            if (isModal)
+            {
+                var parentWindowId = windowId;
+                parentWindowType = _windowTypesByKey[parentWindowId];
+                windowId = BuildWindowId(GuiWindowType.Modal);
+            }
+
             var eventType = NuiGetEventType();
             var elementId = NuiGetEventElement();
             var eventKey = BuildEventKey(windowId, elementId);
@@ -113,7 +133,9 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var windowType = _windowTypesByKey[windowId];
-            var playerWindow = _playerWindows[playerId][windowType];
+            var playerWindow = isModal 
+                ? _playerModals[playerId][parentWindowType] 
+                : _playerWindows[playerId][windowType];
             var viewModel = playerWindow.ViewModel;
 
             // Note: This section has the possibility of being slow.
@@ -188,13 +210,60 @@ namespace SWLOR.Game.Server.Service
             if (NuiFindWindow(player, windowId) == 0)
             {
                 playerWindow.WindowToken = NuiCreate(player, template.Window, template.WindowId);
-                playerWindow.ViewModel.Bind(player, playerWindow.WindowToken, template.InitialGeometry);
+                playerWindow.ViewModel.Bind(player, playerWindow.WindowToken, template.InitialGeometry, type);
             }
             // Otherwise the window must already be open. Close it.
             else
             {
                 NuiDestroy(player, playerWindow.WindowToken);
+
+                // Also destroy the modal, if it's open.
+                var modalWindowId = windowId + "_MODAL";
+                if (NuiFindWindow(player, modalWindowId) != 0)
+                {
+                    NuiDestroy(player, _playerModals[playerId][type].WindowToken);
+                }
             }
+        }
+
+        /// <summary>
+        /// Shows the modal associated with the specified parent window type for the player.
+        /// If the modal is already open, nothing will happen.
+        /// </summary>
+        /// <param name="player">The player who will be shown the modal.</param>
+        /// <param name="parentType">The parent window type.</param>
+        public static void ShowModal(uint player, GuiWindowType parentType)
+        {
+            var modalWindowId = BuildWindowId(parentType) + "_MODAL";
+
+            // If the modal is already open, don't do anything else.
+            if (NuiFindWindow(player, modalWindowId) != 0)
+                return;
+
+            var playerId = GetObjectUUID(player);
+            var playerModal = _playerModals[playerId][parentType];
+            var template = _windowTemplates[GuiWindowType.Modal];
+            var parentWindow = _playerWindows[playerId][parentType];
+            playerModal.WindowToken = NuiCreate(player, template.Window, modalWindowId);
+            playerModal.ViewModel.Bind(player, playerModal.WindowToken, parentWindow.ViewModel.Geometry, parentType);
+        }
+
+        /// <summary>
+        /// Closes the modal associated with the specified parent window type for the player.
+        /// If the modal isn't open, nothing will happen.
+        /// </summary>
+        /// <param name="player">The player to close the modal for.</param>
+        /// <param name="parentType">The parent window type.</param>
+        public static void CloseModal(uint player, GuiWindowType parentType)
+        {
+            var modalWindowId = BuildWindowId(parentType) + "_MODAL";
+
+            // If the modal is not open, don't do anything else.
+            if (NuiFindWindow(player, modalWindowId) == 0)
+                return;
+
+            var playerId = GetObjectUUID(player);
+            NuiDestroy(player, _playerModals[playerId][parentType].WindowToken);
         }
 
         /// <summary>
@@ -212,6 +281,18 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             TogglePlayerWindow(player, GuiWindowType.CharacterSheet);
+        }
+
+        /// <summary>
+        /// Retrieves the modal instance of a player's window.
+        /// </summary>
+        /// <param name="player">The player to retrieve for.</param>
+        /// <param name="type">The type of window to retrieve.</param>
+        /// <returns>A player's window instance of the specified type.</returns>
+        public static GuiPlayerWindow GetPlayerModal(uint player, GuiWindowType type)
+        {
+            var playerId = GetObjectUUID(player);
+            return _playerModals[playerId][type];
         }
 
         public class IdReservation

@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private const int ItemsPerPage = 30;
         private int _pages;
+        private bool _initialLoadDone;
 
         public GuiBindingList<GuiComboEntry> PageNumbers
         {
@@ -152,24 +153,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public bool IsInMainView
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
-        public bool IsConfirmingUpgrade
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
-        public bool IsConfirmingRefund
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
         public PerksViewModel()
         {
             _filteredPerks = new List<PerkType>();
@@ -181,20 +164,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnLoadWindow() => () =>
         {
-            IsInMainView = true;
-            IsConfirmingUpgrade = false;
-            IsConfirmingRefund = false;
+            _initialLoadDone = false;
             SelectedPerkCategoryId = 0;
             SearchText = string.Empty;
             BuyText = "Buy Upgrade";
             SelectedPage = 1;
-
-            LoadCharacterDetails();
-            LoadPerks();
+            IsPerkSelected = false;
+            IsBuyEnabled = false;
 
             WatchOnClient(model => model.SelectedPerkCategoryId);
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.SelectedPage);
+            
+            _initialLoadDone = true;
+            LoadCharacterDetails();
+            LoadPerks();
         };
 
         private void LoadCharacterDetails()
@@ -216,6 +200,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadPerks()
         {
+            if (!_initialLoadDone) return;
+
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
 
@@ -320,7 +306,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : null;
             var meetsRequirements = true;
 
-            var selectedDetails = string.Empty;
+            var selectedDetails = detail.Name + "\n\n";
 
             // Perk Description
             if (detail.Description != null)
@@ -336,7 +322,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (nextUpgrade != null)
             {
                 selectedDetails += "Next Upgrade: \n" +
-                                   $"    Price: {nextUpgrade.Price}\n" +
+                                   $"    Price: {nextUpgrade.Price} SP\n" +
                                    $"{nextUpgrade.Description}\n\n";
 
                 var requirements = new GuiBindingList<string>();
@@ -380,25 +366,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickBuyUpgrade() => () =>
         {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var selectedPerk = _filteredPerks[_selectedPerkIndex];
+            var detail = Perk.GetPerkDetails(selectedPerk);
+            var playerRank = dbPlayer.Perks.ContainsKey(selectedPerk)
+                ? dbPlayer.Perks[selectedPerk]
+                : 0;
+            var nextUpgrade = detail.PerkLevels.ContainsKey(playerRank + 1)
+                ? detail.PerkLevels[playerRank + 1]
+                : null;
 
+            ShowModal(
+                $"This upgrade will cost {nextUpgrade?.Price} SP. Are you sure you want to buy it?", 
+                () =>
+                {
+                    Console.WriteLine("buy sumpin");
+                });
         };
 
         public Action OnClickRefund() => () =>
-        {
-
-        };
-
-        public Action OnClickConfirmUpgrade() => () =>
-        {
-
-        };
-
-        public Action OnClickConfirmRefund() => () =>
-        {
-
-        };
-
-        public Action OnClickCancelConfirmation() => () =>
         {
 
         };

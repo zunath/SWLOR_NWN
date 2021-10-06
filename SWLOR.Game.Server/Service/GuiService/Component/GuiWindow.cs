@@ -273,7 +273,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
 
             root = Nui.Row(root);
 
-            var title = IsTitleBound ? Nui.Bind(TitleBindName) : JsonString(Title);
+            var title = IsTitleBound ? Nui.Bind(TitleBindName) : Title == null ? JsonBool(false) : JsonString(Title);
             var geometry = Nui.Bind(GeometryBindName);
             var isResizable = IsResizableBound ? Nui.Bind(IsResizableBindName) : JsonBool(IsResizable);
             var isCollapsed = IsCollapsedBound ? Nui.Bind(IsCollapsedBindName) : JsonBool(IsCollapsed);

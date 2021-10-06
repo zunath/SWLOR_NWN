@@ -1,5 +1,4 @@
-﻿using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service.GuiService.Component;
+﻿using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {
@@ -16,7 +15,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <param name="player">The player to bind.</param>
         /// <param name="windowToken">The window token to bind.</param>
         /// <param name="initialGeometry">The initial geometry to use.</param>
-        void Bind(uint player, int windowToken, GuiRectangle initialGeometry);
+        /// <param name="type">The type of window in use.</param>
+        void Bind(uint player, int windowToken, GuiRectangle initialGeometry, GuiWindowType type);
 
         /// <summary>
         /// Handles updating the view model with changes received from the player's client.

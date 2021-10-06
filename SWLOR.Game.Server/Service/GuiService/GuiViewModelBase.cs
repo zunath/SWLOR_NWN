@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Annotations;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -146,16 +147,20 @@ namespace SWLOR.Game.Server.Service.GuiService
             }
         }
 
+        protected GuiWindowType WindowType { get; private set; }
+
         /// <summary>
         /// Binds a player and window with the associated view model.
         /// </summary>
         /// <param name="player">The player to bind.</param>
         /// <param name="windowToken">The window token to bind.</param>
         /// <param name="initialGeometry">The initial geometry to use in the event the window dimensions aren't set.</param>
-        public void Bind(uint player, int windowToken, GuiRectangle initialGeometry)
+        /// <param name="type">The type of window.</param>
+        public void Bind(uint player, int windowToken, GuiRectangle initialGeometry, GuiWindowType type)
         {
             Player = player;
             WindowToken = windowToken;
+            WindowType = type;
 
             if (Geometry.X == 0.0f &&
                 Geometry.Y == 0.0f &&
@@ -175,6 +180,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             WatchOnClient(model => model.Geometry);
         }
 
+
         /// <summary>
         /// Handles updating the view model with changes received from the player's client.
         /// </summary>
@@ -189,6 +195,10 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             if(propertyName != nameof(Geometry))
                 GetType().GetProperty(propertyName)?.SetValue(this, value);
+
+            // Update Modal geometry if this VM has it active.
+            if (propertyName == nameof(Geometry))
+                Gui.GetPlayerModal(Player, WindowType).ViewModel.Geometry = Geometry;
         }
 
         /// <summary>
@@ -205,5 +215,21 @@ namespace SWLOR.Game.Server.Service.GuiService
             NuiSetBindWatch(Player, WindowToken, propertyName, true);
             NuiSetBind(Player, WindowToken, propertyName, json);
         }
+        
+        protected void ShowModal(
+            string prompt, 
+            Action confirmAction, 
+            Action cancelAction = null, 
+            string confirmText = "Yes", 
+            string cancelText = "No")
+        {
+            var playerWindow = Gui.GetPlayerModal(Player, WindowType);
+            var vm = (ModalViewModel) playerWindow.ViewModel;
+
+            vm.LoadModalInfo(Geometry, prompt, confirmAction, cancelAction, confirmText, cancelText);
+            Gui.ShowModal(Player, WindowType);
+        }
+
+
     }
 }

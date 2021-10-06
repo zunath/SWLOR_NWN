@@ -18,20 +18,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetTitle("Perks")
                 .AddColumn(col =>
                 {
-                    //// Buy Upgrade confirmation section
-                    //col.AddRow(row =>
-                    //{
-                    //    row.AddLabel()
-                    //        .SetText("Are you sure you want to upgrade this perk?");
-                    //}).BindIsVisible(model => model.IsConfirmingUpgrade);
-
-                    //// Reset confirmation section
-                    //col.AddRow(row =>
-                    //{
-
-                    //}).BindIsVisible(model => model.IsConfirmingReset);
-
-                    // Main section - filters, list, buttons, etc.
                     col.AddRow(row =>
                     {
                         row.AddSpacer();
@@ -46,7 +32,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         }
 
                         row.AddSpacer();
-                    }).BindIsVisible(model => model.IsInMainView);
+                    });
 
                     col.AddRow(row =>
                     {
@@ -63,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHeight(26f);
 
-                    }).BindIsVisible(model => model.IsInMainView);
+                    });
 
                     col.AddRow(row =>
                     {
@@ -72,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHeight(26f);
-                    }).BindIsVisible(model => model.IsInMainView);
+                    });
 
                     col.AddRow(row =>
                     {
@@ -82,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHeight(26f);
 
-                    }).BindIsVisible(model => model.IsInMainView);
+                    });
 
                     col.AddRow(row =>
                     {
@@ -128,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindIsVisible(model => model.IsPerkSelected);
                             });
                         });
-                    }).BindIsVisible(model => model.IsInMainView);
+                    });
 
                     col.AddRow(row =>
                     {
@@ -166,7 +152,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindOnClicked(model => model.OnClickRefund());
 
                         row.AddSpacer();
-                    }).BindIsVisible(model => model.IsInMainView);
+                    });
                 });
 
             return _builder.Build();

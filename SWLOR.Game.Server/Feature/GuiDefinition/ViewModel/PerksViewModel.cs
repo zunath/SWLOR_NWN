@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -32,6 +36,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
+                SelectedPerkIndex = -1;
                 LoadPerks();
             }
         }
@@ -210,15 +215,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var sw = new Stopwatch();
             sw.Start();
             
-            var perkColors = new GuiBindingList<GuiColor>();
-            var perkDetails = new GuiBindingList<string>();
-            var perkDetailsSelected = new GuiBindingList<bool>();
+            var perkButtonColors = new GuiBindingList<GuiColor>();
+            var perkButtonTexts = new GuiBindingList<string>();
+            var perkDetailSelected = new GuiBindingList<bool>();
             var pageNumbers = new GuiBindingList<GuiComboEntry>();
 
             var perkList = SelectedPerkCategoryId == 0
                 ? Perk.GetAllActivePerks()
                 : Perk.GetActivePerksInCategory((PerkCategoryType)SelectedPerkCategoryId);
-
 
             // Filter down to just perks with a name partially matching the search text
             if (!string.IsNullOrWhiteSpace(SearchText))
@@ -263,18 +267,73 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 _filteredPerks.Add(type);
-                perkDetails.Add($"{detail.Name} ({playerRank} / {detail.PerkLevels.Count})");
-                perkDetailsSelected.Add(false);
-                perkColors.Add(meetsRequirements ? _greenColor : _redColor);
+                perkButtonTexts.Add($"{detail.Name} ({playerRank} / {detail.PerkLevels.Count})");
+                perkDetailSelected.Add(false);
+                perkButtonColors.Add(meetsRequirements ? _greenColor : _redColor);
             }
 
-            PerkButtonColors = perkColors;
-            PerkButtonTexts = perkDetails;
-            PerkDetailSelected = perkDetailsSelected;
+            PerkButtonColors = perkButtonColors;
+            PerkButtonTexts = perkButtonTexts;
+            PerkDetailSelected = perkDetailSelected;
             PageNumbers = pageNumbers;
 
             sw.Stop();
             Console.WriteLine($"LoadPerks: {sw.ElapsedMilliseconds}ms");
+        }
+
+        private string BuildSelectedPerkDetailText(PerkDetail detail, PerkLevel currentUpgrade, PerkLevel nextUpgrade)
+        {
+            var selectedDetails = detail.Name + "\n\n";
+
+            // Perk Description
+            if (detail.Description != null)
+            {
+                selectedDetails += "Description: \n" + detail.Description + "\n\n";
+            }
+
+            if (currentUpgrade != null)
+            {
+                selectedDetails += "Current Upgrade: \n" + currentUpgrade.Description + "\n\n";
+            }
+
+            if (nextUpgrade != null)
+            {
+                selectedDetails += "Next Upgrade: \n" +
+                                   $"    Price: {nextUpgrade.Price} SP\n" +
+                                   $"{nextUpgrade.Description}\n\n";
+            }
+
+            return selectedDetails;
+        }
+
+        private (bool, GuiBindingList<string>, GuiBindingList<GuiColor>) BuildRequirements(PerkLevel nextUpgrade)
+        {
+            var meetsRequirements = true;
+            var requirements = new GuiBindingList<string>();
+            var requirementColors = new GuiBindingList<GuiColor>();
+
+            foreach (var req in nextUpgrade.Requirements)
+            {
+                requirements.Add(req.RequirementText);
+
+                if (string.IsNullOrWhiteSpace(req.CheckRequirements(Player)))
+                {
+                    requirementColors.Add(_greenColor);
+                }
+                else
+                {
+                    requirementColors.Add(_redColor);
+                    meetsRequirements = false;
+                }
+            }
+
+            if (nextUpgrade.Requirements.Count <= 0)
+            {
+                requirements.Add("None");
+                requirementColors.Add(_greenColor);
+            }
+
+            return (meetsRequirements, requirements, requirementColors);
         }
 
         public Action OnSelectPerk() => () =>
@@ -304,51 +363,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var nextUpgrade = detail.PerkLevels.ContainsKey(playerRank + 1)
                 ? detail.PerkLevels[playerRank + 1]
                 : null;
+            var selectedDetails = BuildSelectedPerkDetailText(detail, currentUpgrade, nextUpgrade);
             var meetsRequirements = true;
-
-            var selectedDetails = detail.Name + "\n\n";
-
-            // Perk Description
-            if (detail.Description != null)
-            {
-                selectedDetails += "Description: \n" + detail.Description + "\n\n";
-            }
-
-            if (currentUpgrade != null)
-            {
-                selectedDetails += "Current Upgrade: \n" + currentUpgrade.Description + "\n\n";
-            }
 
             if (nextUpgrade != null)
             {
-                selectedDetails += "Next Upgrade: \n" +
-                                   $"    Price: {nextUpgrade.Price} SP\n" +
-                                   $"{nextUpgrade.Description}\n\n";
-
-                var requirements = new GuiBindingList<string>();
-                var requirementColors = new GuiBindingList<GuiColor>();
-
-                foreach (var req in nextUpgrade.Requirements)
-                {
-                    requirements.Add(req.RequirementText);
-
-                    if (string.IsNullOrWhiteSpace(req.CheckRequirements(Player)))
-                    {
-                        requirementColors.Add(_greenColor);
-                    }
-                    else
-                    {
-                        requirementColors.Add(_redColor);
-                        meetsRequirements = false;
-                    }
-                }
-
-                if (nextUpgrade.Requirements.Count <= 0)
-                {
-                    requirements.Add("None");
-                    requirementColors.Add(_greenColor);
-                }
-
+                var (meetsReqs, requirements, requirementColors) = BuildRequirements(nextUpgrade);
+                meetsRequirements = meetsReqs;
                 SelectedRequirements = requirements;
                 SelectedRequirementColors = requirementColors;
             }
@@ -363,6 +384,65 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedDetails = selectedDetails;
             IsPerkSelected = true;
         };
+
+        private void GrantFeats(PerkLevel nextLevel)
+        {
+            foreach (var feat in nextLevel.GrantedFeats)
+            {
+                if (GetHasFeat(feat, Player)) continue;
+
+                // If feat isn't registered or the ability doesn't have an impact action,
+                // don't add the feat to the player's hot bar.
+                if (!Ability.IsFeatRegistered(feat)) continue;
+                var abilityDetail = Ability.GetAbilityDetail(feat);
+                if (abilityDetail.ImpactAction == null) continue;
+
+                CreaturePlugin.AddFeatByLevel(Player, feat, 1);
+                AddFeatToHotBar(feat);
+            }
+        }
+
+        private void AddFeatToHotBar(FeatType feat)
+        {
+            var qbs = PlayerQuickBarSlot.UseFeat(feat);
+
+            // Try to add the new feat to the player's hotbar.
+            if (PlayerPlugin.GetQuickBarSlot(Player, 0).ObjectType == QuickBarSlotType.Empty)
+                PlayerPlugin.SetQuickBarSlot(Player, 0, qbs);
+            else if (PlayerPlugin.GetQuickBarSlot(Player, 1).ObjectType == QuickBarSlotType.Empty)
+                PlayerPlugin.SetQuickBarSlot(Player, 1, qbs);
+            else if (PlayerPlugin.GetQuickBarSlot(Player, 2).ObjectType == QuickBarSlotType.Empty)
+                PlayerPlugin.SetQuickBarSlot(Player, 2, qbs);
+            else if (PlayerPlugin.GetQuickBarSlot(Player, 3).ObjectType == QuickBarSlotType.Empty)
+                PlayerPlugin.SetQuickBarSlot(Player, 3, qbs);
+            else if (PlayerPlugin.GetQuickBarSlot(Player, 4).ObjectType == QuickBarSlotType.Empty)
+                PlayerPlugin.SetQuickBarSlot(Player, 4, qbs);
+            else if (PlayerPlugin.GetQuickBarSlot(Player, 5).ObjectType == QuickBarSlotType.Empty)
+                PlayerPlugin.SetQuickBarSlot(Player, 5, qbs);
+            else if (PlayerPlugin.GetQuickBarSlot(Player, 6).ObjectType == QuickBarSlotType.Empty)
+                PlayerPlugin.SetQuickBarSlot(Player, 6, qbs);
+            else if (PlayerPlugin.GetQuickBarSlot(Player, 7).ObjectType == QuickBarSlotType.Empty)
+                PlayerPlugin.SetQuickBarSlot(Player, 7, qbs);
+            else if (PlayerPlugin.GetQuickBarSlot(Player, 8).ObjectType == QuickBarSlotType.Empty)
+                PlayerPlugin.SetQuickBarSlot(Player, 8, qbs);
+            else if (PlayerPlugin.GetQuickBarSlot(Player, 9).ObjectType == QuickBarSlotType.Empty)
+                PlayerPlugin.SetQuickBarSlot(Player, 9, qbs);
+            else if (PlayerPlugin.GetQuickBarSlot(Player, 10).ObjectType == QuickBarSlotType.Empty)
+                PlayerPlugin.SetQuickBarSlot(Player, 10, qbs);
+        }
+
+        // Applies any Purchase triggers associated with this perk.
+        private void ApplyPurchasePerkTriggers(int perkLevel, PerkType selectedPerk)
+        {
+            var perkDetail = Perk.GetPerkDetails(selectedPerk);
+            if (perkDetail.PurchasedTriggers.Count > 0)
+            {
+                foreach (var action in perkDetail.PurchasedTriggers)
+                {
+                    action(Player, selectedPerk, perkLevel);
+                }
+            }
+        }
 
         public Action OnClickBuyUpgrade() => () =>
         {
@@ -381,7 +461,66 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 $"This upgrade will cost {nextUpgrade?.Price} SP. Are you sure you want to buy it?", 
                 () =>
                 {
-                    Console.WriteLine("buy sumpin");
+                    // Refresh data
+                    dbPlayer = DB.Get<Player>(playerId);
+                    selectedPerk = _filteredPerks[_selectedPerkIndex];
+                    detail = Perk.GetPerkDetails(selectedPerk);
+                    playerRank = dbPlayer.Perks.ContainsKey(selectedPerk)
+                        ? dbPlayer.Perks[selectedPerk]
+                        : 0;
+                    nextUpgrade = detail.PerkLevels.ContainsKey(playerRank + 1)
+                        ? detail.PerkLevels[playerRank + 1]
+                        : null;
+
+                    // Run validation again
+                    if (nextUpgrade == null)
+                        return;
+
+                    if (playerRank + 1 > detail.PerkLevels.Count)
+                        return;
+
+                    foreach (var req in nextUpgrade.Requirements)
+                    {
+                        if (!string.IsNullOrWhiteSpace(req.CheckRequirements(Player)))
+                        {
+                            return;
+                        }
+                    }
+
+                    if (dbPlayer.UnallocatedSP < nextUpgrade.Price)
+                        return;
+
+                    // All validation passes. Perform the upgrade.
+                    dbPlayer.Perks[selectedPerk] = playerRank + 1;
+                    dbPlayer.UnallocatedSP -= nextUpgrade.Price;
+                    DB.Set(playerId, dbPlayer);
+
+                    GrantFeats(nextUpgrade);
+                    ApplyPurchasePerkTriggers(dbPlayer.Perks[selectedPerk], selectedPerk);
+
+                    FloatingTextStringOnCreature(ColorToken .Green($"You purchase '{detail.Name}' rank {dbPlayer.Perks[selectedPerk]}."), Player, false);
+
+                    EventsPlugin.SignalEvent("SWLOR_BUY_PERK", Player);
+
+                    // Update UI with latest upgrade changes.
+                    LoadCharacterDetails();
+
+                    var currentUpgrade = detail.PerkLevels.ContainsKey(dbPlayer.Perks[selectedPerk])
+                        ? detail.PerkLevels[dbPlayer.Perks[selectedPerk]]
+                        : null;
+                    nextUpgrade = detail.PerkLevels.ContainsKey(dbPlayer.Perks[selectedPerk] + 1)
+                        ? detail.PerkLevels[dbPlayer.Perks[selectedPerk] + 1]
+                        : null;
+                    SelectedDetails = BuildSelectedPerkDetailText(detail, currentUpgrade, nextUpgrade);
+                    var (meetsRequirements, requirements, requirementColors) = BuildRequirements(nextUpgrade);
+                    
+                    PerkButtonTexts[_selectedPerkIndex] = $"{detail.Name} ({dbPlayer.Perks[selectedPerk]} / {detail.PerkLevels.Count})";
+                    PerkButtonColors[_selectedPerkIndex] = meetsRequirements ? _greenColor : _redColor;
+                    SelectedRequirements = requirements;
+                    SelectedRequirementColors = requirementColors;
+                    IsBuyEnabled = nextUpgrade != null &&
+                                   dbPlayer.UnallocatedSP >= nextUpgrade.Price &&
+                                   meetsRequirements;
                 });
         };
 

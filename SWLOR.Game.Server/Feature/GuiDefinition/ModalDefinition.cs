@@ -26,12 +26,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(row =>
                     {
-                        row.AddSpacer();
                         row.AddText()
-                            .BindText(modal => modal.PromptText)
-                            .SetHeight(200f);
-
-                        row.AddSpacer();
+                            .BindText(modal => modal.PromptText);
                     });
 
                     col.AddRow(row =>

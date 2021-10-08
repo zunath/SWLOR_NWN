@@ -55,7 +55,6 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 SwitchConversation(nameof(RecipeDialog));
             });
             page.AddResponse("Modify Item Appearance", () => SwitchConversation(nameof(ModifyItemAppearanceDialog)));
-            page.AddResponse("Player Settings", () => SwitchConversation(nameof(PlayerSettingsDialog)));
             page.AddResponse("Open Trash Can (Destroy Items)", () =>
             {
                 EndConversation();

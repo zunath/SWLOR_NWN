@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Player)
                 .Action((user, target, location, args) =>
                 {
-                    Dialog.StartConversation(user, user, nameof(ViewPerksDialog));
+                    Gui.TogglePlayerWindow(user, GuiWindowType.Perks);
                 });
 
             DeleteCommand(builder);

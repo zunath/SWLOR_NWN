@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
@@ -32,12 +33,34 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         private static void PerkRefundTome(ItemBuilder builder)
         {
             builder.Create("refund_tome")
+                .ValidationAction((user, item, target, location) =>
+                {
+                    if (!GetIsPC(user) || GetIsDM(user))
+                    {
+                        return "Only players may use this item.";
+                    }
+
+                    var playerId = GetObjectUUID(user);
+                    var dbPlayer = DB.Get<Player>(playerId);
+
+                    if (dbPlayer.NumberPerkResetsAvailable >= 99)
+                    {
+                        return "You cannot add any more perk resets to your collection.";
+                    }
+
+                    return string.Empty;
+                })
                 .ApplyAction((user, item, target, location) =>
                 {
-                    SetLocalObject(user, "PERK_REFUND_OBJECT", item);
-                    AssignCommand(user, () => ClearAllActions());
+                    var playerId = GetObjectUUID(user);
+                    var dbPlayer = DB.Get<Player>(playerId);
 
-                    Dialog.StartConversation(user, user, nameof(PerkRefundDialog));
+                    dbPlayer.NumberPerkResetsAvailable++;
+
+                    DB.Set(playerId, dbPlayer);
+
+                    SendMessageToPC(user, $"You gain a reset token. (Total: {dbPlayer.NumberPerkResetsAvailable})");
+                    DestroyObject(item);
                 });
         }
         

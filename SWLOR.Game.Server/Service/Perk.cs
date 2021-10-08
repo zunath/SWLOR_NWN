@@ -97,26 +97,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When a perk refund tome is used, start the perk refund conversation.
-        /// </summary>
-        [NWNEventHandler("item_use_bef")]
-        public static void UsePerkRefundTome()
-        {
-            var player = OBJECT_SELF;
-            if (!GetIsPC(player) || GetIsDM(player)) return;
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
-            if (GetResRef(item) != "refund_tome") return;
-
-            SetLocalObject(player, "PERK_REFUND_OBJECT", item);
-            AssignCommand(player, () => ClearAllActions());
-            Dialog.StartConversation(player, player, nameof(PerkRefundDialog));
-
-            // Don't display the "You cannot use this item" message. Skip the event.
-            EventsPlugin.SetEventResult("1"); 
-            EventsPlugin.SkipEvent();
-        }
-
-        /// <summary>
         /// This will mark a perk as unlocked for a player.
         /// If the perk does not have an "unlock requirement", nothing will happen.
         /// This will do a DB call so be sure to refresh your entity instance after calling this.

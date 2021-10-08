@@ -109,6 +109,7 @@ namespace SWLOR.Game.Server.Entity
         public int FPRegen { get; set; }
         public int STMRegen { get; set; }
         public int XPDebt { get; set; }
+        public int NumberPerkResetsAvailable { get; set; }
         public bool IsDeleted { get; set; }
         public bool ShowHelmet { get; set; }
         public bool IsUsingDualPistolMode { get; set; }

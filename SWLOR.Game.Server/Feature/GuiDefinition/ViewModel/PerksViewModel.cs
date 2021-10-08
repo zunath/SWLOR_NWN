@@ -199,8 +199,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             AvailableSP = $"Available SP: {dbPlayer.UnallocatedSP}";
             TotalSP = $"Total SP: {dbPlayer.TotalSPAcquired} / {Skill.SkillCap}";
-            ResetNextAvailable = $"Reset Available: {dateRefundAvailableText}";
-            IsRefundEnabled = isRefundAvailable;
+            ResetNextAvailable = $"Reset Available: {dateRefundAvailableText} [# Available: {dbPlayer.NumberPerkResetsAvailable}]";
+            IsRefundEnabled = false;
         }
 
         private void LoadPerks()
@@ -383,6 +383,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SelectedDetails = selectedDetails;
             IsPerkSelected = true;
+            IsRefundEnabled = (dbPlayer.DatePerkRefundAvailable == null ||
+                               dbPlayer.DatePerkRefundAvailable <= DateTime.UtcNow) &&
+                              dbPlayer.NumberPerkResetsAvailable > 0 &&
+                              currentUpgrade != null;
         };
 
         private void GrantFeats(PerkLevel nextLevel)
@@ -526,7 +530,59 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickRefund() => () =>
         {
+            ShowModal($"You may only refund one perk per 24 hours (real world time). This will also consume a refund token. Are you sure you want to refund this perk?", () =>
+            {
+                var playerId = GetObjectUUID(Player);
+                var dbPlayer = DB.Get<Player>(playerId);
 
+                if (dbPlayer.NumberPerkResetsAvailable <= 0)
+                {
+                    FloatingTextStringOnCreature($"You do not have any refund tokens.", Player, false);
+                }
+                else if (dbPlayer.DatePerkRefundAvailable != null &&
+                    dbPlayer.DatePerkRefundAvailable > DateTime.UtcNow)
+                {
+                    var delta = (DateTime)dbPlayer.DatePerkRefundAvailable - DateTime.UtcNow;
+                    var time = Time.GetTimeLongIntervals(delta.Days, delta.Hours, delta.Minutes, delta.Seconds, false);
+                    FloatingTextStringOnCreature($"You can refund another perk in {time}.", Player, false);
+                }
+                else
+                {
+                    var selectedPerk = _filteredPerks[SelectedPerkIndex];
+                    var perkDetail = Perk.GetPerkDetails(selectedPerk);
+                    var pcPerkLevel = dbPlayer.Perks[selectedPerk];
+                    var refundAmount = perkDetail.PerkLevels
+                        .Where(x => x.Key <= pcPerkLevel)
+                        .Sum(x => x.Value.Price);
+                    // Update player's DB record.
+                    dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow.AddHours(24);
+                    dbPlayer.UnallocatedSP += refundAmount;
+                    dbPlayer.Perks.Remove(selectedPerk);
+                    dbPlayer.NumberPerkResetsAvailable--;
+                    DB.Set(playerId, dbPlayer);
+
+                    // Write an audit log and notify the player
+                    Log.Write(LogGroup.PerkRefund, $"REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {pcPerkLevel} - PerkID {selectedPerk}");
+                    FloatingTextStringOnCreature($"Perk refunded! You reclaimed {refundAmount} SP.", Player, false);
+
+                    // Remove all feats granted by all levels of this perk.
+                    var feats = perkDetail.PerkLevels.Values.SelectMany(s => s.GrantedFeats);
+                    foreach (var feat in feats)
+                    {
+                        CreaturePlugin.RemoveFeat(Player, feat);
+                    }
+
+                    // Run all of the triggers related to refunding this perk.
+                    foreach (var action in perkDetail.RefundedTriggers)
+                    {
+                        action(Player, selectedPerk, 0);
+                    }
+
+                    LoadCharacterDetails();
+                    SelectedPerkIndex = -1;
+                    LoadPerks();
+                }
+            });
         };
 
         public Action OnClickPreviousPage() => () =>

@@ -48,7 +48,6 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 page.AddResponse("Distribute Attribute Points", () => SwitchConversation(nameof(DistributeAbilityPointsDialog)));
             }
 
-            page.AddResponse("View Perks", () => SwitchConversation(nameof(ViewPerksDialog)));
             page.AddResponse("View Recipes", () =>
             {
                 var craftingState = Craft.GetPlayerCraftingState(player);

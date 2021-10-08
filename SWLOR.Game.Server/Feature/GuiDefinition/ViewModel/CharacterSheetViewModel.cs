@@ -143,7 +143,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickAppearance() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.AppearanceCustomization);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.AppearanceEditor);
         };
 
         public Action OnClickSettings() => () =>

@@ -12,7 +12,7 @@
         Skills = 7,
         Perks = 8,
         Settings = 9,
-        AppearanceCustomization = 10,
+        AppearanceEditor = 10,
         Bank = 11,
         Modal = 12,
     }

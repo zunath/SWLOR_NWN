@@ -22,11 +22,11 @@
   },
   "BodyPart_LBicep": {
     "type": "byte",
-    "value": 208
+    "value": 0
   },
   "BodyPart_LFArm": {
     "type": "byte",
-    "value": 208
+    "value": 0
   },
   "BodyPart_LFoot": {
     "type": "byte",
@@ -34,7 +34,7 @@
   },
   "BodyPart_LHand": {
     "type": "byte",
-    "value": 208
+    "value": 0
   },
   "BodyPart_LShin": {
     "type": "byte",
@@ -82,15 +82,15 @@
   },
   "BodyPart_Torso": {
     "type": "byte",
-    "value": 209
+    "value": 208
   },
   "Cha": {
     "type": "byte",
-    "value": 9
+    "value": 70
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 2.0
+    "value": 30.0
   },
   "ClassList": {
     "type": "list",
@@ -103,37 +103,37 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 1
+          "value": 10
         }
       },
       {
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 52
+          "value": 45
         },
         "ClassLevel": {
           "type": "short",
-          "value": 1
+          "value": 10
         }
       }
     ]
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 1
+    "value": 19
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 10
+    "value": 42
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 20
+    "value": 62
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 72
+    "value": 1
   },
   "Comment": {
     "type": "cexostring",
@@ -141,7 +141,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 16
+    "value": 36
   },
   "Conversation": {
     "type": "resref",
@@ -153,7 +153,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 15
+    "value": 350
   },
   "DecayTime": {
     "type": "dword",
@@ -165,11 +165,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "With clouded eyes and only one arm, the reclusive Shaman Heklahba is an eerie sight to behold -- but despite her appearance, she seems welcoming enough..."
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 13
+    "value": 83
   },
   "Disarmable": {
     "type": "byte",
@@ -177,7 +179,22 @@
   },
   "Equip_ItemList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 2,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "wookshamanrobes"
+        }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "item009"
+        }
+      }
+    ]
   },
   "FactionID": {
     "type": "word",
@@ -275,7 +292,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Male Wookiee"
+      "0": "Shaman Heklahba"
     }
   },
   "fortbonus": {
@@ -284,7 +301,7 @@
   },
   "Gender": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "GoodEvil": {
     "type": "byte",
@@ -292,11 +309,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 15
+    "value": 350
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 80
   },
   "Interruptable": {
     "type": "byte",
@@ -326,11 +343,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 21
+    "value": 610
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 0
+    "value": 4
   },
   "NoPermDeath": {
     "type": "byte",
@@ -342,7 +359,7 @@
   },
   "PerceptionRange": {
     "type": "byte",
-    "value": 11
+    "value": 10
   },
   "Phenotype": {
     "type": "int",
@@ -354,11 +371,11 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 3502
+    "value": 1039
   },
   "Race": {
     "type": "byte",
-    "value": 6
+    "value": 155
   },
   "refbonus": {
     "type": "short",
@@ -631,7 +648,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 16
+    "value": 46
   },
   "Subrace": {
     "type": "cexostring",
@@ -639,7 +656,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "wook_male"
+    "value": "wookshaman"
   },
   "Tail_New": {
     "type": "dword",
@@ -651,7 +668,7 @@
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "wook_male"
+    "value": "wook_shaman"
   },
   "WalkRate": {
     "type": "int",
@@ -667,6 +684,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 80
   }
 }

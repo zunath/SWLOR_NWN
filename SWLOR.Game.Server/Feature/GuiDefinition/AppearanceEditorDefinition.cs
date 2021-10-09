@@ -42,43 +42,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(row =>
                     {
-                        row.AddSpacer();
-                        row.AddComboBox()
-                            .AddOption("Skin Color", 1)
-                            .AddOption("Hair Color", 2)
-                            .AddOption("Tattoo Color", 3)
-                            .AddOption("Head", 4)
-                            .AddOption("Torso", 5)
-                            .AddOption("Pelvis", 6)
-                            .AddOption("Right Bicep", 7)
-                            .AddOption("Right Forearm", 8)
-                            .AddOption("Right Hand", 9)
-                            .AddOption("Right Thigh", 10)
-                            .AddOption("Right Shin", 11)
-                            .AddOption("Left Bicep", 12)
-                            .AddOption("Left Forearm", 13)
-                            .AddOption("Left Hand", 14)
-                            .AddOption("Left Thigh", 15)
-                            .AddOption("Left Shin", 16)
-                            .BindSelectedIndex(model => model.SelectedPartIndex);
-                        row.AddSpacer();
+                        row.AddColumn(col2 =>
+                        {
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddList(template =>
+                                {
+                                    template.AddToggleButton()
+                                        .BindText(model => model.CategoryOptions)
+                                        .BindIsToggled(model => model.CategorySelected)
+                                        .BindOnClicked(model => model.OnSelectCategory());
+                                })
+                                    .BindRowCount(model => model.CategoryOptions);
+                            });
+                        });
 
+                        row.AddColumn(col2 =>
+                        {
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddImage()
+                                    .BindResref(model => model.ColorSheetResref)
+                                    .BindIsVisible(model => model.IsColorSheetPartSelected)
+                                    .SetHeight(176f)
+                                    .SetWidth(256f)
+                                    .SetVerticalAlign(NuiVerticalAlign.Top)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetAspect(NuiAspect.ExactScaled)
+                                    .BindOnMouseDown(model => model.OnSelectColor());
+
+                                row2.AddList(template =>
+                                {
+                                    template.AddToggleButton()
+                                        .BindText(model => model.PartOptions)
+                                        .BindIsToggled(model => model.PartSelected)
+                                        .BindOnClicked(model => model.OnSelectPart());
+                                })
+                                    .BindIsVisible(model => model.IsRegularPartSelected);
+
+                            });
+                        });
+                        
                         row.BindIsVisible(model => model.IsAppearanceSelected);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddImage()
-                            .BindResref(model => model.ColorSheetResref)
-                            .BindIsVisible(model => model.IsColorSheetPartSelected)
-                            .SetHeight(176f)
-                            .SetWidth(256f)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetAspect(NuiAspect.ExactScaled)
-                            .BindOnMouseDown(model => model.OnSelectColor());
-                        row.AddSpacer();
                     });
 
                     col.AddRow(row =>

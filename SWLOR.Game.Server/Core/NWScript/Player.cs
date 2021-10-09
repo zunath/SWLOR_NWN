@@ -485,13 +485,13 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// - the player is running a older build that does not advertise device properties,
         /// - the player has disabled sending device properties (Options->Game->Privacy).
         /// </summary>
-        public static PlayerDevicePlatformType GetPlayerDeviceProperty(uint oPlayer, string sProperty)
+        public static int GetPlayerDeviceProperty(uint oPlayer, string sProperty)
         {
             Internal.NativeFunctions.StackPushString(sProperty);
             Internal.NativeFunctions.StackPushObject(oPlayer);
             Internal.NativeFunctions.CallBuiltIn(1004);
 
-            return (PlayerDevicePlatformType)Internal.NativeFunctions.StackPopInteger();
+            return Internal.NativeFunctions.StackPopInteger();
         }
 
         /// <summary>

@@ -2844,6 +2844,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 27.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chieftain Ryywlocc"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wook_chief"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 0.5
                     },
                     "FACTION": {
@@ -4554,6 +4573,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 30.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shaman Heklahba"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wook_shaman"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 51.0
                     },
                     "FACTION": {
@@ -5213,6 +5251,44 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "wpn_guildmaster"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 12.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wookiee Marksman"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wook_gunner"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 12.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Wookiee Warrior"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wook_warrior"
                     }
                   }
                 ]

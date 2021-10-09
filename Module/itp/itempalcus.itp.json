@@ -1845,6 +1845,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Ryywlocc's Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wookchief_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Sania's Outfit"
                     },
                     "RESREF": {
@@ -2092,6 +2103,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "graviusrobe002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Heklahba's Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "wookshamanrobes"
                     }
                   },
                   {
@@ -15232,6 +15254,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "[NPC] Ryywlocc's Ryyk"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "wookchief_ryyk"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Archetype Great Sword"
                           },
                           "RESREF": {
@@ -15292,6 +15325,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "del_greatsword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Great Ryyk Blade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "wook_bigryyk"
                           }
                         },
                         {
@@ -15495,6 +15539,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "pro_longsword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ryyk Blade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "wook_lilryyk"
                           }
                         },
                         {
@@ -16131,6 +16186,33 @@
                       "type": "byte",
                       "value": 49
                     },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "[NPC] Heklahba's Staff"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "item009"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "[NPC] Heklahba's Staff"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "wookshamanstaff"
+                          }
+                        }
+                      ]
+                    },
                     "STRREF": {
                       "type": "dword",
                       "value": 6779
@@ -16456,6 +16538,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "tuskenblasterrif"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Wookiee Bowcaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "wook_bowcaster"
                           }
                         }
                       ]

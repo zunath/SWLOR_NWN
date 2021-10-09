@@ -76,7 +76,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetWidth(256f)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetAspect(NuiAspect.ExactScaled);
+                            .SetAspect(NuiAspect.ExactScaled)
+                            .BindOnMouseDown(model => model.OnSelectColor());
                         row.AddSpacer();
                     });
 

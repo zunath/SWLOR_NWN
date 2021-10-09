@@ -1,5 +1,6 @@
 ﻿using System;
 using SWLOR.Game.Server.Service.GuiService;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -100,6 +101,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsAppearanceSelected = false;
             IsEquipmentSelected = false;
             IsOutfitsSelected = true;
+        };
+
+        public Action OnSelectColor() => () =>
+        {
+            var payload = NuiGetEventPayload();
+            var x = JsonObjectGet(payload, "x");
+            var y = JsonObjectGet(payload, "y");
+
+            Console.WriteLine(JsonDump(payload));
         };
 
         public Action OnApplyChanges() => () =>

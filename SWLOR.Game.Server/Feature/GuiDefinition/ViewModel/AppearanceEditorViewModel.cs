@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 using SWLOR.Game.Server.Feature.AppearanceDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -323,11 +324,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PartSelected[SelectedPartIndex] = true;
         }
 
-        public Action OnCloseWindow() => () =>
-        {
-
-        };
-
         public Action OnSelectAppearance() => () =>
         {
             IsAppearanceSelected = true;
@@ -517,16 +513,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedPartIndex = newPartIndex;
             PartSelected[SelectedPartIndex] = true;
             LoadPart();
-        };
-
-        public Action OnApplyChanges() => () =>
-        {
-
-        };
-
-        public Action OnCancelChanges() => () =>
-        {
-
         };
     }
 }

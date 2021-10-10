@@ -12,7 +12,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             _builder.CreateWindow(GuiWindowType.AppearanceEditor)
                 .BindOnOpened(model => model.OnLoadWindow())
-                .BindOnClosed(model => model.OnCloseWindow())
                 .SetIsResizable(true)
                 .SetInitialGeometry(0, 0, 545f, 295.5f)
                 .SetTitle("Appearance Editor")
@@ -116,22 +115,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         
                         row.BindIsVisible(model => model.IsAppearanceSelected);
                     });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-
-                        row.AddButton()
-                            .SetText("Apply Changes")
-                            .BindOnClicked(model => model.OnApplyChanges());
-
-                        row.AddButton()
-                            .SetText("Cancel")
-                            .BindOnClicked(model => model.OnCancelChanges());
-
-                        row.AddSpacer();
-                    });
-
                 });
 
             return _builder.Build();

@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
+using SWLOR.Game.Server.Feature.AppearanceDefinition;
 using SWLOR.Game.Server.Service.GuiService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -9,6 +13,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private const int ColorWidthCells = 16;
         private const int ColorHeightCells = 11;
+
+        private static readonly Dictionary<RacialType, IAppearanceDefinition> _appearances = new();
+        private Dictionary<int, int> _partIdToIndex = new();
+
+        [NWNEventHandler("mod_load")]
+        public static void LoadAppearances()
+        {
+            _appearances[RacialType.Human] = new HumanAppearanceDefinition();
+            _appearances[RacialType.Bothan] = new BothanAppearanceDefinition();
+            _appearances[RacialType.Chiss] = new ChissAppearanceDefinition();
+            _appearances[RacialType.Zabrak] = new ZabrakAppearanceDefinition();
+            _appearances[RacialType.Twilek] = new TwilekAppearanceDefinition();
+            _appearances[RacialType.Mirialan] = new MirialanAppearanceDefinition();
+            _appearances[RacialType.Echani] = new EchaniAppearanceDefinition();
+            _appearances[RacialType.Cyborg] = new CyborgAppearanceDefinition();
+            _appearances[RacialType.Cathar] = new CatharAppearanceDefinition();
+            _appearances[RacialType.Trandoshan] = new TrandoshanAppearanceDefinition();
+            _appearances[RacialType.Wookiee] = new WookieeAppearanceDefinition();
+            _appearances[RacialType.MonCalamari] = new MonCalamariAppearanceDefinition();
+            _appearances[RacialType.Ugnaught] = new UgnaughtAppearanceDefinition();
+        }
 
         public bool IsAppearanceSelected
         {
@@ -28,7 +53,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-
         public string ColorSheetResref
         {
             get => Get<string>();
@@ -40,26 +64,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             get => Get<bool>();
             set => Set(value);
         }
-
-        public bool IsRegularPartSelected
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
         
-        public GuiBindingList<string> CategoryOptions
+        public GuiBindingList<string> ColorCategoryOptions
         {
             get => Get<GuiBindingList<string>>();
             set => Set(value);
         }
 
-        public GuiBindingList<bool> CategorySelected
+        public GuiBindingList<string> PartCategoryOptions
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<bool> ColorCategorySelected
         {
             get => Get<GuiBindingList<bool>>();
             set => Set(value);
         }
 
-        public int SelectedCategoryIndex
+        public GuiBindingList<bool> PartCategorySelected
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+
+        public int SelectedColorCategoryIndex
         {
             get => Get<int>();
             set
@@ -70,33 +100,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     ColorSheetResref = "gui_pal_skin";
                     IsColorSheetPartSelected = true;
-                    IsRegularPartSelected = false;
                 }
                 else if (value == 1) // 1 = Hair Color
                 {
                     ColorSheetResref = "gui_pal_hair01";
                     IsColorSheetPartSelected = true;
-                    IsRegularPartSelected = false;
                 }
                 else if (value == 2) // 2 = Tattoo Color 1
                 {
                     ColorSheetResref = "gui_pal_tattoo";
                     IsColorSheetPartSelected = true;
-                    IsRegularPartSelected = false;
                 }
                 else if (value == 3) // 3 = Tattoo Color 2
                 {
                     ColorSheetResref = "gui_pal_tattoo";
                     IsColorSheetPartSelected = true;
-                    IsRegularPartSelected = false;
                 }
                 else // All others = Body parts
                 {
                     IsColorSheetPartSelected = false;
-                    IsRegularPartSelected = true;
                 }
             }
         }
+
+        public int SelectedPartCategoryIndex
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        private List<int> _partIds = new List<int>();
+
         public GuiBindingList<string> PartOptions
         {
             get => Get<GuiBindingList<string>>();
@@ -120,23 +154,47 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsAppearanceSelected = true;
             IsEquipmentSelected = false;
             IsOutfitsSelected = false;
-            LoadCategoryOptions();
-            SelectedCategoryIndex = 0;
-            CategorySelected[0] = true;
+            LoadColorCategoryOptions();
+            LoadPartCategoryOptions();
+            SelectedColorCategoryIndex = 0;
+            SelectedPartCategoryIndex = 0;
+            SelectedPartIndex = 0;
+            ColorCategorySelected[0] = true;
+            PartCategorySelected[0] = true;
+            LoadBodyParts();
 
-            WatchOnClient(model => model.SelectedCategoryIndex);
+            WatchOnClient(model => model.SelectedColorCategoryIndex);
+            WatchOnClient(model => model.SelectedPartCategoryIndex);
+            WatchOnClient(model => model.SelectedPartIndex);
         };
 
-        private void LoadCategoryOptions()
+        private void LoadColorCategoryOptions()
         {
-            var partOptions = new GuiBindingList<string>
+            var colorCategoryOptions = new GuiBindingList<string>
             {
                 "Skin Color",
                 "Hair Color",
                 "Tattoo 1 Color",
                 "Tattoo 2 Color",
-                "Tattoo 1",
-                "Tattoo 2",
+            };
+            var colorCategorySelected = new GuiBindingList<bool>();
+
+            foreach (var unused in colorCategoryOptions)
+            {
+                colorCategorySelected.Add(false);
+            }
+
+            ColorCategoryOptions = colorCategoryOptions;
+            ColorCategorySelected = colorCategorySelected;
+
+            SelectedColorCategoryIndex = 0;
+            ColorCategorySelected[SelectedColorCategoryIndex] = true;
+        }
+
+        private void LoadPartCategoryOptions()
+        {
+            var partCategoryOptions = new GuiBindingList<string>
+            {
                 "Head",
                 "Torso",
                 "Pelvis",
@@ -151,18 +209,120 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 "Left Thigh",
                 "Left Shin"
             };
-            var partOptionsSelected = new GuiBindingList<bool>();
+            var partCategorySelected = new GuiBindingList<bool>();
 
-            foreach (var unused in partOptions)
+            foreach (var unused in partCategoryOptions)
             {
-                partOptionsSelected.Add(false);
+                partCategorySelected.Add(false);
             }
 
-            CategoryOptions = partOptions;
-            CategorySelected = partOptionsSelected;
+            PartCategoryOptions = partCategoryOptions;
+            PartCategorySelected = partCategorySelected;
 
-            CategorySelected[SelectedCategoryIndex] = true;
-            SelectedCategoryIndex = 0;
+            SelectedPartCategoryIndex = 0;
+            PartCategorySelected[SelectedPartCategoryIndex] = true;
+        }
+
+        private (GuiBindingList<string>, GuiBindingList<bool>) GetPartLists(int[] partIds)
+        {
+            var partNames = new GuiBindingList<string>();
+            var partSelected = new GuiBindingList<bool>();
+            var partIdToIndex = new Dictionary<int, int>();
+            var index = 0;
+
+            foreach (var partId in partIds)
+            {
+                partNames.Add($"Part #{partId}");
+                partSelected.Add(false);
+                partIdToIndex[partId] = index;
+                index++;
+            }
+
+            _partIdToIndex = partIdToIndex;
+            return (partNames, partSelected);
+        }
+
+        private void LoadBodyParts()
+        {
+            var race = GetRacialType(Player);
+            var gender = GetGender(Player);
+            var appearance = _appearances[race];
+            int[] partIds;
+            int selectedPartId;
+
+            switch (SelectedPartCategoryIndex)
+            {
+                case 0: // Head
+                    switch (gender)
+                    {
+                        case Gender.Male:
+                            partIds = appearance.MaleHeads;
+                            break;
+                        default:
+                            partIds = appearance.FemaleHeads;
+                            break;
+                    }
+
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.Head, Player);
+                    break;
+                case 1: // Torso
+                    partIds = appearance.Torsos;
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.Torso, Player);
+                    break;
+                case 2: // Pelvis
+                    partIds = appearance.Pelvis;
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.Pelvis, Player);
+                    break;
+                case 3: // Right Bicep
+                    partIds = appearance.RightBicep;
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightBicep, Player);
+                    break;
+                case 4: // Right Forearm
+                    partIds = appearance.RightForearm;
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightForearm, Player);
+                    break;
+                case 5: // Right Hand
+                    partIds = appearance.RightHand;
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightHand, Player);
+                    break;
+                case 6: // Right Thigh
+                    partIds = appearance.RightThigh;
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightThigh, Player);
+                    break;
+                case 7: // Right Shin
+                    partIds = appearance.RightShin;
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.RightShin, Player);
+                    break;
+                case 8: // Left Bicep
+                    partIds = appearance.LeftBicep;
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftBicep, Player);
+                    break;
+                case 9: // Left Forearm
+                    partIds = appearance.LeftForearm;
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftForearm, Player);
+                    break;
+                case 10: // Left Hand
+                    partIds = appearance.LeftHand;
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftHand, Player);
+                    break;
+                case 11: // Left Thigh
+                    partIds = appearance.LeftThigh;
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftThigh, Player);
+                    break;
+                case 12: // Left Shin
+                    partIds = appearance.LeftShin;
+                    selectedPartId = GetCreatureBodyPart(CreaturePart.LeftShin, Player);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
+            }
+
+            var (partNames, partSelected) = GetPartLists(partIds);
+
+            PartOptions = partNames;
+            PartSelected = partSelected;
+            SelectedPartIndex = _partIdToIndex[selectedPartId];
+            PartSelected[SelectedPartIndex] = true;
         }
 
         public Action OnCloseWindow() => () =>
@@ -176,7 +336,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsEquipmentSelected = false;
             IsOutfitsSelected = false;
 
-            SelectedCategoryIndex = 0;
+            SelectedColorCategoryIndex = 0;
         };
 
         public Action OnSelectEquipment() => () =>
@@ -193,13 +353,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsOutfitsSelected = true;
         };
 
-        public Action OnSelectCategory() => () =>
+        public Action OnSelectColorCategory() => () =>
         {
             var index = NuiGetEventArrayIndex();
-            CategorySelected[SelectedCategoryIndex] = false;
+            ColorCategorySelected[SelectedColorCategoryIndex] = false;
 
-            SelectedCategoryIndex = index;
-            CategorySelected[index] = true;
+            SelectedColorCategoryIndex = index;
+            ColorCategorySelected[index] = true;
+        };
+
+        public Action OnSelectPartCategory() => () =>
+        {
+            var index = NuiGetEventArrayIndex();
+            PartCategorySelected[SelectedPartCategoryIndex] = false;
+
+            SelectedPartCategoryIndex = index;
+            PartCategorySelected[index] = true;
+
+            LoadBodyParts();
         };
 
         public Action OnSelectColor() => () =>
@@ -231,19 +402,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Appearance - Skin, Hair, or Tattoo
             if (IsAppearanceSelected)
             {
-                if (SelectedCategoryIndex == 0) // 0 = Skin
+                if (SelectedColorCategoryIndex == 0) // 0 = Skin
                 {
                     SetColor(Player, ColorChannel.Skin, colorId);
                 }
-                else if (SelectedCategoryIndex == 1) //  1 = Hair
+                else if (SelectedColorCategoryIndex == 1) //  1 = Hair
                 {
                     SetColor(Player, ColorChannel.Hair, colorId);
                 }
-                else if (SelectedCategoryIndex == 2) // 2 = Tattoo 1
+                else if (SelectedColorCategoryIndex == 2) // 2 = Tattoo 1
                 {
                     SetColor(Player, ColorChannel.Tattoo1, colorId);
                 }
-                else if (SelectedCategoryIndex == 3) // 3 = Tattoo 2
+                else if (SelectedColorCategoryIndex == 3) // 3 = Tattoo 2
                 {
                     SetColor(Player, ColorChannel.Tattoo2, colorId);
                 }
@@ -257,7 +428,67 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSelectPart() => () =>
         {
+            var race = GetRacialType(Player);
+            var gender = GetGender(Player);
+            var appearance = _appearances[race];
+            var index = NuiGetEventArrayIndex();
 
+            PartSelected[SelectedPartIndex] = false;
+            SelectedPartIndex = index;
+            PartSelected[index] = true;
+
+            switch (SelectedPartCategoryIndex)
+            {
+                case 0: // Head
+                    switch (gender)
+                    {
+                        case Gender.Male:
+                            SetCreatureBodyPart(CreaturePart.Head, appearance.MaleHeads[index], Player);
+                            break;
+                        default:
+                            SetCreatureBodyPart(CreaturePart.Head, appearance.FemaleHeads[index], Player);
+                            break;
+                    }
+                    break;
+                case 1: // Torso
+                    SetCreatureBodyPart(CreaturePart.Torso, appearance.Torsos[index], Player);
+                    break;
+                case 2: // Pelvis
+                    SetCreatureBodyPart(CreaturePart.Pelvis, appearance.Pelvis[index], Player);
+                    break;
+                case 3: // Right Bicep
+                    SetCreatureBodyPart(CreaturePart.RightBicep, appearance.RightBicep[index], Player);
+                    break;
+                case 4: // Right Forearm
+                    SetCreatureBodyPart(CreaturePart.RightForearm, appearance.RightForearm[index], Player);
+                    break;
+                case 5: // Right Hand
+                    SetCreatureBodyPart(CreaturePart.RightHand, appearance.RightHand[index], Player);
+                    break;
+                case 6: // Right Thigh
+                    SetCreatureBodyPart(CreaturePart.RightThigh, appearance.RightThigh[index], Player);
+                    break;
+                case 7: // Right Shin
+                    SetCreatureBodyPart(CreaturePart.RightShin, appearance.RightShin[index], Player);
+                    break;
+                case 8: // Left Bicep
+                    SetCreatureBodyPart(CreaturePart.LeftBicep, appearance.LeftBicep[index], Player);
+                    break;
+                case 9: // Left Forearm
+                    SetCreatureBodyPart(CreaturePart.LeftForearm, appearance.LeftForearm[index], Player);
+                    break;
+                case 10: // Left Hand
+                    SetCreatureBodyPart(CreaturePart.LeftHand, appearance.LeftHand[index], Player);
+                    break;
+                case 11: // Left Thigh
+                    SetCreatureBodyPart(CreaturePart.LeftThigh, appearance.LeftThigh[index], Player);
+                    break;
+                case 12: // Left Shin
+                    SetCreatureBodyPart(CreaturePart.LeftShin, appearance.LeftShin[index], Player);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
+            }
         };
 
         public Action OnApplyChanges() => () =>

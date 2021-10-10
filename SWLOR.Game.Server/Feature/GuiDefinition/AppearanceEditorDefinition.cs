@@ -47,15 +47,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             col2.AddRow(row2 =>
                             {
                                 row2.AddList(template =>
-                                {
-                                    template.AddToggleButton()
-                                        .BindText(model => model.CategoryOptions)
-                                        .BindIsToggled(model => model.CategorySelected)
-                                        .BindOnClicked(model => model.OnSelectCategory());
-                                })
-                                    .BindRowCount(model => model.CategoryOptions);
+                                    {
+                                        template.AddToggleButton()
+                                            .BindText(model => model.ColorCategoryOptions)
+                                            .BindIsToggled(model => model.ColorCategorySelected)
+                                            .BindOnClicked(model => model.OnSelectColorCategory());
+                                    })
+                                    .BindRowCount(model => model.ColorCategoryOptions);
                             });
+
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddList(template =>
+                                    {
+                                        template.AddToggleButton()
+                                            .BindText(model => model.PartCategoryOptions)
+                                            .BindIsToggled(model => model.PartCategorySelected)
+                                            .BindOnClicked(model => model.OnSelectPartCategory());
+                                    })
+                                    .BindRowCount(model => model.PartCategoryOptions);
+                            });
+
                         });
+
 
                         row.AddColumn(col2 =>
                         {
@@ -63,23 +77,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 row2.AddImage()
                                     .BindResref(model => model.ColorSheetResref)
-                                    .BindIsVisible(model => model.IsColorSheetPartSelected)
                                     .SetHeight(176f)
                                     .SetWidth(256f)
                                     .SetVerticalAlign(NuiVerticalAlign.Top)
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
                                     .SetAspect(NuiAspect.ExactScaled)
                                     .BindOnMouseDown(model => model.OnSelectColor());
+                                
+                                row2.BindIsVisible(model => model.IsColorSheetPartSelected);
+                            });
 
+                            col2.AddRow(row2 =>
+                            {
                                 row2.AddList(template =>
-                                {
-                                    template.AddToggleButton()
-                                        .BindText(model => model.PartOptions)
-                                        .BindIsToggled(model => model.PartSelected)
-                                        .BindOnClicked(model => model.OnSelectPart());
-                                })
-                                    .BindIsVisible(model => model.IsRegularPartSelected);
-
+                                    {
+                                        template.AddToggleButton()
+                                            .BindText(model => model.PartOptions)
+                                            .BindIsToggled(model => model.PartSelected)
+                                            .BindOnClicked(model => model.OnSelectPart());
+                                    })
+                                    .BindRowCount(model => model.PartOptions);
                             });
                         });
                         

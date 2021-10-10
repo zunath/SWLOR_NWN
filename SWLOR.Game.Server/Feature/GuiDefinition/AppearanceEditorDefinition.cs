@@ -98,6 +98,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     })
                                     .BindRowCount(model => model.PartOptions);
                             });
+
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddButton()
+                                    .SetText("Previous Part")
+                                    .SetHeight(32f)
+                                    .BindOnClicked(model => model.OnPreviousPart());
+
+                                row2.AddButton()
+                                    .SetText("Next Part")
+                                    .SetHeight(32f)
+                                    .BindOnClicked(model => model.OnNextPart());
+                            });
+
                         });
                         
                         row.BindIsVisible(model => model.IsAppearanceSelected);

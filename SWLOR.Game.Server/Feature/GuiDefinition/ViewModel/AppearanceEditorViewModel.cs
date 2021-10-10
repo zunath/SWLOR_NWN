@@ -129,8 +129,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        private List<int> _partIds = new List<int>();
-
         public GuiBindingList<string> PartOptions
         {
             get => Get<GuiBindingList<string>>();
@@ -426,16 +424,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         };
 
-        public Action OnSelectPart() => () =>
+        private void LoadPart()
         {
             var race = GetRacialType(Player);
             var gender = GetGender(Player);
             var appearance = _appearances[race];
-            var index = NuiGetEventArrayIndex();
-
-            PartSelected[SelectedPartIndex] = false;
-            SelectedPartIndex = index;
-            PartSelected[index] = true;
 
             switch (SelectedPartCategoryIndex)
             {
@@ -443,52 +436,87 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     switch (gender)
                     {
                         case Gender.Male:
-                            SetCreatureBodyPart(CreaturePart.Head, appearance.MaleHeads[index], Player);
+                            SetCreatureBodyPart(CreaturePart.Head, appearance.MaleHeads[SelectedPartIndex], Player);
                             break;
                         default:
-                            SetCreatureBodyPart(CreaturePart.Head, appearance.FemaleHeads[index], Player);
+                            SetCreatureBodyPart(CreaturePart.Head, appearance.FemaleHeads[SelectedPartIndex], Player);
                             break;
                     }
                     break;
                 case 1: // Torso
-                    SetCreatureBodyPart(CreaturePart.Torso, appearance.Torsos[index], Player);
+                    SetCreatureBodyPart(CreaturePart.Torso, appearance.Torsos[SelectedPartIndex], Player);
                     break;
                 case 2: // Pelvis
-                    SetCreatureBodyPart(CreaturePart.Pelvis, appearance.Pelvis[index], Player);
+                    SetCreatureBodyPart(CreaturePart.Pelvis, appearance.Pelvis[SelectedPartIndex], Player);
                     break;
                 case 3: // Right Bicep
-                    SetCreatureBodyPart(CreaturePart.RightBicep, appearance.RightBicep[index], Player);
+                    SetCreatureBodyPart(CreaturePart.RightBicep, appearance.RightBicep[SelectedPartIndex], Player);
                     break;
                 case 4: // Right Forearm
-                    SetCreatureBodyPart(CreaturePart.RightForearm, appearance.RightForearm[index], Player);
+                    SetCreatureBodyPart(CreaturePart.RightForearm, appearance.RightForearm[SelectedPartIndex], Player);
                     break;
                 case 5: // Right Hand
-                    SetCreatureBodyPart(CreaturePart.RightHand, appearance.RightHand[index], Player);
+                    SetCreatureBodyPart(CreaturePart.RightHand, appearance.RightHand[SelectedPartIndex], Player);
                     break;
                 case 6: // Right Thigh
-                    SetCreatureBodyPart(CreaturePart.RightThigh, appearance.RightThigh[index], Player);
+                    SetCreatureBodyPart(CreaturePart.RightThigh, appearance.RightThigh[SelectedPartIndex], Player);
                     break;
                 case 7: // Right Shin
-                    SetCreatureBodyPart(CreaturePart.RightShin, appearance.RightShin[index], Player);
+                    SetCreatureBodyPart(CreaturePart.RightShin, appearance.RightShin[SelectedPartIndex], Player);
                     break;
                 case 8: // Left Bicep
-                    SetCreatureBodyPart(CreaturePart.LeftBicep, appearance.LeftBicep[index], Player);
+                    SetCreatureBodyPart(CreaturePart.LeftBicep, appearance.LeftBicep[SelectedPartIndex], Player);
                     break;
                 case 9: // Left Forearm
-                    SetCreatureBodyPart(CreaturePart.LeftForearm, appearance.LeftForearm[index], Player);
+                    SetCreatureBodyPart(CreaturePart.LeftForearm, appearance.LeftForearm[SelectedPartIndex], Player);
                     break;
                 case 10: // Left Hand
-                    SetCreatureBodyPart(CreaturePart.LeftHand, appearance.LeftHand[index], Player);
+                    SetCreatureBodyPart(CreaturePart.LeftHand, appearance.LeftHand[SelectedPartIndex], Player);
                     break;
                 case 11: // Left Thigh
-                    SetCreatureBodyPart(CreaturePart.LeftThigh, appearance.LeftThigh[index], Player);
+                    SetCreatureBodyPart(CreaturePart.LeftThigh, appearance.LeftThigh[SelectedPartIndex], Player);
                     break;
                 case 12: // Left Shin
-                    SetCreatureBodyPart(CreaturePart.LeftShin, appearance.LeftShin[index], Player);
+                    SetCreatureBodyPart(CreaturePart.LeftShin, appearance.LeftShin[SelectedPartIndex], Player);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
             }
+        }
+
+        public Action OnSelectPart() => () =>
+        {
+            var index = NuiGetEventArrayIndex();
+
+            PartSelected[SelectedPartIndex] = false;
+            SelectedPartIndex = index;
+            PartSelected[index] = true;
+            
+            LoadPart();
+        };
+
+        public Action OnPreviousPart() => () =>
+        {
+            var newPartIndex = SelectedPartIndex - 1;
+            if (newPartIndex < 0)
+                newPartIndex = 0;
+
+            PartSelected[SelectedPartIndex] = false;
+            SelectedPartIndex = newPartIndex;
+            PartSelected[SelectedPartIndex] = true;
+            LoadPart();
+        };
+
+        public Action OnNextPart() => () =>
+        {
+            var newPartIndex = SelectedPartIndex + 1;
+            if (newPartIndex > _partIdToIndex.Count - 1)
+                newPartIndex = _partIdToIndex.Count - 1;
+
+            PartSelected[SelectedPartIndex] = false;
+            SelectedPartIndex = newPartIndex;
+            PartSelected[SelectedPartIndex] = true;
+            LoadPart();
         };
 
         public Action OnApplyChanges() => () =>

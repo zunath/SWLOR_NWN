@@ -60,12 +60,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public bool IsColorSheetPartSelected
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-        
         public GuiBindingList<string> ColorCategoryOptions
         {
             get => Get<GuiBindingList<string>>();
@@ -100,26 +94,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (value == 0) // 0 = Skin Color
                 {
                     ColorSheetResref = "gui_pal_skin";
-                    IsColorSheetPartSelected = true;
                 }
                 else if (value == 1) // 1 = Hair Color
                 {
                     ColorSheetResref = "gui_pal_hair01";
-                    IsColorSheetPartSelected = true;
                 }
                 else if (value == 2) // 2 = Tattoo Color 1
                 {
                     ColorSheetResref = "gui_pal_tattoo";
-                    IsColorSheetPartSelected = true;
                 }
                 else if (value == 3) // 3 = Tattoo Color 2
                 {
                     ColorSheetResref = "gui_pal_tattoo";
-                    IsColorSheetPartSelected = true;
-                }
-                else // All others = Body parts
-                {
-                    IsColorSheetPartSelected = false;
                 }
             }
         }

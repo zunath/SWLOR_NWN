@@ -82,8 +82,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
                                     .SetAspect(NuiAspect.ExactScaled)
                                     .BindOnMouseDown(model => model.OnSelectColor());
-                                
-                                row2.BindIsVisible(model => model.IsColorSheetPartSelected);
                             });
 
                             col2.AddRow(row2 =>

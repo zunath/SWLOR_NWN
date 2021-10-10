@@ -18,12 +18,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private void MainPageInit(DialogPage page)
         {
-            page.Header = "Are you ready to enter the game world? This is the LAST chance for you to use the '/customize' chat command to change your appearance.\n\nAre you sure you want to proceed?";
-
-            page.AddResponse("Customize my character", () =>
-            {
-                SwitchConversation(nameof(CharacterCustomizationDialog));
-            });
+            page.Header = "Are you ready to enter the game world?\n\nAre you sure you want to proceed?";
 
             page.AddResponse("Enter the game", () =>
             {

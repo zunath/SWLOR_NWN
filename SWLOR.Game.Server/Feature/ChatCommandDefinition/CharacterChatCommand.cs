@@ -85,7 +85,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
             DeleteCommand(builder);
             LanguageCommand(builder);
-            CustomizeCommand(builder);
             ToggleHelmet(builder);
             ToggleDualPistolMode(builder);
             ToggleEmoteStyle(builder);
@@ -220,31 +219,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         BootPC(user, "Your character has been deleted.");
                         AdministrationPlugin.DeletePlayerCharacter(user, true);
                     }
-                });
-        }
-
-        private static void CustomizeCommand(ChatCommandBuilder builder)
-        {
-            builder.Create("customize", "customise")
-                .Description("Customizes your character appearance. Only available for use in the entry area or DM customization area.")
-                .Permissions(AuthorizationLevel.Player)
-                .Validate((user, args) =>
-                {
-                    // DMs can use this command anywhere.
-                    if (GetIsDM(user)) return string.Empty;
-
-                    // Players can only do this in certain areas.
-                    var areaResref = GetResRef(GetArea(user));
-                    if (areaResref != "ooc_area" && areaResref != "customize_char")
-                    {
-                        return "Customization can only occur in the starting area or the DM customization area. You can't use this command here.";
-                    }
-
-                    return string.Empty;
-                })
-                .Action((user, target, location, args) =>
-                {
-                    Dialog.StartConversation(user, user, nameof(CharacterCustomizationDialog));
                 });
         }
 

@@ -1,6 +1,6 @@
-﻿namespace SWLOR.Game.Server.Feature.AppearanceDefinition
+﻿namespace SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance
 {
-    public class WookieeAppearanceDefinition: AppearanceBaseDefinition
+    public class WookieeRacialAppearanceDefinition: RacialAppearanceBaseDefinition
     {
         public override int[] MaleHeads { get; } = { 119, 192, 193 };
         public override int[] FemaleHeads { get; } = { 110, 185, 186, 192, 193, 195 };

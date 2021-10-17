@@ -13,13 +13,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.AppearanceEditor)
                 .BindOnOpened(model => model.OnLoadWindow())
                 .SetIsResizable(true)
-                .SetInitialGeometry(0, 0, 545f, 295.5f)
+                .SetInitialGeometry(0, 0, 476.57895f, 530.2632f)
                 .SetTitle("Appearance Editor")
 
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>
                     {
+                        row.AddSpacer();
+
                         row.AddToggleButton()
                             .SetText("Appearance")
                             .SetHeight(32f)
@@ -32,15 +34,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindIsToggled(model => model.IsEquipmentSelected)
                             .BindOnClicked(model => model.OnSelectEquipment());
 
-                        row.AddToggleButton()
-                            .SetText("Outfits")
-                            .SetHeight(32f)
-                            .BindIsToggled(model => model.IsOutfitsSelected)
-                            .BindOnClicked(model => model.OnSelectOutfits());
+                        row.AddSpacer();
                     });
 
                     col.AddRow(row =>
                     {
+                        row.BindIsVisible(model => model.IsEquipmentSelected);
+
+                        row.AddSpacer();
+                        
+                        row.AddComboBox()
+                            .AddOption("Armor", 0)
+                            .AddOption("Helmet", 1)
+                            .BindSelectedIndex(model => model.SelectedItemTypeIndex);
+
+                        row.AddSpacer();
+
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText("No item is equipped.")
+                            .BindIsVisible(model => model.DoesNotHaveItemEquipped);
+
+                        row.SetHeight(20f);
+                        row.BindIsVisible(model => model.DoesNotHaveItemEquipped);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.BindIsVisible(model => model.HasItemEquipped);
+
                         row.AddColumn(col2 =>
                         {
                             col2.AddRow(row2 =>
@@ -110,8 +135,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             });
 
                         });
-                        
-                        row.BindIsVisible(model => model.IsAppearanceSelected);
                     });
                 });
 

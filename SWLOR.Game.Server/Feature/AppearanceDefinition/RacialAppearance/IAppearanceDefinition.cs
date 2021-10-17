@@ -1,4 +1,4 @@
-﻿namespace SWLOR.Game.Server.Feature.AppearanceDefinition
+﻿namespace SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance
 {
     public interface IAppearanceDefinition
     {

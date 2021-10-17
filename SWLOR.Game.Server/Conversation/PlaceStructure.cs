@@ -49,28 +49,28 @@ namespace SWLOR.Game.Server.Conversation
             dialog.AddPage("StylePage", stylePage);
 
             // Setup placement grid                
-            NWArea area = _.GetArea(player);
-            Vector3 vPos;
-            vPos.X = 5.0f;
-            vPos.Y = 0.0f;
-            vPos.Z = 0.1f;
-            for (int i = 0; i <= area.Height; i++)
-            {
-                vPos.Y = -5.0f;
-                for (int j = 0; j <= area.Width; j++)
-                {
-                    vPos.Y += 10.0f;
-                    NWObject oTile = _.CreateObject(ObjectType.Placeable, "plc_invisobj",
-                                                        _.Location(area, vPos, 0.0f), false,
-                                                        "x2_tmp_tile" + player.GlobalID.ToString());
-                    _.SetPlotFlag(oTile, true);
-                    _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(VisualEffect.Vfx_Placement_Grid), oTile);
-                    NWNX.NWNXVisibility.SetVisibilityOverride(_.OBJECT_INVALID, oTile, VisibilityType.Hidden);
-                    NWNX.NWNXVisibility.SetVisibilityOverride(player, oTile, VisibilityType.Visible);                    
-                    mainPage.CustomData.Add("PLACEMENT_GRID_" + i + "_" + j, oTile);
-                }
-                vPos.X += 10.0f;
-            }
+            //NWArea area = _.GetArea(player);
+            //Vector3 vPos;
+            //vPos.X = 5.0f;
+            //vPos.Y = 0.0f;
+            //vPos.Z = 0.1f;
+            //for (int i = 0; i <= area.Height; i++)
+            //{
+            //    vPos.Y = -5.0f;
+            //    for (int j = 0; j <= area.Width; j++)
+            //    {
+            //        vPos.Y += 10.0f;
+            //        NWObject oTile = _.CreateObject(ObjectType.Placeable, "plc_invisobj",
+            //                                            _.Location(area, vPos, 0.0f), false,
+            //                                            "x2_tmp_tile" + player.GlobalID.ToString());
+            //        _.SetPlotFlag(oTile, true);
+            //        _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(VisualEffect.Vfx_Placement_Grid), oTile);
+            //        NWNX.NWNXVisibility.SetVisibilityOverride(_.OBJECT_INVALID, oTile, VisibilityType.Hidden);
+            //        NWNX.NWNXVisibility.SetVisibilityOverride(player, oTile, VisibilityType.Visible);                    
+            //        mainPage.CustomData.Add("PLACEMENT_GRID_" + i + "_" + j, oTile);
+            //    }
+            //    vPos.X += 10.0f;
+            //}
 
             return dialog;
         }
@@ -527,13 +527,13 @@ namespace SWLOR.Game.Server.Conversation
         {
             // tear down placement grid
             DialogPage mainPage = GetPageByName("MainPage");
-            foreach (var placementGrid in mainPage.CustomData)
-            {
-                if (placementGrid.Key.StartsWith("PLACEMENT_GRID_"))
-                {                    
-                    _.DelayCommand(10.0f, () => { _.DestroyObject(placementGrid.Value); });
-                }
-            }
+            //foreach (var placementGrid in mainPage.CustomData)
+            //{
+            //    if (placementGrid.Key.StartsWith("PLACEMENT_GRID_"))
+            //    {                    
+            //        _.DelayCommand(10.0f, () => { _.DestroyObject(placementGrid.Value); });
+            //    }
+            //}
                 
             BaseService.ClearPlayerTempData(GetPC());
         }

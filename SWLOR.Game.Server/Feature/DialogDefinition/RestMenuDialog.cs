@@ -43,18 +43,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.Header = header;
 
-            if (dbPlayer.UnallocatedAP > 0)
-            {
-                page.AddResponse("Distribute Attribute Points", () => SwitchConversation(nameof(DistributeAbilityPointsDialog)));
-            }
-
             page.AddResponse("View Recipes", () =>
             {
                 var craftingState = Craft.GetPlayerCraftingState(player);
                 craftingState.DeviceSkillType = SkillType.Invalid;
                 SwitchConversation(nameof(RecipeDialog));
             });
-            page.AddResponse("Modify Item Appearance", () => SwitchConversation(nameof(ModifyItemAppearanceDialog)));
             page.AddResponse("Open Trash Can (Destroy Items)", () =>
             {
                 EndConversation();

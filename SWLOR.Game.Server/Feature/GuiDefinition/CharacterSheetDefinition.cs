@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     public class CharacterSheetDefinition : IGuiWindowDefinition
     {
         private readonly GuiWindowBuilder<CharacterSheetViewModel> _builder = new();
+        private const float IncreaseButtonSize = 14f;
 
         public GuiConstructedWindow BuildWindow()
         {
@@ -70,6 +71,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetColor(139, 0, 0)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddButton()
+                            .SetWidth(IncreaseButtonSize)
+                            .SetHeight(IncreaseButtonSize)
+                            .SetText("+")
+                            .SetIsVisible(false);
                     });
 
                     col.AddRow(row =>
@@ -85,6 +92,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetColor(0, 138, 250)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddButton()
+                            .SetWidth(IncreaseButtonSize)
+                            .SetHeight(IncreaseButtonSize)
+                            .SetText("+")
+                            .SetIsVisible(false);
                     });
 
                     col.AddRow(row =>
@@ -100,6 +113,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetColor(0, 139, 0)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddButton()
+                            .SetWidth(IncreaseButtonSize)
+                            .SetHeight(IncreaseButtonSize)
+                            .SetText("+")
+                            .SetIsVisible(false);
                     });
 
                     col.AddRow(row =>
@@ -113,6 +132,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindText(model => model.Might)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddButton()
+                            .SetWidth(IncreaseButtonSize)
+                            .SetHeight(IncreaseButtonSize)
+                            .SetText("+")
+                            .BindIsVisible(model => model.IsMightUpgradeAvailable)
+                            .BindOnClicked(model => model.OnClickUpgradeMight());
                     });
 
                     col.AddRow(row =>
@@ -126,6 +152,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindText(model => model.Perception)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddButton()
+                            .SetWidth(IncreaseButtonSize)
+                            .SetHeight(IncreaseButtonSize)
+                            .SetText("+")
+                            .BindIsVisible(model => model.IsPerceptionUpgradeAvailable)
+                            .BindOnClicked(model => model.OnClickUpgradePerception());
                     });
 
                     col.AddRow(row =>
@@ -139,6 +172,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindText(model => model.Vitality)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddButton()
+                            .SetWidth(IncreaseButtonSize)
+                            .SetHeight(IncreaseButtonSize)
+                            .SetText("+")
+                            .BindIsVisible(model => model.IsVitalityUpgradeAvailable)
+                            .BindOnClicked(model => model.OnClickUpgradeVitality());
                     });
 
                     col.AddRow(row =>
@@ -152,6 +192,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindText(model => model.Willpower)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddButton()
+                            .SetWidth(IncreaseButtonSize)
+                            .SetHeight(IncreaseButtonSize)
+                            .SetText("+")
+                            .BindIsVisible(model => model.IsWillpowerUpgradeAvailable)
+                            .BindOnClicked(model => model.OnClickUpgradeWillpower());
                     });
 
                     col.AddRow(row =>
@@ -165,6 +212,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindText(model => model.Social)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddButton()
+                            .SetWidth(IncreaseButtonSize)
+                            .SetHeight(IncreaseButtonSize)
+                            .SetText("+")
+                            .BindIsVisible(model => model.IsSocialUpgradeAvailable)
+                            .BindOnClicked(model => model.OnClickUpgradeSocial());
                     });
                 })
 

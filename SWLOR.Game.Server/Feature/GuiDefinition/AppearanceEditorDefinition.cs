@@ -118,7 +118,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                             .BindIsToggled(model => model.PartSelected)
                                             .BindOnClicked(model => model.OnSelectPart());
                                     })
-                                    .BindRowCount(model => model.PartOptions);
+                                    .BindRowCount(model => model.PartOptions)
+                                    .SetWidth(256f);
                             });
 
                             col2.AddRow(row2 =>
@@ -126,11 +127,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 row2.AddButton()
                                     .SetText("Previous Part")
                                     .SetHeight(32f)
+                                    .SetWidth(128f)
                                     .BindOnClicked(model => model.OnPreviousPart());
 
                                 row2.AddButton()
                                     .SetText("Next Part")
                                     .SetHeight(32f)
+                                    .SetWidth(128f)
                                     .BindOnClicked(model => model.OnNextPart());
                             });
 

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item.Property;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -67,7 +66,6 @@ namespace SWLOR.Game.Server.Entity
             CharacterType = CharacterType.Invalid;
             KeyItems = new Dictionary<KeyItemType, DateTime>();
             Guilds = new Dictionary<GuildType, PlayerGuild>();
-            SavedOutfits = new Dictionary<int, string>();
             Ships = new Dictionary<Guid, ShipStatus>();
             Factions = new Dictionary<FactionType, PlayerFactionStanding>();
             TaxiDestinations = new Dictionary<int, List<TaxiDestinationType>>();
@@ -138,7 +136,6 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
         public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
-        public Dictionary<int, string> SavedOutfits { get; set; }
         public Dictionary<Guid, ShipStatus> Ships { get; set; }
         public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }
         public Dictionary<int, List<TaxiDestinationType>> TaxiDestinations { get; set; }

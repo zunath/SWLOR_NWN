@@ -48,6 +48,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .AddOption("Helmet", 1)
                             .BindSelectedIndex(model => model.SelectedItemTypeIndex);
 
+                        row.AddButton()
+                            .SetText("Outfits")
+                            .SetHeight(32f)
+                            .BindOnClicked(model => model.OnClickOutfits());
+
                         row.AddSpacer();
 
                     });

@@ -15,5 +15,6 @@
         AppearanceEditor = 10,
         Bank = 11,
         Modal = 12,
+        Outfits = 13,
     }
 }

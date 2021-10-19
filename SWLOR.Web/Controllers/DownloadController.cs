@@ -15,7 +15,8 @@ namespace SWLOR.Web.Controllers
         private static readonly Dictionary<int, Download> _downloads = new Dictionary<int, Download>
         {
             {1, new Download { LocalPath = "/var/www/swlor_public_files/SWLOR GUI.rar", ContentType = "application/octet-stream", FileName = "SWLORGUI.rar"}},
-            {2, new Download{ LocalPath = "/var/www/swlor_public_files/SWLOR Haks.rar", ContentType = "application/octet-stream ", FileName = "SWLORDevelopmentHaks.rar"} }
+            {2, new Download{ LocalPath = "/var/www/swlor_public_files/SWLOR Haks.rar", ContentType = "application/octet-stream ", FileName = "SWLORDevelopmentHaks.rar"} },
+            {3, new Download{ LocalPath = "/var/www/swlor_public_files/SWLOR Android Textures.rar", ContentType = "application/octet-stream ", FileName = "SWLORAndroidTextureOverrides.rar"} },
         };
 
         public IActionResult Index(int id)

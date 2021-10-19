@@ -472,7 +472,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder);
                         break;
                     case 5: // Right Bicep
-                        partIds = _armorAppearances.Hand;
+                        partIds = _armorAppearances.Bicep;
                         selectedPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep);
                         break;
                     case 6: // Right Forearm

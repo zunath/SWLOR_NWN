@@ -1818,7 +1818,7 @@
                           "__struct_id": 0,
                           "CR": {
                             "type": "float",
-                            "value": 4.0
+                            "value": 3.0
                           },
                           "FACTION": {
                             "type": "cexostring",
@@ -10068,7 +10068,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 93.0
+                      "value": 14.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10087,7 +10087,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 15.0
+                      "value": 16.0
                     },
                     "FACTION": {
                       "type": "cexostring",

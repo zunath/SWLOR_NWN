@@ -3,11 +3,12 @@ version: "3.7"
 services:
     redis:
         hostname: redis
-        image: redis:latest
-        command: redis-server --save 300 0
+        image: redislabs/redismod:latest
         volumes:
           - ${PWD-.}/redis:/data
-        restart: always
+        restart: unless-stopped
+        ports:
+            - "6379:6379"
         networks:
             swlor_network:
                 ipv4_address: 172.22.0.100
@@ -16,7 +17,7 @@ services:
         container_name: redis-commander
         hostname: redis-commander
         image: rediscommander/redis-commander:latest
-        restart: always
+        restart: unless-stopped
         links:
             - "redis:redis"
         environment:

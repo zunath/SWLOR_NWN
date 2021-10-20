@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
+using NReJSON;
 using StackExchange.Redis;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
@@ -10,10 +11,29 @@ namespace SWLOR.Game.Server.Service
 {
     internal class DB
     {
+        internal class JsonSerializer: ISerializerProxy
+        {
+            public TResult Deserialize<TResult>(RedisResult serializedValue)
+            {
+                return JsonConvert.DeserializeObject<TResult>(serializedValue.ToString());
+            }
+
+            public string Serialize<TObjectType>(TObjectType obj)
+            {
+                return JsonConvert.SerializeObject(obj);
+            }
+        }
+
         private static ApplicationSettings _appSettings;
         private static readonly Dictionary<Type, string> _keyPrefixByType = new Dictionary<Type, string>();
         private static ConnectionMultiplexer _multiplexer;
         private static readonly Dictionary<string, EntityBase> _cachedEntities = new Dictionary<string, EntityBase>();
+        public static IDatabase Database => _multiplexer.GetDatabase();
+
+        static DB()
+        {
+            NReJSONSerializer.SerializerProxy = new JsonSerializer();
+        }
 
         [NWNEventHandler("mod_preload")]
         public static void Load()
@@ -65,7 +85,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var data = JsonConvert.SerializeObject(entity);
-            _multiplexer.GetDatabase().StringSet($"{keyPrefixOverride}:{key}", data);
+            _multiplexer.GetDatabase().JsonSet($"{keyPrefixOverride}:{key}", data);
             _cachedEntities[key] = entity;
         }
 
@@ -90,7 +110,7 @@ namespace SWLOR.Game.Server.Service
 
             using (new Profiler("RedisSet"))
             {
-                _multiplexer.GetDatabase().StringSet($"{keyPrefix}:{key}", data);
+                _multiplexer.GetDatabase().JsonSet($"{keyPrefix}:{key}", data);
             }
         }
 
@@ -119,7 +139,7 @@ namespace SWLOR.Game.Server.Service
 
                 using (new Profiler("RedisGet"))
                 {
-                    data = _multiplexer.GetDatabase().StringGet($"{keyPrefixOverride}:{key}");
+                    data = _multiplexer.GetDatabase().JsonGet($"{keyPrefixOverride}:{key}").ToString();
                 }
 
                 if (string.IsNullOrWhiteSpace(data))
@@ -145,7 +165,7 @@ namespace SWLOR.Game.Server.Service
             if(string.IsNullOrWhiteSpace(keyPrefix))
                 throw new ArgumentException($"{nameof(keyPrefix)} cannot be null or whitespace.");
 
-            var json = _multiplexer.GetDatabase().StringGet($"{keyPrefix}:{key}");
+            var json = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{key}").ToString();
             if (string.IsNullOrWhiteSpace(json))
                 return default;
 
@@ -188,20 +208,5 @@ namespace SWLOR.Game.Server.Service
             _multiplexer.GetDatabase().KeyDelete($"{keyPrefixOverride}:{key}");
             _cachedEntities.Remove(key);
         }
-
-        /// <summary>
-        /// Retrieves a list of keys associated with a given key prefix.
-        /// </summary>
-        /// <param name="keyPrefix">The key to search for.</param>
-        /// <returns>A list of keys found associated with the prefix.</returns>
-        public static IEnumerable<string> SearchKeys(string keyPrefix)
-        {
-            foreach (var key in _multiplexer.GetServer(_multiplexer.GetEndPoints()[0])
-                .Keys(pattern: $"{keyPrefix}*", pageSize: 9999))
-            {
-                yield return key.ToString().Split(':')[1];
-            }
-        }
-
     }
 }

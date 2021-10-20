@@ -32,13 +32,13 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("mod_load")]
         public static void LoadPlayerStores()
         {
-            var keys = DB.SearchKeys("PlayerStore");
+            //var keys = DB.SearchKeys("PlayerStore");
 
-            foreach (var key in keys)
-            {
-                var dbPlayerStore = DB.Get<PlayerStore>(key);
-                UpdateCacheEntry(key, dbPlayerStore);
-            }
+            //foreach (var key in keys)
+            //{
+                //var dbPlayerStore = DB.Get<PlayerStore>(key);
+                //UpdateCacheEntry(key, dbPlayerStore);
+            //}
         }
 
         /// <summary>

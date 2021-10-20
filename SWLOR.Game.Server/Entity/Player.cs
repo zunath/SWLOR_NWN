@@ -75,7 +75,9 @@ namespace SWLOR.Game.Server.Entity
 
         public override string KeyPrefix => "Player";
 
+        [Indexed]
         public int Version { get; set; }
+        [Indexed]
         public string Name { get; set; }
         public int MaxHP { get; set; }
         public int MaxFP { get; set; }
@@ -87,6 +89,7 @@ namespace SWLOR.Game.Server.Entity
         public int Fortitude { get; set; }
         public int Reflex { get; set; }
         public int Will { get; set; }
+        [Indexed]
         public string LocationAreaResref { get; set; }
         public float LocationX { get; set; }
         public float LocationY { get; set; }
@@ -96,6 +99,7 @@ namespace SWLOR.Game.Server.Entity
         public float RespawnLocationY { get; set; }
         public float RespawnLocationZ { get; set; }
         public float RespawnLocationOrientation { get; set; }
+        [Indexed]
         public string RespawnAreaResref { get; set; }
         public int UnallocatedXP { get; set; }
         public int UnallocatedSP { get; set; }
@@ -108,10 +112,12 @@ namespace SWLOR.Game.Server.Entity
         public int STMRegen { get; set; }
         public int XPDebt { get; set; }
         public int NumberPerkResetsAvailable { get; set; }
+        [Indexed]
         public bool IsDeleted { get; set; }
         public bool ShowHelmet { get; set; }
         public bool IsUsingDualPistolMode { get; set; }
         public DateTime? DatePerkRefundAvailable { get; set; }
+        [Indexed]
         public CharacterType CharacterType { get; set; }
         public bool IsHolonetEnabled { get; set; }
         public EmoteStyle EmoteStyle { get; set; }

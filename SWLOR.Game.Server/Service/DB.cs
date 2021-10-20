@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Newtonsoft.Json;
+using NRediSearch;
 using NReJSON;
 using StackExchange.Redis;
 using SWLOR.Game.Server.Core;
@@ -9,7 +11,7 @@ using SWLOR.Game.Server.Entity;
 
 namespace SWLOR.Game.Server.Service
 {
-    internal class DB
+    internal static class DB
     {
         internal class JsonSerializer: ISerializerProxy
         {
@@ -25,10 +27,11 @@ namespace SWLOR.Game.Server.Service
         }
 
         private static ApplicationSettings _appSettings;
-        private static readonly Dictionary<Type, string> _keyPrefixByType = new Dictionary<Type, string>();
+        private static readonly Dictionary<Type, string> _keyPrefixByType = new();
+        private static readonly Dictionary<Type, Client> _searchClientsByType = new();
+        private static readonly Dictionary<Type, List<string>> _indexedPropertiesByName = new();
         private static ConnectionMultiplexer _multiplexer;
-        private static readonly Dictionary<string, EntityBase> _cachedEntities = new Dictionary<string, EntityBase>();
-        public static IDatabase Database => _multiplexer.GetDatabase();
+        private static readonly Dictionary<string, EntityBase> _cachedEntities = new();
 
         static DB()
         {
@@ -40,7 +43,7 @@ namespace SWLOR.Game.Server.Service
         {
             _appSettings = ApplicationSettings.Get();
             _multiplexer = ConnectionMultiplexer.Connect(_appSettings.RedisIPAddress);
-            LoadKeyPrefixes();
+            LoadEntities();
 
             // Runs at the end of every main loop. Clears out all data retrieved during this cycle.
             Entrypoints.OnScriptContextEnd += () =>
@@ -50,11 +53,76 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Processes the Redis Search index with the latest changes.
+        /// </summary>
+        /// <param name="entity"></param>
+        private static void ProcessIndex(EntityBase entity)
+        {
+            var type = entity.GetType();
+
+            // Drop any existing index
+            try
+            {
+                // FT.DROPINDEX is used here in lieu of DropIndex() as it does not cause all documents to be lost.
+                _multiplexer.GetDatabase().Execute("FT.DROPINDEX", type.Name);
+                Console.WriteLine($"Dropped index for {type}");
+            }
+            catch
+            {
+                Console.WriteLine($"Index does not exist for type {type}");
+            }
+
+            // Build the schema based on the IndexedAttribute associated to properties.
+            var schema = new Schema();
+            var indexedProperties = new List<string>();
+
+            foreach (var prop in type.GetProperties())
+            {
+                if (prop.GetCustomAttribute(typeof(IndexedAttribute)) != null)
+                {
+                    if (prop.PropertyType == typeof(int) ||
+                        prop.PropertyType == typeof(int?) ||
+                        prop.PropertyType == typeof(ulong) ||
+                        prop.PropertyType == typeof(ulong?) ||
+                        prop.PropertyType == typeof(long) ||
+                        prop.PropertyType == typeof(long?))
+                    {
+                        schema.AddNumericField(prop.Name);
+                    }
+                    else if (prop.PropertyType == typeof(string) ||
+                             prop.PropertyType == typeof(DateTime) ||
+                             prop.PropertyType == typeof(DateTime?) ||
+                             prop.PropertyType == typeof(bool) ||
+                             prop.PropertyType == typeof(bool?) ||
+                             prop.PropertyType == typeof(Enum))
+                    {
+                        schema.AddTextField(prop.Name);
+                    }
+                    else
+                        continue;
+
+                    indexedProperties.Add(prop.Name);
+                }
+
+            }
+
+            // Cache the indexed properties for quick look-up later.
+            _indexedPropertiesByName[type] = indexedProperties;
+
+            // Create the index.
+            if (schema.Fields.Count > 0)
+            {
+                _searchClientsByType[type].CreateIndex(schema, new Client.ConfiguredIndexOptions());
+                Console.WriteLine($"Created index for {type}");
+            }
+        }
+
+        /// <summary>
         /// When initialized, the assembly will be searched for all implementations of the EntityBase object.
         /// The KeyPrefix value of each of these will be stored into a dictionary for quick retrievals later.
         /// This is intended to abstract key building away from the consumer of this class.
         /// </summary>
-        private static void LoadKeyPrefixes()
+        private static void LoadEntities()
         {
             var entityInstances = typeof(EntityBase)
                 .Assembly.GetTypes()
@@ -63,8 +131,14 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var entity in entityInstances)
             {
+                var type = entity.GetType();
                 // Register the type by itself first.
-                _keyPrefixByType[entity.GetType()] = entity.KeyPrefix;
+                _keyPrefixByType[type] = entity.KeyPrefix;
+                
+                // Register the search client.
+                _searchClientsByType[type] = new Client(type.Name, _multiplexer.GetDatabase());
+                ProcessIndex(entity);
+
                 Console.WriteLine($"Registered type '{entity.GetType()}' using key prefix {entity.KeyPrefix}");
             }
         }
@@ -79,12 +153,27 @@ namespace SWLOR.Game.Server.Service
         public static void Set<T>(string key, T entity, string keyPrefixOverride = null)
             where T : EntityBase
         {
+            var type = typeof(T);
             if (string.IsNullOrWhiteSpace(keyPrefixOverride))
             {
-                keyPrefixOverride = _keyPrefixByType[typeof(T)];
+                keyPrefixOverride = _keyPrefixByType[type];
             }
 
             var data = JsonConvert.SerializeObject(entity);
+            var indexKey = $"Index:{keyPrefixOverride}:{key}";
+            var indexData = new Dictionary<string, RedisValue>();
+
+            foreach (var prop in _indexedPropertiesByName[type])
+            {
+                var value = type.GetProperty(prop)?.GetValue(entity);
+
+                if (value != null)
+                {
+                    indexData[prop] = (dynamic)value;
+                }
+            }
+
+            _searchClientsByType[type].ReplaceDocument(indexKey, indexData);
             _multiplexer.GetDatabase().JsonSet($"{keyPrefixOverride}:{key}", data);
             _cachedEntities[key] = entity;
         }
@@ -205,8 +294,23 @@ namespace SWLOR.Game.Server.Service
                 keyPrefixOverride = _keyPrefixByType[typeof(T)];
             }
 
-            _multiplexer.GetDatabase().KeyDelete($"{keyPrefixOverride}:{key}");
+            var indexKey = $"Index:{keyPrefixOverride}:{key}";
+            _searchClientsByType[typeof(T)].DeleteDocument(indexKey);
+            _multiplexer.GetDatabase().JsonDelete($"{keyPrefixOverride}:{key}");
             _cachedEntities.Remove(key);
+        }
+
+        public static void Search()
+        {
+            var result = _searchClientsByType[typeof(Player)].Search(new Query("Jonie*")
+            {
+                WithPayloads = true
+            });
+
+            foreach (var doc in result.Documents)
+            {
+                Console.WriteLine(doc.Id);
+            }
         }
     }
 }

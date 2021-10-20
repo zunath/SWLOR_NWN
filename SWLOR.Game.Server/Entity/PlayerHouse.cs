@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.HousingService;
 
 namespace SWLOR.Game.Server.Entity
@@ -13,7 +12,9 @@ namespace SWLOR.Game.Server.Entity
 
         public override string KeyPrefix => "PlayerHouse";
 
+        [Indexed]
         public string CustomName { get; set; }
+        [Indexed]
         public PlayerHouseType HouseType { get; set; }
         public Dictionary<string, PlayerHouseFurniture> Furnitures { get; set; }
         public Dictionary<string, PlayerHousePermission> PlayerPermissions { get; set; }

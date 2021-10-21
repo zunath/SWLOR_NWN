@@ -9,7 +9,6 @@ namespace SWLOR.Game.Server.Entity
         
         public DateTime DateCreated { get; set; }
 
-        [Indexed]
         public abstract string KeyPrefix { get; }
 
         protected EntityBase()

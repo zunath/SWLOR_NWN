@@ -89,17 +89,10 @@ namespace SWLOR.Game.Server.Service
                     {
                         schema.AddNumericField(prop.Name);
                     }
-                    else if (prop.PropertyType == typeof(string) ||
-                             prop.PropertyType == typeof(DateTime) ||
-                             prop.PropertyType == typeof(DateTime?) ||
-                             prop.PropertyType == typeof(bool) ||
-                             prop.PropertyType == typeof(bool?) ||
-                             prop.PropertyType == typeof(Enum))
+                    else
                     {
                         schema.AddTextField(prop.Name);
                     }
-                    else
-                        continue;
 
                     indexedProperties.Add(prop.Name);
                 }
@@ -165,10 +158,25 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var prop in _indexedPropertiesByName[type])
             {
-                var value = type.GetProperty(prop)?.GetValue(entity);
+                var property = type.GetProperty(prop);
+                var value = property?.GetValue(entity);
 
                 if (value != null)
                 {
+                    // Convert enums to numeric values
+                    if (property.PropertyType.IsEnum)
+                        value = (int) value;
+
+                    if (property.PropertyType == typeof(Guid))
+                    {
+                        value = EscapeTokens(((Guid) value).ToString());
+                    }
+
+                    if (property.PropertyType == typeof(string))
+                    {
+                        value = EscapeTokens((string) value);
+                    }
+
                     indexData[prop] = (dynamic)value;
                 }
             }
@@ -176,31 +184,6 @@ namespace SWLOR.Game.Server.Service
             _searchClientsByType[type].ReplaceDocument(indexKey, indexData);
             _multiplexer.GetDatabase().JsonSet($"{keyPrefixOverride}:{key}", data);
             _cachedEntities[key] = entity;
-        }
-
-        /// <summary>
-        /// Stores a list of objects in the database by an arbitrary key.
-        /// </summary>
-        /// <typeparam name="T">The type of data to store.</typeparam>
-        /// <param name="key">The arbitrary key to set this object under.</param>
-        /// <param name="entities">The list of entities to store.</param>
-        /// <param name="keyPrefix">The key prefix to store the data under. Must be specified or call will fail</param>
-        public static void SetList<T>(string key, EntityList<T> entities, string keyPrefix)
-            where T: EntityBase
-        {
-            if(string.IsNullOrWhiteSpace(keyPrefix))
-                throw new ArgumentException($"{nameof(keyPrefix)} cannot be null or whitespace.");
-
-            string data;
-            using (new Profiler("Serialization"))
-            {
-                data = JsonConvert.SerializeObject(entities);
-            }
-
-            using (new Profiler("RedisSet"))
-            {
-                _multiplexer.GetDatabase().JsonSet($"{keyPrefix}:{key}", data);
-            }
         }
 
         /// <summary>
@@ -242,26 +225,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves a list of objects stored under the specified key from the database. 
-        /// </summary>
-        /// <typeparam name="T">The type of data to retrieve.</typeparam>
-        /// <param name="key">The arbitrary key the data is stored under.</param>
-        /// <param name="keyPrefix">The key prefix to store the data under. Must be specified or call will fail</param>
-        /// <returns>A list of entities.</returns>
-        public static EntityList<T> GetList<T>(string key, string keyPrefix)
-            where T : EntityBase
-        {
-            if(string.IsNullOrWhiteSpace(keyPrefix))
-                throw new ArgumentException($"{nameof(keyPrefix)} cannot be null or whitespace.");
-
-            var json = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{key}").ToString();
-            if (string.IsNullOrWhiteSpace(json))
-                return default;
-
-            return JsonConvert.DeserializeObject<EntityList<T>>(json);
-        }
-
-        /// <summary>
         /// Returns true if an entry with the specified key exists.
         /// Returns false if not.
         /// </summary>
@@ -269,6 +232,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="keyPrefixOverride">If null, the key prefix defined on the entity will be used. Otherwise, this value will be used as the prefix.</param>
         /// <returns>true if found, false otherwise.</returns>
         public static bool Exists<T>(string key, string keyPrefixOverride = null)
+            where T : EntityBase
         {
             if (keyPrefixOverride == null)
             {
@@ -288,6 +252,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="key">The key of the entity</param>
         /// <param name="keyPrefixOverride">If null, the key prefix defined on the entity will be used. Otherwise, this value will be used as the prefix.</param>
         public static void Delete<T>(string key, string keyPrefixOverride = null)
+            where T: EntityBase
         {
             if (keyPrefixOverride == null)
             {
@@ -300,16 +265,49 @@ namespace SWLOR.Game.Server.Service
             _cachedEntities.Remove(key);
         }
 
-        public static void Search()
+        private static string EscapeTokens(string str)
         {
-            var result = _searchClientsByType[typeof(Player)].Search(new Query("Jonie*")
-            {
-                WithPayloads = true
-            });
+            return str
+                .Replace("@", "\\@")
+                .Replace("!", "\\!")
+                .Replace("{", "\\{")
+                .Replace("}", "\\}")
+                .Replace("(", "\\(")
+                .Replace(")", "\\)")
+                .Replace("|", "\\|")
+                .Replace("-", "\\-")
+                .Replace("=", "\\=")
+                .Replace(">", "\\>");
+        }
 
+        public static IEnumerable<T> Search<T>(string fieldName, string search, string fieldName2 = "", string search2 = "", string fieldName3 = "", string search3 = "")
+            where T: EntityBase
+        {
+            // Escape special characters
+            search = EscapeTokens(search);
+
+            var query = $"@{fieldName}:{search}";
+
+
+            if (!string.IsNullOrWhiteSpace(fieldName2) && !string.IsNullOrWhiteSpace(search2))
+            {
+                search2 = EscapeTokens(search2);
+                query += $" @{fieldName2}:{search2}";
+            }
+
+            if (!string.IsNullOrWhiteSpace(fieldName3) && !string.IsNullOrWhiteSpace(search3))
+            {
+                search3 = EscapeTokens(search3);
+                query += $" @{fieldName3}:{search3}";
+            }
+
+            var result = _searchClientsByType[typeof(T)].Search(new Query(query));
+            
             foreach (var doc in result.Documents)
             {
-                Console.WriteLine(doc.Id);
+                // Remove the 'Index:' prefix.
+                var recordId = doc.Id.Remove(0, 6);
+                yield return _multiplexer.GetDatabase().JsonGet<T>(recordId);
             }
         }
     }

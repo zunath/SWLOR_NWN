@@ -23,9 +23,8 @@ namespace SWLOR.Game.Server.Feature
             var container = OBJECT_SELF;
             if (GetResRef(container) != "public_p_storage" || GetLocalBool(container, "IS_DESERIALIZING")) return;
 
-            var storageId = GetStorageID();
-            var key = $"PublicStorage:{storageId}";
-            AddItem(storageId, "PublicStorage");
+            var storageId = GetStorageId();
+            AddItem(storageId, false);
         }
 
         /// <summary>
@@ -35,8 +34,8 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("storage_disturb")]
         public static void RemoveItemFromPublicStorage()
         {
-            var storageId = GetStorageID();
-            RemoveItem(storageId, "PublicStorage");
+            var storageId = GetStorageId();
+            RemoveItem(storageId);
         }
 
         /// <summary>
@@ -46,8 +45,8 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("storage_open")]
         public static void OpenStorage()
         {
-            var storageId = GetStorageID();
-            OpenStorage(storageId, "PublicStorage");
+            var storageId = GetStorageId();
+            OpenStorage(storageId, false);
         }
 
         /// <summary>
@@ -76,12 +75,8 @@ namespace SWLOR.Game.Server.Feature
             var container = OBJECT_SELF;
             if (GetResRef(container) != "bank_chest" || GetLocalBool(container, "IS_DESERIALIZING")) return;
 
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
-            var player = GetItemPossessor(item);
-            var playerId = GetObjectUUID(player);
-            var storageId = GetStorageID();
-            var key = $"{storageId}:{playerId}";
-            AddItem(key, "Bank");
+            var storageId = GetStorageId();
+            AddItem(storageId, true);
         }
 
         /// <summary>
@@ -94,9 +89,9 @@ namespace SWLOR.Game.Server.Feature
             var item = GetInventoryDisturbItem();
             var player = GetItemPossessor(item);
             var playerId = GetObjectUUID(player);
-            var storageId = GetStorageID();
+            var storageId = GetStorageId();
             var key = $"{storageId}:{playerId}";
-            RemoveItem(key, "Bank");
+            RemoveItem(key);
         }
 
         /// <summary>
@@ -108,27 +103,25 @@ namespace SWLOR.Game.Server.Feature
         {
             var player = GetLastOpenedBy();
             if (!GetIsPC(player) || GetIsDM(player)) return;
-
-            var playerId = GetObjectUUID(player);
-            var storageId = GetStorageID();
-            var key = $"{storageId}:{playerId}";
-            OpenStorage(key, "Bank");
+            
+            var storageId = GetStorageId();
+            OpenStorage(storageId, true);
         }
 
         /// <summary>
         /// Retrieves the STORAGE_ID variable from the container.
         /// </summary>
         /// <returns>The value of the STORAGE_ID local variable</returns>
-        protected static string GetStorageID()
+        protected static string GetStorageId()
         {
             var container = OBJECT_SELF;
 
-            var storageID = GetLocalString(container, "STORAGE_ID");
+            var storageId = GetLocalString(container, "STORAGE_ID");
 
-            if (string.IsNullOrWhiteSpace(storageID))
+            if (string.IsNullOrWhiteSpace(storageId))
                 throw new Exception($"Container {GetName(container)} does not have a STORAGE_ID variable assigned.");
 
-            return storageID;
+            return storageId;
         }
 
         /// <summary>
@@ -177,9 +170,9 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Adds an item to the database under the specified key.
         /// </summary>
-        /// <param name="key">The unique identifier under which this item list will be stored.</param>
-        /// <param name="keyPrefix">The prefix to store the data under.</param>
-        protected static void AddItem(string key, string keyPrefix)
+        /// <param name="storageId">The unique identifier under which this item list will be stored.</param>
+        /// <param name="isPrivate">If true, storage will be attached to the player Id</param>
+        protected static void AddItem(string storageId, bool isPrivate)
         {
             // We don't want to serialize the item if we're loading its inventory.
             if (IsLoading) return;
@@ -214,21 +207,23 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            var items = DB.GetList<InventoryItem>(key, keyPrefix) ?? new EntityList<InventoryItem>();
-            var itemID = Guid.Parse(GetObjectUUID(item));
+            
+            var itemId = GetObjectUUID(item);
             var data = ObjectPlugin.Serialize(item);
+            var playerId = GetObjectUUID(player);
 
-            items.Add(new InventoryItem
+            var dbItem = new InventoryItem
             {
-                ID = itemID,
+                StorageId = storageId,
+                PlayerId = isPrivate ? playerId : storageId,
                 Data = data,
                 Name = GetName(item),
                 Quantity = GetItemStackSize(item),
                 Resref = GetResRef(item),
                 Tag = GetTag(item)
-            });
+            };
 
-            DB.SetList(key, items, keyPrefix);
+            DB.Set(itemId, dbItem);
             SendItemLimitMessage(player, true);
         }
 
@@ -248,36 +243,32 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Removes an item from the database by the specified key.
         /// </summary>
-        /// <param name="key">The unique identifier for this item list.</param>
-        /// <param name="keyPrefix">The key prefix to remove from.</param>
-        protected static void RemoveItem(string key, string keyPrefix)
+        /// <param name="storageId">The unique identifier for this item list.</param>
+        protected static void RemoveItem(string storageId)
         {
             var player = GetLastDisturbed();
             var type = GetInventoryDisturbType();
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (type != DisturbType.Removed) return;
 
-            var playerID = GetObjectUUID(player);
+            var playerId = GetObjectUUID(player);
 
-            var storageID = GetStorageID();
-            var items = DB.GetList<InventoryItem>(key, keyPrefix);
             var item = GetInventoryDisturbItem();
-            var itemID = Guid.Parse(GetObjectUUID(item));
-            var existing = items.FirstOrDefault(x => x.ID == itemID);
+            var itemId = GetObjectUUID(item);
+            var existing = DB.Get<InventoryItem>(itemId);
             if (existing == null)
-                throw new Exception($"Could not locate item with ID '{itemID} from database for storage '{storageID}', player ID '{playerID}' and itemID '{itemID}'");
-
-            items.Remove(existing);
-            DB.SetList(key, items, keyPrefix);
+                throw new Exception($"Could not locate item with ID '{itemId} from database for storage '{storageId}', player ID '{playerId}' and itemID '{itemId}'");
+            
+            DB.Delete<InventoryItem>(itemId);
             SendItemLimitMessage(player, false);
         }
 
         /// <summary>
         /// Handles loading items into the container's inventory.
         /// </summary>
-        /// <param name="key">The unique identifier under which this container's items are stored.</param>
-        /// <param name="keyPrefix">The key prefix to look for this data under.</param>
-        protected static void OpenStorage(string key, string keyPrefix)
+        /// <param name="storageId">The unique identifier under which this container's items are stored.</param>
+        /// <param name="isPrivate">If true, storage is tied to a player Id. Otherwise, publicly accessible.</param>
+        protected static void OpenStorage(string storageId, bool isPrivate)
         {
             var container = OBJECT_SELF;
 
@@ -285,7 +276,10 @@ namespace SWLOR.Game.Server.Feature
             var player = GetLastOpenedBy();
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
-            var items = DB.GetList<InventoryItem>(key, keyPrefix) ?? new EntityList<InventoryItem>();
+            var playerId = GetObjectUUID(player);
+            var items = isPrivate
+                ? DB.Search<InventoryItem>("PlayerId", playerId, "StorageId", storageId)
+                : DB.Search<InventoryItem>("StorageId", storageId);
 
             // Prevent the OnAddItem event from firing while we're loading the inventory.
             IsLoading = true;

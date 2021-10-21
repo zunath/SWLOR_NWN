@@ -1,4 +1,7 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System;
+using System.Linq;
+using Newtonsoft.Json;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AchievementService;
@@ -20,7 +23,12 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("test")]
         public static void GiveKeyItems()
         {
-            DB.Search();
+            var data = DB.Search<Player>("Name", "mat*").ToList();
+
+            foreach (var player in data)
+            {
+                Console.WriteLine(JsonConvert.SerializeObject(player));
+            }
         }
 
     }

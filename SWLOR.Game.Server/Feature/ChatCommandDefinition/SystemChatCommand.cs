@@ -56,7 +56,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     BugReport report = new BugReport
                     {
-                        SenderPlayerID = isPlayer ? (Guid?)Guid.Parse(GetObjectUUID(user)) : null,
+                        SenderPlayerId = isPlayer ? (Guid?)Guid.Parse(GetObjectUUID(user)) : null,
                         CDKey = GetPCPublicCDKey(user),
                         Text = message,
                         AreaResref = areaResref,

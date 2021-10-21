@@ -4,8 +4,11 @@ namespace SWLOR.Game.Server.Entity
 {
     public class AuthorizedDM: EntityBase
     {
+        [Indexed]
         public string Name { get; set; }
+        [Indexed]
         public string CDKey { get; set; }
+        [Indexed]
         public AuthorizationLevel Authorization { get; set; }
         public override string KeyPrefix => "AuthorizedDM";
     }

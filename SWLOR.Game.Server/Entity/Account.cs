@@ -14,8 +14,10 @@ namespace SWLOR.Game.Server.Entity
 
         public override string KeyPrefix => "Account";
 
+        [Indexed]
         public ulong TimesLoggedIn { get; set; }
 
+        [Indexed]
         public bool HasCompletedTutorial { get; set; }
 
         public Dictionary<AchievementType, DateTime> Achievements { get; set; }

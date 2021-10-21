@@ -1,4 +1,8 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System;
+using System.Linq;
+using Newtonsoft.Json;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.KeyItemService;
@@ -19,35 +23,12 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("test")]
         public static void GiveKeyItems()
         {
-            var player = GetLastUsedBy();
-            KeyItem.GiveKeyItem(player, KeyItemType.AvixTathamsWorkReceipt);
-            KeyItem.GiveKeyItem(player, KeyItemType.HalronLinthsWorkReceipt);
-            KeyItem.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkReceipt);
-            KeyItem.GiveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkOrder);
-            KeyItem.GiveKeyItem(player, KeyItemType.CZ220ShuttlePass);
-            KeyItem.GiveKeyItem(player, KeyItemType.CZ220ExperimentRoomKey);
-            KeyItem.GiveKeyItem(player, KeyItemType.MandalorianFacilityKey);
-            KeyItem.GiveKeyItem(player, KeyItemType.YellowKeyCard);
-            KeyItem.GiveKeyItem(player, KeyItemType.RedKeyCard);
-            KeyItem.GiveKeyItem(player, KeyItemType.BlueKeyCard);
-            KeyItem.GiveKeyItem(player, KeyItemType.SlicingProgram);
-            KeyItem.GiveKeyItem(player, KeyItemType.DataDisc1);
-            KeyItem.GiveKeyItem(player, KeyItemType.DataDisc2);
-            KeyItem.GiveKeyItem(player, KeyItemType.DataDisc3);
-            KeyItem.GiveKeyItem(player, KeyItemType.DataDisc4);
-            KeyItem.GiveKeyItem(player, KeyItemType.DataDisc5);
-            KeyItem.GiveKeyItem(player, KeyItemType.DataDisc6);
-            KeyItem.GiveKeyItem(player, KeyItemType.PackageForDenamReyholm);
-            KeyItem.GiveKeyItem(player, KeyItemType.OldTome);
-            KeyItem.GiveKeyItem(player, KeyItemType.CoxxionBaseKey);
-            KeyItem.GiveKeyItem(player, KeyItemType.TaxiHailingDevice);
+            var data = DB.Search<Player>(nameof(Player.Name), "mat*").ToList();
 
-
-            Achievement.GiveAchievement(player, AchievementType.CompleteQuests1);
-            Achievement.GiveAchievement(player, AchievementType.CraftItems1);
-            Achievement.GiveAchievement(player, AchievementType.GainSkills1);
-            Achievement.GiveAchievement(player, AchievementType.KillEnemies1);
-            Achievement.GiveAchievement(player, AchievementType.LearnPerks1);
+            foreach (var player in data)
+            {
+                Console.WriteLine(JsonConvert.SerializeObject(player));
+            }
         }
 
     }

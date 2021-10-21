@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Entity
             TaxRate = 0.05f;
         }
 
+        [Indexed]
         public string StoreName { get; set; }
         public Dictionary<string, PlayerStoreItem> ItemsForSale { get; set; }
         public override string KeyPrefix => "PlayerStore";

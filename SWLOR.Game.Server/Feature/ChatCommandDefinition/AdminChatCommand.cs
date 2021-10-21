@@ -58,19 +58,18 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var name = args[0];
                     var cdKey = args[1].ToUpper();
 
-                    var dmList = DB.GetList<AuthorizedDM>("All", "AuthorizedDM") ?? new EntityList<AuthorizedDM>();
-                    var existing = dmList.FirstOrDefault(x => x.CDKey == cdKey);
+                    var existing = DB.Search<AuthorizedDM>(nameof(AuthorizedDM.CDKey), $"{cdKey}").FirstOrDefault();
 
                     if (existing == null)
                     {
-                        dmList.Add(new AuthorizedDM
+                        var dm = new AuthorizedDM
                         {
                             Authorization = AuthorizationLevel.DM,
                             CDKey = cdKey,
                             Name = name
-                        });
+                        };
 
-                        DB.SetList("All", dmList, "AuthorizedDM");
+                        DB.Set(cdKey, dm);
                         SendMessageToPC(user, $"DM '{name}' added under CD Key '{cdKey}'.");
                     }
                     else
@@ -101,10 +100,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 })
                 .Action((user, target, location, args) =>
                 {
-                    var dmList = DB.GetList<AuthorizedDM>("All", "AuthorizedDM") ?? new EntityList<AuthorizedDM>();
-
                     var cdKey = args[0];
-                    var record = dmList.FirstOrDefault(x => x.CDKey == cdKey);
+                    var record = DB.Search<AuthorizedDM>(nameof(AuthorizedDM.CDKey), cdKey).FirstOrDefault();
                     var userCDKey = GetPCPublicCDKey(user);
 
                     if (record == null)
@@ -119,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         return;
                     }
 
-                    for(var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+                    for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
                     {
                         if (!GetIsDM(player)) continue;
 
@@ -129,8 +126,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         }
                     }
 
-                    dmList.Remove(record);
-                    DB.SetList("All", dmList, "AuthorizedDM");
+                    DB.Delete<AuthorizedDM>(cdKey);
+                    SendMessageToPC(user, $"DM {record.Name} has been removed.");
                 });
         }
 
@@ -141,13 +138,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
-                    var dmList = DB.GetList<AuthorizedDM>("All", "AuthorizedDM") ?? new EntityList<AuthorizedDM>();
-
+                    var dmList = DB.Search<AuthorizedDM>(nameof(AuthorizedDM.Authorization), $"{(int)AuthorizationLevel.DM}|{(int)AuthorizationLevel.Admin}");
                     var message = string.Empty;
 
                     foreach (var dm in dmList)
                     {
-                        message += $"{dm.CDKey}: {dm.Name} ({dm.Authorization})";
+                        message += $"{dm.CDKey}: {dm.Name} ({dm.Authorization})\n";
                     }
 
                     SendMessageToPC(user, message);

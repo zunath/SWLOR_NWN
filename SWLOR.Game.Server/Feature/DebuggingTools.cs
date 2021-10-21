@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("test")]
         public static void GiveKeyItems()
         {
-            var data = DB.Search<Player>("Name", "mat*").ToList();
+            var data = DB.Search<Player>(nameof(Player.Name), "mat*").ToList();
 
             foreach (var player in data)
             {

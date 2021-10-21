@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service
                     return AuthorizationLevel.Admin;
             }
 
-            var existing = DB.Search<AuthorizedDM>("CDKey", cdKey).FirstOrDefault();
+            var existing = DB.Search<AuthorizedDM>(nameof(AuthorizedDM.CDKey), cdKey).FirstOrDefault();
             if (existing == null)
                 return AuthorizationLevel.Player;
 

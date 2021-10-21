@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var name = args[0];
                     var cdKey = args[1].ToUpper();
 
-                    var existing = DB.Search<AuthorizedDM>($"CDKey", $"{cdKey}").FirstOrDefault();
+                    var existing = DB.Search<AuthorizedDM>(nameof(AuthorizedDM.CDKey), $"{cdKey}").FirstOrDefault();
 
                     if (existing == null)
                     {
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     var cdKey = args[0];
-                    var record = DB.Search<AuthorizedDM>("CDKey", cdKey).FirstOrDefault();
+                    var record = DB.Search<AuthorizedDM>(nameof(AuthorizedDM.CDKey), cdKey).FirstOrDefault();
                     var userCDKey = GetPCPublicCDKey(user);
 
                     if (record == null)
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
-                    var dmList = DB.Search<AuthorizedDM>($"Authorization", $"{(int)AuthorizationLevel.DM}|{(int)AuthorizationLevel.Admin}");
+                    var dmList = DB.Search<AuthorizedDM>(nameof(AuthorizedDM.Authorization), $"{(int)AuthorizationLevel.DM}|{(int)AuthorizationLevel.Admin}");
                     var message = string.Empty;
 
                     foreach (var dm in dmList)

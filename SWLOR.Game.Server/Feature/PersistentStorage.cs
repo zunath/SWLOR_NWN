@@ -278,8 +278,8 @@ namespace SWLOR.Game.Server.Feature
 
             var playerId = GetObjectUUID(player);
             var items = isPrivate
-                ? DB.Search<InventoryItem>("PlayerId", playerId, "StorageId", storageId)
-                : DB.Search<InventoryItem>("StorageId", storageId);
+                ? DB.Search<InventoryItem>(nameof(InventoryItem.PlayerId), playerId, nameof(InventoryItem.StorageId), storageId)
+                : DB.Search<InventoryItem>(nameof(InventoryItem.StorageId), storageId);
 
             // Prevent the OnAddItem event from firing while we're loading the inventory.
             IsLoading = true;

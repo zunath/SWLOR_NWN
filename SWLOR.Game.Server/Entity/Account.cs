@@ -12,7 +12,6 @@ namespace SWLOR.Game.Server.Entity
             AchievementProgress = new AchievementProgress();
         }
 
-        public override string KeyPrefix => "Account";
 
         [Indexed]
         public ulong TimesLoggedIn { get; set; }

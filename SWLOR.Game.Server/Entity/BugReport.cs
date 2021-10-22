@@ -18,6 +18,5 @@ namespace SWLOR.Game.Server.Entity
         public double SenderLocationY { get; set; }
         public double SenderLocationZ { get; set; }
         public double SenderLocationOrientation { get; set; }
-        public override string KeyPrefix => "BugReport";
     }
 }

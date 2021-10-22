@@ -13,6 +13,5 @@ namespace SWLOR.Game.Server.Entity
         [Indexed]
         public int MigrationVersion { get; set; }
         public DateTime LastRestart { get; set; }
-        public override string KeyPrefix => "ServerConfiguration";
     }
 }

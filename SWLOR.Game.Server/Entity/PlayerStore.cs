@@ -16,7 +16,6 @@ namespace SWLOR.Game.Server.Entity
         [Indexed]
         public string StoreName { get; set; }
         public Dictionary<string, PlayerStoreItem> ItemsForSale { get; set; }
-        public override string KeyPrefix => "PlayerStore";
         public DateTime DateLeaseExpires { get; set; }
         public bool IsOpen { get; set; }
         public int Till { get; set; }

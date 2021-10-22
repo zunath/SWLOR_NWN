@@ -4,7 +4,6 @@ namespace SWLOR.Game.Server.Entity
 {
     public class PlayerOutfit: EntityBase
     {
-        public override string KeyPrefix => "PlayerOutfit";
 
         public List<PlayerOutfitDetail> Outfits { get; set; }
 

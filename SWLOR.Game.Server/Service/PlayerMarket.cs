@@ -14,6 +14,8 @@ namespace SWLOR.Game.Server.Service
 {
     public static class PlayerMarket
     {
+        public const int MaxListingCount = 25;
+
         // Serves two purposes:
         //    1.) Tracks the names of stores.
         //    2.) Identifies that the store is active and should be displayed on the shop list.

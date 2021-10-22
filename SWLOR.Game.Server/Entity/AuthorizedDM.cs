@@ -10,6 +10,5 @@ namespace SWLOR.Game.Server.Entity
         public string CDKey { get; set; }
         [Indexed]
         public AuthorizationLevel Authorization { get; set; }
-        public override string KeyPrefix => "AuthorizedDM";
     }
 }

@@ -126,13 +126,13 @@ namespace SWLOR.Game.Server.Service
             {
                 var type = entity.GetType();
                 // Register the type by itself first.
-                _keyPrefixByType[type] = entity.KeyPrefix;
+                _keyPrefixByType[type] = type.Name;
                 
                 // Register the search client.
                 _searchClientsByType[type] = new Client(type.Name, _multiplexer.GetDatabase());
                 ProcessIndex(entity);
 
-                Console.WriteLine($"Registered type '{entity.GetType()}' using key prefix {entity.KeyPrefix}");
+                Console.WriteLine($"Registered type '{entity.GetType()}' using key prefix {type.Name}");
             }
         }
 
@@ -285,9 +285,8 @@ namespace SWLOR.Game.Server.Service
         {
             // Escape special characters
             search = EscapeTokens(search);
-
-            var query = $"@{fieldName}:{search}";
-
+            
+            var query = $"@EntityType:\"{typeof(T).Name}\" @{fieldName}:{search}";
 
             if (!string.IsNullOrWhiteSpace(fieldName2) && !string.IsNullOrWhiteSpace(search2))
             {

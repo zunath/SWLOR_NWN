@@ -9,12 +9,14 @@ namespace SWLOR.Game.Server.Entity
         
         public DateTime DateCreated { get; set; }
 
-        public abstract string KeyPrefix { get; }
+        [Indexed]
+        public string EntityType { get; set; }
 
         protected EntityBase()
         {
             ID = Guid.NewGuid();
             DateCreated = DateTime.UtcNow;
+            EntityType = GetType().Name;
         }
     }
 }

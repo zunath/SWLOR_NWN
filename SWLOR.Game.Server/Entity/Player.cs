@@ -73,7 +73,6 @@ namespace SWLOR.Game.Server.Entity
             ObjectVisibilities = new Dictionary<string, VisibilityType>();
         }
 
-        public override string KeyPrefix => "Player";
 
         [Indexed]
         public int Version { get; set; }

@@ -295,6 +295,18 @@ namespace SWLOR.Game.Server.Service
             return _playerModals[playerId][type];
         }
 
+        /// <summary>
+        /// Retrieves the window instance of a player's window.
+        /// </summary>
+        /// <param name="player">The player to retrieve for.</param>
+        /// <param name="type">The type of window to retrieve.</param>
+        /// <returns>A player's window instance of the specified type.</returns>
+        public static GuiPlayerWindow GetPlayerWindow(uint player, GuiWindowType type)
+        {
+            var playerId = GetObjectUUID(player);
+            return _playerWindows[playerId][type];
+        }
+
         public class IdReservation
         {
             public int Count { get; set; }

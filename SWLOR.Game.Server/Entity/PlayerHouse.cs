@@ -10,7 +10,6 @@ namespace SWLOR.Game.Server.Entity
             Furnitures = new Dictionary<string, PlayerHouseFurniture>();
         }
 
-        public override string KeyPrefix => "PlayerHouse";
 
         [Indexed]
         public string CustomName { get; set; }

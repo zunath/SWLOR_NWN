@@ -106,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void UpdateItemCount()
         {
-            ListCount = $"{_itemCount} / {PlayerMarket.MaxListingCount} Items Listed";
+            ListCount = $"  {_itemCount} / {PlayerMarket.MaxListingCount} Items Listed";
         }
 
         public Action OnLoadWindow() => () =>
@@ -182,6 +182,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DestroyObject(item);
 
             _itemIds.Add(listing.ItemId);
+            ItemIconResrefs.Add(listing.IconResref);
             ItemMarkets.Add(listing.MarketName);
             ItemNames.Add($"{listing.Quantity}x {listing.Name}");
             ItemPrices.Add(listing.Price);
@@ -227,8 +228,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
 
         };
-
-
 
         private string GetIconResref(uint item, BaseItem baseItem)
         {

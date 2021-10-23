@@ -200,6 +200,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         {
             var newGroup = new GuiGroup<T>();
             group(newGroup);
+            Elements.Add(newGroup);
 
             return newGroup;
         }

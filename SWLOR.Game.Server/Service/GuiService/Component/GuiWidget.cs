@@ -14,8 +14,8 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
     {
         public string Id { get; protected set; }
         public List<IGuiWidget> Elements { get; }
-        private float Width { get; set; }
-        private float Height { get; set; }
+        protected float Width { get; private set; }
+        protected float Height { get; private set; }
         private float AspectRatio { get; set; }
         private float Margin { get; set; }
         private float Padding { get; set; }

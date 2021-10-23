@@ -20,12 +20,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     col.AddRow(row =>
                     {
-                        row.AddLabel()
-                            .BindText(model => model.ListCount)
-                            .SetHeight(26f);
-                    });
-                    col.AddRow(row =>
-                    {
                         row.AddTextEdit()
                             .SetPlaceholder("Item Name")
                             .BindValue(model => model.SearchText);
@@ -41,22 +35,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetWidth(35f)
                             .BindOnClicked(model => model.OnClickClear());
 
+                    });
+
+                    col.AddRow(row =>
+                    {
                         row.AddButton()
                             .SetText("Add Item")
                             .BindOnClicked(model => model.OnClickAddItem())
                             .BindIsEnabled(model => model.IsAddItemEnabled)
                             .SetHeight(35f);
+                        
+                        row.AddLabel()
+                            .BindText(model => model.ListCount)
+                            .SetHeight(35f)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
                     });
-
                     col.AddRow(row =>
                     {
                         row.AddList(template =>
                         {
                             template.AddCell(cell =>
                             {
-                                cell.AddImage()
-                                    //.BindResref(model => model.ItemIconResrefs)
-                                    .SetResref("iwswss");
+                                cell.SetWidth(40f);
+                                cell.SetIsVariable(false);
+
+                                cell.AddGroup(group =>
+                                {
+                                    group.AddImage()
+                                        .BindResref(model => model.ItemIconResrefs)
+                                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                        .SetVerticalAlign(NuiVerticalAlign.Top);
+                                });
                             });
 
                             template.AddCell(cell =>
@@ -68,13 +77,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             template.AddCell(cell =>
                             {
-                                cell.AddLabel()
+                                cell.AddText()
                                     .BindText(model => model.ItemNames)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                                    .BindTooltip(model => model.ItemNames);
                             });
 
                             template.AddCell(cell =>
                             {
+                                cell.SetIsVariable(false);
+                                cell.SetWidth(80f);
 
                                 cell.AddTextEdit()
                                     .BindValue(model => model.ItemPrices);
@@ -94,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindOnClicked(model => model.OnClickRemove());
                             });
                         })
-                            .BindRowCount(model => model.ItemMarkets);
+                            .BindRowCount(model => model.ItemMarkets)
+                            .SetRowHeight(40f);
                     });
 
                     col.AddRow(row =>

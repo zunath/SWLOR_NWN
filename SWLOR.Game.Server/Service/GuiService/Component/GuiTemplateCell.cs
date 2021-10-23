@@ -8,17 +8,16 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
     public class GuiTemplateCell<T>: GuiExpandableComponent<T>
         where T: IGuiViewModel
     {
+        private bool IsVariable { get; set; } = true;
+        
         /// <summary>
-        /// If zero, the cell will grow/shrink automatically.
-        /// If any number greater than zero, that pixel width will be used.
-        /// If any number less than zero, this will be set to zero.
+        /// Sets whether the cell is variable in size.
         /// </summary>
-        public float Width { get; set; } = 0;
-
-        /// <summary>
-        /// If true, the cell can grow if space is available; otherwise it will be static
-        /// </summary>
-        public bool IsVariable { get; set; } = true;
+        /// <param name="isVariable">If true, cell will grow in size. If false, it will remain static.</param>
+        public void SetIsVariable(bool isVariable)
+        {
+            IsVariable = isVariable;
+        }
 
         public override Json BuildElement()
         {

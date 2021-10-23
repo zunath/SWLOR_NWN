@@ -67,6 +67,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<bool> ListingCheckboxEnabled
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+
         private void LoadData()
         {
             var itemIconResrefs = new GuiBindingList<string>();
@@ -74,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var itemNames = new GuiBindingList<string>();
             var itemPriceNames = new GuiBindingList<string>();
             var itemListed = new GuiBindingList<bool>();
+            var listingCheckboxEnabled = new GuiBindingList<bool>();
 
             _itemIds.Clear();
             _itemPrices.Clear();
@@ -96,7 +103,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 itemNames.Add($"{record.Quantity}x {record.Name}");
                 _itemPrices.Add(record.Price);
                 itemPriceNames.Add($"{record.Price} cr");
-                itemListed.Add(record.IsListed);
+                itemListed.Add(record.IsListed && record.Price > 0);
+                listingCheckboxEnabled.Add(record.Price > 0);
             }
 
             _itemCount = count;
@@ -107,6 +115,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ItemNames = itemNames;
             ItemPriceNames = itemPriceNames;
             ItemListed = itemListed;
+            ListingCheckboxEnabled = listingCheckboxEnabled;
         }
 
         private void UpdateItemCount()
@@ -194,7 +203,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ItemNames.Add($"{listing.Quantity}x {listing.Name}");
             _itemPrices.Add(listing.Price);
             ItemPriceNames.Add($"{listing.Price} cr");
-            ItemListed.Add(listing.IsListed);
+            ItemListed.Add(listing.IsListed && listing.Price > 0);
+            ListingCheckboxEnabled.Add(listing.Price > 0);
 
             _itemCount++;
             UpdateItemCount();
@@ -221,6 +231,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _itemPrices.RemoveAt(index);
                 ItemPriceNames.RemoveAt(index);
                 ItemListed.RemoveAt(index);
+                ListingCheckboxEnabled.RemoveAt(index);
 
                 _itemCount--;
                 UpdateItemCount();
@@ -307,8 +318,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _itemPrices[index] = price;
             ItemPriceNames[index] = $"{price} cr";
+
+            if (price <= 0)
+            {
+                ListingCheckboxEnabled[index] = false;
+                ItemListed[index] = false;
+            }
+            else
+            {
+                ListingCheckboxEnabled[index] = true;
+            }
         }
-
-
     }
 }

@@ -102,6 +102,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                                 cell.AddCheckBox()
                                     .BindIsChecked(model => model.ItemListed)
+                                    .BindIsEnabled(model => model.ListingCheckboxEnabled)
                                     .SetText("For Sale");
                             });
 

@@ -142,18 +142,13 @@ namespace SWLOR.Game.Server.Service
         /// <typeparam name="T">The type of data to store</typeparam>
         /// <param name="entity">The data to store.</param>
         /// <param name="key">The arbitrary key to set this object under.</param>
-        /// <param name="keyPrefixOverride">If null, the key prefix defined on the entity will be used. Otherwise, this value will be used as the prefix.</param>
-        public static void Set<T>(string key, T entity, string keyPrefixOverride = null)
+        public static void Set<T>(string key, T entity)
             where T : EntityBase
         {
             var type = typeof(T);
-            if (string.IsNullOrWhiteSpace(keyPrefixOverride))
-            {
-                keyPrefixOverride = _keyPrefixByType[type];
-            }
-
             var data = JsonConvert.SerializeObject(entity);
-            var indexKey = $"Index:{keyPrefixOverride}:{key}";
+            var keyPrefix = _keyPrefixByType[type];
+            var indexKey = $"Index:{keyPrefix}:{key}";
             var indexData = new Dictionary<string, RedisValue>();
 
             foreach (var prop in _indexedPropertiesByName[type])
@@ -182,7 +177,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _searchClientsByType[type].ReplaceDocument(indexKey, indexData);
-            _multiplexer.GetDatabase().JsonSet($"{keyPrefixOverride}:{key}", data);
+            _multiplexer.GetDatabase().JsonSet($"{keyPrefix}:{key}", data);
             _cachedEntities[key] = entity;
         }
 
@@ -191,16 +186,11 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <typeparam name="T">The type of data to retrieve</typeparam>
         /// <param name="key">The arbitrary key the data is stored under</param>
-        /// <param name="keyPrefixOverride">If null, the key prefix defined on the entity will be used. Otherwise, this value will be used as the prefix.</param>
         /// <returns>The object stored in the database under the specified key</returns>
-        public static T Get<T>(string key, string keyPrefixOverride = null)
+        public static T Get<T>(string key)
             where T: EntityBase
         {
-            if (string.IsNullOrWhiteSpace(keyPrefixOverride))
-            {
-                keyPrefixOverride = _keyPrefixByType[typeof(T)];
-            }
-
+            var keyPrefix = _keyPrefixByType[typeof(T)];
             if (_cachedEntities.ContainsKey(key))
             {
                 return (T)_cachedEntities[key];
@@ -211,7 +201,7 @@ namespace SWLOR.Game.Server.Service
 
                 using (new Profiler("RedisGet"))
                 {
-                    data = _multiplexer.GetDatabase().JsonGet($"{keyPrefixOverride}:{key}").ToString();
+                    data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{key}").ToString();
                 }
 
                 if (string.IsNullOrWhiteSpace(data))
@@ -229,20 +219,15 @@ namespace SWLOR.Game.Server.Service
         /// Returns false if not.
         /// </summary>
         /// <param name="key">The key of the entity.</param>
-        /// <param name="keyPrefixOverride">If null, the key prefix defined on the entity will be used. Otherwise, this value will be used as the prefix.</param>
         /// <returns>true if found, false otherwise.</returns>
-        public static bool Exists<T>(string key, string keyPrefixOverride = null)
+        public static bool Exists<T>(string key)
             where T : EntityBase
         {
-            if (keyPrefixOverride == null)
-            {
-                keyPrefixOverride = _keyPrefixByType[typeof(T)];
-            }
-
+            var keyPrefix = _keyPrefixByType[typeof(T)];
             if (_cachedEntities.ContainsKey(key))
                 return true;
             else
-                return _multiplexer.GetDatabase().KeyExists($"{keyPrefixOverride}:{key}");
+                return _multiplexer.GetDatabase().KeyExists($"{keyPrefix}:{key}");
         }
 
         /// <summary>
@@ -250,18 +235,13 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <typeparam name="T">The type of entity to delete.</typeparam>
         /// <param name="key">The key of the entity</param>
-        /// <param name="keyPrefixOverride">If null, the key prefix defined on the entity will be used. Otherwise, this value will be used as the prefix.</param>
-        public static void Delete<T>(string key, string keyPrefixOverride = null)
+        public static void Delete<T>(string key)
             where T: EntityBase
         {
-            if (keyPrefixOverride == null)
-            {
-                keyPrefixOverride = _keyPrefixByType[typeof(T)];
-            }
-
-            var indexKey = $"Index:{keyPrefixOverride}:{key}";
+            var keyPrefix = _keyPrefixByType[typeof(T)];
+            var indexKey = $"Index:{keyPrefix}:{key}";
             _searchClientsByType[typeof(T)].DeleteDocument(indexKey);
-            _multiplexer.GetDatabase().JsonDelete($"{keyPrefixOverride}:{key}");
+            _multiplexer.GetDatabase().JsonDelete($"{keyPrefix}:{key}");
             _cachedEntities.Remove(key);
         }
 

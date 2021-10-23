@@ -32,7 +32,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         private int _itemCount;
-        private readonly List<string> _itemIds = new List<string>();
+
+        private readonly List<string> _itemIds = new();
 
         public GuiBindingList<string> ItemIconResrefs
         {
@@ -52,7 +53,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public GuiBindingList<string> ItemPrices
+        private readonly List<int> _itemPrices = new();
+        public GuiBindingList<string> ItemPriceNames
         {
             get => Get<GuiBindingList<string>>();
             set => Set(value);
@@ -69,10 +71,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var itemIconResrefs = new GuiBindingList<string>();
             var itemMarkets = new GuiBindingList<string>();
             var itemNames = new GuiBindingList<string>();
-            var itemPrices = new GuiBindingList<string>();
+            var itemPriceNames = new GuiBindingList<string>();
             var itemListed = new GuiBindingList<bool>();
 
             _itemIds.Clear();
+            _itemPrices.Clear();
             var playerId = GetObjectUUID(Player);
             var records = DB.Search<MarketItem>(nameof(MarketItem.PlayerId), playerId);
             var count = 0;
@@ -89,24 +92,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 itemIconResrefs.Add(record.IconResref);
                 itemMarkets.Add(record.MarketName);
                 itemNames.Add($"{record.Quantity}x {record.Name}");
-                itemPrices.Add($"{record.Price} cr");
-                itemListed.Add(false);
+                _itemPrices.Add(record.Price);
+                itemPriceNames.Add($"{record.Price} cr");
+                itemListed.Add(record.IsListed);
             }
 
             _itemCount = count;
             UpdateItemCount();
-            IsAddItemEnabled = _itemIds.Count < PlayerMarket.MaxListingCount;
 
             ItemIconResrefs = itemIconResrefs;
             ItemMarkets = itemMarkets;
             ItemNames = itemNames;
-            ItemPrices = itemPrices;
+            ItemPriceNames = itemPriceNames;
             ItemListed = itemListed;
         }
 
         private void UpdateItemCount()
         {
             ListCount = $"  {_itemCount} / {PlayerMarket.MaxListingCount} Items Listed";
+            IsAddItemEnabled = _itemIds.Count < PlayerMarket.MaxListingCount;
         }
 
         public Action OnLoadWindow() => () =>
@@ -115,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadData();
 
             WatchOnClient(model => model.SearchText);
-            WatchOnClient(model => model.ItemPrices);
+            WatchOnClient(model => model.ItemListed);
         };
 
         public Action OnClickAddItem() => () =>
@@ -185,7 +189,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ItemIconResrefs.Add(listing.IconResref);
             ItemMarkets.Add(listing.MarketName);
             ItemNames.Add($"{listing.Quantity}x {listing.Name}");
-            ItemPrices.Add($"{listing.Price} cr");
+            _itemPrices.Add(listing.Price);
+            ItemPriceNames.Add($"{listing.Price} cr");
             ItemListed.Add(listing.IsListed);
 
             _itemCount++;
@@ -209,7 +214,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ItemIconResrefs.RemoveAt(index);
                 ItemMarkets.RemoveAt(index);
                 ItemNames.RemoveAt(index);
-                ItemPrices.RemoveAt(index);
+                _itemPrices.RemoveAt(index);
+                ItemPriceNames.RemoveAt(index);
                 ItemListed.RemoveAt(index);
 
                 _itemCount--;
@@ -227,12 +233,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickSaveChanges() => () =>
         {
+            for(var index = 0; index < _itemIds.Count; index++)
+            {
+                var id = _itemIds[index];
+                var dbListing = DB.Get<MarketItem>(id);
 
+                // It's possible the item was sold already, in which case there won't be a DB record.
+                // Skip this update.
+                if (dbListing == null)
+                    continue;
+
+                // Only do updates if either the price or listing status has changed.
+                if (dbListing.Price == _itemPrices[index] && 
+                    dbListing.IsListed == ItemListed[index]) 
+                    continue;
+
+                // Do the update for this record.
+                dbListing.Price = _itemPrices[index];
+                dbListing.IsListed = ItemListed[index];
+                DB.Set(id, dbListing);
+            }
+            
+            LoadData();
         };
 
         public Action OnClickChangePrice() => () =>
         {
-
+            
         };
 
         private string GetIconResref(uint item, BaseItem baseItem)

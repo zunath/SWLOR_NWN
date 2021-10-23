@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 cell.SetWidth(120f);
 
                                 cell.AddButton()
-                                    .BindText(model => model.ItemPrices)
+                                    .BindText(model => model.ItemPriceNames)
                                     .BindOnClicked(model => model.OnClickChangePrice());
                             });
 

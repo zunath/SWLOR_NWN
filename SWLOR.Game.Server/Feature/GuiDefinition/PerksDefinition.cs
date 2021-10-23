@@ -74,11 +74,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddList(template =>
                         {
-                            template.AddToggleButton()
-                                .BindText(model => model.PerkButtonTexts)
-                                .BindIsToggled(model => model.PerkDetailSelected)
-                                .BindColor(model => model.PerkButtonColors)
-                                .BindOnClicked(model => model.OnSelectPerk());
+                            template.AddCell(cell =>
+                            {
+                                cell.AddToggleButton()
+                                    .BindText(model => model.PerkButtonTexts)
+                                    .BindIsToggled(model => model.PerkDetailSelected)
+                                    .BindColor(model => model.PerkButtonColors)
+                                    .BindOnClicked(model => model.OnSelectPerk());
+                            });
                         })
                             .BindRowCount(model => model.PerkButtonTexts);
 
@@ -104,11 +107,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 row2.AddList(template2 =>
                                 {
-                                    template2.AddLabel()
-                                        .BindText(model => model.SelectedRequirements)
-                                        .BindColor(model => model.SelectedRequirementColors)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top);
+                                    template2.AddCell(cell =>
+                                    {
+                                        cell.AddLabel()
+                                            .BindText(model => model.SelectedRequirements)
+                                            .BindColor(model => model.SelectedRequirementColors)
+                                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                                    });
                                 })
                                     .BindRowCount(model => model.SelectedRequirements)
                                     .BindIsVisible(model => model.IsPerkSelected);

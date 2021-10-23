@@ -53,18 +53,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddList(template =>
                             {
-                                template.AddLabel()
-                                    .BindText(model => model.Names)
-                                    .BindColor(model => model.Colors);
+                                template.AddCell(cell =>
+                                {
+                                    cell.AddLabel()
+                                        .BindText(model => model.Names)
+                                        .BindColor(model => model.Colors);
+                                });
 
-                                template.AddLabel()
-                                    .BindText(model => model.Descriptions)
-                                    .BindColor(model => model.Colors);
+                                template.AddCell(cell =>
+                                {
+                                    cell.AddLabel()
+                                        .BindText(model => model.Descriptions)
+                                        .BindColor(model => model.Colors);
+                                });
 
-                                template.AddLabel()
-                                    .BindText(model => model.AcquiredDates)
-                                    .BindColor(model => model.Colors);
-
+                                template.AddCell(cell =>
+                                {
+                                    cell.AddLabel()
+                                        .BindText(model => model.AcquiredDates)
+                                        .BindColor(model => model.Colors);
+                                });
                             })
                             .BindRowCount(model => model.Names);
                     });

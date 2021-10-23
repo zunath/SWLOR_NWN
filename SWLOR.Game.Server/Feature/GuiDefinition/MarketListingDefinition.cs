@@ -52,28 +52,47 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddList(template =>
                         {
-                            template.AddImage()
-                                //.BindResref(model => model.ItemIconResrefs)
-                                .SetResref("iwswss");
+                            template.AddCell(cell =>
+                            {
+                                cell.AddImage()
+                                    //.BindResref(model => model.ItemIconResrefs)
+                                    .SetResref("iwswss");
+                            });
 
-                            template.AddLabel()
-                                .BindText(model => model.ItemMarkets)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            template.AddCell(cell =>
+                            {
+                                cell.AddLabel()
+                                    .BindText(model => model.ItemMarkets)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            });
 
-                            template.AddLabel()
-                                .BindText(model => model.ItemNames)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            template.AddCell(cell =>
+                            {
+                                cell.AddLabel()
+                                    .BindText(model => model.ItemNames)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                            });
 
-                            template.AddTextEdit()
-                                .BindValue(model => model.ItemPrices);
+                            template.AddCell(cell =>
+                            {
 
-                            template.AddCheckBox()
-                                .BindIsChecked(model => model.ItemListed)
-                                .SetText("For Sale");
+                                cell.AddTextEdit()
+                                    .BindValue(model => model.ItemPrices);
+                            });
 
-                            template.AddButton()
-                                .SetText("Remove")
-                                .BindOnClicked(model => model.OnClickRemove());
+                            template.AddCell(cell =>
+                            {
+                                cell.AddCheckBox()
+                                    .BindIsChecked(model => model.ItemListed)
+                                    .SetText("For Sale");
+                            });
+
+                            template.AddCell(cell =>
+                            {
+                                cell.AddButton()
+                                    .SetText("Remove")
+                                    .BindOnClicked(model => model.OnClickRemove());
+                            });
                         })
                             .BindRowCount(model => model.ItemMarkets);
                     });

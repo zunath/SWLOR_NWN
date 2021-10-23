@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.BindIsVisible(model => model.IsEquipmentSelected);
 
                         row.AddSpacer();
-                        
+
                         row.AddComboBox()
                             .AddOption("Armor", 0)
                             .AddOption("Helmet", 1)
@@ -76,24 +76,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             col2.AddRow(row2 =>
                             {
                                 row2.AddList(template =>
+                                {
+                                    template.AddCell(cell =>
                                     {
-                                        template.AddToggleButton()
+                                        cell.AddToggleButton()
                                             .BindText(model => model.ColorCategoryOptions)
                                             .BindIsToggled(model => model.ColorCategorySelected)
                                             .BindOnClicked(model => model.OnSelectColorCategory());
-                                    })
+                                    });
+                                })
                                     .BindRowCount(model => model.ColorCategoryOptions);
                             });
 
                             col2.AddRow(row2 =>
                             {
                                 row2.AddList(template =>
+                                {
+                                    template.AddCell(cell =>
                                     {
-                                        template.AddToggleButton()
+                                        cell.AddToggleButton()
                                             .BindText(model => model.PartCategoryOptions)
                                             .BindIsToggled(model => model.PartCategorySelected)
                                             .BindOnClicked(model => model.OnSelectPartCategory());
-                                    })
+                                    });
+                                })
                                     .BindRowCount(model => model.PartCategoryOptions);
                             });
 
@@ -117,12 +123,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             col2.AddRow(row2 =>
                             {
                                 row2.AddList(template =>
+                                {
+                                    template.AddCell(cell =>
                                     {
-                                        template.AddToggleButton()
+                                        cell.AddToggleButton()
                                             .BindText(model => model.PartOptions)
                                             .BindIsToggled(model => model.PartSelected)
                                             .BindOnClicked(model => model.OnSelectPart());
-                                    })
+                                    });
+                                })
                                     .BindRowCount(model => model.PartOptions)
                                     .SetWidth(256f);
                             });

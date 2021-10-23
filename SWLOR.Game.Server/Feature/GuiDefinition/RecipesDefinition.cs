@@ -55,11 +55,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddList(template =>
                         {
-                            template.AddToggleButton()
-                                .BindIsToggled(model => model.Selections)
-                                .BindText(model => model.Recipes)
-                                .BindOnClicked(model => model.OnSelectRecipe())
-                                .BindColor(model => model.Colors);
+                            template.AddCell(cell =>
+                            {
+                                cell.AddToggleButton()
+                                    .BindIsToggled(model => model.Selections)
+                                    .BindText(model => model.Recipes)
+                                    .BindOnClicked(model => model.OnSelectRecipe())
+                                    .BindColor(model => model.Colors);
+                            });
                         })
                             .BindRowCount(model => model.Recipes);
 
@@ -104,18 +107,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddList(template =>
+                        {
+                            template.AddCell(cell =>
                             {
-                                template.AddLabel()
+                                cell.AddLabel()
                                     .BindText(model => model.RecipeComponents)
                                     .BindColor(model => model.RecipeComponentColors);
-                            })
+                            });
+                            
+                        })
                             .BindRowCount(model => model.RecipeComponents);
 
                         row.AddList(template =>
                         {
-                            template.AddLabel()
-                                .BindText(model => model.RecipeRequirements)
-                                .BindColor(model => model.RecipeRequirementColors);
+                            template.AddCell(cell =>
+                            {
+                                cell.AddLabel()
+                                    .BindText(model => model.RecipeRequirements)
+                                    .BindColor(model => model.RecipeRequirementColors);
+                            });
                         })
                             .BindRowCount(model => model.RecipeRequirements);
                     });

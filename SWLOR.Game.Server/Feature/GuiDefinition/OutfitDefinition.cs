@@ -20,10 +20,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddList(template =>
                         {
-                            template.AddToggleButton()
-                                .BindIsToggled(model => model.SlotToggles)
-                                .BindText(model => model.SlotNames)
-                                .BindOnClicked(model => model.OnClickSlot());
+                            template.AddCell(cell =>
+                            {
+                                cell.AddToggleButton()
+                                    .BindIsToggled(model => model.SlotToggles)
+                                    .BindText(model => model.SlotNames)
+                                    .BindOnClicked(model => model.OnClickSlot());
+                            });
                         })
                             .BindRowCount(model => model.SlotNames);
                     });

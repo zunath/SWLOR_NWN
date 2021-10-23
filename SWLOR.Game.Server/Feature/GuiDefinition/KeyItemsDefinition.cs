@@ -52,13 +52,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddList(template =>
                         {
-                            template.AddLabel()
-                                .BindText(model => model.Names)
-                                .BindTooltip(model => model.Descriptions);
+                            template.AddCell(cell =>
+                            {
+                                cell.AddLabel()
+                                    .BindText(model => model.Names)
+                                    .BindTooltip(model => model.Descriptions);
+                            });
 
-                            template.AddLabel()
-                                .BindText(model => model.Types)
-                                .BindTooltip(model => model.Descriptions);
+                            template.AddCell(cell =>
+                            {
+                                cell.AddLabel()
+                                    .BindText(model => model.Types)
+                                    .BindTooltip(model => model.Descriptions);
+                            });
                         })
                             .BindRowCount(model => model.Names);
                     });

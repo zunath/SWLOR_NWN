@@ -17,6 +17,7 @@
         Modal = 12,
         Outfits = 13,
         MarketListing = 14,
-        MarketBuying = 15
+        MarketBuying = 15,
+        PriceSelection = 16
     }
 }

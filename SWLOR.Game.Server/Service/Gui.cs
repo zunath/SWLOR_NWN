@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -192,6 +193,18 @@ namespace SWLOR.Game.Server.Service
         public static string BuildEventKey(string windowId, string elementId)
         {
             return windowId + "_" + elementId;
+        }
+
+        /// <summary>
+        /// Determines whether a player currently has a window of the specified type open on screen.
+        /// </summary>
+        /// <param name="player">The player to check</param>
+        /// <param name="type">The type of window to look for</param>
+        /// <returns>true if the window is open, false otherwise</returns>
+        public static bool IsWindowOpen(uint player, GuiWindowType type)
+        {
+            var windowId = BuildWindowId(type);
+            return NuiFindWindow(player, windowId) != 0;
         }
 
         /// <summary>

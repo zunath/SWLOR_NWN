@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -11,7 +12,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class MarketListingViewModel: GuiViewModelBase<MarketListingViewModel>
+    public class MarketListingViewModel: GuiViewModelBase<MarketListingViewModel>, IGuiAcceptsPriceChange
     {
         public string SearchText
         {
@@ -77,7 +78,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _itemIds.Clear();
             _itemPrices.Clear();
             var playerId = GetObjectUUID(Player);
-            var records = DB.Search<MarketItem>(nameof(MarketItem.PlayerId), playerId);
+            var records = DB.Search<MarketItem>(nameof(MarketItem.PlayerId), playerId)
+                .OrderBy(o => o.Name);
             var count = 0;
 
             foreach (var record in records)
@@ -124,6 +126,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickAddItem() => () =>
         {
+            ClosePriceWindow();
             EnterTargetingMode(Player, ObjectType.Item);
         };
 
@@ -199,6 +202,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickRemove() => () =>
         {
+            ClosePriceWindow();
             var index = NuiGetEventArrayIndex();
             var itemId = _itemIds[index];
 
@@ -223,16 +227,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             });
         };
 
-        public Action OnClickSearch() => LoadData;
+        public Action OnClickSearch()
+        {
+            ClosePriceWindow();
+            return LoadData;
+        }
 
         public Action OnClickClear() => () =>
         {
+            ClosePriceWindow();
             SearchText = string.Empty;
             LoadData();
         };
 
         public Action OnClickSaveChanges() => () =>
         {
+            ClosePriceWindow();
+
             for(var index = 0; index < _itemIds.Count; index++)
             {
                 var id = _itemIds[index];
@@ -257,10 +268,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadData();
         };
 
+        private void ClosePriceWindow()
+        {
+            if (Gui.IsWindowOpen(Player, GuiWindowType.PriceSelection))
+            {
+                Gui.TogglePlayerWindow(Player, GuiWindowType.PriceSelection);
+            }
+        }
+
         public Action OnClickChangePrice() => () =>
         {
+            // There is a defect with NUI which prevents text boxes from working within lists.
+            // As a workaround, we use a button to display a price change window. 
+            // The price is entered by the user and saved, which then updates this window.
+            // If/when the defect gets fixed, this can be replaced in favor of a simple text edit control.
+            if (!Gui.IsWindowOpen(Player, GuiWindowType.PriceSelection))
+            {
+                var pricePickerWindow = Gui.GetPlayerWindow(Player, GuiWindowType.PriceSelection);
+                var vm = (PriceSelectionViewModel)pricePickerWindow.ViewModel;
+                var index = NuiGetEventArrayIndex();
+                var recordId = _itemIds[index];
+                var currentPrice = _itemPrices[index];
+                var itemName = ItemNames[index];
+
+                vm.SpecifyTargetWindow(GuiWindowType.MarketListing, recordId, currentPrice, itemName);
+            }
             
+            Gui.TogglePlayerWindow(Player, GuiWindowType.PriceSelection);
         };
+
+        public void ChangePrice(string recordId, int price)
+        {
+            var index = _itemIds.IndexOf(recordId);
+
+            // Couldn't find the record.
+            if (index <= -1)
+                return;
+
+            _itemPrices[index] = price;
+            ItemPriceNames[index] = $"{price} cr";
+        }
 
         private string GetIconResref(uint item, BaseItem baseItem)
         {

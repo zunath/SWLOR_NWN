@@ -209,6 +209,8 @@ namespace SWLOR.Game.Server.Service
             // If the window is closed, open it.
             if (NuiFindWindow(player, windowId) == 0)
             {
+                Console.WriteLine(JsonDump(template.Window));
+
                 playerWindow.WindowToken = NuiCreate(player, template.Window, template.WindowId);
                 playerWindow.ViewModel.Bind(player, playerWindow.WindowToken, template.InitialGeometry, type);
             }

@@ -1,9 +1,10 @@
-﻿using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+﻿using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
-    public class MarketListingDefinition: IGuiWindowDefinition
+    public class MarketListingDefinition : IGuiWindowDefinition
     {
         private readonly GuiWindowBuilder<MarketListingViewModel> _builder = new();
         public GuiConstructedWindow BuildWindow()
@@ -14,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsResizable(true)
                 .SetInitialGeometry(0, 0, 545f, 295.5f)
                 .SetTitle("Market Listing")
-                
+
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>
@@ -35,6 +36,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindOnClicked(model => model.OnClickSearch());
 
                         row.AddButton()
+                            .SetText("X")
+                            .SetHeight(35f)
+                            .SetWidth(35f)
+                            .BindOnClicked(model => model.OnClickClear());
+
+                        row.AddButton()
                             .SetText("Add Item")
                             .BindOnClicked(model => model.OnClickAddItem())
                             .BindIsEnabled(model => model.IsAddItemEnabled)
@@ -44,26 +51,42 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddList(template =>
-                            {
-                                template.AddLabel()
-                                    .BindText(model => model.ItemMarkets);
+                        {
+                            template.AddImage()
+                                //.BindResref(model => model.ItemIconResrefs)
+                                .SetResref("iwswss");
 
-                                template.AddLabel()
-                                    .BindText(model => model.ItemNames);
+                            template.AddLabel()
+                                .BindText(model => model.ItemMarkets)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
 
-                                template.AddTextEdit()
-                                    .BindValue(model => model.ItemPrices);
+                            template.AddLabel()
+                                .BindText(model => model.ItemNames)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
 
-                                template.AddButton()
-                                    .BindText(model => model.ItemListDelistNames)
-                                    .BindColor(model => model.ItemListDelistColors)
-                                    .BindOnClicked(model => model.OnClickListDelist());
+                            template.AddTextEdit()
+                                .BindValue(model => model.ItemPrices);
 
-                                template.AddButton()
-                                    .SetText("Remove")
-                                    .BindOnClicked(model => model.OnClickRemove());
-                            })
+                            template.AddCheckBox()
+                                .BindIsChecked(model => model.ItemListed)
+                                .SetText("For Sale");
+
+                            template.AddButton()
+                                .SetText("Remove")
+                                .BindOnClicked(model => model.OnClickRemove());
+                        })
                             .BindRowCount(model => model.ItemMarkets);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+
+                        row.AddButton()
+                            .SetText("Save Changes")
+                            .BindOnClicked(model => model.OnClickSaveChanges());
+
+                        row.AddSpacer();
                     });
                 })
 

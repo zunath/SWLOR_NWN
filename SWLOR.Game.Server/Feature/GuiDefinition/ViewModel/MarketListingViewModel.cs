@@ -3,19 +3,16 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class MarketListingViewModel: GuiViewModelBase<MarketListingViewModel>
     {
-        private static readonly GuiColor _red = new GuiColor(255, 0, 0);
-        private static readonly GuiColor _green = new GuiColor(0, 255, 0);
-
         public string SearchText
         {
             get => Get<string>();
@@ -37,6 +34,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _itemCount;
         private readonly List<string> _itemIds = new List<string>();
 
+        public GuiBindingList<string> ItemIconResrefs
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> ItemMarkets
         {
             get => Get<GuiBindingList<string>>();
@@ -49,31 +52,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public GuiBindingList<string> ItemPrices
+        public GuiBindingList<int> ItemPrices
         {
-            get => Get<GuiBindingList<string>>();
+            get => Get<GuiBindingList<int>>();
             set => Set(value);
         }
 
-        public GuiBindingList<string> ItemListDelistNames
+        public GuiBindingList<bool> ItemListed
         {
-            get => Get<GuiBindingList<string>>();
-            set => Set(value);
-        }
-
-        public GuiBindingList<GuiColor> ItemListDelistColors
-        {
-            get => Get<GuiBindingList<GuiColor>>();
+            get => Get<GuiBindingList<bool>>();
             set => Set(value);
         }
 
         private void LoadData()
         {
+            var itemIconResrefs = new GuiBindingList<string>();
             var itemMarkets = new GuiBindingList<string>();
             var itemNames = new GuiBindingList<string>();
-            var itemPrices = new GuiBindingList<string>();
-            var itemListDelistNames = new GuiBindingList<string>();
-            var itemListDelistColors = new GuiBindingList<GuiColor>();
+            var itemPrices = new GuiBindingList<int>();
+            var itemListed = new GuiBindingList<bool>();
 
             _itemIds.Clear();
             var playerId = GetObjectUUID(Player);
@@ -89,30 +86,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     continue;
 
                 _itemIds.Add(record.ItemId);
+                itemIconResrefs.Add(record.IconResref);
                 itemMarkets.Add(record.MarketName);
                 itemNames.Add($"{record.Quantity}x {record.Name}");
-                itemPrices.Add(record.Price.ToString());
-
-                if (record.IsListed)
-                {
-                    itemListDelistNames.Add("Delist");
-                    itemListDelistColors.Add(_red);
-                }
-                else
-                {
-                    itemListDelistNames.Add("List");
-                    itemListDelistColors.Add(_green);
-                }
+                itemPrices.Add(record.Price);
+                itemListed.Add(false);
             }
 
             _itemCount = count;
             UpdateItemCount();
             IsAddItemEnabled = _itemIds.Count < PlayerMarket.MaxListingCount;
+
+            ItemIconResrefs = itemIconResrefs;
             ItemMarkets = itemMarkets;
             ItemNames = itemNames;
             ItemPrices = itemPrices;
-            ItemListDelistNames = itemListDelistNames;
-            ItemListDelistColors = itemListDelistColors;
+            ItemListed = itemListed;
         }
 
         private void UpdateItemCount()
@@ -126,6 +115,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadData();
 
             WatchOnClient(model => model.SearchText);
+            WatchOnClient(model => model.ItemPrices);
         };
 
         public Action OnClickAddItem() => () =>
@@ -184,7 +174,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Tag = GetTag(item),
                 Resref = GetResRef(item),
                 Data = ObjectPlugin.Serialize(item),
-                Quantity = GetItemStackSize(item)
+                Quantity = GetItemStackSize(item),
+                IconResref = GetIconResref(item, GetBaseItemType(item))
             };
 
             DB.Set(listing.ItemId, listing);
@@ -193,33 +184,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _itemIds.Add(listing.ItemId);
             ItemMarkets.Add(listing.MarketName);
             ItemNames.Add($"{listing.Quantity}x {listing.Name}");
-            ItemPrices.Add(listing.Price.ToString());
-            ItemListDelistNames.Add("List");
-            ItemListDelistColors.Add(_green);
+            ItemPrices.Add(listing.Price);
+            ItemListed.Add(listing.IsListed);
 
             _itemCount++;
             UpdateItemCount();
         }
-
-        public Action OnClickListDelist() => () =>
-        {
-            var index = NuiGetEventArrayIndex();
-            var itemId = _itemIds[index];
-            var dbListing = DB.Get<MarketItem>(itemId);
-
-            dbListing.IsListed = !dbListing.IsListed;
-
-            if (dbListing.IsListed)
-            {
-                ItemListDelistNames[index] = "Delist";
-                ItemListDelistColors[index] = _red;
-            }
-            else
-            {
-                ItemListDelistNames[index] = "List";
-                ItemListDelistColors[index] = _green;
-            }
-        };
 
         public Action OnClickRemove() => () =>
         {
@@ -238,8 +208,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ItemMarkets.RemoveAt(index);
                 ItemNames.RemoveAt(index);
                 ItemPrices.RemoveAt(index);
-                ItemListDelistNames.RemoveAt(index);
-                ItemListDelistColors.RemoveAt(index);
+                ItemListed.RemoveAt(index);
 
                 _itemCount--;
                 UpdateItemCount();
@@ -247,5 +216,74 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
 
         public Action OnClickSearch() => LoadData;
+
+        public Action OnClickClear() => () =>
+        {
+            SearchText = string.Empty;
+            LoadData();
+        };
+
+        public Action OnClickSaveChanges() => () =>
+        {
+
+        };
+
+
+
+        private string GetIconResref(uint item, BaseItem baseItem)
+        {
+            if (baseItem == BaseItem.Cloak) // Cloaks use PLTs so their default icon doesn't really work
+                return "iit_cloak";
+            else if (baseItem == BaseItem.SpellScroll || baseItem == BaseItem.EnchantedScroll)
+            {// Scrolls get their icon from the cast spell property
+                if (GetItemHasItemProperty(item, ItemPropertyType.CastSpell))
+                {
+                    for(var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                    {
+                        if (GetItemPropertyType(ip) == ItemPropertyType.CastSpell)
+                            return Get2DAString("iprp_spells", "Icon", GetItemPropertySubType(ip));
+                    }
+                }
+            }
+            else if (Get2DAString("baseitems", "ModelType", (int)baseItem) == "0")
+            {// Create the icon resref for simple modeltype items
+                var sSimpleModelId  = GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0).ToString();
+                while (GetStringLength(sSimpleModelId) < 3)
+                {
+                    sSimpleModelId = "0" + sSimpleModelId;
+                }
+
+                var sDefaultIcon = Get2DAString("baseitems", "DefaultIcon", (int)baseItem);
+                switch (baseItem)
+                {
+                    case BaseItem.MiscSmall:
+                    case BaseItem.CraftMaterialSmall:
+                        sDefaultIcon = "iit_smlmisc_" + sSimpleModelId;
+                        break;
+                    case BaseItem.MiscMedium:
+                    case BaseItem.CraftMaterialMedium:
+                    case BaseItem.CraftBase:
+                        sDefaultIcon = "iit_midmisc_" + sSimpleModelId;
+                        break;
+                    case BaseItem.MiscLarge:
+                        sDefaultIcon = "iit_talmisc_" + sSimpleModelId;
+                        break;
+                    case BaseItem.MiscThin:
+                        sDefaultIcon = "iit_thnmisc_" + sSimpleModelId;
+                        break;
+                }
+
+                var nLength = GetStringLength(sDefaultIcon);
+                if (GetSubString(sDefaultIcon, nLength - 4, 1) == "_")// Some items have a default icon of xx_yyy_001, we strip the last 4 symbols if that is the case
+                    sDefaultIcon = GetStringLeft(sDefaultIcon, nLength - 4);
+                var sIcon = sDefaultIcon + "_" + sSimpleModelId;
+                if (ResManGetAliasFor(sIcon, ResType.TGA) != "")// Check if the icon actually exists, if not, we'll fall through and return the default icon
+                    return sIcon;
+            }
+
+            // For everything else use the item's default icon
+            return Get2DAString("baseitems", "DefaultIcon", (int)baseItem);
+        }
+
     }
 }

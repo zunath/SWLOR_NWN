@@ -22,6 +22,6 @@ namespace SWLOR.Game.Server.Entity
         public string Resref { get; set; }
         public string Data { get; set; }
         public int Quantity { get; set; }
-
+        public string IconResref { get; set; }
     }
 }

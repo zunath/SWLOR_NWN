@@ -64,15 +64,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     group.AddImage()
                                         .BindResref(model => model.ItemIconResrefs)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                                        .SetVerticalAlign(NuiVerticalAlign.Top);
+                                        .SetVerticalAlign(NuiVerticalAlign.Top)
+                                        .BindTooltip(model => model.ItemNames);
                                 });
-                            });
-
-                            template.AddCell(cell =>
-                            {
-                                cell.AddLabel()
-                                    .BindText(model => model.ItemMarkets)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
                             });
 
                             template.AddCell(cell =>
@@ -84,15 +78,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             template.AddCell(cell =>
                             {
-                                cell.SetIsVariable(false);
                                 cell.SetWidth(80f);
 
-                                cell.AddTextEdit()
-                                    .BindValue(model => model.ItemPrices);
+                                cell.AddLabel()
+                                    .BindText(model => model.ItemMarkets)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .BindTooltip(model => model.ItemMarkets);
                             });
 
                             template.AddCell(cell =>
                             {
+                                cell.SetIsVariable(false);
+                                cell.SetWidth(120f);
+
+                                cell.AddButton()
+                                    .BindText(model => model.ItemPrices)
+                                    .BindOnClicked(model => model.OnClickChangePrice());
+                            });
+
+                            template.AddCell(cell =>
+                            {
+                                cell.SetWidth(50f);
+
                                 cell.AddCheckBox()
                                     .BindIsChecked(model => model.ItemListed)
                                     .SetText("For Sale");
@@ -100,6 +107,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             template.AddCell(cell =>
                             {
+                                cell.SetWidth(50f);
+
                                 cell.AddButton()
                                     .SetText("Remove")
                                     .BindOnClicked(model => model.OnClickRemove());

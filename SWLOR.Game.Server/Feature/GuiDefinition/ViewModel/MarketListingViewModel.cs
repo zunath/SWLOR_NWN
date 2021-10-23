@@ -52,9 +52,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public GuiBindingList<int> ItemPrices
+        public GuiBindingList<string> ItemPrices
         {
-            get => Get<GuiBindingList<int>>();
+            get => Get<GuiBindingList<string>>();
             set => Set(value);
         }
 
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var itemIconResrefs = new GuiBindingList<string>();
             var itemMarkets = new GuiBindingList<string>();
             var itemNames = new GuiBindingList<string>();
-            var itemPrices = new GuiBindingList<int>();
+            var itemPrices = new GuiBindingList<string>();
             var itemListed = new GuiBindingList<bool>();
 
             _itemIds.Clear();
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 itemIconResrefs.Add(record.IconResref);
                 itemMarkets.Add(record.MarketName);
                 itemNames.Add($"{record.Quantity}x {record.Name}");
-                itemPrices.Add(record.Price);
+                itemPrices.Add($"{record.Price} cr");
                 itemListed.Add(false);
             }
 
@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ItemIconResrefs.Add(listing.IconResref);
             ItemMarkets.Add(listing.MarketName);
             ItemNames.Add($"{listing.Quantity}x {listing.Name}");
-            ItemPrices.Add(listing.Price);
+            ItemPrices.Add($"{listing.Price} cr");
             ItemListed.Add(listing.IsListed);
 
             _itemCount++;
@@ -206,6 +206,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DB.Delete<MarketItem>(itemId);
 
                 _itemIds.RemoveAt(index);
+                ItemIconResrefs.RemoveAt(index);
                 ItemMarkets.RemoveAt(index);
                 ItemNames.RemoveAt(index);
                 ItemPrices.RemoveAt(index);
@@ -225,6 +226,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
 
         public Action OnClickSaveChanges() => () =>
+        {
+
+        };
+
+        public Action OnClickChangePrice() => () =>
         {
 
         };

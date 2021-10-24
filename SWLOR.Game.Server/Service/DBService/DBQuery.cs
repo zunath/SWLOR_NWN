@@ -9,7 +9,19 @@ namespace SWLOR.Game.Server.Service.DBService
     public class DBQuery<T>
         where T: EntityBase
     {
-        private Dictionary<string, string> FieldSearches { get; }
+        private class SearchCriteria
+        {
+            public string Text { get; set; }
+            public bool SkipEscaping { get; set; }
+
+            public SearchCriteria(string text)
+            {
+                Text = text;
+                SkipEscaping = false;
+            }
+        }
+
+        private Dictionary<string, SearchCriteria> FieldSearches { get; }
         private int Offset { get; set; }
         private int Limit { get; set; }
         private string SortByField { get; set; }
@@ -27,7 +39,27 @@ namespace SWLOR.Game.Server.Service.DBService
             if (allowPartialMatches)
                 search += "*";
 
-            FieldSearches.Add(fieldName, search);
+            FieldSearches.Add(fieldName, new SearchCriteria(search));
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a filter based on a field's name for the given text.
+        /// Will search for any matches in the provided list of integers.
+        /// </summary>
+        /// <param name="fieldName">The name of the field to search for</param>
+        /// <param name="search">The list of Ids to search for</param>
+        /// <returns>A configured DBQuery</returns>
+        public DBQuery<T> AddFieldSearch(string fieldName, IEnumerable<int> search)
+        {
+            var searchText = string.Join("|", search);
+            var criteria = new SearchCriteria(searchText)
+            {
+                SkipEscaping = true
+            };
+
+            FieldSearches.Add(fieldName, criteria);
 
             return this;
         }
@@ -40,7 +72,7 @@ namespace SWLOR.Game.Server.Service.DBService
         /// <returns>A configured DBQuery</returns>
         public DBQuery<T> AddFieldSearch(string fieldName, int search)
         {
-            FieldSearches.Add(fieldName, search.ToString());
+            FieldSearches.Add(fieldName, new SearchCriteria(search.ToString()));
 
             return this;
         }
@@ -53,7 +85,7 @@ namespace SWLOR.Game.Server.Service.DBService
         /// <returns>A configured DBQuery</returns>
         public DBQuery<T> AddFieldSearch(string fieldName, bool search)
         {
-            FieldSearches.Add(fieldName, (search ? 1 : 0).ToString());
+            FieldSearches.Add(fieldName, new SearchCriteria((search ? 1 : 0).ToString()));
 
             return this;
         }
@@ -98,9 +130,12 @@ namespace SWLOR.Game.Server.Service.DBService
             sb.Append($"@EntityType:\"{typeof(T).Name}\"");
 
             // Filter by name/searchText
-            foreach (var (name, text) in FieldSearches)
+            foreach (var (name, criteria) in FieldSearches)
             {
-                var search = DB.EscapeTokens(text);
+                var search = criteria.SkipEscaping
+                    ? criteria.Text
+                    : DB.EscapeTokens(criteria.Text);
+
                 sb.Append($" @{name}:{search}");
             }
 
@@ -137,7 +172,7 @@ namespace SWLOR.Game.Server.Service.DBService
 
         public DBQuery()
         {
-            FieldSearches = new Dictionary<string, string>();
+            FieldSearches = new Dictionary<string, SearchCriteria>();
         }
     }
 }

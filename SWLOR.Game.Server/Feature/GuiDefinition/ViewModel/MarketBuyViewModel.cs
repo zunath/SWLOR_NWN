@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -16,13 +17,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     {
         private const int ListingsPerPage = 30;
 
-        private static readonly List<MarketCategoryType> _weaponCategoryTypes = new();
-        private static readonly List<MarketCategoryType> _armorCategoryTypes = new();
-        private static readonly List<MarketCategoryType> _otherCategoryTypes = new();
+        private static readonly List<MarketCategoryType> _categoryTypes = new();
+        private static readonly GuiBindingList<string> _categories = new();
 
-        private static readonly GuiBindingList<string> _weaponCategories = new();
-        private static readonly GuiBindingList<string> _armorCategories = new();
-        private static readonly GuiBindingList<string> _otherCategories = new();
+        private bool _updatingPagination;
+        private readonly List<int> _activeCategoryIdFilters = new();
 
         /// <summary>
         /// When the module loads, set up the category lists so they don't need
@@ -31,20 +30,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         [NWNEventHandler("mod_load")]
         public static void LoadCategories()
         {
-            foreach (var (type, category) in PlayerMarket.GetCategoriesByGroup(MarketGroupType.Weapon))
+            foreach (var (type, category) in PlayerMarket.GetActiveCategories())
             {
-                _weaponCategoryTypes.Add(type);
-                _weaponCategories.Add(category.Name);
-            }
-            foreach (var (type, category) in PlayerMarket.GetCategoriesByGroup(MarketGroupType.Armor))
-            {
-                _armorCategoryTypes.Add(type);
-                _armorCategories.Add(category.Name);
-            }
-            foreach (var (type, category) in PlayerMarket.GetCategoriesByGroup(MarketGroupType.Other))
-            {
-                _otherCategoryTypes.Add(type);
-                _otherCategories.Add(category.Name);
+                _categoryTypes.Add(type);
+                _categories.Add(category.Name);
             }
         }
 
@@ -66,52 +55,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                Search();
+
+                if(!_updatingPagination)
+                    Search();
             }
         }
-
-        private int SelectedWeaponCategoryIndex { get; set; }
-
-        private int SelectedArmorCategoryIndex { get; set; }
-
-        private int SelectedOtherCategoryIndex { get; set; }
-
-
-        public GuiBindingList<string> WeaponCategoryNames
+        
+        public GuiBindingList<string> CategoryNames
         {
             get => Get<GuiBindingList<string>>();
             set => Set(value);
         }
 
-        public GuiBindingList<string> ArmorCategoryNames
-        {
-            get => Get<GuiBindingList<string>>();
-            set => Set(value);
-        }
-
-        public GuiBindingList<string> OtherCategoryNames
-        {
-            get => Get<GuiBindingList<string>>();
-            set => Set(value);
-        }
-
-        public GuiBindingList<bool> WeaponCategoryToggles
+        public GuiBindingList<bool> CategoryToggles
         {
             get => Get<GuiBindingList<bool>>();
             set => Set(value);
         }
-        public GuiBindingList<bool> ArmorCategoryToggles
-        {
-            get => Get<GuiBindingList<bool>>();
-            set => Set(value);
-        }
-        public GuiBindingList<bool> OtherCategoryToggles
-        {
-            get => Get<GuiBindingList<bool>>();
-            set => Set(value);
-        }
-
-        private readonly List<string> _itemIds = new();
 
         public GuiBindingList<string> ItemIconResrefs
         {
@@ -146,65 +106,44 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadData()
         {
-            var weaponCategoryToggles = new GuiBindingList<bool>();
-            var armorCategoryToggles = new GuiBindingList<bool>();
-            var otherCategoryToggles = new GuiBindingList<bool>();
+            var categoryToggles = new GuiBindingList<bool>();
 
-            foreach (var unused in _weaponCategories)
+            foreach (var unused in _categories)
             {
-                weaponCategoryToggles.Add(false);
+                categoryToggles.Add(false);
             }
 
-            foreach (var unused in _armorCategories)
-            {
-                armorCategoryToggles.Add(false);
-            }
-
-            foreach (var unused in _otherCategories)
-            {
-                otherCategoryToggles.Add(false);
-            }
-
-            WeaponCategoryNames = _weaponCategories;
-            ArmorCategoryNames = _armorCategories;
-            OtherCategoryNames = _otherCategories;
-
-            WeaponCategoryToggles = weaponCategoryToggles;
-            ArmorCategoryToggles = armorCategoryToggles;
-            OtherCategoryToggles = otherCategoryToggles;
+            CategoryNames = _categories;
+            CategoryToggles = categoryToggles;
         }
 
         public Action OnLoadWindow() => () =>
         {
+            _updatingPagination = true;
+            _activeCategoryIdFilters.Clear();
+            SelectedPageIndex = 0;
             SearchText = string.Empty;
             LoadData();
-            ResetCategorySelections();
             Search();
-            SelectedPageIndex = 0;
 
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.SelectedPageIndex);
+            WatchOnClient(model => model.CategoryToggles);
+            _updatingPagination = false;
         };
 
         private void Search()
         {
-            var selectedCategoryId = MarketCategoryType.Invalid;
-
-            if (SelectedWeaponCategoryIndex > -1)
-                selectedCategoryId = _weaponCategoryTypes[SelectedWeaponCategoryIndex];
-            else if (SelectedArmorCategoryIndex > -1)
-                selectedCategoryId = _armorCategoryTypes[SelectedArmorCategoryIndex];
-            else if (SelectedOtherCategoryIndex > -1)
-                selectedCategoryId = _otherCategoryTypes[SelectedOtherCategoryIndex];
-
             var query = new DBQuery<MarketItem>()
                 .AddFieldSearch(nameof(MarketItem.IsListed), true);
 
             if (!string.IsNullOrWhiteSpace(SearchText))
                 query.AddFieldSearch(nameof(MarketItem.Name), SearchText, true);
 
-            if (selectedCategoryId != MarketCategoryType.Invalid)
-                query.AddFieldSearch(nameof(MarketItem.Category), (int)selectedCategoryId);
+            if (_activeCategoryIdFilters.Count > 0)
+            {
+                query.AddFieldSearch(nameof(MarketItem.Category), _activeCategoryIdFilters);
+            }
 
             query.AddPaging(ListingsPerPage, ListingsPerPage * SelectedPageIndex);
 
@@ -239,18 +178,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void UpdatePagination(long totalRecordCount)
         {
-            var pageNumbers = new GuiBindingList<GuiComboEntry>();
+            _updatingPagination = true;
+               var pageNumbers = new GuiBindingList<GuiComboEntry>();
             var pages = (int)(totalRecordCount / ListingsPerPage + (totalRecordCount % ListingsPerPage == 0 ? 0 : 1));
 
-            for (var x = 1; x <= pages; x++)
+            // Always add page 1. In the event no items are for sale,
+            // it still needs to be displayed.
+            pageNumbers.Add(new GuiComboEntry($"Page 1", 0));
+            for (var x = 2; x <= pages; x++)
             {
                 pageNumbers.Add(new GuiComboEntry($"Page {x}", x-1));
             }
 
             PageNumbers = pageNumbers;
 
-            if (SelectedPageIndex + 1 > pages)
+            // In the event no results are found, default the index to zero
+            if (pages <= 0)
+                SelectedPageIndex = 0;
+            // Otherwise, if current page is outside the new page bounds,
+            // set it to the last page in the list.
+            else if (SelectedPageIndex > pages - 1)
                 SelectedPageIndex = pages - 1;
+
+            _updatingPagination = false;
         }
 
         public Action OnClickSearch() => Search;
@@ -291,48 +241,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         };
 
-        private void ResetCategorySelections()
-        {
-            if (SelectedWeaponCategoryIndex > -1)
-                WeaponCategoryToggles[SelectedWeaponCategoryIndex] = false;
-            if (SelectedArmorCategoryIndex > -1)
-                ArmorCategoryToggles[SelectedArmorCategoryIndex] = false;
-            if (SelectedOtherCategoryIndex > -1)
-                OtherCategoryToggles[SelectedOtherCategoryIndex] = false;
-
-            SelectedWeaponCategoryIndex = -1;
-            SelectedArmorCategoryIndex = -1;
-            SelectedOtherCategoryIndex = -1;
-        }
-
-        public Action OnClickWeaponCategory() => () =>
+        public Action OnClickCategory() => () =>
         {
             var index = NuiGetEventArrayIndex();
-            ResetCategorySelections();
-            WeaponCategoryToggles[index] = !WeaponCategoryToggles[index];
+            var categoryType = (int)_categoryTypes[index];
 
-            if (WeaponCategoryToggles[index])
-                SelectedWeaponCategoryIndex = index;
+            if(CategoryToggles[index] && !_activeCategoryIdFilters.Contains(categoryType))
+                _activeCategoryIdFilters.Add(categoryType);
+            else if (!CategoryToggles[index] && _activeCategoryIdFilters.Contains(categoryType))
+                _activeCategoryIdFilters.Remove(categoryType);
         };
 
-        public Action OnClickArmorCategory() => () =>
-        {
-            var index = NuiGetEventArrayIndex();
-            ResetCategorySelections();
-            ArmorCategoryToggles[index] = !ArmorCategoryToggles[index];
-
-            if (ArmorCategoryToggles[index])
-                SelectedArmorCategoryIndex = index;
-        };
-
-        public Action OnClickOtherCategory() => () =>
-        {
-            var index = NuiGetEventArrayIndex();
-            ResetCategorySelections();
-            OtherCategoryToggles[index] = !OtherCategoryToggles[index];
-
-            if (OtherCategoryToggles[index])
-                SelectedOtherCategoryIndex = index;
-        };
     }
 }

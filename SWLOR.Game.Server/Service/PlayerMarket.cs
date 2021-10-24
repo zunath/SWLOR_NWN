@@ -14,11 +14,8 @@ namespace SWLOR.Game.Server.Service
     public static class PlayerMarket
     {
         public const int MaxListingCount = 25;
-        private static readonly Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeMarketCategories = new();
-        private static readonly Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeWeaponCategories = new();
-        private static readonly Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeArmorCategories = new();
-        private static readonly Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeOtherCategories = new();
-
+        private static Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeMarketCategories = new();
+        
         /// <summary>
         /// When the module caches, cache all static player market data for quick retrieval.
         /// </summary>
@@ -40,14 +37,10 @@ namespace SWLOR.Game.Server.Service
 
                 if(attribute.IsActive)
                     _activeMarketCategories[category] = attribute;
-
-                if (attribute.Group == MarketGroupType.Weapon)
-                    _activeWeaponCategories[category] = attribute;
-                else if (attribute.Group == MarketGroupType.Armor)
-                    _activeArmorCategories[category] = attribute;
-                else if (attribute.Group == MarketGroupType.Other)
-                    _activeOtherCategories[category] = attribute;
             }
+
+            _activeMarketCategories = _activeMarketCategories.OrderBy(o => o.Value.Name)
+                .ToDictionary(x => x.Key, y => y.Value);
         }
 
         /// <summary>
@@ -57,24 +50,6 @@ namespace SWLOR.Game.Server.Service
         public static Dictionary<MarketCategoryType, MarketCategoryAttribute> GetActiveCategories()
         {
             return _activeMarketCategories.ToDictionary(x => x.Key, y => y.Value);
-        }
-
-        /// <summary>
-        /// Retrieves all of the market categories of a specific group type.
-        /// If a group type is not supported, an ArgumentException will be raised.
-        /// </summary>
-        /// <param name="groupType">The type of group to search for.</param>
-        /// <returns>A dictionary of active market categories for a given group.</returns>
-        public static Dictionary<MarketCategoryType, MarketCategoryAttribute> GetCategoriesByGroup(MarketGroupType groupType)
-        {
-            if (groupType == MarketGroupType.Weapon)
-                return _activeWeaponCategories.ToDictionary(x => x.Key, y => y.Value);
-            else if (groupType == MarketGroupType.Armor)
-                return _activeArmorCategories.ToDictionary(x => x.Key, y => y.Value);
-            else if (groupType == MarketGroupType.Other)
-                return _activeOtherCategories.ToDictionary(x => x.Key, y => y.Value);
-
-            throw new ArgumentException($"{nameof(groupType)} is not supported.");
         }
 
         /// <summary>

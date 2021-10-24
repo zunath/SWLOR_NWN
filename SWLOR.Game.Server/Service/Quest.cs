@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, data is cached to speed up searches later.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler("mod_cache")]
         public static void CacheData()
         {
             RegisterNPCGroups();
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, all of the NPCGroupTypes are iterated over and their data is stored into the cache.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler("mod_cache")]
         public static void RegisterNPCGroups()
         {
             var npcGroups = Enum.GetValues(typeof(NPCGroupType)).Cast<NPCGroupType>();

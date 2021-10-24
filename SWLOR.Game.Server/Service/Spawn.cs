@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, List<Guid>> _allSpawnsByArea = new Dictionary<uint, List<Guid>>();
         private static readonly Dictionary<uint, List<ActiveSpawn>> _activeSpawnsByArea = new Dictionary<uint, List<ActiveSpawn>>();
 
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler("mod_cache")]
         public static void CacheData()
         {
             LoadSpawnTables();

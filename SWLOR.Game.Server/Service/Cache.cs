@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles caching data into server memory for quicker lookup later.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler("mod_cache")]
         public static void OnModuleLoad()
         {
             CacheAreasByResref();

@@ -14,11 +14,9 @@ namespace SWLOR.Game.Server.Feature
     public static class DebuggingTools
     {
         [NWNEventHandler("test2")]
-        public static void KillMe()
+        public static void OpenMarketBuy()
         {
-            var player = GetLastUsedBy();
-
-            Space.ApplyShipDamage(player, player, 999);
+            Gui.TogglePlayerWindow(GetLastUsedBy(), GuiWindowType.MarketBuying);
         }
 
         [NWNEventHandler("test")]

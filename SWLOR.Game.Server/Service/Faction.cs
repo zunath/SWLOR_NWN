@@ -16,9 +16,9 @@ namespace SWLOR.Game.Server.Service
         public const int MaximumFaction = 5000;
 
         /// <summary>
-        /// When the module loads, cache all faction details into memory.
+        /// When the module caches, cache all faction details into memory.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler("mod_cache")]
         public static void LoadFactions()
         {
             var factionTypes = Enum.GetValues(typeof(FactionType)).Cast<FactionType>();

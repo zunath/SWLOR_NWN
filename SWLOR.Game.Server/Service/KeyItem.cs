@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all key item data.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler("mod_cache")]
         public static void LoadData()
         {
             // Organize categories

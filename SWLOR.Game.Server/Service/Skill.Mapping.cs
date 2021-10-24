@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Handles creating all of the mapping dictionaries used by the skill system on module load.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler("mod_cache")]
         public static void LoadMappings()
         {
             LoadItemToSkillMapping();

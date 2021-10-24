@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all taxi destinations.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler("mod_cache")]
         public static void LoadTaxiDestinations()
         {
             var taxiDestinationTypes = Enum.GetValues(typeof(TaxiDestinationType)).Cast<TaxiDestinationType>();

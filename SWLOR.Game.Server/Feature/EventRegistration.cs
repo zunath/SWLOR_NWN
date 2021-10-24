@@ -27,6 +27,9 @@ namespace SWLOR.Game.Server.Feature
 
             Console.WriteLine("Hooking all application-specific events");
             HookApplicationEvents();
+
+            // Fire off the mod_cache event which is used for caching data, before mod_load runs.
+            ExecuteScript("mod_cache", GetModule());
         }
 
         [NWNEventHandler("mod_heartbeat")]

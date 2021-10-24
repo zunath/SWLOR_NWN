@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache the DMG values found in iprp_dmg.2da into memory.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler("mod_cache")]
         public static void CacheData()
         {
             var rowCount = UtilPlugin.Get2DARowCount("iprp_dmg");

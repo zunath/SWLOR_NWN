@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all space data into memory.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler("mod_cache")]
         public static void LoadSpaceSystem()
         {
             LoadShips();

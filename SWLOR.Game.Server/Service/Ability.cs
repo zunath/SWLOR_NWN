@@ -15,11 +15,11 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<FeatType, AbilityDetail> _abilities = new Dictionary<FeatType, AbilityDetail>();
 
         private static readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new Dictionary<uint, ActiveConcentrationAbility>();
-        
+
         /// <summary>
-        /// When the module loads, abilities will be cached and events will be scheduled.
+        /// When the module caches, abilities will be cached and events will be scheduled.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler("mod_cache")]
         public static void OnModuleLoad()
         {
             CacheAbilities();

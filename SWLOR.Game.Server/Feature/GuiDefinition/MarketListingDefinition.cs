@@ -25,16 +25,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindValue(model => model.SearchText);
 
                         row.AddButton()
-                            .SetText("Search")
-                            .SetHeight(35f)
-                            .BindOnClicked(model => model.OnClickSearch());
-
-                        row.AddButton()
                             .SetText("X")
                             .SetHeight(35f)
                             .SetWidth(35f)
                             .BindOnClicked(model => model.OnClickClear());
 
+                        row.AddButton()
+                            .SetText("Search")
+                            .SetHeight(35f)
+                            .BindOnClicked(model => model.OnClickSearch());
                     });
 
                     col.AddRow(row =>
@@ -115,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindOnClicked(model => model.OnClickRemove());
                             });
                         })
-                            .BindRowCount(model => model.ItemMarkets)
+                            .BindRowCount(model => model.ItemNames)
                             .SetRowHeight(40f);
                     });
 

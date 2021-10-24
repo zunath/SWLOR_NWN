@@ -31,9 +31,9 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<GuildType, Dictionary<string, QuestDetail>> _activeGuildTasks = new Dictionary<GuildType, Dictionary<string, QuestDetail>>();
 
         /// <summary>
-        /// When the module loads, cache relevant data and load guild tasks.
+        /// When the module caches, cache relevant data and load guild tasks.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler("mod_cache")]
         public static void LoadData()
         {
             var guildTypes = Enum.GetValues(typeof(GuildType)).Cast<GuildType>();

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using SWLOR.Game.Server.Service.PlayerMarketService;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -23,5 +23,7 @@ namespace SWLOR.Game.Server.Entity
         public string Data { get; set; }
         public int Quantity { get; set; }
         public string IconResref { get; set; }
+        [Indexed]
+        public MarketCategoryType Category { get; set; }
     }
 }

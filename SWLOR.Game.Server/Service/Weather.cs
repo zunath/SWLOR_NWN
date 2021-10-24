@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache planet climates and other pertinent data.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler("mod_cache")]
         public static void LoadData()
         {
             _planetClimates = WeatherPlanetDefinitions.GetPlanetClimates();

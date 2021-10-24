@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<string, LootTable> _lootTables = new Dictionary<string, LootTable>();
 
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler("mod_cache")]
         public static void RegisterLootTables()
         {
             // Get all implementations of spawn table definitions.

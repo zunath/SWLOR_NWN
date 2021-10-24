@@ -1,12 +1,81 @@
-﻿using SWLOR.Game.Server.Core.NWScript.Enum;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Service.PlayerMarketService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using MarketCategoryType = SWLOR.Game.Server.Service.PlayerMarketService.MarketCategoryType;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class PlayerMarket
     {
         public const int MaxListingCount = 25;
+        private static readonly Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeMarketCategories = new();
+        private static readonly Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeWeaponCategories = new();
+        private static readonly Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeArmorCategories = new();
+        private static readonly Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeOtherCategories = new();
+
+        /// <summary>
+        /// When the module caches, cache all static player market data for quick retrieval.
+        /// </summary>
+        [NWNEventHandler("mod_cache")]
+        public static void CacheData()
+        {
+            LoadMarketCategories();
+        }
+
+        /// <summary>
+        /// Reads all of the MarketCategoryType enumerations and adds them to the related dictionaries.
+        /// </summary>
+        private static void LoadMarketCategories()
+        {
+            var categories = Enum.GetValues(typeof(MarketCategoryType)).Cast<MarketCategoryType>();
+            foreach (var category in categories)
+            {
+                var attribute = category.GetAttribute<MarketCategoryType, MarketCategoryAttribute>();
+
+                if(attribute.IsActive)
+                    _activeMarketCategories[category] = attribute;
+
+                if (attribute.Group == MarketGroupType.Weapon)
+                    _activeWeaponCategories[category] = attribute;
+                else if (attribute.Group == MarketGroupType.Armor)
+                    _activeArmorCategories[category] = attribute;
+                else if (attribute.Group == MarketGroupType.Other)
+                    _activeOtherCategories[category] = attribute;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all active market categories.
+        /// </summary>
+        /// <returns>A dictionary of active market categories.</returns>
+        public static Dictionary<MarketCategoryType, MarketCategoryAttribute> GetActiveCategories()
+        {
+            return _activeMarketCategories.ToDictionary(x => x.Key, y => y.Value);
+        }
+
+        /// <summary>
+        /// Retrieves all of the market categories of a specific group type.
+        /// If a group type is not supported, an ArgumentException will be raised.
+        /// </summary>
+        /// <param name="groupType">The type of group to search for.</param>
+        /// <returns>A dictionary of active market categories for a given group.</returns>
+        public static Dictionary<MarketCategoryType, MarketCategoryAttribute> GetCategoriesByGroup(MarketGroupType groupType)
+        {
+            if (groupType == MarketGroupType.Weapon)
+                return _activeWeaponCategories.ToDictionary(x => x.Key, y => y.Value);
+            else if (groupType == MarketGroupType.Armor)
+                return _activeArmorCategories.ToDictionary(x => x.Key, y => y.Value);
+            else if (groupType == MarketGroupType.Other)
+                return _activeOtherCategories.ToDictionary(x => x.Key, y => y.Value);
+
+            throw new ArgumentException($"{nameof(groupType)} is not supported.");
+        }
 
         /// <summary>
         /// Retrieves the icon used on the market UIs. 
@@ -68,6 +137,18 @@ namespace SWLOR.Game.Server.Service
 
             // For everything else use the item's default icon
             return Get2DAString("baseitems", "DefaultIcon", (int)baseItem);
+        }
+
+        /// <summary>
+        /// Determines which market category an item should be placed in.
+        /// If category cannot be determined, MarketCategoryType.Miscellaneous will be returned.
+        /// </summary>
+        /// <param name="item">The item to check</param>
+        /// <returns>A market category type to place the item in.</returns>
+        public static MarketCategoryType GetItemMarketCategory(uint item)
+        {
+
+            return MarketCategoryType.Miscellaneous;
         }
     }
 }

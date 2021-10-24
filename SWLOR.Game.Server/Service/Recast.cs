@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Service
         // Recast Group Descriptions
         private static readonly Dictionary<RecastGroup, string> _recastDescriptions = new Dictionary<RecastGroup, string>();
 
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler("mod_cache")]
         public static void CacheRecastGroups()
         {
             CacheRecastGroupNames();

@@ -44,79 +44,87 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 row2.AddLabel()
                                     .SetText("Weapon")
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
                                     .SetVerticalAlign(NuiVerticalAlign.Top)
-                                    .SetHeight(26f);
+                                    .SetHeight(20f);
                             });
 
                             col2.AddRow(row2 =>
                             {
                                 row2.AddList(template =>
-                                {
-                                    template.AddCell(cell =>
                                     {
-                                        cell.AddToggleButton()
-                                            .BindText(model => model.WeaponCategoryNames)
-                                            .BindIsToggled(model => model.WeaponCategoryToggles)
-                                            .BindOnClicked(model => model.OnClickWeaponCategory());
-                                    });
-                                })
+                                        template.AddCell(cell =>
+                                        {
+                                            cell.AddToggleButton()
+                                                .BindText(model => model.WeaponCategoryNames)
+                                                .BindIsToggled(model => model.WeaponCategoryToggles)
+                                                .BindOnClicked(model => model.OnClickWeaponCategory());
+                                        });
+                                    })
                                     .BindRowCount(model => model.WeaponCategoryNames)
-                                    .SetHeight(140f);
+                                    .SetHeight(120f);
                             });
+                        });
 
+                        row.AddColumn(col2 =>
+                        {
                             col2.AddRow(row2 =>
                             {
                                 row2.AddLabel()
                                     .SetText("Armor")
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
                                     .SetVerticalAlign(NuiVerticalAlign.Top)
-                                    .SetHeight(26f);
+                                    .SetHeight(20f);
                             });
 
                             col2.AddRow(row2 =>
                             {
                                 row2.AddList(template =>
-                                {
-                                    template.AddCell(cell =>
                                     {
-                                        cell.AddToggleButton()
-                                            .BindText(model => model.ArmorCategoryNames)
-                                            .BindIsToggled(model => model.ArmorCategoryToggles)
-                                            .BindOnClicked(model => model.OnClickArmorCategory());
-                                    });
-                                })
+                                        template.AddCell(cell =>
+                                        {
+                                            cell.AddToggleButton()
+                                                .BindText(model => model.ArmorCategoryNames)
+                                                .BindIsToggled(model => model.ArmorCategoryToggles)
+                                                .BindOnClicked(model => model.OnClickArmorCategory());
+                                        });
+                                    })
                                     .BindRowCount(model => model.ArmorCategoryNames)
-                                    .SetHeight(140f);
+                                    .SetHeight(120f);
                             });
+                        });
 
+                        row.AddColumn(col2 =>
+                        {
                             col2.AddRow(row2 =>
                             {
                                 row2.AddLabel()
                                     .SetText("Other")
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
                                     .SetVerticalAlign(NuiVerticalAlign.Top)
-                                    .SetHeight(26f);
+                                    .SetHeight(20f);
                             });
 
                             col2.AddRow(row2 =>
                             {
                                 row2.AddList(template =>
-                                {
-                                    template.AddCell(cell =>
                                     {
-                                        cell.AddToggleButton()
-                                            .BindText(model => model.OtherCategoryNames)
-                                            .BindIsToggled(model => model.OtherCategoryToggles)
-                                            .BindOnClicked(model => model.OnClickOtherCategory());
-                                    });
-                                })
+                                        template.AddCell(cell =>
+                                        {
+                                            cell.AddToggleButton()
+                                                .BindText(model => model.OtherCategoryNames)
+                                                .BindIsToggled(model => model.OtherCategoryToggles)
+                                                .BindOnClicked(model => model.OnClickOtherCategory());
+                                        });
+                                    })
                                     .BindRowCount(model => model.OtherCategoryNames)
-                                    .SetHeight(140f);
+                                    .SetHeight(120f);
                             });
-                        })
-                            .SetWidth(150f);
+                        });
+                    });
 
+                    col.AddRow(row =>
+                    {
                         row.AddColumn(col2 =>
                         {
                             col2.AddRow(row2 =>
@@ -201,7 +209,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                                 row2.AddComboBox()
                                     .BindOptions(model => model.PageNumbers)
-                                    .BindSelectedIndex(model => model.SelectedPage);
+                                    .BindSelectedIndex(model => model.SelectedPageIndex);
 
                                 row2.AddButton()
                                     .SetText(">")

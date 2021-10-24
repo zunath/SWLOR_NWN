@@ -268,6 +268,12 @@ namespace SWLOR.Game.Server.Service
                 .Replace(">", "\\>");
         }
 
+        /// <summary>
+        /// Searches the Redis DB for records matching the query criteria.
+        /// </summary>
+        /// <typeparam name="T">The type of entity to retrieve.</typeparam>
+        /// <param name="query">The query to run.</param>
+        /// <returns>An enumerable of entities matching the criteria.</returns>
         public static IEnumerable<T> Search<T>(DBQuery<T> query)
             where T: EntityBase
         {
@@ -279,6 +285,21 @@ namespace SWLOR.Game.Server.Service
                 var recordId = doc.Id.Remove(0, 6);
                 yield return _multiplexer.GetDatabase().JsonGet<T>(recordId);
             }
+        }
+
+        /// <summary>
+        /// Searches the Redis DB for the number of records matching the query criteria.
+        /// This only retrieves the number of records. Use Search() if you need the actual results.
+        /// </summary>
+        /// <typeparam name="T">The type of entity to retrieve.</typeparam>
+        /// <param name="query">The query to run.</param>
+        /// <returns>The number of records matching the query criteria.</returns>
+        public static long SearchCount<T>(DBQuery<T> query)
+            where T: EntityBase
+        {
+            var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery(true));
+
+            return result.TotalResults;
         }
     }
 }

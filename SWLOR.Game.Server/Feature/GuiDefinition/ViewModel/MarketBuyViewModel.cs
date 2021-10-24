@@ -60,10 +60,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public int SelectedPage
+        public int SelectedPageIndex
         {
             get => Get<int>();
-            set => Set(value);
+            set
+            {
+                Set(value);
+                Search();
+            }
         }
 
         private int SelectedWeaponCategoryIndex { get; set; }
@@ -168,7 +172,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WeaponCategoryToggles = weaponCategoryToggles;
             ArmorCategoryToggles = armorCategoryToggles;
             OtherCategoryToggles = otherCategoryToggles;
-
         }
 
         public Action OnLoadWindow() => () =>
@@ -177,8 +180,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadData();
             ResetCategorySelections();
             Search();
+            SelectedPageIndex = 0;
 
             WatchOnClient(model => model.SearchText);
+            WatchOnClient(model => model.SelectedPageIndex);
         };
 
         private void Search()
@@ -201,7 +206,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (selectedCategoryId != MarketCategoryType.Invalid)
                 query.AddFieldSearch(nameof(MarketItem.Category), (int)selectedCategoryId);
 
-            query.AddPaging(ListingsPerPage, ListingsPerPage * SelectedPage);
+            query.AddPaging(ListingsPerPage, ListingsPerPage * SelectedPageIndex);
+
+            var totalRecordCount = DB.SearchCount(query);
+            UpdatePagination(totalRecordCount);
+
             var results = DB.Search(query);
 
             _itemPrices.Clear();
@@ -228,24 +237,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ItemSellerNames = itemSellerNames;
         }
 
-        public Action OnClickSearch() => () =>
+        private void UpdatePagination(long totalRecordCount)
         {
-            Search();
-        };
+            var pageNumbers = new GuiBindingList<GuiComboEntry>();
+            var pages = (int)(totalRecordCount / ListingsPerPage + (totalRecordCount % ListingsPerPage == 0 ? 0 : 1));
+
+            for (var x = 1; x <= pages; x++)
+            {
+                pageNumbers.Add(new GuiComboEntry($"Page {x}", x-1));
+            }
+
+            PageNumbers = pageNumbers;
+
+            if (SelectedPageIndex + 1 > pages)
+                SelectedPageIndex = pages - 1;
+        }
+
+        public Action OnClickSearch() => Search;
 
         public Action OnClickClearSearch() => () =>
         {
-
+            SearchText = string.Empty;
+            Search();
         };
 
         public Action OnClickPreviousPage() => () =>
         {
+            var newPage = SelectedPageIndex - 1;
+            if (newPage < 0)
+                newPage = 0;
 
+            SelectedPageIndex = newPage;
         };
 
         public Action OnClickNextPage() => () =>
         {
+            var newPage = SelectedPageIndex + 1;
+            if (newPage > PageNumbers.Count - 1)
+                newPage = PageNumbers.Count - 1;
 
+            SelectedPageIndex = newPage;
         };
 
         public Action OnClickExamine() => () =>

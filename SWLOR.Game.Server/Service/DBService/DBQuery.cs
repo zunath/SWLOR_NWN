@@ -90,7 +90,7 @@ namespace SWLOR.Game.Server.Service.DBService
         /// Builds an NRedisSearch query.
         /// </summary>
         /// <returns>An NRedisSearch query.</returns>
-        public Query BuildQuery()
+        public Query BuildQuery(bool countsOnly = false)
         {
             var sb = new StringBuilder();
 
@@ -106,16 +106,25 @@ namespace SWLOR.Game.Server.Service.DBService
 
             var query = new Query(sb.ToString());
 
-            // Apply pagination
-            if (Limit > 0)
+            // If we're only retrieving the number of records this query will return
+            // (before pagination is applied), set the limit to zero records.
+            if (countsOnly)
             {
-                query.Limit(Offset, Limit);
+                query.Limit(0, 0);
             }
-            // If no limit is specified, default to 50.
-            // The default limit is 10 which is too small for our use case.
             else
             {
-                query.Limit(0, 50);
+                // Apply pagination
+                if (Limit > 0)
+                {
+                    query.Limit(Offset, Limit);
+                }
+                // If no limit is specified, default to 50.
+                // The default limit is 10 which is too small for our use case.
+                else
+                {
+                    query.Limit(0, 50);
+                }
             }
 
             if (!string.IsNullOrWhiteSpace(SortByField))

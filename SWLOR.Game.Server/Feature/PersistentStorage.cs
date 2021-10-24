@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.DBService;
 using Item = SWLOR.Game.Server.Service.Item;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -277,9 +278,15 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
+            var privateQuery = new DBQuery<InventoryItem>()
+                .AddFieldSearch(nameof(InventoryItem.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(InventoryItem.StorageId), storageId, false);
+            var publicQuery = new DBQuery<InventoryItem>()
+                .AddFieldSearch(nameof(InventoryItem.StorageId), storageId, false);
+
             var items = isPrivate
-                ? DB.Search<InventoryItem>(nameof(InventoryItem.PlayerId), playerId, nameof(InventoryItem.StorageId), storageId)
-                : DB.Search<InventoryItem>(nameof(InventoryItem.StorageId), storageId);
+                ? DB.Search(privateQuery)
+                : DB.Search(publicQuery);
 
             // Prevent the OnAddItem event from firing while we're loading the inventory.
             IsLoading = true;

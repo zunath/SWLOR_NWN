@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -85,8 +86,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _itemIds.Clear();
             _itemPrices.Clear();
             var playerId = GetObjectUUID(Player);
-            var records = DB.Search<MarketItem>(nameof(MarketItem.PlayerId), playerId)
-                .OrderBy(o => o.Name);
+            var query = new DBQuery<MarketItem>()
+                .AddFieldSearch(nameof(MarketItem.PlayerId), playerId, false)
+                .OrderBy(nameof(MarketItem.Name));
+            var records = DB.Search(query);
             var count = 0;
 
             foreach (var record in records)

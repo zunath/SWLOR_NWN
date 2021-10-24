@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.DBService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using AuthorizationLevel = SWLOR.Game.Server.Enumeration.AuthorizationLevel;
 
@@ -25,7 +26,9 @@ namespace SWLOR.Game.Server.Service
                     return AuthorizationLevel.Admin;
             }
 
-            var existing = DB.Search<AuthorizedDM>(nameof(AuthorizedDM.CDKey), cdKey).FirstOrDefault();
+            var query = new DBQuery<AuthorizedDM>()
+                .AddFieldSearch(nameof(AuthorizedDM.CDKey), cdKey, false);
+            var existing = DB.Search(query).FirstOrDefault();
             if (existing == null)
                 return AuthorizationLevel.Player;
 

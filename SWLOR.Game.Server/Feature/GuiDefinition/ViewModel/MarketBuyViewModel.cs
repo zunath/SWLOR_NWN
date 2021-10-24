@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PlayerMarketService;
@@ -11,6 +14,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class MarketBuyViewModel: GuiViewModelBase<MarketBuyViewModel>
     {
+        private const int ListingsPerPage = 30;
+
         private static readonly List<MarketCategoryType> _weaponCategoryTypes = new();
         private static readonly List<MarketCategoryType> _armorCategoryTypes = new();
         private static readonly List<MarketCategoryType> _otherCategoryTypes = new();
@@ -61,29 +66,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public int SelectedWeaponCategoryId
-        {
-            get => Get<int>();
-            set => Set(value);
-        }
+        private int SelectedWeaponCategoryIndex { get; set; }
 
-        public int SelectedArmorCategoryId
-        {
-            get => Get<int>();
-            set => Set(value);
-        }
+        private int SelectedArmorCategoryIndex { get; set; }
 
-        public int SelectedCraftingCategoryId
-        {
-            get => Get<int>();
-            set => Set(value);
-        }
-
-        public int SelectedOtherCategoryId
-        {
-            get => Get<int>();
-            set => Set(value);
-        }
+        private int SelectedOtherCategoryIndex { get; set; }
 
 
         public GuiBindingList<string> WeaponCategoryNames
@@ -101,6 +88,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<string> OtherCategoryNames
         {
             get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<bool> WeaponCategoryToggles
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+        public GuiBindingList<bool> ArmorCategoryToggles
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+        public GuiBindingList<bool> OtherCategoryToggles
+        {
+            get => Get<GuiBindingList<bool>>();
             set => Set(value);
         }
 
@@ -139,17 +142,84 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadData()
         {
-            var itemIconResrefs = new GuiBindingList<string>();
-            var itemMarkets = new GuiBindingList<string>();
-            var itemNames = new GuiBindingList<string>();
-            var itemPriceNames = new GuiBindingList<string>();
-            _itemPrices.Clear();
-            var itemSellerNames = new GuiBindingList<string>();
+            var weaponCategoryToggles = new GuiBindingList<bool>();
+            var armorCategoryToggles = new GuiBindingList<bool>();
+            var otherCategoryToggles = new GuiBindingList<bool>();
 
+            foreach (var unused in _weaponCategories)
+            {
+                weaponCategoryToggles.Add(false);
+            }
+
+            foreach (var unused in _armorCategories)
+            {
+                armorCategoryToggles.Add(false);
+            }
+
+            foreach (var unused in _otherCategories)
+            {
+                otherCategoryToggles.Add(false);
+            }
 
             WeaponCategoryNames = _weaponCategories;
             ArmorCategoryNames = _armorCategories;
             OtherCategoryNames = _otherCategories;
+
+            WeaponCategoryToggles = weaponCategoryToggles;
+            ArmorCategoryToggles = armorCategoryToggles;
+            OtherCategoryToggles = otherCategoryToggles;
+
+        }
+
+        public Action OnLoadWindow() => () =>
+        {
+            SearchText = string.Empty;
+            LoadData();
+            ResetCategorySelections();
+            Search();
+
+            WatchOnClient(model => model.SearchText);
+        };
+
+        private void Search()
+        {
+            var selectedCategoryId = MarketCategoryType.Invalid;
+
+            if (SelectedWeaponCategoryIndex > -1)
+                selectedCategoryId = _weaponCategoryTypes[SelectedWeaponCategoryIndex];
+            else if (SelectedArmorCategoryIndex > -1)
+                selectedCategoryId = _armorCategoryTypes[SelectedArmorCategoryIndex];
+            else if (SelectedOtherCategoryIndex > -1)
+                selectedCategoryId = _otherCategoryTypes[SelectedOtherCategoryIndex];
+
+            var query = new DBQuery<MarketItem>()
+                .AddFieldSearch(nameof(MarketItem.IsListed), true);
+
+            if (!string.IsNullOrWhiteSpace(SearchText))
+                query.AddFieldSearch(nameof(MarketItem.Name), SearchText, true);
+
+            if (selectedCategoryId != MarketCategoryType.Invalid)
+                query.AddFieldSearch(nameof(MarketItem.Category), (int)selectedCategoryId);
+
+            query.AddPaging(ListingsPerPage, ListingsPerPage * SelectedPage);
+            var results = DB.Search(query);
+
+            _itemPrices.Clear();
+            var itemIconResrefs = new GuiBindingList<string>();
+            var itemMarkets = new GuiBindingList<string>();
+            var itemNames = new GuiBindingList<string>();
+            var itemPriceNames = new GuiBindingList<string>();
+            var itemSellerNames = new GuiBindingList<string>();
+
+            foreach (var record in results)
+            {
+                _itemPrices.Add(record.Price);
+                itemIconResrefs.Add(record.IconResref);
+                itemMarkets.Add(record.MarketName);
+                itemNames.Add(record.Name);
+                itemPriceNames.Add($"{record.Price} cr");
+                itemSellerNames.Add(record.SellerName);
+            }
 
             ItemIconResrefs = itemIconResrefs;
             ItemMarkets = itemMarkets;
@@ -158,14 +228,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ItemSellerNames = itemSellerNames;
         }
 
-        public Action OnLoadWindow() => () =>
-        {
-            LoadData();
-        };
-
         public Action OnClickSearch() => () =>
         {
-
+            Search();
         };
 
         public Action OnClickClearSearch() => () =>
@@ -193,6 +258,50 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var index = NuiGetEventArrayIndex();
 
+        };
+
+        private void ResetCategorySelections()
+        {
+            if (SelectedWeaponCategoryIndex > -1)
+                WeaponCategoryToggles[SelectedWeaponCategoryIndex] = false;
+            if (SelectedArmorCategoryIndex > -1)
+                ArmorCategoryToggles[SelectedArmorCategoryIndex] = false;
+            if (SelectedOtherCategoryIndex > -1)
+                OtherCategoryToggles[SelectedOtherCategoryIndex] = false;
+
+            SelectedWeaponCategoryIndex = -1;
+            SelectedArmorCategoryIndex = -1;
+            SelectedOtherCategoryIndex = -1;
+        }
+
+        public Action OnClickWeaponCategory() => () =>
+        {
+            var index = NuiGetEventArrayIndex();
+            ResetCategorySelections();
+            WeaponCategoryToggles[index] = !WeaponCategoryToggles[index];
+
+            if (WeaponCategoryToggles[index])
+                SelectedWeaponCategoryIndex = index;
+        };
+
+        public Action OnClickArmorCategory() => () =>
+        {
+            var index = NuiGetEventArrayIndex();
+            ResetCategorySelections();
+            ArmorCategoryToggles[index] = !ArmorCategoryToggles[index];
+
+            if (ArmorCategoryToggles[index])
+                SelectedArmorCategoryIndex = index;
+        };
+
+        public Action OnClickOtherCategory() => () =>
+        {
+            var index = NuiGetEventArrayIndex();
+            ResetCategorySelections();
+            OtherCategoryToggles[index] = !OtherCategoryToggles[index];
+
+            if (OtherCategoryToggles[index])
+                SelectedOtherCategoryIndex = index;
         };
     }
 }

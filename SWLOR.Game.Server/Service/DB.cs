@@ -8,6 +8,7 @@ using NReJSON;
 using StackExchange.Redis;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.DBService;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -78,8 +79,10 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var prop in type.GetProperties())
             {
-                if (prop.GetCustomAttribute(typeof(IndexedAttribute)) != null)
+                var attribute = prop.GetCustomAttribute(typeof(IndexedAttribute));
+                if (attribute != null)
                 {
+                    var detail = (IndexedAttribute)attribute;
                     if (prop.PropertyType == typeof(int) ||
                         prop.PropertyType == typeof(int?) ||
                         prop.PropertyType == typeof(ulong) ||
@@ -245,7 +248,12 @@ namespace SWLOR.Game.Server.Service
             _cachedEntities.Remove(key);
         }
 
-        private static string EscapeTokens(string str)
+        /// <summary>
+        /// Escapes tokens used in Redis queries.
+        /// </summary>
+        /// <param name="str">The string to escape</param>
+        /// <returns>A string containing escaped tokens.</returns>
+        public static string EscapeTokens(string str)
         {
             return str
                 .Replace("@", "\\@")
@@ -260,28 +268,11 @@ namespace SWLOR.Game.Server.Service
                 .Replace(">", "\\>");
         }
 
-        public static IEnumerable<T> Search<T>(string fieldName, string search, string fieldName2 = "", string search2 = "", string fieldName3 = "", string search3 = "")
+        public static IEnumerable<T> Search<T>(DBQuery<T> query)
             where T: EntityBase
         {
-            // Escape special characters
-            search = EscapeTokens(search);
-            
-            var query = $"@EntityType:\"{typeof(T).Name}\" @{fieldName}:{search}";
+            var result = _searchClientsByType[typeof(T)].Search(query.BuildQuery());
 
-            if (!string.IsNullOrWhiteSpace(fieldName2) && !string.IsNullOrWhiteSpace(search2))
-            {
-                search2 = EscapeTokens(search2);
-                query += $" @{fieldName2}:{search2}";
-            }
-
-            if (!string.IsNullOrWhiteSpace(fieldName3) && !string.IsNullOrWhiteSpace(search3))
-            {
-                search3 = EscapeTokens(search3);
-                query += $" @{fieldName3}:{search3}";
-            }
-
-            var result = _searchClientsByType[typeof(T)].Search(new Query(query));
-            
             foreach (var doc in result.Documents)
             {
                 // Remove the 'Index:' prefix.

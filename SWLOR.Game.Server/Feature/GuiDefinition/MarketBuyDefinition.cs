@@ -56,7 +56,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     template.AddCell(cell =>
                                     {
                                         cell.AddToggleButton()
-                                            .BindText(model => model.WeaponCategoryNames);
+                                            .BindText(model => model.WeaponCategoryNames)
+                                            .BindIsToggled(model => model.WeaponCategoryToggles)
+                                            .BindOnClicked(model => model.OnClickWeaponCategory());
                                     });
                                 })
                                     .BindRowCount(model => model.WeaponCategoryNames)
@@ -79,7 +81,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     template.AddCell(cell =>
                                     {
                                         cell.AddToggleButton()
-                                            .BindText(model => model.ArmorCategoryNames);
+                                            .BindText(model => model.ArmorCategoryNames)
+                                            .BindIsToggled(model => model.ArmorCategoryToggles)
+                                            .BindOnClicked(model => model.OnClickArmorCategory());
                                     });
                                 })
                                     .BindRowCount(model => model.ArmorCategoryNames)
@@ -102,7 +106,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     template.AddCell(cell =>
                                     {
                                         cell.AddToggleButton()
-                                            .BindText(model => model.OtherCategoryNames);
+                                            .BindText(model => model.OtherCategoryNames)
+                                            .BindIsToggled(model => model.OtherCategoryToggles)
+                                            .BindOnClicked(model => model.OnClickOtherCategory());
                                     });
                                 })
                                     .BindRowCount(model => model.OtherCategoryNames)
@@ -180,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                             .BindOnClicked(model => model.OnClickBuy());
                                     });
                                 })
-                                    .BindRowCount(model => model.ItemMarkets)
+                                    .BindRowCount(model => model.ItemNames)
                                     .SetRowHeight(40f);
                             });
 

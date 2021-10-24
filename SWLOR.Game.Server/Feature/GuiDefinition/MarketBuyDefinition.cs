@@ -138,7 +138,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     {
                                         cell.AddButton()
                                             .SetText("Buy")
-                                            .BindOnClicked(model => model.OnClickBuy());
+                                            .BindOnClicked(model => model.OnClickBuy())
+                                            .BindIsEnabled(model => model.ItemBuyEnabled);
                                     });
                                 })
                                     .BindRowCount(model => model.ItemNames)

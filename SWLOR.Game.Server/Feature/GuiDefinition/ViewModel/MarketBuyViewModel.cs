@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -59,7 +60,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Search();
             }
         }
-        
+
+        private readonly List<string> _itemIds = new();
+        private readonly List<int> _itemPrices = new();
+
         public GuiBindingList<string> CategoryNames
         {
             get => Get<GuiBindingList<string>>();
@@ -90,7 +94,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        private readonly List<int> _itemPrices = new();
         public GuiBindingList<string> ItemPriceNames
         {
             get => Get<GuiBindingList<string>>();
@@ -100,6 +103,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<string> ItemSellerNames
         {
             get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<bool> ItemBuyEnabled
+        {
+            get => Get<GuiBindingList<bool>>();
             set => Set(value);
         }
 
@@ -152,6 +161,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var totalRecordCount = DB.SearchCount(query);
             UpdatePagination(totalRecordCount);
 
+            var credits = GetGold(Player);
             var results = DB.Search(query);
 
             _itemPrices.Clear();
@@ -160,15 +170,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var itemNames = new GuiBindingList<string>();
             var itemPriceNames = new GuiBindingList<string>();
             var itemSellerNames = new GuiBindingList<string>();
+            var itemBuyEnabled = new GuiBindingList<bool>();
 
             foreach (var record in results)
             {
+                _itemIds.Add(record.ItemId);
                 _itemPrices.Add(record.Price);
                 itemIconResrefs.Add(record.IconResref);
                 itemMarkets.Add($"  {record.MarketName}");
-                itemNames.Add(record.Name);
+                itemNames.Add($"{record.Quantity}x {record.Name}");
                 itemPriceNames.Add($"{record.Price} cr");
                 itemSellerNames.Add(record.SellerName);
+                itemBuyEnabled.Add(credits >= record.Price);
             }
 
             ItemIconResrefs = itemIconResrefs;
@@ -176,6 +189,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ItemNames = itemNames;
             ItemPriceNames = itemPriceNames;
             ItemSellerNames = itemSellerNames;
+            ItemBuyEnabled = itemBuyEnabled;
 
             sw.Stop();
             Console.WriteLine($"Market search: {sw.ElapsedMilliseconds}ms");
@@ -247,8 +261,55 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickBuy() => () =>
         {
             var index = NuiGetEventArrayIndex();
+            var itemId = _itemIds[index];
+            var itemName = ItemNames[index];
+            var price = _itemPrices[index];
 
+            ShowModal($"Are you sure you want to buy '{itemName}' for {price} credits?", () =>
+            {
+                var dbItem = DB.Get<MarketItem>(itemId);
 
+                // If another player buys the item or the item gets removed from the market,
+                // prevent the player from purchasing it.
+                if (dbItem == null)
+                {
+                    FloatingTextStringOnCreature("This item is no longer available. It may have been sold or removed from the market.", Player, false);
+                    return;
+                }
+
+                // If the player no longer has enough money to purchase the item, prevent them from purchasing it.
+                // This can happen if the player opens the modal, drops their money and clicks yes.
+                // Another potential scenario is the seller adjusts the price on the item while they're mid-purchase.
+                if (GetGold(Player) < price)
+                {
+                    FloatingTextStringOnCreature("You do not have enough credits to purchase this item.", Player, false);
+                    return;
+                }
+
+                // Take money and give the item to the buyer.
+                TakeGoldFromCreature(price, Player, true);
+                var item = ObjectPlugin.Deserialize(dbItem.Data);
+                ObjectPlugin.AcquireItem(Player, item);
+
+                // Remove this item from the client's search results.
+                _itemIds.RemoveAt(index);
+                _itemPrices.RemoveAt(index);
+                ItemIconResrefs.RemoveAt(index);
+                ItemMarkets.RemoveAt(index);
+                ItemNames.RemoveAt(index);
+                ItemPriceNames.RemoveAt(index);
+                ItemSellerNames.RemoveAt(index);
+                ItemBuyEnabled.RemoveAt(index);
+
+                // Remove the item from the database.
+                DB.Delete<MarketItem>(itemId);
+
+                // Give the money to the seller.
+                var sellerPlayerId = dbItem.PlayerId;
+                var dbSeller = DB.Get<Player>(sellerPlayerId);
+                dbSeller.MarketTill += price;
+                DB.Set(sellerPlayerId, dbSeller);
+            });
         };
 
         public Action OnClickClearFilters() => () =>

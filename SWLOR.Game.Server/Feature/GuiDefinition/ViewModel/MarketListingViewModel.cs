@@ -74,6 +74,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string ShopTill
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public bool IsShopTillEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         private void LoadData()
         {
             var itemIconResrefs = new GuiBindingList<string>();
@@ -119,6 +131,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ItemPriceNames = itemPriceNames;
             ItemListed = itemListed;
             ListingCheckboxEnabled = listingCheckboxEnabled;
+
+            var dbPlayer = DB.Get<Player>(playerId);
+            ShopTill = $"Till: {dbPlayer.MarketTill} cr";
+            IsShopTillEnabled = dbPlayer.MarketTill > 0;
+
         }
 
         private void UpdateItemCount()
@@ -333,5 +350,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ListingCheckboxEnabled[index] = true;
             }
         }
+
+        public Action OnClickShopTill() => () =>
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var credits = dbPlayer.MarketTill;
+
+            if (credits <= 0)
+                return;
+
+            GiveGoldToCreature(Player, credits);
+            dbPlayer.MarketTill = 0;
+            DB.Set(playerId, dbPlayer);
+
+            IsShopTillEnabled = false;
+            ShopTill = "Shop Till: 0 cr";
+        };
     }
 }

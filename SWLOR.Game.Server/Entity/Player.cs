@@ -126,6 +126,7 @@ namespace SWLOR.Game.Server.Entity
         public AppearanceType OriginalAppearanceType { get; set; }
         public float MovementRate { get; set; }
         public int AbilityRecastReduction { get; set; }
+        public int MarketTill { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }

@@ -43,7 +43,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindOnClicked(model => model.OnClickAddItem())
                             .BindIsEnabled(model => model.IsAddItemEnabled)
                             .SetHeight(35f);
-                        
+
+                        row.AddButton()
+                            .BindText(model => model.ShopTill)
+                            .BindIsEnabled(model => model.IsShopTillEnabled)
+                            .BindOnClicked(model => model.OnClickShopTill())
+                            .SetHeight(35f);
+
                         row.AddLabel()
                             .BindText(model => model.ListCount)
                             .SetHeight(35f)

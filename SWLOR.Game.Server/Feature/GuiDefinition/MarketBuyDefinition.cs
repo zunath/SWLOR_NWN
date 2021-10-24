@@ -42,6 +42,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         {
                             col2.AddRow(row2 =>
                             {
+                                row2.AddButton()
+                                    .SetText("Clear Filters")
+                                    .SetHeight(35f)
+                                    .SetWidth(180f)
+                                    .BindOnClicked(model => model.OnClickClearFilters());
+                            }); 
+
+                            col2.AddRow(row2 =>
+                            {
                                 row2.AddList(template =>
                                     {
                                         template.AddCell(cell =>
@@ -89,7 +98,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                                     template.AddCell(cell =>
                                     {
-                                        cell.SetWidth(80f);
+                                        cell.SetWidth(140f);
+                                        cell.SetIsVariable(false);
 
                                         cell.AddLabel()
                                             .BindText(model => model.ItemMarkets)
@@ -115,8 +125,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                                     template.AddCell(cell =>
                                     {
+                                        cell.SetWidth(40f);
+                                        cell.SetIsVariable(false);
                                         cell.AddButton()
-                                            .SetText("Examine")
+                                            .SetText("?")
+                                            .SetWidth(40f)
+                                            .SetHeight(40f)
                                             .BindOnClicked(model => model.OnClickExamine());
                                     });
 

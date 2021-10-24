@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -15,12 +14,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class MarketBuyViewModel: GuiViewModelBase<MarketBuyViewModel>
     {
-        private const int ListingsPerPage = 30;
+        private const int ListingsPerPage = 20;
 
         private static readonly List<MarketCategoryType> _categoryTypes = new();
         private static readonly GuiBindingList<string> _categories = new();
 
-        private bool _updatingPagination;
+        private bool _skipPaginationSearch;
         private readonly List<int> _activeCategoryIdFilters = new();
 
         /// <summary>
@@ -56,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 Set(value);
 
-                if(!_updatingPagination)
+                if(!_skipPaginationSearch)
                     Search();
             }
         }
@@ -119,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnLoadWindow() => () =>
         {
-            _updatingPagination = true;
+            _skipPaginationSearch = true;
             _activeCategoryIdFilters.Clear();
             SelectedPageIndex = 0;
             SearchText = string.Empty;
@@ -129,11 +128,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.SelectedPageIndex);
             WatchOnClient(model => model.CategoryToggles);
-            _updatingPagination = false;
+            _skipPaginationSearch = false;
         };
 
         private void Search()
         {
+            var sw = new Stopwatch();
+            sw.Start();
+
             var query = new DBQuery<MarketItem>()
                 .AddFieldSearch(nameof(MarketItem.IsListed), true);
 
@@ -163,7 +165,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 _itemPrices.Add(record.Price);
                 itemIconResrefs.Add(record.IconResref);
-                itemMarkets.Add(record.MarketName);
+                itemMarkets.Add($"  {record.MarketName}");
                 itemNames.Add(record.Name);
                 itemPriceNames.Add($"{record.Price} cr");
                 itemSellerNames.Add(record.SellerName);
@@ -174,11 +176,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ItemNames = itemNames;
             ItemPriceNames = itemPriceNames;
             ItemSellerNames = itemSellerNames;
+
+            sw.Stop();
+            Console.WriteLine($"Market search: {sw.ElapsedMilliseconds}ms");
         }
 
         private void UpdatePagination(long totalRecordCount)
         {
-            _updatingPagination = true;
+            _skipPaginationSearch = true;
                var pageNumbers = new GuiBindingList<GuiComboEntry>();
             var pages = (int)(totalRecordCount / ListingsPerPage + (totalRecordCount % ListingsPerPage == 0 ? 0 : 1));
 
@@ -200,7 +205,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else if (SelectedPageIndex > pages - 1)
                 SelectedPageIndex = pages - 1;
 
-            _updatingPagination = false;
+            _skipPaginationSearch = false;
         }
 
         public Action OnClickSearch() => Search;
@@ -213,20 +218,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickPreviousPage() => () =>
         {
+            _skipPaginationSearch = true;
             var newPage = SelectedPageIndex - 1;
             if (newPage < 0)
                 newPage = 0;
 
             SelectedPageIndex = newPage;
+            _skipPaginationSearch = false;
         };
 
         public Action OnClickNextPage() => () =>
         {
+            _skipPaginationSearch = true;
             var newPage = SelectedPageIndex + 1;
             if (newPage > PageNumbers.Count - 1)
                 newPage = PageNumbers.Count - 1;
 
             SelectedPageIndex = newPage;
+            _skipPaginationSearch = false;
         };
 
         public Action OnClickExamine() => () =>
@@ -239,6 +248,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var index = NuiGetEventArrayIndex();
 
+
+        };
+
+        public Action OnClickClearFilters() => () =>
+        {
+            LoadData();
+            _activeCategoryIdFilters.Clear();
+            Search();
         };
 
         public Action OnClickCategory() => () =>
@@ -250,6 +267,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _activeCategoryIdFilters.Add(categoryType);
             else if (!CategoryToggles[index] && _activeCategoryIdFilters.Contains(categoryType))
                 _activeCategoryIdFilters.Remove(categoryType);
+
+            Search();
         };
 
     }

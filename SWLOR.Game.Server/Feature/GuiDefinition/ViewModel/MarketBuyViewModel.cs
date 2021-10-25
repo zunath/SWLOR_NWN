@@ -164,6 +164,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var credits = GetGold(Player);
             var results = DB.Search(query);
 
+            _itemIds.Clear();
             _itemPrices.Clear();
             var itemIconResrefs = new GuiBindingList<string>();
             var itemMarkets = new GuiBindingList<string>();
@@ -198,7 +199,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void UpdatePagination(long totalRecordCount)
         {
             _skipPaginationSearch = true;
-               var pageNumbers = new GuiBindingList<GuiComboEntry>();
+            var pageNumbers = new GuiBindingList<GuiComboEntry>();
             var pages = (int)(totalRecordCount / ListingsPerPage + (totalRecordCount % ListingsPerPage == 0 ? 0 : 1));
 
             // Always add page 1. In the event no items are for sale,
@@ -255,7 +256,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickExamine() => () =>
         {
             var index = NuiGetEventArrayIndex();
+            var itemId = _itemIds[index];
+            var dbItem = DB.Get<MarketItem>(itemId);
 
+            var item = ObjectPlugin.Deserialize(dbItem.Data);
+            SetLocalObject(Player, "EXAMINE_ITEM_WINDOW_TARGET", item);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.ExamineItem);
         };
 
         public Action OnClickBuy() => () =>

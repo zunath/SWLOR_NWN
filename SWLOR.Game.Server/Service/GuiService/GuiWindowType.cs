@@ -18,6 +18,7 @@
         Outfits = 13,
         MarketListing = 14,
         MarketBuying = 15,
-        PriceSelection = 16
+        PriceSelection = 16,
+        ExamineItem = 17,
     }
 }

@@ -7,6 +7,7 @@ namespace SWLOR.CLI
         private static readonly HakBuilder _hakBuilder = new();
         private static readonly PlaceableBuilder _placeableBuilder = new();
         private static readonly LanguageBuilder _languageBuilder = new();
+        private static readonly ModulePacker _modulePacker = new();
 
         static void Main(string[] args)
         {
@@ -14,7 +15,7 @@ namespace SWLOR.CLI
 
             // Set up the options.
             var placeableOption = app.Option(
-                "-$|-p |--placeable",
+                "-$|-c |--placeable",
                 "Generates uti files in json format for all of the entries found in placeables.2da.",
                 CommandOptionType.NoValue
             );
@@ -29,6 +30,18 @@ namespace SWLOR.CLI
                 "-$|-l |--language",
                 "Generates code for use with the language system.",
                 CommandOptionType.NoValue
+            );
+
+            var modulePackerOption = app.Option(
+                "-$|-p |--pack",
+                "Packs a module at the specified path. Target must be the path to a .mod file.",
+                CommandOptionType.SingleValue
+            );
+
+            var moduleUnpackOption = app.Option(
+                "-$|-u |--unpack",
+                "Unpacks a module within the running directory. Target must be the path to a .mod file.",
+                CommandOptionType.SingleValue
             );
 
             app.HelpOption("-? | -h | --help");
@@ -48,6 +61,16 @@ namespace SWLOR.CLI
                 if (languageBuilderOption.HasValue())
                 {
                     _languageBuilder.Process();
+                }
+
+                if (modulePackerOption.HasValue())
+                {
+                    _modulePacker.PackModule(modulePackerOption.Value());
+                }
+
+                if (moduleUnpackOption.HasValue())
+                {
+                    _modulePacker.UnpackModule(moduleUnpackOption.Value());
                 }
 
                 return 0;

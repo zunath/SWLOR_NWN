@@ -5,10 +5,6 @@ VisualStudioVersion = 16.0.29519.181
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Game.Server", "SWLOR.Game.Server\SWLOR.Game.Server.csproj", "{AB7417D9-A314-4ED6-8E7E-75B3F2A83DE1}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SWLOR.Tools", "SWLOR.Tools", "{32124ECB-9CD7-48E7-9C83-B78B94AFC641}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Tools.Module.Packer", "SWLOR.Tools.Module.Packer\SWLOR.Tools.Module.Packer.csproj", "{C77A85F3-43C6-4338-9E77-545DC0FFC457}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.Web", "SWLOR.Web\SWLOR.Web.csproj", "{4CF51B54-4FE9-4167-8BD6-742A067BBEF3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SWLOR.CLI", "SWLOR.CLI\SWLOR.CLI.csproj", "{0AF50AD5-8CAC-4CFD-92C9-A2AAAAEE64BE}"
@@ -23,10 +19,6 @@ Global
 		{AB7417D9-A314-4ED6-8E7E-75B3F2A83DE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB7417D9-A314-4ED6-8E7E-75B3F2A83DE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB7417D9-A314-4ED6-8E7E-75B3F2A83DE1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C77A85F3-43C6-4338-9E77-545DC0FFC457}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C77A85F3-43C6-4338-9E77-545DC0FFC457}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C77A85F3-43C6-4338-9E77-545DC0FFC457}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C77A85F3-43C6-4338-9E77-545DC0FFC457}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4CF51B54-4FE9-4167-8BD6-742A067BBEF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4CF51B54-4FE9-4167-8BD6-742A067BBEF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CF51B54-4FE9-4167-8BD6-742A067BBEF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -38,9 +30,6 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{C77A85F3-43C6-4338-9E77-545DC0FFC457} = {32124ECB-9CD7-48E7-9C83-B78B94AFC641}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {01933D17-C90C-4AB1-AD6C-523F2F4B584D}

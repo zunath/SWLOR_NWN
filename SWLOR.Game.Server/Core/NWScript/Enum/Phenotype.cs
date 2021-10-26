@@ -22,6 +22,10 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Custom15,
         Custom16,
         Custom17,
-        Custom18
+        Custom18,
+        Custom19,
+        SpeederBike,
+        Custom21,
+        Custom22,
     }
 }

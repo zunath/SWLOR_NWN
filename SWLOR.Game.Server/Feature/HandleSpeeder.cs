@@ -36,12 +36,14 @@ namespace SWLOR.Game.Server.Feature
                     SetPhenoType(PhenoType.Normal, player);
                     SetCreatureTailType(Core.NWScript.Enum.Creature.TailType.None,player);
                     CreaturePlugin.SetMovementRate(player, MovementRate.Normal);
+                    SendMessageToPC(player,"You dismount your speeder.");
                 }
                 else
                 {
                     SetCreatureTailType(Core.NWScript.Enum.Creature.TailType.SpeederBike,player);
                     SetPhenoType(PhenoType.SpeederBike, player);
-                    CreaturePlugin.SetMovementRate(player, MovementRate.DMFast);  
+                    CreaturePlugin.SetMovementRate(player, MovementRate.DMFast);
+                    SendMessageToPC(player, "You mount your speeder.");
                 }
             }
           
@@ -64,11 +66,12 @@ namespace SWLOR.Game.Server.Feature
                     {
                         ApplyEffectToObject(DurationType.Temporary, stun, player, 2.0f);
                     }
-
                     AssignCommand(player, () =>
                     {
                         ActionPlayAnimation(Animation.LoopingDeadBack, 1, 2.0f);
                     });
+
+                    FloatingTextStringOnCreature("You have been dismounted.", player, false);
                     SetPhenoType(PhenoType.Normal, player);
                     SetCreatureTailType(Core.NWScript.Enum.Creature.TailType.None,player);
                     CreaturePlugin.SetMovementRate(player, MovementRate.Normal);
@@ -85,6 +88,8 @@ namespace SWLOR.Game.Server.Feature
 
             if (GetPhenoType(player) == PhenoType.SpeederBike)
             {
+                SendMessageToPC(player, "You have been dismounted.");
+                FloatingTextStringOnCreature("You have been dismounted.", player, false);
                 SetPhenoType(PhenoType.Normal, player);
                 SetCreatureTailType(Core.NWScript.Enum.Creature.TailType.None, player);
                 CreaturePlugin.SetMovementRate(player, MovementRate.Normal);
@@ -100,11 +105,12 @@ namespace SWLOR.Game.Server.Feature
         {
             var player = OBJECT_SELF;
             var area = GetArea(player);
+            string targetAreaTag = GetLocalString(player, "spdr_hook_t_tag");
+            var targetArea = GetObjectByTag(targetAreaTag);
 
-            Console.WriteLine("hello from area trans");
-
-            if (GetPhenoType(player) == PhenoType.SpeederBike)
+            if (GetPhenoType(player) == PhenoType.SpeederBike && GetIsAreaInterior(targetArea))
             {
+                FloatingTextStringOnCreature("You have been dismounted for entering an area with a speeder.", player, false);
                 ExecuteScript("mounted_enter", player);
                 SetPhenoType(PhenoType.Normal, player);
                 SetCreatureTailType(Core.NWScript.Enum.Creature.TailType.None, player);

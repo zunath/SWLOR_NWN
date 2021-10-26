@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature
         /// Set pheno to normal, tail to none and movement rate to normal.
         /// Warning: This is not currently working. Need to hook the right script. *****!
         /// </summary>
-        [NWNEventHandler("x3_g0_transition")]
+        [NWNEventHandler("speeder_hook")]
         public static void AreaTransitionDismount()
         {
             var player = OBJECT_SELF;

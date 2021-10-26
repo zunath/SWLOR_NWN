@@ -16,7 +16,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <param name="windowToken">The window token to bind.</param>
         /// <param name="initialGeometry">The initial geometry to use.</param>
         /// <param name="type">The type of window in use.</param>
-        void Bind(uint player, int windowToken, GuiRectangle initialGeometry, GuiWindowType type);
+        /// <param name="payload">The initial payload passed in by the caller</param>
+        void Bind(uint player, int windowToken, GuiRectangle initialGeometry, GuiWindowType type, GuiPayloadBase payload);
 
         /// <summary>
         /// Handles updating the view model with changes received from the player's client.

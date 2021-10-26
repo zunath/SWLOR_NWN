@@ -10,8 +10,9 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {
-    public abstract class GuiViewModelBase<TDerived>: IGuiViewModel, INotifyPropertyChanged
-        where TDerived: GuiViewModelBase<TDerived>
+    public abstract class GuiViewModelBase<TDerived, TPayload>: IGuiViewModel, INotifyPropertyChanged
+        where TDerived: GuiViewModelBase<TDerived, TPayload>
+        where TPayload: GuiPayloadBase
     {
         private class PropertyDetail
         {
@@ -27,6 +28,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         protected int WindowToken { get; private set; }
 
         private readonly Dictionary<string, PropertyDetail> _propertyValues = new Dictionary<string, PropertyDetail>();
+
+        protected abstract void Initialize(TPayload initialPayload);
 
         /// <summary>
         /// The window geometry. This is automatically bound for all windows.
@@ -156,7 +159,13 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <param name="windowToken">The window token to bind.</param>
         /// <param name="initialGeometry">The initial geometry to use in the event the window dimensions aren't set.</param>
         /// <param name="type">The type of window.</param>
-        public void Bind(uint player, int windowToken, GuiRectangle initialGeometry, GuiWindowType type)
+        /// <param name="payload">The payload sent in by the caller.</param>
+        public void Bind(
+            uint player, 
+            int windowToken, 
+            GuiRectangle initialGeometry, 
+            GuiWindowType type,
+            GuiPayloadBase payload)
         {
             Player = player;
             WindowToken = windowToken;
@@ -178,6 +187,9 @@ namespace SWLOR.Game.Server.Service.GuiService
             }
 
             WatchOnClient(model => model.Geometry);
+
+            var convertedPayload = payload == null ? default : (TPayload)payload;
+            Initialize(convertedPayload);
         }
 
 

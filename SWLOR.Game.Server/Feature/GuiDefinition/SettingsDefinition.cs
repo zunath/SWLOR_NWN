@@ -10,7 +10,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.Settings)
-                .BindOnOpened(model => model.OnLoadWindow())
                 .SetIsResizable(true)
                 .SetInitialGeometry(0, 0, 545f, 295.5f)
                 .SetTitle("Settings")

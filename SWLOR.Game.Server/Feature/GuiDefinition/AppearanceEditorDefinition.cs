@@ -11,7 +11,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.AppearanceEditor)
-                .BindOnOpened(model => model.OnLoadWindow())
                 .SetIsResizable(true)
                 .SetInitialGeometry(0, 0, 476.57895f, 530.2632f)
                 .SetTitle("Appearance Editor")

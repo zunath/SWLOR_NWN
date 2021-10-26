@@ -14,7 +14,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.Recipes)
-                .BindOnOpened(model => model.OnLoadWindow())
                 .SetIsResizable(true)
                 .SetInitialGeometry(0, 0, 545f, 295.5f)
                 .SetTitle("Recipes")

@@ -6,7 +6,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class SettingsViewModel: GuiViewModelBase<SettingsViewModel>
+    public class SettingsViewModel: GuiViewModelBase<SettingsViewModel, GuiPayloadBase>
     {
         public bool DisplayAchievementNotification
         {
@@ -14,14 +14,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public Action OnLoadWindow() => () =>
+        protected override void Initialize(GuiPayloadBase initialPayload)
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
 
             DisplayAchievementNotification = dbPlayer.Settings.DisplayAchievementNotification;
             WatchOnClient(model => model.DisplayAchievementNotification);
-        };
+        }
 
         public Action OnSave() => () =>
         {

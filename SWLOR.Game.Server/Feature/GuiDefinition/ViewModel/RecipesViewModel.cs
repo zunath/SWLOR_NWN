@@ -11,7 +11,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class RecipesViewModel: GuiViewModelBase<RecipesViewModel>
+    public class RecipesViewModel: GuiViewModelBase<RecipesViewModel, GuiPayloadBase>
     {
         private int _currentRecipeIndex;
 
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RecipeComponentColors = new GuiBindingList<GuiColor>();
         }
 
-        public Action OnLoadWindow() => () =>
+        protected override void Initialize(GuiPayloadBase initialPayload)
         {
             SelectedSkillId = 0;
             SelectedCategoryId = 0;
@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SelectedSkillId);
             WatchOnClient(model => model.SelectedCategoryId);
             WatchOnClient(model => model.ShowAll);
-        };
+        }
 
         private void LoadCategories()
         {
@@ -307,5 +307,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RecipeComponents = recipeComponents;
             RecipeComponentColors = recipeComponentColors;
         }
+
     }
 }

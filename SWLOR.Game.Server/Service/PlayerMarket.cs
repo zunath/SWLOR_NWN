@@ -13,9 +13,10 @@ namespace SWLOR.Game.Server.Service
 {
     public static class PlayerMarket
     {
-        public const int MaxListingCount = 25;
+        public const int MaxListingsPerMarket = 25;
         private static Dictionary<MarketCategoryType, MarketCategoryAttribute> _activeMarketCategories = new();
-        
+        private static readonly Dictionary<MarketRegionType, MarketRegionAttribute> _activeMarketRegions = new();
+
         /// <summary>
         /// When the module caches, cache all static player market data for quick retrieval.
         /// </summary>
@@ -23,6 +24,7 @@ namespace SWLOR.Game.Server.Service
         public static void CacheData()
         {
             LoadMarketCategories();
+            LoadMarkets();
         }
 
         /// <summary>
@@ -41,6 +43,21 @@ namespace SWLOR.Game.Server.Service
 
             _activeMarketCategories = _activeMarketCategories.OrderBy(o => o.Value.Name)
                 .ToDictionary(x => x.Key, y => y.Value);
+        }
+
+        /// <summary>
+        /// Reads all of the MarketRegionType enumerations and adds them to the related dictionaries.
+        /// </summary>
+        private static void LoadMarkets()
+        {
+            var categories = Enum.GetValues(typeof(MarketRegionType)).Cast<MarketRegionType>();
+            foreach (var category in categories)
+            {
+                var attribute = category.GetAttribute<MarketRegionType, MarketRegionAttribute>();
+
+                if (attribute.IsActive)
+                    _activeMarketRegions[category] = attribute;
+            }
         }
 
         /// <summary>
@@ -112,6 +129,16 @@ namespace SWLOR.Game.Server.Service
 
             // For everything else use the item's default icon
             return Get2DAString("baseitems", "DefaultIcon", (int)baseItem);
+        }
+
+        /// <summary>
+        /// Retrieves the market region detail given a specific type.
+        /// </summary>
+        /// <param name="regionType">The type of market region</param>
+        /// <returns>A market region detail</returns>
+        public static MarketRegionAttribute GetMarketRegion(MarketRegionType regionType)
+        {
+            return _activeMarketRegions[regionType];
         }
 
         /// <summary>

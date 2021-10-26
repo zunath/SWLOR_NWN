@@ -7,7 +7,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class AchievementsViewModel: GuiViewModelBase<AchievementsViewModel>
+    public class AchievementsViewModel: GuiViewModelBase<AchievementsViewModel, GuiPayloadBase>
     {
         public bool ShowAll
         {
@@ -50,12 +50,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Colors = new GuiBindingList<GuiColor>();
         }
 
-        public Action OnLoadWindow() => () =>
+        protected override void Initialize(GuiPayloadBase initialPayload)
         {
             ShowAll = true;
             LoadAchievements();
             WatchOnClient(model => model.ShowAll);
-        };
+        }
 
         private void LoadAchievements()
         {

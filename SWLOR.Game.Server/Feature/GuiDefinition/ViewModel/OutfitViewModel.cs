@@ -9,7 +9,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class OutfitViewModel: GuiViewModelBase<OutfitViewModel>
+    public class OutfitViewModel: GuiViewModelBase<OutfitViewModel, GuiPayloadBase>
     {
         private const int MaxOutfits = 25;
 
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public Action OnLoadWindow() => () =>
+        protected override void Initialize(GuiPayloadBase initialPayload)
         {
             SelectedSlotIndex = -1;
             IsDeleteEnabled = false;
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsSlotLoaded = false;
 
             WatchOnClient(model => model.Name);
-        };
+        }
 
         public Action OnClickSlot() => () =>
         {
@@ -357,5 +357,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsSlotLoaded = false;
             });
         };
+
     }
 }

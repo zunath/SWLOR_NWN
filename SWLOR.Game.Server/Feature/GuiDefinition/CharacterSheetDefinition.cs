@@ -12,7 +12,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.CharacterSheet)
-                .BindOnOpened(model => model.OnLoadWindow())
                 .SetInitialGeometry(0, 0, 545f, 320f)
                 .SetTitle("Character Sheet")
                 .AddColumn(col =>

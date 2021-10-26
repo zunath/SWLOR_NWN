@@ -212,7 +212,8 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to toggle the window for.</param>
         /// <param name="type">The type of window to toggle.</param>
-        public static void TogglePlayerWindow(uint player, GuiWindowType type)
+        /// <param name="payload">An optional payload to pass to the view model.</param>
+        public static void TogglePlayerWindow(uint player, GuiWindowType type, GuiPayloadBase payload = null)
         {
             var playerId = GetObjectUUID(player);
             var template = _windowTemplates[type];
@@ -222,10 +223,10 @@ namespace SWLOR.Game.Server.Service
             // If the window is closed, open it.
             if (NuiFindWindow(player, windowId) == 0)
             {
-                Console.WriteLine(JsonDump(template.Window));
+                //Console.WriteLine(JsonDump(template.Window));
 
                 playerWindow.WindowToken = NuiCreate(player, template.Window, template.WindowId);
-                playerWindow.ViewModel.Bind(player, playerWindow.WindowToken, template.InitialGeometry, type);
+                playerWindow.ViewModel.Bind(player, playerWindow.WindowToken, template.InitialGeometry, type, payload);
             }
             // Otherwise the window must already be open. Close it.
             else
@@ -260,7 +261,7 @@ namespace SWLOR.Game.Server.Service
             var template = _windowTemplates[GuiWindowType.Modal];
             var parentWindow = _playerWindows[playerId][parentType];
             playerModal.WindowToken = NuiCreate(player, template.Window, modalWindowId);
-            playerModal.ViewModel.Bind(player, playerModal.WindowToken, parentWindow.ViewModel.Geometry, parentType);
+            playerModal.ViewModel.Bind(player, playerModal.WindowToken, parentWindow.ViewModel.Geometry, parentType, null);
         }
 
         /// <summary>

@@ -7,7 +7,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class ChangePortraitViewModel: GuiViewModelBase<ChangePortraitViewModel>
+    public class ChangePortraitViewModel: GuiViewModelBase<ChangePortraitViewModel, GuiPayloadBase>
     {
         public string ActivePortrait
         {
@@ -42,13 +42,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ActivePortraitInternalId = Cache.GetPortraitInternalId(portraitId);
         }
 
-        public Action OnLoadWindow() => () =>
+        protected override void Initialize(GuiPayloadBase initialPayload)
         {
             MaximumPortraits = Cache.PortraitCount;
             LoadCurrentPortrait();
 
             WatchOnClient(model => model.ActivePortraitInternalId);
-        };
+        }
 
         public Action OnPreviousClick() => () =>
         {
@@ -80,5 +80,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var portraitId = Cache.GetPortraitByInternalId(ActivePortraitInternalId);
             SetPortraitId(Player, portraitId);
         };
+
     }
 }

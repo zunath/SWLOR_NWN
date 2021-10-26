@@ -6,7 +6,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class ExamineItemViewModel: GuiViewModelBase<ExamineItemViewModel>
+    public class ExamineItemViewModel: GuiViewModelBase<ExamineItemViewModel, GuiPayloadBase>
     {
         public string WindowTitle
         {
@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return GetLocalObject(Player, "EXAMINE_ITEM_WINDOW_TARGET");
         }
 
-        public Action OnLoadWindow() => () =>
+        protected override void Initialize(GuiPayloadBase initialPayload)
         {
             var sb = new StringBuilder();
             var item = GetItem();
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             ItemProperties = sb.ToString();
-        };
+        }
 
         public Action OnCloseWindow() => () =>
         {
@@ -87,45 +87,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     sb.Append($" {GetStringByStrRef(strRef)}");
             }
         }
-
-        /*
-         
-string Examine_GetItemPropertyString(itemproperty ip)
-{
-    int nType = GetItemPropertyType(ip);
-    string sName = GetStringByStrRef(StringToInt(Get2DAString("itempropdef", "GameStrRef", nType)));
-
-    int nSubType = GetItemPropertySubType(ip);
-    if(nSubType != -1)
-    {
-        string sSubTypeResRef = Get2DAString("itempropdef", "SubTypeResRef", nType);
-        int nStrRef = StringToInt(Get2DAString(sSubTypeResRef, "Name", nSubType));
-        if(nStrRef)
-            sName += " " + GetStringByStrRef(nStrRef);
-    }
-
-    int nParam1 = GetItemPropertyParam1(ip);
-    if(nParam1 != -1)
-    {
-        string sParamResRef = Get2DAString("iprp_paramtable", "TableResRef", nParam1);
-        string sSubTypeResRef = Get2DAString("itempropdef", "SubTypeResRef", nType);
-        string sTableResRef = Get2DAString(sSubTypeResRef, "TableResRef", nParam1);
-        int nStrRef = StringToInt(Get2DAString(sParamResRef, "Name", GetItemPropertyParam1Value(ip)));
-        if(nStrRef)
-            sName += " " + GetStringByStrRef(nStrRef);
-    }
-
-    int nCostTable = GetItemPropertyCostTable(ip);
-    if(nCostTable != -1)
-    {
-        string sCostTableResRef = Get2DAString("iprp_costtable", "Name", nCostTable);
-        int nStrRef = StringToInt(Get2DAString(sCostTableResRef, "Name", GetItemPropertyCostTableValue(ip)));
-        if(nStrRef)
-            sName += " " + GetStringByStrRef(nStrRef);
-    }
-
-    return sName;
-}
-         */
+        
     }
 }

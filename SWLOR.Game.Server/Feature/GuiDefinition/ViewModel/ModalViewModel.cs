@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class ModalViewModel: GuiViewModelBase<ModalViewModel>
+    public class ModalViewModel: GuiViewModelBase<ModalViewModel, GuiPayloadBase>
     {
         public string PromptText
         {
@@ -39,11 +39,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private GuiRectangle _parentGeometry;
         private Action _callerConfirmAction;
         private Action _callerCancelAction;
-        
-        public Action OnWindowOpen() => () =>
+
+        protected override void Initialize(GuiPayloadBase initialPayload)
         {
             Geometry = _parentGeometry;
-        };
+        }
 
         public Action OnWindowClose() => () =>
         {

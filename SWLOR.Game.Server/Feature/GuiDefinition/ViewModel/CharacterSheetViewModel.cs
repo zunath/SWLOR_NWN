@@ -10,7 +10,7 @@ using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class CharacterSheetViewModel: GuiViewModelBase<CharacterSheetViewModel>
+    public class CharacterSheetViewModel: GuiViewModelBase<CharacterSheetViewModel, GuiPayloadBase>
     {
         private const int MaxUpgrades = 10;
 
@@ -278,7 +278,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsWillpowerUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Willpower] < MaxUpgrades;
             IsSocialUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Social] < MaxUpgrades;
         }
-
-        public Action OnLoadWindow() => LoadData;
+        
+        protected override void Initialize(GuiPayloadBase initialPayload)
+        {
+            LoadData();
+        }
     }
 }

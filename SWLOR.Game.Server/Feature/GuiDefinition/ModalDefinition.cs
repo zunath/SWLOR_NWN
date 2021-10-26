@@ -10,7 +10,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.Modal)
-                .BindOnOpened(model => model.OnWindowOpen())
                 .BindOnClosed(model => model.OnWindowClose())
                 .SetIsResizable(false)
                 .SetIsClosable(false)

@@ -10,7 +10,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class SkillsViewModel : GuiViewModelBase<SkillsViewModel>
+    public class SkillsViewModel : GuiViewModelBase<SkillsViewModel, GuiPayloadBase>
     {
         private readonly List<SkillType> _viewableSkills;
 
@@ -88,13 +88,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DecayLockButtonEnabled = new GuiBindingList<bool>();
         }
 
-
-        public Action OnLoadWindow() => () =>
+        protected override void Initialize(GuiPayloadBase initialPayload)
         {
             SelectedCategoryId = 0;
             LoadSkills(Skill.GetAllActiveSkills());
             WatchOnClient(model => model.SelectedCategoryId);
-        };
+        }
 
         private void LoadSkills(Dictionary<SkillType, SkillAttribute> skills)
         {
@@ -200,5 +199,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DecayLockColors[index] = GetDecayLockColor(isLocked, true);
             DecayLockTexts[index] = GetDecayLockText(isLocked, true);
         };
+
     }
 }

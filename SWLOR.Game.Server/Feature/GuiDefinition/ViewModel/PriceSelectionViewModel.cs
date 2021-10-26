@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class PriceSelectionViewModel: GuiViewModelBase<PriceSelectionViewModel>
+    public class PriceSelectionViewModel: GuiViewModelBase<PriceSelectionViewModel, PriceSelectionPayload>
     {
         private string _targetRecordId;
         private GuiWindowType _targetWindowType;
@@ -46,18 +47,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        public void SpecifyTargetWindow(GuiWindowType windowType, string recordId, int currentPrice, string itemName)
+        protected override void Initialize(PriceSelectionPayload initialPayload)
         {
-            _targetRecordId = recordId;
-            _targetWindowType = windowType;
-            Price = currentPrice.ToString();
-            ItemName = $"Price For: {itemName}";
-        }
+            _targetRecordId = initialPayload.RecordId;
+            _targetWindowType = initialPayload.WindowType;
+            Price = initialPayload.CurrentPrice.ToString();
+            ItemName = $"Price For: {initialPayload.ItemName}";
 
-        public Action OnLoadWindow() => () =>
-        {
             WatchOnClient(model => model.Price);
-        };
+        }
 
         public Action OnClickSave() => () =>
         {
@@ -72,5 +70,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.PriceSelection);
         };
+
     }
 }

@@ -12,7 +12,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class AppearanceEditorViewModel: GuiViewModelBase<AppearanceEditorViewModel>
+    public class AppearanceEditorViewModel: GuiViewModelBase<AppearanceEditorViewModel, GuiPayloadBase>
     {
         private const int ColorWidthCells = 16;
         private const int ColorHeightCells = 11;
@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DoesNotHaveItemEquipped = !hasItemEquipped;
         }
 
-        public Action OnLoadWindow() => () =>
+        protected override void Initialize(GuiPayloadBase initialPayload)
         {
             IsAppearanceSelected = true;
             IsEquipmentSelected = false;
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SelectedPartCategoryIndex);
             WatchOnClient(model => model.SelectedPartIndex);
             WatchOnClient(model => model.SelectedItemTypeIndex);
-        };
+        }
 
         private void LoadColorCategoryOptions()
         {
@@ -911,5 +911,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.Outfits);
         };
+
     }
 }

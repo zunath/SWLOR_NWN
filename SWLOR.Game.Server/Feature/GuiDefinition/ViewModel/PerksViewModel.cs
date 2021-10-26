@@ -15,7 +15,7 @@ using Skill = SWLOR.Game.Server.Service.Skill;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class PerksViewModel : GuiViewModelBase<PerksViewModel>
+    public class PerksViewModel : GuiViewModelBase<PerksViewModel, GuiPayloadBase>
     {
         private static readonly GuiColor _redColor = new GuiColor(255, 0, 0);
         private static readonly GuiColor _greenColor = new GuiColor(0, 255, 0);
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedRequirements = new GuiBindingList<string>();
         }
 
-        public Action OnLoadWindow() => () =>
+        protected override void Initialize(GuiPayloadBase initialPayload)
         {
             _initialLoadDone = false;
             SelectedPerkCategoryId = 0;
@@ -180,11 +180,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SelectedPerkCategoryId);
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.SelectedPage);
-            
+
             _initialLoadDone = true;
             LoadCharacterDetails();
             LoadPerks();
-        };
+        }
 
         private void LoadCharacterDetails()
         {
@@ -602,5 +602,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SelectedPage = newPage;
         };
+
     }
 }

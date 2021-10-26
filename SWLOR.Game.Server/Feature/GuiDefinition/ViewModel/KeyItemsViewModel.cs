@@ -6,7 +6,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class KeyItemsViewModel: GuiViewModelBase<KeyItemsViewModel>
+    public class KeyItemsViewModel: GuiViewModelBase<KeyItemsViewModel, GuiPayloadBase>
     {
         public GuiBindingList<string> Names
         {
@@ -36,12 +36,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        public Action OnLoadWindow() => () =>
+        protected override void Initialize(GuiPayloadBase initialPayload)
         {
             SelectedCategoryId = 0;
             LoadKeyItems();
             WatchOnClient(model => model.SelectedCategoryId);
-        };
+        }
 
         private void LoadKeyItems()
         {
@@ -71,5 +71,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Types = types;
             Descriptions = descriptions;
         }
+
     }
 }

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -13,7 +14,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class MarketBuyViewModel: GuiViewModelBase<MarketBuyViewModel>
+    public class MarketBuyViewModel: GuiViewModelBase<MarketBuyViewModel, MarketPayload>
     {
         private const int ListingsPerPage = 20;
 
@@ -22,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private bool _skipPaginationSearch;
         private readonly List<int> _activeCategoryIdFilters = new();
+        private MarketRegionType _regionType;
 
         /// <summary>
         /// When the module loads, set up the category lists so they don't need
@@ -35,6 +37,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _categoryTypes.Add(type);
                 _categories.Add(category.Name);
             }
+        }
+
+        public string WindowTitle
+        {
+            get => Get<string>();
+            set => Set(value);
         }
 
         public string SearchText
@@ -125,12 +133,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CategoryToggles = categoryToggles;
         }
 
-        public Action OnLoadWindow() => () =>
+        protected override void Initialize(MarketPayload initialPayload)
         {
+            _regionType = initialPayload.RegionType;
+            var regionDetail = PlayerMarket.GetMarketRegion(_regionType);
             _skipPaginationSearch = true;
             _activeCategoryIdFilters.Clear();
             SelectedPageIndex = 0;
             SearchText = string.Empty;
+            WindowTitle = $"{regionDetail.Name} Market";
             LoadData();
             Search();
 
@@ -138,15 +149,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SelectedPageIndex);
             WatchOnClient(model => model.CategoryToggles);
             _skipPaginationSearch = false;
-        };
+        }
 
         private void Search()
         {
             var sw = new Stopwatch();
             sw.Start();
 
+            var marketDetail = PlayerMarket.GetMarketRegion(_regionType);
             var query = new DBQuery<MarketItem>()
-                .AddFieldSearch(nameof(MarketItem.IsListed), true);
+                .AddFieldSearch(nameof(MarketItem.IsListed), true)
+                .AddFieldSearch(nameof(MarketItem.MarketId), marketDetail.MarketId, false);
 
             if (!string.IsNullOrWhiteSpace(SearchText))
                 query.AddFieldSearch(nameof(MarketItem.Name), SearchText, true);
@@ -292,8 +305,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
+                // Item's price has been changed since the player's search.
+                // Notify them and refresh the search.
+                if (dbItem.Price != _itemPrices[index])
+                {
+                    FloatingTextStringOnCreature("The price of this item has been changed by the seller. Please try again.", Player, false);
+                    Search();
+                    return;
+                }
+
                 // Take money and give the item to the buyer.
-                TakeGoldFromCreature(price, Player, true);
+                AssignCommand(Player, () =>
+                {
+                    TakeGoldFromCreature(price, Player, true);
+                });
                 var item = ObjectPlugin.Deserialize(dbItem.Data);
                 ObjectPlugin.AcquireItem(Player, item);
 
@@ -311,9 +336,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DB.Delete<MarketItem>(itemId);
 
                 // Give the money to the seller.
+                var market = PlayerMarket.GetMarketRegion(_regionType);
                 var sellerPlayerId = dbItem.PlayerId;
                 var dbSeller = DB.Get<Player>(sellerPlayerId);
-                dbSeller.MarketTill += price;
+                var proceeds = (int)(price - (price * market.TaxRate));
+                dbSeller.MarketTill += proceeds;
                 DB.Set(sellerPlayerId, dbSeller);
             });
         };

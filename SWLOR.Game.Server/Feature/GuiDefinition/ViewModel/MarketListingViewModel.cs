@@ -1,20 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.PlayerMarketService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class MarketListingViewModel: GuiViewModelBase<MarketListingViewModel>, IGuiAcceptsPriceChange
+    public class MarketListingViewModel: GuiViewModelBase<MarketListingViewModel, MarketPayload>, IGuiAcceptsPriceChange
     {
+        private MarketRegionType _regionType;
+
         public string SearchText
         {
             get => Get<string>();
@@ -28,6 +31,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string ListCount
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string WindowTitle
         {
             get => Get<string>();
             set => Set(value);
@@ -98,8 +107,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _itemIds.Clear();
             _itemPrices.Clear();
             var playerId = GetObjectUUID(Player);
+            var market = PlayerMarket.GetMarketRegion(_regionType);
             var query = new DBQuery<MarketItem>()
                 .AddFieldSearch(nameof(MarketItem.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(MarketItem.MarketId), market.MarketId, false)
                 .OrderBy(nameof(MarketItem.Name));
             var records = DB.Search(query);
             var count = 0;
@@ -140,18 +151,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void UpdateItemCount()
         {
-            ListCount = $"  {_itemCount} / {PlayerMarket.MaxListingCount} Items Listed";
-            IsAddItemEnabled = _itemIds.Count < PlayerMarket.MaxListingCount;
+            ListCount = $"  {_itemCount} / {PlayerMarket.MaxListingsPerMarket} Items Listed";
+            IsAddItemEnabled = _itemIds.Count < PlayerMarket.MaxListingsPerMarket;
         }
 
-        public Action OnLoadWindow() => () =>
+        protected override void Initialize(MarketPayload initialPayload)
         {
+            _regionType = initialPayload.RegionType;
+            var regionDetail = PlayerMarket.GetMarketRegion(_regionType);
+            var taxRate = regionDetail.TaxRate * 100;
+            WindowTitle = $"  {regionDetail.Name} Market [Tax Rate {taxRate:0.#}%]";
             SearchText = string.Empty;
             LoadData();
 
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.ItemListed);
-        };
+        }
 
         public Action OnClickAddItem() => () =>
         {
@@ -184,7 +199,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            if (_itemIds.Count >= PlayerMarket.MaxListingCount)
+            if (_itemIds.Count >= PlayerMarket.MaxListingsPerMarket)
             {
                 FloatingTextStringOnCreature("You cannot list any more items.", Player, false);
                 return;
@@ -197,11 +212,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            var marketDetail = PlayerMarket.GetMarketRegion(_regionType);
             var listing = new MarketItem
             {
-                MarketId = "TestMarket", // todo: change
+                MarketId = marketDetail.MarketId,
                 ItemId = GetObjectUUID(item),
-                MarketName = "Test Market", // todo: change
+                MarketName = marketDetail.Name,
                 PlayerId = GetObjectUUID(Player),
                 SellerName = GetName(Player),
                 Price = 0,
@@ -241,9 +257,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var dbListing = DB.Get<MarketItem>(itemId);
 
-                var deserialized = ObjectPlugin.Deserialize(dbListing.Data);
-                ObjectPlugin.AcquireItem(Player, deserialized);
-                DB.Delete<MarketItem>(itemId);
+                // The item was either bought or removed already. 
+                // Remove it from the client's view, but don't take any action on the server.
+                if (dbListing != null)
+                {
+                    var deserialized = ObjectPlugin.Deserialize(dbListing.Data);
+                    ObjectPlugin.AcquireItem(Player, deserialized);
+                    DB.Delete<MarketItem>(itemId);
+                }
+                else
+                {
+                    FloatingTextStringOnCreature("Your listing for '' has been removed or sold already.", Player, false);
+                }
 
                 _itemIds.RemoveAt(index);
                 ItemIconResrefs.RemoveAt(index);
@@ -314,19 +339,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // As a workaround, we use a button to display a price change window. 
             // The price is entered by the user and saved, which then updates this window.
             // If/when the defect gets fixed, this can be replaced in favor of a simple text edit control.
-            if (!Gui.IsWindowOpen(Player, GuiWindowType.PriceSelection))
-            {
-                var pricePickerWindow = Gui.GetPlayerWindow(Player, GuiWindowType.PriceSelection);
-                var vm = (PriceSelectionViewModel)pricePickerWindow.ViewModel;
-                var index = NuiGetEventArrayIndex();
-                var recordId = _itemIds[index];
-                var currentPrice = _itemPrices[index];
-                var itemName = ItemNames[index];
-
-                vm.SpecifyTargetWindow(GuiWindowType.MarketListing, recordId, currentPrice, itemName);
-            }
-            
-            Gui.TogglePlayerWindow(Player, GuiWindowType.PriceSelection);
+            var index = NuiGetEventArrayIndex();
+            var recordId = _itemIds[index];
+            var currentPrice = _itemPrices[index];
+            var itemName = ItemNames[index];
+            var payload = new PriceSelectionPayload(GuiWindowType.MarketListing, recordId, currentPrice, itemName);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.PriceSelection, payload);
         };
 
         public void ChangePrice(string recordId, int price)
@@ -367,5 +385,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsShopTillEnabled = false;
             ShopTill = "Shop Till: 0 cr";
         };
+
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System;
 using SWLOR.Game.Server.Core;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -116,7 +115,6 @@ namespace SWLOR.Game.Server.Service
             // any enmity lists already.
             if (enemyList.Count <= 0)
                 ExecuteScript("enmity_acquired", creature);
-                Console.WriteLine("enemity is firing");
 
             // Enemy isn't on the creature's list. Add it now.
             if (!enemyList.Contains(enemy))

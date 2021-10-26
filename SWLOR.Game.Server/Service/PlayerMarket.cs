@@ -4,6 +4,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -149,6 +150,90 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A market category type to place the item in.</returns>
         public static MarketCategoryType GetItemMarketCategory(uint item)
         {
+            var baseItemType = GetBaseItemType(item);
+            var tag = GetTag(item);
+
+            // Weapon Classes
+            if (Item.VibrobladeBaseItemTypes.Contains(baseItemType))
+                return MarketCategoryType.Vibroblade;
+            if (Item.FinesseVibrobladeBaseItemTypes.Contains(baseItemType))
+                return MarketCategoryType.FinesseVibroblade;
+            if (Item.HeavyVibrobladeBaseItemTypes.Contains(baseItemType))
+                return MarketCategoryType.HeavyVibroblade;
+            if (Item.PolearmBaseItemTypes.Contains(baseItemType))
+                return MarketCategoryType.Polearm;
+            if (Item.StaffBaseItemTypes.Contains(baseItemType))
+                return MarketCategoryType.Staff;
+            if (Item.PistolBaseItemTypes.Contains(baseItemType))
+                return MarketCategoryType.Pistol;
+            if (Item.ThrowingWeaponBaseItemTypes.Contains(baseItemType))
+                return MarketCategoryType.Throwing;
+            if (Item.RifleBaseItemTypes.Contains(baseItemType))
+                return MarketCategoryType.Rifle;
+
+            // Universal armor classes
+            switch (baseItemType)
+            {
+                // Universal Armor
+                case BaseItem.LargeShield:
+                case BaseItem.SmallShield:
+                case BaseItem.TowerShield:
+                    return MarketCategoryType.Shield;
+                case BaseItem.Cloak:
+                    return MarketCategoryType.Cloak;
+                case BaseItem.Belt:
+                    return MarketCategoryType.Belt;
+                case BaseItem.Ring:
+                    return MarketCategoryType.Ring;
+                case BaseItem.Amulet:
+                    return MarketCategoryType.Necklace;
+            }
+
+            // Armor classes
+            var armorType = Item.GetArmorType(item);
+            if (armorType == ArmorType.Heavy)
+            {
+                switch (baseItemType)
+                {
+                    case BaseItem.Helmet:
+                        return MarketCategoryType.Helmet;
+                    case BaseItem.Gloves:
+                    case BaseItem.Bracer:
+                        return MarketCategoryType.Bracer;
+                    case BaseItem.Boots:
+                        return MarketCategoryType.Legging;
+                    case BaseItem.Armor:
+                        return MarketCategoryType.Breastplate;
+                }
+            }
+            else if (armorType == ArmorType.Light)
+            {
+                switch (baseItemType)
+                {
+                    case BaseItem.Helmet:
+                        return MarketCategoryType.Cap;
+                    case BaseItem.Gloves:
+                    case BaseItem.Bracer:
+                        return MarketCategoryType.Glove;
+                    case BaseItem.Boots:
+                        return MarketCategoryType.Boot;
+                    case BaseItem.Armor:
+                        return MarketCategoryType.Tunic;
+                }
+            }
+
+            // Recipes
+            if (Craft.IsItemRecipe(item))
+                return MarketCategoryType.Recipe;
+            // Components
+            if (Craft.IsItemComponent(item))
+                return MarketCategoryType.Components;
+
+            // Ship Deeds
+            if (Space.IsItemShip(item))
+                return MarketCategoryType.Starship;
+            if (Space.IsItemShipModule(item))
+                return MarketCategoryType.StarshipParts;
 
             return MarketCategoryType.Miscellaneous;
         }

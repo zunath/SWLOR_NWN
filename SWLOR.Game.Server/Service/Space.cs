@@ -8,7 +8,6 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -19,14 +18,17 @@ namespace SWLOR.Game.Server.Service
     {
         public const int MaxRegisteredShips = 10;
 
-        private static readonly Dictionary<string, ShipDetail> _ships = new Dictionary<string, ShipDetail>();
-        private static readonly Dictionary<string, ShipModuleDetail> _shipModules = new Dictionary<string, ShipModuleDetail>();
-        private static readonly Dictionary<string, SpaceObjectDetail> _spaceObjects = new Dictionary<string, SpaceObjectDetail>();
+        private static readonly Dictionary<string, ShipDetail> _ships = new();
+        private static readonly Dictionary<string, ShipModuleDetail> _shipModules = new();
+        private static readonly Dictionary<string, SpaceObjectDetail> _spaceObjects = new();
         
-        private static readonly Dictionary<uint, ShipStatus> _shipNPCs = new Dictionary<uint, ShipStatus>();
-        private static readonly Dictionary<uint, ShipStatus> _spaceObjectInstances = new Dictionary<uint, ShipStatus>();
+        private static readonly Dictionary<uint, ShipStatus> _shipNPCs = new();
+        private static readonly Dictionary<uint, ShipStatus> _spaceObjectInstances = new();
 
         public static Dictionary<FeatType, ShipModuleFeat> ShipModuleFeats { get; } = ShipModuleFeat.GetAll();
+
+        private static readonly HashSet<string> _shipItemResrefs = new();
+        private static readonly HashSet<string> _shipModuleItemTags = new();
 
         /// <summary>
         /// When the module loads, cache all space data into memory.
@@ -62,6 +64,9 @@ namespace SWLOR.Game.Server.Service
                 foreach (var (shipType, shipDetail) in ships)
                 {
                     _ships.Add(shipType, shipDetail);
+
+                    if (!_shipItemResrefs.Contains(shipDetail.ItemResref))
+                        _shipItemResrefs.Add(shipDetail.ItemResref);
                 }
             }
         }
@@ -90,6 +95,9 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     _shipModules.Add(moduleType, moduleDetail);
+
+                    if (!_shipModuleItemTags.Contains(moduleType))
+                        _shipModuleItemTags.Add(moduleType);
                 }
             }
         }
@@ -153,6 +161,28 @@ namespace SWLOR.Game.Server.Service
         public static bool IsRegisteredShipModule(string itemTag)
         {
             return _shipModules.ContainsKey(itemTag);
+        }
+
+        /// <summary>
+        /// Determines whether an item is a ship deed.
+        /// </summary>
+        /// <param name="item">The item to check</param>
+        /// <returns>true if item is a ship deed, false otherwise</returns>
+        public static bool IsItemShip(uint item)
+        {
+            var resref = GetResRef(item);
+            return _shipItemResrefs.Contains(resref);
+        }
+
+        /// <summary>
+        /// Determines whether an item is a ship module.
+        /// </summary>
+        /// <param name="item">The item to check</param>
+        /// <returns>true if item is a ship module, false otherwise</returns>
+        public static bool IsItemShipModule(uint item)
+        {
+            var tag = GetTag(item);
+            return _shipModuleItemTags.Contains(tag);
         }
 
         /// <summary>

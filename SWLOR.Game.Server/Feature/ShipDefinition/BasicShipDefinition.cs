@@ -21,10 +21,10 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
         private void LightFreighter()
         {
             _builder.Create("ShipDeedLightFreighter")
+                .ItemResref("sdeed_freighter")
                 .Name("Light Freighter")
                 .Appearance(AppearanceType.RepublicForay)
                 .RequirePerk(PerkType.Starships, 1)
-                .ItemResref("sdeed_freighter")
                 .MaxArmor(20)
                 .MaxCapacitor(20)
                 .MaxShield(20)

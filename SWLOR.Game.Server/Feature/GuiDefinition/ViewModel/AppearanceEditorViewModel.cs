@@ -540,7 +540,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 throw new ArgumentOutOfRangeException(nameof(SelectedItemTypeIndex));
             }
-            
+
+            if (selectedPartId <= -1)
+                return;
 
             var (partNames, partSelected) = GetPartLists(partIds);
 

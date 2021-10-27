@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         {
             var player = OBJECT_SELF;
             var area = GetArea(player);
-            string targetAreaTag = GetLocalString(player, "spdr_hook_t_tag");
+            var targetAreaTag = GetLocalString(player, "spdr_hook_t_tag");
             var targetArea = GetObjectByTag(targetAreaTag);
 
             if (GetPhenoType(player) == PhenoType.SpeederBike && GetIsAreaInterior(targetArea))

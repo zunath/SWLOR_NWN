@@ -90,12 +90,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public GuiBindingList<string> ItemMarkets
-        {
-            get => Get<GuiBindingList<string>>();
-            set => Set(value);
-        }
-
         public GuiBindingList<string> ItemNames
         {
             get => Get<GuiBindingList<string>>();
@@ -180,7 +174,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _itemIds.Clear();
             _itemPrices.Clear();
             var itemIconResrefs = new GuiBindingList<string>();
-            var itemMarkets = new GuiBindingList<string>();
             var itemNames = new GuiBindingList<string>();
             var itemPriceNames = new GuiBindingList<string>();
             var itemSellerNames = new GuiBindingList<string>();
@@ -191,7 +184,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _itemIds.Add(record.ItemId);
                 _itemPrices.Add(record.Price);
                 itemIconResrefs.Add(record.IconResref);
-                itemMarkets.Add($"  {record.MarketName}");
                 itemNames.Add($"{record.Quantity}x {record.Name}");
                 itemPriceNames.Add($"{record.Price} cr");
                 itemSellerNames.Add(record.SellerName);
@@ -199,7 +191,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             ItemIconResrefs = itemIconResrefs;
-            ItemMarkets = itemMarkets;
             ItemNames = itemNames;
             ItemPriceNames = itemPriceNames;
             ItemSellerNames = itemSellerNames;
@@ -326,7 +317,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _itemIds.RemoveAt(index);
                 _itemPrices.RemoveAt(index);
                 ItemIconResrefs.RemoveAt(index);
-                ItemMarkets.RemoveAt(index);
                 ItemNames.RemoveAt(index);
                 ItemPriceNames.RemoveAt(index);
                 ItemSellerNames.RemoveAt(index);

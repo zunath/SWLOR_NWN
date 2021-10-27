@@ -52,12 +52,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public GuiBindingList<string> ItemMarkets
-        {
-            get => Get<GuiBindingList<string>>();
-            set => Set(value);
-        }
-
         public GuiBindingList<string> ItemNames
         {
             get => Get<GuiBindingList<string>>();
@@ -98,7 +92,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadData()
         {
             var itemIconResrefs = new GuiBindingList<string>();
-            var itemMarkets = new GuiBindingList<string>();
             var itemNames = new GuiBindingList<string>();
             var itemPriceNames = new GuiBindingList<string>();
             var itemListed = new GuiBindingList<bool>();
@@ -125,7 +118,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 _itemIds.Add(record.ItemId);
                 itemIconResrefs.Add(record.IconResref);
-                itemMarkets.Add(record.MarketName);
                 itemNames.Add($"{record.Quantity}x {record.Name}");
                 _itemPrices.Add(record.Price);
                 itemPriceNames.Add($"{record.Price} cr");
@@ -137,7 +129,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             UpdateItemCount();
 
             ItemIconResrefs = itemIconResrefs;
-            ItemMarkets = itemMarkets;
             ItemNames = itemNames;
             ItemPriceNames = itemPriceNames;
             ItemListed = itemListed;
@@ -236,7 +227,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _itemIds.Add(listing.ItemId);
             ItemIconResrefs.Add(listing.IconResref);
-            ItemMarkets.Add(listing.MarketName);
             ItemNames.Add($"{listing.Quantity}x {listing.Name}");
             _itemPrices.Add(listing.Price);
             ItemPriceNames.Add($"{listing.Price} cr");
@@ -272,7 +262,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 _itemIds.RemoveAt(index);
                 ItemIconResrefs.RemoveAt(index);
-                ItemMarkets.RemoveAt(index);
                 ItemNames.RemoveAt(index);
                 _itemPrices.RemoveAt(index);
                 ItemPriceNames.RemoveAt(index);

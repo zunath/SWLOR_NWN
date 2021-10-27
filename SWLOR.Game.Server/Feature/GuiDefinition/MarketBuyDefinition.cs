@@ -97,17 +97,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                                     template.AddCell(cell =>
                                     {
-                                        cell.SetWidth(140f);
-                                        cell.SetIsVariable(false);
-
-                                        cell.AddLabel()
-                                            .BindText(model => model.ItemMarkets)
-                                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                            .BindTooltip(model => model.ItemMarkets);
-                                    });
-
-                                    template.AddCell(cell =>
-                                    {
                                         cell.SetIsVariable(false);
                                         cell.SetWidth(120f);
 

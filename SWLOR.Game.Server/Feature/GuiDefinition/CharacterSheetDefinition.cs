@@ -287,61 +287,115 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(row =>
                     {
-                        row.AddButton()
-                            .SetText("Skills")
-                            .SetHeight(32f)
-                            .SetWidth(100f)
-                            .BindOnClicked(model => model.OnClickSkills());
-                        row.AddButton()
-                            .SetText("Perks")
-                            .SetHeight(32f)
-                            .SetWidth(100f)
-                            .BindOnClicked(model => model.OnClickPerks());
+                        row.AddSpacer();
                     });
 
                     col.AddRow(row =>
                     {
-                        row.AddButton()
-                            .SetText("Quests")
-                            .SetHeight(32f)
-                            .SetWidth(100f)
-                            .BindOnClicked(model => model.OnClickQuests());
-                        row.AddButton()
-                            .SetText("Appearance")
-                            .SetHeight(32f)
-                            .SetWidth(100f)
-                            .BindOnClicked(model => model.OnClickAppearance());
+                        row.AddSpacer();
                     });
 
                     col.AddRow(row =>
                     {
-                        row.AddButton()
-                            .SetText("Recipes")
-                            .SetHeight(32f)
-                            .SetWidth(100f)
-                            .BindOnClicked(model => model.OnClickRecipes());
-                        row.AddButton()
-                            .SetText("Key Items")
-                            .SetHeight(32f)
-                            .SetWidth(100f)
-                            .BindOnClicked(model => model.OnClickKeyItems());
+                        row.AddSpacer();
                     });
 
                     col.AddRow(row =>
                     {
-                        row.AddButton()
-                            .SetText("Achievements")
-                            .SetHeight(32f)
-                            .SetWidth(100f)
-                            .BindOnClicked(model => model.OnClickAchievements());
-                        row.AddButton()
-                            .SetText("Settings")
-                            .SetHeight(32f)
-                            .SetWidth(100f)
-                            .BindOnClicked(model => model.OnClickSettings());
+                        row.AddSpacer();
                     });
 
-                });
+                })
+                
+                .AddColumn(col =>
+                {
+                    col.AddRow(row =>
+                    {
+                        row.AddGroup(group =>
+                        {
+                            group.AddColumn(col2 =>
+                            {
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddButton()
+                                        .SetText("Skills")
+                                        .SetHeight(32f)
+                                        .SetWidth(100f)
+                                        .BindOnClicked(model => model.OnClickSkills());
+                                });
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddButton()
+                                        .SetText("Perks")
+                                        .SetHeight(32f)
+                                        .SetWidth(100f)
+                                        .BindOnClicked(model => model.OnClickPerks());
+                                });
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddButton()
+                                        .SetText("Quests")
+                                        .SetHeight(32f)
+                                        .SetWidth(100f)
+                                        .BindOnClicked(model => model.OnClickQuests());
+                                });
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddButton()
+                                        .SetText("Appearance")
+                                        .SetHeight(32f)
+                                        .SetWidth(100f)
+                                        .BindOnClicked(model => model.OnClickAppearance());
+                                });
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddButton()
+                                        .SetText("Recipes")
+                                        .SetHeight(32f)
+                                        .SetWidth(100f)
+                                        .BindOnClicked(model => model.OnClickRecipes());
+                                });
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddButton()
+                                        .SetText("Key Items")
+                                        .SetHeight(32f)
+                                        .SetWidth(100f)
+                                        .BindOnClicked(model => model.OnClickKeyItems());
+                                });
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddButton()
+                                        .SetText("Achievements")
+                                        .SetHeight(32f)
+                                        .SetWidth(100f)
+                                        .BindOnClicked(model => model.OnClickAchievements());
+                                });
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddButton()
+                                        .SetText("Notes")
+                                        .SetHeight(32f)
+                                        .SetWidth(100f)
+                                        .BindOnClicked(model => model.OnClickNotes());
+                                });
+                                col2.AddRow(row2 =>
+                                {
+                                    row2.AddButton()
+                                        .SetText("Settings")
+                                        .SetHeight(32f)
+                                        .SetWidth(100f)
+                                        .BindOnClicked(model => model.OnClickSettings());
+                                });
+                            });
+                            group.SetScrollbars(NuiScrollbars.Y);
+                            group.SetWidth(130f);
+                            group.SetShowBorder(false);
+                        });
+                    });
+                })
+                
+                ;
 
             return _builder.Build();
         }

@@ -174,6 +174,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.Achievements);
         };
 
+        public Action OnClickNotes() => () =>
+        {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Notes);
+        };
+
         public Action OnClickAppearance() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.AppearanceEditor);

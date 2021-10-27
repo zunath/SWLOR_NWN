@@ -1,1 +1,1 @@
-SWLOR.Tools.Module.Packer.exe p
+SWLOR.CLI.exe -p ./"Star Wars LOR.mod"

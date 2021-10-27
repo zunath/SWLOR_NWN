@@ -67561,6 +67561,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bank Chest"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "bank_chest"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bank Terminal"
                     },
                     "RESREF": {
@@ -67913,17 +67924,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "GTN Market Terminal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "gtn_terminal"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Gun Turret"
                     },
                     "RESREF": {
@@ -67940,6 +67940,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "hemorgite_vein"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Market Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mkt_hut_term"
                     }
                   },
                   {
@@ -68061,6 +68072,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "spc_asteroid"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala Market Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mkt_mon_term"
                     }
                   },
                   {
@@ -68204,6 +68226,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "house_ext_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Public Persistent Storage"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "public_p_storage"
                     }
                   },
                   {
@@ -68507,6 +68540,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Tatooine Market Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mkt_tat_term"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Taxi Terminal"
                     },
                     "RESREF": {
@@ -68600,6 +68644,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "veldite_vein"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Market Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mkt_visc_term"
                     }
                   },
                   {

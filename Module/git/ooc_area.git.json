@@ -26231,7 +26231,7 @@
           "id": 14717,
           "type": "cexolocstring",
           "value": {
-            "0": "Welcome to Star Wars: Legends of the Old Republic!\n\nWe're extremely happy you've stopped in to try our server out. We'll keep this brief so you can get in-game as quickly as possible.\n\nHere are a few things you should know:\n\n1.) You can press 'R' to access your rest menu. This includes all manner of information about your character.\n\n2.) You can purchase some starting items from the vendor in the northern part of this area.\n\n3.) You can customize your character appearance by using the \"/customize\" chat command. Simply type it without the quotes into chat and a menu will appear.\n\n4.) We log ALL chat messages, including tells, to our database for auditing purposes. By continuing to play here you agree to allow your conversations to be stored.\n\n\nIf you need more information about our unique gameplay please visit our website at http://www.starwarsnwn.com/\n\nIf you need further help please visit our Discord channel: https://discord.gg/MyQAM6m\n\n\nMay the Force be with you!"
+            "0": "Welcome to Star Wars: Legends of the Old Republic!\n\nWe're extremely happy you've stopped in to try our server out. We'll keep this brief so you can get in-game as quickly as possible.\n\nHere are a few things you should know:\n\n1.) Press 'C' or open your character sheet to access important options.\n\n2.) You can purchase some starting items from the vendor in the northern part of this area.\n\n3.) You can customize your character appearance from the 'Appearance' button in your character sheet.\n\n4.) We log ALL chat messages, including tells, to our database for auditing purposes. By continuing to play here you agree to allow your conversations to be stored.\n\n\nIf you need more information about our unique gameplay please visit our website at https://www.starwarsnwn.com/\n\nIf you need further help please visit our Discord channel: https://discord.gg/MyQAM6m\n\n\nMay the Force be with you!"
           }
         },
         "DisarmDC": {
@@ -26564,7 +26564,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "test_window"
+          "value": "test"
         },
         "OnUserDefined": {
           "type": "resref",

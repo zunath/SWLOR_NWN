@@ -21,6 +21,10 @@
     "value": [
       {
         "__struct_id": 0,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
         "Animation": {
           "type": "dword",
           "value": 0
@@ -60,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Item appearance crafting is currently disabled. We will be adding this in a future update. Thanks for your understanding and patience!"
+            "0": "Appearances can be changed from your character sheet. Press 'C' to open the character sheet."
           }
         }
       }
@@ -68,7 +72,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 21
+    "value": 15
   },
   "PreventZoomIn": {
     "type": "byte",
@@ -86,6 +90,10 @@
         "Active": {
           "type": "resref",
           "value": ""
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": []
         },
         "Index": {
           "type": "dword",

@@ -109,7 +109,6 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         public static void AreaTransitionDismount()
         {
             var player = OBJECT_SELF;
-            var area = GetArea(player);
             var targetAreaTag = GetLocalString(player, "spdr_hook_t_tag");
             var targetArea = GetObjectByTag(targetAreaTag);
 

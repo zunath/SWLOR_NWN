@@ -1,4 +1,8 @@
-﻿-- Lightfoil Fixes
+﻿-- Refund Lightsaber Perks
+
+CALL swlor.ADM_RefundPlayerPerk(151);
+
+-- Lightfoil Fixes
 UPDATE CraftBlueprint Set EnhancementSlots = 0 Where ID = 221 AND BaseLevel = 1;
 UPDATE CraftBlueprint Set EnhancementSlots = 0 Where ID = 611 AND BaseLevel = 1;
 UPDATE CraftBlueprint Set SkillID = 22 Where PerkID = 151;
@@ -53,6 +57,9 @@ UPDATE PerkLevelSkillRequirement Set SkillID = 22 WHERE PerkLevelID = 2077 AND R
 UPDATE PerkLevelSkillRequirement Set SkillID = 22 WHERE PerkLevelID = 2078 AND RequiredRank = 40;
 UPDATE PerkLevelSkillRequirement Set SkillID = 22 WHERE PerkLevelID = 2079 AND RequiredRank = 45;
 
+-- Starship Fix
+Update CraftBlueprint Set TertiaryMinimum = 2 WHERE ItemName = 'Starship 2 (Light Escort 1)';
+
 -- Cluster Requirement Decrease
 UPDATE CraftBlueprint Set MainMinimum = 2 Where ItemResref = 'c_cluster_red';
 UPDATE CraftBlueprint Set MainMinimum = 2 Where ItemResref = 'c_cluster_yellow';
@@ -79,7 +86,7 @@ UPDATE CraftBlueprint Set EnhancementSlots = 0 Where SkillID = 17 AND ID = 537;
 
 -- Armorsmithing Core Parts Balance
 UPDATE CraftBlueprint Set MainMinimum = 2 Where SkillID = 13 AND ID = 224;
-UPDATE CraftBlueprint Set MainMinimum = 2 Where SkillID = 13 AND ID = 22;
+UPDATE CraftBlueprint Set MainMinimum = 2 Where SkillID = 13 AND ID = 225;
 
 UPDATE CraftBlueprint Set BaseLevel = 0 Where SkillID = 13 AND ID = 223;
 UPDATE CraftBlueprint Set BaseLevel = 0 Where SkillID = 13 AND ID = 224;
@@ -90,7 +97,7 @@ UPDATE CraftBlueprint Set BaseLevel = 1 Where SkillID = 13 AND ID = 228;
 UPDATE CraftBlueprint Set BaseLevel = 1 Where SkillID = 13 AND ID = 229;
 
 -- Add Melee Tuskens
-INSERT INTO swlor.SpawnObject (ID, SpawnID, Resref, Weight, SpawnRule, NPCGroupID, BehaviourScript, DeathVFXID, AIFlags)
+INSERT INTO SpawnObject (ID, SpawnID, Resref, Weight, SpawnRule, NPCGroupID, BehaviourScript, DeathVFXID, AIFlags)
 VALUES (111, 46, 'tusken_melee', 50,'', 27, 'StandardBehaviour', 0, 7);
 
 -- Add Sand Worm

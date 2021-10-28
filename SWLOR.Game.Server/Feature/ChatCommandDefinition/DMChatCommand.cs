@@ -169,6 +169,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             ResetAbilityRecastTimers();
             AdjustFactionStanding();
             GetFactionStanding();
+            RestartServer();
             
             return _builder.Build();
         }

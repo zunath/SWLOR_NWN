@@ -6,6 +6,9 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Creature
         None,
         Lizard,
         Bone,
-        Devil
+        Devil,
+        SwoopBike,
+        SpeederBike,
+        LandSpeeder,
     }
 }

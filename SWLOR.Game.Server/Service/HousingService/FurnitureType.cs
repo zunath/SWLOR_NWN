@@ -218,7 +218,186 @@ namespace SWLOR.Game.Server.Service.HousingService
         ChairShell = 124,
         [Furniture("Couch, Wood, Yellow", "couch_wood", "", true)]
         CouchWoodYellow = 125,
-
+        [Furniture("Weapon Rack, Wall Mounted", "swlorweaponrack", "", true)]
+        WeaponRackWallMounted = 126,
+        [Furniture("Statue, Twi'lek", "statue_twilek", "", true)]
+        StatueTwilek = 127,
+        [Furniture("Chair, Chancellor", "chair_chancellor", "", true)]
+        ChairChancellor = 128,
+        [Furniture("Statue, Robed Woman", "statue_woman", "", true)]
+        StatueRobedWoman = 129,
+        [Furniture("Armchair, High  Back (Orange)", "_mdrn_pl_chair09", "", true)]
+        ArmchairHighBackOrange = 130,
+        [Furniture("Armchair, High  Back (Blue)", "_mdrn_pl_chair10", "", true)]
+        ArmchairHighBackBlue = 131,
+        [Furniture("Bench", "_mdrn_pl_df_chb", "", true)]
+        Bench = 132,
+        [Furniture("Banner, Wall, Lizard", "_mdrn_pl_bannr03", "", true)]
+        BannerWallLizard = 133,
+        [Furniture("Bathtub ", "_mdrn_pl_bathtb1 ", "", true)]
+        Bathtub = 134,
+        [Furniture("Bed, High Back (Black/Grey) ", "_mdrn_pl_beddbgr", "", true)]
+        BedHighBackBlackGrey = 135,
+        [Furniture("Bed, High Back (Blue)", "_mdrn_pl_bedsgbl", "", true)]
+        BedHighBackBlue = 136,
+        [Furniture("Bed, Medical/Exam", "_mdrn_pl_bmdcl", "", true)]
+        BedMedicalExam = 137,
+        [Furniture("Bookshelf, Pedestal (White)", "_mdrn_pl_bookcs5", "", true)]
+        BookshelfPedestalWhite = 138,
+        [Furniture("Cabinet, Curved (Grey/White)", "_mdrn_pl_cabint3", "", true)]
+        CabinetCurvedGreyWhite = 139,
+        [Furniture("Bed, Side Table", "_mdrn_pl_bedmode", "", true)]
+        BedSideTable = 140,
+        [Furniture("Bed, Low", "_mdrn_pl_beddbsc", "", true)]
+        BedLow = 141,
+        [Furniture("Banner, Standing", "_mdrn_pl_bannr04", "", true)]
+        BannerStanding = 142,
+        [Furniture("Chair, Crew (Grey)", "_mdrn_pl_chrgren", "", true)]
+        ChairCrewGrey = 143,
+        [Furniture("Chair, Open Frame (Brown)", "_mdrn_pl_chair32", "", true)]
+        ChairOpenFrameBrown = 144,
+        [Furniture("Chair, Pedestal /w Arms", "_mdrn_pl_chairbl", "", true)]
+        ChairPedestalWithArms = 145,
+        [Furniture("Chair, Pedestal, Padded (Red)", "_mdrn_pl_chairpr", "", true)]
+        ChairPedestalPaddedRed = 146,
+        [Furniture("Chair, Pedestal, Panel", "_mdrn_pl_chair31", "", true)]
+        ChairPedestalPanel = 147,
+        [Furniture("Console, Floor Mounted (Blue Screens)", "_mdrn_pl_cons001", "", true)]
+        ConsoleFloorMountedBlueScreens = 148,
+        [Furniture("Console, Floor Mounted (Green Screens)", "_mdrn_pl_conso04", "", true)]
+        ConsoleFloorMountedGreenScreens = 149,
+        [Furniture("Cot /w Table", "_mdrn_pl_cotsf", "", true)]
+        CotWithTable = 150,
+        [Furniture("Desk, Control Board Inlay", "_mdrn_pl_df_dscb", "", true)]
+        DeskControlBoardInlay = 151,
+        [Furniture("Desk, Control Center", "_mdrn_pl_conso03", "", true)]
+        DeskControlCenter = 152,
+        [Furniture("Desk, Control Center, Large Screen", "_mdrn_pl_conso27", "", true)]
+        DeskControlCenterLargeScreen = 153,
+        [Furniture("Desk, Control Center, Wide", "_mdrn_pl_conso19", "", true)]
+        DeskControlCenterWide = 154,
+        [Furniture("Desk, Corner /w Terminal", "_mdrn_pl_deskcn1", "", true)]
+        DeskCornerwTerminal = 155,
+        [Furniture("Desk, Information/Control Center", "_mdrn_pl_df_dicc", "", true)]
+        DeskInformationControlCenter = 156,
+        [Furniture("Desk, Wall /w Terminal", "_mdrn_pl_deskter", "", true)]
+        DeskWallwTerminal = 157,
+        [Furniture("Desk, Wall /w Terminal, Wide", "_mdrn_pl_desktew", "", true)]
+        DeskWallwTerminalWide = 158,
+        [Furniture("Work Station, Droid Repair", "_mdrn_pl_conso08", "", true)]
+        WorkStationDroidRepair = 159,
+        [Furniture("Footlocker, Modern (Keyed Entry)", "_mdrn_pl_df_fmke", "", true)]
+        FootlockerModernKeyedEntry = 160,
+        [Furniture("Fountain, Oval", "_mdrn_pl_fountn2", "", true)]
+        FountainOval = 161,
+        [Furniture("Holo Display", "_mdrn_pl_holod01", "", true)]
+        HoloDisplay = 162,
+        [Furniture("Holo Display 2", "_mdrn_pl_holod03", "", true)]
+        HoloDisplay2 = 163,
+        [Furniture("Holo Display 4", "_mdrn_pl_holod05", "", true)]
+        HoloDisplay4 = 164,
+        [Furniture("Holo Display 5", "_mdrn_pl_holod06", "", true)]
+        HoloDisplay5 = 165,
+        [Furniture("Holo Projector 1", "_mdrn_pl_holoco2", "", true)]
+        HoloProjector1 = 166,
+        [Furniture("Holo Projector 2", "_mdrn_pl_holobas", "", true)]
+        HoloProjector2 = 167,
+        [Furniture("Instrument Panel, Large Monitor (Technical Data)", "_mdrn_pl_instptd", "", true)]
+        InstrumentPanelLargeMonitorTechnicalData = 168,
+        [Furniture("Kolto Tank (Empty)", "_mdrn_pl_clntnke", "", true)]
+        KoltoTankEmpty = 169,
+        [Furniture("Lamp, Eggs (Pink)", "_mdrn_pl_lampd09", "", true)]
+        LampEggsPink = 170,
+        [Furniture("Lamp, On Poles", "_mdrn_pl_lampd04", "", true)]
+        LampOnPoles = 171,
+        [Furniture("Lantern, Post, Marble", "_mdrn_pl_lamp4", "", true)]
+        LanternPostMarble = 172,
+        [Furniture("Locker, Metal Trapezoid", "_mdrn_pl_rustedl", "", true)]
+        LockerMetalTrapezoid = 173,
+        [Furniture("Mirror (Small)", "_mdrn_pl_mirror1", "", true)]
+        MirrorSmall = 174,
+        [Furniture("Monitor, Wall, Logo Display (Blue)", "_mdrn_pl_screend", "", true)]
+        MonitorWallLogoDisplayBlue = 175,
+        [Furniture("Ornament, Solar System", "_mdrn_pl_ornamnt", "", true)]
+        OrnamentSolarSystem = 176,
+        [Furniture("Ottoman, Decorated (Black)", "_mdrn_pl_ottomn2", "", true)]
+        OttomanDecoratedBlack = 177,
+        [Furniture("Pipes, Conduit (with Power Controls)", "_mdrn_pl_df_pcpc", "", true)]
+        PipesConduitwithPowerControls = 178,
+        [Furniture("Cylinder, Cross Top", "_mdrn_pl_conta38", "", true)]
+        CylinderCrossTop = 179,
+        [Furniture("Pot, Bush, Clipped", "_mdrn_pl_flowrp2", "", true)]
+        PotBushClipped = 180,
+        [Furniture("Pot, Bush, Flowers", "_mdrn_pl_flowrby", "", true)]
+        PotBushFlowers = 181,
+        [Furniture("Pot, Bush, Tall", "_mdrn_pl_flowrpi", "", true)]
+        PotBushTall = 182,
+        [Furniture("Pot, Clay Urn", "_mdrn_pl_pottery", "", true)]
+        PotClayUrn = 183,
+        [Furniture("Pot, Flower, Daisy", "_mdrn_pl_flowpt1", "", true)]
+        PotFlowerDaisy = 184,
+        [Furniture("Pot, Flower, Yellow", "_mdrn_pl_flowpt2", "", true)]
+        PotFlowerYellow = 185,
+        [Furniture("Pot, Long Leaf 1", "_mdrn_pl_plant09", "", true)]
+        PotLongLeaf1 = 186,
+        [Furniture("Pot, Plant, Aloa", "_mdrn_pl_flowspk", "", true)]
+        PotPlantAloa = 187,
+        [Furniture("Pot, Plant, Tropical", "_mdrn_pl_potplnt", "", true)]
+        PotPlantTropical = 188,
+        [Furniture("Pot, Urn, Grecian", "_mdrn_pl_flowr02", "", true)]
+        PotUrnGrecian = 189,
+        [Furniture("Skeleton, Medical Display", "_mdrn_pl_skeleto", "", true)]
+        SkeletonMedicalDisplay = 190,
+        [Furniture("Chest, Trapezoid (White)", "_mdrn_pl_conta14", "", true)]
+        ChestTrapezoidWhite = 191,
+        [Furniture("Space Suit (Tan)", "_mdrn_pl_spcest1", "", true)]
+        SpaceSuitTan = 192,
+        [Furniture("Specimen Tube (Alien)", "_mdrn_pl_alntbea", "", true)]
+        SpecimenTubeAlien = 193,
+        [Furniture("Specimen Tube, Empty", "_mdrn_pl_tubeemp", "", true)]
+        SpecimenTubeEmpty = 194,
+        [Furniture("Specimen Tube, Tall", "_mdrn_pl_tube", "", true)]
+        SpecimenTubeTall = 195,
+        [Furniture("Statue, Bust on Column", "_mdrn_pl_bust", "", true)]
+        StatueBustonColumn = 196,
+        [Furniture("Statue, Kneeling Man", "_mdrn_pl_statue1", "", true)]
+        StatueKneelingMan = 197,
+        [Furniture("Statue, Robed Figure /w Staff", "_mdrn_pl_statu11", "", true)]
+        StatueRobedFigurewStaff = 198,
+        [Furniture("Statue, Senator", "_mdrn_pl_statue2", "", true)]
+        StatueSenator = 199,
+        [Furniture("Storage Tank, Hemisphere /w Monitor", "_mdrn_pl_machin1", "", true)]
+        StorageTankHemispherewMonitor = 200,
+        [Furniture("Stuffed Toy, Bantha", "_mdrn_pl_stuffed", "", true)]
+        StuffedToyBantha = 201,
+        [Furniture("Table, Coffee, Elegant (White)", "_mdrn_pl_table10", "", true)]
+        TableCoffeeElegantWhite = 202,
+        [Furniture("Table, Conference, Centre Cloth", "_mdrn_pl_cnfrtbl", "", true)]
+        TableConferenceCentreCloth = 203,
+        [Furniture("Table, Oval, Centre Leg (Dark)", "_mdrn_pl_table15", "", true)]
+        TableOvalCentreLegDark = 204,
+        [Furniture("Table, Oval, Low (Blue)", "_mdrn_pl_tabl001", "", true)]
+        TableOvalLowBlue = 205,
+        [Furniture("Table, Round, Low (Blue)", "_mdrn_pl_table19", "", true)]
+        TableRoundLowBlue = 206,
+        [Furniture("Table, Stone (Blue)", "_mdrn_pl_table24", "", true)]
+        TableStoneBlue = 207,
+        [Furniture("Table, Stone (Brown)", "_mdrn_pl_table23", "", true)]
+        TableStoneBrown = 208,
+        [Furniture("Table, Wall, Oval", "_mdrn_pl_table32", "", true)]
+        TableWallOval = 209,
+        [Furniture("Toilet, White /w Cistern", "_mdrn_pl_toilet", "", true)]
+        ToiletWhitewCistern = 210,
+        [Furniture("Wall Light, Curved", "_mdrn_pl_lights4", "", true)]
+        WallLightCurved = 211,
+        [Furniture("Wall Light, Octagon", "_mdrn_pl_lights6", "", true)]
+        WallLightOctagon = 212,
+        [Furniture("Wardrobe, Curved (White)", "_mdrn_pl_armoir3", "", true)]
+        WardrobeCurvedWhite = 213,
+        [Furniture("Washbasin, Lever Faucet", "_mdrn_pl_sinka", "", true)]
+        WashbasinLeverFaucet = 214,
+        [Furniture("Weapon Rack", "_mdrn_pl_weaprck", "", true)]
+        WeaponRack = 215,
     }
 
     public class FurnitureAttribute : Attribute

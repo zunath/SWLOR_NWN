@@ -111,8 +111,13 @@ namespace SWLOR.Game.Server.Service
             // Retrieve the creature's list of associated enemies.
             var enemyList = _creatureToEnemies.ContainsKey(creature) ? _creatureToEnemies[creature] : new List<uint>();
 
+            // Fire off an event if this creature isn't currently on
+            // any enmity lists already.
+            if (enemyList.Count <= 0)
+                ExecuteScript("enmity_acquired", creature);
+
             // Enemy isn't on the creature's list. Add it now.
-            if(!enemyList.Contains(enemy))
+            if (!enemyList.Contains(enemy))
                 enemyList.Add(enemy);
 
             // Enemy doesn't have any tables yet.

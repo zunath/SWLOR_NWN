@@ -139,6 +139,18 @@ namespace SWLOR.Game.Server.Service
                 : _playerWindows[playerId][windowType];
             var viewModel = playerWindow.ViewModel;
 
+            // Player moved more than 5 meters away from the tether.
+            // Automatically close the window.
+            if (GetIsObjectValid(viewModel.TetherObject))
+            {
+                if (GetDistanceBetween(player, viewModel.TetherObject) > 5f)
+                {
+                    TogglePlayerWindow(player, windowType);
+                    SendMessageToPC(player, ColorToken.Red($"You have moved too far away from the {GetName(viewModel.TetherObject)}."));
+                    return;
+                }
+            }
+
             // Note: This section has the possibility of being slow.
             // If it is, look into building the methods and caching them at the time of window creation.
             var methodInfo = eventGroup[eventType];
@@ -213,7 +225,12 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to toggle the window for.</param>
         /// <param name="type">The type of window to toggle.</param>
         /// <param name="payload">An optional payload to pass to the view model.</param>
-        public static void TogglePlayerWindow(uint player, GuiWindowType type, GuiPayloadBase payload = null)
+        /// <param name="tetherObject">The object the window is tethered to. If specified, the window will automatically close if the player moves more than 5 meters away from it.</param>
+        public static void TogglePlayerWindow(
+            uint player, 
+            GuiWindowType type, 
+            GuiPayloadBase payload = null, 
+            uint tetherObject = OBJECT_INVALID)
         {
             var playerId = GetObjectUUID(player);
             var template = _windowTemplates[type];
@@ -226,7 +243,7 @@ namespace SWLOR.Game.Server.Service
                 //Console.WriteLine(JsonDump(template.Window));
 
                 playerWindow.WindowToken = NuiCreate(player, template.Window, template.WindowId);
-                playerWindow.ViewModel.Bind(player, playerWindow.WindowToken, template.InitialGeometry, type, payload);
+                playerWindow.ViewModel.Bind(player, playerWindow.WindowToken, template.InitialGeometry, type, payload, tetherObject);
             }
             // Otherwise the window must already be open. Close it.
             else
@@ -261,7 +278,7 @@ namespace SWLOR.Game.Server.Service
             var template = _windowTemplates[GuiWindowType.Modal];
             var parentWindow = _playerWindows[playerId][parentType];
             playerModal.WindowToken = NuiCreate(player, template.Window, modalWindowId);
-            playerModal.ViewModel.Bind(player, playerModal.WindowToken, parentWindow.ViewModel.Geometry, parentType, null);
+            playerModal.ViewModel.Bind(player, playerModal.WindowToken, parentWindow.ViewModel.Geometry, parentType, null, parentWindow.ViewModel.TetherObject);
         }
 
         /// <summary>

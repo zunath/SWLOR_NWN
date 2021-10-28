@@ -5,6 +5,13 @@ namespace SWLOR.Game.Server.Service.GuiService
     public interface IGuiViewModel
     {
         /// <summary>
+        /// The object the window is tethered to.
+        /// If the player moves more than 5 meters away from this object,
+        /// the window will close automatically.
+        /// </summary>
+        public uint TetherObject { get; }
+
+        /// <summary>
         /// The window geometry. This is automatically bound for all windows.
         /// </summary>
         public GuiRectangle Geometry { get; set; }
@@ -17,7 +24,13 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <param name="initialGeometry">The initial geometry to use.</param>
         /// <param name="type">The type of window in use.</param>
         /// <param name="payload">The initial payload passed in by the caller</param>
-        void Bind(uint player, int windowToken, GuiRectangle initialGeometry, GuiWindowType type, GuiPayloadBase payload);
+        /// <param name="tetherObject">The object to tether the window to.</param>
+        void Bind(uint player, 
+            int windowToken, 
+            GuiRectangle initialGeometry, 
+            GuiWindowType type, 
+            GuiPayloadBase payload,
+            uint tetherObject);
 
         /// <summary>
         /// Handles updating the view model with changes received from the player's client.

@@ -14,6 +14,8 @@ namespace SWLOR.Game.Server.Service.GuiService
         where TDerived: GuiViewModelBase<TDerived, TPayload>
         where TPayload: GuiPayloadBase
     {
+        public uint TetherObject { get; private set; }
+
         private class PropertyDetail
         {
             public object Value { get; set; }
@@ -160,16 +162,19 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <param name="initialGeometry">The initial geometry to use in the event the window dimensions aren't set.</param>
         /// <param name="type">The type of window.</param>
         /// <param name="payload">The payload sent in by the caller.</param>
+        /// <param name="tetherObject">The object to tether the window to.</param>
         public void Bind(
             uint player, 
             int windowToken, 
             GuiRectangle initialGeometry, 
             GuiWindowType type,
-            GuiPayloadBase payload)
+            GuiPayloadBase payload,
+            uint tetherObject)
         {
             Player = player;
             WindowToken = windowToken;
             WindowType = type;
+            TetherObject = tetherObject;
 
             if (Geometry.X == 0.0f &&
                 Geometry.Y == 0.0f &&

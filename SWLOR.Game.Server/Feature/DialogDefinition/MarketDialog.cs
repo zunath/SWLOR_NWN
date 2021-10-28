@@ -38,13 +38,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.AddResponse("Buy", () =>
             {
-                Gui.TogglePlayerWindow(player, GuiWindowType.MarketBuying, new MarketPayload(regionType));
+                Gui.TogglePlayerWindow(player, GuiWindowType.MarketBuying, new MarketPayload(regionType), terminal);
                 EndConversation();
             });
 
             page.AddResponse("Sell", () =>
             {
-                Gui.TogglePlayerWindow(player, GuiWindowType.MarketListing, new MarketPayload(regionType));
+                Gui.TogglePlayerWindow(player, GuiWindowType.MarketListing, new MarketPayload(regionType), terminal);
                 EndConversation();
             });
         }

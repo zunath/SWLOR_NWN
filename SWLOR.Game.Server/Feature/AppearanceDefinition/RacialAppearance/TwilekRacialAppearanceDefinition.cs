@@ -3,6 +3,6 @@
     public class TwilekRacialAppearanceDefinition: RacialAppearanceBaseDefinition
     {
         public override int[] MaleHeads { get; } = { 115 };
-        public override int[] FemaleHeads { get; } = { 139, 144, 145, };
+        public override int[] FemaleHeads { get; } = { 139, 144, 145, 205, 206, 207, 208, 209 };
     }
 }

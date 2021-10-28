@@ -20297,6 +20297,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Statue, Robed Woman"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "statue_woman"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Statue, Senator"
                     },
                     "RESREF": {
@@ -20313,6 +20324,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_statue3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Statue, Twi'lek"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "statue_twilek"
                     }
                   },
                   {
@@ -25632,6 +25654,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Weapon Rack, Wall Mounted"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "swlorweaponrack"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Work Station, Droid Repair"
                     },
                     "RESREF": {
@@ -26978,6 +27011,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_chair36"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Chair, Chancellor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "statue_twilek001"
                     }
                   },
                   {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Entity;
+using Discord;
+using Discord.Webhook;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
@@ -36,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 })
                 .Action((user, target, location, args) =>
                 {
-                    string message = string.Empty;
+                    var message = string.Empty;
 
                     foreach (var arg in args)
                     {
@@ -48,26 +49,82 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         SendMessageToPC(user, "Your message was too long. Please shorten it to no longer than 1000 characters and resubmit the bug. For reference, your message was: \"" + message + "\"");
                         return;
                     }
-                    var isPlayer = GetIsPC(user);
                     var area = GetArea(user);
-                    var areaResref = GetResRef(area);
                     var position = GetPosition(user);
-                    var orientation = GetFacing(user);
 
-                    BugReport report = new BugReport
+                    var url = Environment.GetEnvironmentVariable("SWLOR_BUG_WEBHOOK_URL");
+                    
+                    if (string.IsNullOrWhiteSpace(url))
                     {
-                        SenderPlayerId = isPlayer ? (Guid?)Guid.Parse(GetObjectUUID(user)) : null,
-                        CDKey = GetPCPublicCDKey(user),
-                        Text = message,
-                        AreaResref = areaResref,
-                        SenderLocationX = position.X,
-                        SenderLocationY = position.Y,
-                        SenderLocationZ = position.X,
-                        SenderLocationOrientation = orientation
-                    };
+                        SendMessageToPC(user, ColorToken.Red("ERROR: Unable to send bug report because server admin has not specified the 'SWLOR_BUG_WEBHOOK_HOST' and 'SWLOR_BUG_WEBHOOK_PATH' environment variables."));
+                        return;
+                    }
 
-                    var key = Guid.NewGuid().ToString();
-                    DB.Set(key, report);
+                    var authorName = $"{GetName(user)} ({GetPCPlayerName(user)}) [{GetPCPublicCDKey(user)}]";
+                    var areaName = GetName(area);
+                    var areaTag = GetTag(area);
+                    var areaResref = GetResRef(area);
+                    var positionGroup = $"({position.X}, {position.Y}, {position.X})";
+                    var dateReported = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
+                    var playerId = GetObjectUUID(user);
+
+                    // todo: this must be made async
+                    using (var client = new DiscordWebhookClient(url))
+                    {
+                        var embed = new EmbedBuilder
+                        {
+                            Title = "Bug Report",
+                            Description = message,
+                            Author = new EmbedAuthorBuilder
+                            {
+                                Name = authorName
+                            },
+                            Color = Color.Red,
+                            Fields = new List<EmbedFieldBuilder>
+                            {
+                                new()
+                                {
+                                    IsInline = true,
+                                    Name = "Area Name",
+                                    Value = areaName
+                                },
+                                new()
+                                {
+                                    IsInline = true,
+                                    Name = "Area Tag",
+                                    Value = areaTag
+                                },
+                                new()
+                                {
+                                    IsInline = true,
+                                    Name = "Area Resref",
+                                    Value = areaResref
+                                },
+                                new()
+                                {
+                                    IsInline = true,
+                                    Name = "Position",
+                                    Value = positionGroup
+                                },
+                                new()
+                                {
+                                    IsInline = true,
+                                    Name = "Date Reported",
+                                    Value = dateReported,
+                                },
+                                new()
+                                {
+                                    IsInline = true,
+                                    Name = "Player ID",
+                                    Value = playerId
+                                },
+                            }
+                        };
+
+                        
+                        client.SendMessageAsync(string.Empty, embeds: new[] { embed.Build() });
+                    }
+
                     SendMessageToPC(user, "Bug report submitted! Thank you for your report.");
                 });
         }

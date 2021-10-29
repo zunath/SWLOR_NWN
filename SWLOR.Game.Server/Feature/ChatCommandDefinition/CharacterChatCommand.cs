@@ -206,7 +206,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     // Player hasn't submitted or time has elapsed
                     if (isFirstSubmission)
                     {
-                        SetLocalString(user, "DELETE_CHARACTER_LAST_SUBMISSION", DateTime.UtcNow.ToString(CultureInfo.InvariantCulture));
+                        SetLocalString(user, "DELETE_CHARACTER_LAST_SUBMISSION", DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
                         FloatingTextStringOnCreature("Please confirm your deletion by entering another \"/delete <CD Key>\" command within 30 seconds.", user, false);
                     }
                     else

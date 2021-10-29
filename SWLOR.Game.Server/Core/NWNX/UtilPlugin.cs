@@ -30,6 +30,13 @@ namespace SWLOR.Game.Server.Core.NWNX
             return Internal.NativeFunctions.nwnxPopInt();
         }
 
+        public static int GetModuleMTime()
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetModuleMtime");
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
+
         public static string GetCustomToken(int customTokenNumber)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "customTokenNumber");
@@ -38,20 +45,28 @@ namespace SWLOR.Game.Server.Core.NWNX
             return Internal.NativeFunctions.nwnxPopString();
         }
 
-        public static Core.ItemProperty EffectToItemProperty(Core.Effect effect)
+        public static ItemProperty EffectToItemProperty(Effect effect)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "EffectTypeCast");
             Internal.NativeFunctions.nwnxPushEffect(effect.Handle);
             Internal.NativeFunctions.nwnxCallFunction();
-            return new Core.ItemProperty(Internal.NativeFunctions.nwnxPopItemProperty());
+            return new ItemProperty(Internal.NativeFunctions.nwnxPopItemProperty());
         }
 
-        public static Core.Effect ItemPropertyToEffect(Core.ItemProperty ip)
+        public static Effect ItemPropertyToEffect(ItemProperty ip)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "EffectTypeCast");
             Internal.NativeFunctions.nwnxPushItemProperty(ip.Handle);
             Internal.NativeFunctions.nwnxCallFunction();
-            return new Core.Effect(Internal.NativeFunctions.nwnxPopEffect());
+            return new Effect(Internal.NativeFunctions.nwnxPopEffect());
+        }
+
+        public static string StripColors(string str)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "StripColors");
+            Internal.NativeFunctions.nwnxPushString(str);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopString();
         }
 
         public static int IsValidResRef(string resRef, int type = (int)ResRefType.Creature)
@@ -61,6 +76,15 @@ namespace SWLOR.Game.Server.Core.NWNX
             Internal.NativeFunctions.nwnxPushString(resRef);
             Internal.NativeFunctions.nwnxCallFunction();
             return Internal.NativeFunctions.nwnxPopInt();
+        }
+
+        public static string GetEnvironmentVariable(string varname)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetEnvironmentVariable");
+            Internal.NativeFunctions.nwnxPushString(varname);
+            Internal.NativeFunctions.nwnxCallFunction();
+
+            return Internal.NativeFunctions.nwnxPopString();
         }
 
         public static int GetMinutesPerHour()

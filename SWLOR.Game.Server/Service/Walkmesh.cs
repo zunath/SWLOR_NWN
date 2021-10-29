@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Area;
+using SWLOR.Game.Server.Entity;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Vector3 = System.Numerics.Vector3;
 
@@ -14,14 +11,14 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Walkmesh
     {
-        private static readonly Dictionary<uint, List<Location>> _walkmeshesByArea = new Dictionary<uint, List<Location>>();
+        private static Dictionary<string, List<Vector3>> _walkmeshesByArea = new();
         private const int AreaBakeStep = 5;
+        private static bool _bakingRan;
 
         /// <summary>
-        /// When the module loads, generate a list of walkable locations in each area.
-        /// These locations can be used to spawn objects randomly throughout an area.
+        /// When the module content changes, rerun the baking process.
         /// </summary>
-        [NWNEventHandler("mod_load")]
+        [NWNEventHandler("mod_content_chg")]
         public static void LoadWalkmeshes()
         {
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
@@ -29,7 +26,28 @@ namespace SWLOR.Game.Server.Service
                 BakeArea(area);
             }
 
+            var serverConfig = DB.Get<ServerConfiguration>("SWLOR") ?? new ServerConfiguration();
+            serverConfig.WalkmeshesByArea = _walkmeshesByArea;
+            DB.Set("SWLOR", serverConfig);
+
+            _bakingRan = true;
             Console.WriteLine($"Baked {_walkmeshesByArea.Count} areas.");
+        }
+
+        /// <summary>
+        /// When the module loads, retrieve the list of walkable locations from the database.
+        /// These locations can be used to spawn objects randomly throughout an area.
+        /// This only runs if the module content has NOT changed since the last run.
+        /// </summary>
+        [NWNEventHandler("mod_load")]
+        public static void RetrieveWalkmeshes()
+        {
+            if (_bakingRan)
+                return;
+
+            var serverConfig = DB.Get<ServerConfiguration>("SWLOR");
+            _walkmeshesByArea = serverConfig.WalkmeshesByArea;
+            Console.WriteLine($"Loaded {_walkmeshesByArea.Count} area walkmeshes.");
         }
 
         // Area baking process
@@ -37,12 +55,12 @@ namespace SWLOR.Game.Server.Service
         // Each tile is 10x10 meters. The "step" value in the config table determines how many meters we progress before checking for a valid location.
         private static void BakeArea(uint area)
         {
-            _walkmeshesByArea[area] = new List<Location>();
+            var resref = GetResRef(area);
+            _walkmeshesByArea[resref] = new List<Vector3>();
 
             const float MinDistance = 6.0f;
             var width = GetAreaSize(Dimension.Width, area);
             var height = GetAreaSize(Dimension.Height, area);
-            var areaResref = GetResRef(area);
 
             var arraySizeX = width * (10 / AreaBakeStep);
             var arraySizeY = height * (10 / AreaBakeStep);
@@ -65,13 +83,10 @@ namespace SWLOR.Game.Server.Service
 
                     if (isWalkable)
                     {
-                        var location = Location(
-                            area,
-                            new Vector3(x * AreaBakeStep,
-                                y * AreaBakeStep,
-                                GetGroundHeight(checkLocation)), 
-                            0.0f);
-                        _walkmeshesByArea[area].Add(location);
+                        var position = new Vector3(x * AreaBakeStep,
+                            y * AreaBakeStep,
+                            GetGroundHeight(checkLocation));
+                        _walkmeshesByArea[resref].Add(position);
                     }
                 }
             }
@@ -84,13 +99,17 @@ namespace SWLOR.Game.Server.Service
         /// <returns>A random location within an area.</returns>
         public static Location GetRandomLocation(uint area)
         {
-            if (!_walkmeshesByArea.ContainsKey(area)) return Location(area, Vector3.Zero, 0.0f);
+            var resref = GetResRef(area);
+            if (!_walkmeshesByArea.ContainsKey(resref)) 
+                return Location(area, Vector3.Zero, 0.0f);
 
-            var count = _walkmeshesByArea[area].Count;
-            if (count <= 0) return Location(area, Vector3.Zero, 0.0f);
+            var count = _walkmeshesByArea[resref].Count;
+            if (count <= 0) 
+                return Location(area, Vector3.Zero, 0.0f);
 
             var index = Random.Next(count);
-            return _walkmeshesByArea[area][index];
+            var position = _walkmeshesByArea[resref][index];
+            return Location(area, position, 0.0f);
         }
 
     }

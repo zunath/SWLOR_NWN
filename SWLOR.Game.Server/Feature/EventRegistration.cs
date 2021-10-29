@@ -3,6 +3,8 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
@@ -16,6 +18,8 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("mod_preload")]
         public static void OnModulePreload()
         {
+            var serverConfig = DB.Get<ServerConfiguration>("SWLOR") ?? new ServerConfiguration();
+
             Console.WriteLine("Hooking all module events.");
             HookModuleEvents();
 
@@ -28,8 +32,23 @@ namespace SWLOR.Game.Server.Feature
             Console.WriteLine("Hooking all application-specific events");
             HookApplicationEvents();
 
+            // Module has changed since last run.
+            // Run procedures dependent on the module file changing.
+            if (UtilPlugin.GetModuleMTime() != serverConfig.LastModuleMTime)
+            {
+                Console.WriteLine("Module has changed since last boot. Running module changed event.");
+
+                // DB record must be updated before the event fires, as some
+                // events use the server configuration record.
+                serverConfig.LastModuleMTime = UtilPlugin.GetModuleMTime();
+                DB.Set("SWLOR", serverConfig);
+
+                ExecuteScript("mod_content_chg", GetModule());
+            }
+
             // Fire off the mod_cache event which is used for caching data, before mod_load runs.
             ExecuteScript("mod_cache", GetModule());
+
         }
 
         [NWNEventHandler("mod_heartbeat")]

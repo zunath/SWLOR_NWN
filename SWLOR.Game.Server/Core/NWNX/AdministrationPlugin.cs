@@ -53,12 +53,13 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         // Deletes the player character from the servervault
         // The PC will be immediately booted from the game with a "Delete Character" message
-        public static void DeletePlayerCharacter(uint pc, bool bPreserveBackup)
+        public static void DeletePlayerCharacter(uint pc, bool bPreserveBackup = true, string kickMessage = "")
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "DeletePlayerCharacter");
-            Internal.NativeFunctions.StackPushInteger(bPreserveBackup ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(pc);
-            Internal.NativeFunctions.nwnxCallFunction();
+            // NativeFunction calls don't work for this method and cause a crash. Use the core methods instead.
+            NWNXCore.NWNX_PushArgumentString(kickMessage);
+            NWNXCore.NWNX_PushArgumentInt(bPreserveBackup ? 1 : 0);
+            NWNXCore.NWNX_PushArgumentObject(pc);
+            NWNXCore.NWNX_CallFunction(PLUGIN_NAME, "DeletePlayerCharacter");
         }
 
         /// Ban a given IP - get via GetPCIPAddress()

@@ -216,8 +216,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         entity.IsDeleted = true;
                         DB.Set(playerID, entity);
 
-                        BootPC(user, "Your character has been deleted.");
-                        AdministrationPlugin.DeletePlayerCharacter(user, true);
+                        AdministrationPlugin.DeletePlayerCharacter(user, true, "Your character has been deleted.");
                     }
                 });
         }

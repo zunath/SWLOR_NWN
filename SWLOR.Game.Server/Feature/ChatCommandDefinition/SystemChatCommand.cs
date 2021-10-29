@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Threading.Tasks;
 using Discord;
 using Discord.Webhook;
 using SWLOR.Game.Server.Enumeration;
@@ -31,6 +33,17 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     if (args.Length <= 0 || args[0].Length <= 0)
                     {
                         return "Please enter in a description for the bug.";
+                    }
+
+                    var lastSubmission = GetLocalString(user, "BUG_REPORT_LAST_SUBMISSION");
+                    if (!string.IsNullOrWhiteSpace(lastSubmission))
+                    {
+                        var dateTime = DateTime.ParseExact(lastSubmission, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+
+                        if (DateTime.UtcNow <= dateTime)
+                        {
+                            return "You may only submit one bug report per minute. Please wait and try again.";
+                        }
                     }
 
                     return string.Empty;
@@ -67,64 +80,68 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var positionGroup = $"({position.X}, {position.Y}, {position.X})";
                     var dateReported = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss");
                     var playerId = GetObjectUUID(user);
+                    var nextReportAllowed = DateTime.UtcNow.AddMinutes(1);
 
-                    // todo: this must be made async
-                    using (var client = new DiscordWebhookClient(url))
+                    Task.Run(async () =>
                     {
-                        var embed = new EmbedBuilder
+                        using (var client = new DiscordWebhookClient(url))
                         {
-                            Title = "Bug Report",
-                            Description = message,
-                            Author = new EmbedAuthorBuilder
+                            var embed = new EmbedBuilder
                             {
-                                Name = authorName
-                            },
-                            Color = Color.Red,
-                            Fields = new List<EmbedFieldBuilder>
-                            {
-                                new()
+                                Title = "Bug Report",
+                                Description = message,
+                                Author = new EmbedAuthorBuilder
                                 {
-                                    IsInline = true,
-                                    Name = "Area Name",
-                                    Value = areaName
+                                    Name = authorName
                                 },
-                                new()
+                                Color = Color.Red,
+                                Fields = new List<EmbedFieldBuilder>
                                 {
-                                    IsInline = true,
-                                    Name = "Area Tag",
-                                    Value = areaTag
-                                },
-                                new()
-                                {
-                                    IsInline = true,
-                                    Name = "Area Resref",
-                                    Value = areaResref
-                                },
-                                new()
-                                {
-                                    IsInline = true,
-                                    Name = "Position",
-                                    Value = positionGroup
-                                },
-                                new()
-                                {
-                                    IsInline = true,
-                                    Name = "Date Reported",
-                                    Value = dateReported,
-                                },
-                                new()
-                                {
-                                    IsInline = true,
-                                    Name = "Player ID",
-                                    Value = playerId
-                                },
-                            }
-                        };
+                                    new()
+                                    {
+                                        IsInline = true,
+                                        Name = "Area Name",
+                                        Value = areaName
+                                    },
+                                    new()
+                                    {
+                                        IsInline = true,
+                                        Name = "Area Tag",
+                                        Value = areaTag
+                                    },
+                                    new()
+                                    {
+                                        IsInline = true,
+                                        Name = "Area Resref",
+                                        Value = areaResref
+                                    },
+                                    new()
+                                    {
+                                        IsInline = true,
+                                        Name = "Position",
+                                        Value = positionGroup
+                                    },
+                                    new()
+                                    {
+                                        IsInline = true,
+                                        Name = "Date Reported",
+                                        Value = dateReported,
+                                    },
+                                    new()
+                                    {
+                                        IsInline = true,
+                                        Name = "Player ID",
+                                        Value = playerId
+                                    },
+                                }
+                            };
 
-                        
-                        client.SendMessageAsync(string.Empty, embeds: new[] { embed.Build() });
-                    }
 
+                            await client.SendMessageAsync(string.Empty, embeds: new[] { embed.Build() });
+                        }
+                    });
+                    
+                    SetLocalString(user, "BUG_REPORT_LAST_SUBMISSION", nextReportAllowed.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
                     SendMessageToPC(user, "Bug report submitted! Thank you for your report.");
                 });
         }

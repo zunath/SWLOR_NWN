@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
-            SetHiddenWhenEquipped(item, !dbPlayer.ShowHelmet);
+            SetHiddenWhenEquipped(item, !dbPlayer.Settings.ShowHelmet);
         }
     }
 }

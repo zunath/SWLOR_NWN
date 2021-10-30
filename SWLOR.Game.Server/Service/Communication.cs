@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
             
-            SetLocalBool(player, "DISPLAY_HOLONET", dbPlayer.IsHolonetEnabled);
+            SetLocalBool(player, "DISPLAY_HOLONET", dbPlayer.Settings.IsHolonetEnabled);
         }
         
 
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(sender);
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                if (!dbPlayer.IsHolonetEnabled)
+                if (!dbPlayer.Settings.IsHolonetEnabled)
                 {
                     SendMessageToPC(sender, "You have disabled the holonet and cannot send this message.");
                     return;

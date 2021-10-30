@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             _builder.CreateWindow(GuiWindowType.Settings)
                 .SetIsResizable(true)
-                .SetInitialGeometry(0, 0, 545f, 295.5f)
+                .SetInitialGeometry(0, 0, 345f, 214f)
                 .SetTitle("Settings")
                 
                 .AddColumn(col =>
@@ -26,7 +26,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindIsChecked(model => model.DisplayAchievementNotification);
 
                         row.AddSpacer();
-                    });
+                    })
+                        .SetHeight(30f);
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+
+                        row.AddCheckBox()
+                            .SetText("Show Helmet")
+                            .SetTooltip("Shows or hides your helmet graphic.")
+                            .BindIsChecked(model => model.DisplayHelmet);
+
+                        row.AddSpacer();
+                    })
+                        .SetHeight(30f);
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+
+                        row.AddCheckBox()
+                            .SetText("Show Holonet")
+                            .SetTooltip("Shows or hides the Holonet (aka Shout) channel in your chat box.")
+                            .BindIsChecked(model => model.DisplayHolonetChannel);
+
+                        row.AddSpacer();
+                    })
+                        .SetHeight(30f);
 
                     col.AddRow(row =>
                     {

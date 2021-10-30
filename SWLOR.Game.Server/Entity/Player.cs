@@ -49,9 +49,7 @@ namespace SWLOR.Game.Server.Entity
                 {CombatDamageType.Ice, 0}
             };   
 
-            ShowHelmet = true;
             IsUsingDualPistolMode = false;
-            IsHolonetEnabled = true;
             EmoteStyle = EmoteStyle.Regular;
             MovementRate = 1.0f;
             MapPins = new Dictionary<string, List<MapPin>>();
@@ -113,12 +111,10 @@ namespace SWLOR.Game.Server.Entity
         public int NumberPerkResetsAvailable { get; set; }
         [Indexed]
         public bool IsDeleted { get; set; }
-        public bool ShowHelmet { get; set; }
         public bool IsUsingDualPistolMode { get; set; }
         public DateTime? DatePerkRefundAvailable { get; set; }
         [Indexed]
         public CharacterType CharacterType { get; set; }
-        public bool IsHolonetEnabled { get; set; }
         public EmoteStyle EmoteStyle { get; set; }
         public string SerializedHotBar { get; set; }
         public Guid ActiveShipId { get; set; }
@@ -186,10 +182,14 @@ namespace SWLOR.Game.Server.Entity
     {
         public int? BattleThemeId { get; set; }
         public bool DisplayAchievementNotification { get; set; }
+        public bool IsHolonetEnabled { get; set; }
+        public bool ShowHelmet { get; set; }
 
         public PlayerSettings()
         {
             DisplayAchievementNotification = true;
+            ShowHelmet = true;
+            IsHolonetEnabled = true;
         }
     }
 

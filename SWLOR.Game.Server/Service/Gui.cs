@@ -300,20 +300,25 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Skips the character sheet panel open event and shows the SWLOR character sheet instead.
+        /// Skips the default NWN window open events and shows the SWLOR windows instead.
+        /// Applies to the Journal and Character Sheet.
         /// </summary>
         [NWNEventHandler("mod_gui_event")]
-        public static void CharacterSheetGui()
+        public static void ReplaceNWNGuis()
         {
             var player = GetLastGuiEventPlayer();
             var type = GetLastGuiEventType();
             if (type != GuiEventType.DisabledPanelAttemptOpen) return;
 
             var panelType = (GuiPanel)GetLastGuiEventInteger();
-            if (panelType != GuiPanel.CharacterSheet)
-                return;
-
-            TogglePlayerWindow(player, GuiWindowType.CharacterSheet);
+            if (panelType == GuiPanel.CharacterSheet)
+            {
+                TogglePlayerWindow(player, GuiWindowType.CharacterSheet);
+            }
+            else if (panelType == GuiPanel.Journal)
+            {
+                TogglePlayerWindow(player, GuiWindowType.Quests);
+            }
         }
 
         /// <summary>

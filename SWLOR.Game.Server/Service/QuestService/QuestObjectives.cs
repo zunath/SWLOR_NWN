@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Service.QuestService
         void Initialize(uint player, string questId);
         void Advance(uint player, string questId);
         bool IsComplete(uint player, string questId);
+        string GetCurrentStateText(uint player, string questId);
     }
 
     public class CollectItemObjective : IQuestObjective
@@ -76,6 +77,18 @@ namespace SWLOR.Game.Server.Service.QuestService
 
             return true;
         }
+
+        public string GetCurrentStateText(uint player, string questId)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (!dbPlayer.Quests.ContainsKey(questId))
+                return "N/A";
+
+            var numberRemaining = dbPlayer.Quests[questId].ItemProgresses[_resref];
+            var itemName = Cache.GetItemNameByResref(_resref);
+            return $"{_quantity - numberRemaining} / {_quantity} {itemName}";
+        }
     }
 
     public class KillTargetObjective : IQuestObjective
@@ -141,6 +154,19 @@ namespace SWLOR.Game.Server.Service.QuestService
             }
 
             return true;
+        }
+
+        public string GetCurrentStateText(uint player, string questId)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (!dbPlayer.Quests.ContainsKey(questId))
+                return "N/A";
+
+            var npcGroup = Quest.GetNPCGroup(Group);
+            var numberRemaining = dbPlayer.Quests[questId].KillProgresses[Group];
+            
+            return $"{_amount - numberRemaining} / {_amount} {npcGroup.Name}";
         }
     }
 }

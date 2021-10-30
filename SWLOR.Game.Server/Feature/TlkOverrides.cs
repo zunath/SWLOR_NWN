@@ -59,6 +59,9 @@ namespace SWLOR.Game.Server.Feature
 
         private static void OverrideMenuNames()
         {
+            // Journal - List as Quests
+            SetTlkOverride(7037, "Quests");
+
             // Spell Book - List as Unused
             SetTlkOverride(7038, "Unused");
         }

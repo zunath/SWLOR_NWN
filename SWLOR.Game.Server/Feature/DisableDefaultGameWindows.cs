@@ -20,6 +20,9 @@ namespace SWLOR.Game.Server.Feature
 
             // Character Sheet - A NUI replacement is used
             SetGuiPanelDisabled(player, GuiPanel.CharacterSheet, true);
+
+            // Journal - A NUI replacement is used
+            SetGuiPanelDisabled(player, GuiPanel.Journal, true);
         }
     }
 }

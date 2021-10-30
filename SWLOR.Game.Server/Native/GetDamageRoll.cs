@@ -2,11 +2,13 @@
 using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
-using EquipmentSlot = SWLOR.Game.Server.Core.NWScript.Enum.Item.EquipmentSlot;
+using EquipmentSlot = NWN.Native.API.EquipmentSlot;
+using ObjectType = NWN.Native.API.ObjectType;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -15,7 +17,6 @@ namespace SWLOR.Game.Server.Native
         internal delegate int GetDamageRollHook(void* thisPtr, void* pTarget, int bOffHand, int bCritical, int bSneakAttack, int bDeathAttack, int bForceMax);
         // ReSharper disable once NotAccessedField.Local
         private static GetDamageRollHook _callOriginal;
-
 
         [NWNEventHandler("mod_load")]
         public static void RegisterHook()
@@ -28,34 +29,40 @@ namespace SWLOR.Game.Server.Native
         [UnmanagedCallersOnly]
         private static int OnGetDamageRoll(void* thisPtr, void* pTarget, int bOffHand, int bCritical, int bSneakAttack, int bDeathAttack, int bForceMax)
         {
-            var creatureStats = CNWSCreatureStats.FromPointer(thisPtr);
-            var creature = CNWSCreature.FromPointer(creatureStats.m_pBaseCreature);
+            var attackerStats = CNWSCreatureStats.FromPointer(thisPtr);
+            var attacker = CNWSCreature.FromPointer(attackerStats.m_pBaseCreature);
             var targetObject = CNWSObject.FromPointer(pTarget);
-            var damageFlags = creatureStats.m_pBaseCreature.GetDamageFlags();
-            
+            var damageFlags = attackerStats.m_pBaseCreature.GetDamageFlags();
+
             var dmg = 0f;
-            var attackAttribute = creatureStats.m_nStrengthBase < 10 ? 0 : creatureStats.m_nStrengthModifier;
+            var attackAttribute = attackerStats.m_nStrengthBase < 10 ? 0 : attackerStats.m_nStrengthModifier;
             var damage = 0;
-            
+            var specializationDMGBonus = 0f;
+
             // Calculate attacker's DMG
-            if (creature != null)
+            if (attacker != null)
             {
                 var weapon = bOffHand == 1
-                    ? creature.m_pInventory.GetItemInSlot((uint) EquipmentSlot.LeftHand)
-                    : creature.m_pInventory.GetItemInSlot((uint) EquipmentSlot.RightHand);
+                    ? attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand)
+                    : attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
+
+                if (weapon != null)
+                {
+                    specializationDMGBonus = CalculateSpecializationDMG(attacker, weapon);
+                }
 
                 // Nothing equipped - check gloves.
                 if (weapon == null)
                 {
-                    weapon = creature.m_pInventory.GetItemInSlot((uint) EquipmentSlot.Arms);
+                    weapon = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.Arms);
                 }
 
                 // Gloves not equipped. Check claws
                 if (weapon == null)
                 {
                     weapon = bOffHand == 1
-                        ? creature.m_pInventory.GetItemInSlot((uint) EquipmentSlot.CreatureWeaponLeft)
-                        : creature.m_pInventory.GetItemInSlot((uint) EquipmentSlot.CreatureWeaponRight);
+                        ? attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.CreatureWeaponLeft)
+                        : attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.CreatureWeaponRight);
                 }
 
                 if (weapon != null)
@@ -75,16 +82,18 @@ namespace SWLOR.Game.Server.Native
 
                     // Ranged weapons use Perception (NWN's DEX)
                     // All others use Might (NWN's STR)
-                    if (weapon.m_nBaseItem == (uint) BaseItem.Rifle ||
-                        weapon.m_nBaseItem == (uint) BaseItem.Pistol ||
-                        weapon.m_nBaseItem == (uint) BaseItem.Cannon ||
-                        weapon.m_nBaseItem == (uint) BaseItem.Longbow ||
-                        weapon.m_nBaseItem == (uint) BaseItem.Sling)
+                    if (weapon.m_nBaseItem == (uint)BaseItem.Rifle ||
+                        weapon.m_nBaseItem == (uint)BaseItem.Pistol ||
+                        weapon.m_nBaseItem == (uint)BaseItem.Cannon ||
+                        weapon.m_nBaseItem == (uint)BaseItem.Longbow ||
+                        weapon.m_nBaseItem == (uint)BaseItem.Sling)
                     {
-                        attackAttribute = creatureStats.m_nDexterityBase < 10 ? 0 : creatureStats.m_nDexterityModifier;
+                        attackAttribute = attackerStats.m_nDexterityBase < 10 ? 0 : attackerStats.m_nDexterityModifier;
                     }
                 }
             }
+
+            dmg += specializationDMGBonus;
 
             // Safety check - DMG minimum is 0.5
             if (dmg < 0.5f)
@@ -93,12 +102,12 @@ namespace SWLOR.Game.Server.Native
             }
 
             // Combat Mode - Power Attack (+1.0 DMG)
-            if (creature?.m_nCombatMode == 2) // 2 = Power Attack
+            if (attacker?.m_nCombatMode == 2) // 2 = Power Attack
             {
                 dmg += 1.0f;
             }
             // Combat Mode - Improved Power Attack (+2.5 DMG)
-            else if (creature?.m_nCombatMode == 3) // 3 = Improved Power Attack
+            else if (attacker?.m_nCombatMode == 3) // 3 = Improved Power Attack
             {
                 dmg += 2.5f;
             }
@@ -107,7 +116,7 @@ namespace SWLOR.Game.Server.Native
             if (targetObject != null && targetObject.m_nObjectType == (int)ObjectType.Creature)
             {
                 var target = CNWSCreature.FromPointer(pTarget);
-                var damagePower = creatureStats.m_pBaseCreature.CalculateDamagePower(target, bOffHand);
+                var damagePower = attackerStats.m_pBaseCreature.CalculateDamagePower(target, bOffHand);
                 float vitality = target.m_pStats.m_nConstitutionModifier;
                 var defense = Stat.GetDefenseNative(target, CombatDamageType.Physical);
 
@@ -120,14 +129,105 @@ namespace SWLOR.Game.Server.Native
                 }
 
                 // Apply NWN mechanics to damage reduction
-                damage = target.DoDamageImmunity(creature, damage, damageFlags, 0, 1);
-                damage = target.DoDamageResistance(creature, damage, damageFlags, 0, 1, 1);
-                damage = target.DoDamageReduction(creature, damage, damagePower, 0, 1);
+                damage = target.DoDamageImmunity(attacker, damage, damageFlags, 0, 1);
+                damage = target.DoDamageResistance(attacker, damage, damageFlags, 0, 1, 1);
+                damage = target.DoDamageReduction(attacker, damage, damagePower, 0, 1);
                 if (damage < 0)
                     damage = 0;
             }
 
             return damage;
+        }
+
+        private static float CalculateSpecializationDMG(CNWSCreature attacker, CNWSItem weapon)
+        {
+            var baseItemType = (BaseItem)weapon.m_nBaseItem;
+
+            // Vibroblades
+            if (Item.VibrobladeBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.WeaponSpecializationVibroblades) == 1)
+            {
+                return 0.5f;
+            }
+
+            // Finesse Vibroblades
+            if (Item.FinesseVibrobladeBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.WeaponSpecializationFinesseVibroblades) == 1)
+            {
+                return 0.5f;
+            }
+
+            // Lightsabers
+            if (Item.LightsaberBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.WeaponSpecializationLightsabers) == 1)
+            {
+                return 0.5f;
+            }
+
+            // Heavy Vibroblades
+            if (Item.HeavyVibrobladeBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.WeaponSpecializationHeavyVibroblades) == 1)
+            {
+                return 0.5f;
+            }
+
+            // Polearms
+            if (Item.PolearmBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.WeaponSpecializationPolearms) == 1)
+            {
+                return 0.5f;
+            }
+
+            // Twin Blades
+            if (Item.TwinBladeBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.WeaponSpecializationTwinBlades) == 1)
+            {
+                return 0.5f;
+            }
+
+            // Saberstaffs
+            if (Item.SaberstaffBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.WeaponSpecializationSaberstaffs) == 1)
+            {
+                return 0.5f;
+            }
+
+            // Katars
+            if (Item.KatarBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.WeaponSpecializationKatars) == 1)
+            {
+                return 0.5f;
+            }
+
+            // Staves
+            if (Item.StaffBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.WeaponSpecialization_Staff) == 1)
+            {
+                return 0.5f;
+            }
+
+            // Pistols
+            if (Item.PistolBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.WeaponSpecializationPistol) == 1)
+            {
+                return 0.5f;
+            }
+
+            // Throwing Weapons
+            if (Item.ThrowingWeaponBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.WeaponSpecializationThrowingWeapons) == 1)
+            {
+                return 0.5f;
+            }
+
+            // Rifles
+            if (Item.RifleBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.WeaponSpecializationRifles) == 1)
+            {
+                return 0.5f;
+            }
+
+            return 0.0f;
         }
     }
 }

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -285,10 +286,10 @@ namespace SWLOR.Game.Server.Service
             if (!IsPlayerInSpaceMode(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Entity.Player>(playerId);
-            var dbPlayerShip = dbPlayer.Ships[dbPlayer.ActiveShipId];
+            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayerShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
 
-            foreach (var (feat, shipModule) in dbPlayerShip.HighPowerModules)
+            foreach (var (feat, shipModule) in dbPlayerShip.Status.HighPowerModules)
             {
                 var shipModuleDetail = _shipModules[shipModule.ItemTag];
                 ApplyShipModuleFeat(player, shipModuleDetail, feat);
@@ -305,8 +306,8 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return false;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Entity.Player>(playerId) ?? new Entity.Player();
-            return dbPlayer.ActiveShipId != Guid.Empty;
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
+            return dbPlayer.ActiveShipId != Guid.Empty.ToString();
         }
 
         /// <summary>
@@ -314,12 +315,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player entering space mode.</param>
         /// <param name="shipId">The Id of the ship to enter space with.</param>
-        public static void EnterSpaceMode(uint player, Guid shipId)
+        public static void EnterSpaceMode(uint player, string shipId)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Entity.Player>(playerId);
-            var dbPlayerShip = dbPlayer.Ships[shipId];
-            var shipDetail = _ships[dbPlayerShip.ItemTag];
+            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayerShip = DB.Get<PlayerShip>(shipId);
+            var shipDetail = _ships[dbPlayerShip.Status.ItemTag];
 
             // Update player appearance to match that of the ship.
             SetCreatureAppearanceType(player, shipDetail.Appearance);
@@ -329,7 +330,8 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.ActiveShipId = shipId;
 
             // Load ship modules as feats.
-            var allModules = dbPlayerShip.HighPowerModules.Concat(dbPlayerShip.LowPowerModules).ToList();
+            var allModules = dbPlayerShip.Status.HighPowerModules
+                .Concat(dbPlayerShip.Status.LowPowerModules).ToList();
 
             foreach(var (feat, shipModule) in allModules)
             {
@@ -355,10 +357,11 @@ namespace SWLOR.Game.Server.Service
                     PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
                 }
 
-                dbPlayer.Ships[shipId].SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
+                dbPlayerShip.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
             }
 
             DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayerShip.Id.ToString(), dbPlayerShip);
         }
 
         /// <summary>
@@ -388,16 +391,17 @@ namespace SWLOR.Game.Server.Service
         public static void ExitSpaceMode(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Entity.Player>(playerId);
+            var dbPlayer = DB.Get<Player>(playerId);
             var shipId = dbPlayer.ActiveShipId;
+            var dbShip = DB.Get<PlayerShip>(shipId);
 
             ClearCurrentTarget(player);
             SetCreatureAppearanceType(player, dbPlayer.OriginalAppearanceType);
             Enmity.RemoveCreatureEnmity(player);
 
             // Save the ship's hot bar and unassign the active ship Id.
-            dbPlayer.Ships[shipId].SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
-            dbPlayer.ActiveShipId = Guid.Empty;
+            dbShip.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
+            dbPlayer.ActiveShipId = Guid.Empty.ToString();
 
             // Remove all module feats from the player.
             foreach (var (feat, _) in ShipModuleFeats)
@@ -419,6 +423,7 @@ namespace SWLOR.Game.Server.Service
             }
             
             DB.Set(playerId, dbPlayer);
+            DB.Set(shipId, dbShip);
         }
 
         /// <summary>
@@ -430,7 +435,7 @@ namespace SWLOR.Game.Server.Service
         public static bool CanPlayerUseShip(uint player, ShipStatus playerShip)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Entity.Player>(playerId);
+            var dbPlayer = DB.Get<Player>(playerId);
             
             var shipDetails = _ships[playerShip.ItemTag];
 
@@ -466,7 +471,7 @@ namespace SWLOR.Game.Server.Service
             if (!_shipModules.ContainsKey(itemTag)) return false;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Entity.Player>(playerId);
+            var dbPlayer = DB.Get<Player>(playerId);
             var shipModule = _shipModules[itemTag];
 
             foreach (var (perkType, requiredLevel) in shipModule.RequiredPerks)
@@ -642,17 +647,19 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(activator))
             {
                 var playerId = GetObjectUUID(activator);
-                var dbPlayer = DB.Get<Entity.Player>(playerId);
-                dbPlayer.Ships[dbPlayer.ActiveShipId] = activatorShipStatus;
-
-                DB.Set(playerId, dbPlayer);
+                var dbPlayer = DB.Get<Player>(playerId);
+                var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
+                dbShip.Status = activatorShipStatus;
+                
+                DB.Set(dbShip.Id.ToString(), dbShip);
             }
 
             if (GetIsPC(target))
             {
                 var playerId = GetObjectUUID(target);
-                var dbPlayer = DB.Get<Entity.Player>(playerId);
-                dbPlayer.Ships[dbPlayer.ActiveShipId] = targetShipStatus;
+                var dbPlayer = DB.Get<Player>(playerId);
+                var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
+                dbShip.Status = activatorShipStatus;
 
                 DB.Set(playerId, dbPlayer);
             }
@@ -699,13 +706,13 @@ namespace SWLOR.Game.Server.Service
             if (!IsPlayerInSpaceMode(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Entity.Player>(playerId);
-            var playerShip = dbPlayer.Ships[dbPlayer.ActiveShipId];
+            var dbPlayer = DB.Get<Player>(playerId);
+            var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
 
-            ApplyAutoShipRecovery(playerShip);
+            ApplyAutoShipRecovery(dbShip.Status);
 
             // Update changes
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer.ActiveShipId, dbShip);
         }
 
         /// <summary>
@@ -817,14 +824,14 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(creature))
             {
                 var targetPlayerId = GetObjectUUID(creature);
-                var dbTargetPlayer = DB.Get<Entity.Player>(targetPlayerId);
+                var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
 
-                if (dbTargetPlayer.ActiveShipId == Guid.Empty)
+                if (dbTargetPlayer.ActiveShipId == Guid.Empty.ToString())
                     return null;
 
-                var dbPlayerShip = dbTargetPlayer.Ships[dbTargetPlayer.ActiveShipId];
+                var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
 
-                return dbPlayerShip;
+                return dbPlayerShip?.Status;
             }
             // NPC ship statuses are stored directly in cache so we can return them immediately.
             else
@@ -900,13 +907,13 @@ namespace SWLOR.Game.Server.Service
                 if (GetIsPC(target))
                 {
                     var targetPlayerId = GetObjectUUID(target);
-                    var dbTargetPlayer = DB.Get<Entity.Player>(targetPlayerId);
-                    var dbPlayerShip = dbTargetPlayer.Ships[dbTargetPlayer.ActiveShipId];
+                    var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
+                    var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
 
-                    dbPlayerShip.Shield = targetShipStatus.Shield;
-                    dbPlayerShip.Hull = targetShipStatus.Hull;
+                    dbPlayerShip.Status.Shield = targetShipStatus.Shield;
+                    dbPlayerShip.Status.Hull = targetShipStatus.Hull;
 
-                    DB.Set(targetPlayerId, dbTargetPlayer);
+                    DB.Set(dbPlayerShip.Id.ToString(), dbPlayerShip);
                 }
                 else
                 {
@@ -936,12 +943,12 @@ namespace SWLOR.Game.Server.Service
             {
                 var deathLocation = GetLocation(creature);
                 var playerId = GetObjectUUID(creature);
-                var dbPlayer = DB.Get<Entity.Player>(playerId);
-                var dbPlayerShip = dbPlayer.Ships[dbPlayer.ActiveShipId];
+                var dbPlayer = DB.Get<Player>(playerId);
+                var dbPlayerShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
                 const int ChanceToDropModule = 65;
 
                 // Give a chance to drop each installed module.
-                foreach (var (_, shipModule) in dbPlayerShip.HighPowerModules)
+                foreach (var (_, shipModule) in dbPlayerShip.Status.HighPowerModules)
                 {
                     if (Random.D100(1) <= ChanceToDropModule)
                     {
@@ -951,7 +958,7 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
 
-                foreach (var (_, shipModule) in dbPlayerShip.LowPowerModules)
+                foreach (var (_, shipModule) in dbPlayerShip.Status.LowPowerModules)
                 {
                     if (Random.D100(1) <= ChanceToDropModule)
                     {
@@ -1002,9 +1009,9 @@ namespace SWLOR.Game.Server.Service
                 });
 
                 // Remove the destroyed ship from the player's data.
-                dbPlayer.Ships.Remove(dbPlayer.ActiveShipId);
-                dbPlayer.ActiveShipId = Guid.Empty;
-                dbPlayer.SelectedShipId = Guid.Empty;
+                DB.Delete<PlayerShip>(dbPlayerShip.Id.ToString());
+                dbPlayer.ActiveShipId = Guid.Empty.ToString();
+                dbPlayer.SelectedShipId = Guid.Empty.ToString();
 
                 // Update the changes
                 DB.Set(playerId, dbPlayer);

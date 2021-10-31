@@ -3,9 +3,9 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -122,11 +122,17 @@ namespace SWLOR.Game.Server.Feature
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var playerShipId = dbPlayer.ActiveShipId;
-            var dbPlayerShip = dbPlayer.Ships[playerShipId];
+
+            var query = new DBQuery<PlayerShip>()
+                .AddFieldSearch(nameof(PlayerShip.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(PlayerShip.Id), dbPlayer.ActiveShipId.ToString(), false);
+            var dbPlayerShip = DB.Search(query).FirstOrDefault();
+
+            if (dbPlayerShip == null)
+                throw new Exception($"Could not locate ship Id '{dbPlayer.ActiveShipId}' for player Id '{playerId}'.");
 
             var now = DateTime.UtcNow;
-            var allModules = dbPlayerShip.HighPowerModules.Concat(dbPlayerShip.LowPowerModules).ToList();
+            var allModules = dbPlayerShip.Status.HighPowerModules.Concat(dbPlayerShip.Status.LowPowerModules).ToList();
 
             var numberOfRecasts = 0;
             foreach (var (_, shipModule) in allModules)

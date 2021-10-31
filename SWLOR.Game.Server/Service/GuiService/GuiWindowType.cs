@@ -22,5 +22,6 @@
         ExamineItem = 17,
         Notes = 18,
         DistributeRPXP = 19,
+        ShipManagement = 20
     }
 }

@@ -12,7 +12,6 @@ using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.SpaceService;
 using SWLOR.Game.Server.Service.TaxiService;
 
 namespace SWLOR.Game.Server.Entity
@@ -66,7 +65,6 @@ namespace SWLOR.Game.Server.Entity
             CharacterType = CharacterType.Invalid;
             KeyItems = new Dictionary<KeyItemType, DateTime>();
             Guilds = new Dictionary<GuildType, PlayerGuild>();
-            Ships = new Dictionary<Guid, ShipStatus>();
             Factions = new Dictionary<FactionType, PlayerFactionStanding>();
             TaxiDestinations = new Dictionary<int, List<TaxiDestinationType>>();
             AbilityPointsByLevel = new Dictionary<int, int>();
@@ -120,8 +118,8 @@ namespace SWLOR.Game.Server.Entity
         public CharacterType CharacterType { get; set; }
         public EmoteStyle EmoteStyle { get; set; }
         public string SerializedHotBar { get; set; }
-        public Guid ActiveShipId { get; set; }
-        public Guid SelectedShipId { get; set; }
+        public string ActiveShipId { get; set; }
+        public string SelectedShipId { get; set; }
         public AppearanceType OriginalAppearanceType { get; set; }
         public float MovementRate { get; set; }
         public int AbilityRecastReduction { get; set; }
@@ -141,7 +139,6 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
         public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
-        public Dictionary<Guid, ShipStatus> Ships { get; set; }
         public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }
         public Dictionary<int, List<TaxiDestinationType>> TaxiDestinations { get; set; }
         public Dictionary<int, int> AbilityPointsByLevel { get; set; }

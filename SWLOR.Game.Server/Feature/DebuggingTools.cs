@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.KeyItemService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
@@ -14,10 +15,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("test")]
         public static void OpenMarketListing()
         {
-            Quest.AcceptQuest(GetLastUsedBy(), "selan_request");
-            Quest.AcceptQuest(GetLastUsedBy(), "cz220_smithery");
-            Quest.AcceptQuest(GetLastUsedBy(), "cz220_scavenging");
-            Quest.AcceptQuest(GetLastUsedBy(), "cz220_fabrication");
+            KeyItem.GiveKeyItem(GetLastUsedBy(), KeyItemType.CZ220ShuttlePass);
         }
 
     }

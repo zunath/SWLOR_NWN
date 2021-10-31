@@ -6,6 +6,8 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.FactionService;
+using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.QuestService;
@@ -69,6 +71,7 @@ namespace SWLOR.Game.Server.Entity
             TaxiDestinations = new Dictionary<int, List<TaxiDestinationType>>();
             AbilityPointsByLevel = new Dictionary<int, int>();
             ObjectVisibilities = new Dictionary<string, VisibilityType>();
+            WindowGeometries = new Dictionary<GuiWindowType, GuiRectangle>();
         }
 
 
@@ -144,6 +147,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<int, int> AbilityPointsByLevel { get; set; }
         public Dictionary<string, VisibilityType> ObjectVisibilities { get; set; }
         public Dictionary<CombatDamageType, int> Defenses { get; set; }
+        public Dictionary<GuiWindowType, GuiRectangle> WindowGeometries { get; set; }
     }
 
     public class MapPin

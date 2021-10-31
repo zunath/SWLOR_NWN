@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -27,7 +28,7 @@ namespace SWLOR.Game.Server.Service
         {
             LoadWindowTemplates();
         }
-        
+
         /// <summary>
         /// Loads all of the window definitions, constructs them, and caches the data into memory.
         /// </summary>
@@ -68,7 +69,8 @@ namespace SWLOR.Game.Server.Service
 
             if (_playerWindows.ContainsKey(playerId))
                 return;
-            
+
+            var dbPlayer = DB.Get<Player>(playerId);
             _playerWindows[playerId] = new Dictionary<GuiWindowType, GuiPlayerWindow>();
             _playerModals[playerId] = new Dictionary<GuiWindowType, GuiPlayerWindow>();
 
@@ -76,14 +78,43 @@ namespace SWLOR.Game.Server.Service
             {
                 // Add the window
                 var playerWindow = window.CreatePlayerWindowAction();
-                playerWindow.ViewModel.Geometry = window.InitialGeometry;
+                playerWindow.ViewModel.Geometry = dbPlayer.WindowGeometries.ContainsKey(type)
+                    ? dbPlayer.WindowGeometries[type]
+                    : window.InitialGeometry;
                 _playerWindows[playerId][type] = playerWindow;
 
                 // All windows also get a separate modal window added to the cache.
                 var modalWindow = _windowTemplates[GuiWindowType.Modal].CreatePlayerWindowAction();
-                modalWindow.ViewModel.Geometry = window.InitialGeometry;
+                modalWindow.ViewModel.Geometry = dbPlayer.WindowGeometries.ContainsKey(type)
+                    ? dbPlayer.WindowGeometries[type]
+                    : window.InitialGeometry;
                 _playerModals[playerId][type] = modalWindow;
             }
+        }
+
+        /// <summary>
+        /// When a player exits the server, save the geometry positions of any open windows.
+        /// </summary>
+        [NWNEventHandler("mod_exit")]
+        public static void SavePlayerWindowGeometry()
+        {
+            var player = GetExitingObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            foreach (var (type, _) in _windowTemplates)
+            {
+                if (IsWindowOpen(player, type))
+                {
+                    var window = GetPlayerWindow(player, type);
+                    dbPlayer.WindowGeometries[type] = window.ViewModel.Geometry;
+                }
+            }
+
+            DB.Set(playerId, dbPlayer);
         }
 
         /// <summary>
@@ -98,6 +129,14 @@ namespace SWLOR.Game.Server.Service
                 _elementEvents[elementId] = new Dictionary<string, MethodInfo>();
 
             _elementEvents[elementId][eventName] = eventAction;
+        }
+
+        private static void SaveWindowGeometry(string playerId, GuiWindowType windowType, GuiRectangle geometry)
+        {
+            var dbPlayer = DB.Get<Player>(playerId);
+            dbPlayer.WindowGeometries[windowType] = geometry;
+
+            DB.Set(playerId, dbPlayer);
         }
 
         /// <summary>
@@ -124,20 +163,26 @@ namespace SWLOR.Game.Server.Service
             var eventType = NuiGetEventType();
             var elementId = NuiGetEventElement();
             var eventKey = BuildEventKey(windowId, elementId);
+            var windowType = _windowTypesByKey[windowId];
+            var playerWindow = isModal
+                ? _playerModals[playerId][parentWindowType]
+                : _playerWindows[playerId][windowType];
+            var viewModel = playerWindow.ViewModel;
 
             if (!_elementEvents.ContainsKey(eventKey))
+            {
+                if (eventType == "close" &&
+                    !isModal)
+                {
+                    SaveWindowGeometry(playerId, windowType, viewModel.Geometry);
+                }
                 return;
+            }
 
             var eventGroup = _elementEvents[eventKey];
 
             if (!eventGroup.ContainsKey(eventType))
                 return;
-
-            var windowType = _windowTypesByKey[windowId];
-            var playerWindow = isModal 
-                ? _playerModals[playerId][parentWindowType] 
-                : _playerWindows[playerId][windowType];
-            var viewModel = playerWindow.ViewModel;
 
             // Player moved more than 5 meters away from the tether.
             // Automatically close the window.
@@ -157,6 +202,13 @@ namespace SWLOR.Game.Server.Service
             var method = viewModel.GetType().GetMethod(methodInfo.Name);
             var action = method?.Invoke(playerWindow.ViewModel, null);
             ((Action)action)?.Invoke();
+
+            // If the window was closed, save its geometry 
+            if (eventType == "close" &&
+                !isModal)
+            {
+                SaveWindowGeometry(playerId, windowType, viewModel.Geometry);
+            }
         }
 
         /// <summary>
@@ -177,7 +229,7 @@ namespace SWLOR.Game.Server.Service
 
             if (!_playerWindows.ContainsKey(playerId))
                 return;
-            
+
             var playerWindows = _playerWindows[playerId];
             var windowType = _windowTypesByKey[windowId];
             var playerWindow = playerWindows[windowType];
@@ -227,9 +279,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="payload">An optional payload to pass to the view model.</param>
         /// <param name="tetherObject">The object the window is tethered to. If specified, the window will automatically close if the player moves more than 5 meters away from it.</param>
         public static void TogglePlayerWindow(
-            uint player, 
-            GuiWindowType type, 
-            GuiPayloadBase payload = null, 
+            uint player,
+            GuiWindowType type,
+            GuiPayloadBase payload = null,
             uint tetherObject = OBJECT_INVALID)
         {
             var playerId = GetObjectUUID(player);
@@ -467,8 +519,8 @@ namespace SWLOR.Game.Server.Service
             {
                 Draw(player, top, x, y, anchor, startId++, lifeTime);
             }
-            
-            
+
+
             for (var i = 0; i < height; i++)
             {
                 Draw(player, middle, x, ++y, anchor, startId++, lifeTime);

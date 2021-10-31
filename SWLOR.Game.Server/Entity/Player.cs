@@ -48,8 +48,10 @@ namespace SWLOR.Game.Server.Entity
                 {CombatDamageType.Poison, 0},
                 {CombatDamageType.Electrical, 0},
                 {CombatDamageType.Ice, 0}
-            };   
+            };
 
+            ActiveShipId = Guid.Empty.ToString();
+            SelectedShipId = Guid.Empty.ToString();
             IsUsingDualPistolMode = false;
             EmoteStyle = EmoteStyle.Regular;
             MovementRate = 1.0f;

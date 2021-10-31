@@ -163,6 +163,9 @@ namespace SWLOR.Game.Server.Service
             var eventType = NuiGetEventType();
             var elementId = NuiGetEventElement();
             var eventKey = BuildEventKey(windowId, elementId);
+            if (string.IsNullOrWhiteSpace(windowId))
+                return;
+
             var windowType = _windowTypesByKey[windowId];
             var playerWindow = isModal
                 ? _playerModals[playerId][parentWindowType]

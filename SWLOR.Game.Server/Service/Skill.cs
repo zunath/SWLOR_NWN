@@ -125,6 +125,9 @@ namespace SWLOR.Game.Server.Service
 
             void Apply(int expectedRank, int apLevelMax)
             {
+                if (!dbPlayer.AbilityPointsByLevel.ContainsKey(expectedRank))
+                    dbPlayer.AbilityPointsByLevel[expectedRank] = 0;
+
                 if (rank == expectedRank &&
                     dbPlayer.AbilityPointsByLevel[expectedRank] < apLevelMax)
                 {

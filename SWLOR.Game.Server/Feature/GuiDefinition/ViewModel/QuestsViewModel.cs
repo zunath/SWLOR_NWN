@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        private List<string> _questIds = new List<string>();
+        private readonly List<string> _questIds = new List<string>();
         private int SelectedQuestIndex { get; set; }
 
         public GuiBindingList<string> QuestNames
@@ -106,8 +106,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var (questId, quest) in dbPlayer.Quests)
             {
-                var questDetail = Quest.GetQuestById(questId);
+                // Ignore completed quests.
+                if (quest.DateLastCompleted != null)
+                    continue;
 
+                var questDetail = Quest.GetQuestById(questId);
                 if (!string.IsNullOrWhiteSpace(SearchText))
                 {
                     if (!questDetail.Name.ToLower().Contains(SearchText))
@@ -157,7 +160,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickAbandonQuest() => () =>
         {
+            var questId = _questIds[SelectedQuestIndex];
 
+            ShowModal("Are you sure you wish to abandon this quest?", () =>
+            {
+                Quest.AbandonQuest(Player, questId);
+
+                QuestNames.RemoveAt(SelectedQuestIndex);
+                QuestToggles.RemoveAt(SelectedQuestIndex);
+                ActiveQuestName = "[Select a Quest]";
+                ActiveQuestDescription = "[Select a Quest]";
+                IsAbandonQuestEnabled = false;
+
+                SelectedQuestIndex = -1;
+            });
         };
     }
 }

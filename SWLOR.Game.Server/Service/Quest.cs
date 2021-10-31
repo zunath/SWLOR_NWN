@@ -183,7 +183,12 @@ namespace SWLOR.Game.Server.Service
 
             return _npcsWithKillQuests[npcGroupType];
         }
-            
+
+        public static void AbandonQuest(uint player, string questId)
+        {
+            _quests[questId].Abandon(player);
+        }
+
         /// <summary>
         /// Makes a player accept a quest by the specified Id.
         /// If the quest Id is invalid, an exception will be thrown.

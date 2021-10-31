@@ -183,6 +183,35 @@ namespace SWLOR.Game.Server.Service.QuestService
         }
 
         /// <summary>
+        /// Abandons a quest.
+        /// </summary>
+        /// <param name="player">The player abandoning a quest.</param>
+        public void Abandon(uint player)
+        {
+            if (!GetIsPC(player) || GetIsDM(player)) return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (!dbPlayer.Quests.ContainsKey(QuestId))
+                return;
+
+            // This is a repeatable quest. Mark the completion date to now
+            // so that we don't lose how many times it's been completed.
+            if (dbPlayer.Quests[QuestId].TimesCompleted > 0)
+            {
+                dbPlayer.Quests[QuestId].DateLastCompleted = DateTime.UtcNow;
+            }
+            // This quest hasn't been completed yet. It's safe to remove it completely.
+            else
+            {
+                dbPlayer.Quests.Remove(QuestId);
+            }
+
+            DB.Set(playerId, dbPlayer);
+            SendMessageToPC(player, $"Quest '{Name}' has been abandoned!");
+        }
+
+        /// <summary>
         /// Accepts a quest using the configured settings.
         /// </summary>
         /// <param name="player">The player accepting the quest.</param>

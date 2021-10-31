@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -11,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class SkillsViewModel : GuiViewModelBase<SkillsViewModel, GuiPayloadBase>
     {
-        private readonly List<SkillType> _viewableSkills;
+        private readonly List<SkillType> _viewableSkills = new();
 
         public GuiBindingList<string> SkillNames
         {
@@ -55,6 +56,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<bool> DistributeRPXPButtonEnabled
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<string> DistributeRPXPButtonTooltips
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
         public int SelectedCategoryId
         {
             get => Get<int>();
@@ -73,20 +86,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
             }
         }
-
-
-        public SkillsViewModel()
-        {
-            _viewableSkills = new List<SkillType>();
-            SkillNames = new GuiBindingList<string>();
-            Levels = new GuiBindingList<int>();
-            Titles = new GuiBindingList<string>();
-            Progresses = new GuiBindingList<float>();
-            DecayLockTexts = new GuiBindingList<string>();
-            DecayLockColors = new GuiBindingList<GuiColor>();
-            DecayLockButtonEnabled = new GuiBindingList<bool>();
-        }
-
+        
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             SelectedCategoryId = 0;
@@ -107,7 +107,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var decayLockTexts = new GuiBindingList<string>();
             var decayLockColors = new GuiBindingList<GuiColor>();
             var decayLockButtonEnabled = new GuiBindingList<bool>();
-            
+            var distributeRPXPButtonEnabled = new GuiBindingList<bool>();
+            var distributeRPXPTooltips = new GuiBindingList<string>();
+
             foreach (var (type, skill) in skills)
             {
                 var playerSkill = dbPlayer.Skills[type];
@@ -120,6 +122,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 decayLockTexts.Add(GetDecayLockText(playerSkill.IsLocked, skill.ContributesToSkillCap));
                 decayLockColors.Add(GetDecayLockColor(playerSkill.IsLocked, skill.ContributesToSkillCap));
                 decayLockButtonEnabled.Add(skill.ContributesToSkillCap);
+                distributeRPXPButtonEnabled.Add(dbPlayer.UnallocatedXP > 0);
+                distributeRPXPTooltips.Add($"Distribute RP XP ({dbPlayer.UnallocatedXP})");
             }
 
             SkillNames = skillNames;
@@ -129,6 +133,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DecayLockTexts = decayLockTexts;
             DecayLockColors = decayLockColors;
             DecayLockButtonEnabled = decayLockButtonEnabled;
+            DistributeRPXPButtonEnabled = distributeRPXPButtonEnabled;
+            DistributeRPXPButtonTooltips = distributeRPXPTooltips;
         }
 
         private string GetTitle(int rank)
@@ -161,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private float CalculateProgress(int rank, float xp)
         {
             var nextLevelXP = Skill.GetRequiredXP(rank + 1);
-            return nextLevelXP / xp;
+            return xp / nextLevelXP;
         }
 
         private string GetDecayLockText(bool isLocked, bool contributesToSkillCap)
@@ -197,6 +203,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             DecayLockColors[index] = GetDecayLockColor(isLocked, true);
             DecayLockTexts[index] = GetDecayLockText(isLocked, true);
+        };
+
+        public Action OnClickDistributeRPXP() => () =>
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var index = NuiGetEventArrayIndex();
+            var name = SkillNames[index];
+
+            var payload = new RPXPPayload
+            {
+                MaxRPXP = dbPlayer.UnallocatedXP,
+                Skill = _viewableSkills[index],
+                SkillName = name
+            };
+
+            Gui.TogglePlayerWindow(Player, GuiWindowType.DistributeRPXP, payload);
         };
 
     }

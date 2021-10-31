@@ -60,6 +60,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHorizontalAlign(NuiHorizontalAlign.Center)
                             .SetVerticalAlign(NuiVerticalAlign.Top);
 
+                        row.AddLabel()
+                            .SetText("")
+                            .SetWidth(32f);
+
                         row.SetHeight(20f);
                     });
 
@@ -94,6 +98,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindColor(model => model.DecayLockColors)
                                     .BindOnClicked(model => model.ToggleDecayLock())
                                     .BindIsEnabled(model => model.DecayLockButtonEnabled);
+                            });
+
+                            template.AddCell(cell =>
+                            {
+                                cell.SetIsVariable(false);
+                                cell.SetWidth(32f);
+                                cell.AddButton()
+                                    .SetText("+")
+                                    .BindOnClicked(model => model.OnClickDistributeRPXP())
+                                    .BindIsEnabled(model => model.DistributeRPXPButtonEnabled)
+                                    .BindTooltip(model => model.DistributeRPXPButtonTooltips);
                             });
                         })
                             .BindRowCount(model => model.SkillNames);

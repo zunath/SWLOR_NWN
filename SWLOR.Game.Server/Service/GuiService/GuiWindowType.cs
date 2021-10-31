@@ -20,6 +20,7 @@
         MarketBuying = 15,
         PriceSelection = 16,
         ExamineItem = 17,
-        Notes = 18
+        Notes = 18,
+        DistributeRPXP = 19,
     }
 }

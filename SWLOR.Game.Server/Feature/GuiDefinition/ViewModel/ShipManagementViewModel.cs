@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
@@ -12,10 +13,11 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class ShipManagementViewModel: GuiViewModelBase<ShipManagementViewModel, GuiPayloadBase>
+    public class ShipManagementViewModel : GuiViewModelBase<ShipManagementViewModel, GuiPayloadBase>
     {
-        private static GuiColor _green = new GuiColor(0, 255, 0);
-        private static GuiColor _white = new GuiColor(255, 255, 255);
+        private static readonly GuiColor _green = new GuiColor(0, 255, 0);
+        private static readonly GuiColor _white = new GuiColor(255, 255, 255);
+        private const string _blank = "Blank";
 
         private int SelectedShipIndex { get; set; }
         private int ActiveShipIndex { get; set; }
@@ -476,14 +478,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 HighPower7Tooltip = string.Empty;
                 HighPower8Tooltip = string.Empty;
 
-                HighPower1Resref = string.Empty;
-                HighPower2Resref = string.Empty;
-                HighPower3Resref = string.Empty;
-                HighPower4Resref = string.Empty;
-                HighPower5Resref = string.Empty;
-                HighPower6Resref = string.Empty;
-                HighPower7Resref = string.Empty;
-                HighPower8Resref = string.Empty;
+                HighPower1Resref = _blank;
+                HighPower2Resref = _blank;
+                HighPower3Resref = _blank;
+                HighPower4Resref = _blank;
+                HighPower5Resref = _blank;
+                HighPower6Resref = _blank;
+                HighPower7Resref = _blank;
+                HighPower8Resref = _blank;
 
                 LowPower1Visible = false;
                 LowPower2Visible = false;
@@ -503,14 +505,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LowPower7Tooltip = string.Empty;
                 LowPower8Tooltip = string.Empty;
 
-                LowPower1Resref = string.Empty;
-                LowPower2Resref = string.Empty;
-                LowPower3Resref = string.Empty;
-                LowPower4Resref = string.Empty;
-                LowPower5Resref = string.Empty;
-                LowPower6Resref = string.Empty;
-                LowPower7Resref = string.Empty;
-                LowPower8Resref = string.Empty;
+                LowPower1Resref = _blank;
+                LowPower2Resref = _blank;
+                LowPower3Resref = _blank;
+                LowPower4Resref = _blank;
+                LowPower5Resref = _blank;
+                LowPower6Resref = _blank;
+                LowPower7Resref = _blank;
+                LowPower8Resref = _blank;
 
                 IsMakeActiveEnabled = false;
             }
@@ -519,7 +521,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var shipId = _shipIds[SelectedShipIndex];
                 var ship = DB.Get<PlayerShip>(shipId);
                 var shipDetail = Space.GetShipDetailByItemTag(ship.Status.ItemTag);
-                
+
                 ShipName = ship.Status.Name;
                 ShipType = $"Type: {shipDetail.Name}";
 
@@ -543,6 +545,126 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 HighPower7Visible = shipDetail.HighPowerNodes >= 7;
                 HighPower8Visible = shipDetail.HighPowerNodes >= 8;
 
+                var module = ship.Status.HighPowerModules.ContainsKey(1)
+                    ? ship.Status.HighPowerModules[1]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    HighPower1Resref = detail.Texture;
+                    HighPower1Tooltip = detail.Name;
+                }
+                else
+                {
+                    HighPower1Resref = _blank;
+                    HighPower1Tooltip = string.Empty;
+                }
+
+                module = ship.Status.HighPowerModules.ContainsKey(2)
+                    ? ship.Status.HighPowerModules[2]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    HighPower2Resref = detail.Texture;
+                    HighPower2Tooltip = detail.Name;
+                }
+                else
+                {
+                    HighPower2Resref = _blank;
+                    HighPower2Tooltip = string.Empty;
+                }
+
+                module = ship.Status.HighPowerModules.ContainsKey(3)
+                    ? ship.Status.HighPowerModules[3]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    HighPower3Resref = detail.Texture;
+                    HighPower3Tooltip = detail.Name;
+                }
+                else
+                {
+                    HighPower3Resref = _blank;
+                    HighPower3Tooltip = string.Empty;
+                }
+
+                module = ship.Status.HighPowerModules.ContainsKey(4)
+                    ? ship.Status.HighPowerModules[4]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    HighPower4Resref = detail.Texture;
+                    HighPower4Tooltip = detail.Name;
+                }
+                else
+                {
+                    HighPower4Resref = _blank;
+                    HighPower4Tooltip = string.Empty;
+                }
+
+                module = ship.Status.HighPowerModules.ContainsKey(5)
+                    ? ship.Status.HighPowerModules[5]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    HighPower5Resref = detail.Texture;
+                    HighPower5Tooltip = detail.Name;
+                }
+                else
+                {
+                    HighPower5Resref = _blank;
+                    HighPower5Tooltip = string.Empty;
+                }
+
+                module = ship.Status.HighPowerModules.ContainsKey(6)
+                    ? ship.Status.HighPowerModules[6]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    HighPower6Resref = detail.Texture;
+                    HighPower6Tooltip = detail.Name;
+                }
+                else
+                {
+                    HighPower6Resref = _blank;
+                    HighPower6Tooltip = string.Empty;
+                }
+
+                module = ship.Status.HighPowerModules.ContainsKey(7)
+                    ? ship.Status.HighPowerModules[7]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    HighPower7Resref = detail.Texture;
+                    HighPower7Tooltip = detail.Name;
+                }
+                else
+                {
+                    HighPower7Resref = _blank;
+                    HighPower7Tooltip = string.Empty;
+                }
+
+                module = ship.Status.HighPowerModules.ContainsKey(8)
+                    ? ship.Status.HighPowerModules[8]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    HighPower8Resref = detail.Texture;
+                    HighPower8Tooltip = detail.Name;
+                }
+                else
+                {
+                    HighPower8Resref = _blank;
+                    HighPower8Tooltip = string.Empty;
+                }
+
                 LowPower1Visible = shipDetail.LowPowerNodes >= 1;
                 LowPower2Visible = shipDetail.LowPowerNodes >= 2;
                 LowPower3Visible = shipDetail.LowPowerNodes >= 3;
@@ -552,6 +674,85 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LowPower7Visible = shipDetail.LowPowerNodes >= 7;
                 LowPower8Visible = shipDetail.LowPowerNodes >= 8;
 
+                module = ship.Status.LowPowerModules.ContainsKey(1)
+                    ? ship.Status.LowPowerModules[1]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    LowPower1Resref = detail.Texture;
+                    LowPower1Tooltip = detail.Name;
+                }
+
+                module = ship.Status.LowPowerModules.ContainsKey(2)
+                    ? ship.Status.LowPowerModules[2]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    LowPower2Resref = detail.Texture;
+                    LowPower2Tooltip = detail.Name;
+                }
+
+                module = ship.Status.LowPowerModules.ContainsKey(3)
+                    ? ship.Status.LowPowerModules[3]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    LowPower3Resref = detail.Texture;
+                    LowPower3Tooltip = detail.Name;
+                }
+
+                module = ship.Status.LowPowerModules.ContainsKey(4)
+                    ? ship.Status.LowPowerModules[4]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    LowPower4Resref = detail.Texture;
+                    LowPower4Tooltip = detail.Name;
+                }
+
+                module = ship.Status.LowPowerModules.ContainsKey(5)
+                    ? ship.Status.LowPowerModules[5]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    LowPower5Resref = detail.Texture;
+                    LowPower5Tooltip = detail.Name;
+                }
+
+                module = ship.Status.LowPowerModules.ContainsKey(6)
+                    ? ship.Status.LowPowerModules[6]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    LowPower6Resref = detail.Texture;
+                    LowPower6Tooltip = detail.Name;
+                }
+
+                module = ship.Status.LowPowerModules.ContainsKey(7)
+                    ? ship.Status.LowPowerModules[7]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    LowPower7Resref = detail.Texture;
+                    LowPower7Tooltip = detail.Name;
+                }
+
+                module = ship.Status.LowPowerModules.ContainsKey(8)
+                    ? ship.Status.LowPowerModules[8]
+                    : null;
+                if (module != null)
+                {
+                    var detail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                    LowPower8Resref = detail.Texture;
+                    LowPower8Tooltip = detail.Name;
+                }
 
                 IsMakeActiveEnabled = true;
             }
@@ -576,7 +777,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             LoadShip();
         };
-        
+
         public Action OnClickRegisterShip() => () =>
         {
             Targeting.EnterTargetingMode(Player, ObjectType.Item, item =>
@@ -637,10 +838,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DB.Set(ship.Id.ToString(), ship);
 
                 // Update the UI with the new ship details.
-                ShipCountRegistered = $"Ships: {dbPlayerShips.Count+1} / {Space.MaxRegisteredShips}";
+                ShipCountRegistered = $"Ships: {dbPlayerShips.Count + 1} / {Space.MaxRegisteredShips}";
                 _shipIds.Add(ship.Id.ToString());
                 ShipNames.Add(ship.Status.Name);
                 ShipToggles.Add(false);
+                ShipColors.Add(_white);
                 ToggleRegisterButtons();
 
                 DestroyObject(item);
@@ -684,8 +886,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     _shipIds.RemoveAt(SelectedShipIndex);
                     ShipNames.RemoveAt(SelectedShipIndex);
                     ShipToggles.RemoveAt(SelectedShipIndex);
+                    ShipColors.RemoveAt(SelectedShipIndex);
                     ToggleRegisterButtons();
                     ShipCountRegistered = $"Ships: {_shipIds.Count} / {Space.MaxRegisteredShips}";
+                    SelectedShipIndex = -1;
+                    LoadShip();
 
                     FloatingTextStringOnCreature("Ship unregistered!", Player, false);
                 });
@@ -715,11 +920,162 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         };
 
-        private void ProcessHighPower(int slot)
+        private bool ValidateModuleEquip(PlayerShip dbShip, uint item)
         {
+            var itemTag = GetTag(item);
 
+            // Not a valid module type.
+            if (!Space.IsRegisteredShipModule(itemTag))
+            {
+                SendMessageToPC(Player, "Only starship modules may be installed.");
+                return false;
+            }
+
+            var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
+            var shipDetails = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);
+
+            // No high power nodes available.
+            if (moduleDetails.PowerType == ShipModulePowerType.High &&
+                dbShip.Status.HighPowerModules.Count >= shipDetails.HighPowerNodes)
+            {
+                SendMessageToPC(Player, "No high power nodes are available.");
+                return false;
+            }
+
+            // No low power nodes available.
+            if (moduleDetails.PowerType == ShipModulePowerType.Low &&
+                dbShip.Status.LowPowerModules.Count >= shipDetails.LowPowerNodes)
+            {
+                SendMessageToPC(Player, "No low power nodes are available.");
+                return false;
+            }
+
+            // Doesn't meet perk requirements.
+            if (!Space.CanPlayerUseShipModule(Player, itemTag))
+            {
+                SendMessageToPC(Player, "You do not meet the perk requirements necessary to install this module.");
+                return false;
+            }
+
+            return true;
         }
 
+        private void ProcessHighPower(int slot)
+        {
+            var shipId = _shipIds[SelectedShipIndex];
+            var dbShip = DB.Get<PlayerShip>(shipId);
+            var module = dbShip.Status.HighPowerModules.ContainsKey(slot)
+                ? dbShip.Status.HighPowerModules[slot]
+                : null;
+
+            // No module is equipped in this slot. 
+            // Put player into targeting mode to select a module.
+            if (module == null)
+            {
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, (item) =>
+                {
+                    var itemTag = GetTag(item);
+                    var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
+
+                    if (!ValidateModuleEquip(dbShip, item))
+                        return;
+
+                    if (moduleDetails.PowerType != ShipModulePowerType.High)
+                    {
+                        SendMessageToPC(Player, "Only high-powered modules may be installed to this slot.");
+                        return;
+                    }
+
+                    dbShip.Status.HighPowerModules[slot] = new ShipStatus.ShipStatusModule
+                    {
+                        ItemInstanceId = GetObjectUUID(item),
+                        SerializedItem = ObjectPlugin.Serialize(item),
+                        ItemTag = itemTag,
+                        RecastTime = DateTime.MinValue
+                    };
+
+                    moduleDetails.ModuleEquippedAction?.Invoke(Player, dbShip.Status);
+
+                    DB.Set(shipId, dbShip);
+
+                    DestroyObject(item);
+                    LoadShip();
+                });
+            }
+            // A module exists. Prompt user whether they'd like to uninstall it.
+            else
+            {
+                var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                ShowModal($"{moduleDetail.Name} is equipped to high slot #{slot}. Would you like to uninstall it?", () =>
+                {
+                    var item = ObjectPlugin.Deserialize(module.SerializedItem);
+                    ObjectPlugin.AcquireItem(Player, item);
+
+                    moduleDetail.ModuleUnequippedAction?.Invoke(Player, dbShip.Status);
+                    dbShip.Status.HighPowerModules.Remove(slot);
+                    DB.Set(shipId, dbShip);
+                    LoadShip();
+                });
+            }
+        }
+
+        private void ProcessLowPower(int slot)
+        {
+            var shipId = _shipIds[SelectedShipIndex];
+            var dbShip = DB.Get<PlayerShip>(shipId);
+            var module = dbShip.Status.LowPowerModules.ContainsKey(slot)
+                ? dbShip.Status.LowPowerModules[slot]
+                : null;
+
+            // No module is equipped in this slot. 
+            // Put player into targeting mode to select a module.
+            if (module == null)
+            {
+                Targeting.EnterTargetingMode(Player, ObjectType.Item, (item) =>
+                {
+                    var itemTag = GetTag(item);
+                    var moduleDetails = Space.GetShipModuleDetailByItemTag(itemTag);
+
+                    if (!ValidateModuleEquip(dbShip, item))
+                        return;
+
+                    if (moduleDetails.PowerType != ShipModulePowerType.High)
+                    {
+                        SendMessageToPC(Player, "Only low-powered modules may be installed to this slot.");
+                        return;
+                    }
+                    dbShip.Status.LowPowerModules[slot] = new ShipStatus.ShipStatusModule
+                    {
+                        ItemInstanceId = GetObjectUUID(item),
+                        SerializedItem = ObjectPlugin.Serialize(item),
+                        ItemTag = itemTag,
+                        RecastTime = DateTime.MinValue
+                    };
+
+                    moduleDetails.ModuleEquippedAction?.Invoke(Player, dbShip.Status);
+
+                    DB.Set(shipId, dbShip);
+
+                    DestroyObject(item);
+                    LoadShip();
+                });
+            }
+            // A module exists. Prompt user whether they'd like to uninstall it.
+            else
+            {
+                var moduleDetail = Space.GetShipModuleDetailByItemTag(module.ItemTag);
+                ShowModal($"{moduleDetail.Name} is equipped to low slot #{slot}. Would you like to uninstall it?", () =>
+                {
+                    var item = ObjectPlugin.Deserialize(module.SerializedItem);
+                    ObjectPlugin.AcquireItem(Player, item);
+
+                    moduleDetail.ModuleUnequippedAction?.Invoke(Player, dbShip.Status);
+                    dbShip.Status.LowPowerModules.Remove(slot);
+                    DB.Set(shipId, dbShip);
+                    LoadShip();
+                });
+            }
+        }
 
         public Action OnClickHighPower1() => () =>
         {
@@ -754,10 +1110,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ProcessHighPower(8);
         };
 
-        private void ProcessLowPower(int slot)
-        {
-
-        }
 
         public Action OnClickLowPower1() => () =>
         {

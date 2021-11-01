@@ -63,13 +63,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddTextEdit()
                             .BindValue(model => model.ShipName)
-                            .SetPlaceholder("Ship Name");
+                            .SetPlaceholder("Ship Name")
+                            .BindIsEnabled(model => model.IsNameEnabled);
 
                         row.AddButton()
                             .SetText("Save")
                             .BindOnClicked(model => model.OnClickSaveShipName())
                             .SetHeight(35f)
-                            .SetWidth(40f);
+                            .SetWidth(40f)
+                            .BindIsEnabled(model => model.IsNameEnabled);
                     });
                     col.AddRow(row =>
                     {

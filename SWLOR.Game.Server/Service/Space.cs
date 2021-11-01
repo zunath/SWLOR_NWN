@@ -276,6 +276,69 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves the slot number (1-30) of the ship module feat.
+        /// </summary>
+        /// <param name="feat">The feat to check</param>
+        /// <returns>The slot number (1-30) of the ship module feat.</returns>
+        public static int GetFeatSlotNumber(FeatType feat)
+        {
+            var slotNumber = (int)feat - (int)FeatType.ShipModule1 + 1;
+            return slotNumber;
+        }
+
+        /// <summary>
+        /// Retrieves the associated feat given a high slot number.
+        /// Must be in the range of 1-10
+        /// </summary>
+        /// <param name="slot">The slot number. Range is 1-10</param>
+        /// <returns>The feat associated with the high slot number</returns>
+        public static FeatType HighSlotToFeat(int slot)
+        {
+            var featId = (int)(FeatType.ShipModule1) - 1 + slot;
+            return (FeatType)featId;
+        }
+
+        /// <summary>
+        /// Retrieves the associated feat given a low slot number.
+        /// Must be in the range of 1-10
+        /// </summary>
+        /// <param name="slot">The slot number. Range is 1-10</param>
+        /// <returns>The feat associated with the low slot number.</returns>
+        public static FeatType LowSlotToFeat(int slot)
+        {
+            slot += 10; // Offset by 10 for low modules.
+            var featId = (int)(FeatType.ShipModule1) - 1 + slot;
+            return (FeatType)featId;
+        }
+
+        /// <summary>
+        /// Converts a high slot feat to its slot number.
+        /// </summary>
+        /// <param name="feat">The feat to convert</param>
+        /// <returns>The slot number associated with the feat.</returns>
+        public static int HighFeatToSlot(FeatType feat)
+        {
+            var offset = (int)FeatType.ShipModule1 - 1;
+            var slot = (int)feat - offset;
+
+            return slot;
+        }
+
+        /// <summary>
+        /// Converts a low slot feat to its slot number.
+        /// </summary>
+        /// <param name="feat">The feat to convert</param>
+        /// <returns>The slot number associated with the feat.</returns>
+        public static int LowFeatToSlot(FeatType feat)
+        {
+            var offset = (int)FeatType.ShipModule1 - 1;
+            var slot = (int)feat - offset;
+            slot -= 10; // Offset by 10 for low modules.
+
+            return slot;
+        }
+
+        /// <summary>
         /// When a player enters the game, reapply any custom TLK strings related to ship module feats.
         /// </summary>
         [NWNEventHandler("mod_enter")]
@@ -289,9 +352,10 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Player>(playerId);
             var dbPlayerShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
 
-            foreach (var (feat, shipModule) in dbPlayerShip.Status.HighPowerModules)
+            foreach (var (slot, shipModule) in dbPlayerShip.Status.HighPowerModules)
             {
                 var shipModuleDetail = _shipModules[shipModule.ItemTag];
+                var feat = HighSlotToFeat(slot);
                 ApplyShipModuleFeat(player, shipModuleDetail, feat);
             }
         }
@@ -329,12 +393,24 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
             dbPlayer.ActiveShipId = shipId;
 
-            // Load ship modules as feats.
-            var allModules = dbPlayerShip.Status.HighPowerModules
-                .Concat(dbPlayerShip.Status.LowPowerModules).ToList();
-
-            foreach(var (feat, shipModule) in allModules)
+            foreach(var (slot, shipModule) in dbPlayerShip.Status.HighPowerModules)
             {
+                var feat = HighSlotToFeat(slot);
+                var shipModuleDetail = _shipModules[shipModule.ItemTag];
+
+                // Passive modules shouldn't be converted to feats.
+                if (shipModuleDetail.Type == ShipModuleType.Passive) continue;
+
+                // Convert current ship module to feat.
+                CreaturePlugin.AddFeat(player, feat);
+
+                // Rename the feat to match the configured name on the ship module.
+                ApplyShipModuleFeat(player, shipModuleDetail, feat);
+            }
+
+            foreach (var (slot, shipModule) in dbPlayerShip.Status.LowPowerModules)
+            {
+                var feat = LowSlotToFeat(slot);
                 var shipModuleDetail = _shipModules[shipModule.ItemTag];
 
                 // Passive modules shouldn't be converted to feats.
@@ -553,22 +629,20 @@ namespace SWLOR.Game.Server.Service
             
             var activator = OBJECT_SELF;
             var activatorShipStatus = GetShipStatus(activator);
-            
-            // Check high powered modules
-            var shipModule = activatorShipStatus
-                .HighPowerModules
-                .SingleOrDefault(x => x.Key == feat);
+            var slotNumber = GetFeatSlotNumber(feat);
+            ShipStatus.ShipStatusModule shipModule;
 
-            // Not found in high powered modules, check low now.
-            if (shipModule.Value == null)
+            // Slot numbers between 1-10 are high powered slots
+            if (slotNumber <= 10)
             {
-                shipModule = activatorShipStatus
-                    .LowPowerModules
-                    .SingleOrDefault(x => x.Key == feat);
+                shipModule = activatorShipStatus.HighPowerModules[slotNumber];
             }
-
-            // Neither high nor low had this feat.Log an error.
-            if (shipModule.Value == null)
+            // Slot Numbers between 10-20 are low powered slots.
+            else if (slotNumber <= 20)
+            {
+                shipModule = activatorShipStatus.LowPowerModules[slotNumber-10];
+            }
+            else
             {
                 Log.Write(LogGroup.Error, $"Failed to locate matching ship module by its feat for player {GetName(activator)}");
                 SendMessageToPC(activator, "Unable to use that module.");
@@ -576,7 +650,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Found the ship module. Run validation checks.
-            var shipModuleDetails = _shipModules[shipModule.Value.ItemTag];
+            var shipModuleDetails = _shipModules[shipModule.ItemTag];
 
             // Check capacitor requirements
             var requiredCapacitor = shipModuleDetails.CalculateCapacitorAction?.Invoke(activator, activatorShipStatus) ?? 0;
@@ -593,7 +667,7 @@ namespace SWLOR.Game.Server.Service
 
             // Check recast requirements
             var now = DateTime.UtcNow;
-            if (shipModule.Value.RecastTime > now)
+            if (shipModule.RecastTime > now)
             {
                 SendMessageToPC(activator, "That module is not ready.");
                 return;
@@ -634,7 +708,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var recastSeconds = shipModuleDetails.CalculateRecastAction(activator, activatorShipStatus);
                 var recastTimer = now.AddSeconds(recastSeconds);
-                shipModule.Value.RecastTime = recastTimer;
+                shipModule.RecastTime = recastTimer;
             }
 
             // Reduce capacitor
@@ -753,8 +827,9 @@ namespace SWLOR.Game.Server.Service
             foreach (var itemTag in registeredEnemyType.HighPoweredModules)
             {
                 var feat = ShipModuleFeats.ElementAt(featCount).Key;
+                var slot = HighFeatToSlot(feat);
                 var shipModule = _shipModules[itemTag];
-                shipStatus.HighPowerModules.Add(feat, new ShipStatus.ShipStatusModule
+                shipStatus.HighPowerModules.Add(slot, new ShipStatus.ShipStatusModule
                 {
                     ItemTag = itemTag,
                     RecastTime = DateTime.UtcNow
@@ -762,7 +837,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (shipModule.Type != ShipModuleType.Passive)
                 {
-                    shipStatus.ActiveModules.Add(feat);
+                    shipStatus.ActiveModules.Add(slot);
                 }
 
                 shipModule.ModuleEquippedAction?.Invoke(creature, shipStatus);
@@ -772,8 +847,9 @@ namespace SWLOR.Game.Server.Service
             foreach (var itemTag in registeredEnemyType.LowPowerModules)
             {
                 var feat = ShipModuleFeats.ElementAt(featCount).Key;
+                var slot = LowFeatToSlot(feat);
                 var shipModule = _shipModules[itemTag];
-                shipStatus.LowPowerModules.Add(feat, new ShipStatus.ShipStatusModule
+                shipStatus.LowPowerModules.Add(slot, new ShipStatus.ShipStatusModule
                 {
                     ItemTag = itemTag,
                     RecastTime = DateTime.UtcNow
@@ -781,7 +857,7 @@ namespace SWLOR.Game.Server.Service
 
                 if (shipModule.Type != ShipModuleType.Passive)
                 {
-                    shipStatus.ActiveModules.Add(feat);
+                    shipStatus.ActiveModules.Add(slot);
                 }
 
                 shipModule.ModuleEquippedAction?.Invoke(creature, shipStatus);
@@ -1039,16 +1115,27 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(target)) continue;
 
                 // Determine which modules are available.
-                var allModules = shipStatus.HighPowerModules.Concat(shipStatus.LowPowerModules);
-                var availableModules = allModules.Where(x =>
+                var highModules = shipStatus.HighPowerModules.Where(x =>
                 {
                     var shipModuleDetail = _shipModules[x.Value.ItemTag];
                     var requiredCapacitor = shipModuleDetail.CalculateCapacitorAction?.Invoke(creature, shipStatus) ?? 0;
 
                     return x.Value.RecastTime <= now &&
                            shipStatus.Capacitor >= requiredCapacitor;
-                });
+                })
+                    .Select(s => new Tuple<FeatType, ShipStatus.ShipStatusModule>(HighSlotToFeat(s.Key), s.Value));
 
+                var lowModules = shipStatus.LowPowerModules.Where(x =>
+                {
+                    var shipModuleDetail = _shipModules[x.Value.ItemTag];
+                    var requiredCapacitor = shipModuleDetail.CalculateCapacitorAction?.Invoke(creature, shipStatus) ?? 0;
+
+                    return x.Value.RecastTime <= now &&
+                           shipStatus.Capacitor >= requiredCapacitor;
+                })
+                    .Select(s => new Tuple<FeatType, ShipStatus.ShipStatusModule>(LowSlotToFeat(s.Key), s.Value));
+
+                var availableModules = highModules.Concat(lowModules);
                 // Keep distance from target.
                 AssignCommand(creature, () =>
                 {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using SWLOR.Game.Server.Core.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
@@ -36,24 +35,24 @@ namespace SWLOR.Game.Server.Service.SpaceService
         /// <summary>
         /// Equipped high-powered modules
         /// </summary>
-        public Dictionary<FeatType, ShipStatusModule> HighPowerModules { get; set; }
+        public Dictionary<int, ShipStatusModule> HighPowerModules { get; set; }
 
         /// <summary>
         /// Equipped low-powered modules
         /// </summary>
-        public Dictionary<FeatType, ShipStatusModule> LowPowerModules { get; set; }
+        public Dictionary<int, ShipStatusModule> LowPowerModules { get; set; }
 
         /// <summary>
         /// A collection of ship modules, by feat, which can be activated.
         /// This is primarily used by ship AI but is also available for player ships.
         /// </summary>
-        public HashSet<FeatType> ActiveModules { get; set; }
+        public HashSet<int> ActiveModules { get; set; }
 
         public ShipStatus()
         {
-            HighPowerModules = new Dictionary<FeatType, ShipStatusModule>();
-            LowPowerModules = new Dictionary<FeatType, ShipStatusModule>();
-            ActiveModules = new HashSet<FeatType>();
+            HighPowerModules = new Dictionary<int, ShipStatusModule>();
+            LowPowerModules = new Dictionary<int, ShipStatusModule>();
+            ActiveModules = new HashSet<int>();
         }
     }
 }

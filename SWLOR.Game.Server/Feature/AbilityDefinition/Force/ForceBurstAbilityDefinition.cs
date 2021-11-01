@@ -14,15 +14,15 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
-    public class ForceBreachAbilityDefinition : IAbilityListDefinition
+    public class ForceBurstAbilityDefinition : IAbilityListDefinition
     {
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
-            ForceBreach1(builder);
-            ForceBreach2(builder);
-            ForceBreach3(builder);
-            ForceBreach4(builder);
+            ForceBurst1(builder);
+            ForceBurst2(builder);
+            ForceBurst3(builder);
+            ForceBurst4(builder);
 
             return builder.Build();
         }
@@ -62,11 +62,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
 
-        private static void ForceBreach1(AbilityBuilder builder)
+        private static void ForceBurst1(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceBreach1, PerkType.ForceBreach)
-                .Name("Force Breach I")
-                .HasRecastDelay(RecastGroup.ForceBreach, 30f)
+            builder.Create(FeatType.ForceBurst1, PerkType.ForceBurst)
+                .Name("Force Burst I")
+                .HasRecastDelay(RecastGroup.ForceBurst, 30f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(2)
                 .IsCastedAbility()
@@ -74,11 +74,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(ImpactAction);
         }
 
-        private static void ForceBreach2(AbilityBuilder builder)
+        private static void ForceBurst2(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceBreach2, PerkType.ForceBreach)
-                .Name("Force Breach II")
-                .HasRecastDelay(RecastGroup.ForceBreach, 30f)
+            builder.Create(FeatType.ForceBurst2, PerkType.ForceBurst)
+                .Name("Force Burst II")
+                .HasRecastDelay(RecastGroup.ForceBurst, 30f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(3)
                 .IsCastedAbility()
@@ -86,11 +86,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(ImpactAction);
         }
 
-        private static void ForceBreach3(AbilityBuilder builder)
+        private static void ForceBurst3(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceBreach3, PerkType.ForceBreach)
-                .Name("Force Breach III")
-                .HasRecastDelay(RecastGroup.ForceBreach, 30f)
+            builder.Create(FeatType.ForceBurst3, PerkType.ForceBurst)
+                .Name("Force Burst III")
+                .HasRecastDelay(RecastGroup.ForceBurst, 30f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(4)
                 .IsCastedAbility()
@@ -98,11 +98,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasImpactAction(ImpactAction);
         }
 
-        private static void ForceBreach4(AbilityBuilder builder)
+        private static void ForceBurst4(AbilityBuilder builder)
         {
-            builder.Create(FeatType.ForceBreach4, PerkType.ForceBreach)
-                .Name("Force Breach IV")
-                .HasRecastDelay(RecastGroup.ForceBreach, 30f)
+            builder.Create(FeatType.ForceBurst4, PerkType.ForceBurst)
+                .Name("Force Burst IV")
+                .HasRecastDelay(RecastGroup.ForceBurst, 30f)
                 .HasActivationDelay(4.0f)
                 .RequirementFP(5)
                 .IsCastedAbility()

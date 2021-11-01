@@ -20,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             BattleInsight();
             MindTrick();
             ForceHeal();
-            ForceBreach();
+            ForceBurst();
             ForceBody();
             DrainLife();
             ForceLightning();
@@ -273,38 +273,38 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceHeal5);
         }
 
-        private void ForceBreach()
+        private void ForceBurst()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceBreach)
-                .Name("Force Breach")
+            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceBurst)
+                .Name("Force Burst")
 
                 .AddPerkLevel()
                 .Description("Deals 6.0 DMG to a single target.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceBreach1)
+                .GrantsFeat(FeatType.ForceBurst1)
 
                 .AddPerkLevel()
                 .Description("Deals 8.5 DMG to a single target.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceBreach2)
+                .GrantsFeat(FeatType.ForceBurst2)
 
                 .AddPerkLevel()
                 .Description("Deals 12.0 DMG to a single target.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceBreach3)
+                .GrantsFeat(FeatType.ForceBurst3)
 
                 .AddPerkLevel()
                 .Description("Deals 13.5 DMG to a single target.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceBreach4);
+                .GrantsFeat(FeatType.ForceBurst4);
         }
 
         private void ForceBody()

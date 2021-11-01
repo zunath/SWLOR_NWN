@@ -152,7 +152,7 @@
         Scavenging = 160,
         HardLook = 161,
         ForceHeal = 162,
-        ForceBreach = 163,
+        ForceBurst = 163,
         ForceBody = 164,
         DrainLife = 165,
         ForceLightning = 166,

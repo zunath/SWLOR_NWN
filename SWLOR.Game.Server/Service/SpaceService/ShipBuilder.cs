@@ -135,17 +135,6 @@ namespace SWLOR.Game.Server.Service.SpaceService
         }
 
         /// <summary>
-        /// Indicates the ship has a bay in which a droid can be installed.
-        /// </summary>
-        /// <returns>A ship builder with the configured options.</returns>
-        public ShipBuilder HasDroidBay()
-        {
-            _activeShip.HasDroidBay = true;
-
-            return this;
-        }
-
-        /// <summary>
         /// Indicates a player must have the perk at a specific level in order to use the ship.
         /// </summary>
         /// <param name="perkType">The type of perk to require</param>

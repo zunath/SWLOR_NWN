@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Service
             if (_playerWindows.ContainsKey(playerId))
                 return;
 
-            var dbPlayer = DB.Get<Player>(playerId);
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
             _playerWindows[playerId] = new Dictionary<GuiWindowType, GuiPlayerWindow>();
             _playerModals[playerId] = new Dictionary<GuiWindowType, GuiPlayerWindow>();
 

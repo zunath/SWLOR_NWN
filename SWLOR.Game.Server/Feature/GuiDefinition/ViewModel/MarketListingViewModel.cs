@@ -162,19 +162,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickAddItem() => () =>
         {
             ClosePriceWindow();
-            EnterTargetingMode(Player, ObjectType.Item);
-        };
 
-        [NWNEventHandler("mod_p_target")]
-        public static void SelectItem()
-        {
-            var player = GetLastPlayerToSelectTarget();
-            var target = GetTargetingModeSelectedObject();
-            var window = Gui.GetPlayerWindow(player, GuiWindowType.MarketListing);
-            var vm = (MarketListingViewModel)window.ViewModel;
-            
-            vm.AddItem(target);
-        }
+            Targeting.EnterTargetingMode(Player, ObjectType.Item, AddItem);
+            EnterTargetingMode(Player, ObjectType.Item);
+            SetLocalBool(Player, "MARKET_LISTING_TARGETING_MODE", true);
+        };
 
         public void AddItem(uint item)
         {

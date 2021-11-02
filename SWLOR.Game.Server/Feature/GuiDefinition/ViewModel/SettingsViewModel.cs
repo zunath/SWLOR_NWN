@@ -64,6 +64,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);
         };
 
+        public Action OnClickChangeDescription() => () =>
+        {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.ChangeDescription);
+        };
+
         private void UpdateHelmetDisplay()
         {
             var helmet = GetItemInSlot(InventorySlot.Head, Player);

@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             _builder.CreateWindow(GuiWindowType.Settings)
                 .SetIsResizable(true)
-                .SetInitialGeometry(0, 0, 345f, 214f)
+                .SetInitialGeometry(0, 0, 339f, 261f)
                 .SetTitle("Settings")
                 
                 .AddColumn(col =>
@@ -54,6 +54,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddSpacer();
                     })
                         .SetHeight(30f);
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+
+                        row.AddButton()
+                            .SetText("Change Description")
+                            .SetTooltip("Modify your publicly-viewable description which displays when you are examined.")
+                            .BindOnClicked(model => model.OnClickChangeDescription())
+                            .SetHeight(32f);
+
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                    });
 
                     col.AddRow(row =>
                     {

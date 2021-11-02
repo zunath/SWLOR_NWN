@@ -150,7 +150,7 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("NWNX_ON_STEALTH_EXIT_AFTER", "stlex_add_aft");
 
             // Examine events
-            EventsPlugin.SubscribeEvent("NWNX_ON_EXAMINE_OBJECT_BEFORE", "examine_reset");
+            EventsPlugin.SubscribeEvent("NWNX_ON_EXAMINE_OBJECT_BEFORE", "examine_bef");
             EventsPlugin.SubscribeEvent("NWNX_ON_EXAMINE_OBJECT_AFTER", "examine_aft");
 
             // Validate Use Item events
@@ -544,27 +544,8 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("SWLOR_GAIN_SKILL_POINT", "swlor_gain_skill");
             EventsPlugin.SubscribeEvent("SWLOR_COMPLETE_QUEST", "swlor_comp_qst");
             EventsPlugin.SubscribeEvent("SWLOR_CACHE_SKILLS_LOADED", "swlor_skl_cache");
-            EventsPlugin.SubscribeEvent("SWLOR_EXAMINE_OBJECT_BEFORE", "examine_bef");
         }
-
-        /// <summary>
-        /// When an object is examined, reset the description back to its original text.
-        /// This ensures examine events hooked with the 'examine_bef' event will be able
-        /// to modify the text without respect to the order in which they are called.
-        /// </summary>
-        [NWNEventHandler("examine_reset")]
-        public static void ResetExamineDescription()
-        {
-            var objectId = EventsPlugin.GetEventData("EXAMINEE_OBJECT_ID");
-            var obj = StringToObject(objectId);
-
-            var description = GetDescription(obj, true) + "\n\n";
-            SetDescription(obj, description);
-            
-            EventsPlugin.PushEventData("EXAMINEE_OBJECT_ID", objectId);
-            EventsPlugin.SignalEvent("SWLOR_EXAMINE_OBJECT_BEFORE", OBJECT_SELF);
-        }
-
+        
         /// <summary>
         /// A handful of NWNX functions require special calls to load persistence.
         /// When the module loads, run those methods here.

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service.AIService;
 
 namespace SWLOR.Game.Server.Service.SpawnService
@@ -18,6 +19,8 @@ namespace SWLOR.Game.Server.Service.SpawnService
 
         public int GameHourStartRestriction { get; set; }
         public int GameHourEndRestriction { get; set; }
+
+        public Dictionary<string, int> LocalVariables { get; set; }
 
         public SpawnObject()
         {

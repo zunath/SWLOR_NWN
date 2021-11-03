@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service.SpawnService;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
@@ -18,12 +19,14 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void DroidSpawns(SpawnTableBuilder builder)
         {
+            var localVariables = new Dictionary<string, int>();
+            localVariables.Add("DEATH_VFX_ID", (int)VisualEffect.Vfx_Fnf_Electric_Explosion);
             builder.Create("CZ220_DROIDS", "CZ-220 Droids")
-                .AddSpawn(ObjectType.Creature, "malsecdroid")
+                .AddSpawn(ObjectType.Creature, "malsecdroid", localVariables)
                 .WithFrequency(50)
                 .RandomlyWalks()
 
-                .AddSpawn(ObjectType.Creature, "malspiderdroid")
+                .AddSpawn(ObjectType.Creature, "malspiderdroid", localVariables)
                 .WithFrequency(50)
                 .RandomlyWalks();
         }

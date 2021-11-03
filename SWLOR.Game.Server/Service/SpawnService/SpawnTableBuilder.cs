@@ -48,13 +48,15 @@ namespace SWLOR.Game.Server.Service.SpawnService
         /// <param name="type">The object type to spawn</param>
         /// <param name="resref">The resref of the object</param>
         /// <returns>A spawn table builder with the configured settings</returns>
-        public SpawnTableBuilder AddSpawn(ObjectType type, string resref)
+        public SpawnTableBuilder AddSpawn(ObjectType type, string resref, Dictionary<string, int> localVariables = null)
         {
+            Console.WriteLine($"Spawning {resref} with local vars: {string.Join(Environment.NewLine, localVariables)}");
             ActiveSpawn = new SpawnObject
             {
                 Type = type,
                 Resref = resref,
-                Weight = 10
+                Weight = 10,
+                LocalVariables = localVariables
             };
             ActiveTable.Spawns.Add(ActiveSpawn);
 

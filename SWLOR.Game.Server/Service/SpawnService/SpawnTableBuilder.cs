@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Service.AnimationService;
 
 namespace SWLOR.Game.Server.Service.SpawnService
 {
@@ -48,15 +49,13 @@ namespace SWLOR.Game.Server.Service.SpawnService
         /// <param name="type">The object type to spawn</param>
         /// <param name="resref">The resref of the object</param>
         /// <returns>A spawn table builder with the configured settings</returns>
-        public SpawnTableBuilder AddSpawn(ObjectType type, string resref, Dictionary<string, int> localVariables = null)
+        public SpawnTableBuilder AddSpawn(ObjectType type, string resref)
         {
-            Console.WriteLine($"Spawning {resref} with local vars: {string.Join(Environment.NewLine, localVariables)}");
             ActiveSpawn = new SpawnObject
             {
                 Type = type,
                 Resref = resref,
-                Weight = 10,
-                LocalVariables = localVariables
+                Weight = 10
             };
             ActiveTable.Spawns.Add(ActiveSpawn);
 
@@ -129,6 +128,12 @@ namespace SWLOR.Game.Server.Service.SpawnService
         {
             ActiveSpawn.AIFlags |= AIFlag.RandomWalk;
 
+            return this;
+        }
+
+        public SpawnTableBuilder PlayAnimation(IAnimator animation)
+        {
+            ActiveSpawn.Animators.Add(animation);
             return this;
         }
 

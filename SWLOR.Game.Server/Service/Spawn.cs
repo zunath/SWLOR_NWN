@@ -442,7 +442,7 @@ namespace SWLOR.Game.Server.Service
             else if(!string.IsNullOrWhiteSpace(detail.SpawnTableId))
             {
                 var spawnTable = _spawnTables[detail.SpawnTableId];
-                var (objectType, resref, aiFlag, localVariables) = spawnTable.GetNextSpawn();
+                var (objectType, resref, aiFlag, animators) = spawnTable.GetNextSpawn();
 
                 // It's possible that the rules of the spawn table don't have a spawn ready to be created.
                 // In this case, exit early.
@@ -459,18 +459,14 @@ namespace SWLOR.Game.Server.Service
                 var location = Location(detail.Area, position, facing);
 
                 var spawn = CreateObject(objectType, resref, location);
-                
                 SetLocalString(spawn, "SPAWN_ID", spawnId.ToString());
 
-                if (localVariables != null)
-                {
-                    foreach (KeyValuePair<string, int> kvp in localVariables)
-                    {
-                        SetLocalString(spawn, kvp.Key, kvp.Value.ToString());
-                    }
-                }
-
                 AI.SetAIFlag(spawn, aiFlag);
+
+                foreach (var animator in animators)
+                {
+                    animator.SetLocalVariables(spawn);
+                }
 
                 return spawn;
             }

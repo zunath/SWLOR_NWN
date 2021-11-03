@@ -16,6 +16,8 @@ void main()
         return;
     object oArea = GetArea(OBJECT_SELF);
 
+    SetLocalInt(oPC, "jediFlag3", 3);
+
     // Find actors
     SetLocalObject(GetModule(),"cutsceneviewer",oPC);
     // Find the direction the player's facing in at the start of the scene
@@ -44,7 +46,7 @@ void main()
         oItem = GetNextItemInInventory(oFan24);
     }
     // Destroy equipped items.
-    for ( nSlot = 0; nSlot < NUM_INVENTORY_SLOTS; ++nSlot )
+    for ( nSlot = 0; nSlot < NUM_INVENTORY_SLOTS; nSlot++ )
         DestroyObject(GetItemInSlot(nSlot, oFan24));
 
     // Remove all gold.
@@ -73,5 +75,4 @@ void main()
     MusicBackgroundChangeDay(oArea, 462);
     MusicBackgroundChangeNight(oArea, 462);
 
-    SetLocalInt(oPC, "jediFlag3", 3);
 }

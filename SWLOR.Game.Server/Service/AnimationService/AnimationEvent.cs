@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace SWLOR.Game.Server.Service.AnimationService
 {
     /// <summary>
-    /// Subset of VisualEffect
+    /// Subset of supported NWN events for animating
     /// </summary>
     public class AnimationEvent
     {

@@ -15,9 +15,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsResizable(true)
                 .SetInitialGeometry(0, 0, 545f, 295.5f)
                 .SetTitle("Achievements")
-                .AddColumn(column =>
+                .AddColumn(col =>
                 {
-                    column.AddRow(row =>
+                    col.AddRow(row =>
                     {
                         row.AddSpacer();
 
@@ -28,54 +28,50 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddSpacer();
                     });
 
-                    column.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Name")
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
-
-                        row.AddLabel()
-                            .SetText("Description")
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
-
-                        row.AddLabel()
-                            .SetText("Date Unlocked")
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Top);
-
-                        row.SetHeight(20f);
-                    });
-
-                    column.AddRow(row =>
+                    col.AddRow(row =>
                     {
                         row.AddList(template =>
+                        {
+                            template.AddCell(cell =>
                             {
-                                template.AddCell(cell =>
-                                {
-                                    cell.AddLabel()
-                                        .BindText(model => model.Names)
-                                        .BindColor(model => model.Colors);
-                                });
-
-                                template.AddCell(cell =>
-                                {
-                                    cell.AddLabel()
-                                        .BindText(model => model.Descriptions)
-                                        .BindColor(model => model.Colors);
-                                });
-
-                                template.AddCell(cell =>
-                                {
-                                    cell.AddLabel()
-                                        .BindText(model => model.AcquiredDates)
-                                        .BindColor(model => model.Colors);
-                                });
-                            })
+                                cell.AddToggleButton()
+                                    .BindText(model => model.Names)
+                                    .BindIsToggled(model => model.Toggles)
+                                    .BindOnClicked(model => model.OnClickAchievement())
+                                    .BindColor(model => model.Colors);
+                            });
+                        })
                             .BindRowCount(model => model.Names);
                     });
-                });
+                })
+                
+                .AddColumn(col =>
+                {
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .BindText(model => model.Name)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHeight(20f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddText()
+                            .BindText(model => model.Description);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .BindText(model => model.AcquiredDate)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Middle)
+                            .SetHeight(20f);
+                    });
+                })
+                ;
 
             return _builder.Build();
         }

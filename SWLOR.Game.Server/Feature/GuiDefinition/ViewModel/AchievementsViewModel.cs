@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AchievementService;
@@ -11,18 +12,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class AchievementsViewModel: GuiViewModelBase<AchievementsViewModel, GuiPayloadBase>
     {
+        private const int EntriesPerPage = 25;
         private int SelectedIndex { get; set; }
         private readonly List<AchievementType> _types = new();
-
-        public bool ShowAll
-        {
-            get => Get<bool>();
-            set
-            {
-                Set(value);
-                LoadAchievements();
-            }
-        }
 
         public GuiBindingList<string> Names
         {
@@ -60,54 +52,62 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        public int SelectedPageIndex
         {
-            ShowAll = true;
-            LoadAchievements();
-            LoadAchievement();
-
-            WatchOnClient(model => model.ShowAll);
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                UpdatePagination();
+                Search();
+            }
         }
 
-        private void LoadAchievements()
+        public GuiBindingList<GuiComboEntry> PageNumbers
+        {
+            get => Get<GuiBindingList<GuiComboEntry>>();
+            set => Set(value);
+        }
+        
+
+        protected override void Initialize(GuiPayloadBase initialPayload)
+        {
+            SelectedPageIndex = 0;
+            UpdatePagination();
+            Search();
+
+            WatchOnClient(model => model.SelectedPageIndex);
+        }
+
+        private void Search()
         {
             var cdKey = GetPCPublicCDKey(Player);
             var dbAccount = DB.Get<Account>(cdKey) ?? new Account();
+            var achievements = Achievement.GetActiveAchievements()
+                .Skip(SelectedPageIndex * EntriesPerPage)
+                .Take(EntriesPerPage);
 
             var names = new GuiBindingList<string>();
             var colors = new GuiBindingList<GuiColor>();
             var toggles = new GuiBindingList<bool>();
             _types.Clear();
 
-            if (ShowAll)
+            foreach (var (type, detail) in achievements)
             {
-                foreach (var (type, detail) in Achievement.GetActiveAchievements())
-                {
-                    _types.Add(type);
-                    names.Add(detail.Name);
-                    colors.Add(dbAccount.Achievements.ContainsKey(type)
-                        ? new GuiColor(0, 255, 0)
-                        : new GuiColor(255, 0, 0));
-                    toggles.Add(false);
-                }
-            }
-            else
-            {
-                foreach (var (type, _) in dbAccount.Achievements)
-                {
-                    _types.Add(type);
-                    var detail = Achievement.GetAchievement(type);
-
-                    names.Add(detail.Name);
-                    colors.Add(new GuiColor(0, 255, 0));
-                    toggles.Add(false);
-                }
+                _types.Add(type);
+                names.Add(detail.Name);
+                colors.Add(dbAccount.Achievements.ContainsKey(type)
+                    ? new GuiColor(0, 255, 0)
+                    : new GuiColor(255, 0, 0));
+                toggles.Add(false);
             }
 
             SelectedIndex = -1;
             Names = names;
             Colors = colors;
             Toggles = toggles;
+
+            LoadAchievement();
         }
 
         private void LoadAchievement()
@@ -132,6 +132,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : string.Empty;
         }
 
+        private void UpdatePagination()
+        {
+            var totalRecordCount = Achievement.GetActiveAchievements().Count;
+            var pageNumbers = new GuiBindingList<GuiComboEntry>();
+            var pages = (int)(totalRecordCount / EntriesPerPage + (totalRecordCount % EntriesPerPage == 0 ? 0 : 1));
+
+            // Always add page 1.
+            pageNumbers.Add(new GuiComboEntry($"Page 1", 0));
+            for (var x = 2; x <= pages; x++)
+            {
+                pageNumbers.Add(new GuiComboEntry($"Page {x}", x - 1));
+            }
+
+            PageNumbers = pageNumbers;
+
+            // In the event no results are found, default the index to zero
+            if (pages <= 0)
+                SelectedPageIndex = 0;
+
+            // Otherwise, if current page is outside the new page bounds,
+            // set it to the last page in the list.
+            else if (SelectedPageIndex > pages - 1)
+                SelectedPageIndex = pages - 1;
+        }
+
         public Action OnClickAchievement() => () =>
         {
             if (SelectedIndex > -1)
@@ -142,6 +167,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Toggles[SelectedIndex] = true;
 
             LoadAchievement();
+        };
+
+        public Action OnClickPreviousPage() => () =>
+        {
+            var newPage = SelectedPageIndex - 1;
+            if (newPage < 0)
+                newPage = 0;
+
+            SelectedPageIndex = newPage;
+        };
+
+        public Action OnClickNextPage() => () =>
+        {
+            var newPage = SelectedPageIndex + 1;
+            if (newPage > PageNumbers.Count - 1)
+                newPage = PageNumbers.Count - 1;
+
+            SelectedPageIndex = newPage;
         };
     }
 }

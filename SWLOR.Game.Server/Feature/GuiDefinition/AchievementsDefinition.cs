@@ -19,17 +19,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     col.AddRow(row =>
                     {
-                        row.AddSpacer();
-
-                        row.AddCheckBox()
-                            .BindIsChecked(model => model.ShowAll)
-                            .SetText("Show All");
-
-                        row.AddSpacer();
-                    });
-
-                    col.AddRow(row =>
-                    {
                         row.AddList(template =>
                         {
                             template.AddCell(cell =>
@@ -42,6 +31,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             });
                         })
                             .BindRowCount(model => model.Names);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                        row.AddButton()
+                            .SetText("<")
+                            .SetWidth(32f)
+                            .SetHeight(35f)
+                            .BindOnClicked(model => model.OnClickPreviousPage());
+
+                        row.AddComboBox()
+                            .BindOptions(model => model.PageNumbers)
+                            .BindSelectedIndex(model => model.SelectedPageIndex);
+
+                        row.AddButton()
+                            .SetText(">")
+                            .SetWidth(32f)
+                            .SetHeight(35f)
+                            .BindOnClicked(model => model.OnClickNextPage());
+
+                        row.AddSpacer();
                     });
                 })
                 

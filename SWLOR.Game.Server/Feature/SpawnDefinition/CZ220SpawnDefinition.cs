@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             {
                 Duration = DurationType.Instant,
                 Event = AnimationEvent.CreatureOnDeath,
-                Vfx = VisualEffect.Vfx_Fnf_Electric_Explosion
+                Vfx = VisualEffect.Fnf_Fireball
             };
             builder.Create("CZ220_DROIDS", "CZ-220 Droids")
                 .AddSpawn(ObjectType.Creature, "malsecdroid")

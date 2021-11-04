@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Item
             user.DelayAssignCommand(
                          () =>
                          {
-                             DoImpact(user, targetLocation, grenadeType, perkLevel, RadiusSize.Large, ObjectType.Creature);
+                             DoImpact(user, item, targetLocation, grenadeType, perkLevel, RadiusSize.Large, ObjectType.Creature);
                          }, delay + 0.75f);
 
 
@@ -227,11 +227,13 @@ namespace SWLOR.Game.Server.Item
             if (user.IsCreature) { DurabilityService.RunItemDecay((NWPlayer)user, item, 1.0f); }
         }
 
-        public void DoImpact(NWCreature user, Location targetLocation, string grenadeType, int perkLevel, float fExplosionRadius, ObjectType nObjectFilter)
+        public void DoImpact(NWCreature user, NWItem item, Location targetLocation, string grenadeType, int perkLevel, float fExplosionRadius, ObjectType nObjectFilter)
         {
             Effect damageEffect = EffectDamage(0, DamageType.Negative);
             Effect durationEffect = null;
             int duration = perkLevel + 1;
+            int bonus = item.DamageBonus;
+            int medbonus = item.MedicineBonus;
 
             switch (grenadeType)
             {
@@ -245,7 +247,7 @@ namespace SWLOR.Game.Server.Item
                     durationEffect = EffectAreaOfEffect(AreaOfEffect.FogFire, "grenade_incen_en", "grenade_incen_hb", "");
                     break;
                 case "GAS":
-                    durationEffect = EffectAreaOfEffect(AreaOfEffect.FogGhoul, "grenade_gas_en", "grenade_gas_hb", "");
+                    durationEffect = EffectAreaOfEffect(AreaOfEffect.FogAcid, "grenade_gas_en", "grenade_gas_hb", "");
                     break;
                 default:
                     break;
@@ -269,8 +271,8 @@ namespace SWLOR.Game.Server.Item
                     switch (grenadeType)
                     {
                         case "FRAG":
-                            damageEffect = EffectDamage(RandomService.D6(perkLevel), DamageType.Fire);
-                            damageEffect = EffectLinkEffects(EffectDamage(RandomService.D6(perkLevel), DamageType.Piercing), damageEffect);
+                            damageEffect = EffectDamage(RandomService.D6(perkLevel) + bonus, DamageType.Fire);
+                            damageEffect = EffectLinkEffects(EffectDamage(RandomService.D6(perkLevel) + bonus, DamageType.Piercing), damageEffect);
                             if (RandomService.D6(1) > 4)
                             {
                                 //Console.WriteLine("grenade effect bleeding - frag");
@@ -284,7 +286,7 @@ namespace SWLOR.Game.Server.Item
                             //Console.WriteLine("grenade effects set - frag");
                             break;
                         case "CONCUSSION":
-                            damageEffect = EffectDamage(RandomService.D12(perkLevel), DamageType.Sonic);
+                            damageEffect = EffectDamage(RandomService.D12(perkLevel) + bonus, DamageType.Sonic);
                             durationEffect = EffectDeaf();
                             if (RandomService.D6(1) > 4)
                             {
@@ -303,7 +305,7 @@ namespace SWLOR.Game.Server.Item
                             break;
                         case "ION":
                             duration = RandomService.D4(1);
-                            damageEffect = EffectDamage(RandomService.D6(perkLevel), DamageType.Electrical);
+                            damageEffect = EffectDamage(RandomService.D6(perkLevel) + bonus, DamageType.Electrical);
                             if (GetRacialType(targetCreature) == RacialType.Robot ||
                                 (RandomService.D6(1) > 4 && GetRacialType(targetCreature) == RacialType.Cyborg))
                             {
@@ -313,7 +315,7 @@ namespace SWLOR.Game.Server.Item
                             break;
                         case "BACTA":
                             damageEffect = null;
-                            durationEffect = EffectRegenerate(perkLevel, 6.0f);
+                            durationEffect = EffectRegenerate(perkLevel + 1 + medbonus, 6.0f);
                             break;
                         case "ADHESIVE":
                             durationEffect = EffectSlow();
@@ -359,23 +361,15 @@ namespace SWLOR.Game.Server.Item
                     durationEffect = EffectInvisibility(InvisibilityType.Normal);
                     break;
                 case "BACTABOMB":
-                    durationEffect = EffectRegenerate(perkLevel*2, 6.0f);
+                    durationEffect = EffectRegenerate(perkLevel*2 + 1, 6.0f);
                     break;
                 case "INCENDIARY":
-                    impactEffect = EffectDamage(RandomService.D6(perkLevel), DamageType.Fire);
+                    impactEffect = EffectDamage(perkLevel + 1 + RandomService.D6(perkLevel), DamageType.Fire);
                     duration = RandomService.D6(1);
-                    if (RandomService.D6(1) > 4)
-                    {
-                        CustomEffectService.ApplyCustomEffect(user, (NWCreature)oTarget, CustomEffectType.Burning, duration * 6, perkLevel, Convert.ToString(perkLevel));
-                    }
                     break;
                 case "GAS":
-                    impactEffect = EffectDamage(RandomService.D6(perkLevel), DamageType.Acid);
+                    impactEffect = EffectDamage(perkLevel + 1 + RandomService.D6(perkLevel), DamageType.Acid);
                     duration = RandomService.D6(1);
-                    if (RandomService.D6(1) > 4 && GetIsImmune(oTarget, ImmunityType.Poison) == false)
-                    {
-                        durationEffect = EffectPoison(Poison.Arsenic);
-                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(grenadeType));

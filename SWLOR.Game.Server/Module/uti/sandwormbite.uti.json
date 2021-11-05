@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 24
+    "value": 69
   },
   "Charges": {
     "type": "byte",
@@ -22,19 +22,15 @@
   },
   "Cursed": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {
-      "0": "Take this item out of the container to confirm the materials you've selected."
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Identified": {
     "type": "byte",
@@ -43,16 +39,16 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Component Bonus: Structure Bonus Up 4"
+      "0": "Sand Worm Bite"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 63
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 53
+    "value": 55
   },
   "Plot": {
     "type": "byte",
@@ -69,11 +65,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 62
+          "value": 2
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 10
         },
         "Param1": {
           "type": "byte",
@@ -85,11 +81,73 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 137
+          "value": 56
         },
         "Subtype": {
           "type": "word",
-          "value": 33
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 0
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 0
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 43
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 4
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 15
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 74
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
         }
       }
     ]
@@ -104,10 +162,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "compbon_struct2"
+    "value": "SandWormBite"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "compbon"
+    "value": "sandwormbite"
   }
 }

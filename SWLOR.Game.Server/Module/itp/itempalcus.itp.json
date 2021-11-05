@@ -4226,6 +4226,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sand Worm Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sandwormbite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Station Zombie Bite"
                     },
                     "RESREF": {
@@ -15905,7 +15916,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Component Bonus: FP Up 4"
+                "value": "Component Bonus: Structure Bonus Up 4"
               },
               "RESREF": {
                 "type": "resref",

@@ -20,22 +20,16 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
         private void DroidSpawns(SpawnTableBuilder builder)
         {
-            var deathAnimation = new Animator()
-            {
-                Duration = DurationType.Instant,
-                Event = AnimationEvent.CreatureOnDeath,
-                Vfx = VisualEffect.Fnf_Fireball
-            };
             builder.Create("CZ220_DROIDS", "CZ-220 Droids")
                 .AddSpawn(ObjectType.Creature, "malsecdroid")
                 .WithFrequency(50)
                 .RandomlyWalks()
-                .PlayAnimation(deathAnimation)
+                .PlayAnimation(DurationType.Instant, AnimationEvent.CreatureOnDeath, VisualEffect.Fnf_Fireball)
 
                 .AddSpawn(ObjectType.Creature, "malspiderdroid")
                 .WithFrequency(50)
                 .RandomlyWalks()
-                .PlayAnimation(deathAnimation);
+                .PlayAnimation(DurationType.Instant, AnimationEvent.CreatureOnDeath, VisualEffect.Fnf_Fireball);
         }
 
         private void MynockSpawns(SpawnTableBuilder builder)

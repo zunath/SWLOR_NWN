@@ -1297,10 +1297,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - nMissEffect: if this is TRUE, a random vector near or past the target will
         ///   be generated, on which to play the effect
         /// </summary>
-        public static Effect EffectVisualEffect(VisualEffect visualEffectID, bool nMissEffect = false)
+        public static Effect EffectVisualEffect(VisualEffect visualEffectID, bool nMissEffect = false, float fScale = 1.0f)
         {
             Internal.NativeFunctions.StackPushInteger(nMissEffect ? 1 : 0);
             Internal.NativeFunctions.StackPushInteger((int)visualEffectID);
+            Internal.NativeFunctions.StackPushFloat(fScale);
             Internal.NativeFunctions.CallBuiltIn(180);
             return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
         }

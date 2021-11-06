@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Service.AnimationService;
 
 namespace SWLOR.Game.Server.Service.SpawnService
 {
@@ -127,6 +129,18 @@ namespace SWLOR.Game.Server.Service.SpawnService
         {
             ActiveSpawn.AIFlags |= AIFlag.RandomWalk;
 
+            return this;
+        }
+
+        public SpawnTableBuilder PlayAnimation(DurationType duration, AnimationEvent animEvent, VisualEffect vfx)
+        {
+            var animation = new Animator()
+            {
+                Duration = duration,
+                Event = animEvent,
+                Vfx = vfx
+            };
+            ActiveSpawn.Animators.Add(animation);
             return this;
         }
 

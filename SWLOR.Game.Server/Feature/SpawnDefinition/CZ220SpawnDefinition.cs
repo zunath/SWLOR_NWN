@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.Game.Server.Service.SpawnService;
 
 namespace SWLOR.Game.Server.Feature.SpawnDefinition
@@ -22,10 +24,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Creature, "malsecdroid")
                 .WithFrequency(50)
                 .RandomlyWalks()
+                .PlayAnimation(DurationType.Instant, AnimationEvent.CreatureOnDeath, VisualEffect.Fnf_Fireball)
 
                 .AddSpawn(ObjectType.Creature, "malspiderdroid")
                 .WithFrequency(50)
-                .RandomlyWalks();
+                .RandomlyWalks()
+                .PlayAnimation(DurationType.Instant, AnimationEvent.CreatureOnDeath, VisualEffect.Fnf_Fireball);
         }
 
         private void MynockSpawns(SpawnTableBuilder builder)

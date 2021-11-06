@@ -226,6 +226,9 @@ namespace SWLOR.Game.Server.Service.GuiService
         protected void WatchOnClient<TProperty>(Expression<Func<TDerived, TProperty>> expression)
         {
             var propertyName = GuiHelper<TDerived>.GetPropertyName(expression);
+            if (!_propertyValues.ContainsKey(propertyName))
+                _propertyValues[propertyName] = new PropertyDetail();
+            
             var value = _propertyValues[propertyName].Value;
             var json = _converter.ToJson(value);
 

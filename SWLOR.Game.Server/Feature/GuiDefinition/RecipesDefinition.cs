@@ -1,5 +1,4 @@
-﻿using System.Runtime.Serialization;
-using SWLOR.Game.Server.Core.Beamdog;
+﻿using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -22,114 +21,133 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     col.AddRow(row =>
                     {
-                        var skillsCombo = row.AddComboBox()
-                            .BindSelectedIndex(model => model.SelectedSkillId)
-                            .SetWidth(200f);
+                        row.AddTextEdit()
+                            .SetPlaceholder("Search")
+                            .BindValue(model => model.SearchText);
 
-                        skillsCombo.AddOption("Select Skill...", 0);
-                        foreach (var (type, detail) in Skill.GetAllSkillsByCategory(SkillCategoryType.Crafting))
-                        {
-                            skillsCombo.AddOption(detail.Name, (int)type);
-                        }
+                        row.AddButton()
+                            .SetText("X")
+                            .SetHeight(35f)
+                            .SetWidth(35f)
+                            .BindOnClicked(model => model.OnClickClearSearch());
+
+                        row.AddButton()
+                            .SetText("Search")
+                            .SetHeight(35f)
+                            .BindOnClicked(model => model.OnClickSearch());
                     });
 
                     col.AddRow(row =>
                     {
                         row.AddComboBox()
+                            .BindSelectedIndex(model => model.SelectedSkillId)
+                            .BindOptions(model => model.Skills)
+                            .SetWidth(200f);
+
+                        row.AddComboBox()
                             .BindSelectedIndex(model => model.SelectedCategoryId)
                             .BindOptions(model => model.Categories)
                             .BindIsEnabled(model => model.IsSkillSelected)
                             .SetWidth(200f);
-                    });
 
-                    col.AddRow(row =>
-                    {
                         row.AddSpacer();
-                        row.AddCheckBox()
-                            .BindIsChecked(model => model.ShowAll)
-                            .SetText(" Show All");
                     });
 
                     col.AddRow(row =>
                     {
-                        row.AddList(template =>
+                        row.AddColumn(col2 =>
                         {
-                            template.AddCell(cell =>
+                            col2.AddRow(row2 =>
                             {
-                                cell.AddToggleButton()
-                                    .BindIsToggled(model => model.Selections)
-                                    .BindText(model => model.Recipes)
-                                    .BindOnClicked(model => model.OnSelectRecipe())
-                                    .BindColor(model => model.Colors);
+                                row2.AddList(template =>
+                                    {
+                                        template.AddCell(cell =>
+                                        {
+                                            cell.AddToggleButton()
+                                                .BindIsToggled(model => model.RecipeToggles)
+                                                .BindText(model => model.RecipeNames)
+                                                .BindOnClicked(model => model.OnSelectRecipe())
+                                                .BindColor(model => model.RecipeColors);
+                                        });
+                                    })
+                                    .BindRowCount(model => model.RecipeNames);
                             });
-                        })
-                            .BindRowCount(model => model.Recipes);
 
-                    });
-                })
-                
-                .AddColumn(col =>
-                {
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddLabel()
-                            .BindText(model => model.RecipeName)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHeight(26f);
-                        row.AddSpacer();
-                    });
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddSpacer();
+                                row2.AddButton()
+                                    .SetText("<")
+                                    .SetWidth(32f)
+                                    .SetHeight(35f)
+                                    .BindOnClicked(model => model.OnClickPreviousPage());
 
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddLabel()
-                            .BindText(model => model.RecipeLevel)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHeight(26f);
-                        row.AddSpacer();
-                    });
+                                row2.AddComboBox()
+                                    .BindOptions(model => model.PageNumbers)
+                                    .BindSelectedIndex(model => model.SelectedPageIndex);
 
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddLabel()
-                            .BindText(model => model.RecipeModSlots)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHeight(26f);
-                        row.AddSpacer();
-                    });
+                                row2.AddButton()
+                                    .SetText(">")
+                                    .SetWidth(32f)
+                                    .SetHeight(35f)
+                                    .BindOnClicked(model => model.OnClickNextPage());
 
-                    col.AddRow(row =>
-                    {
-                        row.AddList(template =>
+                                row2.AddSpacer();
+                            });
+                        });
+
+                        row.AddColumn(col2 =>
                         {
-                            template.AddCell(cell =>
-                            {
-                                cell.AddLabel()
-                                    .BindText(model => model.RecipeComponents)
-                                    .BindColor(model => model.RecipeComponentColors);
-                            });
-                            
-                        })
-                            .BindRowCount(model => model.RecipeComponents);
 
-                        row.AddList(template =>
-                        {
-                            template.AddCell(cell =>
+                            col2.AddRow(row2 =>
                             {
-                                cell.AddLabel()
-                                    .BindText(model => model.RecipeRequirements)
-                                    .BindColor(model => model.RecipeRequirementColors);
+                                row2.AddSpacer();
+                                row2.AddLabel()
+                                    .BindText(model => model.RecipeName)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetVerticalAlign(NuiVerticalAlign.Top)
+                                    .SetHeight(26f);
+                                row2.AddSpacer();
                             });
-                        })
-                            .BindRowCount(model => model.RecipeRequirements);
+
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddSpacer();
+                                row2.AddLabel()
+                                    .BindText(model => model.RecipeLevel)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetVerticalAlign(NuiVerticalAlign.Top)
+                                    .SetHeight(26f);
+                                row2.AddSpacer();
+                            });
+
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddSpacer();
+                                row2.AddLabel()
+                                    .BindText(model => model.RecipeModSlots)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetVerticalAlign(NuiVerticalAlign.Top)
+                                    .SetHeight(26f);
+                                row2.AddSpacer();
+                            });
+
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddList(template =>
+                                {
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.AddLabel()
+                                            .BindText(model => model.RecipeDetails)
+                                            .BindColor(model => model.RecipeDetailColors);
+                                    });
+                                })
+                                    .BindRowCount(model => model.RecipeDetails);
+                            });
+                        });
                     });
 
-                    col.BindIsVisible(model => model.IsRecipeSelected);
                 });
 
             return _builder.Build();

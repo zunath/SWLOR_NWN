@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<RecipeType, RecipeDetail> _recipes = new();
         private static readonly Dictionary<RecipeCategoryType, RecipeCategoryAttribute> _allCategories = new();
         private static readonly Dictionary<RecipeCategoryType, RecipeCategoryAttribute> _activeCategories = new();
+        private static readonly Dictionary<SkillType, Dictionary<RecipeType, RecipeDetail>> _recipesBySkill = new();
         private static readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>> _recipesBySkillAndCategory = new();
         private static readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, RecipeCategoryAttribute>> _categoriesBySkill = new();
 
@@ -92,6 +93,11 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     _recipes[recipeType] = recipe;
+
+                    // Organize recipes by skill.
+                    if (!_recipesBySkill.ContainsKey(recipe.Skill))
+                        _recipesBySkill[recipe.Skill] = new Dictionary<RecipeType, RecipeDetail>();
+                    _recipesBySkill[recipe.Skill][recipeType] = recipe;
 
                     // Organize recipe by skill and category.
                     if(!_recipesBySkillAndCategory.ContainsKey(recipe.Skill))
@@ -183,6 +189,16 @@ namespace SWLOR.Game.Server.Service
         {
             var resref = GetResRef(item);
             return _componentResrefs.Contains(resref);
+        }
+
+        public static Dictionary<RecipeType, RecipeDetail> GetAllRecipes()
+        {
+            return _recipes;
+        }
+
+        public static Dictionary<RecipeType, RecipeDetail> GetAllRecipesBySkill(SkillType skill)
+        {
+            return _recipesBySkill[skill];
         }
 
         /// <summary>

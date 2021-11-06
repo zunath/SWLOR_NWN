@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature
         /// Skips the character sheet panel open event and shows the SWLOR character sheet instead.
         /// </summary>
         [NWNEventHandler("mod_gui_event")]
-        public static void CharacterSheetGui()
+        public static void MiniMapGui()
         {
             var player = GetLastGuiEventPlayer();
             var type = GetLastGuiEventType();

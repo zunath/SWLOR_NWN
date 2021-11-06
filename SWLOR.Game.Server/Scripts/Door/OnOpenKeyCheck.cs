@@ -26,19 +26,13 @@ namespace SWLOR.Game.Server.Scripts.Door
 
             if (!string.IsNullOrEmpty(keyTag))
             {
-                var key = player.InventoryItems.ToList().Find(i => i.Tag == keyTag);
-                if (key != null)
+                var keys = player.InventoryItems.ToList().FindAll(i => i.Tag == keyTag);
+                if (keys.Count > 0)
                 {
-                    highestMatchingKeyTier = key.ItemProperties.ToList().Aggregate(0, (currentHighest, iprop) => 
+                    highestMatchingKeyTier = keys.Aggregate(0, (currentHighest, key) => 
                     {
-                        var propTypeID = GetItemPropertyType(iprop);
-                        if (propTypeID == ItemPropertyType.ACBonus)
-                        {
-                            var keyTier = GetItemPropertyCostTableValue(iprop);
-                            return keyTier > currentHighest ? keyTier : currentHighest;
-                        }
-
-                        return currentHighest;
+                        var tier = GetLocalInt(key, "TIER");
+                        return tier > currentHighest ? tier : currentHighest;
                     });    
                 }
             }

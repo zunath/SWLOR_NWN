@@ -8,7 +8,9 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.DialogDefinition;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.CraftService;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -300,125 +302,15 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When the crafting device is opened,
-        ///     1.) Open the recipe menu if a recipe hasn't been selected yet for this session.
-        ///     or
-        ///     2.) Spawn command items into the device's inventory.
+        /// When a crafting device is used, display the recipe menu.
         /// </summary>
-        [NWNEventHandler("craft_on_open")]
-        public static void OpenDevice()
+        [NWNEventHandler("craft_on_used")]
+        public static void UseCraftingDevice()
         {
-            var player = GetLastOpenedBy();
-            if (!GetIsPC(player) || GetIsDM(player)) return;
-
-            var state = GetPlayerCraftingState(player);
-            var device = OBJECT_SELF;
-            state.IsOpeningMenu = false;
-
-            // A recipe isn't selected. Open the menu to pick.
-            if (state.SelectedRecipe == RecipeType.Invalid)
-            {
-                var skillType = (SkillType)GetLocalInt(OBJECT_SELF, "CRAFTING_SKILL_TYPE_ID");
-                state.DeviceSkillType = skillType;
-                state.IsOpeningMenu = true;
-
-                Dialog.StartConversation(player, OBJECT_SELF, nameof(RecipeDialog));
-            }
-            // Recipe has been picked. Spawn the command items into this device's inventory.
-            else
-            {
-                var recipe = GetRecipe(state.SelectedRecipe);
-                var command = CreateItemOnObject(CraftItemResref, device);
-                var itemName = Cache.GetItemNameByResref(recipe.Resref);
-
-                SetName(command, $"Craft: {recipe.Quantity}x {itemName}");
-
-                // Load Components command
-                command = CreateItemOnObject(LoadComponentsResref, device);
-                SetName(command, "Load Components");
-
-                // Select Recipe command
-                command = CreateItemOnObject(SelectRecipeResref, device);
-                SetName(command, "Select Recipe");
-            }
-        }
-
-        /// <summary>
-        /// When the device is closed, all command items are destroyed. Any remaining non-command items are returned to the player.
-        /// </summary>
-        [NWNEventHandler("craft_on_closed")]
-        public static void CloseDevice()
-        {
-            var player = GetLastClosedBy();
-
-            if (!GetIsPC(player) || GetIsDM(player)) return;
-
-            var device = OBJECT_SELF;
-
-            for (var item = GetFirstItemInInventory(device); GetIsObjectValid(item); item = GetNextItemInInventory(device))
-            {
-                var resref = GetResRef(item);
-
-                if (_commandResrefs.Contains(resref))
-                {
-                    DestroyObject(item);
-                }
-                else
-                {
-                    Item.ReturnItem(player, item);
-                }
-            }
-
-            // If player is quitting crafting, clear out their state.
-            var state = GetPlayerCraftingState(player);
-            if (!state.IsOpeningMenu)
-            {
-                ClearPlayerCraftingState(player);
-            }
-        }
-
-        /// <summary>
-        /// When an item is removed from the crafting device's inventory, execute a command if it's one of the following types:
-        ///     1.) Craft
-        ///     2.) Load Components
-        ///     3.) Select Recipe
-        /// </summary>
-        [NWNEventHandler("craft_on_disturb")]
-        public static void TakeItem()
-        {
-            var disturbType = GetInventoryDisturbType();
-            if (disturbType != DisturbType.Removed) return;
-
-            var player = GetLastDisturbed();
-            var item = GetInventoryDisturbItem();
-            var resref = GetResRef(item);
-            var device = OBJECT_SELF;
-            var state = GetPlayerCraftingState(player);
-
-            if (state.IsAutoCrafting)
-            {
-                SendMessageToPC(player, ColorToken.Red("You are crafting."));
-                return;
-            }
-
-            // Craft item
-            if (resref == CraftItemResref)
-            {
-                Item.ReturnItem(device, item);
-                CraftItem(player);
-            }
-            // Load components into container
-            else if (resref == LoadComponentsResref)
-            {
-                Item.ReturnItem(device, item);
-                LoadComponents(player);
-            }
-            // Select a different recipe
-            else if (resref == SelectRecipeResref)
-            {
-                Item.ReturnItem(device, item);
-                SelectRecipe(player);
-            }
+            var player = GetLastUsedBy();
+            var skillType = (SkillType)GetLocalInt(OBJECT_SELF, "CRAFTING_SKILL_TYPE_ID");
+            var payload = new RecipesPayload(skillType);
+            Gui.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, OBJECT_SELF);
         }
 
         /// <summary>
@@ -488,7 +380,7 @@ namespace SWLOR.Game.Server.Service
             var craftingDelay = CalculateAutoCraftingDelay();
 
             state.IsAutoCrafting = true;
-            Core.NWNX.PlayerPlugin.StartGuiTimingBar(player, craftingDelay);
+            PlayerPlugin.StartGuiTimingBar(player, craftingDelay);
             AssignCommand(player, () => ActionPlayAnimation(Animation.LoopingGetMid, 1f, craftingDelay));
             DelayCommand(craftingDelay, () =>
             {
@@ -656,7 +548,7 @@ namespace SWLOR.Game.Server.Service
                 var recipeType = (RecipeType)convertedId;
 
                 // Ensure this type of recipe has been registered.
-                if (!Craft.RecipeExists(recipeType))
+                if (!RecipeExists(recipeType))
                 {
                     SendMessageToPC(user, "This recipe has not been registered. Please inform a DM.");
                     return;
@@ -669,7 +561,7 @@ namespace SWLOR.Game.Server.Service
                 recipesLearned++;
                 dbPlayer.UnlockedRecipes[recipeType] = DateTime.UtcNow;
 
-                var recipeDetail = Craft.GetRecipe(recipeType);
+                var recipeDetail = GetRecipe(recipeType);
                 var skillDetail = Skill.GetSkillDetails(recipeDetail.Skill);
                 var itemName = Cache.GetItemNameByResref(recipeDetail.Resref);
                 SendMessageToPC(user, $"You learn the {skillDetail.Name} recipe: {itemName}.");

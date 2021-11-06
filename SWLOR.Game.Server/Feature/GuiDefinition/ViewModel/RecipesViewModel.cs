@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -12,7 +13,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class RecipesViewModel: GuiViewModelBase<RecipesViewModel, GuiPayloadBase>
+    public class RecipesViewModel: GuiViewModelBase<RecipesViewModel, RecipesPayload>
     {
         private static readonly GuiColor _green = new GuiColor(0, 255, 0);
         private static readonly GuiColor _red = new GuiColor(255, 0, 0);
@@ -21,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly List<RecipeType> _recipeTypes = new();
         private const int RecordsPerPage = 20;
         private bool _skipPaginationSearch;
+        private SkillType _craftingFilter;
 
         public string SearchText
         {
@@ -129,6 +131,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool CanCraftRecipe
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> RecipeDetails
         {
             get => Get<GuiBindingList<string>>();
@@ -141,13 +149,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsSkillEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        public bool IsInCraftingMode
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        protected override void Initialize(RecipesPayload initialPayload)
         {
             _skipPaginationSearch = true;
+
+            _craftingFilter = initialPayload?.Skill ?? SkillType.Invalid;
+            IsInCraftingMode = _craftingFilter != SkillType.Invalid;
+            IsSkillEnabled = _craftingFilter == SkillType.Invalid;
+
+            RecipeName = string.Empty;
+            RecipeLevel = string.Empty;
+            RecipeModSlots = string.Empty;
             SearchText = string.Empty;
             SelectedPageIndex = 0;
-            SelectedSkillId = 0;
+            SelectedSkillId = (int)_craftingFilter;
             SelectedCategoryId = 0;
             _currentRecipeIndex = -1;
             LoadSkills();
@@ -350,6 +377,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadRecipeDetail();
         };
 
+        public Action OnClickCraftItem() => () =>
+        {
+            var recipe = _recipeTypes[_currentRecipeIndex];
+            var payload = new CraftPayload(recipe);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Craft, payload, TetherObject);
+        };
+
         private void LoadRecipeDetail()
         {
             var selectedRecipe = _recipeTypes[_currentRecipeIndex];
@@ -395,6 +429,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             RecipeDetails = recipeDetails;
             RecipeDetailColors = recipeDetailColors;
+            CanCraftRecipe = CanPlayerCraftRecipe(selectedRecipe);
         }
 
     }

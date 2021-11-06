@@ -1,8 +1,6 @@
 ﻿using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
-using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
@@ -42,6 +40,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddComboBox()
                             .BindSelectedIndex(model => model.SelectedSkillId)
                             .BindOptions(model => model.Skills)
+                            .BindIsEnabled(model => model.IsSkillEnabled)
                             .SetWidth(200f);
 
                         row.AddComboBox()
@@ -144,6 +143,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     });
                                 })
                                     .BindRowCount(model => model.RecipeDetails);
+                            });
+
+                            col2.AddRow(row2 =>
+                            {
+                                row2.AddSpacer();
+                                row2.AddButton()
+                                    .SetText("Craft Item")
+                                    .BindIsVisible(model => model.IsInCraftingMode)
+                                    .BindIsEnabled(model => model.CanCraftRecipe)
+                                    .SetHeight(35f)
+                                    .BindOnClicked(model => model.OnClickCraftItem());
+                                row2.AddSpacer();
                             });
                         });
                     });

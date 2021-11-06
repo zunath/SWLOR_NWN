@@ -17,7 +17,6 @@ namespace SWLOR.Game.Server.Service.AnimationService
 
         public string IdKey { get { return $"{Value}_id"; } }
         public string DurationKey { get { return $"{Value}_dur"; } }
-        public string ScaleKey { get { return $"{Value}_scale"; } }
 
         public static AnimationEvent CreatureOnAttacked { get { return new AnimationEvent("crea_attacked_vfx"); } }
         public static AnimationEvent CreatureOnPerceive { get { return new AnimationEvent("crea_perception_vfx"); } }

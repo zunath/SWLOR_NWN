@@ -16,8 +16,6 @@ namespace SWLOR.Game.Server.Service.AnimationService
 
         DurationType Duration { get; set; }
 
-        public float Scale { get; set; }
-
         public void SetLocalVariables(uint oObject);
     }
 }

@@ -15,7 +15,8 @@ namespace SWLOR.Game.Server.Service
             if (vfx != 0)
             {
                 var duration = (DurationType)GetLocalInt(oObject, animationEvent.DurationKey);
-                var effect = EffectVisualEffect(vfx);
+                var scale = GetLocalFloat(oObject, animationEvent.ScaleKey);
+                var effect = EffectVisualEffect(vfx, false, scale);
                 ApplyEffectToObject(duration, effect, oObject);
             }
         }

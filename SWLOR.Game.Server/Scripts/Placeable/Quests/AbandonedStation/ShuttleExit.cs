@@ -41,9 +41,9 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests.AbandonedStation
             if (playersInAreas > 0) return;
 
             // Otherwise, everyone has left. Do the cleanup now.
-            AreaService.DestroyAreaInstance(mainLevel);
-            AreaService.DestroyAreaInstance(restrictedLevel);
-            AreaService.DestroyAreaInstance(directorsChambers);
+            //AreaService.DestroyAreaInstance(mainLevel);
+            //AreaService.DestroyAreaInstance(restrictedLevel);
+            //AreaService.DestroyAreaInstance(directorsChambers);
         }
     }
 }

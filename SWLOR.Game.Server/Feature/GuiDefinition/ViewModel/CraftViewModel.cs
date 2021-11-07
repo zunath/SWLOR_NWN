@@ -248,7 +248,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        private List<string> _components = new List<string>();
+        private readonly List<string> _components = new();
         private string _enhancement1;
         private string _enhancement2;
         private int _durability;
@@ -262,6 +262,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _levelDifference;
         private AbilityType _primaryAbility;
         private AbilityType _secondaryAbility;
+        private bool _isSteadyHandActive;
+        private bool _isMuscleMemoryActive;
+        private int _venerationStepsRemaining;
+        private int _wasteNotStepsRemaining;
 
         protected override void Initialize(CraftPayload initialPayload)
         {
@@ -372,11 +376,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _durability = _maxDurability;
 
 
-            // 10% penalty per level due to the recipe level being higher than skill level.
+            // 25% penalty per level due to the recipe level being higher than skill level.
             var progressModifier = 0f;
             if (_levelDifference < 0)
             {
-                var adjustment = _levelDifference * 0.10f;
+                var adjustment = _levelDifference * 0.25f;
                 if (adjustment > 2.00f)
                     adjustment = 2.00f;
                 progressModifier = -adjustment;
@@ -537,13 +541,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         /// <summary>
-        /// Determines if the player has all of the necessary components for this recipe.
+        /// Determines if the player has all of the necessary components for this recipe
+        /// and aggregates them into a new list.
         /// </summary>
-        /// <returns>true if player has all components, false otherwise</returns>
-        private bool HasAllComponents(List<uint> components)
+        /// <returns>A list of components which will be used, an empty list if not all components are found.</returns>
+        private List<uint> AggregateComponents(List<uint> components)
         {
             var recipe = Craft.GetRecipe(_recipe);
             var remainingComponents = recipe.Components.ToDictionary(x => x.Key, y => y.Value);
+            var result = new List<uint>();
 
             for (var index = components.Count - 1; index >= 0; index--)
             {
@@ -569,12 +575,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     remainingComponents[resref] = 0;
                     _components.Add(ObjectPlugin.Serialize(component));
+                    result.Add(component);
                 }
                 // Player's component stack size is less than or equal to the amount required.
                 else if (quantity <= remainingComponents[resref])
                 {
                     remainingComponents[resref] -= quantity;
                     _components.Add(ObjectPlugin.Serialize(component));
+                    result.Add(component);
                 }
 
                 if (remainingComponents[resref] <= 0)
@@ -583,11 +591,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var hasAllComponents = remainingComponents.Count <= 0;
 
-            // If we're missing some components, clear the serialized component list.
-            if(!hasAllComponents)
+            // If we're missing some components, clear the serialized component list and the result list.
+            if (!hasAllComponents)
+            {
                 _components.Clear();
+                result.Clear();
+            }
 
-            return hasAllComponents;
+            return result;
         }
 
         private void SwitchToCraftMode()
@@ -641,6 +652,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsVenerationEnabled = false;
             IsWasteNotEnabled = false;
 
+            _isMuscleMemoryActive = false;
+            _isSteadyHandActive = false;
+            _venerationStepsRemaining = 0;
+            _wasteNotStepsRemaining = 0;
             _durability = _maxDurability;
             _progress = 0;
             _quality = 0;
@@ -660,7 +675,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickManualCraft() => () =>
         {
             var components = GetComponents();
-            if (!HasAllComponents(components))
+            var aggregateList = AggregateComponents(components);
+            if (aggregateList.Count <= 0)
             {
                 StatusText = $"Missing components!";
                 StatusColor = _red;
@@ -671,7 +687,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // The components get serialized during the HasAllComponents call.
             // Since we have everything, go ahead and delete the items from the player's inventory.
             // We're ready to craft!
-            foreach (var component in components)
+            foreach (var component in aggregateList)
             {
                 DestroyObject(component);
             }
@@ -683,10 +699,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
+            var recipe = Craft.GetRecipe(_recipe);
             var primaryModifier = GetAbilityModifier(_primaryAbility, Player);
             var secondaryModifier = GetAbilityModifier(_secondaryAbility, Player);
-            var control = dbPlayer.Control;
-            var progress = baseProgress + (primaryModifier * 2) + secondaryModifier + (int)(control * 0.65f);
+            var craftsmanship = dbPlayer.Craftsmanship;
+            var delta = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
+            var recipeDiff = 1 + 0.05f * delta;
+            var progress = (int)((baseProgress + primaryModifier * 1.25f + secondaryModifier * 0.75f + craftsmanship * 0.65f) * recipeDiff);
 
             return progress;
         }
@@ -695,23 +714,51 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
+            var recipe = Craft.GetRecipe(_recipe);
             var primaryModifier = GetAbilityModifier(_primaryAbility, Player);
             var secondaryModifier = GetAbilityModifier(_secondaryAbility, Player);
-            var craftsmanship = dbPlayer.Craftsmanship;
+            var control = dbPlayer.Control;
+            var delta = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
+            var recipeDiff = delta < 0 
+                ? 1 + 0.05f * delta 
+                : 1;
 
-            var quality = baseQuality + (primaryModifier * 8) + (secondaryModifier * 3) + (int)(craftsmanship * 0.75f);
+            var quality = (int)((baseQuality + primaryModifier * 8 + secondaryModifier * 3 + control * 0.75f) * recipeDiff);
             return quality;
         }
 
         private void ProcessSuccess()
         {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
             var recipe = Craft.GetRecipe(_recipe);
             var item = CreateItemOnObject(recipe.Resref, Player, recipe.Quantity);
+            var delta =  recipe.Level - dbPlayer.Skills[recipe.Skill].Rank;
+            var firstTime = !dbPlayer.CraftedRecipes.ContainsKey(_recipe);
 
             // todo: apply enhancements
 
+            // Add the recipe to the completed list (unlocks auto-crafting)
+            if (firstTime)
+            {
+                dbPlayer.CraftedRecipes[_recipe] = DateTime.UtcNow;
+                DB.Set(playerId, dbPlayer);
+            }
+
+            // Give XP plus a percent bonus based on the quality achieved.
+            var qualityBonus = (float)_quality / (float)_maxQuality;
+            var xp = Skill.GetDeltaXP(delta);
+            // 20% bonus for the first time.
+            if (firstTime)
+                xp += (int)(xp * 0.20f);
+            xp += (int)(xp * qualityBonus);
+
+            Skill.GiveSkillXP(Player, recipe.Skill, xp);
+
+            // Clean up and return to the Set Up mode.
             _components.Clear();
             SwitchToSetUpMode();
+            LoadCraftingState();
             RefreshRecipeStats();
             StatusText = "Successfully created the item!";
             StatusColor = _green;
@@ -754,17 +801,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusColor = _red;
         }
 
-        private void DoSynthesis(string abilityName, int baseAmount, int chance)
+        private void HandleAction(
+            string abilityName, 
+            int chance, 
+            int cpCost, 
+            int durabilityLoss,
+            Action successAction)
         {
-            _durability -= 10;
-            if (_durability < 0)
-                _durability = 0;
+            if (_cp < cpCost)
+            {
+                StatusText = "Not enough CP!";
+                StatusColor = _red;
+                return;
+            }
+
+            if (durabilityLoss > 0)
+            {
+                if (_wasteNotStepsRemaining > 0)
+                {
+                    _wasteNotStepsRemaining--;
+                    durabilityLoss /= 2;
+                }
+
+                _durability -= durabilityLoss;
+                if (_durability < 0)
+                    _durability = 0;
+            }
+
+            _cp -= cpCost;
 
             if (Random.D100(1) <= chance)
             {
-                var progress = CalculateProgress(baseAmount);
-                _progress += progress;
-
+                successAction();
 
                 StatusText = $"{abilityName}: Success!";
                 StatusColor = _green;
@@ -788,89 +856,131 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshRecipeStats();
         }
 
-        private void DoTouch(string abilityName, int baseAmount, int chance)
-        {
-            _durability -= 10;
-            if (_durability < 0)
-                _durability = 0;
-
-            if (Random.D100(1) <= chance)
-            {
-                var quality = CalculateQuality(baseAmount);
-                _quality += quality;
-
-                StatusText = $"{abilityName}: Success!";
-                StatusColor = _green;
-            }
-            else
-            {
-                StatusText = $"{abilityName}: FAILURE";
-                StatusColor = _red;
-            }
-
-            if (_durability <= 0)
-            {
-                ProcessFailure();
-            }
-
-            RefreshRecipeStats();
-        }
-
         public Action OnClickBasicSynthesis() => () =>
         {
-            DoSynthesis("Basic Synthesis", 10, 90);
+            var chance = _isSteadyHandActive ? 100 : 90;
+
+            HandleAction("Basic Synthesis", chance, 0, 10, () =>
+            {
+                var progress = CalculateProgress(10);
+                _progress += progress;
+                _isSteadyHandActive = false;
+            });
         };
 
         public Action OnClickRapidSynthesis() => () =>
         {
-            DoSynthesis("Rapid Synthesis", 30, 75);
+            var chance = _isSteadyHandActive ? 100 : 75;
+            var cpCost = 6;
+            if (_venerationStepsRemaining > 0)
+            {
+                _venerationStepsRemaining--;
+                cpCost /= 2;
+            }
+
+            HandleAction("Rapid Synthesis", chance, cpCost, 10, () =>
+            {
+                var progress = CalculateProgress(30);
+                _progress += progress;
+                _isSteadyHandActive = false;
+            });
         };
 
         public Action OnClickCarefulSynthesis() => () =>
         {
-            DoSynthesis("Careful Synthesis", 80, 50);
+            var chance = _isSteadyHandActive ? 100 : 50;
+            var cpCost = 15;
+            if (_venerationStepsRemaining > 0)
+            {
+                _venerationStepsRemaining--;
+                cpCost /= 2;
+            }
+
+            HandleAction("Careful Synthesis", chance, cpCost, 10, () =>
+            {
+                var progress = CalculateProgress(80);
+                _progress += progress;
+                _isSteadyHandActive = false;
+            });
         };
 
 
         public Action OnClickBasicTouch() => () =>
         {
-            DoTouch("Basic Touch", 10, 90);
+            var chance = _isMuscleMemoryActive ? 100 : 90;
+
+            HandleAction("Basic Touch", chance, 3, 10, () =>
+            {
+                var quality = CalculateQuality(10);
+                _quality += quality;
+                _isMuscleMemoryActive = false;
+            });
         };
 
         public Action OnClickStandardTouch() => () =>
         {
-            DoTouch("Standard Touch", 30, 75);
+            var chance = _isMuscleMemoryActive ? 100 : 75;
+
+            HandleAction("Standard Touch", chance, 6, 10, () =>
+            {
+                var quality = CalculateQuality(30);
+                _quality += quality;
+                _isMuscleMemoryActive = false;
+            });
         };
 
         public Action OnClickPreciseTouch() => () =>
         {
-            DoTouch("Precise Touch", 80, 50);
-        };
+            var chance = _isMuscleMemoryActive ? 100 : 50;
 
+            HandleAction("Precise Touch",  chance, 15, 10, () =>
+            {
+                var quality = CalculateQuality(80);
+                _quality += quality;
+                _isMuscleMemoryActive = false;
+            });
+        };
 
         public Action OnClickMastersMend() => () =>
         {
-
+            HandleAction("Master's Mend", 100, 10, 0, () =>
+            {
+                _durability += 30;
+                if (_durability > _maxDurability)
+                    _durability = _maxDurability;
+            });
         };
 
         public Action OnClickSteadyHand() => () =>
         {
-
+            HandleAction("Steady Hand", 100, 12, 0, () =>
+            {
+                _isSteadyHandActive = true;
+            });
         };
 
         public Action OnClickMuscleMemory() => () =>
         {
-
+            HandleAction("Muscle Memory", 100, 12, 0, () =>
+            {
+                _isMuscleMemoryActive = true;
+            });
         };
 
         public Action OnClickVeneration() => () =>
         {
-
+            HandleAction("Veneration", 100, 8, 10, () =>
+            {
+                _venerationStepsRemaining = 4;
+            });
         };
 
         public Action OnClickWasteNot() => () =>
         {
-
+            HandleAction("Waste Not", 100, 4, 0, () =>
+            {
+                _wasteNotStepsRemaining = 4;
+            });
         };
     }
 }

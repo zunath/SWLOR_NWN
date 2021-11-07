@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string RecipeModSlots
+        public string RecipeEnhancementSlots
         {
             get => Get<string>();
             set => Set(value);
@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             RecipeName = string.Empty;
             RecipeLevel = string.Empty;
-            RecipeModSlots = string.Empty;
+            RecipeEnhancementSlots = string.Empty;
             SearchText = string.Empty;
             SelectedPageIndex = 0;
             SelectedSkillId = (int)_craftingFilter;
@@ -273,7 +273,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var (type, detail) in recipes)
             {
-                var canCraft = CanPlayerCraftRecipe(type);
+                var canCraft = Craft.CanPlayerCraftRecipe(Player, type);
                 var name = $"{Cache.GetItemNameByResref(detail.Resref)} [Lvl. {detail.Level}]";
 
                 recipeNames.Add(name);
@@ -348,22 +348,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _skipPaginationSearch = false;
         };
 
-        private bool CanPlayerCraftRecipe(RecipeType recipeType)
-        {
-            var recipe = Craft.GetRecipe(recipeType);
-            if (recipe.Requirements.Count <= 0) return true;
-
-            foreach (var requirement in recipe.Requirements)
-            {
-                if (!string.IsNullOrWhiteSpace(requirement.CheckRequirements(Player)))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
         public Action OnSelectRecipe() => () =>
         {
             // Deselect the current recipe.
@@ -379,6 +363,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickCraftItem() => () =>
         {
+            if (Gui.IsWindowOpen(Player, GuiWindowType.Craft))
+                return;
+
             var recipe = _recipeTypes[_currentRecipeIndex];
             var payload = new CraftPayload(recipe);
             Gui.TogglePlayerWindow(Player, GuiWindowType.Craft, payload, TetherObject);
@@ -389,47 +376,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var selectedRecipe = _recipeTypes[_currentRecipeIndex];
             var detail = Craft.GetRecipe(selectedRecipe);
             var itemName = Cache.GetItemNameByResref(detail.Resref);
-            var modSlotType = "N/A";
+            var enhancementSlotType = "N/A";
 
-            if (detail.ModType == RecipeModType.Weapon)
-                modSlotType = "Weapon";
-            else if (detail.ModType == RecipeModType.Armor)
-                modSlotType = "Armor";
-            else if (detail.ModType == RecipeModType.Furniture)
-                modSlotType = "Furniture";
+            if (detail.EnhancementType == RecipeEnhancementType.Weapon)
+                enhancementSlotType = "Weapon";
+            else if (detail.EnhancementType == RecipeEnhancementType.Armor)
+                enhancementSlotType = "Armor";
+            else if (detail.EnhancementType == RecipeEnhancementType.Furniture)
+                enhancementSlotType = "Furniture";
 
             RecipeName = $"Recipe: {detail.Quantity}x {itemName}";
             RecipeLevel = $"Level: {detail.Level}";
-            RecipeModSlots = $"Mod Slots: {detail.ModSlots}x {modSlotType}";
-
-            var recipeDetails = new GuiBindingList<string>();
-            var recipeDetailColors = new GuiBindingList<GuiColor>();
-
-            recipeDetails.Add("[COMPONENTS]");
-            recipeDetailColors.Add(new GuiColor(0, 255, 255));
-            foreach (var (resref, quantity) in detail.Components)
-            {
-                var componentName = Cache.GetItemNameByResref(resref);
-                recipeDetails.Add($"{quantity}x {componentName}");
-                recipeDetailColors.Add(new GuiColor(255, 255, 255));
-            }
-
-            recipeDetails.Add(string.Empty);
-            recipeDetailColors.Add(_green);
-
-            recipeDetails.Add("[REQUIREMENTS]");
-            recipeDetailColors.Add(new GuiColor(0, 255,255));
-            foreach (var req in detail.Requirements)
-            {
-                recipeDetails.Add(req.RequirementText);
-                recipeDetailColors.Add(string.IsNullOrWhiteSpace(req.CheckRequirements(Player))
-                    ? _green
-                    : _red);
-            }
+            RecipeEnhancementSlots = $"Enhancement Slots: {detail.EnhancementSlots}x {enhancementSlotType}";
+            var (recipeDetails, recipeDetailColors) = Craft.BuildRecipeDetail(Player, selectedRecipe);
 
             RecipeDetails = recipeDetails;
             RecipeDetailColors = recipeDetailColors;
-            CanCraftRecipe = CanPlayerCraftRecipe(selectedRecipe);
+            CanCraftRecipe = Craft.CanPlayerCraftRecipe(Player, selectedRecipe);
         }
 
     }

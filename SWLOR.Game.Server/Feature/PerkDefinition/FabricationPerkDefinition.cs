@@ -7,20 +7,115 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class FabricationPerkDefinition : IPerkListDefinition
     {
+        private readonly PerkBuilder _builder = new();
+
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
-            var builder = new PerkBuilder();
-            FurnitureBlueprints(builder);
-            StructureBlueprints(builder);
-            StarshipBlueprints(builder);
-            ModuleBlueprints(builder);
+            Synthesis();
+            Touch();
+            Abilities();
 
-            return builder.Build();
+            FurnitureBlueprints();
+            StructureBlueprints();
+            StarshipBlueprints();
+            ModuleBlueprints();
+
+            return _builder.Build();
         }
 
-        private void FurnitureBlueprints(PerkBuilder builder)
+        private void Synthesis()
         {
-            builder.Create(PerkCategoryType.Fabrication, PerkType.FurnitureBlueprints)
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.RapidSynthesisFabrication)
+                .Name("Rapid Synthesis (Fabrication)")
+
+                .AddPerkLevel()
+                .Description("Increases progress by 30. (75% success rate)")
+                .Price(1)
+                .RequirementSkill(SkillType.Fabrication, 10);
+
+
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.CarefulSynthesisFabrication)
+                .Name("Careful Synthesis (Fabrication)")
+
+                .AddPerkLevel()
+                .Description("Increases progress by 80. (50% success rate)")
+                .Price(1)
+                .RequirementSkill(SkillType.Fabrication, 30);
+        }
+
+        private void Touch()
+        {
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.BasicTouchFabrication)
+                .Name("Basic Touch (Fabrication)")
+
+                .AddPerkLevel()
+                .Description("Increases quality by 10. (90% success rate)")
+                .Price(1)
+                .RequirementSkill(SkillType.Fabrication, 5);
+
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.StandardTouchFabrication)
+                .Name("Standard Touch (Fabrication)")
+
+                .AddPerkLevel()
+                .Description("Increases quality by 30. (75% success rate)")
+                .Price(1)
+                .RequirementSkill(SkillType.Fabrication, 15);
+
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.PreciseTouchFabrication)
+                .Name("Precise Touch (Fabrication)")
+
+                .AddPerkLevel()
+                .Description("Increases quality by 80. (50% success rate)")
+                .Price(1)
+                .RequirementSkill(SkillType.Fabrication, 35);
+        }
+
+        private void Abilities()
+        {
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.MastersMendFabrication)
+                .Name("Master's Mend (Fabrication)")
+
+                .AddPerkLevel()
+                .Description("Restores item durability by 30.")
+                .Price(1)
+                .RequirementSkill(SkillType.Fabrication, 10);
+
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.SteadyHandFabrication)
+                .Name("Steady Hand (Fabrication)")
+
+                .AddPerkLevel()
+                .Description("Increases success rate of next synthesis ability to 100%.")
+                .Price(1)
+                .RequirementSkill(SkillType.Fabrication, 20);
+
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.MuscleMemoryFabrication)
+                .Name("Muscle Memory (Fabrication)")
+
+                .AddPerkLevel()
+                .Description("Increases success rate of next touch ability to 100%.")
+                .Price(1)
+                .RequirementSkill(SkillType.Fabrication, 40);
+
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.VenerationFabrication)
+                .Name("Veneration (Fabrication)")
+
+                .AddPerkLevel()
+                .Description("Reduces CP cost of Synthesis abilitites by 50% for the next four actions.")
+                .Price(1)
+                .RequirementSkill(SkillType.Fabrication, 25);
+
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.WasteNotFabrication)
+                .Name("Waste Not (Fabrication)")
+
+                .AddPerkLevel()
+                .Description("Reduces loss of durability by 50% for the next four actions.")
+                .Price(1)
+                .RequirementSkill(SkillType.Fabrication, 8);
+        }
+
+        private void FurnitureBlueprints()
+        {
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.FurnitureBlueprints)
                 .Name("Furniture Blueprints")
 
                 .AddPerkLevel()
@@ -53,9 +148,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FurnitureBlueprints5);
         }
 
-        private void StructureBlueprints(PerkBuilder builder)
+        private void StructureBlueprints()
         {
-            builder.Create(PerkCategoryType.Fabrication, PerkType.StructureBlueprints)
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.StructureBlueprints)
                 .Name("Structure Blueprints")
 
                 .AddPerkLevel()
@@ -88,9 +183,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.StructureBlueprints5);
         }
 
-        private void StarshipBlueprints(PerkBuilder builder)
+        private void StarshipBlueprints()
         {
-            builder.Create(PerkCategoryType.Fabrication, PerkType.StarshipBlueprints)
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.StarshipBlueprints)
                 .Name("Starship Blueprints")
 
                 .AddPerkLevel()
@@ -112,9 +207,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.StarshipBlueprints3);
         }
 
-        private void ModuleBlueprints(PerkBuilder builder)
+        private void ModuleBlueprints()
         {
-            builder.Create(PerkCategoryType.Fabrication, PerkType.ModuleBlueprints)
+            _builder.Create(PerkCategoryType.Fabrication, PerkType.ModuleBlueprints)
                 .Name("Module Blueprints")
 
                 .AddPerkLevel()

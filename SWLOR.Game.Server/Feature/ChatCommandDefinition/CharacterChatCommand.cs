@@ -33,15 +33,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     SendMessageToPC(user, "Your public CD Key is: " + cdKey);
                 });
 
-            builder.Create("rest")
-                .Description("Opens the rest menu.")
-                .Permissions(AuthorizationLevel.Player)
-                .Action((user, target, location, args) =>
-                {
-                    Dialog.StartConversation(user, user, nameof(RestMenuDialog));
-                });
-
-
             builder.Create("save")
                 .Description("Manually saves your character. Your character also saves automatically every few minutes.")
                 .Permissions(AuthorizationLevel.Player)
@@ -68,15 +59,15 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
 
             builder.Create("recipe", "recipes")
-                .Description("Opens the recipes menu.")
+                .Description("Toggles the recipes menu.")
                 .Permissions(AuthorizationLevel.Player)
                 .Action((user, target, location, args) =>
                 {
-                    Dialog.StartConversation(user, user, nameof(RecipeDialog));
+                    Gui.TogglePlayerWindow(user,  GuiWindowType.Recipes);
                 });
 
             builder.Create("perk", "perks")
-                .Description("Opens the perks menu.")
+                .Description("Toggles the perks menu.")
                 .Permissions(AuthorizationLevel.Player)
                 .Action((user, target, location, args) =>
                 {

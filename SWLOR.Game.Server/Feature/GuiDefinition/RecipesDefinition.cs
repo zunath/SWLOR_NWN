@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 row2.AddSpacer();
                                 row2.AddLabel()
-                                    .BindText(model => model.RecipeModSlots)
+                                    .BindText(model => model.RecipeEnhancementSlots)
                                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
                                     .SetVerticalAlign(NuiVerticalAlign.Top)
                                     .SetHeight(26f);
@@ -139,7 +139,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     {
                                         cell.AddLabel()
                                             .BindText(model => model.RecipeDetails)
-                                            .BindColor(model => model.RecipeDetailColors);
+                                            .BindColor(model => model.RecipeDetailColors)
+                                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                            .SetVerticalAlign(NuiVerticalAlign.Middle);
                                     });
                                 })
                                     .BindRowCount(model => model.RecipeDetails);

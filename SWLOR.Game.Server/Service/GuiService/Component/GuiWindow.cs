@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         /// </summary>
         /// <param name="name">The name to associate to the partial view. This must be unique within the window.</param>
         /// <param name="view">The structure of the view.</param>
-        public GuiWindow<T> AddPartialView(string name, Action<GuiGroup<T>> view)
+        public GuiWindow<T> DefinePartialView(string name, Action<GuiGroup<T>> view)
         {
             var group = new GuiGroup<T>();
             group.SetScrollbars(NuiScrollbars.None);

@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(7)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 1)
-                .ModSlots(RecipeModType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 8)
                 .Component("fiberp_ruined", 4);
 
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(7)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 1)
-                .ModSlots(RecipeModType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 8)
                 .Component("fiberp_ruined", 4);
 
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(7)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 1)
-                .ModSlots(RecipeModType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_ruined", 8)
                 .Component("fiberp_ruined", 4);
         }
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(17)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)
-                .ModSlots(RecipeModType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_scordspar", 8)
                 .Component("fiberp_flawed", 4);
 
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(17)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)
-                .ModSlots(RecipeModType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 8)
                 .Component("fiberp_flawed", 4);
 
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(17)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)
-                .ModSlots(RecipeModType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("lth_flawed", 8)
                 .Component("fiberp_flawed", 4);
         }
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(27)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 8)
                 .Component("fiberp_good", 4);
 
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(27)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_good", 8)
                 .Component("fiberp_good", 4);
 
@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(27)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_good", 8)
                 .Component("fiberp_good", 4);
         }
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(37)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 4)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 8)
                 .Component("fiberp_imperfect", 4);
 
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(37)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 4)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_imperfect", 8)
                 .Component("fiberp_imperfect", 4);
 
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(37)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 4)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_imperfect", 8)
                 .Component("fiberp_imperfect", 4);
         }
@@ -174,7 +174,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(47)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 8)
                 .Component("fiberp_high", 4);
 
@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(47)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_high", 8)
                 .Component("fiberp_high", 4);
 
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(47)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("lth_high", 8)
                 .Component("fiberp_high", 4);
         }

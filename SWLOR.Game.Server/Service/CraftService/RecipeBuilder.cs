@@ -81,16 +81,16 @@ namespace SWLOR.Game.Server.Service.CraftService
         }
 
         /// <summary>
-        /// Sets the number of mod slots available to a recipe.
+        /// Sets the number of enhancement slots available to a recipe.
         /// If called twice, the latest one will replace the previous one.
         /// </summary>
-        /// <param name="type">The type of mod.</param>
+        /// <param name="type">The type of enhancement.</param>
         /// <param name="slots">The number of slots</param>
         /// <returns>A recipe builder with the configured options</returns>
-        public RecipeBuilder ModSlots(RecipeModType type, int slots)
+        public RecipeBuilder EnhancementSlots(RecipeEnhancementType type, int slots)
         {
-            _activeRecipe.ModType = type;
-            _activeRecipe.ModSlots = slots;
+            _activeRecipe.EnhancementType = type;
+            _activeRecipe.EnhancementSlots = slots;
 
             return this;
         }

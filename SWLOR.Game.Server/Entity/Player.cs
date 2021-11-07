@@ -64,6 +64,7 @@ namespace SWLOR.Game.Server.Entity
             Quests = new Dictionary<string, PlayerQuest>();
             UnlockedPerks = new Dictionary<PerkType, DateTime>();
             UnlockedRecipes = new Dictionary<RecipeType, DateTime>();
+            CraftedRecipes = new Dictionary<RecipeType, DateTime>();
             CharacterType = CharacterType.Invalid;
             KeyItems = new Dictionary<KeyItemType, DateTime>();
             Guilds = new Dictionary<GuildType, PlayerGuild>();
@@ -139,6 +140,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<string, PlayerQuest> Quests { get; set; }
         public Dictionary<PerkType, DateTime> UnlockedPerks { get; set; }
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
+        public Dictionary<RecipeType, DateTime> CraftedRecipes { get; set; }
         public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }
         public Dictionary<FactionType, PlayerFactionStanding> Factions { get; set; }

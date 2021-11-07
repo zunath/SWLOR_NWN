@@ -7,10 +7,10 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
-using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -18,16 +18,10 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Craft
     {
-        private const string CraftItemResref = "auto_craft_item";
-        private const string LoadComponentsResref = "load_components";
-        private const string SelectRecipeResref = "select_recipe";
-
-        private static readonly string[] _commandResrefs =
-        {
-            CraftItemResref,
-            LoadComponentsResref,
-            SelectRecipeResref
-        };
+        private static readonly GuiColor _white = new GuiColor(255, 255, 255);
+        private static readonly GuiColor _green = new GuiColor(0, 255, 0);
+        private static readonly GuiColor _red = new GuiColor(255, 0, 0);
+        private static readonly GuiColor _cyan = new GuiColor(0, 255, 255);
 
         private static readonly Dictionary<RecipeType, RecipeDetail> _recipes = new();
         private static readonly Dictionary<RecipeCategoryType, RecipeCategoryAttribute> _allCategories = new();
@@ -38,7 +32,6 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<SkillType, Tuple<AbilityType, AbilityType>> _craftSkillToAbility = new();
 
-        private static readonly Dictionary<uint, PlayerCraftingState> _playerCraftingStates = new();
         private static readonly HashSet<string> _componentResrefs = new();
 
         /// <summary>
@@ -275,33 +268,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves a player's crafting state.
-        /// If no state is found, a new one will be created and returned.
-        /// </summary>
-        /// <param name="player">The player state to retrieve.</param>
-        /// <returns>A player's crafting state</returns>
-        public static PlayerCraftingState GetPlayerCraftingState(uint player)
-        {
-            if(!_playerCraftingStates.ContainsKey(player))
-                _playerCraftingStates[player] = new PlayerCraftingState();
-
-            return _playerCraftingStates[player];
-        }
-
-        /// <summary>
-        /// Removes a player's crafting state from the cache.
-        /// Be sure this is called when the player leaves the server or stops crafting.
-        /// </summary>
-        /// <param name="player">The player to remove state from.</param>
-        public static void ClearPlayerCraftingState(uint player)
-        {
-            if (!_playerCraftingStates.ContainsKey(player))
-                return;
-
-            _playerCraftingStates.Remove(player);
-        }
-
-        /// <summary>
         /// When a crafting device is used, display the recipe menu.
         /// </summary>
         [NWNEventHandler("craft_on_used")]
@@ -312,201 +278,7 @@ namespace SWLOR.Game.Server.Service
             var payload = new RecipesPayload(skillType);
             Gui.TogglePlayerWindow(player, GuiWindowType.Recipes, payload, OBJECT_SELF);
         }
-
-        /// <summary>
-        /// Handles the crafting procedure.
-        /// Success is determined by a player's stats.
-        /// An item is created on a successful attempt.
-        /// </summary>
-        /// <param name="player">The player performing the crafting.</param>
-        private static void CraftItem(uint player)
-        {
-            var state = GetPlayerCraftingState(player);
-            var device = OBJECT_SELF;
-
-            float CalculateAutoCraftingDelay()
-            {
-                return 20f;
-            }
-
-            void CraftItem(bool isSuccessful)
-            {
-                var recipe = GetRecipe(state.SelectedRecipe);
-
-                var playerComponents = GetComponents(player, device);
-                var remainingComponents = recipe.Components.ToDictionary(x => x.Key, y => y.Value);
-
-                for (var index = playerComponents.Count - 1; index >= 0; index--)
-                {
-                    var component = playerComponents[index];
-                    var resref = GetResRef(component);
-
-                    // Item does not need any more of this component type.
-                    if (!remainingComponents.ContainsKey(resref))
-                        continue;
-
-                    var quantity = GetItemStackSize(component);
-
-                    // Player's component stack size is greater than the amount required.
-                    if (quantity > remainingComponents[resref])
-                    {
-                        SetItemStackSize(component, quantity - remainingComponents[resref]);
-                        remainingComponents[resref] = 0;
-                    }
-                    // Player's component stack size is less than or equal to the amount required.
-                    else if (quantity <= remainingComponents[resref])
-                    {
-                        remainingComponents[resref] -= quantity;
-                        DestroyObject(component);
-                    }
-
-                    if (remainingComponents[resref] <= 0)
-                        remainingComponents.Remove(resref);
-                }
-
-                if (isSuccessful)
-                {
-                    CreateItemOnObject(recipe.Resref, player, recipe.Quantity);
-                    ExecuteScript("craft_success", player);
-                }
-            }
-
-            if (!HasAllComponents(player, device))
-            {
-                SendMessageToPC(player, ColorToken.Red("You are missing some necessary components..."));
-                return;
-            }
-
-            var craftingDelay = CalculateAutoCraftingDelay();
-
-            state.IsAutoCrafting = true;
-            PlayerPlugin.StartGuiTimingBar(player, craftingDelay);
-            AssignCommand(player, () => ActionPlayAnimation(Animation.LoopingGetMid, 1f, craftingDelay));
-            DelayCommand(craftingDelay, () =>
-            {
-                // Player logged out.
-                if (!GetIsObjectValid(player))
-                {
-                    ClearPlayerCraftingState(player);
-                    return;
-                }
-
-                var chanceToCraft = CalculateChanceToCraft(player, state.SelectedRecipe);
-                var roll = Random.NextFloat(0f, 100f);
-
-                if (roll <= chanceToCraft)
-                {
-                    CraftItem(true);
-                }
-                else
-                {
-                    CraftItem(false);
-                    SendMessageToPC(player, ColorToken.Red("You failed to craft the item..."));
-                }
-
-                state.IsAutoCrafting = false;
-            });
-            ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), player, craftingDelay);
-        }
-
-        /// <summary>
-        /// Determines if the player has all of the necessary components for this recipe.
-        /// </summary>
-        /// <param name="player">The player to check</param>
-        /// <param name="device">The crafting device</param>
-        /// <returns>true if player has all components, false otherwise</returns>
-        private static bool HasAllComponents(uint player, uint device)
-        {
-            var state = GetPlayerCraftingState(player);
-            var recipe = GetRecipe(state.SelectedRecipe);
-            var remainingComponents = recipe.Components.ToDictionary(x => x.Key, y => y.Value);
-            var components = GetComponents(player, device);
-
-            for (var index = components.Count - 1; index >= 0; index--)
-            {
-                var component = components[index];
-                var resref = GetResRef(component);
-
-                // Item does not need any more of this component type.
-                if (!remainingComponents.ContainsKey(resref))
-                    continue;
-
-                var quantity = GetItemStackSize(component);
-
-                // Player's component stack size is greater than the amount required.
-                if (quantity > remainingComponents[resref])
-                {
-                    remainingComponents[resref] = 0;
-                }
-                // Player's component stack size is less than or equal to the amount required.
-                else if (quantity <= remainingComponents[resref])
-                {
-                    remainingComponents[resref] -= quantity;
-                }
-
-                if (remainingComponents[resref] <= 0)
-                    remainingComponents.Remove(resref);
-            }
-
-            return remainingComponents.Count <= 0;
-        }
-
-        /// <summary>
-        /// Retrieves all of the items found on a crafting device which match a recipe's component list.
-        /// </summary>
-        /// <param name="player">The player object</param>
-        /// <param name="device">The crafting device</param>
-        /// <returns>A list of item object Ids </returns>
-        private static List<uint> GetComponents(uint player, uint device)
-        {
-            var playerComponents = new List<uint>();
-            var model = GetPlayerCraftingState(player);
-            var recipe = GetRecipe(model.SelectedRecipe);
-
-            for (var item = GetFirstItemInInventory(device); GetIsObjectValid(item); item = GetNextItemInInventory(device))
-            {
-                var resref = GetResRef(item);
-                if (recipe.Components.ContainsKey(resref))
-                    playerComponents.Add(item);
-            }
-
-            return playerComponents;
-        }
-
-        /// <summary>
-        /// Searches a player's inventory for components matching this recipe's requirements.
-        /// </summary>
-        /// <param name="player">The player to search.</param>
-        private static void LoadComponents(uint player)
-        {
-            var device = OBJECT_SELF;
-            var state = GetPlayerCraftingState(player);
-            var recipe = GetRecipe(state.SelectedRecipe);
-
-            for (var item = GetFirstItemInInventory(player); GetIsObjectValid(item); item = GetNextItemInInventory(player))
-            {
-                var resref = GetResRef(item);
-
-                if (recipe.Components.ContainsKey(resref))
-                {
-                    Item.ReturnItem(device, item);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Opens the recipe menu so that a player can select a different recipe to create.
-        /// </summary>
-        /// <param name="player">The player object</param>
-        private static void SelectRecipe(uint player)
-        {
-            var device = OBJECT_SELF;
-            var state = GetPlayerCraftingState(player);
-            state.IsOpeningMenu = true;
-
-            Dialog.StartConversation(player, device, nameof(RecipeDialog));
-        }
-
+        
         /// <summary>
         /// When a player uses an item tagged with "RECIPE", the list of recipes associated with the item
         /// are added to their collection. The item is then destroyed.
@@ -577,5 +349,93 @@ namespace SWLOR.Game.Server.Service
             DB.Set(playerId, dbPlayer);
             DestroyObject(item);
         }
+
+        /// <summary>
+        /// Builds a recipe's detail for use within the NUI window.
+        /// </summary>
+        /// <param name="player">The player to build for.</param>
+        /// <param name="recipe">The recipe to build.</param>
+        public static (GuiBindingList<string>, GuiBindingList<GuiColor>) BuildRecipeDetail(uint player, RecipeType recipe)
+        {
+            var detail = GetRecipe(recipe);
+            var recipeDetails = new GuiBindingList<string>();
+            var recipeDetailColors = new GuiBindingList<GuiColor>();
+
+            recipeDetails.Add("[COMPONENTS]");
+            recipeDetailColors.Add(_cyan);
+            foreach (var (resref, quantity) in detail.Components)
+            {
+                var componentName = Cache.GetItemNameByResref(resref);
+                recipeDetails.Add($"{quantity}x {componentName}");
+                recipeDetailColors.Add(_white);
+            }
+
+            recipeDetails.Add(string.Empty);
+            recipeDetailColors.Add(_green);
+
+            recipeDetails.Add("[REQUIREMENTS]");
+            recipeDetailColors.Add(_cyan);
+            foreach (var req in detail.Requirements)
+            {
+                recipeDetails.Add(req.RequirementText);
+                recipeDetailColors.Add(string.IsNullOrWhiteSpace(req.CheckRequirements(player))
+                    ? _green
+                    : _red);
+            }
+
+            recipeDetails.Add(string.Empty);
+            recipeDetailColors.Add(_green);
+
+            recipeDetails.Add("[PROPERTIES]");
+            recipeDetailColors.Add(_cyan);
+            var tempStorage = GetObjectByTag("TEMP_ITEM_STORAGE");
+            var item = CreateItemOnObject(detail.Resref, tempStorage);
+            
+            foreach (var ip in Item.BuildItemPropertyList(item))
+            {
+                recipeDetails.Add(ip);
+                recipeDetailColors.Add(_white);
+            }
+            
+            DestroyObject(item);
+
+            return (recipeDetails, recipeDetailColors);
+        }
+
+        /// <summary>
+        /// Determines whether a player can craft a specific recipe.
+        /// This does not account for whether the player actually has the required items in their inventory.
+        /// </summary>
+        /// <param name="player">The player to check</param>
+        /// <param name="recipeType">The recipe to check</param>
+        /// <returns>true if the player can craft the recipe, false otherwise</returns>
+        public static bool CanPlayerCraftRecipe(uint player, RecipeType recipeType)
+        {
+            var recipe = GetRecipe(recipeType);
+            if (recipe.Requirements.Count <= 0) return true;
+
+            foreach (var requirement in recipe.Requirements)
+            {
+                if (!string.IsNullOrWhiteSpace(requirement.CheckRequirements(player)))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Determines whether an item is an enhancement of the specified type.
+        /// </summary>
+        /// <param name="item">The item to check.</param>
+        /// <param name="type">The type to expect.</param>
+        /// <returns>true if item is an enhancement of the specified type. false otherwise.</returns>
+        public static bool IsItemEnhancement(uint item, RecipeEnhancementType type)
+        {
+
+            return true;
+        }
+
     }
 }

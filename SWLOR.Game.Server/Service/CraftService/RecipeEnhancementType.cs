@@ -1,6 +1,6 @@
 ﻿namespace SWLOR.Game.Server.Service.CraftService
 {
-    public enum RecipeModType
+    public enum RecipeEnhancementType
     {
         None = 0,
         Weapon = 1,

@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(3)
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 1)
-                .ModSlots(RecipeModType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 4)
                 .Component("wood", 2);
 
@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(13)
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 2)
-                .ModSlots(RecipeModType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 4)
                 .Component("fine_wood", 2);
 
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(23)
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 3)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 4)
                 .Component("ancient_wood", 2);
 
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(33)
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 4)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 4)
                 .Component("aracia_wood", 2);
 
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(43)
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 5)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 4)
                 .Component("hyphae_wood", 2);
         }
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(5)
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 1)
-                .ModSlots(RecipeModType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 6)
                 .Component("wood", 3);
 
@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(15)
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 2)
-                .ModSlots(RecipeModType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 6)
                 .Component("fine_wood", 3);
 
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(25)
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 3)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 6)
                 .Component("ancient_wood", 3);
 
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(35)
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 4)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 6)
                 .Component("aracia_wood", 3);
 
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(45)
                 .Quantity(1)
                 .RequirementPerk(PerkType.MartialBlueprints, 5)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 6)
                 .Component("hyphae_wood", 3);
         }

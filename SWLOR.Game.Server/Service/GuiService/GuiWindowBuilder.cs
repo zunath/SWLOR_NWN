@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
@@ -59,6 +60,7 @@ namespace SWLOR.Game.Server.Service.GuiService
                 Gui.RegisterElementEvent(windowEventKey, "close", _activeWindow.ClosedEventMethodInfo);
             
             // Recurse over all elements in the window, looking for and registering any events
+            RegisterElementEvents(_activeWindow.PartialViews.Values.ToList(), windowId);
             RegisterElementEvents(_activeWindow.Elements, windowId);
         }
 

@@ -45,6 +45,9 @@ namespace SWLOR.Game.Server.Feature
 
             SetTlkOverride(321, "EV");
             SetTlkOverride(7099, "Evasion");
+
+            SetTlkOverride(66751, "Holonet");
+            SetTlkOverride(66755, "Comms");
         }
 
         private static string BuildRecommendedButtonText()

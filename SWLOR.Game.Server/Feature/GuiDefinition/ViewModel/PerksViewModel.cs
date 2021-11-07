@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class PerksViewModel : GuiViewModelBase<PerksViewModel, GuiPayloadBase>
     {
-        private static readonly GuiColor _redColor = new GuiColor(255, 0, 0);
-        private static readonly GuiColor _greenColor = new GuiColor(0, 255, 0);
+        private static readonly GuiColor _red = new GuiColor(255, 0, 0);
+        private static readonly GuiColor _green = new GuiColor(0, 255, 0);
 
         private const int ItemsPerPage = 30;
         private int _pages;
@@ -269,7 +269,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _filteredPerks.Add(type);
                 perkButtonTexts.Add($"{detail.Name} ({playerRank} / {detail.PerkLevels.Count})");
                 perkDetailSelected.Add(false);
-                perkButtonColors.Add(meetsRequirements ? _greenColor : _redColor);
+                perkButtonColors.Add(meetsRequirements ? _green : _red);
             }
 
             PerkButtonColors = perkButtonColors;
@@ -312,25 +312,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var requirements = new GuiBindingList<string>();
             var requirementColors = new GuiBindingList<GuiColor>();
 
-            foreach (var req in nextUpgrade.Requirements)
+            if (nextUpgrade == null)
             {
-                requirements.Add(req.RequirementText);
-
-                if (string.IsNullOrWhiteSpace(req.CheckRequirements(Player)))
-                {
-                    requirementColors.Add(_greenColor);
-                }
-                else
-                {
-                    requirementColors.Add(_redColor);
-                    meetsRequirements = false;
-                }
+                requirements.Add("MAXED");
+                requirementColors.Add(_green);
             }
-
-            if (nextUpgrade.Requirements.Count <= 0)
+            else
             {
-                requirements.Add("None");
-                requirementColors.Add(_greenColor);
+                foreach (var req in nextUpgrade.Requirements)
+                {
+                    requirements.Add(req.RequirementText);
+
+                    if (string.IsNullOrWhiteSpace(req.CheckRequirements(Player)))
+                    {
+                        requirementColors.Add(_green);
+                    }
+                    else
+                    {
+                        requirementColors.Add(_red);
+                        meetsRequirements = false;
+                    }
+                }
+
+                if (nextUpgrade.Requirements.Count <= 0)
+                {
+                    requirements.Add("None");
+                    requirementColors.Add(_green);
+                }
             }
 
             return (meetsRequirements, requirements, requirementColors);
@@ -365,14 +373,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : null;
             var selectedDetails = BuildSelectedPerkDetailText(detail, currentUpgrade, nextUpgrade);
             var meetsRequirements = true;
-
-            if (nextUpgrade != null)
-            {
-                var (meetsReqs, requirements, requirementColors) = BuildRequirements(nextUpgrade);
-                meetsRequirements = meetsReqs;
-                SelectedRequirements = requirements;
-                SelectedRequirementColors = requirementColors;
-            }
+            
+            var (meetsReqs, requirements, requirementColors) = BuildRequirements(nextUpgrade);
+            meetsRequirements = meetsReqs;
+            SelectedRequirements = requirements;
+            SelectedRequirementColors = requirementColors;
 
             BuyText = nextUpgrade != null
                 ? $"Buy Upgrade ({nextUpgrade.Price} SP)"
@@ -516,10 +521,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         ? detail.PerkLevels[dbPlayer.Perks[selectedPerk] + 1]
                         : null;
                     SelectedDetails = BuildSelectedPerkDetailText(detail, currentUpgrade, nextUpgrade);
-                    var (meetsRequirements, requirements, requirementColors) = BuildRequirements(nextUpgrade);
-                    
+
                     PerkButtonTexts[_selectedPerkIndex] = $"{detail.Name} ({dbPlayer.Perks[selectedPerk]} / {detail.PerkLevels.Count})";
-                    PerkButtonColors[_selectedPerkIndex] = meetsRequirements ? _greenColor : _redColor;
+
+                    var (meetsRequirements, requirements, requirementColors) = BuildRequirements(nextUpgrade);
+
+                    PerkButtonColors[_selectedPerkIndex] = meetsRequirements ? _green : _red;
                     SelectedRequirements = requirements;
                     SelectedRequirementColors = requirementColors;
                     IsBuyEnabled = nextUpgrade != null &&

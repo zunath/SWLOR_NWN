@@ -77,6 +77,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
+                _currentRecipeIndex = -1;
 
                 if (!_skipPaginationSearch)
                     Search();

@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<SkillType, Tuple<AbilityType, AbilityType>> _craftSkillToAbility = new();
 
+        private static readonly RecipeLevelChart _levelChart = new();
         private static readonly HashSet<string> _componentResrefs = new();
 
         /// <summary>
@@ -433,8 +434,18 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if item is an enhancement of the specified type. false otherwise.</returns>
         public static bool IsItemEnhancement(uint item, RecipeEnhancementType type)
         {
-
+            // todo: check item properties
             return true;
+        }
+
+        /// <summary>
+        /// Retrieves a recipe's level detail by the given level number.
+        /// </summary>
+        /// <param name="level">The level to search by.</param>
+        /// <returns>A recipe level detail.</returns>
+        public static RecipeLevelDetail GetRecipeLevelDetail(int level)
+        {
+            return _levelChart.GetByLevel(level);
         }
 
     }

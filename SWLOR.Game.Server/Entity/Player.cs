@@ -90,6 +90,10 @@ namespace SWLOR.Game.Server.Entity
         public int Fortitude { get; set; }
         public int Reflex { get; set; }
         public int Will { get; set; }
+        public int CP { get; set; }
+        public int Control { get; set; }
+        public int Craftsmanship { get; set; }
+
         [Indexed]
         public string LocationAreaResref { get; set; }
         public float LocationX { get; set; }

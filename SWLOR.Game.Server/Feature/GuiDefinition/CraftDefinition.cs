@@ -22,17 +22,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .BindText(model => model.ControlTotal)
-                            .SetHeight(20f);
-
-                        row.AddLabel()
-                            .BindText(model => model.CraftsmanshipTotal)
-                            .SetHeight(20f);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
                             .BindText(model => model.RecipeName)
                             .SetHeight(20f)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
@@ -43,6 +32,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddLabel()
                             .BindText(model => model.RecipeLevel)
+                            .SetHeight(20f)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .BindText(model => model.YourSkill)
                             .SetHeight(20f)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
                             .SetVerticalAlign(NuiVerticalAlign.Middle);
@@ -121,6 +119,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddLabel()
+                            .BindText(model => model.StatusText)
+                            .BindColor(model => model.StatusColor)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Middle)
+                            .SetHeight(20f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
                             .BindText(model => model.DurabilityText)
                             .SetHeight(20f)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
@@ -169,6 +177,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddLabel()
+                            .BindText(model => model.CP)
+                            .SetHeight(20f)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Middle);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
                             .SetText("Synthesis Abilities:")
                             .SetHeight(20f)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
@@ -179,21 +196,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddButton()
                             .SetHeight(30f)
-                            .SetText("Basic Synthesis")
+                            .SetText("Basic Synthesis [0]")
                             .BindOnClicked(model => model.OnClickBasicSynthesis())
                             .SetTooltip("Increases progress by 10. (90% success rate)")
                             .BindIsEnabled(model => model.IsInCraftMode);
 
                         row.AddButton()
                             .SetHeight(30f)
-                            .SetText("Rapid Synthesis")
+                            .SetText("Rapid Synthesis [6]")
                             .BindOnClicked(model => model.OnClickRapidSynthesis())
                             .SetTooltip("Increases progress by 30. (75% success rate)")
                             .BindIsEnabled(model => model.IsRapidSynthesisEnabled);
 
                         row.AddButton()
                             .SetHeight(30f)
-                            .SetText("Careful Synthesis")
+                            .SetText("Careful Synthesis [15]")
                             .BindOnClicked(model => model.OnClickCarefulSynthesis())
                             .SetTooltip("Increases progress by 80. (50% success rate)")
                             .BindIsEnabled(model => model.IsCarefulSynthesisEnabled);
@@ -212,21 +229,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddButton()
                             .SetHeight(30f)
-                            .SetText("Basic Touch")
+                            .SetText("Basic Touch [3]")
                             .BindOnClicked(model => model.OnClickBasicTouch())
                             .SetTooltip("Increases quality by 10. (90% success rate)")
                             .BindIsEnabled(model => model.IsBasicTouchEnabled);
 
                         row.AddButton()
                             .SetHeight(30f)
-                            .SetText("Standard Touch")
+                            .SetText("Standard Touch [6]")
                             .BindOnClicked(model => model.OnClickStandardTouch())
                             .SetTooltip("Increases quality by 30. (75% success rate)")
                             .BindIsEnabled(model => model.IsStandardTouchEnabled);
 
                         row.AddButton()
                             .SetHeight(30f)
-                            .SetText("Precise Touch")
+                            .SetText("Precise Touch [15]")
                             .BindOnClicked(model => model.OnClickPreciseTouch())
                             .SetTooltip("Increases quality by 80. (50% success rate)")
                             .BindIsEnabled(model => model.IsPreciseTouchEnabled);
@@ -246,21 +263,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddButton()
                             .SetHeight(30f)
-                            .SetText("Master's Mend")
+                            .SetText("Master's Mend [10]")
                             .BindOnClicked(model => model.OnClickMastersMend())
                             .SetTooltip("Restores item durability by 30.")
                             .BindIsEnabled(model => model.IsMastersMendEnabled);
 
                         row.AddButton()
                             .SetHeight(30f)
-                            .SetText("Steady Hand")
+                            .SetText("Steady Hand [12]")
                             .BindOnClicked(model => model.OnClickSteadyHand())
                             .SetTooltip("Increases success rate of next synthesis ability to 100%.")
                             .BindIsEnabled(model => model.IsSteadyHandEnabled);
 
                         row.AddButton()
                             .SetHeight(30f)
-                            .SetText("Muscle Memory")
+                            .SetText("Muscle Memory [12]")
                             .BindOnClicked(model => model.OnClickMuscleMemory())
                             .SetTooltip("Increases success rate of next touch ability to 100%.")
                             .BindIsEnabled(model => model.IsMuscleMemoryEnabled);
@@ -270,14 +287,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddButton()
                             .SetHeight(30f)
-                            .SetText("Veneration")
+                            .SetText("Veneration [8]")
                             .BindOnClicked(model => model.OnClickVeneration())
                             .SetTooltip("Reduces CP cost of Synthesis abilitites by 50% for the next four actions.")
                             .BindIsEnabled(model => model.IsVenerationEnabled);
 
                         row.AddButton()
                             .SetHeight(30f)
-                            .SetText("Waste Not")
+                            .SetText("Waste Not [4]")
                             .BindOnClicked(model => model.OnClickWasteNot())
                             .SetTooltip("Reduces loss of durability by 50% for the next four actions.")
                             .BindIsEnabled(model => model.IsWasteNotEnabled);

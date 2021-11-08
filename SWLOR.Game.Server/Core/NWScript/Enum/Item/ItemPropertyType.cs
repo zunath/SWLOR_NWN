@@ -86,20 +86,23 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         Additional = 87,
 
         // Custom Item Properties follow
-        WeaponSocket = 88,
-        ArmorSocket = 89,
+        Control = 88,
+        Craftsmanship = 89,
         HPBonus = 90,
         FPBonus = 91,
         STMBonus = 92,
         DMG = 93,
         Defense = 94,
-
+        ProgressPenalty = 95,
         NPCHP = 96,
         NPCEP = 97,
         NPCSTM = 98,
         NPCLevel = 99,
         UseLimitationPerk = 100,
-        ArmorClass = 117,
+        ArmorEnhancement = 101,
+        WeaponEnhancement = 102,
+
+        Evasion = 117,
         AbilityRecastReduction = 118,
     }
 }

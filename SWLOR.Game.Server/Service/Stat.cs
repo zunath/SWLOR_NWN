@@ -524,6 +524,28 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Modifies a player's control by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustControl(Player entity, int adjustBy)
+        {
+            entity.Control += adjustBy;
+        }
+
+        /// <summary>
+        /// Modifies a player's craftsmanship by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustCraftsmanship(Player entity, int adjustBy)
+        {
+            entity.Craftsmanship += adjustBy;
+        }
+
+        /// <summary>
         /// When a creature spawns, load its relevant defense information based on their equipment.
         /// </summary>
         [NWNEventHandler("crea_spawn")]

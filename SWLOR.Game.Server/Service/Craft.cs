@@ -4,10 +4,12 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -446,6 +448,72 @@ namespace SWLOR.Game.Server.Service
         public static RecipeLevelDetail GetRecipeLevelDetail(int level)
         {
             return _levelChart.GetByLevel(level);
+        }
+
+        /// <summary>
+        /// Builds an item property for a given enhancement type.
+        /// </summary>
+        /// <param name="subTypeId">The sub type of the enhancement</param>
+        /// <param name="amount">The amount to apply.</param>
+        /// <returns></returns>
+        public static ItemProperty BuildItemPropertyForEnhancement(int subTypeId, int amount)
+        {
+            switch (subTypeId)
+            {
+                case 1: // Defense - Physical
+                    return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Physical, amount);
+                case 2: // Defense - Force
+                    return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Force, amount);
+                case 3: // Defense - Fire
+                    return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Fire, amount);
+                case 4: // Defense - Poison
+                    return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Poison, amount);
+                case 5: // Defense - Electrical
+                    return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Electrical, amount);
+                case 6: // Defense - Ice
+                    return ItemPropertyCustom(ItemPropertyType.Defense, (int)CombatDamageType.Ice, amount);
+                case 7: // Evasion
+                    return ItemPropertyCustom(ItemPropertyType.Evasion, -1, amount);
+                case 8: // HP
+                    return ItemPropertyCustom(ItemPropertyType.HPBonus, -1, amount);
+                case 9: // FP
+                    return ItemPropertyCustom(ItemPropertyType.FPBonus, -1, amount);
+                case 10: // Stamina
+                    return ItemPropertyCustom(ItemPropertyType.STMBonus, -1, amount);
+                case 11: // Vitality
+                    return ItemPropertyAbilityBonus(AbilityType.Vitality, amount);
+                case 12: // Social
+                    return ItemPropertyAbilityBonus(AbilityType.Social, amount);
+                case 13: // Willpower
+                    return ItemPropertyAbilityBonus(AbilityType.Willpower, amount);
+                case 14: // Control
+                    return ItemPropertyCustom(ItemPropertyType.Control, -1, amount);
+                case 15: // Craftsmanship
+                    return ItemPropertyCustom(ItemPropertyType.Craftsmanship, -1, amount);
+                
+                // 16 and 17 are applied within the view model, as they are not actually item properties.
+                
+                case 18: // DMG - Physical
+                    return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, amount);
+                case 19: // DMG - Force
+                    return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Force, amount);
+                case 20: // DMG - Fire
+                    return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Fire, amount);
+                case 21: // DMG - Poison
+                    return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Poison, amount);
+                case 22: // DMG - Electrical
+                    return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Electrical, amount);
+                case 23: // DMG - Ice
+                    return ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Ice, amount);
+                case 24: // Might
+                    return ItemPropertyAbilityBonus(AbilityType.Might, amount);
+                case 25: // Perception
+                    return ItemPropertyAbilityBonus(AbilityType.Perception, amount);
+                case 26: // Attack Bonus
+                    return ItemPropertyAttackBonus(amount);
+            }
+
+            throw new Exception("Unsupported enhancement type.");
         }
 
     }

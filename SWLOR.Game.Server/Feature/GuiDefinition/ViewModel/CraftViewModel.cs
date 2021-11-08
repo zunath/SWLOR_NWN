@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
@@ -23,8 +27,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string SetUpPartialName = "SetUpPartial";
         public const string CraftPartialName = "CraftPartial";
         private const string BlankTexture = "Blank";
-        private static GuiColor _green = new GuiColor(0, 255, 0);
-        private static GuiColor _red = new GuiColor(255, 0, 0);
+        private static readonly GuiColor _green = new GuiColor(0, 255, 0);
+        private static readonly GuiColor _red = new GuiColor(255, 0, 0);
 
         private RecipeType _recipe;
         
@@ -249,6 +253,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         private readonly List<string> _components = new();
+        private readonly List<ItemProperty> _itemPropertiesEnhancement1 = new();
+        private readonly List<ItemProperty> _itemPropertiesEnhancement2 = new();
         private string _enhancement1;
         private string _enhancement2;
         private int _durability;
@@ -446,19 +452,89 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     ObjectPlugin.AcquireItem(Player, item);
                 }
 
+                _itemPropertiesEnhancement1.Clear();
+                _itemPropertiesEnhancement2.Clear();
                 _components.Clear();
             }
         };
 
         private bool IsValidEnhancement(uint item)
         {
+            var recipe = Craft.GetRecipe(_recipe);
+            var itemPropertyType = ItemPropertyType.Invalid;
+
             if (GetItemPossessor(item) != Player)
             {
                 FloatingTextStringOnCreature("Item must be in your inventory.", Player, false);
                 return false;
             }
 
+            if (recipe.EnhancementType == RecipeEnhancementType.Armor)
+            {
+                itemPropertyType = ItemPropertyType.ArmorEnhancement;
+            }
+            else if (recipe.EnhancementType == RecipeEnhancementType.Weapon)
+            {
+                itemPropertyType = ItemPropertyType.WeaponEnhancement;
+            }
+
+            if (itemPropertyType == ItemPropertyType.Invalid)
+            {
+                FloatingTextStringOnCreature("Item must be an enhancement.", Player, false);
+                return false;
+            }
+
+            var foundIp = false;
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) != itemPropertyType) 
+                    continue;
+
+                foundIp = true;
+                break;
+            }
+
+            if (!foundIp)
+            {
+                FloatingTextStringOnCreature("Item must be an enhancement.", Player, false);
+                return false;
+            }
+
             return true;
+        }
+
+        private int CalculateProgressPenaltyAndProcessItemProperties(uint item, List<ItemProperty> itemProperties)
+        {
+            var recipe = Craft.GetRecipe(_recipe);
+            var progressPenalty = 0;
+
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                var type = GetItemPropertyType(ip);
+                var subType = GetItemPropertySubType(ip);
+                var amount = GetItemPropertyCostTableValue(ip);
+
+                // Progress Penalty - Add to total
+                if (type == ItemPropertyType.ProgressPenalty)
+                {
+                    progressPenalty += GetItemPropertyCostTableValue(ip);
+                }
+                // Enhancement - Add to item property list.
+                else if (type == ItemPropertyType.ArmorEnhancement &&
+                         recipe.EnhancementType == RecipeEnhancementType.Armor)
+                {
+                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
+                    itemProperties.Add(itemProperty);
+                }
+                else if (type == ItemPropertyType.WeaponEnhancement &&
+                         recipe.EnhancementType == RecipeEnhancementType.Weapon)
+                {
+                    var itemProperty = Craft.BuildItemPropertyForEnhancement(subType, amount);
+                    itemProperties.Add(itemProperty);
+                }
+            }
+
+            return progressPenalty;
         }
 
         public Action OnClickEnhancement1() => () =>
@@ -470,12 +546,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (!IsValidEnhancement(item))
                         return;
 
+                    var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement1);
                     _enhancement1 = ObjectPlugin.Serialize(item);
                     Enhancement1Tooltip = GetName(item);
                     Enhancement1Resref = Item.GetIconResref(item);
+                    _maxProgress += progressPenalty;
 
                     DestroyObject(item);
-
                     RefreshRecipeStats();
                 });
             }
@@ -485,9 +562,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var item = ObjectPlugin.Deserialize(_enhancement1);
                     ObjectPlugin.AcquireItem(Player, item);
+                    var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement1);
                     _enhancement1 = string.Empty;
                     Enhancement1Resref = BlankTexture;
                     Enhancement1Tooltip = "Select Enhancement #1";
+                    _maxProgress -= progressPenalty;
+                    _itemPropertiesEnhancement1.Clear();
 
                     RefreshRecipeStats();
                 });
@@ -503,9 +583,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (!IsValidEnhancement(item))
                         return;
 
+                    var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement2);
                     _enhancement2 = ObjectPlugin.Serialize(item);
                     Enhancement2Tooltip = GetName(item);
                     Enhancement2Resref = Item.GetIconResref(item);
+                    _maxProgress += progressPenalty;
 
                     DestroyObject(item);
                     RefreshRecipeStats();
@@ -517,9 +599,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     var item = ObjectPlugin.Deserialize(_enhancement2);
                     ObjectPlugin.AcquireItem(Player, item);
+                    var progressPenalty = CalculateProgressPenaltyAndProcessItemProperties(item, _itemPropertiesEnhancement2);
                     _enhancement2 = string.Empty;
                     Enhancement2Resref = BlankTexture;
                     Enhancement2Tooltip = "Select Enhancement #2";
+                    _maxProgress -= progressPenalty;
+                    _itemPropertiesEnhancement2.Clear();
+
                     RefreshRecipeStats();
                 });
             }
@@ -735,8 +821,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var item = CreateItemOnObject(recipe.Resref, Player, recipe.Quantity);
             var delta =  recipe.Level - dbPlayer.Skills[recipe.Skill].Rank;
             var firstTime = !dbPlayer.CraftedRecipes.ContainsKey(_recipe);
+            var propertyTransferChance = (int)(((float)_quality / (float)_maxQuality) * 100);
 
-            // todo: apply enhancements
+            // Apply item properties provided by enhancements, provided the transfer check passes.
+            foreach (var ip in _itemPropertiesEnhancement1)
+            {
+                if (Random.D100(1) <= propertyTransferChance)
+                {
+                    BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.KeepExisting, false, false);
+                    SendMessageToPC(Player, ColorToken.Green("Enhancement applied successfully."));
+                }
+                else
+                {
+                    SendMessageToPC(Player, ColorToken.Red("Enhancement failed to apply."));
+                }
+            }
+            foreach (var ip in _itemPropertiesEnhancement2)
+            {
+                if (Random.D100(1) <= propertyTransferChance)
+                {
+                    BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.KeepExisting, false, false);
+                    SendMessageToPC(Player, ColorToken.Green("Enhancement applied successfully."));
+                }
+                else
+                {
+                    SendMessageToPC(Player, ColorToken.Red("Enhancement failed to apply."));
+                }
+            }
 
             // Add the recipe to the completed list (unlocks auto-crafting)
             if (firstTime)
@@ -756,6 +867,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Skill.GiveSkillXP(Player, recipe.Skill, xp);
 
             // Clean up and return to the Set Up mode.
+            _itemPropertiesEnhancement1.Clear();
+            _itemPropertiesEnhancement2.Clear();
+            _enhancement1 = string.Empty;
+            _enhancement2 = string.Empty;
             _components.Clear();
             SwitchToSetUpMode();
             LoadCraftingState();
@@ -793,6 +908,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
             }
 
+            _itemPropertiesEnhancement1.Clear();
+            _itemPropertiesEnhancement2.Clear();
             _components.Clear();
 
             SwitchToSetUpMode();

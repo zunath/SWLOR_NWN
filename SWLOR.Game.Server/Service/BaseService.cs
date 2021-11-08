@@ -1227,7 +1227,7 @@ namespace SWLOR.Game.Server.Service
                     player = (_.GetNextPC());
                 }
 
-                AreaService.DestroyAreaInstance(area);
+                //AreaService.DestroyAreaInstance(area);
             });
         }
 

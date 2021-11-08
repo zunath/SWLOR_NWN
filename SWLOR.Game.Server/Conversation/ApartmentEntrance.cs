@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Conversation
                     player = (_.GetNextPC());
                 }
 
-                AreaService.DestroyAreaInstance(area);
+                //AreaService.DestroyAreaInstance(area);
             });
 
 

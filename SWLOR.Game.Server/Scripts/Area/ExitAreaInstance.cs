@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Scripts.Area
                 int playerCount = NWModule.Get().Players.Count(x => !Equals(x, player) && Equals(x.Area, door.Area));
                 if (playerCount <= 0)
                 {
-                    AreaService.DestroyAreaInstance(door.Area);
+                    //AreaService.DestroyAreaInstance(door.Area);
                 }
             });
 

@@ -69,18 +69,18 @@ namespace SWLOR.Game.Server.Service
             TeleportPlayerToBindPoint(oPC);
 
             // If player is the last person in an instance, destroy the instance.
-            if (area.IsInstance)
-            {
-                int playersInArea = NWModule.Get().Players.Count(x => x.Area == oPC.Area && x != oPC);
+            //if (area.IsInstance)
+            //{
+            //    int playersInArea = NWModule.Get().Players.Count(x => x.Area == oPC.Area && x != oPC);
 
-                if (playersInArea <= 0)
-                {
-                    _.DelayCommand(12.0f, () =>
-                    {
-                        AreaService.DestroyAreaInstance(area);
-                    }); 
-                }
-            }
+            //    if (playersInArea <= 0)
+            //    {
+            //        _.DelayCommand(12.0f, () =>
+            //        {
+            //            AreaService.DestroyAreaInstance(area);
+            //        }); 
+            //    }
+            //}
         }
         
 

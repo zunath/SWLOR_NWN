@@ -263,6 +263,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Darth Malak's Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "malak_robes01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Farmer Outfit"
                     },
                     "RESREF": {
@@ -356,6 +367,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "pil_joleerobes"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Malak's Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "malak_cloak002"
                     }
                   },
                   {
@@ -3882,1199 +3904,6 @@
         "STRREF": {
           "type": "dword",
           "value": 16778255
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ID": {
-          "type": "byte",
-          "value": 201
-        },
-        "LIST": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Altar, Evil"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0055"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Altar, Hand"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0059"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Altar, Stone"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0068"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Bear Skin Rug"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0064"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Bed Roll"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0085"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Bed, Extra Large"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0052"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Bed, Large"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0075"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Bed, Stone, Yellow"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0074"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Bed, Wood, Yellow"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0078"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Bench, Large"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0115"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Bench, Stone, Dwarven"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0111"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Bench, Wood"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0113"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Bench, Wood, Large"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0117"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Bench, Wood, Small"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0118"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Bench, Wood, Small 2"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0123"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Bird Cage"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0081"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Birdbath"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0026"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Brazier, Round"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0021"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Brazier, Stone"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0017"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Bunk Bed"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0083"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Cage"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0037"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Candelabra"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0090"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Candle"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0062"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Carpet"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0077"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Carpet, Fancy"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0093"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Carpet, Fancy, Smaller"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0096"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Carpet, Round, Blue"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0054"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Chair, Shell"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0124"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Chair, Stone"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0122"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Chair, Wood"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0119"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Chair, Wood, Medium"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0114"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Chair, Wood, Small"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0120"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Chandelier"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0065"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Cot"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0069"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Couch, Wood, Yellow"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0125"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Cushions"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0061"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Dartboard"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0098"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Doorway, Metal"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0019"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Doorway, Stone"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0030"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Dran Statue "
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0048"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Drow Altar"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0097"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Drow Bar"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0102"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Drow Chair"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0116"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Drow Table"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0108"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Easel"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0045"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Female Statue"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0031"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Flaming Statue"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0020"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Floor-anchored shackles"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0100"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Footstool"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0107"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Fountain"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0043"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Gnomish Contraption"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0032"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Gong"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0013"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Illithid Chair"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0112"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Illithid Table"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0095"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Invalid"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0000"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Jukebox"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0005"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Keg"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0047"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Ladder, Dark"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0008"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Ladder, Light"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0007"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Lamp Post"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0038"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Map"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0099"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Mining Well"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0010"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Mining Well Platform"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0028"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Mirror"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0106"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Monster Statue"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0044"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Net"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0051"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Obelisk, Large"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0004"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Obelisk, Small"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0006"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Ottoman"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0086"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Overgrown Pillar"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0079"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Painting 1"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0092"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Painting 2"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0089"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Pedestal"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0022"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Pedestal, Evil"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0025"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Pedestal, Sword"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0029"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Pillar, Flame"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0036"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Pillar, Rounded"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0088"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Pillar, Stone"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0033"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Pillar, Wood"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0040"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Pillar, Wood, Dark"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0082"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Potted Plant"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0091"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Rope Coil"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0023"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Round Wooden Table"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0101"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Rune Pillar"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0104"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Sea Idol"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0042"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Shrine of Umberlee"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0103"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Sphinx Statue"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0027"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Statue of Lathander"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0035"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Statue, Cyric"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0041"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Statue, Guardian"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0018"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Statue, Huge"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0009"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Statue, Monster"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0014"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Statue, Wizard"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0012"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Statue, Wyvern "
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0024"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Table, Stone, Large"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0073"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Table, Stone, Small"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0058"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Table, Wood"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0070"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Table, Wood, Large"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0056"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Table, Wood, With Fish"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0057"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Throne, Wood"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0121"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Throw Rug"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0072"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Tome"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0080"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Torch Bracket"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0039"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Urn"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0067"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Vase, Rounded"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0076"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Vase, Tall"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0084"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
-                "value": "Window"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "furniture_0060"
-              }
-            }
-          ]
-        },
-        "STRREF": {
-          "type": "dword",
-          "value": 16859920
         }
       },
       {
@@ -11804,6 +10633,1661 @@
       },
       {
         "__struct_id": 0,
+        "LIST": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 187
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 16778280
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 185
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 16778278
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 186
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 16778279
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 6756
+              }
+            },
+            {
+              "__struct_id": 0,
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 188
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 6760
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 189
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 6761
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 490
+              }
+            },
+            {
+              "__struct_id": 0,
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 191
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 6765
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 192
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 6766
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 193
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 6767
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 194
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 6699
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 190
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 6768
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 6763
+              }
+            },
+            {
+              "__struct_id": 0,
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 195
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 6769
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 196
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 6770
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 197
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 6771
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 198
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 6772
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 199
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 6817
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 491
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 206
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 6776
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 205
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16778283
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 208
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 489
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 207
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16778284
+              }
+            },
+            {
+              "__struct_id": 0,
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 203
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 16778263
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 202
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 16778248
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 200
+                    },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Archetype Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "arc_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Basic Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "b_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Carbide Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "car_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ceramic Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "crm_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Cermet Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cer_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Delta Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "del_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ophidian Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "oph_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Proto Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "proto_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Republic Trooper Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "republictrooperb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Striker Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "str_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Titan Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "tit_rifle"
+                          }
+                        }
+                      ]
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 16778249
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 204
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 16778269
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 201
+                    },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Altar, Evil"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0055"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Altar, Hand"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0059"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Altar, Stone"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0068"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bear Skin Rug"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0064"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bed Roll"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0085"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bed, Extra Large"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0052"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bed, Large"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0075"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bed, Stone, Yellow"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0074"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bed, Wood, Yellow"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0078"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bench, Large"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0115"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bench, Stone, Dwarven"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0111"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bench, Wood"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0113"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bench, Wood, Large"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0117"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bench, Wood, Small"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0118"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bench, Wood, Small 2"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0123"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bird Cage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0081"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Birdbath"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0026"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Brazier, Round"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0021"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Brazier, Stone"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0017"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Bunk Bed"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0083"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Cage"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0037"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Candelabra"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0090"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Candle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0062"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Carpet"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0077"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Carpet, Fancy"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0093"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Carpet, Fancy, Smaller"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0096"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Carpet, Round, Blue"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0054"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Chair, Shell"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0124"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Chair, Stone"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0122"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Chair, Wood"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0119"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Chair, Wood, Medium"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0114"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Chair, Wood, Small"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0120"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Chandelier"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0065"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Cot"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0069"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Couch, Wood, Yellow"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0125"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Cushions"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0061"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Dartboard"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0098"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Doorway, Metal"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0019"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Doorway, Stone"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0030"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Dran Statue "
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0048"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Drow Altar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0097"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Drow Bar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0102"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Drow Chair"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0116"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Drow Table"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0108"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Easel"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0045"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Female Statue"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0031"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Flaming Statue"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0020"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Floor-anchored shackles"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0100"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Footstool"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0107"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Fountain"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0043"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gnomish Contraption"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0032"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Gong"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0013"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Illithid Chair"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0112"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Illithid Table"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0095"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Invalid"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0000"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Jukebox"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Keg"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0047"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ladder, Dark"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0008"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ladder, Light"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0007"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Lamp Post"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0038"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Map"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0099"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Mining Well"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0010"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Mining Well Platform"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0028"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Mirror"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0106"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Monster Statue"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0044"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Net"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0051"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Obelisk, Large"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0004"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Obelisk, Small"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0006"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Ottoman"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0086"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Overgrown Pillar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0079"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Painting 1"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0092"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Painting 2"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0089"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Pedestal"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0022"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Pedestal, Evil"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0025"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Pedestal, Sword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0029"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Pillar, Flame"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0036"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Pillar, Rounded"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0088"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Pillar, Stone"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0033"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Pillar, Wood"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0040"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Pillar, Wood, Dark"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0082"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Potted Plant"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0091"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rope Coil"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0023"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Round Wooden Table"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0101"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Rune Pillar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0104"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sea Idol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0042"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Shrine of Umberlee"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0103"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sphinx Statue"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0027"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Statue of Lathander"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0035"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Statue, Cyric"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0041"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Statue, Guardian"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0018"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Statue, Huge"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0009"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Statue, Monster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0014"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Statue, Wizard"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0012"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Statue, Wyvern "
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0024"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Table, Stone, Large"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0073"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Table, Stone, Small"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0058"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Table, Wood"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0070"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Table, Wood, Large"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0056"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Table, Wood, With Fish"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0057"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Throne, Wood"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0121"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Throw Rug"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0072"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Tome"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0080"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Torch Bracket"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0039"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Urn"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0067"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Vase, Rounded"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0076"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Vase, Tall"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0084"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Window"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "furniture_0060"
+                          }
+                        }
+                      ]
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 16778247
+                    }
+                  }
+                ]
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 6818
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 209
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 494
+              }
+            }
+          ]
+        },
+        "STRREF": {
+          "type": "dword",
+          "value": 16778246
+        }
+      },
+      {
+        "__struct_id": 0,
         "ID": {
           "type": "byte",
           "value": 54
@@ -14485,6 +14969,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Malak's Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "malak_lightsaber"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Mulhorandi"
                     },
                     "RESREF": {
@@ -16448,7 +16943,7 @@
                     "__struct_id": 0,
                     "ID": {
                       "type": "byte",
-                      "value": 44
+                      "value": 43
                     },
                     "LIST": {
                       "type": "list",
@@ -16457,78 +16952,117 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Assault Rifle"
+                            "value": "[NPC] Shu's Scatter Blaster"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "ass_rifle"
+                            "value": "shutgun"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Republic Commander Rifle"
+                            "value": "Carabine blaster"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "republiccomma002"
+                            "value": "blast_carabine"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Elite Sith Trooper Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "e_sith_tblaster"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Enforcer Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "rifle_enforcer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "NPC Blaster Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "rifle_npc"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "NPC Mando Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "npc_man_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Republic Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "republicblaster"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Republic Trooper Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "f_trooperblaster"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Trooper Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sith_tblaster"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Telford's Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "zomb_telgun"
                           }
                         }
                       ]
                     },
                     "STRREF": {
                       "type": "dword",
-                      "value": 16872211
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 62
-                    },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Dual Pistol"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "dualpistolmain"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Dual Pistol (Offhand)"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "offhandpistol"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Pistolet Blaster Jawa"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "blast_jawa_d"
-                          }
-                        }
-                      ]
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 16872213
+                      "value": 6774
                     }
                   },
                   {
@@ -16600,6 +17134,44 @@
                     "STRREF": {
                       "type": "dword",
                       "value": 16778269
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 44
+                    },
+                    "LIST": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Assault Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "ass_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Republic Commander Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "republiccomma002"
+                          }
+                        }
+                      ]
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 6819
                     }
                   },
                   {
@@ -16802,14 +17374,14 @@
                     },
                     "STRREF": {
                       "type": "dword",
-                      "value": 16872210
+                      "value": 6820
                     }
                   },
                   {
                     "__struct_id": 0,
                     "ID": {
                       "type": "byte",
-                      "value": 200
+                      "value": 62
                     },
                     "LIST": {
                       "type": "list",
@@ -16818,128 +17390,40 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Archetype Rifle"
+                            "value": "Dual Pistol"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "arc_rifle"
+                            "value": "dualpistolmain"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Rifle"
+                            "value": "Dual Pistol (Offhand)"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "b_rifle"
+                            "value": "offhandpistol"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Carbide Rifle"
+                            "value": "Pistolet Blaster Jawa"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "car_rifle"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Ceramic Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "crm_rifle"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Cermet Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "cer_rifle"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Delta Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "del_rifle"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Ophidian Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "oph_rifle"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Proto Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "proto_rifle"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Republic Trooper Blaster"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "republictrooperb"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Striker Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "str_rifle"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Titan Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "tit_rifle"
+                            "value": "blast_jawa_d"
                           }
                         }
                       ]
                     },
                     "STRREF": {
                       "type": "dword",
-                      "value": 16872212
+                      "value": 6821
                     }
                   }
                 ]

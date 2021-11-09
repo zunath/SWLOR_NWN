@@ -9992,6 +9992,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 43.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Darth Malak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "darthmalek001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 84.0
                     },
                     "FACTION": {

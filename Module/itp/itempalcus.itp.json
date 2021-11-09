@@ -142,6 +142,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Clan Lsu Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "clanlsuarmor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Clan Lsu Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "clanlsuarmor002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Colonist Armoured Garbs"
                     },
                     "RESREF": {
@@ -14557,6 +14579,17 @@
                       "type": "resref",
                       "value": "hlslang_9"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Y'serna's Firebrand"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item032"
+                    }
                   }
                 ]
               },
@@ -16320,6 +16353,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "cer_spear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Clan Lsu Polearm"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "clanlsupolearm"
                     }
                   },
                   {

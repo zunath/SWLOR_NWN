@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private const string BlankTexture = "Blank";
         private static readonly GuiColor _green = new GuiColor(0, 255, 0);
         private static readonly GuiColor _red = new GuiColor(255, 0, 0);
+        private static readonly GuiColor _cyan = new GuiColor(0, 255, 255);
 
         private RecipeType _recipe;
         
@@ -246,6 +247,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string AutoCraft
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public GuiColor StatusColor
         {
             get => Get<GuiColor>();
@@ -409,6 +416,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshRecipeStats()
         {
+            var autoCraftChance = CalculateAutoCraftChance();
+            AutoCraft = IsAutoCraftEnabled
+                ? $"Auto Craft [{autoCraftChance:F}%]"
+                : "Auto Craft";
+
             CP = $"CP: {_cp}/{_maxCP}";
 
             DurabilityPercentage = (float)_durability / (float)_maxDurability;
@@ -703,31 +715,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return result;
         }
 
-        private void SwitchToCraftMode()
-        {
-            StatusText = string.Empty;
-            StatusColor = _green;
-
-            IsInCraftMode = true;
-            IsInSetupMode = false;
-            IsAutoCraftEnabled = false;
-            IsClosable = false;
-
-            IsRapidSynthesisEnabled = Perk.GetEffectivePerkLevel(Player, _rapidSynthesisPerk) > 0;
-            IsCarefulSynthesisEnabled = Perk.GetEffectivePerkLevel(Player, _carefulSynthesisPerk) > 0;
-
-            IsBasicTouchEnabled = Perk.GetEffectivePerkLevel(Player, _basicTouchPerk) > 0;
-            IsStandardTouchEnabled = Perk.GetEffectivePerkLevel(Player, _standardTouchPerk) > 0;
-            IsPreciseTouchEnabled = Perk.GetEffectivePerkLevel(Player, _preciseTouchPerk) > 0;
-
-            IsMastersMendEnabled = Perk.GetEffectivePerkLevel(Player, _mastersMendPerk) > 0;
-            IsSteadyHandEnabled = Perk.GetEffectivePerkLevel(Player, _steadyHandPerk) > 0;
-            IsMuscleMemoryEnabled = Perk.GetEffectivePerkLevel(Player, _muscleMemoryPerk) > 0;
-
-            IsVenerationEnabled = Perk.GetEffectivePerkLevel(Player, _venerationPerk) > 0;
-            IsWasteNotEnabled = Perk.GetEffectivePerkLevel(Player, _wasteNotPerk) > 0;
-        }
-
         private void SwitchToSetUpMode()
         {
             var playerId = GetObjectUUID(Player);
@@ -769,12 +756,110 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Enhancement2Tooltip = "Select Enhancement #2";
         }
 
+        private void SwitchToCraftMode()
+        {
+            StatusText = string.Empty;
+            StatusColor = _green;
+
+            IsInCraftMode = true;
+            IsInSetupMode = false;
+            IsAutoCraftEnabled = false;
+            IsClosable = false;
+
+            IsRapidSynthesisEnabled = Perk.GetEffectivePerkLevel(Player, _rapidSynthesisPerk) > 0;
+            IsCarefulSynthesisEnabled = Perk.GetEffectivePerkLevel(Player, _carefulSynthesisPerk) > 0;
+
+            IsBasicTouchEnabled = Perk.GetEffectivePerkLevel(Player, _basicTouchPerk) > 0;
+            IsStandardTouchEnabled = Perk.GetEffectivePerkLevel(Player, _standardTouchPerk) > 0;
+            IsPreciseTouchEnabled = Perk.GetEffectivePerkLevel(Player, _preciseTouchPerk) > 0;
+
+            IsMastersMendEnabled = Perk.GetEffectivePerkLevel(Player, _mastersMendPerk) > 0;
+            IsSteadyHandEnabled = Perk.GetEffectivePerkLevel(Player, _steadyHandPerk) > 0;
+            IsMuscleMemoryEnabled = Perk.GetEffectivePerkLevel(Player, _muscleMemoryPerk) > 0;
+
+            IsVenerationEnabled = Perk.GetEffectivePerkLevel(Player, _venerationPerk) > 0;
+            IsWasteNotEnabled = Perk.GetEffectivePerkLevel(Player, _wasteNotPerk) > 0;
+        }
+
+        private void SwitchToAutoCraftMode()
+        {
+            StatusText = "Auto-crafting....";
+            StatusColor = _cyan;
+
+            IsInCraftMode = false;
+            IsInSetupMode = false;
+            IsAutoCraftEnabled = false;
+            IsClosable = false;
+        }
+
+        private float CalculateAutoCraftChance()
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var recipe = Craft.GetRecipe(_recipe);
+
+            const float BaseChance = 65f;
+            var craftsmanship = dbPlayer.Craftsmanship;
+            var control = dbPlayer.Control;
+            var recipeLevel = recipe.Level;
+            var levelDiff = dbPlayer.Skills[recipe.Skill].Rank - recipe.Level;
+            var difficultyAdjustment = Craft.GetRecipeLevelDetail(recipeLevel).DifficultyAdjustment;
+
+            var craftsmanshipMod = craftsmanship * ((1 - recipeLevel * difficultyAdjustment) * 0.5f);
+            var controlMod = control * ((1 - recipeLevel * difficultyAdjustment) * 0.25f);
+            var chance = levelDiff * 5 + craftsmanshipMod + controlMod + BaseChance;
+
+            if (chance < 1)
+                chance = 1;
+            else if (chance > 95)
+                chance = 95;
+
+            return chance;
+        }
+
         public Action OnClickAutoCraft() => () =>
         {
+            void ProcessAutoCraft()
+            {
+                _progress += (int)(_maxProgress * 0.1f);
+                RefreshRecipeStats();
 
+                if (_progress >= _maxProgress)
+                {
+                    var chance = CalculateAutoCraftChance();
+
+                    // Auto craft is based solely on the player's calculated craft chance
+                    if (Random.NextFloat(1f, 100f) <= chance)
+                    {
+                        ProcessSuccess();
+                    }
+                    else
+                    {
+                        ProcessFailure();
+                    }
+                }
+                else
+                {
+                    DelayCommand(1.0f, ProcessAutoCraft);
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(_enhancement1) ||
+                !string.IsNullOrWhiteSpace(_enhancement2))
+            {
+                StatusText = $"Enhancements cannot be installed with auto-craft.";
+                StatusColor = _red;
+                return;
+            }
+
+            if (ProcessComponents())
+            {
+                SwitchToAutoCraftMode();
+                DelayCommand(1.0f, ProcessAutoCraft);
+            }
         };
 
-        public Action OnClickManualCraft() => () =>
+        private bool ProcessComponents()
         {
             var components = GetComponents();
             var aggregateList = AggregateComponents(components);
@@ -783,7 +868,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 StatusText = $"Missing components!";
                 StatusColor = _red;
 
-                return;
+                return false;
             }
 
             // The components get serialized during the HasAllComponents call.
@@ -793,8 +878,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 DestroyObject(component);
             }
-            
-            SwitchToCraftMode();
+
+            return true;
+        }
+
+        public Action OnClickManualCraft() => () =>
+        {
+            if (ProcessComponents())
+            {
+                SwitchToCraftMode();
+            }
         };
 
         private int CalculateProgress(int baseProgress)

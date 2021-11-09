@@ -9973,6 +9973,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Clan Lsu Warrior"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "clanlsuwarrior"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 84.0
                     },
                     "FACTION": {
@@ -10157,6 +10176,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vrake"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 28.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Y'serna, Leader of Clan Lsu "
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "yserna_001"
                     }
                   }
                 ]

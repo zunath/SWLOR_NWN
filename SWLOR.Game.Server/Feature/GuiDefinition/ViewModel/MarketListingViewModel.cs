@@ -210,7 +210,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Resref = GetResRef(item),
                 Data = ObjectPlugin.Serialize(item),
                 Quantity = GetItemStackSize(item),
-                IconResref = PlayerMarket.GetIconResref(item),
+                IconResref = Item.GetIconResref(item),
                 Category = PlayerMarket.GetItemMarketCategory(item)
             };
 

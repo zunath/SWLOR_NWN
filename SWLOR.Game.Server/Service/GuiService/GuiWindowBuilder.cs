@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Service.GuiService
@@ -58,6 +60,7 @@ namespace SWLOR.Game.Server.Service.GuiService
                 Gui.RegisterElementEvent(windowEventKey, "close", _activeWindow.ClosedEventMethodInfo);
             
             // Recurse over all elements in the window, looking for and registering any events
+            RegisterElementEvents(_activeWindow.PartialViews.Values.ToList(), windowId);
             RegisterElementEvents(_activeWindow.Elements, windowId);
         }
 
@@ -67,6 +70,12 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <returns>A constructed window.</returns>
         public GuiConstructedWindow Build()
         {
+            var partialViews = new Dictionary<string, Json>();
+            foreach (var (key, partial) in _activeWindow.PartialViews)
+            {
+                partialViews[key] = partial.ToJson();
+            }
+
             var json = _activeWindow.Build();
             var windowId = Gui.BuildWindowId(_type);
             RegisterAllElementEvents();
@@ -76,6 +85,7 @@ namespace SWLOR.Game.Server.Service.GuiService
                 windowId,
                 json,
                 _activeWindow.Geometry,
+                partialViews,
                 () =>
             {
                 var dataModelInstance = Activator.CreateInstance<T>();

@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(6)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 1)
-                .ModSlots(RecipeModType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 7)
                 .Component("wood", 4);
 
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(16)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 2)
-                .ModSlots(RecipeModType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_scordspar", 7)
                 .Component("fine_wood", 4);
 
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(26)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 3)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 7)
                 .Component("ancient_wood", 4);
 
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(36)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 4)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 7)
                 .Component("aracia_wood", 4);
 
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(46)
                 .Quantity(1)
                 .RequirementPerk(PerkType.ArmorBlueprints, 5)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 7)
                 .Component("hyphae_wood", 4);
         }

@@ -400,6 +400,16 @@ namespace SWLOR.Game.Server.Service
             return _playerWindows[playerId][type];
         }
 
+        /// <summary>
+        /// Retrieves a window's template by the given type.
+        /// </summary>
+        /// <param name="type">The type of window to search for.</param>
+        /// <returns>A window template.</returns>
+        public static GuiConstructedWindow GetWindowTemplate(GuiWindowType type)
+        {
+            return _windowTemplates[type];
+        }
+
         public class IdReservation
         {
             public int Count { get; set; }

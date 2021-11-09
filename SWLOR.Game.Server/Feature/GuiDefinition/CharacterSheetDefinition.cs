@@ -287,17 +287,41 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(row =>
                     {
-                        row.AddSpacer();
+                        row.AddLabel()
+                            .SetText("BAB")
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddLabel()
+                            .BindText(model => model.BAB)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
                     });
 
                     col.AddRow(row =>
                     {
-                        row.AddSpacer();
+                        row.AddLabel()
+                            .SetText("Control")
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddLabel()
+                            .BindText(model => model.Control)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
                     });
 
                     col.AddRow(row =>
                     {
-                        row.AddSpacer();
+                        row.AddLabel()
+                            .SetText("Craftsmanship")
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddLabel()
+                            .BindText(model => model.Craftsmanship)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
                     });
 
                     col.AddRow(row =>

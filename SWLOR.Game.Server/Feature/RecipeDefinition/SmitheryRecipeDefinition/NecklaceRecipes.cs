@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(2)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 1)
-                .ModSlots(RecipeModType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 3)
                 .Component("jade", 2);
 
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(2)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 1)
-                .ModSlots(RecipeModType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 3)
                 .Component("jade", 2);
 
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(2)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 1)
-                .ModSlots(RecipeModType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_veldite", 3)
                 .Component("jade", 2);
         }
@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(12)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 2)
-                .ModSlots(RecipeModType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_scordspar", 3)
                 .Component("agate", 2);
 
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(12)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 2)
-                .ModSlots(RecipeModType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_scordspar", 3)
                 .Component("agate", 2);
 
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(12)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 2)
-                .ModSlots(RecipeModType.Armor, 1)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 1)
                 .Component("ref_scordspar", 3)
                 .Component("agate", 2);
         }
@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(22)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 3)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 3)
                 .Component("citrine", 2);
 
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(22)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 3)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 3)
                 .Component("citrine", 2);
 
@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(22)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 3)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_plagionite", 3)
                 .Component("citrine", 2);
         }
@@ -138,7 +138,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(32)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 4)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 3)
                 .Component("ruby", 2);
 
@@ -149,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(32)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 4)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 3)
                 .Component("ruby", 2);
 
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(32)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 4)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_keromber", 3)
                 .Component("ruby", 2);
         }
@@ -174,7 +174,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(42)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 5)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 3)
                 .Component("emerald", 2);
 
@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(42)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 5)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 3)
                 .Component("emerald", 2);
 
@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(42)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 5)
-                .ModSlots(RecipeModType.Armor, 2)
+                .EnhancementSlots(RecipeEnhancementType.Armor, 2)
                 .Component("ref_jasioclase", 3)
                 .Component("emerald", 2);
         }

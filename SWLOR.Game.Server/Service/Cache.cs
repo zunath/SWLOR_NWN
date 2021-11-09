@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
+using SWLOR.Game.Server.Entity;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -14,11 +15,30 @@ namespace SWLOR.Game.Server.Service
     /// </summary>
     public static class Cache
     {
+        private static bool _cachedThisRun;
         private static Dictionary<string, uint> AreasByResref { get; } = new();
-        private static Dictionary<string, string> ItemNamesByResref { get; } = new();
+        private static Dictionary<string, string> ItemNamesByResref { get; set; } = new();
         private static Dictionary<int, int> PortraitIdsByInternalId { get; } = new();
         private static Dictionary<int, int> PortraitInternalIdsByPortraitId { get; } = new();
         private static Dictionary<int, string> PortraitResrefByInternalId { get; } = new();
+
+        [NWNEventHandler("mod_content_chg")]
+        public static void CacheItemNamesByResref()
+        {
+            var resref = UtilPlugin.GetFirstResRef(ResRefType.Item);
+
+            while (!string.IsNullOrWhiteSpace(resref))
+            {
+                CacheItemNameByResref(resref);
+                resref = UtilPlugin.GetNextResRef();
+            }
+
+            var dbModuleCache = DB.Get<ModuleCache>("SWLOR");
+            dbModuleCache.ItemNamesByResref = ItemNamesByResref;
+            DB.Set("SWLOR", dbModuleCache);
+
+            _cachedThisRun = true;
+        }
 
         /// <summary>
         /// Handles caching data into server memory for quicker lookup later.
@@ -27,12 +47,22 @@ namespace SWLOR.Game.Server.Service
         public static void OnModuleLoad()
         {
             CacheAreasByResref();
-            CacheItemNamesByResref();
+            LoadAreaCache();
             CachePortraitsById();
 
             Console.WriteLine($"Loaded {AreasByResref.Count} areas by resref.");
             Console.WriteLine($"Loaded {ItemNamesByResref.Count} item names by resref.");
             Console.WriteLine($"Loaded {PortraitIdsByInternalId.Count} portraits by Id.");
+        }
+
+        private static void LoadAreaCache()
+        {
+            // No need to load from the DB, it's already in memory.
+            if (_cachedThisRun)
+                return;
+
+            var dbModuleCache = DB.Get<ModuleCache>("SWLOR");
+            ItemNamesByResref = dbModuleCache.ItemNamesByResref;
         }
 
         /// <summary>
@@ -58,20 +88,6 @@ namespace SWLOR.Game.Server.Service
                 return OBJECT_INVALID;
 
             return AreasByResref[resref];
-        }
-
-        /// <summary>
-        /// Stores the names of every item in the module. This speeds up the look-ups later on.
-        /// </summary>
-        private static void CacheItemNamesByResref()
-        {
-            var resref = UtilPlugin.GetFirstResRef(ResRefType.Item);
-
-            while (!string.IsNullOrWhiteSpace(resref))
-            {
-                CacheItemNameByResref(resref);
-                resref = UtilPlugin.GetNextResRef();
-            }
         }
 
         /// <summary>

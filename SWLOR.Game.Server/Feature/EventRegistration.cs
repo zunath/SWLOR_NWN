@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("mod_preload")]
         public static void OnModulePreload()
         {
-            var serverConfig = DB.Get<ServerConfiguration>("SWLOR") ?? new ServerConfiguration();
+            var serverConfig = DB.Get<ModuleCache>("SWLOR") ?? new ModuleCache();
 
             Console.WriteLine("Hooking all module events.");
             HookModuleEvents();

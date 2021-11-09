@@ -40,6 +40,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string ShowBorderBindName { get; set; }
         private bool IsShowBorderBound => !string.IsNullOrWhiteSpace(ShowBorderBindName);
 
+        public Dictionary<string, IGuiWidget> PartialViews { get; }
         public List<IGuiWidget> Elements { get; }
 
 
@@ -193,6 +194,23 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         }
 
         /// <summary>
+        /// Adds a partial view to the window. This will only define the partial view.
+        /// You need to call ChangePartialView from within the view model for it to actually change.
+        /// </summary>
+        /// <param name="name">The name to associate to the partial view. This must be unique within the window.</param>
+        /// <param name="view">The structure of the view.</param>
+        public GuiWindow<T> DefinePartialView(string name, Action<GuiGroup<T>> view)
+        {
+            var group = new GuiGroup<T>();
+            group.SetScrollbars(NuiScrollbars.None);
+            group.SetShowBorder(false);
+            PartialViews[name] = group;
+            view(group);
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds a column to the layout.
         /// </summary>
         /// <param name="col">The new column's definition.</param>
@@ -255,6 +273,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             IsTransparent = false;
             ShowBorder = true;
 
+            PartialViews = new Dictionary<string, IGuiWidget>();
             Elements = new List<IGuiWidget>();
         }
 

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using ItemProperty = SWLOR.Game.Server.Core.ItemProperty;
@@ -27,6 +28,8 @@ namespace SWLOR.Game.Server.Feature
             _statChangeActions[ItemPropertyType.STMBonus] = ApplySTMBonus;
             _statChangeActions[ItemPropertyType.AbilityRecastReduction] = ApplyAbilityRecastReduction;
             _statChangeActions[ItemPropertyType.Defense] = ApplyDefense;
+            _statChangeActions[ItemPropertyType.Control] = ApplyControl;
+            _statChangeActions[ItemPropertyType.Craftsmanship] = ApplyCraftsmanship;
         }
 
         /// <summary>
@@ -93,7 +96,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Entity.Player>(playerId);
+            var dbPlayer = DB.Get<Player>(playerId);
 
             if (isAdding)
             {
@@ -118,7 +121,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Entity.Player>(playerId);
+            var dbPlayer = DB.Get<Player>(playerId);
 
             if (isAdding)
             {
@@ -143,7 +146,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Entity.Player>(playerId);
+            var dbPlayer = DB.Get<Player>(playerId);
 
             if (isAdding)
             {
@@ -168,7 +171,7 @@ namespace SWLOR.Game.Server.Feature
         {
             var amount = GetItemPropertyCostTableValue(ip);
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Entity.Player>(playerId);
+            var dbPlayer = DB.Get<Player>(playerId);
 
             if (isAdding)
             {
@@ -194,7 +197,7 @@ namespace SWLOR.Game.Server.Feature
             var amount = GetItemPropertyCostTableValue(ip);
             var damageType = (CombatDamageType)GetItemPropertySubType(ip);
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Entity.Player>(playerId);
+            var dbPlayer = DB.Get<Player>(playerId);
 
             if (isAdding)
             {
@@ -203,6 +206,56 @@ namespace SWLOR.Game.Server.Feature
             else
             {
                 Stat.AdjustDefense(dbPlayer, damageType, -amount);
+            }
+
+            DB.Set(playerId, dbPlayer);
+        }
+
+        /// <summary>
+        /// Applies or removes control on a player.
+        /// </summary>
+        /// <param name="player">The player to adjust</param>
+        /// <param name="item">The item being equipped or unequipped</param>
+        /// <param name="ip">The item property associated with this change</param>
+        /// <param name="isAdding">If true, we're adding the control, if false we're removing it.</param>
+        private static void ApplyControl(uint player, uint item, ItemProperty ip, bool isAdding)
+        {
+            var amount = GetItemPropertyCostTableValue(ip);
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (isAdding)
+            {
+                Stat.AdjustControl(dbPlayer, amount);
+            }
+            else
+            {
+                Stat.AdjustControl(dbPlayer, -amount);
+            }
+
+            DB.Set(playerId, dbPlayer);
+        }
+
+        /// <summary>
+        /// Applies or removes craftsmanship on a player.
+        /// </summary>
+        /// <param name="player">The player to adjust</param>
+        /// <param name="item">The item being equipped or unequipped</param>
+        /// <param name="ip">The item property associated with this change</param>
+        /// <param name="isAdding">If true, we're adding the craftsmanship, if false we're removing it.</param>
+        private static void ApplyCraftsmanship(uint player, uint item, ItemProperty ip, bool isAdding)
+        {
+            var amount = GetItemPropertyCostTableValue(ip);
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            if (isAdding)
+            {
+                Stat.AdjustCraftsmanship(dbPlayer, amount);
+            }
+            else
+            {
+                Stat.AdjustCraftsmanship(dbPlayer, -amount);
             }
 
             DB.Set(playerId, dbPlayer);

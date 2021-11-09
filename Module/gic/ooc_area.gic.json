@@ -822,7 +822,14 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": "Bread"
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
         }
       }
     ]

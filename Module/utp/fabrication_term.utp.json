@@ -56,7 +56,7 @@
   },
   "HasInventory": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "HP": {
     "type": "short",
@@ -76,7 +76,7 @@
   },
   "Lockable": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "Locked": {
     "type": "byte",
@@ -94,7 +94,7 @@
   },
   "OnClosed": {
     "type": "resref",
-    "value": "craft_on_closed"
+    "value": ""
   },
   "OnDamaged": {
     "type": "resref",
@@ -114,7 +114,7 @@
   },
   "OnInvDisturbed": {
     "type": "resref",
-    "value": "craft_on_disturb"
+    "value": ""
   },
   "OnLock": {
     "type": "resref",
@@ -126,7 +126,7 @@
   },
   "OnOpen": {
     "type": "resref",
-    "value": "craft_on_open"
+    "value": ""
   },
   "OnSpellCastAt": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "OnUsed": {
     "type": "resref",
-    "value": ""
+    "value": "craft_on_used"
   },
   "OnUserDefined": {
     "type": "resref",

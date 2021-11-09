@@ -263,6 +263,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Darth Malak's Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "malak_robes01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Farmer Outfit"
                     },
                     "RESREF": {
@@ -356,6 +367,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "pil_joleerobes"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Malak's Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "malak_cloak002"
                     }
                   },
                   {
@@ -15799,6 +15821,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "hlslang_12"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Malak's Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "malak_lightsaber"
                     }
                   },
                   {

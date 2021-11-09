@@ -461,7 +461,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool IsValidEnhancement(uint item)
         {
             var recipe = Craft.GetRecipe(_recipe);
-            var itemPropertyType = ItemPropertyType.Invalid;
+            var typeIP = ItemPropertyType.Invalid;
 
             if (GetItemPossessor(item) != Player)
             {
@@ -471,32 +471,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (recipe.EnhancementType == RecipeEnhancementType.Armor)
             {
-                itemPropertyType = ItemPropertyType.ArmorEnhancement;
+                typeIP = ItemPropertyType.ArmorEnhancement;
             }
             else if (recipe.EnhancementType == RecipeEnhancementType.Weapon)
             {
-                itemPropertyType = ItemPropertyType.WeaponEnhancement;
+                typeIP = ItemPropertyType.WeaponEnhancement;
             }
 
-            if (itemPropertyType == ItemPropertyType.Invalid)
+            if (typeIP == ItemPropertyType.Invalid)
             {
                 FloatingTextStringOnCreature("Item must be an enhancement.", Player, false);
                 return false;
             }
 
             var foundIp = false;
+            var enhancementLevel = -1;
             for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
             {
-                if (GetItemPropertyType(ip) != itemPropertyType) 
-                    continue;
+                var type = GetItemPropertyType(ip);
+                if (type == typeIP)
+                {
+                    foundIp = true;
+                }
 
-                foundIp = true;
-                break;
+                if (type == ItemPropertyType.EnhancementLevel)
+                {
+                    enhancementLevel = GetItemPropertyCostTableValue(ip);
+                }
+
+                if(foundIp && enhancementLevel > -1)
+                    break;
             }
 
-            if (!foundIp)
+            if (!foundIp || enhancementLevel == -1)
             {
                 FloatingTextStringOnCreature("Item must be an enhancement.", Player, false);
+                return false;
+            }
+
+            var levelDiff = enhancementLevel - recipe.Level;
+            if (levelDiff > 5)
+            {
+                FloatingTextStringOnCreature("Enhancement must be within 5 levels of recipe level.", Player, false);
                 return false;
             }
 

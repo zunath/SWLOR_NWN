@@ -186,13 +186,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "visc_forcevision"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "manda_facility"
         }
       },

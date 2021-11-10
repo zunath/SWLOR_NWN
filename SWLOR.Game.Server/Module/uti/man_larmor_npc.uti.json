@@ -6,7 +6,7 @@
   },
   "ArmorPart_Belt": {
     "type": "byte",
-    "value": 218
+    "value": 198
   },
   "ArmorPart_LBicep": {
     "type": "byte",
@@ -14,11 +14,11 @@
   },
   "ArmorPart_LFArm": {
     "type": "byte",
-    "value": 244
+    "value": 75
   },
   "ArmorPart_LFoot": {
     "type": "byte",
-    "value": 245
+    "value": 107
   },
   "ArmorPart_LHand": {
     "type": "byte",
@@ -26,7 +26,7 @@
   },
   "ArmorPart_LShin": {
     "type": "byte",
-    "value": 227
+    "value": 166
   },
   "ArmorPart_LShoul": {
     "type": "byte",
@@ -34,7 +34,7 @@
   },
   "ArmorPart_LThigh": {
     "type": "byte",
-    "value": 231
+    "value": 75
   },
   "ArmorPart_Neck": {
     "type": "byte",
@@ -42,7 +42,7 @@
   },
   "ArmorPart_Pelvis": {
     "type": "byte",
-    "value": 75
+    "value": 106
   },
   "ArmorPart_RBicep": {
     "type": "byte",
@@ -50,11 +50,11 @@
   },
   "ArmorPart_RFArm": {
     "type": "byte",
-    "value": 244
+    "value": 75
   },
   "ArmorPart_RFoot": {
     "type": "byte",
-    "value": 245
+    "value": 107
   },
   "ArmorPart_RHand": {
     "type": "byte",
@@ -66,7 +66,7 @@
   },
   "ArmorPart_RShin": {
     "type": "byte",
-    "value": 227
+    "value": 166
   },
   "ArmorPart_RShoul": {
     "type": "byte",
@@ -74,11 +74,11 @@
   },
   "ArmorPart_RThigh": {
     "type": "byte",
-    "value": 231
+    "value": 75
   },
   "ArmorPart_Torso": {
     "type": "byte",
-    "value": 247
+    "value": 75
   },
   "BaseItem": {
     "type": "int",
@@ -90,11 +90,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 127
+    "value": 23
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 127
+    "value": 23
   },
   "Comment": {
     "type": "cexostring",
@@ -122,11 +122,11 @@
   },
   "Leather1Color": {
     "type": "byte",
-    "value": 127
+    "value": 23
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 127
+    "value": 23
   },
   "LocalizedName": {
     "id": 12838,

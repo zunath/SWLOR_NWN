@@ -116,7 +116,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "v_repubbase_3"
+    "value": "area001"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -2913,7 +2913,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 13
+    "value": 11
   },
   "Width": {
     "type": "int",

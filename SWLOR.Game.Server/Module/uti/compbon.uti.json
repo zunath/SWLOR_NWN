@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Component Bonus: Structure Bonus Up 4"
+      "0": "Component Bonus: FP Up 4"
     }
   },
   "ModelPart1": {
@@ -73,7 +73,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 2
+          "value": 4
         },
         "Param1": {
           "type": "byte",
@@ -89,7 +89,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 33
+          "value": 17
         }
       }
     ]
@@ -104,7 +104,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "compbon_struct2"
+    "value": "compbon_fpup4"
   },
   "TemplateResRef": {
     "type": "resref",

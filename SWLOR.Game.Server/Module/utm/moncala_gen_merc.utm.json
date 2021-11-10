@@ -1109,21 +1109,6 @@
                 "type": "word",
                 "value": 8
               }
-            },
-            {
-              "__struct_id": 23,
-              "InventoryRes": {
-                "type": "resref",
-                "value": "fus_lantern"
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 0
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 10
-              }
             }
           ]
         }

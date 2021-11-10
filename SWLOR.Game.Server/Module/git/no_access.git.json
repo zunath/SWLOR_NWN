@@ -4486,7 +4486,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.223918079636389e-027
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -10321,7 +10321,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 8.407790785948902e-045
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -11224,7 +11224,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 3.417206435102499e-041
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -11615,7 +11615,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 8.407790785948902e-045
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -11881,7 +11881,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.331233541108576e-043
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -12147,7 +12147,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.331233541108576e-043
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -12546,7 +12546,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 8.407790785948902e-045
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -13477,7 +13477,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 8.407790785948902e-045
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -13876,7 +13876,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.681558157189781e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -14009,7 +14009,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 2.101947696487226e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -14142,7 +14142,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.961817850054744e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -14275,7 +14275,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 2.101947696487226e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -14408,7 +14408,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.681558157189781e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -14541,7 +14541,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.961817850054744e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -14674,7 +14674,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.681558157189781e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -14807,7 +14807,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.961817850054744e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -14940,7 +14940,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.961817850054744e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -15073,7 +15073,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.961817850054744e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -15206,7 +15206,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 2.101947696487226e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -15339,7 +15339,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.681558157189781e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -15472,7 +15472,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.681558157189781e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -15605,7 +15605,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.961817850054744e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -15738,7 +15738,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 2.101947696487226e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -15871,7 +15871,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 2.101947696487226e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -16004,7 +16004,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.821688003622262e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -16137,7 +16137,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.681558157189781e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -16270,7 +16270,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.821688003622262e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -16403,7 +16403,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 2.101947696487226e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -16536,7 +16536,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.821688003622262e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -16669,7 +16669,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 2.101947696487226e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -16802,7 +16802,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 2.101947696487226e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -16935,7 +16935,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.821688003622262e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -17068,7 +17068,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 2.101947696487226e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -17201,7 +17201,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.681558157189781e-044
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -17600,7 +17600,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.853525504731722e-040
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -17866,7 +17866,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 4.683670559891518e-039
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -17999,7 +17999,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.983958365791076e-041
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -18531,7 +18531,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.200842719003152e-038
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -18930,7 +18930,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.001022182275365e-038
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -19462,7 +19462,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.200842719003152e-038
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -19861,7 +19861,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.968544082683503e-041
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -20127,7 +20127,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.010205171371779e-038
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -20393,7 +20393,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.200842719003152e-038
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -21058,7 +21058,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.253011562562291e-027
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -21324,7 +21324,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.253318170609438e-027
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -21590,7 +21590,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.238605606578275e-027
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -21856,7 +21856,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.239083237204483e-027
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -22122,7 +22122,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.239449934265894e-027
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -22388,7 +22388,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.239738053385574e-027
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -22654,7 +22654,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.240143269045873e-027
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -22920,7 +22920,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.215807218268596e-027
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -23538,7 +23538,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 5
+                      "value": 4
                     },
                     "Param1": {
                       "type": "byte",
@@ -23671,7 +23671,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 10
+                      "value": 5
                     },
                     "Param1": {
                       "type": "byte",
@@ -23804,7 +23804,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 15
+                      "value": 6
                     },
                     "Param1": {
                       "type": "byte",
@@ -23937,7 +23937,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 5
+                      "value": 4
                     },
                     "Param1": {
                       "type": "byte",
@@ -24070,7 +24070,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 10
+                      "value": 5
                     },
                     "Param1": {
                       "type": "byte",
@@ -24203,7 +24203,7 @@
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 15
+                      "value": 6
                     },
                     "Param1": {
                       "type": "byte",
@@ -24243,804 +24243,6 @@
               "Tag": {
                 "type": "cexostring",
                 "value": "compbon_fp6"
-              },
-              "TemplateResRef": {
-                "type": "resref",
-                "value": "compbon"
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 0.0
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
-              }
-            },
-            {
-              "__struct_id": 176,
-              "AddCost": {
-                "type": "dword",
-                "value": 0
-              },
-              "BaseItem": {
-                "type": "int",
-                "value": 24
-              },
-              "Charges": {
-                "type": "byte",
-                "value": 0
-              },
-              "Cost": {
-                "type": "dword",
-                "value": 0
-              },
-              "Cursed": {
-                "type": "byte",
-                "value": 1
-              },
-              "DescIdentified": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "Take this item out of the container to confirm the materials you've selected."
-                }
-              },
-              "Description": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": ""
-                }
-              },
-              "Identified": {
-                "type": "byte",
-                "value": 1
-              },
-              "LocalizedName": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "Component Bonus: Dexterity Up 4"
-                }
-              },
-              "ModelPart1": {
-                "type": "byte",
-                "value": 63
-              },
-              "Plot": {
-                "type": "byte",
-                "value": 0
-              },
-              "PropertiesList": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 62
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 137
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 36
-                    }
-                  }
-                ]
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 1
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 25
-              },
-              "StackSize": {
-                "type": "word",
-                "value": 1
-              },
-              "Stolen": {
-                "type": "byte",
-                "value": 0
-              },
-              "Tag": {
-                "type": "cexostring",
-                "value": "compbon_dex4"
-              },
-              "TemplateResRef": {
-                "type": "resref",
-                "value": "compbon"
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 0.0
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
-              }
-            },
-            {
-              "__struct_id": 177,
-              "AddCost": {
-                "type": "dword",
-                "value": 0
-              },
-              "BaseItem": {
-                "type": "int",
-                "value": 24
-              },
-              "Charges": {
-                "type": "byte",
-                "value": 0
-              },
-              "Cost": {
-                "type": "dword",
-                "value": 0
-              },
-              "Cursed": {
-                "type": "byte",
-                "value": 1
-              },
-              "DescIdentified": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "Take this item out of the container to confirm the materials you've selected."
-                }
-              },
-              "Description": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": ""
-                }
-              },
-              "Identified": {
-                "type": "byte",
-                "value": 1
-              },
-              "LocalizedName": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "Component Bonus: Strength Up 4"
-                }
-              },
-              "ModelPart1": {
-                "type": "byte",
-                "value": 63
-              },
-              "Plot": {
-                "type": "byte",
-                "value": 0
-              },
-              "PropertiesList": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 62
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 137
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 35
-                    }
-                  }
-                ]
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 2
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 25
-              },
-              "StackSize": {
-                "type": "word",
-                "value": 1
-              },
-              "Stolen": {
-                "type": "byte",
-                "value": 0
-              },
-              "Tag": {
-                "type": "cexostring",
-                "value": "compbon_str4"
-              },
-              "TemplateResRef": {
-                "type": "resref",
-                "value": "compbon"
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 0.0
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
-              }
-            },
-            {
-              "__struct_id": 178,
-              "AddCost": {
-                "type": "dword",
-                "value": 0
-              },
-              "BaseItem": {
-                "type": "int",
-                "value": 24
-              },
-              "Charges": {
-                "type": "byte",
-                "value": 0
-              },
-              "Cost": {
-                "type": "dword",
-                "value": 0
-              },
-              "Cursed": {
-                "type": "byte",
-                "value": 1
-              },
-              "DescIdentified": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "Take this item out of the container to confirm the materials you've selected."
-                }
-              },
-              "Description": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": ""
-                }
-              },
-              "Identified": {
-                "type": "byte",
-                "value": 1
-              },
-              "LocalizedName": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "Component Bonus: Constitution Up 4"
-                }
-              },
-              "ModelPart1": {
-                "type": "byte",
-                "value": 63
-              },
-              "Plot": {
-                "type": "byte",
-                "value": 0
-              },
-              "PropertiesList": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 62
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 137
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 37
-                    }
-                  }
-                ]
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 3
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 25
-              },
-              "StackSize": {
-                "type": "word",
-                "value": 1
-              },
-              "Stolen": {
-                "type": "byte",
-                "value": 0
-              },
-              "Tag": {
-                "type": "cexostring",
-                "value": "compbon_con4"
-              },
-              "TemplateResRef": {
-                "type": "resref",
-                "value": "compbon"
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 0.0
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
-              }
-            },
-            {
-              "__struct_id": 179,
-              "AddCost": {
-                "type": "dword",
-                "value": 0
-              },
-              "BaseItem": {
-                "type": "int",
-                "value": 24
-              },
-              "Charges": {
-                "type": "byte",
-                "value": 0
-              },
-              "Cost": {
-                "type": "dword",
-                "value": 0
-              },
-              "Cursed": {
-                "type": "byte",
-                "value": 1
-              },
-              "DescIdentified": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "Take this item out of the container to confirm the materials you've selected."
-                }
-              },
-              "Description": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": ""
-                }
-              },
-              "Identified": {
-                "type": "byte",
-                "value": 1
-              },
-              "LocalizedName": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "Component Bonus: Wisdom Up 4"
-                }
-              },
-              "ModelPart1": {
-                "type": "byte",
-                "value": 63
-              },
-              "Plot": {
-                "type": "byte",
-                "value": 0
-              },
-              "PropertiesList": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 62
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 137
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 38
-                    }
-                  }
-                ]
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 4
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 25
-              },
-              "StackSize": {
-                "type": "word",
-                "value": 1
-              },
-              "Stolen": {
-                "type": "byte",
-                "value": 0
-              },
-              "Tag": {
-                "type": "cexostring",
-                "value": "compbon_wis4"
-              },
-              "TemplateResRef": {
-                "type": "resref",
-                "value": "compbon"
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 0.0
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
-              }
-            },
-            {
-              "__struct_id": 180,
-              "AddCost": {
-                "type": "dword",
-                "value": 0
-              },
-              "BaseItem": {
-                "type": "int",
-                "value": 24
-              },
-              "Charges": {
-                "type": "byte",
-                "value": 0
-              },
-              "Cost": {
-                "type": "dword",
-                "value": 0
-              },
-              "Cursed": {
-                "type": "byte",
-                "value": 1
-              },
-              "DescIdentified": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "Take this item out of the container to confirm the materials you've selected."
-                }
-              },
-              "Description": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": ""
-                }
-              },
-              "Identified": {
-                "type": "byte",
-                "value": 1
-              },
-              "LocalizedName": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "Component Bonus: Charisma Up 4"
-                }
-              },
-              "ModelPart1": {
-                "type": "byte",
-                "value": 63
-              },
-              "Plot": {
-                "type": "byte",
-                "value": 0
-              },
-              "PropertiesList": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 62
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 137
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 40
-                    }
-                  }
-                ]
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 5
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 25
-              },
-              "StackSize": {
-                "type": "word",
-                "value": 1
-              },
-              "Stolen": {
-                "type": "byte",
-                "value": 0
-              },
-              "Tag": {
-                "type": "cexostring",
-                "value": "compbon_cha4"
-              },
-              "TemplateResRef": {
-                "type": "resref",
-                "value": "compbon"
-              },
-              "XOrientation": {
-                "type": "float",
-                "value": 0.0
-              },
-              "XPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "YOrientation": {
-                "type": "float",
-                "value": 1.0
-              },
-              "YPosition": {
-                "type": "float",
-                "value": -1.0
-              },
-              "ZPosition": {
-                "type": "float",
-                "value": -1.0
-              }
-            },
-            {
-              "__struct_id": 181,
-              "AddCost": {
-                "type": "dword",
-                "value": 0
-              },
-              "BaseItem": {
-                "type": "int",
-                "value": 24
-              },
-              "Charges": {
-                "type": "byte",
-                "value": 0
-              },
-              "Cost": {
-                "type": "dword",
-                "value": 0
-              },
-              "Cursed": {
-                "type": "byte",
-                "value": 1
-              },
-              "DescIdentified": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "Take this item out of the container to confirm the materials you've selected."
-                }
-              },
-              "Description": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": ""
-                }
-              },
-              "Identified": {
-                "type": "byte",
-                "value": 1
-              },
-              "LocalizedName": {
-                "type": "cexolocstring",
-                "value": {
-                  "0": "Component Bonus: Intelligence Up 4"
-                }
-              },
-              "ModelPart1": {
-                "type": "byte",
-                "value": 63
-              },
-              "Plot": {
-                "type": "byte",
-                "value": 0
-              },
-              "PropertiesList": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 62
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 4
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 137
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 39
-                    }
-                  }
-                ]
-              },
-              "Repos_PosX": {
-                "type": "word",
-                "value": 6
-              },
-              "Repos_Posy": {
-                "type": "word",
-                "value": 25
-              },
-              "StackSize": {
-                "type": "word",
-                "value": 1
-              },
-              "Stolen": {
-                "type": "byte",
-                "value": 0
-              },
-              "Tag": {
-                "type": "cexostring",
-                "value": "compbon_int4"
               },
               "TemplateResRef": {
                 "type": "resref",

@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 40
+    "value": 9
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 12.0
+    "value": 2.0
   },
   "ClassList": {
     "type": "list",
@@ -99,18 +99,29 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 56
+          "value": 4
         },
         "ClassLevel": {
           "type": "short",
-          "value": 10
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 2,
+        "Class": {
+          "type": "int",
+          "value": 52
+        },
+        "ClassLevel": {
+          "type": "short",
+          "value": 1
         }
       }
     ]
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 3
+    "value": 1
   },
   "Color_Skin": {
     "type": "byte",
@@ -118,11 +129,11 @@
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 23
+    "value": 1
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 22
+    "value": 1
   },
   "Comment": {
     "type": "cexostring",
@@ -130,7 +141,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 26
+    "value": 16
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +153,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 150
+    "value": 15
   },
   "DecayTime": {
     "type": "dword",
@@ -158,7 +169,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 50
+    "value": 13
   },
   "Disarmable": {
     "type": "byte",
@@ -168,24 +179,17 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 1,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "alienhead002"
-        }
-      },
-      {
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "republictrooper"
+          "value": "republic_outfit"
         }
       },
       {
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "f_trooperblaster"
+          "value": "blaster_b"
         }
       }
     ]
@@ -303,11 +307,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 150
+    "value": 15
   },
   "Int": {
     "type": "byte",
-    "value": 40
+    "value": 10
   },
   "Interruptable": {
     "type": "byte",
@@ -315,7 +319,7 @@
   },
   "IsImmortal": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "IsPC": {
     "type": "byte",
@@ -337,7 +341,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 230
+    "value": 21
   },
   "NaturalAC": {
     "type": "byte",
@@ -630,7 +634,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 926
+    "value": 0
   },
   "SpecAbilityList": {
     "type": "list",
@@ -638,7 +642,7 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 147
+    "value": 4
   },
   "Str": {
     "type": "byte",
@@ -678,6 +682,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 40
+    "value": 10
   }
 }

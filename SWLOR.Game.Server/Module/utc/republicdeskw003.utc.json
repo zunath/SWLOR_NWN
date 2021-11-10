@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 60
+    "value": 80
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 15.0
+    "value": 12.0
   },
   "ClassList": {
     "type": "list",
@@ -103,14 +103,14 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 20
+          "value": 35
         }
       }
     ]
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 3
+    "value": 1
   },
   "Color_Skin": {
     "type": "byte",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 20
+    "value": 100
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -5
+    "value": -30
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 125
+    "value": 175
   },
   "DecayTime": {
     "type": "dword",
@@ -158,7 +158,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 40
+    "value": 90
   },
   "Disarmable": {
     "type": "byte",
@@ -178,14 +178,7 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "republicofficeru"
-        }
-      },
-      {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "republicstand001"
+          "value": "republicdeskwork"
         }
       }
     ]
@@ -216,13 +209,6 @@
         "Feat": {
           "type": "word",
           "value": 4
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 364
         }
       },
       {
@@ -450,11 +436,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 125
+    "value": 175
   },
   "Int": {
     "type": "byte",
-    "value": 40
+    "value": 80
   },
   "Interruptable": {
     "type": "byte",
@@ -467,6 +453,26 @@
   "IsPC": {
     "type": "byte",
     "value": 0
+  },
+  "ItemList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "InventoryRes": {
+          "type": "resref",
+          "value": "republicstand001"
+        },
+        "Repos_PosX": {
+          "type": "word",
+          "value": 0
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
+        }
+      }
+    ]
   },
   "LastName": {
     "type": "cexolocstring",
@@ -484,11 +490,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 225
+    "value": 1750
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 5
+    "value": 40
   },
   "NoPermDeath": {
     "type": "byte",
@@ -777,7 +783,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 927
+    "value": 0
   },
   "SpecAbilityList": {
     "type": "list",
@@ -825,6 +831,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 50
+    "value": 80
   }
 }

@@ -36,12 +36,12 @@
   },
   "Identified": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Tusken Cycler Rifle"
+      "0": "Tusken Blaster Rifle"
     }
   },
   "ModelPart1": {
@@ -50,7 +50,7 @@
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 154
+    "value": 222
   },
   "ModelPart3": {
     "type": "byte",
@@ -95,7 +95,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 9
         }
       },
       {

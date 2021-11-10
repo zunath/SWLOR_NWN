@@ -8025,7 +8025,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "ned_spawn"
+          "value": "creature_spawn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -8076,7 +8076,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "nakedned"
+                "value": "tat_militia02"
               }
             },
             {

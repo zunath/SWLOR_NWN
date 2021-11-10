@@ -34,7 +34,7 @@
   },
   "FogClipDist": {
     "type": "float",
-    "value": 45.0
+    "value": 65.0
   },
   "Height": {
     "type": "int",
@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Viscara - Veles Colony - Former Fosz Estate - Exterior"
+      "0": "Viscara - Veles Colony - Fosz Estate - Exterior"
     }
   },
   "NoRest": {
@@ -124,15 +124,15 @@
   },
   "SkyBox": {
     "type": "byte",
-    "value": 0
+    "value": 13
   },
   "SunAmbientColor": {
     "type": "dword",
-    "value": 6566450
+    "value": 11302265
   },
   "SunDiffuseColor": {
     "type": "dword",
-    "value": 16777215
+    "value": 6305616
   },
   "SunFogAmount": {
     "type": "byte",
@@ -140,7 +140,7 @@
   },
   "SunFogColor": {
     "type": "dword",
-    "value": 9535080
+    "value": 6443597
   },
   "SunShadows": {
     "type": "byte",
@@ -2913,7 +2913,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 7
+    "value": 6
   },
   "Width": {
     "type": "int",

@@ -171,14 +171,14 @@
         "__struct_id": 1,
         "EquippedRes": {
           "type": "resref",
-          "value": "fac_pubhelm"
+          "value": "republictrooperh"
         }
       },
       {
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "republictrooper"
+          "value": "republic_outf001"
         }
       },
       {
@@ -742,7 +742,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 926
+    "value": 65535
   },
   "SpecAbilityList": {
     "type": "list",

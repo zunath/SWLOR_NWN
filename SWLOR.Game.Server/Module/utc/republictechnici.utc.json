@@ -685,7 +685,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 193
+    "value": 0
   },
   "SpecAbilityList": {
     "type": "list",

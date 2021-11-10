@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 20
+    "value": 40
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 18.0
+    "value": 20.0
   },
   "ClassList": {
     "type": "list",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 30
+    "value": 58
   },
   "Conversation": {
     "type": "resref",
@@ -138,11 +138,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -15
+    "value": -18
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 300
+    "value": 280
   },
   "DecayTime": {
     "type": "dword",
@@ -390,13 +390,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 411
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 30
         }
       },
@@ -485,11 +478,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 300
+    "value": 280
   },
   "Int": {
     "type": "byte",
-    "value": 30
+    "value": 40
   },
   "Interruptable": {
     "type": "byte",
@@ -519,11 +512,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 600
+    "value": 1000
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 0
+    "value": 40
   },
   "NoPermDeath": {
     "type": "byte",
@@ -812,7 +805,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 926
+    "value": 0
   },
   "SpecAbilityList": {
     "type": "list",

@@ -30,7 +30,7 @@
   },
   "Flags": {
     "type": "dword",
-    "value": 0
+    "value": 1
   },
   "FogClipDist": {
     "type": "float",
@@ -148,7 +148,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "Area001"
+    "value": "playerap_s_fur"
   },
   "Tile_List": {
     "type": "list",
@@ -333,7 +333,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 10
+    "value": 11
   },
   "Width": {
     "type": "int",

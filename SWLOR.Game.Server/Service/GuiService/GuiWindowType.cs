@@ -24,6 +24,7 @@
         DistributeRPXP = 19,
         ShipManagement = 20,
         ChangeDescription = 21,
-        Craft = 22
+        Craft = 22,
+        ManageStaff = 23,
     }
 }

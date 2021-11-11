@@ -169,6 +169,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SelectedUserIndex = -1;
                 StatusText = "User deleted successfully.";
                 StatusColor = _green;
+
+                Log.Write(LogGroup.DM, $"User deleted from authorized DM list. Name: {dbUser.Name}, CDKey: {dbUser.CDKey}, Role: {dbUser.Authorization}");
             });
         };
 
@@ -197,6 +199,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             StatusText = "Saved successfully.";
             StatusColor = _green;
+
+            Log.Write(LogGroup.DM, $"User updated on authorized DM list. Name: {dbUser.Name}, CDKey: {dbUser.CDKey}, Role: {dbUser.Authorization}");
         };
 
         public Action OnClickDiscardChanges() => () =>

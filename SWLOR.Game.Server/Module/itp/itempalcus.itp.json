@@ -4853,6 +4853,17 @@
       },
       {
         "__struct_id": 0,
+        "ID": {
+          "type": "byte",
+          "value": 201
+        },
+        "STRREF": {
+          "type": "dword",
+          "value": 16859920
+        }
+      },
+      {
+        "__struct_id": 0,
         "LIST": {
           "type": "list",
           "value": [
@@ -13580,353 +13591,6 @@
       },
       {
         "__struct_id": 0,
-        "LIST": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "LIST": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 187
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 16778280
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 185
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 16778278
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 186
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 16778279
-                    }
-                  }
-                ]
-              },
-              "STRREF": {
-                "type": "dword",
-                "value": 6756
-              }
-            },
-            {
-              "__struct_id": 0,
-              "LIST": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 188
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 6760
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 189
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 6761
-                    }
-                  }
-                ]
-              },
-              "STRREF": {
-                "type": "dword",
-                "value": 490
-              }
-            },
-            {
-              "__struct_id": 0,
-              "LIST": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 191
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 6765
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 192
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 6766
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 193
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 6767
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 194
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 6699
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 190
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 6768
-                    }
-                  }
-                ]
-              },
-              "STRREF": {
-                "type": "dword",
-                "value": 6763
-              }
-            },
-            {
-              "__struct_id": 0,
-              "LIST": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 195
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 6769
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 196
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 6770
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 197
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 6771
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 198
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 6772
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 199
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 6817
-                    }
-                  }
-                ]
-              },
-              "STRREF": {
-                "type": "dword",
-                "value": 491
-              }
-            },
-            {
-              "__struct_id": 0,
-              "ID": {
-                "type": "byte",
-                "value": 206
-              },
-              "STRREF": {
-                "type": "dword",
-                "value": 6776
-              }
-            },
-            {
-              "__struct_id": 0,
-              "ID": {
-                "type": "byte",
-                "value": 205
-              },
-              "STRREF": {
-                "type": "dword",
-                "value": 16778283
-              }
-            },
-            {
-              "__struct_id": 0,
-              "ID": {
-                "type": "byte",
-                "value": 208
-              },
-              "STRREF": {
-                "type": "dword",
-                "value": 489
-              }
-            },
-            {
-              "__struct_id": 0,
-              "ID": {
-                "type": "byte",
-                "value": 207
-              },
-              "STRREF": {
-                "type": "dword",
-                "value": 16778284
-              }
-            },
-            {
-              "__struct_id": 0,
-              "LIST": {
-                "type": "list",
-                "value": [
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 203
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 16778263
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 202
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 16778248
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 200
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 16778249
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 204
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 16778269
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 201
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 16778247
-                    }
-                  }
-                ]
-              },
-              "STRREF": {
-                "type": "dword",
-                "value": 6818
-              }
-            },
-            {
-              "__struct_id": 0,
-              "ID": {
-                "type": "byte",
-                "value": 209
-              },
-              "STRREF": {
-                "type": "dword",
-                "value": 494
-              }
-            }
-          ]
-        },
-        "STRREF": {
-          "type": "dword",
-          "value": 16778246
-        }
-      },
-      {
-        "__struct_id": 0,
         "ID": {
           "type": "byte",
           "value": 54
@@ -19207,7 +18871,18 @@
                     "__struct_id": 0,
                     "ID": {
                       "type": "byte",
-                      "value": 43
+                      "value": 44
+                    },
+                    "STRREF": {
+                      "type": "dword",
+                      "value": 16872211
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ID": {
+                      "type": "byte",
+                      "value": 62
                     },
                     "LIST": {
                       "type": "list",
@@ -19216,205 +18891,40 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "[NPC] Shu's Scatter Blaster"
+                            "value": "Dual Pistol"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "shutgun"
+                            "value": "dualpistolmain"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Blaster Rifle"
+                            "value": "Dual Pistol (Offhand)"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "rifle_b"
+                            "value": "offhandpistol"
                           }
                         },
                         {
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Blaster Rifle I"
+                            "value": "Pistolet Blaster Jawa"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "rifle_1"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Blaster Rifle II"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_2"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Blaster Rifle III"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_3"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Blaster Rifle IV"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_4"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Carabine blaster"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "blast_carabine"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Coxxion Blaster Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_cox"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Elite Sith Trooper Blaster"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "e_sith_tblaster"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Enforcer Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_enforcer"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "NPC Blaster Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_npc"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "NPC Mando Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "npc_man_rifle"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Republic Blaster"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "republicblaster"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Republic Trooper Blaster"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "f_trooperblaster"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Sharpshooter Blaster Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_s"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Sith Trooper Blaster"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "sith_tblaster"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Telford's Blaster"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "zomb_telgun"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Trandoshan Blaster Rifle"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "rifle_tran"
+                            "value": "blast_jawa_d"
                           }
                         }
                       ]
                     },
                     "STRREF": {
                       "type": "dword",
-                      "value": 6774
+                      "value": 16872213
                     }
                   },
                   {
@@ -19508,17 +19018,6 @@
                     "STRREF": {
                       "type": "dword",
                       "value": 16778269
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ID": {
-                      "type": "byte",
-                      "value": 44
-                    },
-                    "STRREF": {
-                      "type": "dword",
-                      "value": 6819
                     }
                   },
                   {
@@ -19688,56 +19187,18 @@
                     },
                     "STRREF": {
                       "type": "dword",
-                      "value": 6820
+                      "value": 16872210
                     }
                   },
                   {
                     "__struct_id": 0,
                     "ID": {
                       "type": "byte",
-                      "value": 62
-                    },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Dual Pistol"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "dualpistolmain"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Dual Pistol (Offhand)"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "offhandpistol"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Pistolet Blaster Jawa"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "blast_jawa_d"
-                          }
-                        }
-                      ]
+                      "value": 200
                     },
                     "STRREF": {
                       "type": "dword",
-                      "value": 6821
+                      "value": 16872212
                     }
                   }
                 ]

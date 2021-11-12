@@ -10454,6 +10454,73 @@
           "type": "dword",
           "value": 6732
         }
+      },
+      {
+        "__struct_id": 0,
+        "LIST": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 150
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859853
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 153
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859856
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 152
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859855
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 154
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859857
+              }
+            },
+            {
+              "__struct_id": 0,
+              "ID": {
+                "type": "byte",
+                "value": 151
+              },
+              "STRREF": {
+                "type": "dword",
+                "value": 16859854
+              }
+            }
+          ]
+        },
+        "NAME": {
+          "type": "cexostring",
+          "value": "World Creatures"
+        }
       }
     ]
   }

@@ -41149,7 +41149,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 56
+                      "value": 6
                     },
                     "Cursed": {
                       "type": "byte",

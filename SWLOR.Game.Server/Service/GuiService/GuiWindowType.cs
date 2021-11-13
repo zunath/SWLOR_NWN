@@ -26,5 +26,11 @@
         ChangeDescription = 21,
         Craft = 22,
         ManageStaff = 23,
+
+        PropertyManagement = 24,
+        CityManagement = 25,
+        FurnitureManagement = 26,
+        ApartmentManagement = 27,
+        CityHall = 28,
     }
 }

@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 84.0
+    "value": 33.0
   },
   "ClassList": {
     "type": "list",
@@ -103,7 +103,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 40
+          "value": 30
         }
       }
     ]
@@ -114,7 +114,7 @@
   },
   "Color_Skin": {
     "type": "byte",
-    "value": 12
+    "value": 13
   },
   "Color_Tattoo1": {
     "type": "byte",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 1500
+    "value": 100
   },
   "DecayTime": {
     "type": "dword",
@@ -174,13 +174,6 @@
         "EquippedRes": {
           "type": "resref",
           "value": "jedimasterobes"
-        }
-      },
-      {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "lightsaber_zhar"
         }
       }
     ]
@@ -274,27 +267,6 @@
         "Feat": {
           "type": "word",
           "value": 584
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 754
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 755
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 757
         }
       },
       {
@@ -484,7 +456,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Jedi Master Zhar"
+      "0": "Zhar Lestin"
     }
   },
   "fortbonus": {
@@ -501,7 +473,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 1500
+    "value": 100
   },
   "Int": {
     "type": "byte",
@@ -519,10 +491,30 @@
     "type": "byte",
     "value": 0
   },
+  "ItemList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "InventoryRes": {
+          "type": "resref",
+          "value": "lightsaber_zhar"
+        },
+        "Repos_PosX": {
+          "type": "word",
+          "value": 0
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
+        }
+      }
+    ]
+  },
   "LastName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Lestin"
+      "0": ""
     }
   },
   "LawfulChaotic": {
@@ -535,7 +527,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 2900
+    "value": 1150
   },
   "NaturalAC": {
     "type": "byte",
@@ -848,7 +840,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "JediMasterZhar"
+    "value": "ZharLestin"
   },
   "Tail_New": {
     "type": "dword",

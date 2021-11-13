@@ -120,6 +120,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bastila's Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "robe_sand_m006"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Bounty Hunter Outfit Dark Red"
                     },
                     "RESREF": {
@@ -219,6 +230,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Dac Baine's Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item027"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Dancer Female 1"
                     },
                     "RESREF": {
@@ -268,6 +290,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "malak_robes01"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Darth Revan's Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "revan_robes_002"
                     }
                   },
                   {
@@ -686,6 +719,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "robe_sand_m001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Varke Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "robe_sand_m003"
                     }
                   },
                   {
@@ -1263,6 +1307,39 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Commander Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_cmdr_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Commando Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_cmdo_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Honor Guard Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_hogu_helm"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Sith Hood"
                     },
                     "RESREF": {
@@ -1312,6 +1389,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "helmet_fb001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Varke Force Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "helmet_fb003"
                     }
                   }
                 ]
@@ -1713,6 +1801,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sith_officer_uni"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Warrior Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_war_armor"
                     }
                   },
                   {
@@ -3027,6 +3126,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Gero's Thug outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "exchangethug002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Gero's Thug outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "gerothug001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Gravius's Robes"
                     },
                     "RESREF": {
@@ -3659,6 +3780,50 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "item004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Commander Armour"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_cmdr_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Commando Armour"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_cmdo_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Honor Guard Armour"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_hogu_armr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sith Siege Trooper Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_siege_armor"
                     }
                   },
                   {
@@ -13706,6 +13871,17 @@
                       "type": "resref",
                       "value": "yshrensaber001"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zez-Kai Ell's Master Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item025"
+                    }
                   }
                 ]
               },
@@ -15167,11 +15343,55 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Darth Revan's Cloak"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item034"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Darth Revan's Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "revan_sithsab002"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Darth Revan's Mask"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "revan_mask"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Fusion Lantern"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "fus_lantern"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Master Vandar's Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pclightsabert001"
                     }
                   },
                   {
@@ -15200,11 +15420,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "NPC Force Lightning"
+                      "value": "NPC Sith Powers"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "sithring"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Revan's Jedi Lightsaber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "revan_saber_003"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Zez_Kai Ell's Masterstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item026"
                     }
                   }
                 ]
@@ -16474,6 +16716,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Sith Commando Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sith_cmdo_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Survival Knife"
                           },
                           "RESREF": {
@@ -16748,6 +17001,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "[NPC] Sith Warrior Saber"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sith_war_saber"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Alask's Lightsaber"
                           },
                           "RESREF": {
@@ -16874,6 +17138,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "exchangesword001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Exchange Vibroblade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "exchangesword003"
                           }
                         },
                         {
@@ -18029,6 +18304,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Bastila's Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "saberstaff_y_004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Berserker Twin Vibroblade"
                     },
                     "RESREF": {
@@ -18837,6 +19123,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Sith Force Pike"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sith_pike"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Trandoshan Polearm H"
                     },
                     "RESREF": {
@@ -18951,6 +19248,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Dac's Flakgun"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dakflakgun003"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Republic Commander Rifle"
                           },
                           "RESREF": {
@@ -18989,6 +19297,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "republictrooperb"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Sith Siege Blaster"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "sithsiegeblaster"
                           }
                         },
                         {
@@ -19104,6 +19423,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "blaster_cox"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Dac's Custom Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "blaster_006"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Exchange Blaster Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "exchangepisto002"
                           }
                         },
                         {

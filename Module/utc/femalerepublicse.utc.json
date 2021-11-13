@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 1
+    "value": 5
   },
   "Appearance_Type": {
     "type": "word",
@@ -110,7 +110,7 @@
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 1
+    "value": 22
   },
   "Color_Skin": {
     "type": "byte",
@@ -328,7 +328,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 2
+    "value": 114
   },
   "PerceptionRange": {
     "type": "byte",

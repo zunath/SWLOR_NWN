@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Quests
 
             var quest = QuestService.GetQuestByID(QuestID);
             quest.Advance(player, crystal);
+            quest.Advance(player, crystal);
 
             // Hide the "Source of Power?" placeable so the player can't use it again.
             ObjectVisibilityService.AdjustVisibility(player, "81533EBB-2084-4C97-B004-8E1D8C395F56", false);

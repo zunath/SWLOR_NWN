@@ -102,6 +102,10 @@ namespace SWLOR.Game.Server.Service
             foreach (PCQuestStatus pcQuest in pcQuests)
             {
                 var quest = _quests[pcQuest.QuestID];
+
+                // One of the EE patches introduced a regression wherein the journal entries wouldn't be given to players after logging in.
+                // This is a workaround to ensure they appear after relogging.
+                RemoveJournalQuestEntry(quest.JournalTag, oPC.Object, false);
                 AddJournalQuestEntry(quest.JournalTag, pcQuest.QuestState, oPC.Object, false);
             }
         }

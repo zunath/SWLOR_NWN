@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Processor
 
                     foreach (var player in NWModule.Get().Players)
                     {
-                        _.BootPC(player, "Server is automatically rebooting. This is a temporary solution until we can fix performance problems. Thank you for your patience and understanding.");
+                        _.BootPC(player, "Server is automatically rebooting. Please reconnect shortly.");
                     }
 
                     NWNXAdmin.ShutdownServer();

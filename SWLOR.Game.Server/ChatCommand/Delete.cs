@@ -63,8 +63,6 @@ namespace SWLOR.Game.Server.ChatCommand
 
         public string ValidateArguments(NWPlayer user, params string[] args)
         {
-            return "Currently disabled.";
-
             if (!user.IsPlayer)
                 return "You can only delete a player character.";
 

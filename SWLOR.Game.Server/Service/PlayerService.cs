@@ -282,6 +282,8 @@ namespace SWLOR.Game.Server.Service
             SaveLocation(player);
             if(player.IsPlayer)
                 ExportSingleCharacter(player);
+
+            StoreResetPosition();
         }
 
         private static void LoadCharacter()
@@ -580,7 +582,23 @@ namespace SWLOR.Game.Server.Service
                 currentTick = 0;
             }
 
+
+
             NWModule.Get().SetLocalInt("SAVE_CHARACTERS_TICK", currentTick);
+        }
+
+        private static void StoreResetPosition()
+        {
+            var player = GetEnteringObject();
+            NWArea area = OBJECT_SELF;
+
+            if (!GetIsPC(player) || GetIsDM(player)) 
+                return;
+
+            if (area.IsInstance)
+                return;
+            
+            SetLocalLocation(player, "STUCK_LOCATION_RESET", GetLocation(player));
         }
     }
 }

@@ -65,6 +65,26 @@ namespace SWLOR.Game.Server.Service.DBService
         }
 
         /// <summary>
+        /// Adds a filter based on a field's name for the given text.
+        /// Will search for any matches in the provided list of strings.
+        /// </summary>
+        /// <param name="fieldName">The name of the field to search for</param>
+        /// <param name="search">The list of values to search for</param>
+        /// <returns>A configured DBQuery</returns>
+        public DBQuery<T> AddFieldSearch(string fieldName, IEnumerable<string> search)
+        {
+            var searchText = string.Join("|", search);
+            var criteria = new SearchCriteria(searchText)
+            {
+                SkipEscaping = true
+            };
+
+            FieldSearches.Add(fieldName, criteria);
+
+            return this;
+        }
+
+        /// <summary>
         /// Adds a filter based on a field's name for the given number.
         /// </summary>
         /// <param name="fieldName">The name of the field to search for</param>

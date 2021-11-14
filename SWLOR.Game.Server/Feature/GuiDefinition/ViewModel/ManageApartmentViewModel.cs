@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -255,7 +257,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnManagePermissions() => () =>
         {
-            Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement);
+            var apartment = GetApartment();
+            var payload = new PropertyPermissionPayload
+            {
+                PropertyId = apartment.Id.ToString(),
+                AvailablePermissions = new List<PropertyPermissionType>
+                {
+                    PropertyPermissionType.EditStructures,
+                    PropertyPermissionType.RetrieveStructures,
+                    PropertyPermissionType.RenameProperty,
+                    PropertyPermissionType.AccessStorage,
+                    PropertyPermissionType.ExtendLease,
+                    PropertyPermissionType.CancelLease,
+                    PropertyPermissionType.EnterProperty,
+                    PropertyPermissionType.RenameStructures
+                }
+            };
+
+            Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload, TetherObject);
         };
 
         public Action OnEnterApartment() => () =>

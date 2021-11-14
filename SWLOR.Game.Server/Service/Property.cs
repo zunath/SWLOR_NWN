@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<PropertyLayoutType, PropertyLayoutTypeAttribute> _activeLayouts = new();
         private static readonly Dictionary<PropertyType, List<PropertyLayoutType>> _layoutsByPropertyType = new();
         private static readonly Dictionary<PropertyLayoutType, Vector3> _entrancesByLayout = new();
+        private static readonly Dictionary<PropertyPermissionType, PropertyPermissionAttribute> _activePermissions = new();
 
         private static readonly Dictionary<string, uint> _instanceTemplates = new();
         private static readonly Dictionary<string, uint> _propertyInstances = new();
@@ -30,6 +31,7 @@ namespace SWLOR.Game.Server.Service
         public static void CacheData()
         {
             CachePropertyTypes();
+            CachePermissions();
             CacheFurniture();
             CacheInstanceTemplates();
         }
@@ -60,6 +62,20 @@ namespace SWLOR.Game.Server.Service
 
                     _layoutsByPropertyType[layout.PropertyType].Add(type);
                     _entrancesByLayout[type] = GetEntrancePosition(layout.AreaInstanceResref);
+                }
+            }
+        }
+
+        private static void CachePermissions()
+        {
+            var permissionTypes = Enum.GetValues(typeof(PropertyPermissionType)).Cast<PropertyPermissionType>();
+            foreach (var type in permissionTypes)
+            {
+                var permission = type.GetAttribute<PropertyPermissionType, PropertyPermissionAttribute>();
+
+                if (permission.IsActive)
+                {
+                    _activePermissions[type] = permission;
                 }
             }
         }
@@ -279,7 +295,7 @@ namespace SWLOR.Game.Server.Service
                         { PropertyPermissionType.AccessStorage , true},
                         { PropertyPermissionType.ExtendLease , true},
                         { PropertyPermissionType.CancelLease , true},
-                        { PropertyPermissionType.Enter , true},
+                        { PropertyPermissionType.EnterProperty , true},
                         { PropertyPermissionType.RenameStructures , true}
                     }
                 },
@@ -362,6 +378,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves the detail for a given permission type.
+        /// </summary>
+        /// <param name="permission">The type of permission to retrieve.</param>
+        /// <returns>A permission detail</returns>
+        public static PropertyPermissionAttribute GetPermissionByType(PropertyPermissionType permission)
+        {
+            return _activePermissions[permission];
+        }
+
+        /// <summary>
         /// When an apartment terminal is used, open the Apartment NUI
         /// </summary>
         [NWNEventHandler("apartment_term")]
@@ -436,7 +462,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="propertyId">The property Id</param>
         public static void EnterProperty(uint player, string propertyId)
         {
-            if (!HasPropertyPermission(player, propertyId, PropertyPermissionType.Enter))
+            if (!HasPropertyPermission(player, propertyId, PropertyPermissionType.EnterProperty))
             {
                 FloatingTextStringOnCreature("You do not have permission to access that property.", player, false);
                 return;

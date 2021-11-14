@@ -21,15 +21,19 @@ namespace SWLOR.Game.Server.Entity
             {
                 var layout = Property.GetLayoutByType(InteriorLayout);
                 targetArea = CreateArea(layout.AreaInstanceResref);
+                Property.RegisterInstance(Id.ToString(), targetArea);
             }
 
-            var query = new DBQuery<PropertyBase>()
-                .AddFieldSearch(nameof(Id), ChildPropertyIds);
-            var children = DB.Search(query);
-
-            foreach (var child in children)
+            if (ChildPropertyIds.Count > 0)
             {
-                child.SpawnIntoWorld(targetArea);
+                var query = new DBQuery<WorldProperty>()
+                    .AddFieldSearch(nameof(Id), ChildPropertyIds);
+                var children = DB.Search(query);
+
+                foreach (var child in children)
+                {
+                    child.SpawnIntoWorld(targetArea);
+                }
             }
         }
     }

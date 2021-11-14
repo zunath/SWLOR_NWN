@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.Feature
             var area = GetArea(player);
             var position = GetPosition(player);
             var orientation = GetFacing(player);
-            var playerID = GetObjectUUID(player);
-            var entity = DB.Get<Player>(playerID) ?? new Player();
+            var playerId = GetObjectUUID(player);
+            var entity = DB.Get<Player>(playerId) ?? new Player();
 
             entity.LocationX = position.X;
             entity.LocationY = position.Y;
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature
             entity.LocationOrientation = orientation;
             entity.LocationAreaResref = GetResRef(area);
 
-            DB.Set(playerID, entity);
+            DB.Set(playerId, entity);
         }
 
         /// <summary>
@@ -98,8 +98,8 @@ namespace SWLOR.Game.Server.Feature
         {
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
-            var playerID = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerID);
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
 
             if (dbPlayer == null || string.IsNullOrWhiteSpace(dbPlayer.LocationAreaResref)) return;
 

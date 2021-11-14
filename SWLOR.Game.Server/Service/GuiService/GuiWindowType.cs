@@ -30,7 +30,8 @@
         PropertyManagement = 24,
         CityManagement = 25,
         FurnitureManagement = 26,
-        ApartmentManagement = 27,
-        CityHall = 28,
+        RentApartment = 27,
+        ManageApartment = 28,
+        CityHall = 29,
     }
 }

@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.PropertyService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -44,7 +45,7 @@ namespace SWLOR.Game.Server.Service
         /// Handles caching data into server memory for quicker lookup later.
         /// </summary>
         [NWNEventHandler("mod_cache")]
-        public static void OnModuleLoad()
+        public static void CacheData()
         {
             CacheAreasByResref();
             LoadAreaCache();
@@ -53,6 +54,22 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {AreasByResref.Count} areas by resref.");
             Console.WriteLine($"Loaded {ItemNamesByResref.Count} item names by resref.");
             Console.WriteLine($"Loaded {PortraitIdsByInternalId.Count} portraits by Id.");
+        }
+
+        /// <summary>
+        /// Remove instance templates from the area cache on module load.
+        /// This ensures player locations are not updated in places they shouldn't be.
+        /// </summary>
+        [NWNEventHandler("mod_load")]
+        public static void RemoveInstancesFromCache()
+        {
+            var propertyLayouts = Property.GetAllLayoutsByPropertyType(PropertyType.Apartment);
+            foreach (var type in propertyLayouts)
+            {
+                var layout = Property.GetLayoutByType(type);
+                if (AreasByResref.ContainsKey(layout.AreaInstanceResref))
+                    AreasByResref.Remove(layout.AreaInstanceResref);
+            }
         }
 
         private static void LoadAreaCache()

@@ -11,7 +11,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class ApartmentManagementViewModel: GuiViewModelBase<ApartmentManagementViewModel, GuiPayloadBase>
+    public class RentApartmentViewModel: GuiViewModelBase<RentApartmentViewModel, GuiPayloadBase>
     {
         private GuiColor _red = new GuiColor(255, 0, 0);
         private GuiColor _green = new GuiColor(0, 255, 0);
@@ -84,6 +84,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _layoutTypes.Add(layoutType);
             }
 
+            Name = $"Please select a layout.";
+            FurnitureLimit = string.Empty;
+            InitialPrice = string.Empty;
+            PricePerDay = string.Empty;
+
             LayoutNames = layoutNames;
             LayoutToggles = layoutToggles;
         }
@@ -142,29 +147,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     AssignCommand(Player, () => TakeGoldFromCreature(layout.InitialPrice, Player, true));
 
-                    Gui.TogglePlayerWindow(Player, GuiWindowType.ApartmentManagement);
-                    Property.CreateApartment(Player, layoutType);
+                    var property = Property.CreateApartment(Player, layoutType);
                     var position = Property.GetEntrancePosition(layoutType);
-                    var area = Cache.GetAreaByResref(layout.AreaInstanceResref);
-                    var location = Location(area, position, 0.0f);
+                    var instance = Property.GetRegisteredInstance(property.Id.ToString());
+                    var location = Location(instance, position, 0.0f);
 
+                    Property.StoreOriginalLocation(Player);
+                    AssignCommand(Player, () =>
+                    {
+                        JumpToLocation(location);
+                    });
+
+                    Gui.TogglePlayerWindow(Player, GuiWindowType.RentApartment);
                 });
         };
 
         public Action OnPreviewApartment() => () =>
         {
             var layoutType = _layoutTypes[SelectedLayout];
-            var layout = Property.GetLayoutByType(layoutType);
             var position = Property.GetEntrancePosition(layoutType);
-            var area = Cache.GetAreaByResref(layout.AreaInstanceResref);
+            var area = Property.GetInstanceTemplate(layoutType);
             var location = Location(area, position, 0.0f);
 
+            Property.StoreOriginalLocation(Player);
             AssignCommand(Player, () =>
             {
                 JumpToLocation(location);
             });
 
-            Gui.TogglePlayerWindow(Player, GuiWindowType.ApartmentManagement);
+            Gui.TogglePlayerWindow(Player, GuiWindowType.RentApartment);
         };
     }
 }

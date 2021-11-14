@@ -13,8 +13,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class RentApartmentViewModel: GuiViewModelBase<RentApartmentViewModel, GuiPayloadBase>
     {
-        private GuiColor _red = new GuiColor(255, 0, 0);
-        private GuiColor _green = new GuiColor(0, 255, 0);
+        private readonly GuiColor _red = new GuiColor(255, 0, 0);
+        private readonly GuiColor _green = new GuiColor(0, 255, 0);
 
         public string Instructions
         {
@@ -135,7 +135,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     var playerId = GetObjectUUID(Player);
                     var query = new DBQuery<WorldProperty>()
-                        .AddFieldSearch(nameof(WorldProperty.OwnerPlayerId), playerId, false);
+                        .AddFieldSearch(nameof(WorldProperty.OwnerPlayerId), playerId, false)
+                        .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
                     var apartments = DB.Search(query).ToList();
 
                     if (apartments.Count > 0)
@@ -148,15 +149,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     AssignCommand(Player, () => TakeGoldFromCreature(layout.InitialPrice, Player, true));
 
                     var property = Property.CreateApartment(Player, layoutType);
-                    var position = Property.GetEntrancePosition(layoutType);
-                    var instance = Property.GetRegisteredInstance(property.Id.ToString());
-                    var location = Location(instance, position, 0.0f);
-
-                    Property.StoreOriginalLocation(Player);
-                    AssignCommand(Player, () =>
-                    {
-                        JumpToLocation(location);
-                    });
+                    Property.EnterProperty(Player, property.Id.ToString());
 
                     Gui.TogglePlayerWindow(Player, GuiWindowType.RentApartment);
                 });
@@ -165,16 +158,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnPreviewApartment() => () =>
         {
             var layoutType = _layoutTypes[SelectedLayout];
-            var position = Property.GetEntrancePosition(layoutType);
-            var area = Property.GetInstanceTemplate(layoutType);
-            var location = Location(area, position, 0.0f);
 
-            Property.StoreOriginalLocation(Player);
-            AssignCommand(Player, () =>
-            {
-                JumpToLocation(location);
-            });
-
+            Property.PreviewProperty(Player, layoutType);
             Gui.TogglePlayerWindow(Player, GuiWindowType.RentApartment);
         };
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Entity
@@ -10,6 +11,7 @@ namespace SWLOR.Game.Server.Entity
             ParentPropertyId = string.Empty;
             ChildPropertyIds = new List<string>();
             Permissions = new Dictionary<string, Dictionary<PropertyPermissionType, bool>>();
+            Timers = new Dictionary<PropertyTimerType, DateTime>();
         }
 
         [Indexed]
@@ -28,10 +30,21 @@ namespace SWLOR.Game.Server.Entity
 
         public Dictionary<string, Dictionary<PropertyPermissionType, bool>> Permissions { get; set; }
 
-        public abstract void SpawnIntoWorld(uint area);
+        public Dictionary<PropertyTimerType, DateTime> Timers { get; set; }
 
+        [Indexed]
         public bool IsPubliclyAccessible { get; set; }
 
         public PropertyLayoutType InteriorLayout { get; set; }
+
+        /// <summary>
+        /// If this flag is set to true, the property will be permanently removed
+        /// from the database the next time the server boots up.
+        /// This is delayed to avoid lag and situations where players could log into a deleted property.
+        /// </summary>
+        [Indexed]
+        public bool IsQueuedForDeletion { get; set; }
+
+        public abstract void SpawnIntoWorld(uint area);
     }
 }

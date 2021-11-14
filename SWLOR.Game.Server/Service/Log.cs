@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Service
         Death,
         Server,
         PerkRefund,
-        PlayerHousing,
+        Property,
         PlayerMarket,
         AI,
         Space

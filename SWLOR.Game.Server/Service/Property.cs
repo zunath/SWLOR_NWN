@@ -34,6 +34,16 @@ namespace SWLOR.Game.Server.Service
             CacheInstanceTemplates();
         }
 
+        /// <summary>
+        /// When the module loads, clean up any deleted data and then load properties.
+        /// </summary>
+        [NWNEventHandler("mod_load")]
+        public static void OnModuleLoad()
+        {
+            CleanUpData();
+            LoadProperties();
+        }
+
         private static void CachePropertyTypes()
         {
             var layoutTypes = Enum.GetValues(typeof(PropertyLayoutType)).Cast<PropertyLayoutType>();
@@ -159,12 +169,71 @@ namespace SWLOR.Game.Server.Service
         {
             return _propertyInstances[propertyId];
         }
+        
+        /// <summary>
+        /// When the module loads, remove all data marked for deletion and any properties with expired leases.
+        /// </summary>
+        private static void CleanUpData()
+        {
+            var now = DateTime.UtcNow;
+
+            // Mark any properties with expired leases as queued for deletion. They will be picked up on the last
+            // step of this method.
+            var propertyTypesWithLeases = new[]
+            {
+                (int)PropertyType.Apartment,
+                (int)PropertyType.City
+            };
+            var query = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), propertyTypesWithLeases);
+            var properties = DB.Search(query);
+
+            foreach (var property in properties)
+            {
+                var lease = property.Timers[PropertyTimerType.Lease];
+                if (lease <= now)
+                {
+                    Log.Write(LogGroup.Property, $"Property '{property.CustomName}' has an expired lease. Expired on: {lease.ToString("G")}");
+
+                    property.IsQueuedForDeletion = true;
+                    DB.Set(property.Id.ToString(), property);
+                }
+            }
+
+            // Remove any properties queued for deletion.
+            query = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), true);
+            properties = DB.Search(query);
+
+            foreach (var property in properties)
+            {
+                Log.Write(LogGroup.Property, $"Property '{property.CustomName}' scheduled for deletion. Peforming delete now.");
+                DeleteProperty(property);
+            }
+        }
+
+        private static void DeleteProperty(WorldProperty property)
+        {
+            if (property.ChildPropertyIds.Count > 0)
+            {
+                var query = new DBQuery<WorldProperty>()
+                    .AddFieldSearch(nameof(WorldProperty.Id), property.ChildPropertyIds);
+                var children = DB.Search(query);
+
+                foreach (var child in children)
+                {
+                    DeleteProperty(child);
+                }
+            }
+
+            DB.Delete<WorldProperty>(property.Id.ToString());
+            Log.Write(LogGroup.Property, $"Property '{property.CustomName}' deleted.");
+        }
 
         /// <summary>
         /// When the module loads, load all properties.
         /// </summary>
-        [NWNEventHandler("mod_load")]
-        public static void LoadProperties()
+        private static void LoadProperties()
         {
             var apartments = DB.Search(new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment));
@@ -213,6 +282,10 @@ namespace SWLOR.Game.Server.Service
                         { PropertyPermissionType.Enter , true},
                         { PropertyPermissionType.RenameStructures , true}
                     }
+                },
+                Timers =
+                {
+                    { PropertyTimerType.Lease, DateTime.UtcNow.AddDays(7) }
                 },
                 CustomName = $"{GetName(player)}'s Apartment",
                 PropertyType = PropertyType.Apartment,
@@ -300,13 +373,86 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var query = new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.OwnerPlayerId), playerId, false)
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment);
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
+                .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
             var existingApartment = DB.Search(query).FirstOrDefault();
 
             Gui.TogglePlayerWindow(player,
                 existingApartment == null 
                     ? GuiWindowType.RentApartment 
                     : GuiWindowType.ManageApartment, null, terminal);
+        }
+
+        /// <summary>
+        /// Determines whether a player a specific permission.
+        /// This will always return true for DMs.
+        /// </summary>
+        /// <param name="player">The player to check.</param>
+        /// <param name="propertyId">The property Id to check.</param>
+        /// <param name="permission">The type of permission to check.</param>
+        /// <returns>true if player has permission, false otherwise</returns>
+        public static bool HasPropertyPermission(uint player, string propertyId, PropertyPermissionType permission)
+        {
+            // DMs always have permission.
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return true;
+            
+            if (!GetIsPC(player))
+                return false;
+
+            var playerId = GetObjectUUID(player);
+            var property = DB.Get<WorldProperty>(propertyId);
+
+            // Player doesn't exist in the permissions list. No permission.
+            if (!property.Permissions.ContainsKey(playerId))
+                return false;
+
+            // Player exists, check their permission.
+            return property.Permissions[playerId][permission];
+        }
+
+        /// <summary>
+        /// Sends a player to the template area of a particular layout.
+        /// </summary>
+        /// <param name="player">The player to send.</param>
+        /// <param name="layout">The layout type to send them to.</param>
+        public static void PreviewProperty(uint player, PropertyLayoutType layout)
+        {
+            var position = GetEntrancePosition(layout);
+            var area = GetInstanceTemplate(layout);
+            var location = Location(area, position, 0.0f);
+
+            StoreOriginalLocation(player);
+            AssignCommand(player, () =>
+            {
+                JumpToLocation(location);
+            });
+        }
+
+        /// <summary>
+        /// Sends a player to a specific property's instance.
+        /// </summary>
+        /// <param name="player">The player to send.</param>
+        /// <param name="propertyId">The property Id</param>
+        public static void EnterProperty(uint player, string propertyId)
+        {
+            if (!HasPropertyPermission(player, propertyId, PropertyPermissionType.Enter))
+            {
+                FloatingTextStringOnCreature("You do not have permission to access that property.", player, false);
+                return;
+            }
+
+            var property = DB.Get<WorldProperty>(propertyId);
+            var layout = _activeLayouts[property.InteriorLayout];
+            var position = GetEntrancePosition(layout.AreaInstanceResref);
+            var instance = GetRegisteredInstance(property.Id.ToString());
+            var location = Location(instance, position, 0.0f);
+
+            StoreOriginalLocation(player);
+            AssignCommand(player, () =>
+            {
+                JumpToLocation(location);
+            });
         }
 
         /// <summary>

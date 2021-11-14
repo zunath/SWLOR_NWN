@@ -1,8 +1,10 @@
 ﻿using System;
+using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Enum.Item;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using static SWLOR.Game.Server.NWN._;
 
@@ -101,15 +103,17 @@ namespace SWLOR.Game.Server.Conversation
         private bool IsMainValid()
         {
             NWPlayer player = GetPC();
-            NWItem main = player.RightHand;           
-
+            NWItem main = player.RightHand;
+            Player pc = DataService.Player.GetByID(player.GlobalID);
+            
             bool canModifyMain = main.IsValid && 
                                  !main.IsPlot && 
                                  !main.IsCursed &&
                                  // https://github.com/zunath/SWLOR_NWN/issues/942#issue-467176236
                                  main.CustomItemType != CustomItemType.Lightsaber && 
                                  main.CustomItemType != CustomItemType.Saberstaff &&
-                                 main.GetLocalBool("LIGHTSABER") == false;
+                                 main.GetLocalBool("LIGHTSABER") == false &&
+                                 !(pc.ModeDualPistol && main.CustomItemType == CustomItemType.BlasterPistol);
 
             if (canModifyMain)
             {
@@ -124,10 +128,12 @@ namespace SWLOR.Game.Server.Conversation
         {
             NWPlayer player = GetPC();
             NWItem offHand = player.LeftHand;
+            Player pc = DataService.Player.GetByID(player.GlobalID);
 
             bool canModifyOffHand = offHand.IsValid && !offHand.IsPlot && !offHand.IsCursed &&
                                     // https://github.com/zunath/SWLOR_NWN/issues/942#issue-467176236
-                                    offHand.CustomItemType != CustomItemType.Lightsaber && offHand.GetLocalBool("LIGHTSABER") == false;
+                                    offHand.CustomItemType != CustomItemType.Lightsaber && offHand.GetLocalBool("LIGHTSABER") == false &&
+                                    !(pc.ModeDualPistol && offHand.CustomItemType == CustomItemType.BlasterPistol);
 
             if (canModifyOffHand)
             {

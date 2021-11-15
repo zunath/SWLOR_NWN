@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
@@ -19,7 +20,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private List<PropertyPermissionType> AvailablePermissions { get; set; }
         private int SelectedPlayerIndex { get; set; }
 
-        private List<string> _playerIds = new();
+        private readonly List<string> _playerIds = new();
 
         public string Instruction
         {
@@ -63,6 +64,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<bool> PermissionGrantingStates
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> PermissionNames
         {
             get => Get<GuiBindingList<string>>();
@@ -81,17 +88,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-
         private void LoadPlayerInfo()
         {
             var playerId = _playerIds[SelectedPlayerIndex];
-            var dbPlayer = DB.Get<Player>(playerId);
+
+            var query = new DBQuery<Player>()
+                .AddFieldSearch(nameof(Entity.Player.Id), playerId, false);
+            var dbPlayer = DB.Search(query).Single();
             var dbProperty = DB.Get<WorldProperty>(PropertyId);
             var playerPermissions = dbProperty.Permissions.ContainsKey(playerId)
                 ? dbProperty.Permissions[playerId]
                 : new Dictionary<PropertyPermissionType, bool>();
+            var playerGrantPermissions = dbProperty.Permissions.ContainsKey(playerId)
+                ? dbProperty.GrantPermissions[playerId]
+                : new Dictionary<PropertyPermissionType, bool>();
 
             var permissionStates = new GuiBindingList<bool>();
+            var permissionGrantingStates = new GuiBindingList<bool>();
             var permissionNames = new GuiBindingList<string>();
             var permissionDescriptions = new GuiBindingList<string>();
 
@@ -107,10 +120,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     permissionStates.Add(playerPermissions[type]);
                 else
                     permissionStates.Add(false);
+
+                if(playerPermissions.ContainsKey(type))
+                    permissionGrantingStates.Add(playerGrantPermissions[type]);
+                else 
+                    permissionGrantingStates.Add(false);
             }
-
-
+            
             PermissionStates = permissionStates;
+            PermissionGrantingStates = permissionGrantingStates;
             PermissionNames = permissionNames;
             PermissionDescriptions = permissionDescriptions;
         }
@@ -124,6 +142,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             AvailablePermissions = initialPayload.AvailablePermissions;
 
+            var property = DB.Get<WorldProperty>(PropertyId);
+            PropertyName = property.CustomName;
             PlayerNames = new GuiBindingList<string>();
             PlayerToggles = new GuiBindingList<bool>();
             PermissionStates = new GuiBindingList<bool>();

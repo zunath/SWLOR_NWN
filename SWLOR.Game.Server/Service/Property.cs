@@ -410,7 +410,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Determines whether a player a specific permission.
+        /// Determines whether a player has a specific permission.
         /// This will always return true for DMs.
         /// </summary>
         /// <param name="player">The player to check.</param>
@@ -435,6 +435,34 @@ namespace SWLOR.Game.Server.Service
 
             // Player exists, check their permission.
             return property.Permissions[playerId][permission];
+        }
+
+        /// <summary>
+        /// Determines whether a player can GRANT a specific permission to another player.
+        /// This will always return true for DMs.
+        /// </summary>
+        /// <param name="player">The player to check.</param>
+        /// <param name="propertyId">The property Id to check.</param>
+        /// <param name="permission">The type of permission to check.</param>
+        /// <returns>true if player can grant the permission, false otherwise</returns>
+        public static bool CanGrantPermission(uint player, string propertyId, PropertyPermissionType permission)
+        {
+            // DMs always have permission.
+            if (GetIsDM(player) || GetIsDMPossessed(player))
+                return true;
+
+            if (!GetIsPC(player))
+                return false;
+
+            var playerId = GetObjectUUID(player);
+            var property = DB.Get<WorldProperty>(propertyId);
+
+            // Player doesn't exist in the permissions list. No permission.
+            if (!property.GrantPermissions.ContainsKey(playerId))
+                return false;
+
+            // Player exists, check their permission.
+            return property.GrantPermissions[playerId][permission];
         }
 
         /// <summary>

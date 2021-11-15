@@ -56,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 row2.AddButton()
                                     .SetText("Search")
                                     .SetHeight(35f)
+                                    .SetWidth(70f)
                                     .BindOnClicked(model => model.OnClickSearch());
                             });
 
@@ -94,12 +95,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 {
                                     template.AddCell(cell =>
                                     {
+                                        cell.SetIsVariable(false);
+                                        cell.SetWidth(140f);
+                                        cell.AddLabel()
+                                            .BindText(model => model.PermissionNames)
+                                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                            .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                            .BindTooltip(model => model.PermissionDescriptions);
+                                    });
+
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.SetIsVariable(false);
+                                        cell.SetWidth(90f);
                                         cell.AddCheckBox()
                                             .BindIsChecked(model => model.PermissionStates)
-                                            .BindText(model => model.PermissionNames);
+                                            .SetText("Permission");
+                                    });
+
+                                    template.AddCell(cell =>
+                                    {
+                                        cell.SetIsVariable(false);
+                                        cell.SetWidth(80f);
+                                        cell.AddCheckBox()
+                                            .BindIsChecked(model => model.PermissionGrantingStates)
+                                            .SetText("Grant")
+                                            .SetTooltip("Player will be able to grant this permission to others if checked.");
                                     });
                                 })
-                                    .BindRowCount(model => model.PermissionNames);
+                                    .BindRowCount(model => model.PermissionNames)
+                                    .SetWidth(330f);
                             });
 
                             col2.AddRow(row2 =>

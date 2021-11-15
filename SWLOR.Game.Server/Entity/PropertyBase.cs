@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Entity
         public List<string> ChildPropertyIds { get; set; }
 
         public Dictionary<string, Dictionary<PropertyPermissionType, bool>> Permissions { get; set; }
+        public Dictionary<string, Dictionary<PropertyPermissionType, bool>> GrantPermissions { get; set; }
 
         public Dictionary<PropertyTimerType, DateTime> Timers { get; set; }
 

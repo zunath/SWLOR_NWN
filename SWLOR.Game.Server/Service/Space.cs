@@ -370,7 +370,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return false;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
             return dbPlayer.ActiveShipId != Guid.Empty.ToString();
         }
 
@@ -436,8 +436,8 @@ namespace SWLOR.Game.Server.Service
                 dbPlayerShip.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
             }
 
-            DB.Set(playerId, dbPlayer);
-            DB.Set(dbPlayerShip.Id.ToString(), dbPlayerShip);
+            DB.Set(dbPlayer);
+            DB.Set(dbPlayerShip);
         }
 
         /// <summary>
@@ -498,8 +498,8 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
             }
             
-            DB.Set(playerId, dbPlayer);
-            DB.Set(shipId, dbShip);
+            DB.Set(dbPlayer);
+            DB.Set(dbShip);
         }
 
         /// <summary>
@@ -725,7 +725,7 @@ namespace SWLOR.Game.Server.Service
                 var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
                 dbShip.Status = activatorShipStatus;
                 
-                DB.Set(dbShip.Id.ToString(), dbShip);
+                DB.Set(dbShip);
             }
 
             if (GetIsPC(target))
@@ -735,7 +735,7 @@ namespace SWLOR.Game.Server.Service
                 var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
                 dbShip.Status = activatorShipStatus;
 
-                DB.Set(playerId, dbPlayer);
+                DB.Set(dbPlayer);
             }
         }
 
@@ -786,7 +786,7 @@ namespace SWLOR.Game.Server.Service
             ApplyAutoShipRecovery(dbShip.Status);
 
             // Update changes
-            DB.Set(dbPlayer.ActiveShipId, dbShip);
+            DB.Set(dbShip);
         }
 
         /// <summary>
@@ -989,7 +989,7 @@ namespace SWLOR.Game.Server.Service
                     dbPlayerShip.Status.Shield = targetShipStatus.Shield;
                     dbPlayerShip.Status.Hull = targetShipStatus.Hull;
 
-                    DB.Set(dbPlayerShip.Id.ToString(), dbPlayerShip);
+                    DB.Set(dbPlayerShip);
                 }
                 else
                 {
@@ -1090,7 +1090,7 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.SelectedShipId = Guid.Empty.ToString();
 
                 // Update the changes
-                DB.Set(playerId, dbPlayer);
+                DB.Set(dbPlayer);
             }
             // Simply kill NPCs
             else

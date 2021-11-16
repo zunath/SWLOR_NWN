@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer.Factions[faction].Points < 0)
                 dbPlayer.Factions[faction].Points = 0;
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
 
             if (adjustBy > 0)
             {

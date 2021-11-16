@@ -74,12 +74,7 @@ namespace SWLOR.Game.Server.Service.DBService
         public DBQuery<T> AddFieldSearch(string fieldName, IEnumerable<string> search)
         {
             var searchText = string.Join("|", search);
-            var criteria = new SearchCriteria(searchText)
-            {
-                SkipEscaping = true
-            };
-
-            FieldSearches.Add(fieldName, criteria);
+            FieldSearches.Add(fieldName, new SearchCriteria(searchText));
 
             return this;
         }

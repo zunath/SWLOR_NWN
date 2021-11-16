@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Names.Add(newUser.Name);
             UserToggles.Add(false);
 
-            DB.Set(newUser.Id.ToString(), newUser);
+            DB.Set(newUser);
 
             StatusText = string.Empty;
         };
@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             IsDeleteEnabled = userCDKey != dbUser.CDKey;
 
-            DB.Set(userId, dbUser);
+            DB.Set(dbUser);
 
             Names[SelectedUserIndex] = dbUser.Name;
 

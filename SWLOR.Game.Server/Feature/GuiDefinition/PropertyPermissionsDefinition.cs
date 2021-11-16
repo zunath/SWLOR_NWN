@@ -110,7 +110,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         cell.SetWidth(90f);
                                         cell.AddCheckBox()
                                             .BindIsChecked(model => model.PermissionStates)
-                                            .SetText("Permission");
+                                            .SetText("Permission")
+                                            .BindIsEnabled(model => model.PermissionEnabled);
                                     });
 
                                     template.AddCell(cell =>
@@ -120,7 +121,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         cell.AddCheckBox()
                                             .BindIsChecked(model => model.PermissionGrantingStates)
                                             .SetText("Grant")
-                                            .SetTooltip("Player will be able to grant this permission to others if checked.");
+                                            .SetTooltip("Player will be able to grant this permission to others if checked.")
+                                            .BindIsEnabled(model => model.GrantPermissionEnabled);
                                     });
                                 })
                                     .BindRowCount(model => model.PermissionNames)

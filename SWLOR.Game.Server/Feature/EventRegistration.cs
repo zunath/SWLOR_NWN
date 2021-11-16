@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature
                 // DB record must be updated before the event fires, as some
                 // events use the server configuration record.
                 serverConfig.LastModuleMTime = UtilPlugin.GetModuleMTime();
-                DB.Set("SWLOR", serverConfig);
+                DB.Set(serverConfig);
 
                 ExecuteScript("mod_content_chg", GetModule());
             }

@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
-            SelectedPageIndex = 0;
+            SelectedPageIndex = -1;
             UpdatePagination();
             Search();
 
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void Search()
         {
             var cdKey = GetPCPublicCDKey(Player);
-            var dbAccount = DB.Get<Account>(cdKey) ?? new Account();
+            var dbAccount = DB.Get<Account>(cdKey) ?? new Account(cdKey);
             var achievements = Achievement.GetActiveAchievements()
                 .Skip(SelectedPageIndex * EntriesPerPage)
                 .Take(EntriesPerPage);
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var type = _types[SelectedIndex];
             var achievement = Achievement.GetAchievement(type);
             var cdKey = GetPCPublicCDKey(Player);
-            var dbAccount = DB.Get<Account>(cdKey) ?? new Account();
+            var dbAccount = DB.Get<Account>(cdKey) ?? new Account(cdKey);
 
             Name = achievement.Name;
             Description = achievement.Description;

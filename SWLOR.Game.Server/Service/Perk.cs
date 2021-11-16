@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer.UnlockedPerks.ContainsKey(perkType)) return;
 
             dbPlayer.UnlockedPerks[perkType] = DateTime.UtcNow;
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
     }
 }

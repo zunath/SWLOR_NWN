@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Service
             if (_playerWindows.ContainsKey(playerId))
                 return;
 
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
             _playerWindows[playerId] = new Dictionary<GuiWindowType, GuiPlayerWindow>();
             _playerModals[playerId] = new Dictionary<GuiWindowType, GuiPlayerWindow>();
 
@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Player>(playerId);
             dbPlayer.WindowGeometries[windowType] = geometry;
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>

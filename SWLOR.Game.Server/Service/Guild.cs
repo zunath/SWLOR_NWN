@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             dbPlayer.Guilds[guild] = dbGuild;
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         private static void RefreshGuildTasks()

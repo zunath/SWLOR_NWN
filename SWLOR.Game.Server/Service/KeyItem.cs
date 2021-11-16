@@ -161,7 +161,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             dbPlayer.KeyItems[keyItem] = DateTime.UtcNow;
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
 
             var keyItemDetail = _allKeyItems[keyItem];
             SendMessageToPC(player, $"You acquire the '{keyItemDetail.Name}' key item.");
@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             dbPlayer.KeyItems.Remove(keyItem);
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
 
             var keyItemDetail = _allKeyItems[keyItem];
             SendMessageToPC(player, $"You lost the '{keyItemDetail.Name}' key item.");

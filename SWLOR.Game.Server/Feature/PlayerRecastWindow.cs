@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature
                 dbPlayer.RecastTimes.Remove(group);
             }
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
     }
 }

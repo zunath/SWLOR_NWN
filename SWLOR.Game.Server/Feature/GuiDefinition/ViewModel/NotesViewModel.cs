@@ -14,7 +14,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const int MaxNumberOfNotes = 25;
         public const int MaxNoteLength = 1000;
 
-        private readonly List<Guid> _noteIds = new();
+        private readonly List<string> _noteIds = new();
 
         private bool _isLoadingNote;
         public bool IsSaveEnabled
@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbNote.Name = ActiveNoteName;
             dbNote.Text = ActiveNoteText;
 
-            DB.Set(noteId.ToString(), dbNote);
+            DB.Set(dbNote);
 
             IsSaveEnabled = false;
             NoteNames[SelectedNoteIndex] = ActiveNoteName;
@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             NoteToggled.Add(false);
             IsNewEnabled = _noteIds.Count < MaxNumberOfNotes;
 
-            DB.Set(note.Id.ToString(), note);
+            DB.Set(note);
         };
 
         public Action OnClickDeleteNote() => () =>

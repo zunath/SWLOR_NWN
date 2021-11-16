@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         var playerID = GetObjectUUID(user);
                         var entity = DB.Get<Player>(playerID);
                         entity.IsDeleted = true;
-                        DB.Set(playerID, entity);
+                        DB.Set(entity);
 
                         AdministrationPlugin.DeletePlayerCharacter(user, true, "Your character has been deleted.");
                     }

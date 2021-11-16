@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
             quest.ItemProgresses[_resref] = _quantity;
             dbPlayer.Quests[questId] = quest;
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         public void Advance(uint player, string questId)
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             if (quest.ItemProgresses[_resref] <= 0) return;
 
             quest.ItemProgresses[_resref]--;
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
 
             var questDetail = Quest.GetQuestById(questId);
             var itemName = Cache.GetItemNameByResref(_resref);
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             
             quest.KillProgresses[Group] = _amount;
             dbPlayer.Quests[questId] = quest;
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         public void Advance(uint player, string questId)
@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             if (quest.KillProgresses[Group] <= 0) return;
 
             quest.KillProgresses[Group]--;
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
 
             var npcGroup = Quest.GetNPCGroup(Group);
             var questDetail = Quest.GetQuestById(questId);

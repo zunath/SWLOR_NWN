@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 dbPlayer.RespawnLocationY = position.Y;
                 dbPlayer.RespawnLocationZ = position.Z;
 
-                DB.Set(playerId, dbPlayer);
+                DB.Set(dbPlayer);
 
                 FloatingTextStringOnCreature("You will return to this location the next time you die.", player, false);
             });

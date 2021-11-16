@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Service
                     Log.Write(LogGroup.Property, $"Property '{property.CustomName}' has an expired lease. Expired on: {lease.ToString("G")}");
 
                     property.IsQueuedForDeletion = true;
-                    DB.Set(property.Id.ToString(), property);
+                    DB.Set(property);
                 }
             }
 
@@ -299,6 +299,21 @@ namespace SWLOR.Game.Server.Service
                         { PropertyPermissionType.RenameStructures , true}
                     }
                 },
+                GrantPermissions =
+                {
+                    [playerId] = new Dictionary<PropertyPermissionType, bool>
+                    {
+                        { PropertyPermissionType.AdjustPermissions , true},
+                        { PropertyPermissionType.EditStructures , true},
+                        { PropertyPermissionType.RetrieveStructures , true},
+                        { PropertyPermissionType.RenameProperty , true},
+                        { PropertyPermissionType.AccessStorage , true},
+                        { PropertyPermissionType.ExtendLease , true},
+                        { PropertyPermissionType.CancelLease , true},
+                        { PropertyPermissionType.EnterProperty , true},
+                        { PropertyPermissionType.RenameStructures , true}
+                    }
+                },
                 Timers =
                 {
                     { PropertyTimerType.Lease, DateTime.UtcNow.AddDays(7) }
@@ -310,7 +325,7 @@ namespace SWLOR.Game.Server.Service
                 InteriorLayout = layout
             };
 
-            DB.Set(property.Id.ToString(), property);
+            DB.Set(property);
             property.SpawnIntoWorld(OBJECT_INVALID);
 
             return property;

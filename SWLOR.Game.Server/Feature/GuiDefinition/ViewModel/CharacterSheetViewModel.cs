@@ -228,7 +228,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.UpgradedStats[ability]++;
             CreaturePlugin.ModifyRawAbilityScore(Player, ability, 1);
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
 
             FloatingTextStringOnCreature($"Your {abilityName} attribute has increased!", Player, false);
             LoadData();

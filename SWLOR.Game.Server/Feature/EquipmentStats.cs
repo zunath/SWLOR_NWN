@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature
                 Stat.AdjustPlayerMaxHP(dbPlayer, player, -amount);
             }
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace SWLOR.Game.Server.Feature
                 Stat.AdjustPlayerMaxFP(dbPlayer, -amount);
             }
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Feature
                 Stat.AdjustPlayerMaxSTM(dbPlayer, -amount);
             }
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Feature
                 Stat.AdjustPlayerRecastReduction(dbPlayer, -amount);
             }
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>
@@ -208,7 +208,7 @@ namespace SWLOR.Game.Server.Feature
                 Stat.AdjustDefense(dbPlayer, damageType, -amount);
             }
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>
@@ -233,7 +233,7 @@ namespace SWLOR.Game.Server.Feature
                 Stat.AdjustControl(dbPlayer, -amount);
             }
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>
@@ -258,7 +258,7 @@ namespace SWLOR.Game.Server.Feature
                 Stat.AdjustCraftsmanship(dbPlayer, -amount);
             }
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
     }
 }

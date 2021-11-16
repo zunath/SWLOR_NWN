@@ -267,7 +267,7 @@ namespace SWLOR.Game.Server.Service
             // Save any changes, if furniture was removed.
             if (removedCount > 0)
             {
-                DB.Set(ownerPlayerUUID, playerHouse);
+                DB.Set(playerHouse);
             }
 
             // Set the instance into cache and then return the area.

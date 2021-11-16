@@ -215,6 +215,7 @@ namespace SWLOR.Game.Server.Feature
 
             var dbItem = new InventoryItem
             {
+                Id = itemId,
                 StorageId = storageId,
                 PlayerId = isPrivate ? playerId : storageId,
                 Data = data,
@@ -224,7 +225,7 @@ namespace SWLOR.Game.Server.Feature
                 Tag = GetTag(item)
             };
 
-            DB.Set(itemId, dbItem);
+            DB.Set(dbItem);
             SendItemLimitMessage(player, true);
         }
 

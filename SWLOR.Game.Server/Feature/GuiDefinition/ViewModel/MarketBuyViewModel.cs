@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var record in results)
             {
-                _itemIds.Add(record.ItemId);
+                _itemIds.Add(record.Id);
                 _itemPrices.Add(record.Price);
                 itemIconResrefs.Add(record.IconResref);
                 itemNames.Add($"{record.Quantity}x {record.Name}");
@@ -331,7 +331,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var dbSeller = DB.Get<Player>(sellerPlayerId);
                 var proceeds = (int)(price - (price * market.TaxRate));
                 dbSeller.MarketTill += proceeds;
-                DB.Set(sellerPlayerId, dbSeller);
+                DB.Set(dbSeller);
             });
         };
 

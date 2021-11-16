@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Service.PlayerMarketService;
+﻿using System;
+using SWLOR.Game.Server.Service.PlayerMarketService;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -6,7 +7,6 @@ namespace SWLOR.Game.Server.Entity
     {
         [Indexed]
         public string MarketId { get; set; }
-        public string ItemId { get; set; }
         public string MarketName { get; set; }
         [Indexed]
         public string PlayerId { get; set; }

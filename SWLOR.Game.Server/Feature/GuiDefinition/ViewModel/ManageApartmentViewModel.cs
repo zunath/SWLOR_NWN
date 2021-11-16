@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var apartment = GetApartment();
             apartment.CustomName = CustomName;
 
-            DB.Set(apartment.Id.ToString(), apartment);
+            DB.Set(apartment);
 
             var instance = Property.GetRegisteredInstance(apartment.Id.ToString());
             SetName(instance, CustomName);
@@ -219,7 +219,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     apartment = GetApartment();
                     apartment.Timers[PropertyTimerType.Lease] = newLeaseDate;
 
-                    DB.Set(apartment.Id.ToString(), apartment);
+                    DB.Set(apartment);
 
                     Instruction = $"Lease extended by {days} {dayWord}!";
                     InstructionColor = _green;
@@ -246,7 +246,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     // Queue the deletion for the next reboot to avoid lag while players are on.
                     apartment.IsQueuedForDeletion = true;
-                    DB.Set(apartment.Id.ToString(), apartment);
+                    DB.Set(apartment);
                     
                     if(Gui.IsWindowOpen(Player, GuiWindowType.ManageApartment))
                         Gui.TogglePlayerWindow(Player, GuiWindowType.ManageApartment);

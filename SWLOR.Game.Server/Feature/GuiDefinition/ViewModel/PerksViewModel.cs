@@ -502,7 +502,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     // All validation passes. Perform the upgrade.
                     dbPlayer.Perks[selectedPerk] = playerRank + 1;
                     dbPlayer.UnallocatedSP -= nextUpgrade.Price;
-                    DB.Set(playerId, dbPlayer);
+                    DB.Set(dbPlayer);
 
                     GrantFeats(nextUpgrade);
                     ApplyPurchasePerkTriggers(dbPlayer.Perks[selectedPerk], selectedPerk);
@@ -566,7 +566,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     dbPlayer.UnallocatedSP += refundAmount;
                     dbPlayer.Perks.Remove(selectedPerk);
                     dbPlayer.NumberPerkResetsAvailable--;
-                    DB.Set(playerId, dbPlayer);
+                    DB.Set(dbPlayer);
 
                     // Write an audit log and notify the player
                     Log.Write(LogGroup.PerkRefund, $"REFUND - {playerId} - Refunded Date {DateTime.UtcNow} - Level {pcPerkLevel} - PerkID {selectedPerk}");

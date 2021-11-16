@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Entity
             ParentPropertyId = string.Empty;
             ChildPropertyIds = new List<string>();
             Permissions = new Dictionary<string, Dictionary<PropertyPermissionType, bool>>();
+            GrantPermissions = new Dictionary<string, Dictionary<PropertyPermissionType, bool>>();
             Timers = new Dictionary<PropertyTimerType, DateTime>();
         }
 

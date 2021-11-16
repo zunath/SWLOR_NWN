@@ -151,7 +151,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 Z = position.Z
             };
 
-            DB.Set(model.OwnerUUID, dbHouse);
+            DB.Set(dbHouse);
 
             // Add an Id pointer to the placeable.
             SetLocalString(model.Placeable, "HOUSING_FURNITURE_ID", furnitureId);
@@ -175,7 +175,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             model.Placeable = OBJECT_INVALID;
 
             dbHouse.Furnitures.Remove(furnitureId);
-            DB.Set(model.OwnerUUID, dbHouse);
+            DB.Set(dbHouse);
         }
 
         private void MovePageInit(DialogPage page)
@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 dbHouse.Furnitures[furnitureId].Y = position.Y;
                 dbHouse.Furnitures[furnitureId].Z = position.Z;
 
-                DB.Set(model.OwnerUUID, dbHouse);
+                DB.Set(dbHouse);
             }
 
             page.Header = ColorToken.Green("Move Furniture") + "\n\n";
@@ -238,7 +238,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 var furnitureId = GetLocalString(model.Placeable, "HOUSING_FURNITURE_ID");
 
                 dbHouse.Furnitures[furnitureId].Orientation = facing;
-                DB.Set(model.OwnerUUID, dbHouse);
+                DB.Set(dbHouse);
             }
 
             page.Header = ColorToken.Green("Rotate Furniture") + "\n\n" +

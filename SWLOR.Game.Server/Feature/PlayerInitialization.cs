@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
             // Already been initialized. Don't do it again.
             if (dbPlayer.Version >= 1) return;
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature
             AssignCharacterType(player, dbPlayer);
             RegisterDefaultRespawnPoint(dbPlayer);
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         private static void AutoLevelPlayer(uint player)

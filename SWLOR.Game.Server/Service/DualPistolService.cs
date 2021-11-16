@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Service
 
             dbPlayer.IsUsingDualPistolMode = !dbPlayer.IsUsingDualPistolMode;
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
             //Console.WriteLine("ToggleDualMode Changed To = " + dbPlayer.IsUsingDualPistolMode);
 
             var weapon = GetItemInSlot(InventorySlot.RightHand);

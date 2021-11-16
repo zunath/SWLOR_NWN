@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.Settings.ShowHelmet = DisplayHelmet;
             dbPlayer.Settings.IsHolonetEnabled = DisplayHolonetChannel;
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
 
             Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);
 

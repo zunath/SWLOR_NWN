@@ -20,6 +20,17 @@ namespace SWLOR.Game.Server.Entity
     {
         public Player()
         {
+            Init();
+        }
+
+        public Player(string id)
+        {
+            Init();
+            Id = id;
+        }
+
+        private void Init()
+        {
             Settings = new PlayerSettings();
             BaseStats = new Dictionary<AbilityType, int>
             {

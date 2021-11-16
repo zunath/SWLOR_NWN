@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Service
 
             var dbModuleCache = DB.Get<ModuleCache>("SWLOR");
             dbModuleCache.ItemNamesByResref = ItemNamesByResref;
-            DB.Set("SWLOR", dbModuleCache);
+            DB.Set(dbModuleCache);
 
             _cachedThisRun = true;
         }

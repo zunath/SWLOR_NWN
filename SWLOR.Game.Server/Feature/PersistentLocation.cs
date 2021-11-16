@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature
             var position = GetPosition(player);
             var orientation = GetFacing(player);
             var playerId = GetObjectUUID(player);
-            var entity = DB.Get<Player>(playerId) ?? new Player();
+            var entity = DB.Get<Player>(playerId) ?? new Player(playerId);
 
             entity.LocationX = position.X;
             entity.LocationY = position.Y;
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature
             entity.LocationOrientation = orientation;
             entity.LocationAreaResref = GetResRef(area);
 
-            DB.Set(playerId, entity);
+            DB.Set(entity);
         }
 
         /// <summary>

@@ -578,11 +578,16 @@ namespace SWLOR.Game.Server.Service
 
             if (currentTick >= 10)
             {
-                ExportAllCharacters();
+                foreach (var player in NWModule.Get().Players)
+                {
+                    if (NWNXCreature.GetIsBartering(player))
+                        continue;
+
+                    ExportSingleCharacter(player);
+                }
+
                 currentTick = 0;
             }
-
-
 
             NWModule.Get().SetLocalInt("SAVE_CHARACTERS_TICK", currentTick);
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using NRediSearch;
 using SWLOR.Game.Server.Entity;
@@ -73,8 +74,19 @@ namespace SWLOR.Game.Server.Service.DBService
         /// <returns>A configured DBQuery</returns>
         public DBQuery<T> AddFieldSearch(string fieldName, IEnumerable<string> search)
         {
-            var searchText = string.Join("|", search);
-            FieldSearches.Add(fieldName, new SearchCriteria(searchText));
+            var list = new List<string>();
+            foreach (var s in search)
+            {
+                list.Add(DB.EscapeTokens(s));
+            }
+
+            var searchText = string.Join("|", list);
+            var criteria = new SearchCriteria(searchText)
+            {
+                SkipEscaping = true
+            };
+
+            FieldSearches.Add(fieldName, criteria);
 
             return this;
         }

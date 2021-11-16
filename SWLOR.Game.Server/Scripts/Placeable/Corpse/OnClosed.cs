@@ -14,12 +14,12 @@ namespace SWLOR.Game.Server.Scripts.Placeable.Corpse
             if (!firstItem.IsValid)
             {
                 container.Destroy();
-            }
 
-            corpseOwner.AssignCommand(() =>
-            {
-                _.SetIsDestroyable(true);
-            });
+                corpseOwner.AssignCommand(() =>
+                {
+                    _.SetIsDestroyable(true);
+                });
+            }
         }
 
         public void SubscribeEvents()

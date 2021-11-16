@@ -165,7 +165,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            DelayCommand(360.0f, () =>
+            DelayCommand(300.0f, () =>
             {
                 if (!container.IsValid) return;
 

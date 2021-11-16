@@ -10,8 +10,6 @@ namespace SWLOR.Game.Server.Entity
         {
             ParentPropertyId = string.Empty;
             ChildPropertyIds = new List<string>();
-            Permissions = new Dictionary<string, Dictionary<PropertyPermissionType, bool>>();
-            GrantPermissions = new Dictionary<string, Dictionary<PropertyPermissionType, bool>>();
             Timers = new Dictionary<PropertyTimerType, DateTime>();
         }
 
@@ -28,9 +26,6 @@ namespace SWLOR.Game.Server.Entity
         public string ParentPropertyId { get; set; }
 
         public List<string> ChildPropertyIds { get; set; }
-
-        public Dictionary<string, Dictionary<PropertyPermissionType, bool>> Permissions { get; set; }
-        public Dictionary<string, Dictionary<PropertyPermissionType, bool>> GrantPermissions { get; set; }
 
         public Dictionary<PropertyTimerType, DateTime> Timers { get; set; }
 

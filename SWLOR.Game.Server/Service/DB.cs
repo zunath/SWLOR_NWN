@@ -82,7 +82,6 @@ namespace SWLOR.Game.Server.Service
                 var attribute = prop.GetCustomAttribute(typeof(IndexedAttribute));
                 if (attribute != null)
                 {
-                    var detail = (IndexedAttribute)attribute;
                     if (prop.PropertyType == typeof(int) ||
                         prop.PropertyType == typeof(int?) ||
                         prop.PropertyType == typeof(ulong) ||

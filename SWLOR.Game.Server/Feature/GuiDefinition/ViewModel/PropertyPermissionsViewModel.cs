@@ -108,14 +108,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             
             var dbPlayer = DB.Get<Player>(targetPlayerId);
             var dbProperty = DB.Get<WorldProperty>(PropertyId);
-            var playerGrantPermissions = dbProperty.GrantPermissions[playerId];
+            var grantorPermissions = DB.Search(new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false))
+                .First();
             
-            var targetPermissions = dbProperty.Permissions.ContainsKey(targetPlayerId)
-                ? dbProperty.Permissions[targetPlayerId]
-                : new Dictionary<PropertyPermissionType, bool>();
-            var targetGrantPermissions = dbProperty.GrantPermissions.ContainsKey(targetPlayerId)
-                ? dbProperty.GrantPermissions[targetPlayerId]
-                : new Dictionary<PropertyPermissionType, bool>();
+            var targetPermissions = DB.Search(new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), targetPlayerId, false)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false))
+                .FirstOrDefault() ?? new WorldPropertyPermission
+            {
+                PlayerId = targetPlayerId, 
+                PropertyId = PropertyId
+            };
 
             var permissionStates = new GuiBindingList<bool>();
             var permissionGrantingStates = new GuiBindingList<bool>();
@@ -132,17 +137,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 permissionNames.Add(permission.Name);
                 permissionDescriptions.Add(permission.Description);
 
-                if(targetPermissions.ContainsKey(type))
-                    permissionStates.Add(targetPermissions[type]);
+                if(targetPermissions.Permissions.ContainsKey(type))
+                    permissionStates.Add(targetPermissions.Permissions[type]);
                 else
                     permissionStates.Add(false);
 
-                if(targetPermissions.ContainsKey(type))
-                    permissionGrantingStates.Add(targetGrantPermissions[type]);
+                if(targetPermissions.GrantPermissions.ContainsKey(type))
+                    permissionGrantingStates.Add(targetPermissions.GrantPermissions[type]);
                 else 
                     permissionGrantingStates.Add(false);
 
-                if(playerGrantPermissions.ContainsKey(type) && playerGrantPermissions[type] && playerId != targetPlayerId)
+                if(grantorPermissions.GrantPermissions.ContainsKey(type) && grantorPermissions.GrantPermissions[type] && playerId != targetPlayerId)
                     permissionEnabled.Add(true);
                 else
                     permissionEnabled.Add(false);
@@ -188,6 +193,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void Search()
         {
+            Instruction = string.Empty;
             SelectedPlayerIndex = -1;
             _playerIds.Clear();
             var playerNames = new GuiBindingList<string>();
@@ -197,8 +203,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // If no search is specified, load only the users who currently have permissions.
             if (string.IsNullOrWhiteSpace(SearchText))
             {
-                var dbProperty = DB.Get<WorldProperty>(PropertyId);
-                var playerIds = dbProperty.Permissions.Keys.ToList();
+                var permissionQuery = new DBQuery<WorldPropertyPermission>()
+                    .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false);
+                var playerIds = DB.Search(permissionQuery).Select(s => s.PlayerId);
                 var query = new DBQuery<Player>()
                     .AddFieldSearch(nameof(Entity.Player.Id), playerIds);
                 dbPlayers = DB.Search(query);
@@ -215,7 +222,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var player in dbPlayers)
             {
-                _playerIds.Add(player.Id.ToString());
+                _playerIds.Add(player.Id);
                 playerNames.Add(player.Name);
                 playerToggles.Add(false);
             }
@@ -233,12 +240,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickClearSearch() => () =>
         {
+            Instruction = string.Empty;
             SearchText = string.Empty;
             Search();
         };
 
         public Action OnSelectPlayer() => () =>
         {
+            Instruction = string.Empty;
             if (SelectedPlayerIndex > -1)
                 PlayerToggles[SelectedPlayerIndex] = false;
 
@@ -250,35 +259,38 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickSaveChanges() => () =>
         {
-            var dbProperty = DB.Get<WorldProperty>(PropertyId);
-
             var playerId = GetObjectUUID(Player);
+            var query = new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false);
+            var grantorPermissions = DB.Search(query).FirstOrDefault();
             var targetPlayerId = _playerIds[SelectedPlayerIndex];
 
             // Safety check to ensure the user still has grant permissions.
             // If they lost them while the window was open, they could still send this command even though they no longer have permission.
-            if (!dbProperty.GrantPermissions.ContainsKey(playerId))
+            if (grantorPermissions == null)
                 return;
 
             // Safety check to ensure the user isn't modifying their own permissions.
             if (playerId == targetPlayerId)
                 return;
-
-            var grantorPermissions = dbProperty.GrantPermissions[playerId];
-            var permissions = dbProperty.Permissions.ContainsKey(targetPlayerId)
-                ? dbProperty.Permissions[targetPlayerId]
-                : new Dictionary<PropertyPermissionType, bool>();
-            var grantPermissions = dbProperty.GrantPermissions.ContainsKey(targetPlayerId)
-                ? dbProperty.GrantPermissions[targetPlayerId]
-                : new Dictionary<PropertyPermissionType, bool>();
-
+            
+            query = new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), targetPlayerId, false)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false);
+            var targetPermissions = DB.Search(query).FirstOrDefault() ?? new WorldPropertyPermission
+            {
+                PlayerId = targetPlayerId,
+                PropertyId = PropertyId
+            };
+            
             var hasAtLeastOne = false;
             for (var index = 0; index < AvailablePermissions.Count; index++)
             {
                 var permission = AvailablePermissions[index];
 
                 // Only permissions the player can grant should be updated.
-                if (grantorPermissions[permission])
+                if (grantorPermissions.GrantPermissions[permission])
                 {
                     var canGrant = PermissionGrantingStates[index];
 
@@ -291,40 +303,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     if (hasPermission)
                         hasAtLeastOne = true;
 
-                    permissions[permission] = hasPermission;
-                    grantPermissions[permission] = canGrant;
-                }
-                // Otherwise keep it on the same setting, or set to false if it doesn't exist.
-                else
-                {
-                    if (dbProperty.Permissions.ContainsKey(targetPlayerId))
-                        permissions[permission] = dbProperty.Permissions[targetPlayerId][permission];
-                    else
-                        permissions[permission] = false;
-
-                    if (dbProperty.GrantPermissions.ContainsKey(targetPlayerId))
-                        grantPermissions[permission] = dbProperty.Permissions[targetPlayerId][permission];
-                    else
-                        permissions[permission] = false;
+                    targetPermissions.Permissions[permission] = hasPermission;
+                    targetPermissions.GrantPermissions[permission] = canGrant;
                 }
             }
 
             // Player has at least one permission. Set the changes in the DB.
             if (hasAtLeastOne)
             {
-                dbProperty.Permissions[targetPlayerId] = permissions;
-                dbProperty.GrantPermissions[targetPlayerId] = grantPermissions;
+                DB.Set(targetPermissions);
             }
-            // Player doesn't have any permissions. If they currently exist in the permissions lists, remove them.
+            // Player doesn't have any permissions. Remove the entry.
             else
             {
-                if (dbProperty.Permissions.ContainsKey(targetPlayerId))
-                    dbProperty.Permissions.Remove(targetPlayerId);
-                if (dbProperty.GrantPermissions.ContainsKey(targetPlayerId))
-                    dbProperty.GrantPermissions.Remove(targetPlayerId);
+                DB.Delete<WorldPropertyPermission>(targetPermissions.Id);
             }
 
-            DB.Set(dbProperty);
 
             Instruction = $"Permissions updated!";
             InstructionColor = _green;
@@ -332,8 +326,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickReset() => () =>
         {
-            var dbProperty = DB.Get<WorldProperty>(PropertyId);
+            Instruction = string.Empty;
             var playerId = _playerIds[SelectedPlayerIndex];
+            var query = new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false);
+            var permissions = DB.Search(query).FirstOrDefault() ?? new WorldPropertyPermission
+            {
+                PropertyId = PropertyId,
+                PlayerId = playerId
+            };
 
             var permissionStates = new GuiBindingList<bool>();
             var grantPermissionStates = new GuiBindingList<bool>();
@@ -342,8 +344,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var permission = AvailablePermissions[index];
 
-                permissionStates.Add(dbProperty.Permissions[playerId][permission]);
-                grantPermissionStates.Add(dbProperty.GrantPermissions[playerId][permission]);
+                permissionStates.Add(permissions.Permissions[permission]);
+                grantPermissionStates.Add(permissions.GrantPermissions[permission]);
             }
 
             PermissionStates = permissionStates;

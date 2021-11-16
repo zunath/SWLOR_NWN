@@ -284,36 +284,6 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var property = new WorldProperty
             {
-                Permissions =
-                {
-                    [playerId] = new Dictionary<PropertyPermissionType, bool>
-                    {
-                        { PropertyPermissionType.AdjustPermissions , true},
-                        { PropertyPermissionType.EditStructures , true},
-                        { PropertyPermissionType.RetrieveStructures , true},
-                        { PropertyPermissionType.RenameProperty , true},
-                        { PropertyPermissionType.AccessStorage , true},
-                        { PropertyPermissionType.ExtendLease , true},
-                        { PropertyPermissionType.CancelLease , true},
-                        { PropertyPermissionType.EnterProperty , true},
-                        { PropertyPermissionType.RenameStructures , true}
-                    }
-                },
-                GrantPermissions =
-                {
-                    [playerId] = new Dictionary<PropertyPermissionType, bool>
-                    {
-                        { PropertyPermissionType.AdjustPermissions , true},
-                        { PropertyPermissionType.EditStructures , true},
-                        { PropertyPermissionType.RetrieveStructures , true},
-                        { PropertyPermissionType.RenameProperty , true},
-                        { PropertyPermissionType.AccessStorage , true},
-                        { PropertyPermissionType.ExtendLease , true},
-                        { PropertyPermissionType.CancelLease , true},
-                        { PropertyPermissionType.EnterProperty , true},
-                        { PropertyPermissionType.RenameStructures , true}
-                    }
-                },
                 Timers =
                 {
                     { PropertyTimerType.Lease, DateTime.UtcNow.AddDays(7) }
@@ -325,7 +295,39 @@ namespace SWLOR.Game.Server.Service
                 InteriorLayout = layout
             };
 
+            var permissions = new WorldPropertyPermission
+            {
+                PropertyId = property.Id,
+                PlayerId = playerId,
+                Permissions = new Dictionary<PropertyPermissionType, bool>
+                {
+                    { PropertyPermissionType.AdjustPermissions, true },
+                    { PropertyPermissionType.EditStructures, true },
+                    { PropertyPermissionType.RetrieveStructures, true },
+                    { PropertyPermissionType.RenameProperty, true },
+                    { PropertyPermissionType.AccessStorage, true },
+                    { PropertyPermissionType.ExtendLease, true },
+                    { PropertyPermissionType.CancelLease, true },
+                    { PropertyPermissionType.EnterProperty, true },
+                    { PropertyPermissionType.RenameStructures, true }
+                },
+                GrantPermissions = new Dictionary<PropertyPermissionType, bool>
+                {
+                    { PropertyPermissionType.AdjustPermissions, true },
+                    { PropertyPermissionType.EditStructures, true },
+                    { PropertyPermissionType.RetrieveStructures, true },
+                    { PropertyPermissionType.RenameProperty, true },
+                    { PropertyPermissionType.AccessStorage, true },
+                    { PropertyPermissionType.ExtendLease, true },
+                    { PropertyPermissionType.CancelLease, true },
+                    { PropertyPermissionType.EnterProperty, true },
+                    { PropertyPermissionType.RenameStructures, true }
+                }
+            };
+
             DB.Set(property);
+            DB.Set(permissions);
+
             property.SpawnIntoWorld(OBJECT_INVALID);
 
             return property;
@@ -442,14 +444,17 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             var playerId = GetObjectUUID(player);
-            var property = DB.Get<WorldProperty>(propertyId);
+            var query = new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
+            var permissions = DB.Search(query).FirstOrDefault();
 
             // Player doesn't exist in the permissions list. No permission.
-            if (!property.Permissions.ContainsKey(playerId))
+            if (permissions == null)
                 return false;
 
             // Player exists, check their permission.
-            return property.Permissions[playerId][permission];
+            return permissions.Permissions[permission];
         }
 
         /// <summary>
@@ -470,14 +475,17 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             var playerId = GetObjectUUID(player);
-            var property = DB.Get<WorldProperty>(propertyId);
+            var query = new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
+            var permissions = DB.Search(query).FirstOrDefault();
 
             // Player doesn't exist in the permissions list. No permission.
-            if (!property.GrantPermissions.ContainsKey(playerId))
+            if (permissions == null)
                 return false;
 
             // Player exists, check their permission.
-            return property.GrantPermissions[playerId][permission];
+            return permissions.GrantPermissions[permission];
         }
 
         /// <summary>

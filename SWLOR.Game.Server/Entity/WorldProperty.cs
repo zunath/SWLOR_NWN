@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Entity
             {
                 var layout = Property.GetLayoutByType(InteriorLayout);
                 targetArea = CreateArea(layout.AreaInstanceResref);
-                Property.RegisterInstance(Id.ToString(), targetArea);
+                Property.RegisterInstance(Id, targetArea);
 
                 SetName(targetArea, CustomName);
             }

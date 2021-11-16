@@ -13,7 +13,7 @@
         StimFiend = 8,
         MedicalBlueprints = 9,
         SpeedyMedicine = 10,
-        MartialFinesse = 11,
+        // 11 is free
         Hide = 12,
         MindShield = 13,
         StronidiumRefining = 14,
@@ -134,8 +134,7 @@
         DeflectBlasterFire = 154,
         LightsaberDualWielding = 155,
         EngineeringModInstallation = 156,
-        // 157-159 are free
-        SaberFinesse = 160,
+        // 157-160 are free
         Racer = 161,
         Evasive = 162,
         Hunter = 163,

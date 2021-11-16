@@ -3,8 +3,7 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
 
-
-namespace SWLOR.Game.Server.Perk.OneHanded
+namespace SWLOR.Game.Server.Perk.General
 {
     public class WeaponFinesse : IPerkHandler
     {
@@ -41,7 +40,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public void OnPurchased(NWCreature creature, int newLevel)
         {
-            ApplyFeatChanges(creature, null);
+            NWNXCreature.AddFeat(creature, Feat.WeaponFinesse);
         }
 
         public void OnRemoved(NWCreature creature)
@@ -51,34 +50,14 @@ namespace SWLOR.Game.Server.Perk.OneHanded
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
         {
-            if (oItem.CustomItemType != CustomItemType.FinesseVibroblade) return;
-
-            ApplyFeatChanges(creature, null);
         }
 
         public void OnItemUnequipped(NWCreature creature, NWItem oItem)
         {
-            if (oItem.CustomItemType != CustomItemType.FinesseVibroblade) return;
-            if (oItem == creature.LeftHand) return;
-
-            ApplyFeatChanges(creature, oItem);
         }
 
         public void OnCustomEnmityRule(NWCreature creature, int amount)
         {
-        }
-
-        private void ApplyFeatChanges(NWCreature creature, NWItem oItem)
-        {
-            NWItem equipped = oItem ?? creature.RightHand;
-
-            if (Equals(equipped, oItem) || equipped.CustomItemType != CustomItemType.FinesseVibroblade)
-            {
-                NWNXCreature.RemoveFeat(creature, Feat.WeaponFinesse);
-                return;
-            }
-
-            NWNXCreature.AddFeat(creature, Feat.WeaponFinesse);
         }
 
         public bool IsHostile()

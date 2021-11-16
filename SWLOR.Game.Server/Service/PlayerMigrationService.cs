@@ -152,6 +152,17 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.VersionNumber = 8;
             }
 
+            // VERSION 9: Remove Weapon Finesse if player currently has it.
+            if (dbPlayer.VersionNumber < 9)
+            {
+                if (GetHasFeat(Feat.WeaponFinesse, player))
+                {
+                    NWNXCreature.RemoveFeat(player, Feat.WeaponFinesse);
+                }
+
+                dbPlayer.VersionNumber = 9;
+            }
+
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
         }
         

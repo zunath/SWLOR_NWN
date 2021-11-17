@@ -410,7 +410,7 @@ namespace SWLOR.Game.Server.Service
             if (player.GetLocalInt("IS_GUNNER") == 1) return;
             
             NWArea area = player.Area;
-            if (area.IsValid && area.Tag != "ooc_area" && area.Tag != "tutorial" && !area.IsInstance)
+            if (area.IsValid && area.Tag != "ooc_area" && area.Tag != "tutorial" && area.Tag != "customize_char" && !area.IsInstance)
             {
                 LoggingService.Trace(TraceComponent.Space, "Saving location in area " + GetName(area));
                 Player entity = GetPlayerEntity(player.GlobalID);

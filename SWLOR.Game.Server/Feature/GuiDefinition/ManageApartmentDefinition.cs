@@ -32,17 +32,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         col.AddRow(row =>
                         {
-                            row.AddTextEdit()
-                                .BindValue(model => model.CustomName)
-                                .SetPlaceholder("Apartment Name")
-                                .SetMaxLength(32);
-
-                            row.AddButton()
-                                .SetText("Save")
-                                .SetHeight(35f)
-                                .BindOnClicked(model => model.SaveCustomName());
+                            row.AddList(template =>
+                            {
+                                template.AddCell(cell =>
+                                {
+                                    cell.AddToggleButton()
+                                        .BindText(model => model.ApartmentNames)
+                                        .BindTooltip(model => model.ApartmentNames)
+                                        .BindIsToggled(model => model.ApartmentToggles)
+                                        .BindOnClicked(model => model.OnSelectApartment());
+                                });
+                            })
+                                .BindRowCount(model => model.ApartmentNames);
                         });
+                    });
 
+                    root.AddColumn(col =>
+                    {
                         col.AddRow(row =>
                         {
                             row.AddLabel()
@@ -88,10 +94,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetHorizontalAlign(NuiHorizontalAlign.Left)
                                 .SetVerticalAlign(NuiVerticalAlign.Middle);
                         });
-                    });
 
-                    root.AddColumn(col =>
-                    {
                         col.AddRow(row =>
                         {
                             row.AddButton()
@@ -128,7 +131,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetText("Manage Permissions")
                                 .BindOnClicked(model => model.OnManagePermissions())
                                 .SetHeight(35f)
-                                .SetWidth(250f);
+                                .SetWidth(250f)
+                                .BindIsEnabled(model => model.IsManagePermissionsEnabled);
                         });
 
                         col.AddRow(row =>
@@ -138,11 +142,47 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetColor(255, 0, 0)
                                 .BindOnClicked(model => model.OnCancelLease())
                                 .SetHeight(35f)
-                                .SetWidth(250f);
+                                .SetWidth(250f)
+                                .BindIsEnabled(model => model.IsCancelLeaseEnabled);
+                        });
+                    });
+
+                    root.AddColumn(col =>
+                    {
+                        col.AddRow(row =>
+                        {
+                            row.AddTextEdit()
+                                .BindValue(model => model.CustomName)
+                                .SetPlaceholder("Apartment Name")
+                                .SetMaxLength(ManageApartmentViewModel.MaxNameLength)
+                                .BindIsEnabled(model => model.IsPropertyRenameEnabled)
+                                .SetWidth(200f);
+
+                        });
+
+                        col.AddRow(row =>
+                        {
+                            row.AddTextEdit()
+                                .BindValue(model => model.CustomDescription)
+                                .SetHeight(200f)
+                                .SetPlaceholder("Description")
+                                .BindIsEnabled(model => model.IsDescriptionEnabled)
+                                .SetWidth(200f)
+                                .SetIsMultiline(true)
+                                .SetMaxLength(ManageApartmentViewModel.MaxDescriptionLength);
+                        });
+
+                        col.AddRow(row =>
+                        {
+                            row.AddButton()
+                                .SetText("Save")
+                                .SetHeight(35f)
+                                .BindOnClicked(model => model.SaveChanges())
+                                .BindIsEnabled(model => model.IsSaveEnabled)
+                                .SetWidth(200f);
                         });
 
                     });
-
                 })
 
                 ;

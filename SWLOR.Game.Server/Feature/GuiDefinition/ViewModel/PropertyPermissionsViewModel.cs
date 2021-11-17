@@ -101,6 +101,46 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        private WorldPropertyPermission CreateEmptyPermissions(string targetPlayerId)
+        {
+            return new WorldPropertyPermission
+            {
+                PropertyId = PropertyId,
+                PlayerId = targetPlayerId,
+                Permissions = Property.GetPermissionsByPropertyType(PropertyType.Apartment).ToDictionary(x => x, _ => false),
+                GrantPermissions = Property.GetPermissionsByPropertyType(PropertyType.Apartment).ToDictionary(x => x, _ => false)
+            };
+        }
+
+        private bool CanAdjustPermission(
+            WorldPropertyPermission grantorPermissions, 
+            WorldPropertyPermission targetPermissions,
+            PropertyPermissionType type,
+            string targetPlayerId,
+            string ownerPlayerId)
+        {
+            var playerId = GetObjectUUID(Player);
+            var isTargetOwner = targetPlayerId == ownerPlayerId;
+            return grantorPermissions.GrantPermissions[type] // Player must have grant permission for this property
+                && playerId != targetPlayerId // Player can't adjust their own permissions
+                && (!targetPermissions.GrantPermissions[type] || playerId == ownerPlayerId) // Player can't adjust permissions of another grantor, unless owner
+                && !isTargetOwner; // Player can't adjust the owner's permissions.
+        }
+
+        private bool CanAdjustGrantPermission(
+            WorldPropertyPermission grantorPermissions,
+            PropertyPermissionType type,
+            string targetPlayerId,
+            string ownerPlayerId)
+        {
+            var playerId = GetObjectUUID(Player);
+            var isTargetOwner = targetPlayerId == ownerPlayerId;
+            return grantorPermissions.GrantPermissions[type] // Player must have grantor permission
+                   && playerId == ownerPlayerId // Can't adjust owner's permissions
+                   && playerId != targetPlayerId // Can't adjust your own permissions
+                   && !isTargetOwner; // Can't adjust owner's permissions
+        }
+
         private void LoadPlayerInfo()
         {
             var playerId = GetObjectUUID(Player);
@@ -116,11 +156,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var targetPermissions = DB.Search(new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), targetPlayerId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false))
-                .FirstOrDefault() ?? new WorldPropertyPermission
-            {
-                PlayerId = targetPlayerId, 
-                PropertyId = PropertyId
-            };
+                .FirstOrDefault() ?? CreateEmptyPermissions(targetPlayerId);
 
             var permissionStates = new GuiBindingList<bool>();
             var permissionGrantingStates = new GuiBindingList<bool>();
@@ -137,22 +173,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 permissionNames.Add(permission.Name);
                 permissionDescriptions.Add(permission.Description);
 
-                if(targetPermissions.Permissions.ContainsKey(type))
-                    permissionStates.Add(targetPermissions.Permissions[type]);
-                else
-                    permissionStates.Add(false);
+                permissionStates.Add(targetPermissions.Permissions[type]);
+                permissionGrantingStates.Add(targetPermissions.GrantPermissions[type]);
 
-                if(targetPermissions.GrantPermissions.ContainsKey(type))
-                    permissionGrantingStates.Add(targetPermissions.GrantPermissions[type]);
-                else 
-                    permissionGrantingStates.Add(false);
-
-                if(grantorPermissions.GrantPermissions.ContainsKey(type) && grantorPermissions.GrantPermissions[type] && playerId != targetPlayerId)
+                if(CanAdjustPermission(grantorPermissions, targetPermissions, type, targetPlayerId, dbProperty.OwnerPlayerId)) 
                     permissionEnabled.Add(true);
                 else
                     permissionEnabled.Add(false);
 
-                if(playerId == dbProperty.OwnerPlayerId && playerId != targetPlayerId)
+                if(CanAdjustGrantPermission(grantorPermissions, type, targetPlayerId, dbProperty.OwnerPlayerId))
                     grantPermissionEnabled.Add(true);
                 else
                     grantPermissionEnabled.Add(false);
@@ -278,13 +307,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             query = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), targetPlayerId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false);
-            var targetPermissions = DB.Search(query).FirstOrDefault() ?? new WorldPropertyPermission
-            {
-                PlayerId = targetPlayerId,
-                PropertyId = PropertyId
-            };
+            var targetPermissions = DB.Search(query).FirstOrDefault() ?? CreateEmptyPermissions(targetPlayerId);
             
-            var hasAtLeastOne = false;
             for (var index = 0; index < AvailablePermissions.Count; index++)
             {
                 var permission = AvailablePermissions[index];
@@ -300,16 +324,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     var hasPermission = PermissionStates[index];
 
-                    if (hasPermission)
-                        hasAtLeastOne = true;
-
                     targetPermissions.Permissions[permission] = hasPermission;
                     targetPermissions.GrantPermissions[permission] = canGrant;
                 }
             }
 
             // Player has at least one permission. Set the changes in the DB.
-            if (hasAtLeastOne)
+            if (targetPermissions.Permissions.Any(x => x.Value) ||
+                targetPermissions.GrantPermissions.Any(x => x.Value))
             {
                 DB.Set(targetPermissions);
             }
@@ -327,15 +349,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickReset() => () =>
         {
             Instruction = string.Empty;
-            var playerId = _playerIds[SelectedPlayerIndex];
+            var targetPlayerId = _playerIds[SelectedPlayerIndex];
             var query = new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), targetPlayerId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false);
-            var permissions = DB.Search(query).FirstOrDefault() ?? new WorldPropertyPermission
-            {
-                PropertyId = PropertyId,
-                PlayerId = playerId
-            };
+            var permissions = DB.Search(query).FirstOrDefault() ?? CreateEmptyPermissions(targetPlayerId);
 
             var permissionStates = new GuiBindingList<bool>();
             var grantPermissionStates = new GuiBindingList<bool>();

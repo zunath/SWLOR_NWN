@@ -18,8 +18,5 @@ namespace SWLOR.Game.Server.Entity
 
         public Dictionary<PropertyPermissionType, bool> Permissions { get; set; }
         public Dictionary<PropertyPermissionType, bool> GrantPermissions { get; set; }
-
-        [Indexed]
-        public bool IsQueuedForDeletion { get; set; }
     }
 }

@@ -8,6 +8,8 @@ namespace SWLOR.Game.Server.Entity
     {
         protected PropertyBase()
         {
+            CustomName = string.Empty;
+            CustomDescription = string.Empty;
             ParentPropertyId = string.Empty;
             ChildPropertyIds = new List<string>();
             Timers = new Dictionary<PropertyTimerType, DateTime>();
@@ -15,6 +17,8 @@ namespace SWLOR.Game.Server.Entity
 
         [Indexed]
         public string CustomName { get; set; }
+
+        public string CustomDescription { get; set; }
 
         [Indexed]
         public PropertyType PropertyType { get; set; }

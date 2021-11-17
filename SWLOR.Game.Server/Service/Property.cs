@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<string, uint> _instanceTemplates = new();
         private static readonly Dictionary<string, uint> _propertyInstances = new();
+        private static readonly Dictionary<PropertyType, List<PropertyPermissionType>> _permissionsByPropertyType = new();
 
         /// <summary>
         /// When the module loads, cache all relevant data into memory.
@@ -37,12 +38,13 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// When the module loads, clean up any deleted data and then load properties.
+        /// When the module loads, clean up any deleted data, refreshes permissions and then load properties.
         /// </summary>
         [NWNEventHandler("mod_load")]
         public static void OnModuleLoad()
         {
             CleanUpData();
+            RefreshPermissions();
             LoadProperties();
         }
 
@@ -78,6 +80,57 @@ namespace SWLOR.Game.Server.Service
                     _activePermissions[type] = permission;
                 }
             }
+
+            // Assign the list of permissions associated with each property type.
+            _permissionsByPropertyType[PropertyType.Apartment] = new List<PropertyPermissionType>
+            {
+                PropertyPermissionType.AdjustPermissions,
+                PropertyPermissionType.EditStructures,
+                PropertyPermissionType.RetrieveStructures,
+                PropertyPermissionType.RenameProperty,
+                PropertyPermissionType.AccessStorage,
+                PropertyPermissionType.ExtendLease,
+                PropertyPermissionType.CancelLease,
+                PropertyPermissionType.EnterProperty,
+                PropertyPermissionType.RenameStructures,
+                PropertyPermissionType.ChangeDescription
+            };
+
+            _permissionsByPropertyType[PropertyType.Building] = new List<PropertyPermissionType>
+            {
+                PropertyPermissionType.AdjustPermissions,
+                PropertyPermissionType.EditStructures,
+                PropertyPermissionType.RetrieveStructures,
+                PropertyPermissionType.RenameProperty,
+                PropertyPermissionType.AccessStorage,
+                PropertyPermissionType.EnterProperty,
+                PropertyPermissionType.RenameStructures,
+                PropertyPermissionType.ChangeDescription
+            };
+
+            _permissionsByPropertyType[PropertyType.Starship] = new List<PropertyPermissionType>
+            {
+                PropertyPermissionType.AdjustPermissions,
+                PropertyPermissionType.EditStructures,
+                PropertyPermissionType.RetrieveStructures,
+                PropertyPermissionType.RenameProperty,
+                PropertyPermissionType.EnterProperty,
+                PropertyPermissionType.RenameStructures,
+                PropertyPermissionType.ChangeDescription
+            };
+
+            _permissionsByPropertyType[PropertyType.City] = new List<PropertyPermissionType>
+            {
+                PropertyPermissionType.AdjustPermissions,
+                PropertyPermissionType.EditStructures,
+                PropertyPermissionType.RetrieveStructures,
+                PropertyPermissionType.RenameProperty,
+                PropertyPermissionType.ExtendLease,
+                PropertyPermissionType.CancelLease,
+                PropertyPermissionType.EnterProperty,
+                PropertyPermissionType.RenameStructures,
+                PropertyPermissionType.ChangeDescription
+            };
         }
 
         /// <summary>
@@ -242,8 +295,102 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            DB.Delete<WorldProperty>(property.Id.ToString());
+            var permissionsQuery = new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), property.Id, false);
+            var permissions = DB.Search(permissionsQuery);
+
+            foreach (var permission in permissions)
+            {
+                DB.Delete<WorldPropertyPermission>(permission.Id);
+                Log.Write(LogGroup.Property, $"Deleted property permission for property '{permission.PropertyId}' and player '{permission.PlayerId}'.");
+            }
+
+            DB.Delete<WorldProperty>(property.Id);
             Log.Write(LogGroup.Property, $"Property '{property.CustomName}' deleted.");
+        }
+
+        /// <summary>
+        /// When the module loads, update the permissions list on all properties to reflect any changes.
+        /// </summary>
+        private static void RefreshPermissions()
+        {
+            foreach (var (type, permissions) in _permissionsByPropertyType)
+            {
+                var propertyQuery = new DBQuery<WorldProperty>()
+                    .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)type);
+                var dbProperties = DB.Search(propertyQuery);
+
+                foreach (var property in dbProperties)
+                {
+                    var permissionQuery = new DBQuery<WorldPropertyPermission>()
+                        .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), property.Id, false);
+                    var dbPropertyPermissions = DB.Search(permissionQuery).ToList();
+                    
+                    foreach (var propertyPermission in dbPropertyPermissions)
+                    {
+                        // Perform a refresh of permissions (adding/removing as needed)
+                        // If changes occurred, save them.
+                        if (RefreshPermissions(property.OwnerPlayerId, propertyPermission, permissions))
+                        {
+                            DB.Set(propertyPermission);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Modifies the permissions on an individual world property permission object.
+        /// </summary>
+        /// <param name="propertyOwnerId">The Id of the property owner.</param>
+        /// <param name="dbPermission">The permission to modify.</param>
+        /// <param name="masterList">The master list of permissions.</param>
+        private static bool RefreshPermissions(string propertyOwnerId, WorldPropertyPermission dbPermission, List<PropertyPermissionType> masterList)
+        {
+            var hasChanges = false;
+            // Remove any permissions that have been removed from the master list.
+            for (var index = dbPermission.Permissions.Count - 1; index >= 0; index--)
+            {
+                // Permission no longer exists in master list. Remove it from this instance.
+                var permission = dbPermission.Permissions.ElementAt(index).Key;
+                if (!masterList.Contains(permission))
+                {
+                    dbPermission.Permissions.Remove(permission);
+                    Log.Write(LogGroup.Property, $"Removing permission {permission} from property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
+                    hasChanges = true;
+                }
+            }
+            for (var index = dbPermission.GrantPermissions.Count - 1; index >= 0; index--)
+            {
+                var grantPermission = dbPermission.GrantPermissions.ElementAt(index).Key;
+                if (!masterList.Contains(grantPermission))
+                {
+                    dbPermission.Permissions.Remove(grantPermission);
+                    Log.Write(LogGroup.Property, $"Removing grant permission {grantPermission} from property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
+                    hasChanges = true;
+                }
+            }
+
+            // Now add any new permissions
+            var hasAccess = propertyOwnerId == dbPermission.PlayerId;
+            foreach (var masterPermission in masterList)
+            {
+                if (!dbPermission.Permissions.ContainsKey(masterPermission))
+                {
+                    dbPermission.Permissions[masterPermission] = hasAccess;
+                    Log.Write(LogGroup.Property, $"Adding permission {dbPermission.Permissions[masterPermission]} to property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
+                    hasChanges = true;
+                }
+
+                if (!dbPermission.GrantPermissions.ContainsKey(masterPermission))
+                {
+                    dbPermission.GrantPermissions[masterPermission] = hasAccess;
+                    Log.Write(LogGroup.Property, $"Adding permission {dbPermission.Permissions[masterPermission]} to property {dbPermission.PropertyId} for player Id {dbPermission.PlayerId}.");
+                    hasChanges = true;
+                }
+            }
+
+            return hasChanges;
         }
 
         /// <summary>
@@ -298,32 +445,14 @@ namespace SWLOR.Game.Server.Service
             var permissions = new WorldPropertyPermission
             {
                 PropertyId = property.Id,
-                PlayerId = playerId,
-                Permissions = new Dictionary<PropertyPermissionType, bool>
-                {
-                    { PropertyPermissionType.AdjustPermissions, true },
-                    { PropertyPermissionType.EditStructures, true },
-                    { PropertyPermissionType.RetrieveStructures, true },
-                    { PropertyPermissionType.RenameProperty, true },
-                    { PropertyPermissionType.AccessStorage, true },
-                    { PropertyPermissionType.ExtendLease, true },
-                    { PropertyPermissionType.CancelLease, true },
-                    { PropertyPermissionType.EnterProperty, true },
-                    { PropertyPermissionType.RenameStructures, true }
-                },
-                GrantPermissions = new Dictionary<PropertyPermissionType, bool>
-                {
-                    { PropertyPermissionType.AdjustPermissions, true },
-                    { PropertyPermissionType.EditStructures, true },
-                    { PropertyPermissionType.RetrieveStructures, true },
-                    { PropertyPermissionType.RenameProperty, true },
-                    { PropertyPermissionType.AccessStorage, true },
-                    { PropertyPermissionType.ExtendLease, true },
-                    { PropertyPermissionType.CancelLease, true },
-                    { PropertyPermissionType.EnterProperty, true },
-                    { PropertyPermissionType.RenameStructures, true }
-                }
+                PlayerId = playerId
             };
+            
+            foreach (var permission in _permissionsByPropertyType[PropertyType.Apartment])
+            {
+                permissions.Permissions[permission] = true;
+                permissions.GrantPermissions[permission] = true;
+            }
 
             DB.Set(property);
             DB.Set(permissions);
@@ -402,6 +531,16 @@ namespace SWLOR.Game.Server.Service
         public static PropertyPermissionAttribute GetPermissionByType(PropertyPermissionType permission)
         {
             return _activePermissions[permission];
+        }
+
+        /// <summary>
+        /// Retrieves the list of available permissions for a given property type.
+        /// </summary>
+        /// <param name="type">The type of property</param>
+        /// <returns>A list of available permissions</returns>
+        public static List<PropertyPermissionType> GetPermissionsByPropertyType(PropertyType type)
+        {
+            return _permissionsByPropertyType[type];
         }
 
         /// <summary>
@@ -522,7 +661,7 @@ namespace SWLOR.Game.Server.Service
             var property = DB.Get<WorldProperty>(propertyId);
             var layout = _activeLayouts[property.InteriorLayout];
             var position = GetEntrancePosition(layout.AreaInstanceResref);
-            var instance = GetRegisteredInstance(property.Id.ToString());
+            var instance = GetRegisteredInstance(property.Id);
             var location = Location(instance, position, 0.0f);
 
             StoreOriginalLocation(player);

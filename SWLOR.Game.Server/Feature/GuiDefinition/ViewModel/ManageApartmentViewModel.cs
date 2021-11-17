@@ -14,9 +14,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageApartmentViewModel: GuiViewModelBase<ManageApartmentViewModel, GuiPayloadBase>
     {
+        public const int MaxNameLength = 50;
+        public const int MaxDescriptionLength = 200;
         private const int MaxLeaseDays = 30;
         private static readonly GuiColor _red = new GuiColor(255, 0, 0);
         private static readonly GuiColor _green = new GuiColor(0, 255, 0);
+
+        public GuiBindingList<string> ApartmentNames
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<bool> ApartmentToggles
+        {
+            get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+
+        public bool IsApartmentSelected
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        private int SelectedApartmentIndex { get; set; }
+
+        private readonly List<string> _propertyIds = new List<string>();
 
         public string Instruction
         {
@@ -31,6 +55,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string CustomName
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string CustomDescription
         {
             get => Get<string>();
             set => Set(value);
@@ -102,53 +132,162 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsManagePermissionsEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsCancelLeaseEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsDescriptionEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsPropertyRenameEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsSaveEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         private WorldProperty GetApartment()
         {
-            var playerId = GetObjectUUID(Player);
+            var selectedPropertyId = _propertyIds[SelectedApartmentIndex];
             var query = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.OwnerPlayerId), playerId, false)
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
-                .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
+                .AddFieldSearch(nameof(WorldProperty.Id), selectedPropertyId, false);
             var apartment = DB.Search(query).Single();
 
             return apartment;
         }
 
+        private WorldPropertyPermission GetPermissions()
+        {
+            var playerId = GetObjectUUID(Player);
+            var selectedPropertyId = _propertyIds[SelectedApartmentIndex];
+            var query = new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), selectedPropertyId, false);
+            var permission = DB.Search(query).FirstOrDefault()
+                             ?? new WorldPropertyPermission();
+
+            return permission;
+        }
+
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
-            var apartment = GetApartment();
-            var layout = Property.GetLayoutByType(apartment.InteriorLayout);
-            var furnitureCount = apartment.ChildPropertyIds.Count;
-            var leaseDate = apartment.Timers[PropertyTimerType.Lease];
-            var now = DateTime.UtcNow;
+            SelectedApartmentIndex = -1;
+            var playerId = GetObjectUUID(Player);
+            var apartmentNames = new GuiBindingList<string>();
+            var apartmentToggles = new GuiBindingList<bool>();
+            var permissionQuery = new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
+            var dbPermissions = DB.Search(permissionQuery);
 
-            ClearInstructions();
-            CustomName = apartment.CustomName;
-            LayoutName = $"Layout: {layout.Name}";
-            InitialPrice = $"Initial Price: {layout.InitialPrice} cr";
-            PricePerDay = $"Price Per Day: {layout.PricePerDay} cr";
-            FurnitureLimit = $"Furniture Limit: {furnitureCount} / {layout.FurnitureLimit}";
+            var propertyQuery = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
+                .AddFieldSearch(nameof(WorldProperty.Id), dbPermissions.Select(s => s.PropertyId));
+            var properties = DB.Search(propertyQuery);
 
-            // Apartment lease has expired but won't be cleaned up until the next reboot.
-            // Display it differently to signify the player needs to fix it or risk losing it.
-            if (now >= leaseDate)
+            foreach (var property in properties)
             {
-                LeasedUntil = $"Lease EXPIRED on {leaseDate.ToString("G")}";
-                LeasedUntilColor = _red;
+                _propertyIds.Add(property.Id);
+                apartmentNames.Add(property.CustomName);
+                apartmentToggles.Add(false);
+            }
+
+            ApartmentNames = apartmentNames;
+            ApartmentToggles = apartmentToggles;
+            
+            LoadApartment();
+            WatchOnClient(model => model.CustomName);
+            WatchOnClient(model => model.CustomDescription);
+        }
+
+        private void LoadApartment()
+        {
+            if (SelectedApartmentIndex <= -1)
+            {
+                CustomName = string.Empty;
+                CustomDescription = string.Empty;
+                LayoutName = $"Layout: [SELECT]";
+                InitialPrice = $"Initial Price: [SELECT]";
+                PricePerDay = $"Price Per Day: [SELECT]";
+                FurnitureLimit = $"Furniture Limit: [SELECT]";
+                LeasedUntil = string.Empty;
+
+                IsEnterEnabled = false;
+                IsManagePermissionsEnabled = false;
+                IsCancelLeaseEnabled = false;
+                IsPropertyRenameEnabled = false;
+                IsDescriptionEnabled = false;
+                IsSaveEnabled = false;
             }
             else
             {
-                LeasedUntil = $"Lease Expires on {leaseDate.ToString("G")}";
-                LeasedUntilColor = _green;
+                var apartment = GetApartment();
+                var permissions = GetPermissions();
+                var layout = Property.GetLayoutByType(apartment.InteriorLayout);
+                var furnitureCount = apartment.ChildPropertyIds.Count;
+                var leaseDate = apartment.Timers[PropertyTimerType.Lease];
+                var now = DateTime.UtcNow;
+
+                ClearInstructions();
+                CustomName = apartment.CustomName;
+                CustomDescription = apartment.CustomDescription;
+                LayoutName = $"Layout: {layout.Name}";
+                InitialPrice = $"Initial Price: {layout.InitialPrice} cr";
+                PricePerDay = $"Price Per Day: {layout.PricePerDay} cr";
+                FurnitureLimit = $"Furniture Limit: {furnitureCount} / {layout.FurnitureLimit}";
+                IsEnterEnabled = permissions.Permissions[PropertyPermissionType.EnterProperty];
+                IsManagePermissionsEnabled = permissions.GrantPermissions.Any(x => x.Value);
+                IsCancelLeaseEnabled = permissions.Permissions[PropertyPermissionType.CancelLease];
+                IsPropertyRenameEnabled = permissions.Permissions[PropertyPermissionType.RenameProperty];
+                IsDescriptionEnabled = permissions.Permissions[PropertyPermissionType.ChangeDescription];
+                IsSaveEnabled = IsPropertyRenameEnabled || IsDescriptionEnabled;
+
+                // Apartment lease has expired but won't be cleaned up until the next reboot.
+                // Display it differently to signify the player needs to fix it or risk losing it.
+                if (now >= leaseDate)
+                {
+                    LeasedUntil = $"Lease EXPIRED on {leaseDate.ToString("G")}";
+                    LeasedUntilColor = _red;
+                }
+                else
+                {
+                    LeasedUntil = $"Lease Expires on {leaseDate.ToString("G")}";
+                    LeasedUntilColor = _green;
+                }
             }
-            
 
             RefreshLeaseInfo();
-            WatchOnClient(model => model.CustomName);
         }
 
         private void RefreshLeaseInfo()
         {
+            if (SelectedApartmentIndex <= -1)
+            {
+                ExtendLease1DayText = $"Extend 1 Day";
+                IsExtendLease1DayEnabled = false;
+
+                ExtendLease7DaysText = "Extend 7 Days";
+                IsExtendLease7DaysEnabled = false;
+
+                IsEnterEnabled = false;
+                return;
+            }
+
             var apartment = GetApartment();
             var layout = Property.GetLayoutByType(apartment.InteriorLayout);
             var leasedUntilDate = apartment.Timers[PropertyTimerType.Lease];
@@ -173,31 +312,70 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Instruction = string.Empty;
         }
 
-        public Action SaveCustomName() => () =>
+        public Action OnSelectApartment() => () =>
         {
-            if (CustomName.Length < 3)
-            {
-                Instruction = $"Apartment names must be at least 3 characters long.";
-                InstructionColor = _red;
-                return;
-            }
-            
+            if (SelectedApartmentIndex > -1)
+                ApartmentToggles[SelectedApartmentIndex] = false;
+
+            SelectedApartmentIndex = NuiGetEventArrayIndex();
+            ApartmentToggles[SelectedApartmentIndex] = true;
+
+            LoadApartment();
+        };
+
+        public Action SaveChanges() => () =>
+        {
+            var permissions = GetPermissions();
             var apartment = GetApartment();
-            apartment.CustomName = CustomName;
+            var hasChange = false;
 
-            DB.Set(apartment);
+            // Rename Property
+            if (permissions.Permissions[PropertyPermissionType.RenameProperty])
+            {
+                if (CustomName.Length < 3)
+                {
+                    Instruction = $"Name must be at least 3 characters long.";
+                    InstructionColor = _red;
+                    return;
+                }
 
-            var instance = Property.GetRegisteredInstance(apartment.Id.ToString());
-            SetName(instance, CustomName);
+                if (CustomName.Length > MaxNameLength)
+                    CustomName = CustomName.Substring(0, MaxNameLength);
 
+                apartment.CustomName = CustomName;
+                hasChange = true;
+            }
 
-            Instruction = $"Name saved!";
-            InstructionColor = _green;
+            // Change Description
+            if (permissions.Permissions[PropertyPermissionType.ChangeDescription])
+            {
+                if (CustomDescription.Length > MaxDescriptionLength)
+                    CustomDescription = CustomDescription.Substring(0, MaxDescriptionLength);
+
+                apartment.CustomDescription = CustomDescription;
+                hasChange = true;
+            }
+
+            if (hasChange)
+            {
+                DB.Set(apartment);
+
+                var instance = Property.GetRegisteredInstance(apartment.Id);
+                SetName(instance, CustomName);
+
+                Instruction = $"Saved successfully.";
+                InstructionColor = _green;
+            }
         };
 
         private void ExtendLease(int days)
         {
             var apartment = GetApartment();
+            var permissions = GetPermissions();
+
+            if (!permissions.Permissions[PropertyPermissionType.ExtendLease])
+                return;
+
             var layout = Property.GetLayoutByType(apartment.InteriorLayout);
             var price = days * layout.PricePerDay;
             var dayWord = days == 1 ? "day" : "days";
@@ -242,6 +420,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"WARNING: Cancelling your lease will forfeit your apartment and ALL objects contained inside. These items will be permanently lost. You will NOT receive any credits back that have already been paid toward the lease. Are you sure you want to revoke your lease?",
                 () =>
                 {
+                    var permissions = GetPermissions();
+                    if (!permissions.Permissions[PropertyPermissionType.CancelLease])
+                        return;
+
                     var apartment = GetApartment();
 
                     // Queue the deletion for the next reboot to avoid lag while players are on.
@@ -257,21 +439,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnManagePermissions() => () =>
         {
+            var permissions = GetPermissions();
+            if (!permissions.GrantPermissions.Any(x => x.Value))
+                return;
+
             var apartment = GetApartment();
             var payload = new PropertyPermissionPayload
             {
-                PropertyId = apartment.Id.ToString(),
-                AvailablePermissions = new List<PropertyPermissionType>
-                {
-                    PropertyPermissionType.EditStructures,
-                    PropertyPermissionType.RetrieveStructures,
-                    PropertyPermissionType.RenameProperty,
-                    PropertyPermissionType.AccessStorage,
-                    PropertyPermissionType.ExtendLease,
-                    PropertyPermissionType.CancelLease,
-                    PropertyPermissionType.EnterProperty,
-                    PropertyPermissionType.RenameStructures
-                }
+                PropertyId = apartment.Id,
+                AvailablePermissions = Property.GetPermissionsByPropertyType(PropertyType.Apartment)
             };
 
             Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload, TetherObject);
@@ -279,8 +455,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnEnterApartment() => () =>
         {
+            var permissions = GetPermissions();
+            if (!permissions.Permissions[PropertyPermissionType.EnterProperty])
+                return;
+
             var apartment = GetApartment();
-            Property.EnterProperty(Player, apartment.Id.ToString());
+            Property.EnterProperty(Player, apartment.Id);
 
             Gui.TogglePlayerWindow(Player, GuiWindowType.ManageApartment);
         };

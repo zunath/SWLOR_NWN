@@ -24,7 +24,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
         EnterProperty = 8,
         [PropertyPermission("Rename Structures", "Toggles the ability to rename structures within the property.", true)]
         RenameStructures = 9,
-
+        [PropertyPermission("Change Description", "Toggles the ability to change a property's description", true)]
+        ChangeDescription = 10,
     }
 
     public class PropertyPermissionAttribute : Attribute

@@ -187,6 +187,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
+            _propertyIds.Clear();
             SelectedApartmentIndex = -1;
             var playerId = GetObjectUUID(Player);
             var apartmentNames = new GuiBindingList<string>();
@@ -463,6 +464,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Property.EnterProperty(Player, apartment.Id);
 
             Gui.TogglePlayerWindow(Player, GuiWindowType.ManageApartment);
+        };
+
+        public Action OnBuyApartment() => () =>
+        {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.RentApartment, null, TetherObject);
         };
     }
 }

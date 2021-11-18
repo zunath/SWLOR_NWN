@@ -551,18 +551,8 @@ namespace SWLOR.Game.Server.Service
         {
             var player = GetLastUsedBy();
             var terminal = OBJECT_SELF;
-
-            var playerId = GetObjectUUID(player);
-            var query = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.OwnerPlayerId), playerId, false)
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
-                .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
-            var existingApartment = DB.Search(query).FirstOrDefault();
-
-            Gui.TogglePlayerWindow(player,
-                existingApartment == null 
-                    ? GuiWindowType.RentApartment 
-                    : GuiWindowType.ManageApartment, null, terminal);
+            
+            Gui.TogglePlayerWindow(player, GuiWindowType.ManageApartment, null, terminal);
         }
 
         /// <summary>

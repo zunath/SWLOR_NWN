@@ -98,7 +98,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                                 row2.AddButton()
                                     .SetText("Buy")
-                                    .BindOnClicked(model => model.OnBuyApartment());
+                                    .BindOnClicked(model => model.OnBuyApartment())
+                                    .BindIsEnabled(model => model.IsRentApartmentEnabled);
                             });
                         });
                     });

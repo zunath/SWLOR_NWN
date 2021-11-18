@@ -45,6 +45,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             })
                                 .BindRowCount(model => model.ApartmentNames);
                         });
+
+                        col.AddRow(row =>
+                        {
+                            row.AddSpacer();
+                            row.AddButton()
+                                .SetText("Buy Apartment")
+                                .SetHeight(35f)
+                                .BindOnClicked(model => model.OnBuyApartment());
+                            row.AddSpacer();
+                        });
                     });
 
                     root.AddColumn(col =>

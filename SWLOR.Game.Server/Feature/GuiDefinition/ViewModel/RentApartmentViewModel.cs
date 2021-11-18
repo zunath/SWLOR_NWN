@@ -68,9 +68,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsRentApartmentEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        private bool CanRentApartment()
+        {
+            var playerId = GetObjectUUID(Player);
+            var query = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.OwnerPlayerId), playerId, false)
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment);
+            var dbApartment = DB.Search(query).FirstOrDefault();
+
+            return dbApartment == null;
+        }
+
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             SelectedLayout = -1;
+            IsRentApartmentEnabled = CanRentApartment();
             var layoutNames = new GuiBindingList<string>();
             var layoutToggles = new GuiBindingList<bool>();
             _layoutTypes.Clear();
@@ -149,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     AssignCommand(Player, () => TakeGoldFromCreature(layout.InitialPrice, Player, true));
 
                     var property = Property.CreateApartment(Player, layoutType);
-                    Property.EnterProperty(Player, property.Id.ToString());
+                    Property.EnterProperty(Player, property.Id);
 
                     Gui.TogglePlayerWindow(Player, GuiWindowType.RentApartment);
                 });

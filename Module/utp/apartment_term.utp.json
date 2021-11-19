@@ -76,7 +76,7 @@
   },
   "Lockable": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "Locked": {
     "type": "byte",
@@ -142,7 +142,7 @@
   },
   "OnUsed": {
     "type": "resref",
-    "value": "generic_convo"
+    "value": "apartment_term"
   },
   "OnUserDefined": {
     "type": "resref",
@@ -211,56 +211,6 @@
   "Useable": {
     "type": "byte",
     "value": 1
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Placeable.GenericConversation"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "APARTMENT_BUILDING_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "CONVERSATION"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "ApartmentRental"
-        }
-      }
-    ]
   },
   "Will": {
     "type": "byte",

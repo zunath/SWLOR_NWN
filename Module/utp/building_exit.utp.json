@@ -87,7 +87,7 @@
     "id": 66778,
     "type": "cexolocstring",
     "value": {
-      "0": "Building Exit"
+      "0": "Property Exit"
     }
   },
   "OnClick": {
@@ -244,7 +244,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "BuildingExit"
+          "value": "PropertyExitDialog"
         }
       }
     ]

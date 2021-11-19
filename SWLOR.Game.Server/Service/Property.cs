@@ -18,11 +18,12 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<FurnitureType, FurnitureAttribute> _activeFurniture = new();
         private static readonly Dictionary<PropertyLayoutType, PropertyLayoutTypeAttribute> _activeLayouts = new();
         private static readonly Dictionary<PropertyType, List<PropertyLayoutType>> _layoutsByPropertyType = new();
-        private static readonly Dictionary<PropertyLayoutType, Vector3> _entrancesByLayout = new();
+        private static readonly Dictionary<PropertyLayoutType, Vector4> _entrancesByLayout = new();
         private static readonly Dictionary<PropertyPermissionType, PropertyPermissionAttribute> _activePermissions = new();
 
         private static readonly Dictionary<string, uint> _instanceTemplates = new();
         private static readonly Dictionary<string, uint> _propertyInstances = new();
+        private static readonly Dictionary<string, Location> _propertyInstancesEntrances = new();
         private static readonly Dictionary<PropertyType, List<PropertyPermissionType>> _permissionsByPropertyType = new();
 
         /// <summary>
@@ -173,7 +174,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="areaResref">The resref of the area to look for</param>
         /// <returns>X, Y, and Z coordinates of the entrance location</returns>
-        private static Vector3 GetEntrancePosition(string areaResref)
+        private static Vector4 GetEntrancePosition(string areaResref)
         {
             var area = Cache.GetAreaByResref(areaResref);
             
@@ -182,10 +183,10 @@ namespace SWLOR.Game.Server.Service
                 if (GetTag(obj) != "PROPERTY_ENTRANCE") continue;
 
                 var position = GetPosition(obj);
-                return position;
+                return new Vector4(position, GetFacing(obj));
             }
             
-            return new Vector3();
+            return new Vector4();
         }
 
         /// <summary>
@@ -227,6 +228,7 @@ namespace SWLOR.Game.Server.Service
         public static void UnregisterInstance(string propertyId)
         {
             _propertyInstances.Remove(propertyId);
+            _propertyInstancesEntrances.Remove(propertyId);
         }
 
         /// <summary>
@@ -507,7 +509,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="type">The layout type</param>
         /// <returns>The entrance position for the layout.</returns>
-        public static Vector3 GetEntrancePosition(PropertyLayoutType type)
+        public static Vector4 GetEntrancePosition(PropertyLayoutType type)
         {
             return _entrancesByLayout[type];
         }
@@ -624,9 +626,10 @@ namespace SWLOR.Game.Server.Service
         /// <param name="layout">The layout type to send them to.</param>
         public static void PreviewProperty(uint player, PropertyLayoutType layout)
         {
-            var position = GetEntrancePosition(layout);
+            var entrance = GetEntrancePosition(layout);
             var area = GetInstanceTemplate(layout);
-            var location = Location(area, position, 0.0f);
+            var position = new Vector3(entrance.X, entrance.Y, entrance.Z);
+            var location = Location(area, position, entrance.W);
 
             StoreOriginalLocation(player);
             AssignCommand(player, () =>
@@ -649,10 +652,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             var property = DB.Get<WorldProperty>(propertyId);
-            var layout = _activeLayouts[property.InteriorLayout];
-            var position = GetEntrancePosition(layout.AreaInstanceResref);
+            var entrance = _entrancesByLayout[property.InteriorLayout];
             var instance = GetRegisteredInstance(property.Id);
-            var location = Location(instance, position, 0.0f);
+            var position = new Vector3(entrance.X, entrance.Y, entrance.Z);
+            var location = Location(instance, position, entrance.W);
 
             StoreOriginalLocation(player);
             AssignCommand(player, () =>

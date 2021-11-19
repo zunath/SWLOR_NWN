@@ -383,7 +383,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Player Home Entrance"
+                      "value": "Property Entrance"
                     },
                     "RESREF": {
                       "type": "resref",

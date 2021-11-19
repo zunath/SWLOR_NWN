@@ -51,13 +51,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var targetWillpower = GetAbilityModifier(AbilityType.Willpower, target);
             var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, false);
+
+            var elecBeam = EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Hand);
             
             AssignCommand(activator, () =>
             {
+                PlaySound("frc_lghtning");
+                ActionPlayAnimation(Animation.LoopingCustom64, 1.0f,4.0f);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Beam_Lightning), target);
+                ApplyEffectToObject(DurationType.Temporary, elecBeam, target, 4.0f);
             });
-            ActionCastFakeSpellAtObject(Spell.LightningBolt, target);
+
             
             Enmity.ModifyEnmityOnAll(activator, 1);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
@@ -68,10 +72,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
                 .Name("Force Lightning I")
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
-                .HasActivationDelay(2.0f)
                 .RequirementFP(2)
                 .IsCastedAbility()
-                .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction(ImpactAction);
         }
 
@@ -80,10 +82,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceLightning2, PerkType.ForceLightning)
                 .Name("Force Lightning II")
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
-                .HasActivationDelay(2.0f)
                 .RequirementFP(3)
                 .IsCastedAbility()
-                .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction(ImpactAction);
         }
 
@@ -92,10 +92,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceLightning3, PerkType.ForceLightning)
                 .Name("Force Lightning III")
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
-                .HasActivationDelay(2.0f)
                 .RequirementFP(4)
                 .IsCastedAbility()
-                .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction(ImpactAction);
         }
 
@@ -104,10 +102,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceLightning4, PerkType.ForceLightning)
                 .Name("Force Lightning IV")
                 .HasRecastDelay(RecastGroup.ForceLightning, 30f)
-                .HasActivationDelay(4.0f)
                 .RequirementFP(5)
                 .IsCastedAbility()
-                .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction(ImpactAction);
         }
     }

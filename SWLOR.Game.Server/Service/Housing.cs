@@ -10,13 +10,14 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service.HousingService;
+using SWLOR.Game.Server.Service.PropertyService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
     public static class Housing
     {
-        private static readonly Dictionary<FurnitureType, FurnitureAttribute> _activeFurniture = new Dictionary<FurnitureType, FurnitureAttribute>();
+        private static readonly Dictionary<StructureType, StructureAttribute> _activeFurniture = new Dictionary<StructureType, StructureAttribute>();
         private static readonly Dictionary<PlayerHouseType, PlayerHouseAttribute> _activePlayerHouses = new Dictionary<PlayerHouseType, PlayerHouseAttribute>();
         private static readonly Dictionary<PlayerHouseType, Vector3> _houseEntrancePositions = new Dictionary<PlayerHouseType, Vector3>();
         private static readonly Dictionary<string, uint> _activeHouseInstances = new Dictionary<string, uint>();
@@ -36,10 +37,10 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void LoadFurniture()
         {
-            var furnitureTypes = Enum.GetValues(typeof(FurnitureType)).Cast<FurnitureType>();
+            var furnitureTypes = Enum.GetValues(typeof(StructureType)).Cast<StructureType>();
             foreach (var furniture in furnitureTypes)
             {
-                var furnitureDetail = furniture.GetAttribute<FurnitureType, FurnitureAttribute>();
+                var furnitureDetail = furniture.GetAttribute<StructureType, StructureAttribute>();
 
                 if (furnitureDetail.IsActive)
                 {
@@ -115,7 +116,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="type">The type of furniture.</param>
         /// <returns>Details for the specified furniture type.</returns>
-        public static FurnitureAttribute GetFurnitureDetail(FurnitureType type)
+        public static StructureAttribute GetFurnitureDetail(StructureType type)
         {
             return _activeFurniture[type];
         }
@@ -247,7 +248,7 @@ namespace SWLOR.Game.Server.Service
             var removedCount = 0;
             foreach(var (id, furniture) in playerHouse.Furnitures)
             {
-                var furnitureDetail = _activeFurniture[furniture.FurnitureType];
+                var furnitureDetail = _activeFurniture[furniture.StructureType];
 
                 // In the event that a piece of furniture has been marked inactive after it was already placed, we need to remove it from the house.
                 if (!furnitureDetail.IsActive)
@@ -288,7 +289,7 @@ namespace SWLOR.Game.Server.Service
 
             // Ensure it's a furniture item.
             var furnitureTypeId = GetFurnitureTypeFromItem(item);
-            if (furnitureTypeId == FurnitureType.Invalid) return false;
+            if (furnitureTypeId == StructureType.Invalid) return false;
 
             // Ensure we're inside someone's house.
             var ownerPlayerUUID = GetLocalString(area, "HOUSING_OWNER_PLAYER_UUID");
@@ -330,19 +331,19 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="item">The item to retrieve from.</param>
         /// <returns>A furniture type associated with the item.</returns>
-        public static FurnitureType GetFurnitureTypeFromItem(uint item)
+        public static StructureType GetFurnitureTypeFromItem(uint item)
         {
             var resref = GetResRef(item);
-            if (!resref.StartsWith("furniture_")) return FurnitureType.Invalid;
+            if (!resref.StartsWith("furniture_")) return StructureType.Invalid;
 
             var id = resref.Substring(resref.Length-4, 4);
 
             if (!int.TryParse(id, out var furnitureId))
             {
-                return FurnitureType.Invalid;
+                return StructureType.Invalid;
             }
 
-            return (FurnitureType) furnitureId;
+            return (StructureType) furnitureId;
         }
 
         /// <summary>

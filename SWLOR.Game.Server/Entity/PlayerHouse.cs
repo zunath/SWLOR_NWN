@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Service.HousingService;
+using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Entity
 
     public class PlayerHouseFurniture
     {
-        public FurnitureType FurnitureType { get; set; }
+        public StructureType StructureType { get; set; }
         public float X { get; set; }
         public float Y { get; set; }
         public float Z { get; set; }

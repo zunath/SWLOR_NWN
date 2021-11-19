@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.HousingService;
+using SWLOR.Game.Server.Service.PropertyService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
@@ -29,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             public bool HasBeenPlaced { get; set; }
             public uint Item { get; set; }
             public uint Placeable { get; set; }
-            public FurnitureType FurnitureType { get; set; }
+            public StructureType StructureType { get; set; }
             public Location TargetLocation { get; set; }
             public string OwnerUUID { get; set; }
         }
@@ -84,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 model.Placeable = GetLocalObject(player, "TEMP_FURNITURE_PLACEABLE");
             }
 
-            model.FurnitureType = (FurnitureType)GetLocalInt(player, "TEMP_FURNITURE_TYPE_ID");
+            model.StructureType = (StructureType)GetLocalInt(player, "TEMP_FURNITURE_TYPE_ID");
             model.OwnerUUID = GetLocalString(area, "HOUSING_OWNER_PLAYER_UUID");
             model.TargetLocation = GetLocalLocation(player, "TEMP_FURNITURE_LOCATION");
 
@@ -100,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var model = GetDataModel<Model>();
             var dbHouse = DB.Get<PlayerHouse>(model.OwnerUUID);
             var houseDetail = Housing.GetHouseTypeDetail(dbHouse.HouseType);
-            var furnitureDetail = Housing.GetFurnitureDetail(model.FurnitureType);
+            var furnitureDetail = Housing.GetFurnitureDetail(model.StructureType);
 
             page.Header = ColorToken.Green("Furniture: ") + furnitureDetail.Name + "\n" +
                           ColorToken.Green("Furniture Limit: ") + dbHouse.Furnitures.Count + " / " + houseDetail.FurnitureLimit + "\n\n" +
@@ -132,7 +133,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 return;
             }
 
-            var furnitureDetail = Housing.GetFurnitureDetail(model.FurnitureType);
+            var furnitureDetail = Housing.GetFurnitureDetail(model.StructureType);
             model.Placeable = CreateObject(ObjectType.Placeable, furnitureDetail.Resref, model.TargetLocation);
             DestroyObject(model.Item);
             model.HasBeenPlaced = true;
@@ -144,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var furnitureId = Guid.NewGuid().ToString();
             dbHouse.Furnitures[furnitureId] = new PlayerHouseFurniture
             {
-                FurnitureType = model.FurnitureType,
+                StructureType = model.StructureType,
                 Orientation = 0.0f,
                 X = position.X,
                 Y = position.Y,
@@ -164,7 +165,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var dbHouse = DB.Get<PlayerHouse>(model.OwnerUUID);
 
             var furnitureId = GetLocalString(model.Placeable, "HOUSING_FURNITURE_ID");
-            var furnitureType = dbHouse.Furnitures[furnitureId].FurnitureType;
+            var furnitureType = dbHouse.Furnitures[furnitureId].StructureType;
             var paddedId = ((int) furnitureType).ToString().PadLeft(4, '0');
             var itemResref = $"furniture_{paddedId}";
 

@@ -100,13 +100,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             if (string.IsNullOrWhiteSpace(furnitureId)) return;
 
             var dbFurniture = dbHouse.Furnitures[furnitureId];
-            var detail = Housing.GetFurnitureDetail(dbFurniture.FurnitureType);
+            var detail = Housing.GetFurnitureDetail(dbFurniture.StructureType);
 
             page.AddResponse(detail.Name, () =>
             {
                 var player = GetPC();
 
-                SetLocalInt(player, "TEMP_FURNITURE_TYPE_ID", (int)dbFurniture.FurnitureType);
+                SetLocalInt(player, "TEMP_FURNITURE_TYPE_ID", (int)dbFurniture.StructureType);
                 SetLocalLocation(player, "TEMP_FURNITURE_LOCATION", GetLocation(placeable));
                 SetLocalObject(player, "TEMP_FURNITURE_PLACEABLE", placeable);
 

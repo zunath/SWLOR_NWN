@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Property
     {
-        private static readonly Dictionary<FurnitureType, FurnitureAttribute> _activeFurniture = new();
+        private static readonly Dictionary<StructureType, StructureAttribute> _activeFurniture = new();
         private static readonly Dictionary<PropertyLayoutType, PropertyLayoutTypeAttribute> _activeLayouts = new();
         private static readonly Dictionary<PropertyType, List<PropertyLayoutType>> _layoutsByPropertyType = new();
         private static readonly Dictionary<PropertyLayoutType, Vector4> _entrancesByLayout = new();
@@ -139,10 +139,10 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void CacheFurniture()
         {
-            var furnitureTypes = Enum.GetValues(typeof(FurnitureType)).Cast<FurnitureType>();
+            var furnitureTypes = Enum.GetValues(typeof(StructureType)).Cast<StructureType>();
             foreach (var furniture in furnitureTypes)
             {
-                var furnitureDetail = furniture.GetAttribute<FurnitureType, FurnitureAttribute>();
+                var furnitureDetail = furniture.GetAttribute<StructureType, StructureAttribute>();
 
                 if (furnitureDetail.IsActive)
                 {
@@ -487,11 +487,11 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Retrieves a furniture detail by its type.
         /// </summary>
-        /// <param name="furniture"></param>
+        /// <param name="structure"></param>
         /// <returns></returns>
-        public static FurnitureAttribute GetFurnitureByType(FurnitureType furniture)
+        public static StructureAttribute GetFurnitureByType(StructureType structure)
         {
-            return _activeFurniture[furniture];
+            return _activeFurniture[structure];
         }
 
         /// <summary>

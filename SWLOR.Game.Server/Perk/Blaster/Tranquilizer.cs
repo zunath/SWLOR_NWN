@@ -1,10 +1,12 @@
 ﻿using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Perk.Blaster
 {
@@ -44,7 +46,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
         {
             var concentrationEffect = AbilityService.GetActiveConcentrationEffect(target.Object);
             if (concentrationEffect.Type == PerkType.MindShield ||
-                GetIsImmune(target, IMMUNITY_TYPE_MIND_SPELLS) == TRUE)
+                GetIsImmune(target, ImmunityType.MindSpells) == true)
             {
                 creature.SendMessage("Your target is immune to tranquilization effects.");
                 return;
@@ -103,10 +105,10 @@ namespace SWLOR.Game.Server.Perk.Blaster
             target.SetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN", 1);
 
             Effect effect = _.EffectDazed();
-            effect = _.EffectLinkEffects(effect, _.EffectVisualEffect(VFX_DUR_IOUNSTONE_BLUE));
+            effect = _.EffectLinkEffects(effect, _.EffectVisualEffect(VisualEffect.Vfx_Dur_Iounstone_Blue));
             effect = _.TagEffect(effect, "TRANQUILIZER_EFFECT");
 
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, effect, target, duration);
+            _.ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
         }
 
         private bool RemoveExistingEffect(NWObject target, float duration)

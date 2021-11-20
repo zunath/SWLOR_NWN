@@ -1,6 +1,6 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
 
 namespace SWLOR.Game.Server.Perk.Armor
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Perk.Armor
 
         public void OnRemoved(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, _.FEAT_DODGE);
+            NWNXCreature.RemoveFeat(creature, Feat.Dodge);
         }
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
@@ -72,11 +72,11 @@ namespace SWLOR.Game.Server.Perk.Armor
             
             if (equipped.Equals(oItem) || equipped.CustomItemType != CustomItemType.LightArmor)
             {
-                NWNXCreature.RemoveFeat(creature, _.FEAT_DODGE);
+                NWNXCreature.RemoveFeat(creature, Feat.Dodge);
                 return;
             }
 
-            NWNXCreature.AddFeat(creature, _.FEAT_DODGE);
+            NWNXCreature.AddFeat(creature, Feat.Dodge);
         }
 
         public bool IsHostile()

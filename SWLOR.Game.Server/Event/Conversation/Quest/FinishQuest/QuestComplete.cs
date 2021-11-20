@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
@@ -13,7 +12,7 @@ namespace SWLOR.Game.Server.Event.Conversation.Quest.FinishQuest
             using (new Profiler(nameof(QuestComplete) + ".Index" + index + ".Rule" + customRuleIndex))
             {
                 NWPlayer player = _.GetPCSpeaker();
-                NWObject talkTo = NWGameObject.OBJECT_SELF;
+                NWObject talkTo = _.OBJECT_SELF;
                 int questID = talkTo.GetLocalInt("QUEST_ID_" + index);
                 if (questID <= 0) questID = talkTo.GetLocalInt("QST_ID_" + index);
 

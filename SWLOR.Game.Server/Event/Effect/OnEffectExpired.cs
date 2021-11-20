@@ -1,4 +1,4 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Event.Effect
@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Event.Effect
         {
             Data = data.Split(',');
             Creator = creator;
-            AppliedTo = NWGameObject.OBJECT_SELF;
+            AppliedTo = _.OBJECT_SELF;
         }
     }
 }

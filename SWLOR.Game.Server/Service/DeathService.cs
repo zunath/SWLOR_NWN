@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Linq;
+using System.Numerics;
 using SWLOR.Game.Server.GameObject;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
-using static NWN._;
+using SWLOR.Game.Server.NWN.Enum;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -24,32 +26,32 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = _.GetLastPlayerDied();
             NWObject hostile = _.GetLastHostileActor(player.Object);
 
-            _.SetStandardFactionReputation(STANDARD_FACTION_COMMONER, 100, player);
-            _.SetStandardFactionReputation(STANDARD_FACTION_MERCHANT, 100, player);
-            _.SetStandardFactionReputation(STANDARD_FACTION_DEFENDER, 100, player);
+            _.SetStandardFactionReputation(StandardFaction.Commoner, 100, player);
+            _.SetStandardFactionReputation(StandardFaction.Merchant, 100, player);
+            _.SetStandardFactionReputation(StandardFaction.Defender, 100, player);
 
-            var factionMember = _.GetFirstFactionMember(hostile.Object, FALSE);
-            while (_.GetIsObjectValid(factionMember) == TRUE)
+            var factionMember = _.GetFirstFactionMember(hostile.Object, false);
+            while (_.GetIsObjectValid(factionMember) == true)
             {
                 _.ClearPersonalReputation(player.Object, factionMember);
-                factionMember = _.GetNextFactionMember(hostile.Object, FALSE);
+                factionMember = _.GetNextFactionMember(hostile.Object, false);
             }
             
             const string RespawnMessage = "You have died. You can wait for another player to revive you or respawn to go to your last respawn point.";
-            _.PopUpDeathGUIPanel(player.Object, TRUE, TRUE, 0, RespawnMessage);
+            _.PopUpDeathGUIPanel(player.Object, true, true, 0, RespawnMessage);
         }
 
         private static void ApplyDurabilityLoss(NWPlayer player)
         {
-            for (int index = 0; index < NUM_INVENTORY_SLOTS; index++)
+            for (int index = 0; index < NumberOfInventorySlots; index++)
             {
-                NWItem equipped = _.GetItemInSlot(index, player);
-                DurabilityService.RunItemDecay(player, equipped, RandomService.RandomFloat(0.10f, 0.50f));
+                NWItem equipped = _.GetItemInSlot((InventorySlot)index, player);
+                DurabilityService.RunItemDecay(player, equipped, RandomService.RandomFloat(0.15f, 0.50f));
             }
 
             foreach (var item in player.InventoryItems)
             {
-                DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(0.10f, 0.50f));
+                DurabilityService.RunItemDecay(player, item, RandomService.RandomFloat(0.10f, 0.25f));
             }
         }
 
@@ -59,42 +61,41 @@ namespace SWLOR.Game.Server.Service
             ApplyDurabilityLoss(oPC);
 
             int amount = oPC.MaxHP / 2;
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectResurrection(), oPC.Object);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(amount), oPC.Object);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectResurrection(), oPC.Object);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(amount), oPC.Object);
 
             NWArea area = oPC.Area;
             
             TeleportPlayerToBindPoint(oPC);
 
             // If player is the last person in an instance, destroy the instance.
-            if (area.IsInstance)
-            {
-                int playersInArea = NWModule.Get().Players.Count(x => x.Area == oPC.Area && x != oPC);
+            //if (area.IsInstance)
+            //{
+            //    int playersInArea = NWModule.Get().Players.Count(x => x.Area == oPC.Area && x != oPC);
 
-                if (playersInArea <= 0)
-                {
-                    _.DelayCommand(12.0f, () =>
-                    {
-                        AreaService.DestroyAreaInstance(area);
-                    }); 
-                }
-            }
+            //    if (playersInArea <= 0)
+            //    {
+            //        _.DelayCommand(12.0f, () =>
+            //        {
+            //            AreaService.DestroyAreaInstance(area);
+            //        }); 
+            //    }
+            //}
         }
         
 
         public static void SetRespawnLocation(NWPlayer player)
         {
             if (player == null) throw new ArgumentNullException(nameof(player), nameof(player) + " cannot be null.");
-            if (player.Object == null) throw new ArgumentNullException(nameof(player.Object), nameof(player.Object) + " cannot be null.");
 
             Player pc = DataService.Player.GetByID(player.GlobalID);
-            pc.RespawnLocationX = player.Position.m_X;
-            pc.RespawnLocationY = player.Position.m_Y;
-            pc.RespawnLocationZ = player.Position.m_Z;
+            pc.RespawnLocationX = player.Position.X;
+            pc.RespawnLocationY = player.Position.Y;
+            pc.RespawnLocationZ = player.Position.Z;
             pc.RespawnLocationOrientation = player.Facing;
             pc.RespawnAreaResref = player.Area.Resref;
             DataService.SubmitDataChange(pc, DatabaseActionType.Update);
-            _.FloatingTextStringOnCreature("You will return to this location the next time you die.", player.Object, FALSE);
+            _.FloatingTextStringOnCreature("You will return to this location the next time you die.", player.Object, false);
         }
 
 
@@ -131,7 +132,7 @@ namespace SWLOR.Game.Server.Service
             else
             {
                 NWArea area = NWModule.Get().Areas.Single(x => x.Resref == entity.RespawnAreaResref);
-                Vector position = _.Vector((float)entity.RespawnLocationX, (float)entity.RespawnLocationY, (float)entity.RespawnLocationZ);
+                Vector3 position = _.Vector3((float)entity.RespawnLocationX, (float)entity.RespawnLocationY, (float)entity.RespawnLocationZ);
                 Location location = _.Location(area.Object, position, (float)entity.RespawnLocationOrientation);
                 pc.AssignCommand(() =>
                 {

@@ -254,7 +254,6 @@ namespace SWLOR.Game.Server.Service
         public static string GetNamePCColor(NWObject oPC)
         {
             if (oPC == null) throw new ArgumentNullException(nameof(oPC), nameof(oPC) + " cannot be null.");
-            if (oPC.Object == null) throw new ArgumentNullException(nameof(oPC.Object), nameof(oPC.Object) + " cannot be null.");
             
             return TokenStart(153, 255, 255) + oPC.Name + TokenEnd();
         }
@@ -268,7 +267,6 @@ namespace SWLOR.Game.Server.Service
         public static string GetNameNPCColor(NWObject oNPC)
         {
             if (oNPC == null) throw new ArgumentNullException(nameof(oNPC), nameof(oNPC) + " cannot be null.");
-            if (oNPC.Object == null) throw new ArgumentNullException(nameof(oNPC.Object), nameof(oNPC.Object) + " cannot be null.");
 
             return TokenStart(204, 153, 204) + oNPC.Name + TokenEnd();
         }

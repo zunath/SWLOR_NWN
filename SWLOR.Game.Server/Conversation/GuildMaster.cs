@@ -1,6 +1,5 @@
 ﻿using System.Linq;
-using NWN;
-using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Quest.Objective;
@@ -318,7 +317,7 @@ namespace SWLOR.Game.Server.Conversation
             switch (responseID)
             {
                 case 1: // Accept Task
-                    quest.Accept(player, NWGameObject.OBJECT_SELF);
+                    quest.Accept(player, _.OBJECT_SELF);
                     LoadTaskDetailsPage();
                     LoadTaskListPage();
                     break;
@@ -344,7 +343,7 @@ namespace SWLOR.Game.Server.Conversation
             // All other quest types
             else if(quest.CanComplete(player))
             {
-                quest.Complete(player, NWGameObject.OBJECT_SELF, null);
+                quest.Complete(player, _.OBJECT_SELF, null);
                 EndConversation();
             }
             // Missing a requirement.

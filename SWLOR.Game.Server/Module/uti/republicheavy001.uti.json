@@ -18,7 +18,7 @@
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 22
+    "value": 23
   },
   "Comment": {
     "type": "cexostring",
@@ -60,11 +60,11 @@
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 0
+    "value": 90
   },
   "Metal2Color": {
     "type": "byte",
-    "value": 0
+    "value": 92
   },
   "ModelPart1": {
     "type": "byte",

@@ -1,9 +1,7 @@
 ﻿using System;
-using NWN;
-using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
 
 
 namespace SWLOR.Game.Server.Service
@@ -15,7 +13,7 @@ namespace SWLOR.Game.Server.Service
         {
             var dbPlayer = DataService.Player.GetByID(oPC.GlobalID);
             string pcName = oPC.Name;
-            int classID = oPC.Class1;
+            var classID = oPC.Class1;
 
             string item1Resref = "";
             int item1Quantity = 1;

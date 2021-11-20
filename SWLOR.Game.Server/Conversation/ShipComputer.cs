@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
 using System.Collections.Generic;
 using System.Collections;
+using System.Numerics;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Item;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
@@ -100,8 +103,8 @@ namespace SWLOR.Game.Server.Conversation
             int currentReinforcedFuel = pcBase.ReinforcedFuel;
             int currentFuel = pcBase.Fuel;
             int currentResources = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structure.ID).Count();
-            int maxReinforcedFuel = BaseService.CalculateMaxReinforcedFuel(pcBase.ID) + 25 * SpaceService.GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipStronidiumBonus);
-            int maxFuel = BaseService.CalculateMaxFuel(pcBase.ID) + 25 * SpaceService.GetCargoBonus(bay, (int)CustomItemPropertyType.StarshipFuelBonus);
+            int maxReinforcedFuel = BaseService.CalculateMaxReinforcedFuel(pcBase.ID) + 25 * SpaceService.GetCargoBonus(bay, ItemPropertyType.StarshipStronidiumBonus);
+            int maxFuel = BaseService.CalculateMaxFuel(pcBase.ID) + 25 * SpaceService.GetCargoBonus(bay, ItemPropertyType.StarshipFuelBonus);
             int maxResources = BaseService.CalculateResourceCapacity(pcBase.ID);
 
             string locationDescription;
@@ -203,7 +206,7 @@ namespace SWLOR.Game.Server.Conversation
                             }
                         }
 
-                        _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), player);
+                        _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake), player);
 
                         // Clean up the base structure, if we were in a PC dock not public starport.
                         // Get a reference to our placeable (and door), and delete them with some VFX. 
@@ -230,7 +233,7 @@ namespace SWLOR.Game.Server.Conversation
                                     // Found our dock.  Clear its variable and play some VFX.
                                     plc.Structure.SetLocalInt("DOCKED_STARSHIP", 0);
                                     DoDustClouds(plc.Structure.Location);
-                                    _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), plc.Structure);
+                                    _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake), plc.Structure);
                                 }
                                 else if (plc.PCBaseStructureID == structure.ID)
                                 {
@@ -342,7 +345,7 @@ namespace SWLOR.Game.Server.Conversation
                     }
                     else
                     {
-                        _.TakeGoldFromCreature(starport.Cost, player, 1);
+                        _.TakeGoldFromCreature(starport.Cost, player, true);
 
                         // Land.
                         pcBase.ShipLocation = starport.StarportID.ToString();
@@ -408,7 +411,7 @@ namespace SWLOR.Game.Server.Conversation
                     }
 
                     // And shake the screen, because stuff.
-                    _.ApplyEffectAtLocation(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), loc);
+                    _.ApplyEffectAtLocation(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake), loc);
                     DoDustClouds(loc);            
                 }
 
@@ -425,7 +428,7 @@ namespace SWLOR.Game.Server.Conversation
                     }
                 }
 
-                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, _.EffectVisualEffect(356), player);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Fnf_Screen_Shake), player);
                 SpaceService.RemoveShipInSpace(player.Area);
 
                 EndConversation();
@@ -465,7 +468,7 @@ namespace SWLOR.Game.Server.Conversation
             var structure = DataService.PCBaseStructure.GetByID(structureID);
             var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
             Location location = oPC.Location;
-            bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location);
+            bay = _.CreateObject(ObjectType.Placeable, "fuel_bay", location);
             bay.AssignCommand(() => _.SetFacingPoint(oPC.Position));
 
             area.SetLocalObject("FUEL_BAY", bay.Object);
@@ -491,15 +494,15 @@ namespace SWLOR.Game.Server.Conversation
         {
             // Utility method to throw some dust clouds up around a landing ship.
             float x, y;
-            Vector v;
+            Vector3 v;
 
             for (int i=0; i < 6; i++)
             {
                 x = loc.X + (5 - _.d10());
                 y = loc.Y + (5 - _.d10());
-                v = new Vector(x, y, loc.Z);
+                v = new Vector3(x, y, loc.Z);
 
-                NWPlaceable cloud = _.CreateObject(OBJECT_TYPE_PLACEABLE, "plc_dustplume", _.Location(loc.Area, v, loc.Orientation));
+                NWPlaceable cloud = _.CreateObject(ObjectType.Placeable, "plc_dustplume", _.Location(loc.Area, v, loc.Orientation));
 
                 _.DelayCommand(10.0f, () => _.DestroyObject(cloud));
             }

@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.GameObject;
-using NWN;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.AI.Contracts;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
-using System;
+using static SWLOR.Game.Server.NWN._;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -50,9 +51,9 @@ namespace SWLOR.Game.Server.AI
             NWObject door = (GetBlockingDoor());
             if (!door.IsValid) return;
 
-            if (GetIsDoorActionPossible(door.Object, DOOR_ACTION_OPEN) == TRUE)
+            if (GetIsDoorActionPossible(door.Object, DoorAction.Open) == true)
             {
-                DoDoorAction(door.Object, DOOR_ACTION_OPEN);
+                DoDoorAction(door.Object, DoorAction.Open);
             }
         }
 
@@ -82,10 +83,10 @@ namespace SWLOR.Game.Server.AI
 
         public virtual void OnDeath(NWCreature self)
         {
-            int vfx = self.GetLocalInt("DEATH_VFX");
-            if (vfx > 0)
+            var vfx = (VisualEffect)self.GetLocalInt("DEATH_VFX");
+            if (vfx != VisualEffect.Invalid)
             {
-                ApplyEffectToObject(DURATION_TYPE_INSTANT, EffectVisualEffect(vfx), self);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(vfx), self);
             }
         }
 
@@ -224,7 +225,7 @@ namespace SWLOR.Game.Server.AI
                 });
             }
             // We don't have a valid target but we're still attacking someone. We shouldn't be attacking them anymore. Clear all actions.
-            else if(target == null && GetCurrentAction(self) == ACTION_ATTACKOBJECT)
+            else if(target == null && GetCurrentAction(self) == ActionType.AttackObject)
             {
                 self.AssignCommand(() =>
                 {
@@ -245,14 +246,14 @@ namespace SWLOR.Game.Server.AI
             {
                 self.AssignCommand(() =>
                 {
-                    ActionEquipMostDamagingRanged(new NWGameObject());
+                    ActionEquipMostDamagingRanged();
                 });
             }
             else
             {
                 self.AssignCommand(() =>
                 {
-                    ActionEquipMostDamagingMelee(new NWGameObject());
+                    ActionEquipMostDamagingMelee();
                 });
             }
         }
@@ -272,7 +273,7 @@ namespace SWLOR.Game.Server.AI
 
             // Cycle through each nearby creature. Process their flags individually if necessary.
             int nth = 1;
-            NWCreature creature = _.GetNearestObject(OBJECT_TYPE_CREATURE, self, nth);
+            NWCreature creature = _.GetNearestObject(self, ObjectType.Creature, nth);
             while (creature.IsValid)
             {
                 float aggroRange = GetAggroRange(creature);
@@ -291,7 +292,7 @@ namespace SWLOR.Game.Server.AI
                     Link(self, creature);
                 }
                 nth++;
-                creature = _.GetNearestObject(OBJECT_TYPE_CREATURE, self, nth);
+                creature = _.GetNearestObject(self, ObjectType.Creature, nth);
             }
         }
 
@@ -321,13 +322,13 @@ namespace SWLOR.Game.Server.AI
             if (nearby.IsDead) return;
 
             // Is the nearby creature not an enemy?
-            if (GetIsEnemy(nearby, self.Object) == FALSE) return;
+            if (GetIsEnemy(nearby, self.Object) == false) return;
 
             // Does the nearby creature have sanctuary?
-            if (nearby.HasAnyEffect(EFFECT_TYPE_SANCTUARY)) return;
+            if (nearby.HasAnyEffect(EffectTypeScript.Sanctuary)) return;
 
             // Does the nearby creature have line of sight to the creature being attacked?
-            if (LineOfSightObject(self, nearby) == FALSE) return;
+            if (LineOfSightObject(self, nearby) == false) return;
 
             // Success. Increase enmity on the nearby target.
             EnmityService.AdjustEnmity(self, nearby, 0, 1);
@@ -348,7 +349,7 @@ namespace SWLOR.Game.Server.AI
             if (nearby.IsDead) return;
 
             // Is the nearby creature an enemy?
-            if (_.GetIsEnemy(nearby, self) == TRUE) return;
+            if (_.GetIsEnemy(nearby, self) == true) return;
 
             // Does the calling creature have the same racial type as the nearby creature?
             if (self.RacialType != nearby.RacialType) return;
@@ -362,7 +363,7 @@ namespace SWLOR.Game.Server.AI
             if (target.IsDead) return;
 
             // Does the nearby creature have line of sight to the creature being attacked?
-            if (LineOfSightObject(self, nearby) == FALSE) return;
+            if (LineOfSightObject(self, nearby) == false) return;
 
             // Add the target of the nearby creature to this creature's enmity table.
             EnmityService.AdjustEnmity(self, target, 0, 1);
@@ -375,10 +376,10 @@ namespace SWLOR.Game.Server.AI
                 return;
             }
 
-            if (_.GetCurrentAction(self.Object) == _.ACTION_INVALID &&
-                _.IsInConversation(self.Object) == _.FALSE &&
-                _.GetCurrentAction(self.Object) != _.ACTION_RANDOMWALK &&
-                _.GetCurrentAction(self.Object) != _.ACTION_MOVETOPOINT &&
+            if (_.GetCurrentAction(self.Object) == ActionType.Invalid &&
+                _.IsInConversation(self.Object) == false &&
+                _.GetCurrentAction(self.Object) != ActionType.RandomWalk &&
+                _.GetCurrentAction(self.Object) != ActionType.MoveToPoint &&
                 RandomService.Random(100) <= 25)
             {
                 self.AssignCommand(_.ActionRandomWalk);
@@ -390,9 +391,9 @@ namespace SWLOR.Game.Server.AI
             if (self.IsInCombat || !EnmityService.IsEnmityTableEmpty(self))
                 return;
 
-            if (_.GetCurrentAction(self.Object) == _.ACTION_INVALID &&
-                _.IsInConversation(self.Object) == _.FALSE &&
-                _.GetCurrentAction(self.Object) != _.ACTION_RANDOMWALK)
+            if (_.GetCurrentAction(self.Object) == ActionType.Invalid &&
+                _.IsInConversation(self.Object) == false &&
+                _.GetCurrentAction(self.Object) != ActionType.RandomWalk)
             {
                 var flags = GetAIFlags(self);
                 Location spawnLocation = self.GetLocalLocation("AI_SPAWN_POINT");
@@ -423,6 +424,17 @@ namespace SWLOR.Game.Server.AI
             NWObject target = _.GetAttackTarget(self);
             if (!target.IsValid) return;
 
+
+            // todo: GetEffectType() returns EFFECT_TYPE_INVALIDEFFECT for knockdown effects.
+            // todo: The following code is causing a segfault crash... look into other solutions or figure out what's causing that.
+            // target.Effects.Any(x => NWNXEffect.UnpackEffect(x).Type == (int)EffectTypeEngine.Knockdown) ||
+            // Potential workaround: if (target.GetLocalBool("KNOCKDOWN")) return;
+            if (target.GetLocalBool("KNOCKDOWN")) return;
+            if (target.Effects.Any(x => _.GetEffectTag(x) == "TRANQUILIZER_EFFECT"))
+            {
+                return;
+            }
+
             // Pull back whatever concentration effect is currently active, if any.
             var concentration = AbilityService.GetActiveConcentrationEffect(self);
 
@@ -435,11 +447,11 @@ namespace SWLOR.Game.Server.AI
             foreach (var perkDetails in randomizedFeatIDs)
             {
                 // Move to next feat if this creature cannot use this one.
-                if (!AbilityService.CanUsePerkFeat(self, target, perkDetails.FeatID)) continue;
+                if (!AbilityService.CanUsePerkFeat(self, target, (Feat)perkDetails.FeatID)) continue;
                 
                 self.AssignCommand(() =>
                 {
-                    _.ActionUseFeat(perkDetails.FeatID, target);
+                    _.ActionUseFeat((Feat)perkDetails.FeatID, target);
                 });
 
                 break;

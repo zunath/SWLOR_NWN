@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
@@ -171,7 +171,7 @@ namespace SWLOR.Game.Server.Service
         public static void AddWaypointMapPin(NWPlayer oPC, string waypointTag, string text, string mapPinTag)
         {
             NWObject waypoint = (_.GetWaypointByTag(waypointTag));
-            SetMapPin(oPC, text, waypoint.Position.m_X, waypoint.Position.m_Y, waypoint.Area, mapPinTag);
+            SetMapPin(oPC, text, waypoint.Position.X, waypoint.Position.Y, waypoint.Area, mapPinTag);
         }
 
     }

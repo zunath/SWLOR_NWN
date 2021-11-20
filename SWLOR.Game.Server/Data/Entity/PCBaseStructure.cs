@@ -1,10 +1,11 @@
 
 using System;
+using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCBaseStructure]")]
+    [Table("PCBaseStructure")]
     public class PCBaseStructure: IEntity
     {
         public PCBaseStructure()
@@ -29,6 +30,10 @@ namespace SWLOR.Game.Server.Data.Entity
         public int StructureBonus { get; set; }
         public DateTime? DateNextActivity { get; set; }
         public int StructureModeID { get; set; }
+        public int TileMainLight1Color { get; set; }
+        public int TileMainLight2Color { get; set; }
+        public int TileSourceLight1Color { get; set; }
+        public int TileSourceLight2Color { get; set; }
 
         public IEntity Clone()
         {
@@ -48,7 +53,11 @@ namespace SWLOR.Game.Server.Data.Entity
                 CustomName = CustomName,
                 StructureBonus = StructureBonus,
                 DateNextActivity = DateNextActivity,
-                StructureModeID = StructureModeID
+                StructureModeID = StructureModeID,
+                TileMainLight1Color = TileMainLight1Color,
+                TileMainLight2Color = TileMainLight2Color,
+                TileSourceLight1Color = TileSourceLight1Color,
+                TileSourceLight2Color = TileSourceLight2Color
             };
         }
     }

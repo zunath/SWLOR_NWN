@@ -1,6 +1,5 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
@@ -10,14 +9,20 @@ using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
-using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Item;
 using SWLOR.Game.Server.Event.Legacy;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Extension;
-using static NWN._;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Item;
+using SWLOR.Game.Server.NWN.Enum.Item.Property;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using static SWLOR.Game.Server.NWN._;
+using OnHitCastSpell = SWLOR.Game.Server.Event.Feat.OnHitCastSpell;
+using Skill = SWLOR.Game.Server.Data.Entity.Skill;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -112,10 +117,14 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnItemUsed()
         {
-            NWPlayer user = NWGameObject.OBJECT_SELF;
-            NWItem oItem = NWNXEvents.OnItemUsed_GetItem();
-            NWObject target = NWNXEvents.OnItemUsed_GetTarget();
-            Location targetLocation = NWNXEvents.OnItemUsed_GetTargetLocation();
+            NWPlayer user = _.OBJECT_SELF;
+            NWItem oItem = _.StringToObject(NWNXEvents.GetEventData("ITEM_OBJECT_ID"));
+            NWObject target = _.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
+            var targetPositionX = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_X"));
+            var targetPositionY = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Y"));
+            var targetPositionZ = (float)Convert.ToDouble(NWNXEvents.GetEventData("TARGET_POSITION_Z"));
+            var targetPosition = Vector3(targetPositionX, targetPositionY, targetPositionZ);
+            Location targetLocation = Location(user.Area, targetPosition, 0.0f);
 
             string className = oItem.GetLocalString("SCRIPT");
             if (string.IsNullOrWhiteSpace(className)) className = oItem.GetLocalString("ACTIVATE_SCRIPT");
@@ -150,12 +159,24 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            // NOTE - these checks are duplicated in FinishActionItem.  Keep both in sync.
             float maxDistance = item.MaxDistance(user, oItem, target, targetLocation);
             if (maxDistance > 0.0f)
             {
-                if (target.IsValid &&
-                    (GetDistanceBetween(user.Object, target.Object) > maxDistance ||
-                    user.Area.Resref != target.Area.Resref))
+                NWObject owner = GetItemPossessor(target);
+
+                if (target.IsValid && owner.IsValid)
+                {
+                    // We are okay - we have targeted an item in our inventory (we can't target someone
+                    // else's inventory, so no need to actually check distance).
+                }
+                else if (target.Object == _.OBJECT_SELF)
+                {
+                    // Also okay.
+                }
+                else if (target.IsValid && 
+                         (GetDistanceBetween(user.Object, target.Object) > maxDistance ||
+                          user.Area.Resref != target.Area.Resref))
                 {
                     user.SendMessage("Your target is too far away.");
                     return;
@@ -171,9 +192,9 @@ namespace SWLOR.Game.Server.Service
 
             CustomData customData = item.StartUseItem(user, oItem, target, targetLocation);
             float delay = item.Seconds(user, oItem, target, targetLocation, customData);
-            int animationID = item.AnimationID();
+            var animationID = item.AnimationID();
             bool faceTarget = item.FaceTarget();
-            Vector userPosition = user.Position;
+            Vector3 userPosition = user.Position;
 
             user.AssignCommand(() =>
             {
@@ -195,7 +216,7 @@ namespace SWLOR.Game.Server.Service
 
         public static string OnModuleExamine(string existingDescription, NWObject examinedObject)
         {
-            if (examinedObject.ObjectType != OBJECT_TYPE_ITEM) return existingDescription;
+            if (examinedObject.ObjectType != ObjectType.Item) return existingDescription;
 
             NWItem examinedItem = (examinedObject.Object);
             string description = "";
@@ -204,7 +225,7 @@ namespace SWLOR.Game.Server.Service
             {
                 description += ColorTokenService.Orange("Recommended Level: ") + examinedItem.RecommendedLevel;
 
-                if (examinedItem.BaseItemType == BASE_ITEM_RING || examinedItem.BaseItemType == BASE_ITEM_AMULET)
+                if (examinedItem.BaseItemType == BaseItem.Ring || examinedItem.BaseItemType == BaseItem.Amulet)
                     description += " (Uses your highest armor skill)";
 
                 description += "\n";
@@ -381,9 +402,9 @@ namespace SWLOR.Game.Server.Service
             // Attack bonus, damage, base attack bonus: weapons only
             // AC - armor items only.
             ItemProperty ip = GetFirstItemProperty(examinedItem);
-            while (GetIsItemPropertyValid(ip) == TRUE)
+            while (GetIsItemPropertyValid(ip) == true)
             {
-                if (GetItemPropertyType(ip) == (int) CustomItemPropertyType.ComponentBonus)
+                if (GetItemPropertyType(ip) == ItemPropertyType.ComponentBonus)
                 {
                     switch (GetItemPropertySubType(ip))
                     {
@@ -408,74 +429,74 @@ namespace SWLOR.Game.Server.Service
             return existingDescription + "\n" + description;
         }
 
-        public static HashSet<int> ArmorBaseItemTypes = new HashSet<int>()
+        public static HashSet<BaseItem> ArmorBaseItemTypes = new HashSet<BaseItem>()
         {
-            BASE_ITEM_ARMOR,
-            BASE_ITEM_HELMET
+            BaseItem.Armor,
+            BaseItem.Helmet
         };
 
-        public static HashSet<int> ShieldBaseItemTypes = new HashSet<int>()
+        public static HashSet<BaseItem> ShieldBaseItemTypes = new HashSet<BaseItem>()
         {
-            BASE_ITEM_LARGESHIELD,
-            BASE_ITEM_SMALLSHIELD,
-            BASE_ITEM_TOWERSHIELD
+            BaseItem.LargeShield,
+            BaseItem.SmallShield,
+            BaseItem.TowerShield
         };
 
-        public static HashSet<int> WeaponBaseItemTypes = new HashSet<int>()
+        public static HashSet<BaseItem> WeaponBaseItemTypes = new HashSet<BaseItem>()
         {
-            BASE_ITEM_ARROW,
-            BASE_ITEM_BASTARDSWORD,
-            BASE_ITEM_BATTLEAXE,
-            BASE_ITEM_BOLT,
-            BASE_ITEM_BRACER,
-            BASE_ITEM_BULLET,
-            BASE_ITEM_CLUB,
-            BASE_ITEM_DAGGER,
-            BASE_ITEM_DART,
-            BASE_ITEM_DIREMACE,
-            BASE_ITEM_DOUBLEAXE,
-            BASE_ITEM_DWARVENWARAXE,
-            BASE_ITEM_GLOVES,
-            BASE_ITEM_GREATAXE,
-            BASE_ITEM_GREATSWORD,
-            BASE_ITEM_GRENADE,
-            BASE_ITEM_HALBERD,
-            BASE_ITEM_HANDAXE,
-            BASE_ITEM_HEAVYCROSSBOW,
-            BASE_ITEM_HEAVYFLAIL,
-            BASE_ITEM_KAMA,
-            BASE_ITEM_KATANA,
-            BASE_ITEM_KUKRI,
-            BASE_ITEM_LIGHTCROSSBOW,
-            BASE_ITEM_LIGHTFLAIL,
-            BASE_ITEM_LIGHTHAMMER,
-            BASE_ITEM_LIGHTMACE,
-            BASE_ITEM_LONGBOW,
-            BASE_ITEM_LONGSWORD,
-            BASE_ITEM_MORNINGSTAR,
-            BASE_ITEM_QUARTERSTAFF,
-            BASE_ITEM_RAPIER,
-            BASE_ITEM_SCIMITAR,
-            BASE_ITEM_SCYTHE,
-            BASE_ITEM_SHORTBOW,
-            BASE_ITEM_SHORTSPEAR,
-            BASE_ITEM_SHORTSWORD,
-            BASE_ITEM_SHURIKEN,
-            BASE_ITEM_SICKLE,
-            BASE_ITEM_SLING,
-            BASE_ITEM_THROWINGAXE,
-            BASE_ITEM_TRIDENT,
-            BASE_ITEM_TWOBLADEDSWORD,
-            BASE_ITEM_WARHAMMER,
-            BASE_ITEM_WHIP,
-            CustomBaseItemType.Saberstaff,
-            CustomBaseItemType.Lightsaber
+            BaseItem.Arrow,
+            BaseItem.BastardSword,
+            BaseItem.BattleAxe,
+            BaseItem.Bolt,
+            BaseItem.Bracer,
+            BaseItem.Bullet,
+            BaseItem.Club,
+            BaseItem.Dagger,
+            BaseItem.Dart,
+            BaseItem.DireMace,
+            BaseItem.DoubleAxe,
+            BaseItem.DwarvenWarAxe,
+            BaseItem.Gloves,
+            BaseItem.GreatAxe,
+            BaseItem.GreatSword,
+            BaseItem.Grenade,
+            BaseItem.Halberd,
+            BaseItem.HandAxe,
+            BaseItem.HeavyCrossbow,
+            BaseItem.HeavyFlail,
+            BaseItem.Kama,
+            BaseItem.Katana,
+            BaseItem.Kukri,
+            BaseItem.LightCrossbow,
+            BaseItem.LightFlail,
+            BaseItem.LightHammer,
+            BaseItem.LightMace,
+            BaseItem.Longbow,
+            BaseItem.Longsword,
+            BaseItem.MorningStar,
+            BaseItem.QuarterStaff,
+            BaseItem.Rapier,
+            BaseItem.Scimitar,
+            BaseItem.Scythe,
+            BaseItem.ShortBow,
+            BaseItem.ShortSpear,
+            BaseItem.ShortSword,
+            BaseItem.Shuriken,
+            BaseItem.Sickle,
+            BaseItem.Sling,
+            BaseItem.ThrowingAxe,
+            BaseItem.Trident,
+            BaseItem.TwoBladedSword,
+            BaseItem.WarHammer,
+            BaseItem.Whip,
+            BaseItem.Saberstaff,
+            BaseItem.Lightsaber
         };
 
         private static void OnModuleUnequipItem()
         {
             NWPlayer player = GetPCItemLastUnequippedBy();
-            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == TRUE) return; // Don't run heavy code when customizing equipment.
+            if (GetLocalBool(player, "IS_CUSTOMIZING_ITEM") == true) return; // Don't run heavy code when customizing equipment.
 
             NWItem oItem = GetPCItemLastUnequipped();
 
@@ -517,79 +538,79 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleEquipItem()
         {
-            int[] validItemTypes = {
-                    BASE_ITEM_ARMOR,
-                    BASE_ITEM_ARROW,
-                    BASE_ITEM_BASTARDSWORD,
-                    BASE_ITEM_BATTLEAXE,
-                    BASE_ITEM_BELT,
-                    BASE_ITEM_BOLT,
-                    BASE_ITEM_BOOTS,
-                    BASE_ITEM_BRACER,
-                    BASE_ITEM_BULLET,
-                    BASE_ITEM_CLOAK,
-                    BASE_ITEM_CLUB,
-                    BASE_ITEM_DAGGER,
-                    BASE_ITEM_DART,
-                    BASE_ITEM_DIREMACE,
-                    BASE_ITEM_DOUBLEAXE,
-                    BASE_ITEM_DWARVENWARAXE,
-                    BASE_ITEM_GLOVES,
-                    BASE_ITEM_GREATAXE,
-                    BASE_ITEM_GREATSWORD,
-                    BASE_ITEM_GRENADE,
-                    BASE_ITEM_HALBERD,
-                    BASE_ITEM_HANDAXE,
-                    BASE_ITEM_HEAVYCROSSBOW,
-                    BASE_ITEM_HEAVYFLAIL,
-                    BASE_ITEM_HELMET,
-                    BASE_ITEM_KAMA,
-                    BASE_ITEM_KATANA,
-                    BASE_ITEM_KUKRI,
-                    BASE_ITEM_LARGESHIELD,
-                    BASE_ITEM_LIGHTCROSSBOW,
-                    BASE_ITEM_LIGHTFLAIL,
-                    BASE_ITEM_LIGHTHAMMER,
-                    BASE_ITEM_LIGHTMACE,
-                    BASE_ITEM_LONGBOW,
-                    BASE_ITEM_LONGSWORD,
-                    BASE_ITEM_MORNINGSTAR,
-                    BASE_ITEM_QUARTERSTAFF,
-                    BASE_ITEM_RAPIER,
-                    BASE_ITEM_SCIMITAR,
-                    BASE_ITEM_SCYTHE,
-                    BASE_ITEM_SHORTBOW,
-                    BASE_ITEM_SHORTSPEAR,
-                    BASE_ITEM_SHORTSWORD,
-                    BASE_ITEM_SHURIKEN,
-                    BASE_ITEM_SICKLE,
-                    BASE_ITEM_SLING,
-                    BASE_ITEM_SMALLSHIELD,
-                    BASE_ITEM_THROWINGAXE,
-                    BASE_ITEM_TOWERSHIELD,
-                    BASE_ITEM_TRIDENT,
-                    BASE_ITEM_TWOBLADEDSWORD,
-                    BASE_ITEM_WARHAMMER,
-                    BASE_ITEM_WHIP,
-                    CustomBaseItemType.Saberstaff,
-                    CustomBaseItemType.Lightsaber
+            BaseItem[] validItemTypes = {
+                    BaseItem.Armor,
+                    BaseItem.Arrow,
+                    BaseItem.BastardSword,
+                    BaseItem.BattleAxe,
+                    BaseItem.Belt,
+                    BaseItem.Bolt,
+                    BaseItem.Boots,
+                    BaseItem.Bracer,
+                    BaseItem.Bullet,
+                    BaseItem.Cloak,
+                    BaseItem.Club,
+                    BaseItem.Dagger,
+                    BaseItem.Dart,
+                    BaseItem.DireMace,
+                    BaseItem.DoubleAxe,
+                    BaseItem.DwarvenWarAxe,
+                    BaseItem.Gloves,
+                    BaseItem.GreatAxe,
+                    BaseItem.GreatSword,
+                    BaseItem.Grenade,
+                    BaseItem.Halberd,
+                    BaseItem.HandAxe,
+                    BaseItem.HeavyCrossbow,
+                    BaseItem.HeavyFlail,
+                    BaseItem.Helmet,
+                    BaseItem.Kama,
+                    BaseItem.Katana,
+                    BaseItem.Kukri,
+                    BaseItem.LargeShield,
+                    BaseItem.LightCrossbow,
+                    BaseItem.LightFlail,
+                    BaseItem.LightHammer,
+                    BaseItem.LightMace,
+                    BaseItem.Longbow,
+                    BaseItem.Longsword,
+                    BaseItem.MorningStar,
+                    BaseItem.QuarterStaff,
+                    BaseItem.Rapier,
+                    BaseItem.Scimitar,
+                    BaseItem.Scythe,
+                    BaseItem.ShortBow,
+                    BaseItem.ShortSpear,
+                    BaseItem.ShortSword,
+                    BaseItem.Shuriken,
+                    BaseItem.Sickle,
+                    BaseItem.Sling,
+                    BaseItem.SmallShield,
+                    BaseItem.ThrowingAxe,
+                    BaseItem.TowerShield,
+                    BaseItem.Trident,
+                    BaseItem.TwoBladedSword,
+                    BaseItem.WarHammer,
+                    BaseItem.Whip,
+                    BaseItem.Saberstaff,
+                    BaseItem.Lightsaber
 
             };
 
             NWPlayer player = GetPCItemLastEquippedBy();
 
-            if (player.GetLocalInt("IS_CUSTOMIZING_ITEM") == TRUE) return; // Don't run heavy code when customizing equipment.
+            if (GetLocalBool(player, "IS_CUSTOMIZING_ITEM") == true) return; // Don't run heavy code when customizing equipment.
 
             NWItem oItem = (GetPCItemLastEquipped());
-            int baseItemType = oItem.BaseItemType;
-            Effect eEffect = EffectVisualEffect(579);
+            var baseItemType = oItem.BaseItemType;
+            Effect eEffect = EffectVisualEffect(VisualEffect.LightsaberHum);
             eEffect = TagEffect(eEffect, "LIGHTSABER_HUM");
 
             // Handle lightsaber sounds
             if (oItem.CustomItemType == CustomItemType.Lightsaber ||
                 oItem.CustomItemType == CustomItemType.Saberstaff)
             {
-                ApplyEffectToObject(DURATION_TYPE_PERMANENT, eEffect, player);
+                ApplyEffectToObject(DurationType.Permanent, eEffect, player);
                 player.AssignCommand(() =>
                 {
                     PlaySound("saberon");
@@ -624,7 +645,7 @@ namespace SWLOR.Game.Server.Service
             }
 
 
-            if (baseItemType == BASE_ITEM_TORCH)
+            if (baseItemType == BaseItem.Torch)
             {
                 int charges = oItem.ReduceCharges();
                 if (charges <= 0)
@@ -640,9 +661,9 @@ namespace SWLOR.Game.Server.Service
         {
             foreach (ItemProperty ip in oItem.ItemProperties)
             {
-                if (GetItemPropertyType(ip) == ITEM_PROPERTY_ONHITCASTSPELL)
+                if (GetItemPropertyType(ip) == ItemPropertyType.OnHitCastSpell)
                 {
-                    if (GetItemPropertySubType(ip) == IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER)
+                    if (GetItemPropertySubType(ip) == (int)OnHitCastSpellType.ONHIT_UNIQUEPOWER)
                     {
                         return;
                     }
@@ -650,12 +671,12 @@ namespace SWLOR.Game.Server.Service
             }
 
             // No item property found. Add it to the item.
-            BiowareXP2.IPSafeAddItemProperty(oItem, ItemPropertyOnHitCastSpell(IP_CONST_ONHIT_CASTSPELL_ONHIT_UNIQUEPOWER, 40), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(oItem, ItemPropertyOnHitCastSpell(OnHitCastSpellType.ONHIT_UNIQUEPOWER, 40), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
         }
 
         public static void ReturnItem(NWObject target, NWItem item)
         {
-            if (GetHasInventory(item) == TRUE)
+            if (GetHasInventory(item) == true)
             {
                 NWObject possessor = item.Possessor;
                 possessor.AssignCommand(() =>
@@ -665,7 +686,7 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                CopyItem(item.Object, target.Object, TRUE);
+                CopyItem(item.Object, target.Object, true);
                 item.Destroy();
             }
         }
@@ -696,129 +717,129 @@ namespace SWLOR.Game.Server.Service
             return prop;
         }
 
-        public static HashSet<int> MeleeWeaponTypes = new HashSet<int>()
+        public static HashSet<BaseItem> MeleeWeaponTypes = new HashSet<BaseItem>()
         {
-            BASE_ITEM_BASTARDSWORD,
-            BASE_ITEM_BATTLEAXE,
-            BASE_ITEM_CLUB,
-            BASE_ITEM_DAGGER,
-            BASE_ITEM_HANDAXE,
-            BASE_ITEM_KAMA,
-            BASE_ITEM_KATANA,
-            BASE_ITEM_KUKRI,
-            BASE_ITEM_LIGHTFLAIL,
-            BASE_ITEM_LIGHTHAMMER,
-            BASE_ITEM_LIGHTMACE,
-            BASE_ITEM_LONGSWORD,
-            BASE_ITEM_RAPIER,
-            BASE_ITEM_SCIMITAR,
-            BASE_ITEM_SHORTSPEAR,
-            BASE_ITEM_SHORTSWORD,
-            BASE_ITEM_SICKLE,
-            BASE_ITEM_WHIP,
-            CustomBaseItemType.Lightsaber,
-            BASE_ITEM_DIREMACE,
-            BASE_ITEM_DWARVENWARAXE,
-            BASE_ITEM_GREATAXE,
-            BASE_ITEM_GREATSWORD,
-            BASE_ITEM_HALBERD,
-            BASE_ITEM_HEAVYFLAIL,
-            BASE_ITEM_MORNINGSTAR,
-            BASE_ITEM_QUARTERSTAFF,
-            BASE_ITEM_SCYTHE,
-            BASE_ITEM_TRIDENT,
-            BASE_ITEM_WARHAMMER,
-            BASE_ITEM_DOUBLEAXE,
-            BASE_ITEM_TWOBLADEDSWORD,
-            CustomBaseItemType.Saberstaff,
-            BASE_ITEM_BRACER,
-            BASE_ITEM_GLOVES
+            BaseItem.BastardSword,
+            BaseItem.BattleAxe,
+            BaseItem.Club,
+            BaseItem.Dagger,
+            BaseItem.HandAxe,
+            BaseItem.Kama,
+            BaseItem.Katana,
+            BaseItem.Kukri,
+            BaseItem.LightFlail,
+            BaseItem.LightHammer,
+            BaseItem.LightMace,
+            BaseItem.Longsword,
+            BaseItem.Rapier,
+            BaseItem.Scimitar,
+            BaseItem.ShortSpear,
+            BaseItem.ShortSword,
+            BaseItem.Sickle,
+            BaseItem.Whip,
+            BaseItem.Lightsaber,
+            BaseItem.DireMace,
+            BaseItem.DwarvenWarAxe,
+            BaseItem.GreatAxe,
+            BaseItem.GreatSword,
+            BaseItem.Halberd,
+            BaseItem.HeavyFlail,
+            BaseItem.MorningStar,
+            BaseItem.QuarterStaff,
+            BaseItem.Scythe,
+            BaseItem.Trident,
+            BaseItem.WarHammer,
+            BaseItem.DoubleAxe,
+            BaseItem.TwoBladedSword,
+            BaseItem.Saberstaff,
+            BaseItem.Bracer,
+            BaseItem.Gloves
 
         };
 
-        public static HashSet<int> RangedWeaponTypes = new HashSet<int>()
+        public static HashSet<BaseItem> RangedWeaponTypes = new HashSet<BaseItem>()
         {
-            BASE_ITEM_HEAVYCROSSBOW,
-            BASE_ITEM_LIGHTCROSSBOW,
-            BASE_ITEM_LONGBOW,
-            BASE_ITEM_SHORTBOW,
-            BASE_ITEM_ARROW,
-            BASE_ITEM_BOLT,
-            BASE_ITEM_GRENADE,
-            BASE_ITEM_SHURIKEN,
-            BASE_ITEM_SLING,
-            BASE_ITEM_THROWINGAXE,
-            BASE_ITEM_BULLET,
-            BASE_ITEM_DART
+            BaseItem.HeavyCrossbow,
+            BaseItem.LightCrossbow,
+            BaseItem.Longbow,
+            BaseItem.ShortBow,
+            BaseItem.Arrow,
+            BaseItem.Bolt,
+            BaseItem.Grenade,
+            BaseItem.Shuriken,
+            BaseItem.Sling,
+            BaseItem.ThrowingAxe,
+            BaseItem.Bullet,
+            BaseItem.Dart
         };
 
-        private static readonly Dictionary<int, SkillType> _skillTypeMappings = new Dictionary<int, SkillType>()
+        private static readonly Dictionary<BaseItem, SkillType> _skillTypeMappings = new Dictionary<BaseItem, SkillType>()
         {
             // One-Handed Skills
-            {BASE_ITEM_BASTARDSWORD, SkillType.OneHanded},
-            {BASE_ITEM_BATTLEAXE, SkillType.OneHanded},
-            {BASE_ITEM_CLUB, SkillType.OneHanded},
-            {BASE_ITEM_DAGGER, SkillType.OneHanded},
-            {BASE_ITEM_HANDAXE, SkillType.OneHanded},
-            {BASE_ITEM_KAMA, SkillType.OneHanded},
-            {BASE_ITEM_KATANA, SkillType.OneHanded},
-            {BASE_ITEM_KUKRI, SkillType.OneHanded},
-            {BASE_ITEM_LIGHTFLAIL, SkillType.OneHanded},
-            {BASE_ITEM_LIGHTHAMMER, SkillType.OneHanded},
-            {BASE_ITEM_LIGHTMACE, SkillType.OneHanded},
-            {BASE_ITEM_LONGSWORD, SkillType.OneHanded},
-            {BASE_ITEM_MORNINGSTAR, SkillType.OneHanded},
-            {BASE_ITEM_RAPIER, SkillType.OneHanded},
-            {BASE_ITEM_SCIMITAR, SkillType.OneHanded},
-            {BASE_ITEM_SHORTSWORD, SkillType.OneHanded},
-            {BASE_ITEM_SICKLE, SkillType.OneHanded},
-            {BASE_ITEM_WHIP, SkillType.OneHanded},
+            {BaseItem.BastardSword, SkillType.OneHanded},
+            {BaseItem.BattleAxe, SkillType.OneHanded},            
+            {BaseItem.Dagger, SkillType.OneHanded},
+            {BaseItem.HandAxe, SkillType.OneHanded},
+            {BaseItem.Kama, SkillType.OneHanded},
+            {BaseItem.Katana, SkillType.OneHanded},
+            {BaseItem.Kukri, SkillType.OneHanded},
+            {BaseItem.LightFlail, SkillType.OneHanded},
+            {BaseItem.LightHammer, SkillType.OneHanded},
+            {BaseItem.LightMace, SkillType.OneHanded},
+            {BaseItem.Longsword, SkillType.OneHanded},
+            {BaseItem.MorningStar, SkillType.OneHanded},
+            {BaseItem.Rapier, SkillType.OneHanded},
+            {BaseItem.Scimitar, SkillType.OneHanded},
+            {BaseItem.ShortSword, SkillType.OneHanded},
+            {BaseItem.Sickle, SkillType.OneHanded},
+            {BaseItem.Whip, SkillType.OneHanded},
             // Two-Handed Skills
-            {BASE_ITEM_DIREMACE, SkillType.TwoHanded}     ,
-            {BASE_ITEM_DWARVENWARAXE, SkillType.TwoHanded},
-            {BASE_ITEM_GREATAXE, SkillType.TwoHanded}     ,
-            {BASE_ITEM_GREATSWORD, SkillType.TwoHanded}   ,
-            {BASE_ITEM_HALBERD, SkillType.TwoHanded}      ,
-            {BASE_ITEM_HEAVYFLAIL, SkillType.TwoHanded}   ,
-            {BASE_ITEM_SCYTHE, SkillType.TwoHanded}       ,
-            {BASE_ITEM_TRIDENT, SkillType.TwoHanded}      ,
-            {BASE_ITEM_WARHAMMER, SkillType.TwoHanded}    ,
-            {BASE_ITEM_SHORTSPEAR, SkillType.TwoHanded}   ,
+            {BaseItem.DireMace, SkillType.TwoHanded}     ,
+            {BaseItem.DwarvenWarAxe, SkillType.TwoHanded},
+            {BaseItem.GreatAxe, SkillType.TwoHanded}     ,
+            {BaseItem.GreatSword, SkillType.TwoHanded}   ,
+            {BaseItem.Halberd, SkillType.TwoHanded}      ,
+            {BaseItem.HeavyFlail, SkillType.TwoHanded}   ,
+            {BaseItem.Scythe, SkillType.TwoHanded}       ,
+            {BaseItem.Trident, SkillType.TwoHanded}      ,
+            {BaseItem.WarHammer, SkillType.TwoHanded}    ,
+            {BaseItem.ShortSpear, SkillType.TwoHanded}   ,
             // Twin Blades Skills
-            {BASE_ITEM_TWOBLADEDSWORD, SkillType.TwinBlades },
-            {BASE_ITEM_DOUBLEAXE, SkillType.TwinBlades },
+            {BaseItem.TwoBladedSword, SkillType.TwinBlades },
+            {BaseItem.DoubleAxe, SkillType.TwinBlades },
             // Martial Arts Skills
-            {BASE_ITEM_BRACER, SkillType.MartialArts},
-            {BASE_ITEM_GLOVES, SkillType.MartialArts},
-            {BASE_ITEM_QUARTERSTAFF, SkillType.MartialArts},
-            {BASE_ITEM_HEAVYCROSSBOW, SkillType.Firearms},
-            {BASE_ITEM_LIGHTCROSSBOW, SkillType.Firearms},
+            {BaseItem.Club, SkillType.MartialArts},
+            {BaseItem.Bracer, SkillType.MartialArts},
+            {BaseItem.Gloves, SkillType.MartialArts},
+            {BaseItem.QuarterStaff, SkillType.MartialArts},
             // Firearms Skills
-            {BASE_ITEM_LONGBOW, SkillType.Firearms},
-            {BASE_ITEM_SHORTBOW, SkillType.Firearms},
-            {BASE_ITEM_ARROW, SkillType.Firearms},
-            {BASE_ITEM_BOLT, SkillType.Firearms},
+            {BaseItem.HeavyCrossbow, SkillType.Firearms},
+            {BaseItem.LightCrossbow, SkillType.Firearms},
+            {BaseItem.Longbow, SkillType.Firearms},
+            {BaseItem.ShortBow, SkillType.Firearms},
+            {BaseItem.Arrow, SkillType.Firearms},
+            {BaseItem.Bolt, SkillType.Firearms},
+            {BaseItem.Bullet, SkillType.Firearms},
+            {BaseItem.Sling, SkillType.Firearms},
             // Throwing Skills
-            {BASE_ITEM_GRENADE, SkillType.Throwing},
-            {BASE_ITEM_SHURIKEN, SkillType.Throwing},
-            {BASE_ITEM_SLING, SkillType.Throwing},
-            {BASE_ITEM_THROWINGAXE, SkillType.Throwing},
-            {BASE_ITEM_BULLET, SkillType.Throwing},
-            {BASE_ITEM_DART, SkillType.Throwing},
+            {BaseItem.Grenade, SkillType.Throwing},
+            {BaseItem.Shuriken, SkillType.Throwing},            
+            {BaseItem.ThrowingAxe, SkillType.Throwing},
+            {BaseItem.Dart, SkillType.Throwing},
             // Shield Skills
-            {BASE_ITEM_SMALLSHIELD, SkillType.Shields },
-            {BASE_ITEM_LARGESHIELD, SkillType.Shields },
-            {BASE_ITEM_TOWERSHIELD, SkillType.Shields },
+            {BaseItem.SmallShield, SkillType.Shields },
+            {BaseItem.LargeShield, SkillType.Shields },
+            {BaseItem.TowerShield, SkillType.Shields },
             // Lightsabers
-            {CustomBaseItemType.Lightsaber, SkillType.Lightsaber},
-            {CustomBaseItemType.Saberstaff, SkillType.Lightsaber}
+            {BaseItem.Lightsaber, SkillType.Lightsaber},
+            {BaseItem.Saberstaff, SkillType.Lightsaber}
         };
 
         public static SkillType GetSkillTypeForItem(NWItem item)
         {
             using (new Profiler("ItemService::GetSkillTypeForItem"))
             {
-                int type = item.BaseItemType;
+                var type = item.BaseItemType;
 
                 // Check for explicit override.
                 if (item.AssociatedSkillType > 0) return item.AssociatedSkillType;
@@ -830,7 +851,7 @@ namespace SWLOR.Game.Server.Service
                 else if (item.CustomItemType == CustomItemType.ForceArmor) return SkillType.ForceArmor;
 
                 // Training lightsabers are katana weapons with special local variables.
-                if (item.GetLocalInt("LIGHTSABER") == TRUE)
+                if (GetLocalBool(item, "LIGHTSABER") == true)
                 {
                     return SkillType.Lightsaber;
                 }
@@ -845,7 +866,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnHitCastSpell()
         {
-            NWObject target = NWGameObject.OBJECT_SELF;
+            NWObject target = _.OBJECT_SELF;
             if (!target.IsValid) return;
 
             NWObject oSpellOrigin = (GetSpellCastItem());
@@ -860,12 +881,12 @@ namespace SWLOR.Game.Server.Service
 
         public static bool CanHandleChat(NWObject sender)
         {
-            return sender.GetLocalInt("ITEM_RENAMING_LISTENING") == TRUE;
+            return GetLocalBool(sender, "ITEM_RENAMING_LISTENING") == true;
         }
 
         private static void OnModuleNWNXChat()
         {
-            NWPlayer player = NWNXChat.GetSender().Object;
+            NWPlayer player = NWNXChat.GetSender();
 
             if (!CanHandleChat(player)) return;
             string message = NWNXChat.GetMessage();

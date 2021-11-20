@@ -2,11 +2,12 @@
 
 using SWLOR.Game.Server.Data.Contracts;
 using System;
+using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[Player]")]
+    [Table("Player")]
     public class Player : IEntity
     {
         public Player()
@@ -65,6 +66,7 @@ namespace SWLOR.Game.Server.Data.Entity
         public SpecializationType SpecializationID { get; set; }
         public int? ActiveConcentrationPerkID { get; set; }
         public int ActiveConcentrationTier { get; set; }
+        public bool ModeDualPistol { get; set; }
 
         public IEntity Clone()
         {
@@ -118,7 +120,8 @@ namespace SWLOR.Game.Server.Data.Entity
                 RoleplayXP = RoleplayXP,
                 SpecializationID = SpecializationID,
                 ActiveConcentrationPerkID = ActiveConcentrationPerkID,
-                ActiveConcentrationTier = ActiveConcentrationTier
+                ActiveConcentrationTier = ActiveConcentrationTier,
+                ModeDualPistol = ModeDualPistol
             };
         }
     }

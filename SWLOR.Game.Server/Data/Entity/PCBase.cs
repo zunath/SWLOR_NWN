@@ -1,10 +1,11 @@
 
 using System;
+using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCBase]")]
+    [Table("PCBase")]
     public class PCBase: IEntity
     {
         public PCBase()
@@ -31,7 +32,10 @@ namespace SWLOR.Game.Server.Data.Entity
         public int? BuildingStyleID { get; set; }
         public string ShipLocation { get; set; }
         public int? Starcharts { get; set; }
-
+        public int TileMainLight1Color { get; set; }
+        public int TileMainLight2Color { get; set; }
+        public int TileSourceLight1Color { get; set; }
+        public int TileSourceLight2Color { get; set; }
         public IEntity Clone()
         {
             return new PCBase
@@ -52,7 +56,11 @@ namespace SWLOR.Game.Server.Data.Entity
                 CustomName = CustomName,
                 BuildingStyleID = BuildingStyleID,
                 ShipLocation = ShipLocation,
-                Starcharts = Starcharts
+                Starcharts = Starcharts,
+                TileMainLight1Color = TileMainLight1Color,
+                TileMainLight2Color = TileMainLight2Color,
+                TileSourceLight1Color = TileSourceLight1Color,
+                TileSourceLight2Color = TileSourceLight2Color
             };
         }
     }

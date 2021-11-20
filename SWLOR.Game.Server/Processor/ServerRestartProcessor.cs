@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Linq;
-using NWN;
-using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.Processor.Contracts;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
@@ -71,7 +69,7 @@ namespace SWLOR.Game.Server.Processor
 
                     foreach (var player in NWModule.Get().Players)
                     {
-                        _.BootPC(player, "Server is automatically rebooting. This is a temporary solution until we can fix performance problems. Thank you for your patience and understanding.");
+                        _.BootPC(player, "Server is automatically rebooting. Please reconnect shortly.");
                     }
 
                     NWNXAdmin.ShutdownServer();

@@ -1,9 +1,8 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
-
-using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.OneHanded
 {
@@ -14,7 +13,7 @@ namespace SWLOR.Game.Server.Perk.OneHanded
         public string CanCastSpell(NWCreature oPC, NWObject oTarget, int spellTier)
         {
             NWItem weapon = oPC.RightHand;
-            if (weapon.CustomItemType != CustomItemType.Baton)
+            if (weapon.CustomItemType != CustomItemType.Baton && weapon.BaseItemType != NWN.Enum.Item.BaseItem.Club)
                 return "You must be equipped with a baton weapon to use that ability.";
 
             return string.Empty;
@@ -74,8 +73,8 @@ namespace SWLOR.Game.Server.Perk.OneHanded
                 default: return;
             }
 
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, _.EffectKnockdown(), target.Object, length);
-            _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectDamage(damage, DAMAGE_TYPE_BLUDGEONING), target);
+            _.ApplyEffectToObject(DurationType.Temporary, AbilityService.EffectKnockdown(target, length), target.Object, length);
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, DamageType.Bludgeoning), target);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

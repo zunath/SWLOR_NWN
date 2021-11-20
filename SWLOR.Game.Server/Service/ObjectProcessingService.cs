@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Processor;
-using SWLOR.Game.Server.Processor.Contracts;
-using SWLOR.Game.Server.SpawnRule.Contracts;
-using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -28,7 +21,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleLoad()
         {
-            Events.MainLoopTick += Events_MainLoopTick;
+            Entrypoints.MainLoopTick += (sender, frame) => Events_MainLoopTick(frame);
         }
         
         private static void Events_MainLoopTick(ulong frame)

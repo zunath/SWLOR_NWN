@@ -1,7 +1,4 @@
-﻿using System;
-using NWN;
-using static NWN._;
-using SWLOR.Game.Server.Data.Entity;
+﻿using static SWLOR.Game.Server.NWN._;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -78,6 +75,10 @@ namespace SWLOR.Game.Server.Conversation
                 message += " " + ColorTokenService.Green("Maybe you should answer it.");
             }            
             SendMessageToPC(receiver, message);
+            if (HoloComService.GetCallAttempt(sender) % 5 == 0)
+            {
+                FloatingTextStringOnCreature(message, receiver);
+            }
 
             if (HoloComService.GetCallAttempt(sender) <= 15)
             {

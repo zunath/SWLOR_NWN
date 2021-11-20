@@ -1,24 +1,24 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.GameObject
 {
     public class NWPlaceable : NWObject
     {
-        public NWPlaceable(NWGameObject nwnObject) 
+        public NWPlaceable(uint nwnObject) 
             : base(nwnObject)
         {
         }
 
         public virtual bool IsUseable
         {
-            get => _.GetUseableFlag(Object) == 1;
-            set => _.SetUseableFlag(Object, value ? 1 : 0);
+            get => _.GetUseableFlag(Object);
+            set => _.SetUseableFlag(Object, value);
         }
 
         public virtual bool IsLocked
         {
-            get => _.GetLocked(Object) == 1;
-            set => _.SetLocked(Object, value ? 1 : 0);
+            get => _.GetLocked(Object);
+            set => _.SetLocked(Object, value);
         }
 
         //
@@ -48,12 +48,12 @@ namespace SWLOR.Game.Server.GameObject
             return Object.GetHashCode();
         }
 
-        public static implicit operator NWGameObject(NWPlaceable o)
+        public static implicit operator uint(NWPlaceable o)
         {
             return o.Object;
         }
 
-        public static implicit operator NWPlaceable(NWGameObject o)
+        public static implicit operator NWPlaceable(uint o)
         {
             return new NWPlaceable(o);
         }

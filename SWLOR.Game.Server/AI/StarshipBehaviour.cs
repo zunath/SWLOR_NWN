@@ -1,10 +1,7 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
-using NWN;
-using SWLOR.Game.Server.NWNX;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
-
-using static NWN._;
 
 namespace SWLOR.Game.Server.AI
 {
@@ -25,13 +22,13 @@ namespace SWLOR.Game.Server.AI
         public override void OnPerception(NWCreature self)
         {
             base.OnPerception(self);
-            SpaceService.OnPerception(NWGameObject.OBJECT_SELF, _.GetLastPerceived());
+            SpaceService.OnPerception(_.OBJECT_SELF, _.GetLastPerceived());
         }
 
         public override void OnHeartbeat(NWCreature self)
         {
             base.OnHeartbeat(self);
-            SpaceService.OnHeartbeat(NWGameObject.OBJECT_SELF);
+            SpaceService.OnHeartbeat(_.OBJECT_SELF);
         }
     }
 }

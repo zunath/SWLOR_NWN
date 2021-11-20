@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 9
+    "value": 40
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 2.0
+    "value": 12.0
   },
   "ClassList": {
     "type": "list",
@@ -99,22 +99,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 4
+          "value": 56
         },
         "ClassLevel": {
           "type": "short",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 2,
-        "Class": {
-          "type": "int",
-          "value": 52
-        },
-        "ClassLevel": {
-          "type": "short",
-          "value": 1
+          "value": 10
         }
       }
     ]
@@ -141,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 16
+    "value": 26
   },
   "Conversation": {
     "type": "resref",
@@ -153,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 15
+    "value": 150
   },
   "DecayTime": {
     "type": "dword",
@@ -169,7 +158,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 13
+    "value": 50
   },
   "Disarmable": {
     "type": "byte",
@@ -182,14 +171,14 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "republic_outfit"
+          "value": "republictrooper"
         }
       },
       {
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "blaster_1"
+          "value": "f_trooperblaster"
         }
       }
     ]
@@ -307,11 +296,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 15
+    "value": 150
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 40
   },
   "Interruptable": {
     "type": "byte",
@@ -319,7 +308,7 @@
   },
   "IsImmortal": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "IsPC": {
     "type": "byte",
@@ -341,7 +330,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 21
+    "value": 230
   },
   "NaturalAC": {
     "type": "byte",
@@ -353,7 +342,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 44
+    "value": 114
   },
   "PerceptionRange": {
     "type": "byte",
@@ -634,7 +623,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 345
+    "value": 188
   },
   "SpecAbilityList": {
     "type": "list",
@@ -642,7 +631,7 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 4
+    "value": 147
   },
   "Str": {
     "type": "byte",
@@ -682,6 +671,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 40
   }
 }

@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
-using NWN;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
@@ -32,7 +33,7 @@ namespace SWLOR.Game.Server.Item
             return false;
         }
 
-        public int AnimationID()
+        public Animation AnimationID()
         {
             return 0;
         }

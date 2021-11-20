@@ -2,7 +2,7 @@
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ValueObject;
 
 
@@ -10,11 +10,11 @@ using SWLOR.Game.Server.ValueObject;
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class mod_on_leave
+    public class mod_on_leave
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        private static void Main()
+        public static void Main()
         {
             NWPlayer pc = (_.GetExitingObject());
 

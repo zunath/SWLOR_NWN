@@ -1,13 +1,13 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
-    internal class CharacterManagement: ConversationBase
+    public class CharacterManagement: ConversationBase
     {
         private class Model
         {
@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Conversation
                 "Character Management & Information Page",
                 "Disable PVP Protection",
                 "Toggle Helmet Display",
+                "Toggle Dual Blaster Pistol Mode",
                 "Change Character Description"
             );
 
@@ -48,7 +49,10 @@ namespace SWLOR.Game.Server.Conversation
                         case 2: // Toggle Helmet Display
                             HelmetToggleService.ToggleHelmetDisplay(GetPC());
                             break;
-                        case 3: // Change Character Description
+                        case 3: // Toggle Dual Pistol Display
+                            DualPistolService.ToggleDualPistolMode(GetPC());
+                            break;
+                        case 4: // Change Character Description
                             SwitchConversation("ChangeDescription");
                             break;
                     }
@@ -79,13 +83,13 @@ namespace SWLOR.Game.Server.Conversation
             {
                 PVPSanctuaryService.SetPlayerPVPSanctuaryOverride(GetPC(), true);
                 dto.IsConfirmingDisableSanctuary = false;
-                _.FloatingTextStringOnCreature(ColorTokenService.Red("PVP protection has been disabled. You may now attack and be attacked by other players."), GetPC().Object, _.FALSE);
+                _.FloatingTextStringOnCreature(ColorTokenService.Red("PVP protection has been disabled. You may now attack and be attacked by other players."), GetPC().Object, false);
                 SetResponseText("MainPage", 1, "Disable PVP Protection");
             }
             else
             {
                 dto.IsConfirmingDisableSanctuary = true;
-                _.FloatingTextStringOnCreature(ColorTokenService.Red("WARNING: PVP protection prevents other players from attacking you. If you disable this, players will immediately be able to attack you anywhere. Click again to confirm."), GetPC().Object, _.FALSE);
+                _.FloatingTextStringOnCreature(ColorTokenService.Red("WARNING: PVP protection prevents other players from attacking you. If you disable this, players will immediately be able to attack you anywhere. Click again to confirm."), GetPC().Object, false);
                 SetResponseText("MainPage", 1, "CONFIRM DISABLE PVP PROTECTION");
             }
 

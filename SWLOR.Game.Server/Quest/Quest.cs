@@ -11,7 +11,7 @@ using SWLOR.Game.Server.Quest.Objective;
 using SWLOR.Game.Server.Quest.Prerequisite;
 using SWLOR.Game.Server.Quest.Reward;
 using SWLOR.Game.Server.Service;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Quest
 {
@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Quest
             }
 
             // Add the journal entry to the player.
-            AddJournalQuestEntry(JournalTag, 1, player.Object, FALSE);
+            AddJournalQuestEntry(JournalTag, 1, player.Object, false);
 
             // Notify them that they've accepted a quest.
             player.SendMessage("Quest '" + Name + "' accepted. Refer to your journal for more information on this quest.");
@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Quest
                 var nextState = GetState(questStatus.QuestState);
                 
                 // Update the player's journal
-                AddJournalQuestEntry(JournalTag, questStatus.QuestState, player, FALSE);
+                AddJournalQuestEntry(JournalTag, questStatus.QuestState, player, false);
 
                 // Notify the player they've progressed.
                 player.SendMessage("Objective for quest '" + Name + "' complete! Check your journal for information on the next objective.");
@@ -272,7 +272,7 @@ namespace SWLOR.Game.Server.Quest
             _onComplete?.Invoke(player, questSource);
             
             player.SendMessage("Quest '" + Name + "' complete!");
-            RemoveJournalQuestEntry(JournalTag, player, FALSE);
+            RemoveJournalQuestEntry(JournalTag, player, false);
             MessageHub.Instance.Publish(new OnQuestCompleted(player, QuestID));
         }
 

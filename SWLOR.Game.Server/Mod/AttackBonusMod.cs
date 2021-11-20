@@ -3,8 +3,9 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Mod.Contracts;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.Service;
 
 
@@ -50,8 +51,8 @@ namespace SWLOR.Game.Server.Mod
             int currentAB = 0;
             foreach (var ip in item.ItemProperties)
             {
-                int type = _.GetItemPropertyType(ip);
-                if (type == _.ITEM_PROPERTY_ATTACK_BONUS)
+                var type = _.GetItemPropertyType(ip);
+                if (type == ItemPropertyType.AttackBonus)
                 {
                     int bonus =  _.GetItemPropertyCostTableValue(ip);
                     currentAB += bonus;

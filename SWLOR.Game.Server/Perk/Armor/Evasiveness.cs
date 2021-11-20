@@ -1,7 +1,9 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 
 
 namespace SWLOR.Game.Server.Perk.Armor
@@ -71,13 +73,13 @@ namespace SWLOR.Game.Server.Perk.Armor
             }
 
             Effect effect = _.EffectConcealment(concealment);
-            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, creature.Object, length);
+            _.ApplyEffectToObject(DurationType.Temporary, effect, creature.Object, length);
 
-            effect = _.EffectVisualEffect(_.VFX_DUR_AURA_CYAN);
-            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, creature.Object, length);
+            effect = _.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Cyan);
+            _.ApplyEffectToObject(DurationType.Temporary, effect, creature.Object, length);
 
-            effect = _.EffectVisualEffect(_.VFX_IMP_AC_BONUS);
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, effect, creature.Object);
+            effect = _.EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus);
+            _.ApplyEffectToObject(DurationType.Instant, effect, creature.Object);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

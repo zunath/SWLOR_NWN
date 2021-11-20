@@ -4,20 +4,21 @@ using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
+using static SWLOR.Game.Server.NWN._;
 
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class mod_on_enter
+    public class mod_on_enter
 #pragma warning restore IDE1006 // Naming Styles
     {
         // ReSharper disable once UnusedMember.Local
-        private static void Main()
+        public static void Main()
         {
             // The order of the following procedures matters.
-            NWPlayer player = _.GetEnteringObject();
+            NWPlayer player = GetEnteringObject();
 
             using (new Profiler(nameof(mod_on_enter) + ":AddDMToCache"))
             {
@@ -30,7 +31,7 @@ namespace NWN.Scripts
             using (new Profiler(nameof(mod_on_enter) + ":BiowareDefault"))
             {
                 player.DeleteLocalInt("IS_CUSTOMIZING_ITEM");
-                _.ExecuteScript("dmfi_onclienter ", NWGameObject.OBJECT_SELF); // DMFI also calls "x3_mod_def_enter"
+                ExecuteScript("dmfi_onclienter ", OBJECT_SELF); // DMFI also calls "x3_mod_def_enter"
             }
 
             using (new Profiler(nameof(mod_on_enter) + ":PlayerValidation"))
@@ -54,7 +55,7 @@ namespace NWN.Scripts
             }
             
             MessageHub.Instance.Publish(new OnModuleEnter());
-            player.SetLocalInt("LOGGED_IN_ONCE", _.TRUE);
+            SetLocalBool(player, "LOGGED_IN_ONCE", true);
         }
     }
 }

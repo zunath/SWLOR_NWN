@@ -4,17 +4,18 @@ using System.Linq;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Area;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
-using ComponentType = SWLOR.Game.Server.Data.Entity.ComponentType;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -27,7 +28,7 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnAreaEnter>(message => OnAreaEnter());
             MessageHub.Instance.Subscribe<OnUseCraftingFeat>(messsage =>
             {
-                NWPlayer player = NWGameObject.OBJECT_SELF;
+                NWPlayer player = _.OBJECT_SELF;
                 DialogService.StartConversation(player, player, "ModifyItemAppearance");
             });
             MessageHub.Instance.Subscribe<OnModuleNWNXChat>(message => OnModuleNWNXChat());
@@ -207,15 +208,15 @@ namespace SWLOR.Game.Server.Service
             oPC.AssignCommand(() =>
             {
                 _.ClearAllActions();
-                _.ActionPlayAnimation(ANIMATION_LOOPING_GET_MID, 1.0f, modifiedCraftDelay);
+                _.ActionPlayAnimation(Animation.LoopingGetMid, 1.0f, modifiedCraftDelay);
             });
             _.DelayCommand(1.0f * (modifiedCraftDelay / 2.0f), () =>
             {
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectVisualEffect(VFX_COM_BLOOD_SPARK_MEDIUM), device.Object);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Spark_Medium), device.Object);
             });
-            Effect immobilize = _.EffectCutsceneImmobilize();
+            var immobilize = _.EffectCutsceneImmobilize();
             immobilize = _.TagEffect(immobilize, "CRAFTING_IMMOBILIZATION");
-            _.ApplyEffectToObject(DURATION_TYPE_PERMANENT, immobilize, oPC.Object);
+            _.ApplyEffectToObject(DurationType.Permanent, immobilize, oPC.Object);
 
             NWNXPlayer.StartGuiTimingBar(oPC, modifiedCraftDelay, "");
 
@@ -229,17 +230,7 @@ namespace SWLOR.Game.Server.Service
             int atmosphere = CalculateAreaAtmosphereBonus(oPC.Area);
             PerkType perkType;
             float adjustedSpeed = 1.0f;
-            SkillType skillType = (SkillType)skillID;
-
-            // Identify which perk to use for this skill.
-            if (skillType == SkillType.Weaponsmith) perkType = PerkType.SpeedyWeaponsmith;
-            else if (skillType == SkillType.Armorsmith) perkType = PerkType.SpeedyArmorsmith;
-            else if (skillType == SkillType.Cooking) perkType = PerkType.SpeedyCooking;
-            else if (skillType == SkillType.Engineering) perkType = PerkType.SpeedyEngineering;
-            else if (skillType == SkillType.Fabrication) perkType = PerkType.SpeedyFabrication;
-            else if (skillType == SkillType.Medicine) perkType = PerkType.SpeedyMedicine;
-            else if (skillType == SkillType.Harvesting) perkType = PerkType.SpeedyReassembly;
-            else return BaseCraftDelay;
+            perkType = PerkType.SpeedyCrafting;
 
             int perkLevel = PerkService.GetCreaturePerkLevel(oPC, perkType);
 
@@ -509,25 +500,25 @@ namespace SWLOR.Game.Server.Service
             foreach (var item in model.MainComponents)
             {
                 if (!destroyComponents)
-                    _.CopyItem(item.Object, player.Object, TRUE);
+                    _.CopyItem(item.Object, player.Object, true);
                 item.Destroy();
             }
             foreach (var item in model.SecondaryComponents)
             {
                 if (!destroyComponents)
-                    _.CopyItem(item.Object, player.Object, TRUE);
+                    _.CopyItem(item.Object, player.Object, true);
                 item.Destroy();
             }
             foreach (var item in model.TertiaryComponents)
             {
                 if (!destroyComponents)
-                    _.CopyItem(item.Object, player.Object, TRUE);
+                    _.CopyItem(item.Object, player.Object, true);
                 item.Destroy();
             }
             foreach (var item in model.EnhancementComponents)
             {
                 if (!destroyComponents)
-                    _.CopyItem(item.Object, player.Object, TRUE);
+                    _.CopyItem(item.Object, player.Object, true);
                 item.Destroy();
             }
 
@@ -543,12 +534,12 @@ namespace SWLOR.Game.Server.Service
 
         public static bool CanHandleChat(NWObject sender)
         {
-            return sender.GetLocalInt("CRAFT_RENAMING_ITEM") == TRUE;
+            return GetLocalBool(sender, "CRAFT_RENAMING_ITEM") == true;
         }
 
         private static void OnModuleNWNXChat()
         {
-            NWPlayer pc = NWNXChat.GetSender().Object;
+            NWPlayer pc = NWNXChat.GetSender();
             string newName = NWNXChat.GetMessage();
 
             if (!CanHandleChat(pc))
@@ -581,14 +572,14 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleUseFeat()
         {
-            NWPlayer pc = NWGameObject.OBJECT_SELF;
-            int featID = NWNXEvents.OnFeatUsed_GetFeatID();
+            NWPlayer pc = _.OBJECT_SELF;
+            int featID = Convert.ToInt32(NWNXEvents.GetEventData("FEAT_ID"));
 
-            if (featID != (int)CustomFeatType.RenameCraftedItem) return;
+            if (featID != (int)Feat.RenameCraftedItem) return;
             pc.ClearAllActions();
 
-            bool isSetting = pc.GetLocalInt("CRAFT_RENAMING_ITEM") == TRUE;
-            NWItem renameItem = NWNXEvents.OnFeatUsed_GetTarget().Object;
+            bool isSetting = GetLocalBool(pc, "CRAFT_RENAMING_ITEM") == true;
+            NWItem renameItem = _.StringToObject(NWNXEvents.GetEventData("TARGET_OBJECT_ID"));
 
             if (isSetting)
             {
@@ -605,7 +596,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            pc.SetLocalInt("CRAFT_RENAMING_ITEM", TRUE);
+            SetLocalBool(pc, "CRAFT_RENAMING_ITEM", true);
             pc.SetLocalObject("CRAFT_RENAMING_ITEM_OBJECT", renameItem);
             pc.SendMessage("Please enter in a name for this item. Length should be between 3 and 64 characters. Use this feat again to cancel this procedure.");
         }
@@ -689,7 +680,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnAreaEnter()
         {
-            NWArea area = NWGameObject.OBJECT_SELF;
+            NWArea area = _.OBJECT_SELF;
             string bonuses = GetAreaAtmosphereBonusText(area);
 
             if (string.IsNullOrWhiteSpace(bonuses)) return;

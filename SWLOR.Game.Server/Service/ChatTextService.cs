@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 using System.Text;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
+using ChatChannel = SWLOR.Game.Server.NWNX.ChatChannel;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleNWNXChat()
         {
-            ChatChannelType channel = (ChatChannelType)NWNXChat.GetChannel();
+            ChatChannel channel = (ChatChannel)NWNXChat.GetChannel();
 
             // So we're going to play with a couple of channels here.
 
@@ -47,12 +48,12 @@ namespace SWLOR.Game.Server.Service
             // - PlayerDM echoes back the message received to the sender.
 
             bool inCharacterChat =
-                channel == ChatChannelType.PlayerTalk ||
-                channel == ChatChannelType.PlayerWhisper ||
-                channel == ChatChannelType.PlayerParty ||
-                channel == ChatChannelType.PlayerShout;
+                channel == ChatChannel.PlayerTalk ||
+                channel == ChatChannel.PlayerWhisper ||
+                channel == ChatChannel.PlayerParty ||
+                channel == ChatChannel.PlayerShout;
 
-            bool messageToDm = channel == ChatChannelType.PlayerDM;
+            bool messageToDm = channel == ChatChannel.PlayerDM;
 
             if (!inCharacterChat && !messageToDm)
             {
@@ -80,10 +81,10 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (channel == ChatChannelType.PlayerDM)
+            if (channel == ChatChannel.PlayerDM)
             {
                 // Simply echo the message back to the player.
-                NWNXChat.SendMessage((int)ChatChannelType.ServerMessage, "(Sent to DM) " + message, sender, sender);
+                NWNXChat.SendMessage((int)ChatChannel.ServerMessage, "(Sent to DM) " + message, sender, sender);
                 return;
             }
 
@@ -91,8 +92,8 @@ namespace SWLOR.Game.Server.Service
             NWNXChat.SkipMessage();
 
             // If this is a shout message, and the holonet is disabled, we disallow it.
-            if (channel == ChatChannelType.PlayerShout && sender.IsPC && 
-                sender.GetLocalInt("DISPLAY_HOLONET") == FALSE)
+            if (channel == ChatChannel.PlayerShout && sender.IsPC && 
+                GetLocalBool(sender, "DISPLAY_HOLONET") == false)
             {
                 NWPlayer player = sender.Object;
                 player.SendMessage("You have disabled the holonet and cannot send this message.");
@@ -117,7 +118,7 @@ namespace SWLOR.Game.Server.Service
 
                 chatComponents = new List<ChatComponent> {component};
 
-                if (channel == ChatChannelType.PlayerShout)
+                if (channel == ChatChannel.PlayerShout)
                 {
                     _.SendMessageToPC(sender, "Out-of-character messages cannot be sent on the Holonet.");
                     return;
@@ -156,13 +157,13 @@ namespace SWLOR.Game.Server.Service
             List<NWObject> recipients = new List<NWObject> {sender};
 
             // This is a server-wide holonet message (that receivers can toggle on or off).
-            if (channel == ChatChannelType.PlayerShout)
+            if (channel == ChatChannel.PlayerShout)
             {
-                recipients.AddRange(NWModule.Get().Players.Where(player => player.GetLocalInt("DISPLAY_HOLONET") == TRUE));
+                recipients.AddRange(NWModule.Get().Players.Where(player => GetLocalBool(player, "DISPLAY_HOLONET") == true));
                 recipients.AddRange(AppCache.ConnectedDMs);
             }
             // This is the normal party chat, plus everyone within 20 units of the sender.
-            else if (channel == ChatChannelType.PlayerParty)
+            else if (channel == ChatChannel.PlayerParty)
             {
                 // Can an NPC use the playerparty channel? I feel this is safe ...
                 NWPlayer player = sender.Object;
@@ -173,13 +174,13 @@ namespace SWLOR.Game.Server.Service
                 distanceCheck = 20.0f;
             }
             // Normal talk - 20 units.
-            else if (channel == ChatChannelType.PlayerTalk)
+            else if (channel == ChatChannel.PlayerTalk)
             {
                 needsAreaCheck = true;
                 distanceCheck = 20.0f;
             }
             // Whisper - 4 units.
-            else if (channel == ChatChannelType.PlayerWhisper)
+            else if (channel == ChatChannel.PlayerWhisper)
             {
                 needsAreaCheck = true;
                 distanceCheck = 4.0f;
@@ -200,11 +201,11 @@ namespace SWLOR.Game.Server.Service
 
                 StringBuilder finalMessage = new StringBuilder();
 
-                if (channel == ChatChannelType.PlayerShout)
+                if (channel == ChatChannel.PlayerShout)
                 {
                     finalMessage.Append("[Holonet] ");
                 }
-                else if (channel == ChatChannelType.PlayerParty)
+                else if (channel == ChatChannel.PlayerParty)
                 {
                     finalMessage.Append("[Comms] ");
 
@@ -241,7 +242,7 @@ namespace SWLOR.Game.Server.Service
 
                 var originalSender = sender;
                 // temp set sender to hologram owner for holocoms
-                if (GetIsObjectValid(HoloComService.GetHoloGramOwner(sender)) == TRUE)
+                if (GetIsObjectValid(HoloComService.GetHoloGramOwner(sender)) == true)
                 {
                     sender = HoloComService.GetHoloGramOwner(sender);
                 }
@@ -250,8 +251,8 @@ namespace SWLOR.Game.Server.Service
                 
                 // Wookiees cannot speak any other language (but they can understand them).
                 // Swap their language if they attempt to speak in any other language.
-                CustomRaceType race = (CustomRaceType) _.GetRacialType(sender);                
-                if (race == CustomRaceType.Wookiee && language != SkillType.Shyriiwook)
+                RacialType race = (RacialType) _.GetRacialType(sender);                
+                if (race == RacialType.Wookiee && language != SkillType.Shyriiwook)
                 {
                     LanguageService.SetActiveLanguage(sender, SkillType.Shyriiwook);
                     language = SkillType.Shyriiwook;
@@ -296,11 +297,11 @@ namespace SWLOR.Game.Server.Service
                 //   We could use the native channels for these but the [shout] or [party chat] labels look silly.
                 // - Talk and whisper are sent as-is.
 
-                ChatChannelType finalChannel = channel;
+                ChatChannel finalChannel = channel;
 
-                if (channel == ChatChannelType.PlayerShout || channel == ChatChannelType.PlayerParty)
+                if (channel == ChatChannel.PlayerShout || channel == ChatChannel.PlayerParty)
                 {
-                    finalChannel = ChatChannelType.DMTalk;
+                    finalChannel = ChatChannel.DMTalk;
                 }
 
                 // There are a couple of colour overrides we want to use here.
@@ -309,11 +310,11 @@ namespace SWLOR.Game.Server.Service
 
                 string finalMessageColoured = finalMessage.ToString();
 
-                if (channel == ChatChannelType.PlayerShout)
+                if (channel == ChatChannel.PlayerShout)
                 {
                     finalMessageColoured = ColorTokenService.Custom(finalMessageColoured, 0, 180, 255);
                 }
-                else if (channel == ChatChannelType.PlayerParty)
+                else if (channel == ChatChannel.PlayerParty)
                 {
                     finalMessageColoured = ColorTokenService.Orange(finalMessageColoured);
                 }
@@ -333,7 +334,7 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer) return;
 
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
-            player.SetLocalInt("DISPLAY_HOLONET", dbPlayer.DisplayHolonet ? TRUE : FALSE);
+            SetLocalBool(player, "DISPLAY_HOLONET", dbPlayer.DisplayHolonet ? true : false);
         }
         
         private enum WorkingOnEmoteStyle

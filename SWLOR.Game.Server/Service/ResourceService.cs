@@ -1,9 +1,10 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
 using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.NWN.Enum.Item;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var ip in tempItem.ItemProperties)
             {
-                if (_.GetItemPropertyType(ip) == (int)CustomItemPropertyType.ComponentType)
+                if (_.GetItemPropertyType(ip) == ItemPropertyType.ComponentType)
                 {
                     typeID = _.GetItemPropertyCostTableValue(ip);
                     break;
@@ -152,7 +153,7 @@ namespace SWLOR.Game.Server.Service
             {
                 "compbon_charges1",
                 "compbon_charges2",
-                "compbon_charges3"
+                "compbon_charges3",
             };
 
             HashSet<string> lightPurpleIP = new HashSet<string>
@@ -177,7 +178,13 @@ namespace SWLOR.Game.Server.Service
                 "compbon_con3",
                 "compbon_wis3",
                 "compbon_int3",
-                "compbon_cha3"
+                "compbon_cha3",
+                "compbon_str4",      
+                "compbon_dex4",     
+                "compbon_con4",      
+                "compbon_wis4",       
+                "compbon_int4",     
+                "compbon_cha4"         
             };
 
             HashSet<string> yellowIP = new HashSet<string>
@@ -190,7 +197,8 @@ namespace SWLOR.Game.Server.Service
                 "compbon_snkatk2",
                 "compbon_enmdown3",
                 "compbon_enmup3",
-                "compbon_snkatk3"
+                "compbon_snkatk3",
+                "compbon_struct2"
             };
 
             HashSet<string> redIP = new HashSet<string>
@@ -247,12 +255,12 @@ namespace SWLOR.Game.Server.Service
                 //"compbon_cooking1",     // Cooking 1
                 "compbon_dmg1",         // Damage 1
                 "compbon_eng1",         // Engineering 1
-                "compbon_enmdown1",     // Enmity Down 1
+                //"compbon_enmdown1",     // Enmity Down 1
                 "compbon_harv1",        // Harvesting 1
                 "compbon_wpn1",         // Weaponsmith 1
                 "compbon_hp2",          // Hit Points 2
                 "compbon_fp2",          // Force Points 2
-                "compbon_enmup1",       // Enmity Up 1
+                //"compbon_enmup1",       // Enmity Up 1
                 "compbon_med1",         // Meditate 1
                 "compbon_faid1",        // Medicine 1
                 "compbon_fab1",         // Fabrication 1
@@ -264,68 +272,73 @@ namespace SWLOR.Game.Server.Service
             string[] highIP =
             {
                 "compbon_arm2",         // Armorsmith 2
+                "compbon_ac1",          // AC 1
                 "compbon_cspd2",        // Cooldown Recovery 2
                 "compbon_charges2",     // Charges 2
                 //"compbon_cooking2",     // Cooking 2
                 "compbon_dmg2",         // Damage 2
                 "compbon_eng2",         // Engineering 2
-                "compbon_enmdown2",     // Enmity Down 2
+                //"compbon_enmdown2",     // Enmity Down 2
                 "compbon_harv2",        // Harvesting 2
                 "compbon_wpn2",         // Weaponsmith 2
                 "compbon_hp4",          // Hit Points 4
                 "compbon_fp4",          // Force Points 4
-                "compbon_enmup2",       // Enmity Up 2
+                //"compbon_enmup2",       // Enmity Up 2
                 "compbon_luck1",        // Luck 1
                 "compbon_med2",         // Meditate 2
                 "compbon_faid2",        // Medicine 2
                 "compbon_hpregen1",     // HP Regen 1
                 "compbon_fpregen1",     // FP Regen 1
-                "compbon_snkatk1",      // Sneak Attack 1
+                //"compbon_snkatk1",      // Sneak Attack 1
                 "compbon_fab2",         // Fabrication 2
                 "compbon_scanup2",      // Scanning 2
                 "compbon_rest2",        // Rest 2
-                "compbon_str1",         // Strength 1
-                "compbon_dex1",         // Dexterity 1
-                "compbon_con1",         // Constitution 1
-                "compbon_wis1",         // Wisdom 1
-                "compbon_int1",         // Intelligence 1
-                "compbon_cha1",         // Charisma 1
+                "compbon_str2",         // Strength 1
+                "compbon_dex2",         // Dexterity 1
+                "compbon_con2",         // Constitution 1
+                "compbon_wis2",         // Wisdom 1
+                "compbon_int2",         // Intelligence 1
+                "compbon_cha2",         // Charisma 1
                 "compbon_ab2",          // Attack Bonus 2
-                "compbon_scavup1"       // Scavenging 1
+                "compbon_scavup1",       // Scavenging 1
+                "compbon_struct2"       //Structure Bonus 2
+
 
             };
 
             string[] veryHighIP =
             {
                 "compbon_arm3",         // Armorsmith 3
+                "compbon_ac2",          //AC 2
                 "compbon_cspd3",        // Cooldown Recovery 3
                 //"compbon_cooking3",     // Cooking 3
                 "compbon_charges3",     // Charges 3
                 "compbon_dmg3",         // Damage 3
                 "compbon_eng3",         // Engineering 3
-                "compbon_enmdown3",     // Enmity Down 3
+                //"compbon_enmdown3",     // Enmity Down 3
                 "compbon_harv3",        // Harvesting 3
                 "compbon_wpn3",         // Weaponsmith 3
                 "compbon_hp6",          // Hit Points 6
                 "compbon_fp6",          // Force Points 6
-                "compbon_enmup3",       // Enmity Up 3
+                //"compbon_enmup3",       // Enmity Up 3
                 "compbon_luck2",        // Luck 2
                 "compbon_med3",         // Meditate 3
                 "compbon_faid3",        // Medicine 3
                 "compbon_hpregen2",     // HP Regen 2
                 "compbon_fpregen2",     // FP Regen 2
-                "compbon_snkatk2",      // Sneak Attack 2
+                //"compbon_snkatk2",      // Sneak Attack 2
                 "compbon_fab3",         // Fabrication 3
                 "compbon_scanup3",      // Scanning 3
                 "compbon_rest3",        // Rest 3
-                "compbon_str2",         // Strength 2
-                "compbon_dex2",         // Dexterity 2
-                "compbon_con2",         // Constitution 2
-                "compbon_wis2",         // Wisdom 2
-                "compbon_int2",         // Intelligence 2
-                "compbon_cha2",         // Charisma 2
+                "compbon_str4",         // Strength 4
+                "compbon_dex4",         // Dexterity 4
+                "compbon_con4",         // Constitution 4
+                "compbon_wis4",         // Wisdom 4
+                "compbon_int4",         // Intelligence 4
+                "compbon_cha4",         // Charisma 4
                 "compbon_ab3",          // Attack Bonus 3
-                "compbon_scavup2"       // Scavenging 2
+                "compbon_scavup2",       // Scavenging 2
+                "compbon_struct2"       //Structure Bonus 2
             };
             
             string[] setToUse;

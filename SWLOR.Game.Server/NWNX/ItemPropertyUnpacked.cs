@@ -1,11 +1,10 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.NWNX
 {
     public class ItemPropertyUnpacked
     {
-        public int ItemPropertyID { get; set; }
         public int Property { get; set; }
         public int SubType { get; set; }
         public int CostTable { get; set; }
@@ -21,7 +20,7 @@ namespace SWLOR.Game.Server.NWNX
 
         public ItemPropertyUnpacked()
         {
-            Creator = new NWObject(NWGameObject.OBJECT_INVALID);
+            Creator = new NWObject(_.OBJECT_INVALID);
             Tag = string.Empty;
         }
     }

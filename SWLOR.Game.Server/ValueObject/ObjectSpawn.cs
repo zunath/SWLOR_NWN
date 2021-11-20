@@ -1,4 +1,4 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.AI;
 using SWLOR.Game.Server.GameObject;
 
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.ValueObject
         
         public ObjectSpawn(NWLocation location, bool isStaticSpawnPoint, string resref, float respawnTime = 120.0f)
         {
-            Spawn = new NWGameObject();
+            Spawn = _.OBJECT_INVALID;
             SpawnLocation = location;
             IsStaticSpawnPoint = isStaticSpawnPoint;
             RespawnTime = respawnTime;
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.ValueObject
         }
         public ObjectSpawn(NWLocation location, bool isStaticSpawnPoint, int spawnTableID, float respawnTime = 120.0f)
         {
-            Spawn = new NWGameObject();
+            Spawn = _.OBJECT_INVALID;
             SpawnLocation = location;
             IsStaticSpawnPoint = isStaticSpawnPoint;
             RespawnTime = respawnTime;

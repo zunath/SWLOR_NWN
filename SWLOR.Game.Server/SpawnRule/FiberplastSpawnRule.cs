@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 

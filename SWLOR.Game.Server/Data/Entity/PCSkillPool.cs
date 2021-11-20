@@ -1,9 +1,10 @@
 ﻿using System;
+using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCSkillPool]")]
+    [Table("PCSkillPool")]
     public class PCSkillPool: IEntity
     {
         public PCSkillPool()

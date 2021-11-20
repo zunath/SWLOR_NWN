@@ -1,7 +1,6 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
 
 
@@ -47,7 +46,7 @@ namespace SWLOR.Game.Server.Perk.Throwing
 
         public void OnRemoved(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, _.FEAT_ZEN_ARCHERY);
+            NWNXCreature.RemoveFeat(creature, Feat.ZenArchery);
         }
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
@@ -75,11 +74,11 @@ namespace SWLOR.Game.Server.Perk.Throwing
             if (Equals(equipped, oItem) ||
                 equipped.CustomItemType != CustomItemType.Throwing)
             {
-                NWNXCreature.RemoveFeat(creature, _.FEAT_ZEN_ARCHERY);
+                NWNXCreature.RemoveFeat(creature, Feat.ZenArchery);
                 return;
             }
 
-            NWNXCreature.AddFeat(creature, _.FEAT_ZEN_ARCHERY);
+            NWNXCreature.AddFeat(creature, Feat.ZenArchery);
         }
 
         public bool IsHostile()

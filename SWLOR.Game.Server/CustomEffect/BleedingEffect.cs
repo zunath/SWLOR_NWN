@@ -2,8 +2,9 @@
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.GameObject;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.CustomEffect
@@ -23,7 +24,7 @@ namespace SWLOR.Game.Server.CustomEffect
             if (currentTick % 2 == 0) return;
 
             Location location = oTarget.Location;
-            NWPlaceable oBlood = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, "plc_bloodstain", location));
+            NWPlaceable oBlood = (_.CreateObject(ObjectType.Placeable, "plc_bloodstain", location));
             oBlood.Destroy(48.0f);
 
             int amount = 1;
@@ -38,7 +39,7 @@ namespace SWLOR.Game.Server.CustomEffect
             oCaster.AssignCommand(() =>
             {
                 Effect damage = _.EffectDamage(amount);
-                _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, damage, oTarget.Object);
+                _.ApplyEffectToObject(DurationType.Instant, damage, oTarget.Object);
             });
         }
 

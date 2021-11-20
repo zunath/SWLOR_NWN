@@ -1,24 +1,24 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using NWN;
-using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.NWNX;
+using ChatChannel = SWLOR.Game.Server.NWNX.ChatChannel;
+
 namespace SWLOR.Game.Server.Service
 {
     public static class RoleplayService
     {
-        private static readonly ChatChannelType[] ValidChannels =
+        private static readonly ChatChannel[] ValidChannels =
         {
-            ChatChannelType.PlayerParty,
-            ChatChannelType.PlayerShout,
-            ChatChannelType.PlayerTalk,
-            ChatChannelType.PlayerWhisper
+            ChatChannel.PlayerParty,
+            ChatChannel.PlayerShout,
+            ChatChannel.PlayerTalk,
+            ChatChannel.PlayerWhisper
         };
 
         public static void SubscribeEvents()
@@ -97,13 +97,13 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DataService.Player.GetByID(player.GlobalID);
             if (dbPlayer.RoleplayPoints >= 50)
             {
-                const int BaseXP = 500;
+                const int BaseXP = 1000;
                 float residencyBonus = PlayerStatService.EffectiveResidencyBonus(player);
                 int xp = (int)(BaseXP + BaseXP * residencyBonus);
                 float dmBonusModifier = dbPlayer.XPBonus * 0.01f;
                 if (dmBonusModifier > 0.25f)
                     dmBonusModifier = 0.25f;
-                xp += (int)(xp * dmBonusModifier);
+                xp += (int)(xp * dmBonusModifier + ((dbPlayer.RoleplayPoints - 50) * 50));
 
                 dbPlayer.RoleplayXP += xp;
                 dbPlayer.RoleplayPoints = 0;
@@ -113,22 +113,22 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static bool CanReceiveRPPoint(NWPlayer player, ChatChannelType channel)
+        private static bool CanReceiveRPPoint(NWPlayer player, ChatChannel channel)
         {
             // Party - Must be in a party with another PC.
-            if (channel == ChatChannelType.PlayerParty)
+            if (channel == ChatChannel.PlayerParty)
             {
                 return player.PartyMembers.Any(x => x.GlobalID != player.GlobalID);
             }
 
             // Shout (Holonet) - Another player must be online.
-            else if (channel == ChatChannelType.PlayerShout)
+            else if (channel == ChatChannel.PlayerShout)
             {
                 return NWModule.Get().Players.Count() > 1;
             }
 
             // Talk - Another player must be nearby. (20.0 units)
-            else if(channel == ChatChannelType.PlayerTalk)
+            else if(channel == ChatChannel.PlayerTalk)
             {
                 return NWModule.Get().Players.Any(nearby => 
                     player.GlobalID != nearby.GlobalID &&
@@ -136,7 +136,7 @@ namespace SWLOR.Game.Server.Service
             }
             
             // Whisper - Another player must be nearby. (4.0 units)
-            else if (channel == ChatChannelType.PlayerWhisper)
+            else if (channel == ChatChannel.PlayerWhisper)
             {
                 return NWModule.Get().Players.Any(nearby => 
                     player.GlobalID != nearby.GlobalID &&

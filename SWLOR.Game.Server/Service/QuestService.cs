@@ -1,4 +1,4 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -7,14 +7,13 @@ using SWLOR.Game.Server.NWN.Events.Creature;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
-using System.Data.Linq;
 using System.Linq;
 using SWLOR.Game.Server.Event.Module;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Quest;
 using SWLOR.Game.Server.Quest.Contracts;
 using SWLOR.Game.Server.Quest.Objective;
-using SWLOR.Game.Server.Scripting;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -32,27 +31,23 @@ namespace SWLOR.Game.Server.Service
             MessageHub.Instance.Subscribe<OnModuleEnter>(message => OnModuleEnter());
             
             // Scripting Events
-            MessageHub.Instance.Subscribe<OnQuestLoaded>(message => LoadQuest(message.Quest.Quest));
-            MessageHub.Instance.Subscribe<OnQuestUnloaded>(message => UnloadQuest(message.Quest.Quest));
+            MessageHub.Instance.Subscribe<OnModuleLoad>(message => LoadQuests());
         }
 
-        private static void LoadQuest(IQuest quest)
+        private static void LoadQuests()
         {
-            if (_quests.ContainsKey(quest.QuestID))
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(w => typeof(AbstractQuest).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
+
+            foreach (var type in types)
             {
-                throw new DuplicateKeyException(quest, "Quest with ID " + quest.QuestID + " has already been registered. IDs must be unique across all quests.");
+                var quest = (AbstractQuest)Activator.CreateInstance(type);
+                _quests[quest.Quest.QuestID] = quest.Quest;
+
+                Console.WriteLine("Registered quest: " + quest.Quest.Name + " ( " + quest.Quest.QuestID + " )");
             }
 
-            _quests[quest.QuestID] = quest;
-            Console.WriteLine("Registered quest: " + quest.Name + " ( " + quest.QuestID + " )");
-        }
-
-        private static void UnloadQuest(IQuest quest)
-        {
-            if (!_quests.ContainsKey(quest.QuestID)) return;
-
-            _quests.Remove(quest.QuestID);
-            Console.WriteLine("Unregistered quest: " + quest.Name + " ( " + quest.QuestID + " )");
         }
 
         /// <summary>
@@ -107,7 +102,11 @@ namespace SWLOR.Game.Server.Service
             foreach (PCQuestStatus pcQuest in pcQuests)
             {
                 var quest = _quests[pcQuest.QuestID];
-                AddJournalQuestEntry(quest.JournalTag, pcQuest.QuestState, oPC.Object, FALSE);
+
+                // One of the EE patches introduced a regression wherein the journal entries wouldn't be given to players after logging in.
+                // This is a workaround to ensure they appear after relogging.
+                RemoveJournalQuestEntry(quest.JournalTag, oPC.Object, false);
+                AddJournalQuestEntry(quest.JournalTag, pcQuest.QuestState, oPC.Object, false);
             }
         }
 
@@ -117,7 +116,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void OnCreatureDeath()
         {
-            NWCreature creature = NWGameObject.OBJECT_SELF;
+            NWCreature creature = _.OBJECT_SELF;
 
             int npcGroupID = creature.GetLocalInt("NPC_GROUP");
             if (npcGroupID <= 0) return;
@@ -290,7 +289,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             Location location = oPC.Location;
-            NWPlaceable collector = CreateObject(OBJECT_TYPE_PLACEABLE, "qst_item_collect", location);
+            NWPlaceable collector = CreateObject(ObjectType.Placeable, "qst_item_collect", location);
             collector.SetLocalObject("QUEST_OWNER", questOwner);
 
             collector.AssignCommand(() =>

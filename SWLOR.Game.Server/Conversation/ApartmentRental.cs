@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.SWLOR;
@@ -9,7 +9,7 @@ using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Conversation
 
         public override void Initialize()
         {
-            NWPlaceable terminal = NWGameObject.OBJECT_SELF;
+            NWPlaceable terminal = _.OBJECT_SELF;
             var data = BaseService.GetPlayerTempData(GetPC());
             data.ApartmentBuildingID = terminal.GetLocalInt("APARTMENT_BUILDING_ID");
 
@@ -242,7 +242,7 @@ namespace SWLOR.Game.Server.Conversation
             var data = BaseService.GetPlayerTempData(GetPC());
             var style = DataService.BuildingStyle.GetByID(data.BuildingStyleID);
             var area = AreaService.CreateAreaInstance(player, style.Resref, "APARTMENT PREVIEW: " + style.Name, "PLAYER_HOME_ENTRANCE");
-            area.SetLocalInt("IS_BUILDING_PREVIEW", TRUE);
+            SetLocalBool(area, "IS_BUILDING_PREVIEW", true);
             BaseService.JumpPCToBuildingInterior(player, area);
         }
 
@@ -287,7 +287,7 @@ namespace SWLOR.Game.Server.Conversation
             var allPermissions = Enum.GetValues(typeof(BasePermission)).Cast<BasePermission>().ToArray();
             BasePermissionService.GrantBasePermissions(player, pcApartment.ID, allPermissions);
 
-            _.TakeGoldFromCreature(purchasePrice, player, TRUE);
+            _.TakeGoldFromCreature(purchasePrice, player, true);
             
             LoadMainPage();
             ClearNavigationStack();
@@ -375,7 +375,7 @@ namespace SWLOR.Game.Server.Conversation
 
             if (data.IsConfirming)
             {
-                _.TakeGoldFromCreature(dailyUpkeep * days, GetPC(), TRUE);
+                _.TakeGoldFromCreature(dailyUpkeep * days, GetPC(), true);
                 data.IsConfirming = false;
                 SetResponseText("DetailsPage", responseID, optionText);
                 pcApartment.DateRentDue = pcApartment.DateRentDue.AddDays(days);

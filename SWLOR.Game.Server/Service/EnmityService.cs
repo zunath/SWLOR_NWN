@@ -1,6 +1,6 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
+using static SWLOR.Game.Server.NWN._;
 using SWLOR.Game.Server.GameObject;
-
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
@@ -47,6 +47,7 @@ namespace SWLOR.Game.Server.Service
         public static void AdjustEnmity(NWCreature npc, NWCreature attacker, int volatileAdjust, int cumulativeAdjust = 0)
         {
             if (!npc.IsNPC) return;
+            if (attacker == null || attacker.Area != npc.Area || LineOfSightObject(npc, attacker) == false) return;
 
             bool adjustVolatile = volatileAdjust != 0;
             bool adjustCumulative = cumulativeAdjust != 0;
@@ -120,15 +121,15 @@ namespace SWLOR.Game.Server.Service
 
         public static void OnNPCPhysicallyAttacked()
         {
-            NWCreature self = (NWGameObject.OBJECT_SELF);
-            NWCreature attacker = (_.GetLastAttacker(NWGameObject.OBJECT_SELF));
+            NWCreature self = (_.OBJECT_SELF);
+            NWCreature attacker = (_.GetLastAttacker(_.OBJECT_SELF));
             AdjustEnmity(self, attacker, 0, 1);
         }
 
         public static void OnNPCDamaged()
         {
-            NWCreature self = (NWGameObject.OBJECT_SELF);
-            NWCreature damager = (_.GetLastDamager(NWGameObject.OBJECT_SELF));
+            NWCreature self = (_.OBJECT_SELF);
+            NWCreature damager = (_.GetLastDamager(_.OBJECT_SELF));
             int enmityAmount = _.GetTotalDamageDealt();
             if (enmityAmount <= 0) enmityAmount = 1;
 
@@ -137,8 +138,8 @@ namespace SWLOR.Game.Server.Service
 
         public static void OnPlayerDamaged()
         {
-            NWPlayer player = (NWGameObject.OBJECT_SELF);
-            NWCreature npc = (_.GetLastDamager(NWGameObject.OBJECT_SELF));
+            NWPlayer player = (_.OBJECT_SELF);
+            NWCreature npc = (_.GetLastDamager(_.OBJECT_SELF));
 
             if (!player.IsPlayer || !npc.IsNPC) return;
 

@@ -1,61 +1,84 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using System;
-using static SWLOR.Game.Server.NWNX.NWNXCore;
 
 namespace SWLOR.Game.Server.NWNX
 {
     public static class NWNXItemProperty
     {
-        private const string NWNX_ItemProperty = "NWNX_ItemProperty";
+        private const string PLUGIN_NAME = "NWNX_ItemProperty";
 
+        // Convert native itemproperty type to unpacked structure
         public static ItemPropertyUnpacked UnpackIP(ItemProperty ip)
         {
-            const string FunctionName = "UnpackIP";
+            const string func = "UnpackIP";
 
-            NWNX_PushArgumentItemProperty(NWNX_ItemProperty, FunctionName, ip);
-            NWNX_CallFunction(NWNX_ItemProperty, FunctionName);
+            NWNXCore.NWNX_PushArgumentItemProperty(PLUGIN_NAME, func, ip);
+            NWNXCore.NWNX_CallFunction(PLUGIN_NAME, func);
 
-            var n = new ItemPropertyUnpacked
+            return new ItemPropertyUnpacked
             {
-                ItemPropertyID = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                Property = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                SubType = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                CostTable = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                CostTableValue = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                Param1 = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                Param1Value = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                UsesPerDay = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                ChanceToAppear = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                IsUseable = Convert.ToBoolean(NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName)),
-                SpellID = NWNX_GetReturnValueInt(NWNX_ItemProperty, FunctionName),
-                Creator = NWNX_GetReturnValueObject(NWNX_ItemProperty, FunctionName),
-                Tag = NWNX_GetReturnValueString(NWNX_ItemProperty, FunctionName)
+                Property = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func),
+                SubType = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func),
+                CostTable = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func),
+                CostTableValue = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func),
+                Param1 = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func),
+                Param1Value = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func),
+                UsesPerDay = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func),
+                ChanceToAppear = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func),
+                IsUseable = Convert.ToBoolean(NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func)),
+                SpellID = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, func),
+                Creator = NWNXCore.NWNX_GetReturnValueObject(PLUGIN_NAME, func),
+                Tag = NWNXCore.NWNX_GetReturnValueString(PLUGIN_NAME, func)
             };
-
-            return n;
         }
 
-        public static ItemProperty PackIP(ItemPropertyUnpacked n)
+        // Convert unpacked itemproperty structure to native type.
+        public static ItemProperty PackIP(ItemPropertyUnpacked itemProperty)
         {
             const string sFunc = "PackIP";
 
-            NWNX_PushArgumentString(NWNX_ItemProperty, sFunc, n.Tag);
-            NWNX_PushArgumentObject(NWNX_ItemProperty, sFunc, n.Creator);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.SpellID);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.IsUseable ? 1 : 0);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.ChanceToAppear);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.UsesPerDay);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.Param1Value);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.Param1);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.CostTableValue);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.CostTable);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.SubType);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.Property);
-            NWNX_PushArgumentInt(NWNX_ItemProperty, sFunc, n.ItemPropertyID);
+            NWNXCore.NWNX_PushArgumentString(PLUGIN_NAME, sFunc, itemProperty.Tag);
+            NWNXCore.NWNX_PushArgumentObject(PLUGIN_NAME, sFunc, itemProperty.Creator);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.SpellID);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.IsUseable ? 1 : 0);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.ChanceToAppear);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.UsesPerDay);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.Param1Value);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.Param1);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.CostTableValue);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.CostTable);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.SubType);
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, itemProperty.Property);
 
-            NWNX_CallFunction(NWNX_ItemProperty, sFunc);
-            return NWNX_GetReturnValueItemProperty(NWNX_ItemProperty, sFunc);
+            NWNXCore.NWNX_CallFunction(PLUGIN_NAME, sFunc);
+            return NWNXCore.NWNX_GetReturnValueItemProperty(PLUGIN_NAME, sFunc);
         }
 
+        /// @brief Gets the active item property at the index
+        /// @param oItem - the item with the property
+        /// @param nIndex - the index such as returned by some Item Events
+        /// @return A constructed NWNX_IPUnpacked, except for creator, and spell id.
+        public static ItemPropertyUnpacked GetActiveProperty(uint oItem, int nIndex)
+        {
+            const string sFunc = "GetActiveProperty";
+
+            NWNXCore.NWNX_PushArgumentInt(PLUGIN_NAME, sFunc, nIndex);
+            NWNXCore.NWNX_PushArgumentObject(PLUGIN_NAME, sFunc, oItem);
+            NWNXCore.NWNX_CallFunction(PLUGIN_NAME, sFunc);
+
+            return new ItemPropertyUnpacked
+            {
+                Property = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, sFunc),
+                SubType = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, sFunc),
+                CostTable = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, sFunc),
+                CostTableValue = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, sFunc),
+                Param1 = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, sFunc),
+                Param1Value = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, sFunc),
+                UsesPerDay = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, sFunc),
+                ChanceToAppear = NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, sFunc),
+                IsUseable = Convert.ToBoolean(NWNXCore.NWNX_GetReturnValueInt(PLUGIN_NAME, sFunc)),
+                Tag = NWNXCore.NWNX_GetReturnValueString(PLUGIN_NAME, sFunc)
+            };
+        }
     }
 }

@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Caching
         public Area GetByResrefOrDefault(string resref)
         {
             if (!ByResref.ContainsKey(resref))
-                return default;
+                return default(Area);
 
             return (Area)ByResref[resref].Clone();
         }

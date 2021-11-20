@@ -19,10 +19,6 @@
                 "value": [
                   {
                     "__struct_id": 0,
-                    "DELETE_ME": {
-                      "type": "cexostring",
-                      "value": "Corpses - Monsters"
-                    },
                     "ID": {
                       "type": "byte",
                       "value": 26
@@ -570,14 +566,14 @@
                           }
                         }
                       ]
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Corpses - Monsters"
                     }
                   },
                   {
                     "__struct_id": 0,
-                    "DELETE_ME": {
-                      "type": "cexostring",
-                      "value": "Corpses - NPC Human"
-                    },
                     "ID": {
                       "type": "byte",
                       "value": 23
@@ -982,14 +978,14 @@
                           }
                         }
                       ]
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Corpses - NPC Human"
                     }
                   },
                   {
                     "__struct_id": 0,
-                    "DELETE_ME": {
-                      "type": "cexostring",
-                      "value": "Corpses - NPC Other"
-                    },
                     "ID": {
                       "type": "byte",
                       "value": 22
@@ -1229,14 +1225,14 @@
                           }
                         }
                       ]
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Corpses - NPC Other"
                     }
                   },
                   {
                     "__struct_id": 0,
-                    "DELETE_ME": {
-                      "type": "cexostring",
-                      "value": "Misc."
-                    },
                     "ID": {
                       "type": "byte",
                       "value": 24
@@ -1278,6 +1274,10 @@
                           }
                         }
                       ]
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Misc."
                     }
                   }
                 ]
@@ -1826,10 +1826,6 @@
             },
             {
               "__struct_id": 0,
-              "DELETE_ME": {
-                "type": "cexostring",
-                "value": "Weapons"
-              },
               "ID": {
                 "type": "byte",
                 "value": 25
@@ -3015,6 +3011,10 @@
                     }
                   }
                 ]
+              },
+              "NAME": {
+                "type": "cexostring",
+                "value": "Weapons"
               }
             }
           ]

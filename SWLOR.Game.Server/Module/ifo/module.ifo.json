@@ -186,13 +186,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "visc_forcevision"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "manda_facility"
         }
       },
@@ -1098,12 +1091,106 @@
           "type": "resref",
           "value": "ship_firstlight"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_jeditemple_ext"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_repubbase_ext"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_swamp_base"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "kash_village"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "kashyyyk_camp"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "kashyyykpaths"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pref_shipbattle"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "prefabwarehouse"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "playerap_l_fur"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "playerap_l_unf"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "playerap_m_fur"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "playerap_m_unf"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "playerap_s_fur"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "playerap_s_unf"
+        }
       }
     ]
-  },
-  "Mod_CacheNSSList": {
-    "type": "list",
-    "value": []
   },
   "Mod_Creator_ID": {
     "type": "int",
@@ -1143,15 +1230,15 @@
   },
   "Mod_Entry_X": {
     "type": "float",
-    "value": 18.8521785736084
+    "value": 18.97829627990723
   },
   "Mod_Entry_Y": {
     "type": "float",
-    "value": 6.176247596740723
+    "value": 5.520429611206055
   },
   "Mod_Entry_Z": {
     "type": "float",
-    "value": -9.5367431640625e-007
+    "value": -5.7220458984375e-006
   },
   "Mod_Expan_List": {
     "type": "list",
@@ -1225,6 +1312,13 @@
         "Mod_Hak": {
           "type": "cexostring",
           "value": "swlor_mtr"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "swlor_music"
         }
       },
       {
@@ -1421,7 +1515,7 @@
   },
   "Mod_MinGameVer": {
     "type": "cexostring",
-    "value": "1.77"
+    "value": "1.80"
   },
   "Mod_MinPerHour": {
     "type": "byte",

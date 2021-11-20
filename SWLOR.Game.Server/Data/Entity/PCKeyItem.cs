@@ -1,11 +1,11 @@
 
 using System;
-
+using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCKeyItem]")]
+    [Table("PCKeyItem")]
     public class PCKeyItem: IEntity
     {
         public PCKeyItem()

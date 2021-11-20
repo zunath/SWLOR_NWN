@@ -1,6 +1,6 @@
-﻿using NWN;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
 
 
@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Perk.Blaster
 
         public void OnRemoved(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, _.FEAT_RAPID_SHOT);
+            NWNXCreature.RemoveFeat(creature, Feat.RapidShot);
         }
 
         public void OnItemEquipped(NWCreature creature, NWItem oItem)
@@ -74,11 +74,11 @@ namespace SWLOR.Game.Server.Perk.Blaster
             if (equippedWeapon.Equals(oItem) || 
                 equippedWeapon.CustomItemType != CustomItemType.BlasterPistol)
             {
-                NWNXCreature.RemoveFeat(creature, _.FEAT_RAPID_SHOT);
+                NWNXCreature.RemoveFeat(creature, Feat.RapidShot);
                 return;
             }
 
-            NWNXCreature.AddFeat(creature, _.FEAT_RAPID_SHOT);
+            NWNXCreature.AddFeat(creature, Feat.RapidShot);
         }
 
         public bool IsHostile()

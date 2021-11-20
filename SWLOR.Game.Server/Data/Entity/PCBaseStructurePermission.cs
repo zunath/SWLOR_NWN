@@ -1,10 +1,11 @@
 
 using System;
+using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[PCBaseStructurePermission]")]
+    [Table("PCBaseStructurePermission")]
     public class PCBaseStructurePermission: IEntity
     {
         public PCBaseStructurePermission()

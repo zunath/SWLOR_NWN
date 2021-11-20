@@ -108,7 +108,7 @@ void main()
 
     int nBase = GetBaseItemType(oTarget);
     // GZ@2006/03/26: Added cloak support
-    if ( nBase != BASE_ITEM_ARMOR  &&  nBase != BASE_ITEM_HELMET  &&  nBase != BASE_ITEM_CLOAK )
+    if ( nBase != BASE_ITEM_ARMOR &&  nBase != BASE_ITEM_HELMET &&  nBase != BASE_ITEM_CLOAK )
     {
         FloatingTextStrRefOnCreature(83353,oPC);    //"Invalid Target, must select armor or helmet"
         return;

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN;
 
 
 namespace SWLOR.Game.Server.Service
@@ -53,8 +54,8 @@ namespace SWLOR.Game.Server.Service
             }
             
             description.Append("\n\n").Append(ColorTokenService.Green("Description: \n\n")).Append(backupDescription).AppendLine();
-            target.UnidentifiedDescription = description.ToString();
-
+            target.UnidentifiedDescription = description.ToString();            
+            _.DelayCommand(0.1f, () => { _.SetDescription(target, backupDescription, false); });
             return true;
         }
 

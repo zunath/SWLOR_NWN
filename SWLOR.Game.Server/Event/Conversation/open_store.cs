@@ -1,13 +1,13 @@
-﻿using SWLOR.Game.Server;
-
-using SWLOR.Game.Server.GameObject;
+﻿using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.ValueObject;
 
 // ReSharper disable once CheckNamespace
 namespace NWN.Scripts
 {
 #pragma warning disable IDE1006 // Naming Styles
-    internal class open_store
+    public class open_store
 #pragma warning restore IDE1006 // Naming Styles
     {
         public static void Main()
@@ -15,13 +15,13 @@ namespace NWN.Scripts
             using (new Profiler(nameof(open_store)))
             {
                 NWPlayer player = _.GetPCSpeaker();
-                NWObject self = NWGameObject.OBJECT_SELF;
+                NWObject self = _.OBJECT_SELF;
                 string storeTag = self.GetLocalString("STORE_TAG");
                 NWObject store;
 
                 if (string.IsNullOrWhiteSpace(storeTag))
                 {
-                    store = _.GetNearestObject(_.OBJECT_TYPE_STORE, self);
+                    store = _.GetNearestObject(self, ObjectType.Store);
                 }
                 else
                 {

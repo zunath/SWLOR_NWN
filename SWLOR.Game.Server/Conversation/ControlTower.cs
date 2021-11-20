@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -162,7 +161,7 @@ namespace SWLOR.Game.Server.Conversation
             var structure = DataService.PCBaseStructure.GetByID(structureID);
             var pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
             Location location = oPC.Location;
-            bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "fuel_bay", location);
+            bay = _.CreateObject(ObjectType.Placeable, "fuel_bay", location);
             bay.AssignCommand(() => _.SetFacingPoint(oPC.Position));
 
             tower.SetLocalObject("CONTROL_TOWER_FUEL_BAY", bay.Object);
@@ -209,7 +208,7 @@ namespace SWLOR.Game.Server.Conversation
             Guid structureID = new Guid(tower.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structureItems = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structureID);
             Location location = oPC.Location;
-            bay = _.CreateObject(OBJECT_TYPE_PLACEABLE, "resource_bay", location);
+            bay = _.CreateObject(ObjectType.Placeable, "resource_bay", location);
 
             tower.SetLocalObject("CONTROL_TOWER_RESOURCE_BAY", bay.Object);
             bay.SetLocalObject("CONTROL_TOWER_PARENT", tower.Object);

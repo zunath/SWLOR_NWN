@@ -1,17 +1,17 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using SWLOR.Game.Server.GameObject;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
-    internal class RestMenu : ConversationBase
+    public class RestMenu : ConversationBase
     {
         public override PlayerDialog SetUp(NWPlayer player)
         {
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Conversation
                     {
                         // Open Overflow Inventory
                         case 1:
-                            NWObject storage = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, "overflow_storage", player.Location));
+                            NWObject storage = (_.CreateObject(ObjectType.Placeable, "overflow_storage", player.Location));
                             player.AssignCommand(() => _.ActionInteractObject(storage.Object));
                             break;
                         // View Skills
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Conversation
                         // Open Trash Can (Destroy Items)
                         case 8:
                             EndConversation();
-                            NWPlaceable trashCan = (_.CreateObject(_.OBJECT_TYPE_PLACEABLE, "reo_trash_can", player.Location));
+                            NWPlaceable trashCan = (_.CreateObject(ObjectType.Placeable, "reo_trash_can", player.Location));
 
                             player.AssignCommand(() => _.ActionInteractObject(trashCan.Object));
                             _.DelayCommand(0.2f, () => trashCan.IsUseable = false);

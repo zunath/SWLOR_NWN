@@ -1,4 +1,4 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
@@ -72,22 +72,22 @@ namespace SWLOR.Game.Server.Conversation
             {
                 case 1: // Viscara
                     planet = "Viscara";
-                    price = 600;
+                    price = 100;
                     destinationTag = "VISCARA_LANDING";
                     break;
                 case 2: // Mon Cala
                     planet = "Mon Cala";
-                    price = 600;
+                    price = 200;
                     destinationTag = "MON_CALA_LANDING";
                     break;
                 case 3: // Hutlar
                     planet = "Hutlar";
-                    price = 600;
+                    price = 300;
                     destinationTag = "HUTLAR_LANDING";
                     break;
                 case 4: // Tatooine
                     planet = "Tatooine";
-                    price = 1000;
+                    price = 400;
                     destinationTag = "TATOOINE_LANDING";
                     break;
                 default: return;
@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Conversation
                     }
 
                     // Take the gold.
-                    _.TakeGoldFromCreature(model.Price, player, _.TRUE);
+                    _.TakeGoldFromCreature(model.Price, player, true);
 
                     // Get the location based on the waypoint tag.
                     Location location = _.GetLocation(_.GetWaypointByTag(model.DestinationTag));

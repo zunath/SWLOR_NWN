@@ -1,11 +1,11 @@
 
 using System;
-
+using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[BankItem]")]
+    [Table("BankItem")]
     public class BankItem: IEntity
     {
         public BankItem()

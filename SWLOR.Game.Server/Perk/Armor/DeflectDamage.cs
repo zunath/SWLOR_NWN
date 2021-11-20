@@ -1,7 +1,11 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Item.Property;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
+using DamageType = SWLOR.Game.Server.NWN.Enum.DamageType;
 
 
 namespace SWLOR.Game.Server.Perk.Armor
@@ -43,42 +47,42 @@ namespace SWLOR.Game.Server.Perk.Armor
         {
             int damageBase;
             float length = 12.0f;
-            int randomDamage;
+            DamageBonus randomDamage;
 
             switch (perkLevel)
             {
                 case 1:
                     damageBase = 1;
-                    randomDamage = 6; // 6 = DAMAGE_BONUS_1d4 constant
+                    randomDamage = DamageBonus.DAMAGEBONUS_1d4; // 6 = DAMAGE_BONUS_1d4 constant
                     break;
                 case 2:
                     damageBase = 1;
-                    randomDamage = 8; // 8 = DAMAGE_BONUS_1d8 constant
+                    randomDamage = DamageBonus.DAMAGEBONUS_1d8; // 8 = DAMAGE_BONUS_1d8 constant
                     break;
                 case 3:
                     damageBase = 2;
-                    randomDamage = 10; // 10 = DAMAGE_BONUS_2d6 constant
+                    randomDamage = DamageBonus.DAMAGEBONUS_2d6; // 10 = DAMAGE_BONUS_2d6 constant
                     break;
                 case 4:
                     damageBase = 2;
-                    randomDamage = 11; // 11 = DAMAGE_BONUS_2d8 constant
+                    randomDamage = DamageBonus.DAMAGEBONUS_2d8; // 11 = DAMAGE_BONUS_2d8 constant
                     break;
                 case 5:
                     damageBase = 3;
-                    randomDamage = 15; // 15 = DAMAGE_BONUS_2d12 constant
+                    randomDamage = DamageBonus.DAMAGEBONUS_2d12; // 15 = DAMAGE_BONUS_2d12 constant
                     break;
                 default:
                     return;
             }
 
-            Effect effect = _.EffectDamageShield(damageBase, randomDamage, _.DAMAGE_TYPE_MAGICAL);
-            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, creature.Object, length);
+            Effect effect = _.EffectDamageShield(damageBase, randomDamage, DamageType.Magical);
+            _.ApplyEffectToObject(DurationType.Temporary, effect, creature.Object, length);
 
-            effect = _.EffectVisualEffect(_.VFX_DUR_AURA_ORANGE);
-            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, effect, creature.Object, length);
+            effect = _.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Orange);
+            _.ApplyEffectToObject(DurationType.Temporary, effect, creature.Object, length);
 
-            effect = _.EffectVisualEffect(_.VFX_IMP_AC_BONUS);
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, effect, creature.Object);
+            effect = _.EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus);
+            _.ApplyEffectToObject(DurationType.Instant, effect, creature.Object);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

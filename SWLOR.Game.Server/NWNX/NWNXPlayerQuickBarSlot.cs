@@ -1,6 +1,5 @@
-﻿using SWLOR.Game.Server.GameObject;
-
-using NWN;
+﻿using SWLOR.Game.Server.NWN.Enum;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.NWNX
 {
@@ -13,11 +12,11 @@ namespace SWLOR.Game.Server.NWNX
         /// <returns></returns>
         public static QuickBarSlot Empty(QuickBarSlotType type)
         {
-            QuickBarSlot qbs = new QuickBarSlot
+            var qbs = new QuickBarSlot
             {
                 ObjectType = type,
-                Item = (new NWGameObject()),
-                SecondaryItem = (new NWGameObject()),
+                Item = OBJECT_INVALID,
+                SecondaryItem = OBJECT_INVALID,
                 MultiClass = 0,
                 Resref = "",
                 CommandLabel = "",
@@ -27,9 +26,9 @@ namespace SWLOR.Game.Server.NWNX
                 MetaType = 0,
                 DomainLevel = 0,
                 AssociateType = 0,
-                Associate = (new NWGameObject())
+                Associate = OBJECT_INVALID
             };
-            
+
             return qbs;
         }
 
@@ -39,9 +38,9 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="oItem"></param>
         /// <param name="nPropertyID"></param>
         /// <returns></returns>
-        public static QuickBarSlot UseItem(NWItem oItem, int nPropertyID)
+        public static QuickBarSlot UseItem(uint oItem, int nPropertyID)
         {
-            QuickBarSlot qbs = Empty(QuickBarSlotType.Item);
+            var qbs = Empty(QuickBarSlotType.Item);
 
             qbs.Item = oItem;
             qbs.INTParam1 = nPropertyID;
@@ -55,9 +54,9 @@ namespace SWLOR.Game.Server.NWNX
         /// <param name="oItem"></param>
         /// <param name="oSecondaryItem"></param>
         /// <returns></returns>
-        public static QuickBarSlot EquipItem(NWItem oItem, NWItem oSecondaryItem)
+        public static QuickBarSlot EquipItem(uint oItem, uint oSecondaryItem)
         {
-            QuickBarSlot qbs = Empty(QuickBarSlotType.Item);
+            var qbs = Empty(QuickBarSlotType.Item);
 
             qbs.Item = oItem;
             qbs.SecondaryItem = oSecondaryItem;
@@ -75,7 +74,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <returns></returns>
         public static QuickBarSlot CastSpell(int nSpell, int nClassIndex, int nMetamagic, int nDomainLevel)
         {
-            QuickBarSlot qbs = Empty(QuickBarSlotType.Spell);
+            var qbs = Empty(QuickBarSlotType.Spell);
 
             qbs.INTParam1 = nSpell;
             qbs.MultiClass = nClassIndex;
@@ -92,7 +91,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <returns></returns>
         public static QuickBarSlot UseSkill(int nSkill)
         {
-            QuickBarSlot qbs = Empty(QuickBarSlotType.Skill);
+            var qbs = Empty(QuickBarSlotType.Skill);
 
             qbs.INTParam1 = nSkill;
 
@@ -104,11 +103,11 @@ namespace SWLOR.Game.Server.NWNX
         /// </summary>
         /// <param name="nFeat"></param>
         /// <returns></returns>
-        public static QuickBarSlot UseFeat(int nFeat)
+        public static QuickBarSlot UseFeat(Feat nFeat)
         {
-            QuickBarSlot qbs = Empty(QuickBarSlotType.Feat);
+            var qbs = Empty(QuickBarSlotType.Feat);
 
-            qbs.INTParam1 = nFeat;
+            qbs.INTParam1 = (int)nFeat;
 
             return qbs;
         }
@@ -138,7 +137,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <returns></returns>
         public static QuickBarSlot Emote(int nEmote)
         {
-            QuickBarSlot qbs = Empty(QuickBarSlotType.Emote);
+            var qbs = Empty(QuickBarSlotType.Emote);
 
             qbs.INTParam1 = nEmote;
 
@@ -152,7 +151,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <returns></returns>
         public static QuickBarSlot ToggleMode(int nMode)
         {
-            QuickBarSlot qbs = Empty(QuickBarSlotType.ModeToggle);
+            var qbs = Empty(QuickBarSlotType.ModeToggle);
 
             qbs.INTParam1 = nMode;
 
@@ -184,7 +183,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <returns></returns>
         public static QuickBarSlot QuickChat(int nCommand)
         {
-            QuickBarSlot qbs = Empty(QuickBarSlotType.QuickChat);
+            var qbs = Empty(QuickBarSlotType.QuickChat);
 
             qbs.INTParam1 = nCommand;
 
@@ -208,7 +207,7 @@ namespace SWLOR.Game.Server.NWNX
         /// <returns></returns>
         public static QuickBarSlot UseSpecialAbility(int nSpell, int nCasterLevel)
         {
-            QuickBarSlot qbs = Empty(QuickBarSlotType.Spell);
+            var qbs = Empty(QuickBarSlotType.Spell);
 
             qbs.INTParam1 = nSpell;
             qbs.DomainLevel = nCasterLevel;
@@ -224,12 +223,12 @@ namespace SWLOR.Game.Server.NWNX
         /// <returns></returns>
         public static QuickBarSlot Command(string sCommandLabel, string sCommandLine)
         {
-            QuickBarSlot qbs = Empty(QuickBarSlotType.Command);
+            var qbs = Empty(QuickBarSlotType.Command);
 
             qbs.CommandLabel = sCommandLabel;
             qbs.CommandLine = sCommandLine;
 
             return qbs;
         }
-}
+    }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Globalization;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.ChatCommand.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -51,9 +51,7 @@ namespace SWLOR.Game.Server.ChatCommand
                 dbPlayer.IsDeleted = true;
                 DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
 
-                _.BootPC(user, "Your character has been deleted.");
-                NWNXAdmin.DeletePlayerCharacter(user, true);
-
+                NWNXAdmin.DeletePlayerCharacter(user, true, "Your character has been deleted.");
             }
         }
 

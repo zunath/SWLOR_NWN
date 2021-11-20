@@ -1,4 +1,3 @@
-using System;
 using SWLOR.Game.Server.Data.Entity;
 
 namespace SWLOR.Game.Server.Caching

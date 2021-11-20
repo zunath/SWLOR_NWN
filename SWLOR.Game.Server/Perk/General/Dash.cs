@@ -1,7 +1,7 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using static NWN._;
+using SWLOR.Game.Server.NWN.Enum;
 
 namespace SWLOR.Game.Server.Perk.General
 {
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Perk.General
             Effect movement = _.EffectMovementSpeedIncrease(speed);
             movement = _.TagEffect(movement, "DASH");
 
-            _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, movement, target, duration);
+            _.ApplyEffectToObject(DurationType.Temporary, movement, target, duration);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)

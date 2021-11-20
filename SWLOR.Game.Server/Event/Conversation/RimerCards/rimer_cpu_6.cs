@@ -1,6 +1,6 @@
 ﻿
 using SWLOR.Game.Server.Event.Conversation.RimerCards;
-using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.ValueObject;
 
@@ -16,8 +16,8 @@ namespace NWN.Scripts
             using (new Profiler(nameof(rimer_cpu_6)))
             {
                 RimerDeckType deck = RandomService.Random(4) <= 3 ? RimerDeckType.Spells : RimerDeckType.Angels;
-                RimerCPU.ConfigureGameSettings(NWGameObject.OBJECT_SELF, deck, RimerAIDifficulty.Normal);
-                return _.FALSE;
+                RimerCPU.ConfigureGameSettings(_.OBJECT_SELF, deck, RimerAIDifficulty.Normal);
+                return 0;
             }
         }
     }

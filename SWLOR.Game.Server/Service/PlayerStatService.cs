@@ -1,5 +1,5 @@
 ﻿
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -10,9 +10,12 @@ using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWNX;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 using SWLOR.Game.Server.ValueObject;
+using Skill = SWLOR.Game.Server.Data.Entity.Skill;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -51,9 +54,9 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnSkillGained(NWPlayer player)
         {
-            for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
+            for (int itemSlot = 0; itemSlot < NumberOfInventorySlots; itemSlot++)
             {
-                NWItem item = _.GetItemInSlot(itemSlot, player);
+                NWItem item = _.GetItemInSlot((InventorySlot)itemSlot, player);
                 CalculateEffectiveStats(player, item);
             }
             ApplyStatChanges(player, null);
@@ -61,9 +64,9 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnSkillDecayed(NWPlayer player)
         {
-            for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
+            for (int itemSlot = 0; itemSlot < NumberOfInventorySlots; itemSlot++)
             {
-                NWItem item = _.GetItemInSlot(itemSlot, player);
+                NWItem item = _.GetItemInSlot((InventorySlot)itemSlot, player);
                 CalculateEffectiveStats(player, item);
             }
             ApplyStatChanges(player, null);
@@ -77,9 +80,9 @@ namespace SWLOR.Game.Server.Service
 
             // Don't fire for ammo as it reapplies bonuses we **just** removed from blasters.
             if (ignoreItem != null &&
-                (ignoreItem.BaseItemType == BASE_ITEM_BOLT ||
-                 ignoreItem.BaseItemType == BASE_ITEM_ARROW ||
-                 ignoreItem.BaseItemType == BASE_ITEM_BULLET)) return;
+                (ignoreItem.BaseItemType == BaseItem.Bolt ||
+                 ignoreItem.BaseItemType == BaseItem.Arrow ||
+                 ignoreItem.BaseItemType == BaseItem.Bullet)) return;
 
             Player pcEntity = DataService.Player.GetByID(player.GlobalID);
             List<PCSkill> skills = DataService.PCSkill
@@ -151,12 +154,12 @@ namespace SWLOR.Game.Server.Service
             if (chaBonus > 55) chaBonus = 55;
 
             // Apply attributes
-            NWNXCreature.SetRawAbilityScore(player, ABILITY_STRENGTH, (int)strBonus + pcEntity.STRBase);
-            NWNXCreature.SetRawAbilityScore(player, ABILITY_DEXTERITY, (int)dexBonus + pcEntity.DEXBase);
-            NWNXCreature.SetRawAbilityScore(player, ABILITY_CONSTITUTION, (int)conBonus + pcEntity.CONBase);
-            NWNXCreature.SetRawAbilityScore(player, ABILITY_INTELLIGENCE, (int)intBonus + pcEntity.INTBase);
-            NWNXCreature.SetRawAbilityScore(player, ABILITY_WISDOM, (int)wisBonus + pcEntity.WISBase);
-            NWNXCreature.SetRawAbilityScore(player, ABILITY_CHARISMA, (int)chaBonus + pcEntity.CHABase);
+            NWNXCreature.SetRawAbilityScore(player, AbilityType.Strength, (int)strBonus + pcEntity.STRBase);
+            NWNXCreature.SetRawAbilityScore(player, AbilityType.Dexterity, (int)dexBonus + pcEntity.DEXBase);
+            NWNXCreature.SetRawAbilityScore(player, AbilityType.Constitution, (int)conBonus + pcEntity.CONBase);
+            NWNXCreature.SetRawAbilityScore(player, AbilityType.Intelligence, (int)intBonus + pcEntity.INTBase);
+            NWNXCreature.SetRawAbilityScore(player, AbilityType.Wisdom, (int)wisBonus + pcEntity.WISBase);
+            NWNXCreature.SetRawAbilityScore(player, AbilityType.Charisma, (int)chaBonus + pcEntity.CHABase);
 
             // Apply AC
             int ac = EffectiveArmorClass(player, ignoreItem, itemBonuses);
@@ -191,8 +194,8 @@ namespace SWLOR.Game.Server.Service
             if (player.CurrentHP > player.MaxHP)
             {
                 int amount = player.CurrentHP - player.MaxHP;
-                Effect damage = _.EffectDamage(amount);
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, damage, player.Object);
+                var damage = _.EffectDamage(amount);
+                _.ApplyEffectToObject(DurationType.Instant, damage, player.Object);
             }
 
             // Apply FP
@@ -292,12 +295,7 @@ namespace SWLOR.Game.Server.Service
 
             // Shield Oath and Precision Targeting affect a percentage of the TOTAL armor class on a creature.
             var stance = CustomEffectService.GetCurrentStanceType(player);
-            if (stance == CustomEffectType.ShieldOath)
-            {
-                int bonus = (int)(totalAC * 0.2f);
-                baseAC += bonus;
-            }
-            else if (stance == CustomEffectType.PrecisionTargeting)
+            if (stance == CustomEffectType.PrecisionTargeting)
             {
                 int penalty = (int)(totalAC * 0.3f);
                 baseAC -= penalty;
@@ -308,14 +306,14 @@ namespace SWLOR.Game.Server.Service
             return baseAC;
         }
 
-        private static void CalculateEffectiveStats(NWPlayer player, NWItem item)
+        public static void CalculateEffectiveStats(NWPlayer player, NWItem item)
         {
             if (item == null || !item.IsValid || !player.IsPlayer || player.IsDMPossessed || player.IsDM || !player.IsInitializedAsPlayer) return;
 
             // Calculating effective stats can be expensive, so we cache it on the item.
             SkillType skill; 
             
-            if(item.BaseItemType == BASE_ITEM_AMULET || item.BaseItemType == BASE_ITEM_RING)
+            if(item.BaseItemType == BaseItem.Amulet || item.BaseItemType == BaseItem.Ring)
             {
                 var forceArmor = SkillService.GetPCSkill(player, (int)SkillType.ForceArmor);
                 var lightArmor = SkillService.GetPCSkill(player, (int)SkillType.LightArmor);
@@ -418,9 +416,9 @@ namespace SWLOR.Game.Server.Service
             stats.EnmityRate = 1.0f;
 
             HashSet<NWItem> processed = new HashSet<NWItem>();
-            for (int itemSlot = 0; itemSlot < NUM_INVENTORY_SLOTS; itemSlot++)
+            for (int itemSlot = 0; itemSlot < NumberOfInventorySlots; itemSlot++)
             {
-                NWItem item = _.GetItemInSlot(itemSlot, player);
+                NWItem item = _.GetItemInSlot((InventorySlot)itemSlot, player);
 
                 if (!item.IsValid || item.Equals(ignoreItem)) continue;
 
@@ -473,21 +471,25 @@ namespace SWLOR.Game.Server.Service
 
 
                 // Calculate AC
-                if (ItemService.ArmorBaseItemTypes.Contains(item.BaseItemType) ||
-                    ItemService.ShieldBaseItemTypes.Contains(item.BaseItemType))
+                if (ItemService.ArmorBaseItemTypes.Contains(item.BaseItemType))
                 {
                     int skillRankToUse;
+                    int maxAC = 0;
+
                     if (item.CustomItemType == CustomItemType.HeavyArmor)
                     {
                         skillRankToUse = heavyRank;
+                        maxAC = 10;
                     }
                     else if (item.CustomItemType == CustomItemType.LightArmor)
                     {
                         skillRankToUse = lightRank;
+                        maxAC = 13;
                     }
                     else if (item.CustomItemType == CustomItemType.ForceArmor)
                     {
                         skillRankToUse = forceRank;
+                        maxAC = 11;
                     }
                     else if (item.CustomItemType == CustomItemType.MartialArtWeapon)
                     {
@@ -497,6 +499,10 @@ namespace SWLOR.Game.Server.Service
 
                     int itemAC = item.CustomAC;
                     itemAC = CalculateAdjustedValue(itemAC, item.RecommendedLevel, skillRankToUse, 0);
+                    if (itemAC > maxAC)
+                    {
+                        item.CustomAC = maxAC;
+                    }
                     stats.AC += itemAC;
 
                 }

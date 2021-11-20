@@ -1,82 +1,69 @@
-﻿using SWLOR.Game.Server.GameObject;
-
-using static SWLOR.Game.Server.NWNX.NWNXCore;
+﻿using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum.Item;
 
 namespace SWLOR.Game.Server.NWNX
 {
     public static class NWNXItem
     {
-        private const string NWNX_Item = "NWNX_Item";
+        private const string PLUGIN_NAME = "NWNX_Item";
 
         // Set oItem's weight. Will not persist through saving.
-        public static void SetWeight(NWItem oItem, int w)
+        public static void SetWeight(uint oItem, int w)
         {
-            string sFunc = "SetWeight";
-
-            NWNX_PushArgumentInt(NWNX_Item, sFunc, w);
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
-
-            NWNX_CallFunction(NWNX_Item, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetWeight");
+            Internal.NativeFunctions.nwnxPushInt(w);
+            Internal.NativeFunctions.nwnxPushObject(oItem);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
         // Set oItem's base value in gold pieces (Total cost = base_value +
         // additional_value). Will not persist through saving.
         // NOTE: Equivalent to SetGoldPieceValue NWNX2 function
-        public static void SetBaseGoldPieceValue(NWItem oItem, int g)
+        public static void SetBaseGoldPieceValue(uint oItem, int g)
         {
-            string sFunc = "SetBaseGoldPieceValue";
-
-            NWNX_PushArgumentInt(NWNX_Item, sFunc, g);
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
-
-            NWNX_CallFunction(NWNX_Item, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetBaseGoldPieceValue");
+            Internal.NativeFunctions.nwnxPushInt(g);
+            Internal.NativeFunctions.nwnxPushObject(oItem);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
         // Set oItem's additional value in gold pieces (Total cost = base_value +
         // additional_value). Will persist through saving.
-        public static void SetAddGoldPieceValue(NWItem oItem, int g)
+        public static void SetAddGoldPieceValue(uint oItem, int g)
         {
-            string sFunc = "SetAddGoldPieceValue";
-
-            NWNX_PushArgumentInt(NWNX_Item, sFunc, g);
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
-
-            NWNX_CallFunction(NWNX_Item, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAddGoldPieceValue");
+            Internal.NativeFunctions.nwnxPushInt(g);
+            Internal.NativeFunctions.nwnxPushObject(oItem);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
         // Get oItem's base value in gold pieces.
-        public static int GetBaseGoldPieceValue(NWItem oItem)
+        public static int GetBaseGoldPieceValue(uint oItem)
         {
-            string sFunc = "GetBaseGoldPieceValue";
-
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
-
-            NWNX_CallFunction(NWNX_Item, sFunc);
-            return NWNX_GetReturnValueInt(NWNX_Item, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetBaseGoldPieceValue");
+            Internal.NativeFunctions.nwnxPushObject(oItem);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopInt();
         }
 
         // Get oItem's additional value in gold pieces.
-        public static int GetAddGoldPieceValue(NWItem oItem)
+        public static int GetAddGoldPieceValue(uint oItem)
         {
-            string sFunc = "GetAddGoldPieceValue";
-
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
-
-            NWNX_CallFunction(NWNX_Item, sFunc);
-            return NWNX_GetReturnValueInt(NWNX_Item, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAddGoldPieceValue");
+            Internal.NativeFunctions.nwnxPushObject(oItem);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopInt();
         }
 
         // Set oItem's base item type. This will not be visible until the
         // item is refreshed (e.g. drop and take the item, or logging out
         // and back in).
-        public static void SetBaseItemType(NWItem oItem, int nBaseItem)
+        public static void SetBaseItemType(uint oItem, BaseItem baseitem)
         {
-            string sFunc = "SetBaseItemType";
-
-            NWNX_PushArgumentInt(NWNX_Item, sFunc, nBaseItem);
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
-
-            NWNX_CallFunction(NWNX_Item, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetBaseItemType");
+            Internal.NativeFunctions.nwnxPushInt((int)baseitem);
+            Internal.NativeFunctions.nwnxPushObject(oItem);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
         // Make a single change to the appearance of an item. This will not be visible to PCs until
@@ -100,51 +87,51 @@ namespace SWLOR.Game.Server.NWNX
         //
         // [1] When specifying per-part coloring, the value 255 corresponds with the logical
         // function 'clear colour override', which clears the per-part override for that part.
-        public static void SetItemAppearance(NWItem oItem, int nType, int nIndex, int nValue)
+        public static void SetItemAppearance(uint oItem, int nType, int nIndex, int nValue)
         {
-            string sFunc = "SetItemAppearance";
-
-            NWNX_PushArgumentInt(NWNX_Item, sFunc, nValue);
-            NWNX_PushArgumentInt(NWNX_Item, sFunc, nIndex);
-            NWNX_PushArgumentInt(NWNX_Item, sFunc, nType);
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
-
-            NWNX_CallFunction(NWNX_Item, sFunc);
-
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetItemAppearance");
+            Internal.NativeFunctions.nwnxPushInt(nValue);
+            Internal.NativeFunctions.nwnxPushInt(nIndex);
+            Internal.NativeFunctions.nwnxPushInt(nType);
+            Internal.NativeFunctions.nwnxPushObject(oItem);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
         // Return a String containing the entire appearance for oItem which can later be
         // passed to RestoreItemAppearance().
-        public static string GetEntireItemAppearance(NWItem oItem)
+        public static string GetEntireItemAppearance(uint oItem)
         {
-            string sFunc = "GetEntireItemAppearance";
-
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
-
-            NWNX_CallFunction(NWNX_Item, sFunc);
-            return NWNX_GetReturnValueString(NWNX_Item, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetEntireItemAppearance");
+            Internal.NativeFunctions.nwnxPushObject(oItem);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopString();
         }
 
         // Restore an item's appearance with the value returned by GetEntireItemAppearance().
-        public static void RestoreItemAppearance(NWItem oItem, string sApp)
+        public static void RestoreItemAppearance(uint oItem, string sApp)
         {
-            string sFunc = "RestoreItemAppearance";
-
-            NWNX_PushArgumentString(NWNX_Item, sFunc, sApp);
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem.Object);
-
-            NWNX_CallFunction(NWNX_Item, sFunc);
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RestoreItemAppearance");
+            Internal.NativeFunctions.nwnxPushString(sApp);
+            Internal.NativeFunctions.nwnxPushObject(oItem);
+            Internal.NativeFunctions.nwnxCallFunction();
         }
 
-
-        public static int GetBaseArmorClass(NWItem oItem)
+        // Get oItem's base armor class
+        public static int GetBaseArmorClass(uint oItem)
         {
-            string sFunc = "GetBaseArmorClass";
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetBaseArmorClass");
+            Internal.NativeFunctions.nwnxPushObject(oItem);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopInt();
+        }
 
-            NWNX_PushArgumentObject(NWNX_Item, sFunc, oItem);
-
-            NWNX_CallFunction(NWNX_Item, sFunc);
-            return NWNX_GetReturnValueInt(NWNX_Item, sFunc);
+        // Get oItem's minimum level needed to equip
+        public static int GetMinEquipLevel(uint oItem)
+        {
+            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMinEquipLevel");
+            Internal.NativeFunctions.nwnxPushObject(oItem);
+            Internal.NativeFunctions.nwnxCallFunction();
+            return Internal.NativeFunctions.nwnxPopInt();
         }
     }
 }

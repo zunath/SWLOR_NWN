@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
-using NWN;
-using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Service;
 
@@ -45,7 +44,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void LoadMainPage()
         {
-            NWPlaceable door = NWGameObject.OBJECT_SELF;
+            NWPlaceable door = _.OBJECT_SELF;
             int apartmentBuildingID = door.GetLocalInt("APARTMENT_BUILDING_ID");
 
             if (apartmentBuildingID <= 0)
@@ -118,7 +117,7 @@ namespace SWLOR.Game.Server.Conversation
 
         private void EnterApartment(Guid pcBaseID)
         {
-            NWPlaceable door = NWGameObject.OBJECT_SELF;
+            NWPlaceable door = _.OBJECT_SELF;
             NWPlayer oPC = GetPC();
 
             int apartmentBuildingID = door.GetLocalInt("APARTMENT_BUILDING_ID");
@@ -142,7 +141,7 @@ namespace SWLOR.Game.Server.Conversation
                     player = (_.GetNextPC());
                 }
 
-                AreaService.DestroyAreaInstance(area);
+                //AreaService.DestroyAreaInstance(area);
             });
 
 

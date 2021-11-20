@@ -4,13 +4,12 @@ using System.Linq;
 using System.Reflection;
 using SWLOR.Game.Server.Conversation.Contracts;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.SpawnRule.Contracts;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -114,10 +113,6 @@ namespace SWLOR.Game.Server.Service
 
         public static void LoadConversation(NWPlayer player, NWObject talkTo, string @class, int dialogNumber)
         {
-            if (player == null) throw new ArgumentNullException(nameof(player));
-            if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
-            if (talkTo == null) throw new ArgumentNullException(nameof(talkTo));
-            if (talkTo.Object == null) throw new ArgumentNullException(nameof(talkTo.Object));
             if (string.IsNullOrWhiteSpace(@class)) throw new ArgumentException(nameof(@class), nameof(@class) + " cannot be null, empty, or whitespace.");
             if (dialogNumber != -1 && (dialogNumber < 1 || dialogNumber > NumberOfDialogs)) throw new ArgumentOutOfRangeException(nameof(dialogNumber), nameof(dialogNumber) + " must be between 1 and " + NumberOfDialogs);
 
@@ -139,27 +134,22 @@ namespace SWLOR.Game.Server.Service
 
         public static void StartConversation(NWPlayer player, NWObject talkTo, string @class)
         {
-            if (player == null) throw new ArgumentNullException(nameof(player));
-            if (player.Object == null) throw new ArgumentNullException(nameof(player.Object));
-            if (talkTo == null) throw new ArgumentNullException(nameof(talkTo));
-            if (talkTo.Object == null) throw new ArgumentNullException(nameof(talkTo.Object));
             if (string.IsNullOrWhiteSpace(@class)) throw new ArgumentException(nameof(@class), nameof(@class) + " cannot be null, empty, or whitespace.");
 
             LoadConversation(player, talkTo, @class, -1);
             PlayerDialog dialog = AppCache.PlayerDialogs[player.GlobalID];
 
             // NPC conversations
-            
-            if (_.GetObjectType(talkTo.Object) == _.OBJECT_TYPE_CREATURE &&
+            if (GetObjectType(talkTo) == ObjectType.Creature &&
                 !talkTo.IsPlayer &&
                 !talkTo.IsDM)
             {
-                _.BeginConversation("dialog" + dialog.DialogNumber, new NWGameObject());
+                talkTo.AssignCommand(() => ActionStartConversation(player, "dialog" + dialog.DialogNumber, true, false));
             }
             // Everything else
             else
             {
-                player.AssignCommand(() => _.ActionStartConversation(talkTo.Object, "dialog" + dialog.DialogNumber, _.TRUE, _.FALSE));
+                player.AssignCommand(() => ActionStartConversation(talkTo.Object, "dialog" + dialog.DialogNumber, true, false));
             }
         }
 
@@ -170,8 +160,6 @@ namespace SWLOR.Game.Server.Service
 
         public static void EndConversation(NWPlayer player)
         {
-            if (player == null) throw new ArgumentNullException(nameof(player));
-            
             PlayerDialog playerDialog = LoadPlayerDialog(player.GlobalID);
             playerDialog.IsEnding = true;
             StorePlayerDialog(player.GlobalID, playerDialog);
@@ -179,21 +167,21 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleRest()
         {
-            NWPlayer player = (_.GetLastPCRested());
-            int restType = _.GetLastRestEventType();
+            NWPlayer player = (GetLastPCRested());
+            var restType = GetLastRestEventType();
 
-            if (restType != _.REST_EVENTTYPE_REST_STARTED ||
+            if (restType != RestEventType.Started ||
                 !player.IsValid ||
                 player.IsDM) return;
 
-            player.AssignCommand(() => _.ClearAllActions());
+            player.AssignCommand(() => ClearAllActions());
 
             StartConversation(player, player, "RestMenu");
         }
 
         public static void OnActionsTaken(int nodeID)
         {
-            NWPlayer player = (_.GetPCSpeaker());
+            NWPlayer player = (GetPCSpeaker());
             PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
 
             using (new Profiler(nameof(DialogService) + "." + nameof(OnActionsTaken) + "." + dialog.ActiveDialogName))
@@ -249,7 +237,7 @@ namespace SWLOR.Game.Server.Service
 
         public static bool OnAppearsWhen(int nodeType, int nodeID)
         {
-            NWPlayer player = (_.GetPCSpeaker());
+            NWPlayer player = (GetPCSpeaker());
             bool hasDialog = HasPlayerDialog(player.GlobalID);
             if (!hasDialog) return false;
             PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);
@@ -319,49 +307,49 @@ namespace SWLOR.Game.Server.Service
                     page = dialog.CurrentPage;
                     newNodeText = page.Header;
 
-                    _.SetCustomToken(90000 + dialogOffset, newNodeText);
+                    SetCustomToken(90000 + dialogOffset, newNodeText);
                     return true;
                 }
 
-                _.SetCustomToken(90001 + nodeID + dialogOffset, newNodeText);
+                SetCustomToken(90001 + nodeID + dialogOffset, newNodeText);
                 return displayNode;
             }
         }
 
         public static void OnDialogStart()
         {
-            NWPlayer pc = (_.GetLastUsedBy());
-            if (!pc.IsValid) pc = (_.GetPCSpeaker());
+            NWPlayer pc = (GetLastUsedBy());
+            if (!pc.IsValid) pc = (GetPCSpeaker());
 
-            string conversation = _.GetLocalString(NWGameObject.OBJECT_SELF, "CONVERSATION");
+            string conversation = GetLocalString(OBJECT_SELF, "CONVERSATION");
 
             using (new Profiler(nameof(DialogService) + "." + nameof(OnDialogStart) + "." + conversation))
             {
 
                 if (!string.IsNullOrWhiteSpace(conversation))
                 {
-                    int objectType = _.GetObjectType(NWGameObject.OBJECT_SELF);
-                    if (objectType == _.OBJECT_TYPE_PLACEABLE)
+                    var objectType = GetObjectType(OBJECT_SELF);
+                    if (objectType == ObjectType.Placeable)
                     {
-                        NWPlaceable talkTo = (NWGameObject.OBJECT_SELF);
+                        NWPlaceable talkTo = (OBJECT_SELF);
                         StartConversation(pc, talkTo, conversation);
                     }
                     else
                     {
-                        NWCreature talkTo = (NWGameObject.OBJECT_SELF);
+                        NWCreature talkTo = (OBJECT_SELF);
                         StartConversation(pc, talkTo, conversation);
                     }
                 }
                 else
                 {
-                    _.ActionStartConversation(pc.Object, "", _.TRUE, _.FALSE);
+                    ActionStartConversation(pc.Object, "", true, false);
                 }
             }
         }
 
         public static void OnDialogEnd()
         {
-            NWPlayer player = (_.GetPCSpeaker());
+            NWPlayer player = (GetPCSpeaker());
             if (!HasPlayerDialog(player.GlobalID)) return;
 
             PlayerDialog dialog = LoadPlayerDialog(player.GlobalID);

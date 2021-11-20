@@ -1,11 +1,12 @@
 ﻿using System;
-using NWN;
+using System.Numerics;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
-
-using static NWN._;
 
 namespace SWLOR.Game.Server.CustomEffect
 {
@@ -20,12 +21,12 @@ namespace SWLOR.Game.Server.CustomEffect
 
             player.AssignCommand(() =>
             {
-                _.ActionPlayAnimation(ANIMATION_LOOPING_SIT_CROSS, 1.0f, 6.1f);
+                _.ActionPlayAnimation(Animation.LoopingSitCross, 1.0f, 6.1f);
             });
 
             player.IsBusy = true;
 
-            string data = $"{player.Position.m_X},{player.Position.m_Y},{player.Position.m_Z}";
+            string data = $"{player.Position.X},{player.Position.Y},{player.Position.Z}";
 
             return data;
         }
@@ -40,7 +41,7 @@ namespace SWLOR.Game.Server.CustomEffect
 
             // Pull original position from data
             string[] values = data.Split(',');
-            Vector originalPosition = _.Vector
+            Vector3 originalPosition = _.Vector3
             (
                 Convert.ToSingle(values[0]),
                 Convert.ToSingle(values[1]),
@@ -48,11 +49,11 @@ namespace SWLOR.Game.Server.CustomEffect
             );
 
             // Check position
-            Vector position = player.Position;
+            Vector3 position = player.Position;
 
-            if ((Math.Abs(position.m_X - originalPosition.m_X) > 0.01f ||
-                 Math.Abs(position.m_Y - originalPosition.m_Y) > 0.01f ||
-                 Math.Abs(position.m_Z - originalPosition.m_Z) > 0.01f) ||
+            if ((Math.Abs(position.X - originalPosition.X) > 0.01f ||
+                 Math.Abs(position.Y - originalPosition.Y) > 0.01f ||
+                 Math.Abs(position.Z - originalPosition.Z) > 0.01f) ||
                 !CanRest(player) ||
                 !player.IsValid)
             {
@@ -65,16 +66,16 @@ namespace SWLOR.Game.Server.CustomEffect
 
             player.AssignCommand(() =>
             {
-                _.ActionPlayAnimation(ANIMATION_LOOPING_SIT_CROSS, 1.0f, 6.1f);
+                _.ActionPlayAnimation(Animation.LoopingSitCross, 1.0f, 6.1f);
             });
 
             if (restTick >= 6)
             {
                 int amount = CalculateAmount(player);
 
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, _.EffectHeal(amount), player);
-                Effect vfx = _.EffectVisualEffect(VFX_IMP_HEAD_HOLY);
-                _.ApplyEffectToObject(DURATION_TYPE_INSTANT, vfx, player);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(amount), player);
+                Effect vfx = _.EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Holy);
+                _.ApplyEffectToObject(DurationType.Instant, vfx, player);
                 restTick = 0;
             }
 

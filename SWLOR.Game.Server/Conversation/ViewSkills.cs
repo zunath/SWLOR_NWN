@@ -260,10 +260,30 @@ namespace SWLOR.Game.Server.Conversation
             Player dbPlayer = DataService.Player.GetByID(player.GlobalID);
             Model vm = GetDialogCustomData<Model>();
 
+            int rpXpToDistribute = dbPlayer.RoleplayXP;
+
+            PCSkill pcSkill = SkillService.GetPCSkill(player, vm.SelectedSkillID);
+            Skill skill = SkillService.GetSkill(vm.SelectedSkillID);
+            // Get all player skills and then sum them up by the rank.
+            int totalSkillCount = DataService.PCSkill
+                .GetAllByPlayerID(player.GlobalID)
+                .Where(x => DataService.Skill.GetByID(x.SkillID).ContributesToSkillCap)
+                .Sum(s => s.Rank);
+            int totalSkillXpToMaxRank = 0;
+            //totalSkillCount < SkillService.SkillCap
+            for (int x = pcSkill.Rank + 1; x < skill.MaxRank; x++)
+            {
+                int tempValue;
+                if (SkillService.SkillXPRequirements.TryGetValue(x, out tempValue))
+                {
+                    totalSkillXpToMaxRank += tempValue;
+                }
+            }
+
             switch (responseID)
             {
                 case 1: // Select All RP XP
-                    vm.RPXPDistributing = dbPlayer.RoleplayXP;
+                    vm.RPXPDistributing = totalSkillXpToMaxRank;
                     break;
                 case 2: // Increase by 1000
                     vm.RPXPDistributing += 1000;
@@ -289,12 +309,17 @@ namespace SWLOR.Game.Server.Conversation
                 case 9: // Decrease by 1
                     vm.RPXPDistributing -= 1;
                     break;
-                case 10: // Distribute Roleplay XP
+                case 10: // Distribute Roleplay XP                
 
                     // Make sure the player specified how much they want to distribute.
                     if (vm.RPXPDistributing <= 0)
                     {
                         player.SendMessage("Please specify how much RP XP you'd like to distribute into this skill.");
+                        vm.IsConfirming = false;
+                    }
+                    else if(vm.RPXPDistributing > totalSkillXpToMaxRank)
+                    {
+                        player.SendMessage("Please lower your distribution amount, current max for this skill is " + totalSkillXpToMaxRank + ".");
                         vm.IsConfirming = false;
                     }
                     else

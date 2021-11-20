@@ -1,11 +1,12 @@
 
 
 using System;
+using Dapper.Contrib.Extensions;
 using SWLOR.Game.Server.Data.Contracts;
 
 namespace SWLOR.Game.Server.Data.Entity
 {
-    [Table("[ModuleEvent]")]
+    [Table("ModuleEvent")]
     public class ModuleEvent: IEntity
     {
         public ModuleEvent()

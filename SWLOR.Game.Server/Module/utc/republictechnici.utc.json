@@ -404,7 +404,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 2
+    "value": 114
   },
   "PerceptionRange": {
     "type": "byte",
@@ -685,7 +685,7 @@
   },
   "SoundSetFile": {
     "type": "word",
-    "value": 0
+    "value": 193
   },
   "SpecAbilityList": {
     "type": "list",

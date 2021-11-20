@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using NWN;
-using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.NWNX;
-
-
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -27,7 +26,7 @@ namespace SWLOR.Game.Server.Service
             DamageEventData data = NWNXDamage.GetDamageEventData();
 
             NWPlayer player = data.Damager.Object;
-            NWCreature target = NWGameObject.OBJECT_SELF;
+            NWCreature target = _.OBJECT_SELF;
 
             int attackType = target.GetLocalInt(AbilityService.LAST_ATTACK + player.GlobalID);
 
@@ -56,15 +55,19 @@ namespace SWLOR.Game.Server.Service
             NWPlayer player = data.Damager.Object;
             NWItem weapon = _.GetLastWeaponUsed(player);
             
-            if (weapon.CustomItemType == CustomItemType.BlasterPistol ||
-                weapon.CustomItemType == CustomItemType.BlasterRifle)
+            if (weapon.CustomItemType == CustomItemType.BlasterPistol)
             {
                 int statBonus = (int)(player.DexterityModifier * 0.5f);
                 data.Base += statBonus;
             }
+            else if (weapon.CustomItemType == CustomItemType.BlasterRifle)
+            {
+                int statbonus = (int)(player.DexterityModifier * 0.6f);
+                data.Base += statbonus;
+            }
             else if (weapon.CustomItemType == CustomItemType.Lightsaber ||
                      weapon.CustomItemType == CustomItemType.Saberstaff ||
-                     weapon.GetLocalInt("LIGHTSABER") == TRUE)
+                     GetLocalBool(weapon, "LIGHTSABER"))
             {
                 int statBonus = (int) (player.CharismaModifier * 0.25f);
                 data.Base += statBonus;
@@ -78,7 +81,7 @@ namespace SWLOR.Game.Server.Service
             DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
             NWCreature damager = data.Damager.Object;
-            NWCreature target = NWGameObject.OBJECT_SELF;
+            NWCreature target = _.OBJECT_SELF;
 
             NWItem damagerWeapon = _.GetLastWeaponUsed(damager);
             NWItem targetWeapon = target.RightHand;
@@ -96,7 +99,7 @@ namespace SWLOR.Game.Server.Service
             string action;
             // Check target's equipped weapon, armor and perk.
             if (targetWeapon.CustomItemType == CustomItemType.MartialArtWeapon ||
-                !target.RightHand.IsValid && !target.LeftHand.IsValid)
+                (!target.RightHand.IsValid && !target.LeftHand.IsValid))
             {
                 // Martial Arts (weapon or unarmed) uses the Evade Blaster Fire perk which is primarily DEX based.
                 perkLevel = PerkService.GetCreaturePerkLevel(target.Object, PerkType.EvadeBlasterFire);
@@ -105,7 +108,7 @@ namespace SWLOR.Game.Server.Service
             }
             else if (targetWeapon.CustomItemType == CustomItemType.Lightsaber ||
                      targetWeapon.CustomItemType == CustomItemType.Saberstaff ||
-                     targetWeapon.GetLocalInt("LIGHTSABER") == TRUE)
+                     GetLocalBool(targetWeapon, "LIGHTSABER"))
             {
                 // Lightsabers (lightsaber or saberstaff) uses the Deflect Blaster Fire perk which is primarily CHA based.
                 perkLevel = PerkService.GetCreaturePerkLevel(target.Object, PerkType.DeflectBlasterFire);
@@ -171,7 +174,7 @@ namespace SWLOR.Game.Server.Service
             DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
 
-            NWCreature target = NWGameObject.OBJECT_SELF;
+            NWCreature target = _.OBJECT_SELF;
             NWItem shield = target.LeftHand;
             var concentrationEffect = AbilityService.GetActiveConcentrationEffect(target);
             double reduction = 0.0f;
@@ -186,8 +189,8 @@ namespace SWLOR.Game.Server.Service
                 int perkLevel = PerkService.GetCreaturePerkLevel(target.Object, PerkType.ShieldProficiency);
                 float perkBonus = 0.02f * perkLevel;
 
-                // DI = 10% + 1% / 3 AC bonuses on the shield + 2% per perk bonus. 
-                reduction = (0.1 + 0.01 * shield.AC / 3) + perkBonus;
+                // DI = 10% + 1% AC bonuses on the shield + 2% per perk bonus. 
+                reduction = (0.1 + (0.01 * shield.CustomAC)) + perkBonus;
             }
             // Calculate Absorb Energy concentration effect reduction.
             if (concentrationEffect.Type == PerkType.AbsorbEnergy)
@@ -197,18 +200,27 @@ namespace SWLOR.Game.Server.Service
                 {
                     reduction = perkReduction;
                     // Calculate and award force XP based on total damage reduced.
-                    int xp = (int)(data.Total * reduction * 3);
+                    int xp = (int)(data.Total * 3);
                     if (xp < 5) xp = 5;
 
                     SkillService.GiveSkillXP(target.Object, SkillType.ForceControl, xp);
                     // Play a visual effect signifying the ability was activated.
-                    _.ApplyEffectToObject(DURATION_TYPE_TEMPORARY, EffectVisualEffect(VFX_DUR_BLUR), target, 0.5f);
+                    _.ApplyEffectToObject(DurationType.Temporary, EffectVisualEffect(VisualEffect.Dur_Blur), target, 0.5f);
+                }
+            }
+            //Shield Oath Damage Immunity
+            NWPlayer player = _.OBJECT_SELF;
+            if (target.IsPC)
+            {
+                if (CustomEffectService.GetCurrentStanceType(player) == CustomEffectType.ShieldOath)
+                {
+                    reduction += 0.2f;
                 }
             }
 
             // No reduction found. Bail out early.
             if (reduction <= 0.0f) return;
-
+            target.SendMessage("Total Damage: " + data.Total);
             target.SendMessage("Damage reduced by " + (int)(reduction * 100) + "%");
             reduction = 1.0f - reduction;
 
@@ -218,13 +230,15 @@ namespace SWLOR.Game.Server.Service
             data.Magical = (int)(data.Magical * reduction);
             data.Acid = (int)(data.Acid * reduction);
             data.Cold = (int)(data.Cold * reduction);
-            data.Divine = (int)(data.Divine * reduction);
+            //data.Divine = (int)(data.Divine * reduction); -- special damage types, such as force rage
             data.Electrical = (int)(data.Electrical * reduction);
             data.Fire = (int)(data.Fire * reduction);
             data.Negative = (int)(data.Negative * reduction);
             data.Positive = (int)(data.Positive * reduction);
             data.Sonic = (int)(data.Sonic * reduction);
             data.Base = (int)(data.Base * reduction);
+            
+            target.SendMessage("Total Damage: " + data.Total);
 
             NWNXDamage.SetDamageEventData(data);
         }
@@ -239,7 +253,7 @@ namespace SWLOR.Game.Server.Service
             if (damager.IsPlayer && sneakAttackType > 0)
             {
                 NWPlayer player = damager.Object;
-                NWCreature target = NWGameObject.OBJECT_SELF;
+                NWCreature target = _.OBJECT_SELF;
                 var pcPerk = PerkService.GetPCPerkByID(damager.GlobalID, (int) PerkType.SneakAttack);
                 int perkRank = pcPerk?.PerkLevel ?? 0;
                 int perkBonus = 1;
@@ -276,7 +290,7 @@ namespace SWLOR.Game.Server.Service
         {
             DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
-            NWObject target = NWGameObject.OBJECT_SELF;
+            NWObject target = _.OBJECT_SELF;
             if (!target.IsPlayer) return;
 
             NWPlayer player = target.Object;
@@ -301,7 +315,7 @@ namespace SWLOR.Game.Server.Service
         {
             DamageEventData data = NWNXDamage.GetDamageEventData();
             NWObject damager = data.Damager;
-            bool isActive = damager.GetLocalInt("RECOVERY_BLAST_ACTIVE") == TRUE;
+            bool isActive = GetLocalBool(damager,"RECOVERY_BLAST_ACTIVE");
             damager.DeleteLocalInt("RECOVERY_BLAST_ACTIVE");
             NWItem weapon = _.GetLastWeaponUsed(damager.Object);
 
@@ -328,7 +342,7 @@ namespace SWLOR.Game.Server.Service
         {
             DamageEventData data = NWNXDamage.GetDamageEventData();
             if (data.Total <= 0) return;
-            NWObject self = NWGameObject.OBJECT_SELF;
+            NWObject self = _.OBJECT_SELF;
 
             // Ignore the first damage because it occurred during the application of the effect.
             if (self.GetLocalInt("TRANQUILIZER_EFFECT_FIRST_RUN") > 0)
@@ -337,7 +351,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            for (Effect effect = _.GetFirstEffect(self.Object); _.GetIsEffectValid(effect) == TRUE; effect = _.GetNextEffect(self.Object))
+            for (var effect = _.GetFirstEffect(self.Object); _.GetIsEffectValid(effect) == true; effect = _.GetNextEffect(self.Object))
             {
                 if (_.GetEffectTag(effect) == "TRANQUILIZER_EFFECT")
                 {
@@ -388,17 +402,17 @@ namespace SWLOR.Game.Server.Service
         /// <returns>Data regarding the ability resistance roll</returns>
         public static AbilityResistanceResult CalculateAbilityResistance(NWCreature attacker, NWCreature defender, SkillType skill, ForceBalanceType balanceType, bool sendRollMessage = true)
         {
-            int abilityScoreType;
+            AbilityType abilityScoreType;
             switch (skill)
             {
                 case SkillType.ForceAlter:
-                    abilityScoreType = ABILITY_INTELLIGENCE;
+                    abilityScoreType = AbilityType.Intelligence;
                     break;
                 case SkillType.ForceControl:
-                    abilityScoreType = ABILITY_WISDOM;
+                    abilityScoreType = AbilityType.Wisdom;
                     break;
                 case SkillType.ForceSense:
-                    abilityScoreType = ABILITY_CHARISMA;
+                    abilityScoreType = AbilityType.Charisma;
                     break;
                 default:
                     throw new ArgumentException("Invalid skill type called for " + nameof(CalculateAbilityResistance) + ", value '" + skill + "' not supported.");
@@ -442,7 +456,7 @@ namespace SWLOR.Game.Server.Service
 
             float attackerTotal = attackerSkill + attackerAbility + attackerAffinity + attackerCR;
             float defenderTotal = defenderSkill + defenderAbility + defenderAffinity + defenderCR;
-            float divisor = attackerTotal + defenderTotal + 1; // +1 to prevent division by zero.
+            //float divisor = attackerTotal + defenderTotal + 1; // +1 to prevent division by zero.
 
             //Console.WriteLine("attackerCR = " + attackerCR);
             //Console.WriteLine("defenderCR = " + defenderCR);
@@ -456,8 +470,11 @@ namespace SWLOR.Game.Server.Service
             //Console.WriteLine("defenderTotal = " + defenderTotal);
             //Console.WriteLine("divisor = " + divisor);
 
-            result.DC = (int) (defenderTotal / divisor * 100);
-            result.Roll = RandomService.D100(1);
+            result.DC = (int)defenderTotal + 10;
+                // divisor * 100);
+            result.Roll = RandomService.D20(1) + (int)attackerTotal;
+
+
 
             if (sendRollMessage)
             {

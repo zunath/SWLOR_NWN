@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using NWN;
+using SWLOR.Game.Server.NWN;
 
 namespace SWLOR.Game.Server.GameObject
 {
     public class NWPlayer : NWCreature
     {
-        public NWPlayer(NWGameObject nwnObject)
+        public NWPlayer(uint nwnObject)
             : base(nwnObject)
         {
         }
@@ -48,12 +48,12 @@ namespace SWLOR.Game.Server.GameObject
             return Object.GetHashCode();
         }
 
-        public static implicit operator NWGameObject(NWPlayer o)
+        public static implicit operator uint(NWPlayer o)
         {
             return o.Object;
         }
 
-        public static implicit operator NWPlayer(NWGameObject o)
+        public static implicit operator NWPlayer(uint o)
         {
             return new NWPlayer(o);
         }

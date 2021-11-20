@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.Caching
 
         public PCMarketListing GetByIDOrDefault(Guid id)
         {
-            if (!ByID.ContainsKey(id)) return default;
+            if (!ByID.ContainsKey(id)) return default(PCMarketListing);
 
             return (PCMarketListing)ByID[id].Clone();
         }

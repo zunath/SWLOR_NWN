@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.Event.SWLOR

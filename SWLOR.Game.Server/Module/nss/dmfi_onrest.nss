@@ -102,7 +102,7 @@ animation.
 
 Included in this package is a way to do "Alternate Resting Animations". These
 animations simply change the way you appear when you rest. Since they use the
-ForceRest() function, it isn't a "true" rest... rather it sets you for a certain
+ForceRest() function, it isn't a "TRUE" rest... rather it sets you for a certain
 amount of time (equal to a normal rest) as un-moveable, and applies the rest at
 the end of that time. This just means you don't get the little egg timer.
 

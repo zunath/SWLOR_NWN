@@ -1,11 +1,11 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
@@ -25,10 +25,10 @@ namespace SWLOR.Game.Server.Item.Medicine
 
             foreach (Effect effect in target.Effects)
             {
-                if (_.GetIsEffectValid(effect) == TRUE)
+                if (_.GetIsEffectValid(effect) == true)
                 {
-                    int effectType = _.GetEffectType(effect);
-                    if (effectType == EFFECT_TYPE_POISON || effectType == EFFECT_TYPE_DISEASE)
+                    var effectType = _.GetEffectType(effect);
+                    if (effectType == EffectTypeScript.Poison || effectType == EffectTypeScript.Disease || effectType == EffectTypeScript.AbilityDecrease)
                     {
                         _.RemoveEffect(target.Object, effect);
                     }
@@ -64,9 +64,9 @@ namespace SWLOR.Game.Server.Item.Medicine
             return true;
         }
 
-        public int AnimationID()
+        public Animation AnimationID()
         {
-            return ANIMATION_LOOPING_GET_MID;
+            return Animation.LoopingGetMid;
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)
@@ -90,10 +90,10 @@ namespace SWLOR.Game.Server.Item.Medicine
             bool hasEffect = false;
             foreach (Effect effect in target.Effects)
             {
-                if (_.GetIsEffectValid(effect) == TRUE)
+                if (_.GetIsEffectValid(effect) == true)
                 {
-                    int effectType = _.GetEffectType(effect);
-                    if (effectType == EFFECT_TYPE_POISON || effectType == EFFECT_TYPE_DISEASE)
+                    var effectType = _.GetEffectType(effect);
+                    if (effectType == EffectTypeScript.Poison || effectType == EffectTypeScript.Disease || effectType == EffectTypeScript.AbilityDecrease)
                     {
                         hasEffect = true;
                     }

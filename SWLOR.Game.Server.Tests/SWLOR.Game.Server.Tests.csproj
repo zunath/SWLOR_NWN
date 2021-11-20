@@ -1,181 +1,25 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\packages\NUnit3TestAdapter.3.14.0\build\net35\NUnit3TestAdapter.props" Condition="Exists('..\packages\NUnit3TestAdapter.3.14.0\build\net35\NUnit3TestAdapter.props')" />
-  <Import Project="..\packages\NUnit.3.12.0\build\NUnit.props" Condition="Exists('..\packages\NUnit.3.12.0\build\NUnit.props')" />
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C05D52A5-E0FA-4C7C-ABBD-0DBD60E3749B}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SWLOR.Game.Server.Tests</RootNamespace>
-    <AssemblyName>SWLOR.Game.Server.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFramework>net5.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+
+  <ItemGroup>
+    <PackageReference Include="nunit" Version="3.12.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.16.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="nunit.framework, Version=3.12.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>..\packages\NUnit.3.12.0\lib\net45\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.3\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Caching\ApartmentBuildingCacheTests.cs" />
-    <Compile Include="Caching\AreaCachingTests.cs" />
-    <Compile Include="Caching\AssociationCachingTests.cs" />
-    <Compile Include="Caching\AttributeCachingTests.cs" />
-    <Compile Include="Caching\AuthorizedDMCachingTests.cs" />
-    <Compile Include="Caching\BankCachingTests.cs" />
-    <Compile Include="Caching\BankItemCachingTests.cs" />
-    <Compile Include="Caching\BaseItemTypeCachingTests.cs" />
-    <Compile Include="Caching\BaseStructureCachingTests.cs" />
-    <Compile Include="Caching\BaseStructureTypeCachingTests.cs" />
-    <Compile Include="Caching\BugReportCachingTests.cs" />
-    <Compile Include="Caching\BuildingStyleCachingTests.cs" />
-    <Compile Include="Caching\BuildingTypeCachingTests.cs" />
-    <Compile Include="Caching\ChatChannelCachingTests.cs" />
-    <Compile Include="Caching\ChatLogCachingTests.cs" />
-    <Compile Include="Caching\ClientLogEventCachingTests.cs" />
-    <Compile Include="Caching\ClientLogEventTypeCachingTests.cs" />
-    <Compile Include="Caching\ComponentTypeCachingTests.cs" />
-    <Compile Include="Caching\CooldownCategoryCachingTests.cs" />
-    <Compile Include="Caching\CraftBlueprintCachingTests.cs" />
-    <Compile Include="Caching\CraftBlueprintCategoryCachingTests.cs" />
-    <Compile Include="Caching\CraftDeviceCachingTests.cs" />
-    <Compile Include="Caching\CustomEffectCachingTests.cs" />
-    <Compile Include="Caching\CustomEffectCategoryCachingTests.cs" />
-    <Compile Include="Caching\DatabaseVersionCachingTests.cs" />
-    <Compile Include="Caching\DMActionCachingTests.cs" />
-    <Compile Include="Caching\DMActionTypeCachingTests.cs" />
-    <Compile Include="Caching\DMRoleCachingTests.cs" />
-    <Compile Include="Caching\DownloadCachingTests.cs" />
-    <Compile Include="Caching\EnmityAdjustmentRuleCachingTests.cs" />
-    <Compile Include="Caching\ErrorCachingTests.cs" />
-    <Compile Include="Caching\FameRegionCachingTests.cs" />
-    <Compile Include="Caching\GameTopicCachingTests.cs" />
-    <Compile Include="Caching\GameTopicCategoryCachingTests.cs" />
-    <Compile Include="Caching\GuildCachingTests.cs" />
-    <Compile Include="Caching\GuildTaskCachingTests.cs" />
-    <Compile Include="Caching\ItemTypeCachingTests.cs" />
-    <Compile Include="Caching\JukeboxSongCachingTests.cs" />
-    <Compile Include="Caching\KeyItemCachingTests.cs" />
-    <Compile Include="Caching\KeyItemCategoryCachingTests.cs" />
-    <Compile Include="Caching\LootTableCachingTests.cs" />
-    <Compile Include="Caching\LootTableItemCachingTests.cs" />
-    <Compile Include="Caching\MarketCategoryCachingTests.cs" />
-    <Compile Include="Caching\MessageCachingTests.cs" />
-    <Compile Include="Caching\NPCGroupCachingTests.cs" />
-    <Compile Include="Caching\PCBaseCachingTests.cs" />
-    <Compile Include="Caching\PCBasePermissionCachingTests.cs" />
-    <Compile Include="Caching\PCBaseStructureCachingTests.cs" />
-    <Compile Include="Caching\PCBaseStructureItemCachingTests.cs" />
-    <Compile Include="Caching\PCBaseStructurePermissionCachingTests.cs" />
-    <Compile Include="Caching\PCBaseTypeCachingTests.cs" />
-    <Compile Include="Caching\PCCooldownCachingTests.cs" />
-    <Compile Include="Caching\PCCraftedBlueprintCachingTests.cs" />
-    <Compile Include="Caching\PCCustomEffectCachingTests.cs" />
-    <Compile Include="Caching\PCGuildPointCachingTests.cs" />
-    <Compile Include="Caching\PCImpoundedItemCachingTests.cs" />
-    <Compile Include="Caching\PCKeyItemCachingTests.cs" />
-    <Compile Include="Caching\PCMapPinCachingTests.cs" />
-    <Compile Include="Caching\PCMapProgressionCachingTests.cs" />
-    <Compile Include="Caching\PCMarketListingCachingTests.cs" />
-    <Compile Include="Caching\PCObjectVisibilityCachingTests.cs" />
-    <Compile Include="Caching\PCOutfitCachingTests.cs" />
-    <Compile Include="Caching\PCOverflowItemCachingTests.cs" />
-    <Compile Include="Caching\PCPerkCachingTests.cs" />
-    <Compile Include="Caching\PCPerkRefundCachingTests.cs" />
-    <Compile Include="Caching\PCQuestItemProgressCachingTests.cs" />
-    <Compile Include="Caching\PCQuestKillTargetProgressCachingTests.cs" />
-    <Compile Include="Caching\PCQuestStatusCachingTests.cs" />
-    <Compile Include="Caching\PCRegionalFameCachingTests.cs" />
-    <Compile Include="Caching\PCSkillCachingTests.cs" />
-    <Compile Include="Caching\PCSkillPoolCachingTests.cs" />
-    <Compile Include="Caching\PerkCachingTests.cs" />
-    <Compile Include="Caching\PerkCategoryCachingTests.cs" />
-    <Compile Include="Caching\PerkFeatCachingTests.cs" />
-    <Compile Include="Caching\PerkLevelCachingTests.cs" />
-    <Compile Include="Caching\PerkLevelQuestRequirementCachingTests.cs" />
-    <Compile Include="Caching\PerkLevelSkillRequirementCachingTests.cs" />
-    <Compile Include="Caching\PlayerCachingTests.cs" />
-    <Compile Include="Caching\ServerConfigurationCachingTests.cs" />
-    <Compile Include="Caching\SkillCachingTests.cs" />
-    <Compile Include="Caching\SkillCategoryCachingTests.cs" />
-    <Compile Include="Caching\SpaceEncounterCachingTests.cs" />
-    <Compile Include="Caching\SpaceStarportCachingTests.cs" />
-    <Compile Include="Caching\SpawnCachingTests.cs" />
-    <Compile Include="Caching\SpawnObjectCachingTests.cs" />
-    <Compile Include="Caching\SpawnObjectTypeCachingTests.cs" />
-    <Compile Include="Caching\StructureModeCachingTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ValueObject\Dialog\DialogPageTests.cs" />
-    <Compile Include="ValueObject\Dialog\DialogResponseTests.cs" />
-    <Compile Include="ValueObject\Dialog\PlayerDialogTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj">
-      <Project>{f2c6f36d-74fa-489e-8891-51a3b390c55a}</Project>
-      <Name>SWLOR.Game.Server</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="GameObject\" />
-    <Folder Include="Service\" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\NUnit.3.12.0\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NUnit.3.12.0\build\NUnit.props'))" />
-    <Error Condition="!Exists('..\packages\NUnit3TestAdapter.3.14.0\build\net35\NUnit3TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NUnit3TestAdapter.3.14.0\build\net35\NUnit3TestAdapter.props'))" />
-  </Target>
 </Project>

@@ -1,5 +1,5 @@
 ﻿using System;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 
@@ -7,6 +7,7 @@ using SWLOR.Game.Server.ValueObject;
 using SWLOR.Game.Server.ValueObject.Dialog;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -65,8 +66,8 @@ namespace SWLOR.Game.Server.Conversation
         {
             ClearPageResponses("MainPage");
             var data = BaseService.GetPlayerTempData(GetPC());
-            int cellX = (int)(_.GetPositionFromLocation(data.TargetLocation).m_X / 10.0f);
-            int cellY = (int)(_.GetPositionFromLocation(data.TargetLocation).m_Y / 10.0f);
+            int cellX = (int)(_.GetPositionFromLocation(data.TargetLocation).X / 10.0f);
+            int cellY = (int)(_.GetPositionFromLocation(data.TargetLocation).Y / 10.0f);
             string sector = BaseService.GetSectorOfLocation(data.TargetLocation);
 
             Area dbArea = DataService.Area.GetByResref(data.TargetArea.Resref);
@@ -84,6 +85,7 @@ namespace SWLOR.Game.Server.Conversation
             bool canRenameStructure = false;
             bool canChangeStructureMode = false;
             bool canEditPublicBasePermissions = false;
+            bool canAdjustLighting = false;
 
             string header = ColorTokenService.Green("Base Management Menu\n\n");
             header += ColorTokenService.Green("Area: ") + data.TargetArea.Name + " (" + cellX + ", " + cellY + ")\n\n";
@@ -117,6 +119,7 @@ namespace SWLOR.Game.Server.Conversation
                 canEditBuildingPermissions = BasePermissionService.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanAdjustPermissions);
                 canEditBuildingPublicPermissions = BasePermissionService.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanAdjustPublicPermissions);
                 canChangeStructureMode = false; // Starships cannot be workshops.
+                canAdjustLighting = true;
                 data.StructureID = pcBaseStructureID;
             }
             // Area is not buildable.
@@ -156,6 +159,7 @@ namespace SWLOR.Game.Server.Conversation
                 canEditBuildingPermissions = BasePermissionService.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanAdjustPermissions);
                 canEditBuildingPublicPermissions = BasePermissionService.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanAdjustPublicPermissions);
                 canChangeStructureMode = BasePermissionService.HasStructurePermission(GetPC(), pcBaseStructureID, StructurePermission.CanChangeStructureMode);
+                canAdjustLighting = true;
                 data.StructureID = pcBaseStructureID;
             }
             // Building type is an apartment
@@ -178,6 +182,7 @@ namespace SWLOR.Game.Server.Conversation
                 canEditPrimaryResidence = BasePermissionService.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanEditPrimaryResidence);
                 canRemovePrimaryResidence = BasePermissionService.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanRemovePrimaryResidence);
                 canRenameStructure = BasePermissionService.HasBasePermission(GetPC(), pcBaseID, BasePermission.CanRenameStructures);
+                canAdjustLighting = true;
                 data.PCBaseID = pcBaseID;
             }
             // Building type is an exterior building
@@ -265,6 +270,7 @@ namespace SWLOR.Game.Server.Conversation
             AddResponseToPage("MainPage", "Edit Primary Residence", canEditPrimaryResidence || canRemovePrimaryResidence);
             AddResponseToPage("MainPage", "Rename Building", canRenameStructure);
             AddResponseToPage("MainPage", "Edit Building Mode", canChangeStructureMode);
+            AddResponseToPage("MainPage", "Adjust Lighting", canAdjustLighting);
         }
 
         public override void DoAction(NWPlayer player, string pageName, int responseID)
@@ -307,7 +313,7 @@ namespace SWLOR.Game.Server.Conversation
 
                     if (string.IsNullOrWhiteSpace(newDescription))
                     {
-                        _.FloatingTextStringOnCreature("Type in a new name to the chat bar and then press 'Next'.", GetPC().Object, _.FALSE);
+                        _.FloatingTextStringOnCreature("Type in a new name to the chat bar and then press 'Next'.", GetPC().Object, false);
                         return;
                     }
 
@@ -422,11 +428,14 @@ namespace SWLOR.Game.Server.Conversation
                     break;
                 case 7: // Rename Building/Apartment
                     GetPC().SetLocalInt("LISTENING_FOR_DESCRIPTION", 1);
-                    _.FloatingTextStringOnCreature("Type in a new name to the chat bar and then press 'Next'.", GetPC().Object, _.FALSE);
+                    _.FloatingTextStringOnCreature("Type in a new name to the chat bar and then press 'Next'.", GetPC().Object, false);
                     ChangePage("RenamePage");
                     break;
                 case 8: // Edit Building Mode
                     SwitchConversation("EditBuildingMode");
+                    break;
+                case 9: // AdjustLighting
+                    SwitchConversation("AdjustLighting");
                     break;
             }
         }
@@ -937,10 +946,12 @@ namespace SWLOR.Game.Server.Conversation
             var data = BaseService.GetPlayerTempData(GetPC());
             bool canPlaceEditStructures;
             var structure = data.ManipulatingStructure.Structure;
-            Vector position = _.GetPositionFromLocation(data.TargetLocation);
-            Vector playerposition = _.GetPositionFromLocation(GetPC().Location); 
+            Vector3 position = _.GetPositionFromLocation(data.TargetLocation);
+            Vector3 playerposition = _.GetPositionFromLocation(GetPC().Location); 
 
-            if (data.BuildingType == Enumeration.BuildingType.Interior)
+            if (data.BuildingType == Enumeration.BuildingType.Interior ||
+                data.BuildingType == Enumeration.BuildingType.Apartment ||
+                data.BuildingType == Enumeration.BuildingType.Starship)
             {
                 var structureID = new Guid(data.ManipulatingStructure.Structure.Area.GetLocalString("PC_BASE_STRUCTURE_ID"));
                 canPlaceEditStructures = BasePermissionService.HasStructurePermission(GetPC(), structureID, StructurePermission.CanPlaceEditStructures);
@@ -956,15 +967,15 @@ namespace SWLOR.Game.Server.Conversation
                 return;
             }
 
-            if (playerposition.m_Z + position.m_Z > 10.0f ||
-                playerposition.m_Z + position.m_Z < -10.0f)
+            if (playerposition.Z + position.Z > 10.0f ||
+                playerposition.Z + position.Z < -10.0f)
             {
                 GetPC().SendMessage("This structure cannot be moved any further in this direction.");
                 return;
             }
             else
             {
-                position.m_Z += degrees;
+                position.Z += degrees;
             }
 
             structure.Location = _.Location(_.GetAreaFromLocation(data.TargetLocation),
@@ -979,7 +990,7 @@ namespace SWLOR.Game.Server.Conversation
             LoadRotatePage();
 
             var dbStructure = DataService.PCBaseStructure.GetByID(data.ManipulatingStructure.PCBaseStructureID);
-            dbStructure.LocationZ = position.m_Z;
+            dbStructure.LocationZ = position.Z;
             
             DataService.SubmitDataChange(dbStructure, DatabaseActionType.Update);
         }

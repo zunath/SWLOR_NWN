@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 169
+    "value": 170
   },
   "Appearance_Type": {
     "type": "word",
@@ -26,7 +26,7 @@
   },
   "BodyPart_LFArm": {
     "type": "byte",
-    "value": 1
+    "value": 2
   },
   "BodyPart_LFoot": {
     "type": "byte",
@@ -86,11 +86,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 100
+    "value": 70
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 104.0
+    "value": 44.0
   },
   "ClassList": {
     "type": "list",
@@ -103,14 +103,14 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 50
+          "value": 20
         }
       }
     ]
   },
   "Color_Hair": {
     "type": "byte",
-    "value": 1
+    "value": 4
   },
   "Color_Skin": {
     "type": "byte",
@@ -118,11 +118,11 @@
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 1
+    "value": 52
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 1
+    "value": 50
   },
   "Comment": {
     "type": "cexostring",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 100
+    "value": 70
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 1000
+    "value": 650
   },
   "DecayTime": {
     "type": "dword",
@@ -158,7 +158,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 100
+    "value": 70
   },
   "Disarmable": {
     "type": "byte",
@@ -265,34 +265,6 @@
         "Feat": {
           "type": "word",
           "value": 584
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 755
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 756
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 757
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 759
         }
       },
       {
@@ -482,7 +454,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Republic Commander"
+      "0": "Republic Base Commander"
     }
   },
   "fortbonus": {
@@ -499,11 +471,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 1000
+    "value": 650
   },
   "Int": {
     "type": "byte",
-    "value": 100
+    "value": 70
   },
   "Interruptable": {
     "type": "byte",
@@ -553,11 +525,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 3250
+    "value": 1250
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 45
+    "value": 25
   },
   "NoPermDeath": {
     "type": "byte",
@@ -565,7 +537,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 2
+    "value": 114
   },
   "PerceptionRange": {
     "type": "byte",
@@ -858,7 +830,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 100
+    "value": 70
   },
   "Subrace": {
     "type": "cexostring",
@@ -882,7 +854,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 6
+    "value": 4
   },
   "willbonus": {
     "type": "short",
@@ -894,6 +866,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 100
+    "value": 70
   }
 }

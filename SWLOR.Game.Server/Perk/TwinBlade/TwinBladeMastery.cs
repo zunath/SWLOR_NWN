@@ -1,7 +1,6 @@
 ﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-
-using NWN;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 
@@ -69,9 +68,9 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
 
         private void RemoveFeats(NWCreature creature)
         {
-            NWNXCreature.RemoveFeat(creature, _.FEAT_TWO_WEAPON_FIGHTING);
-            NWNXCreature.RemoveFeat(creature, _.FEAT_AMBIDEXTERITY);
-            NWNXCreature.RemoveFeat(creature, _.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
+            NWNXCreature.RemoveFeat(creature, Feat.TwoWeaponFighting);
+            NWNXCreature.RemoveFeat(creature, Feat.Ambidexterity);
+            NWNXCreature.RemoveFeat(creature, Feat.ImprovedTwoWeaponFighting);
         }
 
         private void ApplyFeatChanges(NWCreature creature, NWItem unequippedItem)
@@ -85,15 +84,15 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
             }
 
             int perkLevel = PerkService.GetCreaturePerkLevel(creature, PerkType.TwinBladeMastery);
-            NWNXCreature.AddFeat(creature, _.FEAT_TWO_WEAPON_FIGHTING);
+            NWNXCreature.AddFeat(creature, Feat.TwoWeaponFighting);
 
             if (perkLevel >= 2)
             {
-                NWNXCreature.AddFeat(creature, _.FEAT_AMBIDEXTERITY);
+                NWNXCreature.AddFeat(creature, Feat.Ambidexterity);
             }
             if (perkLevel >= 3)
             {
-                NWNXCreature.AddFeat(creature, _.FEAT_IMPROVED_TWO_WEAPON_FIGHTING);
+                NWNXCreature.AddFeat(creature, Feat.TwoWeaponFighting);
             }
         }
 

@@ -1,22 +1,22 @@
 ﻿using System.Collections.Generic;
-using NWN;
-using static NWN._;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWN.Enum.Area;
 
 namespace SWLOR.Game.Server.GameObject
 {
     public class NWArea : NWObject
     {
-        public NWArea(NWGameObject o) 
+        public NWArea(uint o) 
             : base(o)
         {
             
         }
 
-        public int Width => _.GetAreaSize(AREA_WIDTH, Object);
+        public int Width => _.GetAreaSize(Dimension.Width, Object);
 
-        public int Height => _.GetAreaSize(AREA_HEIGHT, Object);
+        public int Height => _.GetAreaSize(Dimension.Height, Object);
 
-        public bool IsInstance => _.GetLocalInt(Object, "IS_AREA_INSTANCE") == TRUE;
+        public bool IsInstance => _.GetLocalBool(Object, "IS_AREA_INSTANCE");
 
         public IEnumerable<NWObject> Objects
         {
@@ -56,12 +56,12 @@ namespace SWLOR.Game.Server.GameObject
             return Object.GetHashCode();
         }
 
-        public static implicit operator NWGameObject(NWArea o)
+        public static implicit operator uint(NWArea o)
         {
             return o.Object;
         }
 
-        public static implicit operator NWArea(NWGameObject o)
+        public static implicit operator NWArea(uint o)
         {
             return new NWArea(o);
         }

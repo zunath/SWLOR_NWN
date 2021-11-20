@@ -1,13 +1,13 @@
-﻿using System;
-using System.Linq;
-using NWN;
+﻿using System.Linq;
+using System.Numerics;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Events.Creature;
-using SWLOR.Game.Server.SpawnRule.Contracts;
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void ProcessLoot()
         {
-            NWCreature creature = NWGameObject.OBJECT_SELF;
+            NWCreature creature = _.OBJECT_SELF;
             
             // Single loot table (without an index)
             int singleLootTableID = creature.GetLocalInt("LOOT_TABLE_ID");
@@ -112,15 +112,15 @@ namespace SWLOR.Game.Server.Service
 
         private static void ProcessCorpse()
         {
-            SetIsDestroyable(FALSE);
+            SetIsDestroyable(false);
 
-            NWObject self = NWGameObject.OBJECT_SELF;
+            NWObject self = _.OBJECT_SELF;
             if (self.Tag == "spaceship_copy") return;
 
-            Vector lootPosition = Vector(self.Position.m_X, self.Position.m_Y, self.Position.m_Z - 0.11f);
+            Vector3 lootPosition = Vector3(self.Position.X, self.Position.Y, self.Position.Z - 0.11f);
             Location spawnLocation = Location(self.Area, lootPosition, self.Facing);
 
-            NWPlaceable container = CreateObject(OBJECT_TYPE_PLACEABLE, "corpse", spawnLocation);
+            NWPlaceable container = CreateObject(ObjectType.Placeable, "corpse", spawnLocation);
             container.SetLocalObject("CORPSE_BODY", self);
             container.Name = self.Name + "'s Corpse";
 
@@ -130,21 +130,22 @@ namespace SWLOR.Game.Server.Service
             });
 
             // Dump equipped items in container
-            for (int slot = 0; slot < NUM_INVENTORY_SLOTS; slot++)
+            for (var slot = 0; slot < NumberOfInventorySlots; slot++)
             {
-                if (slot == INVENTORY_SLOT_CARMOUR ||
-                    slot == INVENTORY_SLOT_CWEAPON_B ||
-                    slot == INVENTORY_SLOT_CWEAPON_L ||
-                    slot == INVENTORY_SLOT_CWEAPON_R)
+                var inventorySlot = (InventorySlot) slot;
+                if (inventorySlot == InventorySlot.CreatureArmor ||
+                    inventorySlot == InventorySlot.CreatureBite ||
+                    inventorySlot == InventorySlot.CreatureRight ||
+                    inventorySlot == InventorySlot.CreatureLeft)
                     continue;
 
-                NWItem item = GetItemInSlot(slot, self);
+                NWItem item = GetItemInSlot(inventorySlot, self);
                 if (item.IsValid && !item.IsCursed && item.IsDroppable)
                 {
-                    NWItem copy = CopyItem(item, container, TRUE);
+                    NWItem copy = CopyItem(item, container, true);
 
-                    if (slot == INVENTORY_SLOT_HEAD ||
-                        slot == INVENTORY_SLOT_CHEST)
+                    if (inventorySlot == InventorySlot.Head  ||
+                        inventorySlot == InventorySlot.Chest)
                     {
                         copy.SetLocalObject("CORPSE_ITEM_COPY", item);
                     }
@@ -159,17 +160,17 @@ namespace SWLOR.Game.Server.Service
             {
                 if (item.IsValid && !item.IsCursed && item.IsDroppable)
                 {
-                    CopyItem(item, container, TRUE);
+                    CopyItem(item, container, true);
                     item.Destroy();
                 }
             }
 
-            DelayCommand(360.0f, () =>
+            DelayCommand(300.0f, () =>
             {
                 if (!container.IsValid) return;
 
                 NWObject body = container.GetLocalObject("CORPSE_BODY");
-                body.AssignCommand(() => SetIsDestroyable(TRUE));
+                body.AssignCommand(() => SetIsDestroyable(true));
                 body.DestroyAllInventoryItems();
                 body.Destroy();
 

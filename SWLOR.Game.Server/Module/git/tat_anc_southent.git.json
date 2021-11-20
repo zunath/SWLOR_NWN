@@ -7502,7 +7502,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.267590846509847e-006
+          "value": 1.50600942561141e-006
         },
         "YPosition": {
           "type": "float",
@@ -7563,7 +7563,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.267590846509847e-006
+          "value": 1.50600942561141e-006
         },
         "YPosition": {
           "type": "float",
@@ -7616,7 +7616,7 @@
         },
         "XOrientation": {
           "type": "float",
-          "value": -3.250437430324382e-006
+          "value": -3.727274588527507e-006
         },
         "XPosition": {
           "type": "float",
@@ -8025,7 +8025,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "creature_spawn"
+          "value": "ned_spawn"
         },
         "TemplateResRef": {
           "type": "resref",
@@ -8076,7 +8076,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "tat_militia02"
+                "value": "nakedned"
               }
             },
             {

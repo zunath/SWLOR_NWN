@@ -1,10 +1,8 @@
 ﻿using System;
 using SWLOR.Game.Server.GameObject;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.NWNX;
-
-using static NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -19,8 +17,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (location == null) throw new ArgumentException("Invalid target location during creature deserialization.");
 
-            NWCreature creature = NWNXObject.Deserialize(base64String).Object;
-            if (creature.Object == null) throw new NullReferenceException("Unable to deserialize creature.");
+            NWCreature creature = NWNXObject.Deserialize(base64String);
             creature.Location = location;
 
             return creature;
@@ -33,9 +30,8 @@ namespace SWLOR.Game.Server.Service
                 throw new ArgumentException("Invalid target placeable during item deserialization.");
             }
 
-            NWItem item = NWNXObject.Deserialize(base64String).Object;
-            if (item.Object == null) throw new NullReferenceException("Unable to deserialize item.");
-            var result = _.CopyItem(item.Object, target.Object, TRUE);
+            NWItem item = NWNXObject.Deserialize(base64String);
+            var result = _.CopyItem(item.Object, target.Object, true);
             item.Destroy();
 
             return result;
@@ -48,8 +44,7 @@ namespace SWLOR.Game.Server.Service
                 throw new ArgumentException("Invalid target location during item deserialization.");
             }
 
-            NWItem item = NWNXObject.Deserialize(base64String).Object;
-            if (item.Object == null) throw new NullReferenceException("Unable to deserialize item.");
+            NWItem item = NWNXObject.Deserialize(base64String);
             item.Location = targetLocation;
             
             return item;
@@ -62,9 +57,8 @@ namespace SWLOR.Game.Server.Service
                 throw new ArgumentException("Invalid target creature during item deserialization.");
             }
 
-            NWItem item = NWNXObject.Deserialize(base64String).Object;
-            if (item.Object == null) throw new NullReferenceException("Unable to deserialize item.");
-            var result = _.CopyItem(item.Object, target.Object, TRUE);
+            NWItem item = NWNXObject.Deserialize(base64String);
+            var result = _.CopyItem(item.Object, target.Object, true);
             item.Destroy();
 
             return result;

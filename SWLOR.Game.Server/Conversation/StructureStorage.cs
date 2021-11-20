@@ -1,12 +1,11 @@
 ﻿using System;
-using NWN;
-using SWLOR.Game.Server.Data.Entity;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -158,7 +157,7 @@ namespace SWLOR.Game.Server.Conversation
 
             string structureID = chest.GetLocalString("PC_BASE_STRUCTURE_ID");
             Location location = oPC.Location;
-            NWPlaceable copy = (_.CreateObject(OBJECT_TYPE_PLACEABLE, "str_storage_copy", location));
+            NWPlaceable copy = (_.CreateObject(ObjectType.Placeable, "str_storage_copy", location));
             copy.Name = chest.Name;
             copy.AssignCommand(() => _.SetFacingPoint(oPC.Position));
 

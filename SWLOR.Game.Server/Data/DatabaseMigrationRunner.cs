@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using Dapper;
+using Dapper.Contrib.Extensions;
+using MySql.Data.MySqlClient;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Service;
 
@@ -40,31 +41,13 @@ namespace SWLOR.Game.Server.Data
         /// </summary>
         private static void BuildDatabase()
         {
-            bool exists = CheckDatabaseExists(DataService.MasterConnectionString, Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE"));
+            bool exists = CheckDatabaseExists();
 
             if (!exists)
             {
                 Console.WriteLine("Database not found. Generating database...");
 
-                using (var connection = new SqlConnection(DataService.MasterConnectionString))
-                {
-                    connection.Open();
-                    try
-                    {
-                        string dbName = Environment.GetEnvironmentVariable("SQL_SERVER_DATABASE");
-                        string sql = $@"CREATE DATABASE [{dbName}]";
-
-                        connection.Execute(sql);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("ERROR: Unable to create database. Please check your permissions.");
-                        LoggingService.LogError(ex);
-                        return;
-                    }
-                }
-
-                using (var connection = new SqlConnection(DataService.SWLORConnectionString))
+                using (var connection = new MySqlConnection(DataService.SWLORConnectionString))
                 {
                     Console.WriteLine("Creating tables, procedures, views, etc...");
                     string sql = ReadResourceFile(FolderName + ".Initialization.sql");
@@ -78,16 +61,18 @@ namespace SWLOR.Game.Server.Data
             }
         }
 
-        private static bool CheckDatabaseExists(string connectionString, string databaseName)
+        private static bool CheckDatabaseExists()
         {
             bool result;
 
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = new MySqlConnection(DataService.SWLORConnectionString))
             {
                 connection.Open();
-                using (var command = new SqlCommand($"SELECT db_id('{databaseName}')", connection) { CommandTimeout = 0 })
+                using (var command = new MySqlCommand($"SHOW TABLES LIKE 'ServerConfiguration'", connection) { CommandTimeout = 0 })
                 {
-                    result = (command.ExecuteScalar() != DBNull.Value);
+                    var exists = command.ExecuteScalar();
+
+                    result = (exists != null);
                 }
             }
 
@@ -127,9 +112,9 @@ namespace SWLOR.Game.Server.Data
         private static IEnumerable<string> GetScriptResources()
         {
             DatabaseVersion currentVersion;
-            using (var connection = new SqlConnection(DataService.SWLORConnectionString))
+            using (var connection = new MySqlConnection(DataService.SWLORConnectionString))
             {
-                string sql = "select top 1 ID, ScriptName, DateApplied, VersionDate, VersionNumber FROM DatabaseVersion ORDER BY VersionDate DESC, VersionNumber DESC";
+                string sql = "select ID, ScriptName, DateApplied, VersionDate, VersionNumber FROM DatabaseVersion ORDER BY VersionDate DESC, VersionNumber DESC LIMIT 1;";
                 currentVersion = connection.QueryFirstOrDefault<DatabaseVersion>(sql);
             }
 
@@ -191,7 +176,7 @@ namespace SWLOR.Game.Server.Data
             string fileName = GetFileNameFromScriptResourceName(resource);
             Console.WriteLine("Applying migration script: " + resource);
 
-            using (var connection = new SqlConnection(DataService.SWLORConnectionString))
+            using (var connection = new MySqlConnection(DataService.SWLORConnectionString))
             {
                 try
                 {
@@ -249,36 +234,20 @@ namespace SWLOR.Game.Server.Data
                 VersionNumber = versionInfo.Item2
             };
 
-            using (var connection = new SqlConnection(DataService.SWLORConnectionString))
+            using (var connection = new MySqlConnection(DataService.SWLORConnectionString))
             {
                 connection.Insert(version);
             }
         }
 
-        // Code I pulled from StackOverflow: https://stackoverflow.com/questions/40814/execute-a-large-sql-script-with-go-commands
-        // Can't execute the entire script at once. You have to split out the "GO"s
-        private static void ExecuteBatchNonQuery(string sql, SqlConnection conn)
+        private static void ExecuteBatchNonQuery(string sql, MySqlConnection conn)
         {
-            string sqlBatch = string.Empty;
-            SqlCommand cmd = new SqlCommand(string.Empty, conn);
+            var cmd = new MySqlCommand(sql, conn);
             conn.Open();
-            sql += "\nGO";   // make sure last batch is executed.
             try
             {
-                foreach (string line in sql.Split(new string[2] { "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries))
-                {
-                    if (line.ToUpperInvariant().Trim() == "GO")
-                    {
-                        cmd.CommandText = sqlBatch;
-                        cmd.CommandTimeout = 0;
-                        cmd.ExecuteNonQuery();
-                        sqlBatch = string.Empty;
-                    }
-                    else
-                    {
-                        sqlBatch += line + "\n";
-                    }
-                }
+                cmd.CommandTimeout = 0;
+                cmd.ExecuteNonQuery();
             }
             finally
             {

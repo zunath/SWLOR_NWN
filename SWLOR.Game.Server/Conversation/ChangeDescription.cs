@@ -1,13 +1,13 @@
 ﻿using SWLOR.Game.Server.GameObject;
 
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
 
 namespace SWLOR.Game.Server.Conversation
 {
-    internal class ChangeDescription: ConversationBase
+    public class ChangeDescription: ConversationBase
     {
 
         public override PlayerDialog SetUp(NWPlayer player)
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Conversation
 
                     if (string.IsNullOrWhiteSpace(newDescription))
                     {
-                        _.FloatingTextStringOnCreature("Type in a new description to the chat bar and then press 'Next'.", GetPC().Object, _.FALSE);
+                        _.FloatingTextStringOnCreature("Type in a new description to the chat bar and then press 'Next'.", GetPC().Object, false);
                         return;
                     }
 

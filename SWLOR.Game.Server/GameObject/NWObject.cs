@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-
-using NWN;
-using SWLOR.Game.Server.Event;
+using System.Numerics;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.GameObject
 {
     public class NWObject
     {
-        public virtual NWGameObject Object { get; }
+        public virtual uint Object { get; }
         
-        public NWObject(NWGameObject nwnObject)
+        public NWObject(uint nwnObject)
         {
             Object = nwnObject;
         }
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.GameObject
             {
                 if (!IsPlayer) return false;
 
-                string globalID = _.GetTag(Object);
+                string globalID = GetTag(Object);
                 return !string.IsNullOrWhiteSpace(globalID);
             }
         }
@@ -34,16 +34,13 @@ namespace SWLOR.Game.Server.GameObject
             if (IsInitializedAsPlayer || !IsPlayer) return;
             
             string guid = Guid.NewGuid().ToString();
-            _.SetTag(Object, guid);
+            SetTag(Object, guid);
         }
 
         public virtual Guid GlobalID => GetOrAssignGlobalID();
 
         public virtual Guid GetOrAssignGlobalID()
         {
-            if (Object == null || Object == OBJECT_TYPE_INVALID)
-                throw new Exception("NWN object has not been set for this wrapper.");
-
             string globalID;
             if (IsPlayer)
             {
@@ -52,7 +49,7 @@ namespace SWLOR.Game.Server.GameObject
                     throw new Exception("Must call Initialize() before getting GlobalID");
                 }
 
-                globalID = _.GetTag(Object);
+                globalID = GetTag(Object);
             }
             else
             {
@@ -69,75 +66,75 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual string Name
         {
-            get => _.GetName(Object);
-            set => _.SetName(Object, value);
+            get => GetName(Object);
+            set => SetName(Object, value);
         }
 
         public virtual string Tag
         {
-            get => _.GetTag(Object);
-            set => _.SetTag(Object, value);
+            get => GetTag(Object);
+            set => SetTag(Object, value);
         }
 
-        public virtual string Resref => _.GetResRef(Object);
+        public virtual string Resref => GetResRef(Object);
 
         public virtual NWLocation Location
         {
-            get => _.GetLocation(Object);
+            get => GetLocation(Object);
             set
             {
-                AssignCommand(() => _.JumpToLocation(value));
+                AssignCommand(() => JumpToLocation(value));
             }
         }
 
-        public virtual NWArea Area => _.GetArea(Object);
+        public virtual NWArea Area => GetArea(Object);
 
-        public virtual Vector Position => _.GetPosition(Object);
+        public virtual Vector3 Position => GetPosition(Object);
 
-        public virtual bool HasInventory => _.GetHasInventory(Object) == 1;
+        public virtual bool HasInventory => GetHasInventory(Object);
 
         public virtual bool IsPlot
         {
-            get => _.GetPlotFlag(Object) == 1;
-            set => _.SetPlotFlag(Object, value ? 1 : 0);
+            get => GetPlotFlag(Object);
+            set => _.SetPlotFlag(Object, value);
         }
 
         public virtual float Facing
         {
-            get => _.GetFacing(Object);
-            set => AssignCommand(() => _.SetFacing(value));
+            get => GetFacing(Object);
+            set => AssignCommand(() => SetFacing(value));
         }
 
-        public virtual int CurrentHP => _.GetCurrentHitPoints(Object);
+        public virtual int CurrentHP => GetCurrentHitPoints(Object);
 
-        public virtual int MaxHP => _.GetMaxHitPoints(Object);
+        public virtual int MaxHP => GetMaxHitPoints(Object);
 
-        public virtual bool IsValid => Object != null && _.GetIsObjectValid(Object) == 1;
+        public virtual bool IsValid => GetIsObjectValid(Object);
 
         public virtual string IdentifiedDescription
         {
-            get => _.GetDescription(Object);
-            set => _.SetDescription(Object, value);
+            get => GetDescription(Object);
+            set => SetDescription(Object, value);
         }
 
         public virtual string UnidentifiedDescription
         {
-            get => _.GetDescription(Object, FALSE, FALSE);
-            set => _.SetDescription(Object, value, FALSE);
+            get => GetDescription(Object, false, false);
+            set => SetDescription(Object, value, false);
         }
 
         public virtual int Gold
         {
-            get => _.GetGold(Object);
+            get => GetGold(Object);
             set
             {
                 AssignCommand(() =>
                 {
-                    _.TakeGoldFromCreature(Gold, Object, TRUE);
+                    TakeGoldFromCreature(Gold, Object, true);
 
                     if (value > 0)
                     {
-                        _.GiveGoldToCreature(Object, value);
+                        GiveGoldToCreature(Object, value);
                     }
                 });
             }
@@ -148,14 +145,29 @@ namespace SWLOR.Game.Server.GameObject
             return _.GetLocalInt(Object, name);
         }
 
+        public virtual bool GetLocalBool(string name)
+        {
+            return _.GetLocalBool(Object, name);
+        }
+
         public virtual void SetLocalInt(string name, int value)
         {
             _.SetLocalInt(Object, name, value);
         }
 
+        public virtual void SetLocalBool(string name, bool value)
+        {
+            _.SetLocalBool(Object, name, value);
+        }
+
         public virtual void DeleteLocalInt(string name)
         {
             _.DeleteLocalInt(Object, name);
+        }
+
+        public virtual void DeleteLocalBool(string name)
+        {
+            _.DeleteLocalBool(Object, name);
         }
 
 
@@ -187,11 +199,11 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual void DestroyAllInventoryItems()
         {
-            NWItem item = _.GetFirstItemInInventory(Object);
+            NWItem item = GetFirstItemInInventory(Object);
             while (item.IsValid)
             {
-                _.DestroyObject(item.Object);
-                item = _.GetNextItemInInventory(Object);
+                DestroyObject(item.Object);
+                item = GetNextItemInInventory(Object);
             }
         }
 
@@ -217,12 +229,12 @@ namespace SWLOR.Game.Server.GameObject
         }
 
 
-        public virtual NWGameObject GetLocalObject(string name)
+        public virtual uint GetLocalObject(string name)
         {
             return _.GetLocalObject(Object, name);
         }
 
-        public virtual void SetLocalObject(string name, NWGameObject value)
+        public virtual void SetLocalObject(string name, uint value)
         {
             _.SetLocalObject(Object, name, value);
         }
@@ -234,7 +246,7 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual void Destroy(float delay = 0.0f)
         {
-            _.DestroyObject(Object, delay);
+            DestroyObject(Object, delay);
         }
 
         public virtual void AssignCommand(ActionDelegate action)
@@ -242,7 +254,7 @@ namespace SWLOR.Game.Server.GameObject
             _.AssignCommand(Object, action);
         }
 
-        public virtual void SpeakString(string message, int talkVolume = TALKVOLUME_TALK)
+        public virtual void SpeakString(string message, TalkVolume talkVolume = TalkVolume.Talk)
         {
             _.AssignCommand(Object, () =>
             {
@@ -251,8 +263,9 @@ namespace SWLOR.Game.Server.GameObject
         }
 
         public virtual void DelayEvent<T>(float seconds, T data)
+            where T: class
         {
-            _.DelayCommand(seconds, () =>
+            DelayCommand(seconds, () =>
             {
                 MessageHub.Instance.Publish(data);
             });
@@ -260,32 +273,32 @@ namespace SWLOR.Game.Server.GameObject
 
         public virtual void DelayAssignCommand(ActionDelegate action, float seconds)
         {
-            _.DelayCommand(seconds, () =>
+            DelayCommand(seconds, () =>
             {
                 AssignCommand(action);
             });
         }
 
-        public virtual bool IsPC => _.GetIsPC(Object) == 1;
+        public virtual bool IsPC => GetIsPC(Object);
 
-        public virtual bool IsPlayer => _.GetIsPC(Object) == 1 && _.GetIsDM(Object) == 0 && _.GetIsDMPossessed(Object) == 0;
+        public virtual bool IsPlayer => GetIsPC(Object) && !GetIsDM(Object) && !GetIsDMPossessed(Object);
 
-        public virtual bool IsDM =>  _.GetIsDM(Object) == 1 || _.GetIsDMPossessed(Object) == 1;
+        public virtual bool IsDM =>  GetIsDM(Object) || GetIsDMPossessed(Object);
 
         public virtual bool IsNPC => !IsPlayer && !IsDM && IsCreature;
         
-        public virtual bool IsCreature => _.GetObjectType(Object) == OBJECT_TYPE_CREATURE;
+        public virtual bool IsCreature => GetObjectType(Object) == ObjectType.Creature;
 
         public virtual IEnumerable<NWItem> InventoryItems
         {
             get
             {
-                if (_.GetHasInventory(Object) == FALSE)
+                if (GetHasInventory(Object) == false)
                 {
                     throw new Exception("Object does not have an inventory.");
                 }
                 
-                for (NWItem item = _.GetFirstItemInInventory(Object); _.GetIsObjectValid(item) == TRUE; item = _.GetNextItemInInventory(Object))
+                for (NWItem item = GetFirstItemInInventory(Object); GetIsObjectValid(item); item = GetNextItemInInventory(Object))
                 {
                     yield return item;
                 }
@@ -296,26 +309,26 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                for (Effect effect = _.GetFirstEffect(Object); _.GetIsEffectValid(effect) == TRUE; effect = _.GetNextEffect(Object))
+                for (Effect effect = GetFirstEffect(Object); GetIsEffectValid(effect); effect = GetNextEffect(Object))
                 {
                     yield return effect;
                 }
             }
         }
 
-        public int ObjectType => _.GetObjectType(Object);
+        public ObjectType ObjectType => GetObjectType(Object);
 
-        public void RemoveEffect(int effectTypeID)
+        public void RemoveEffect(EffectTypeScript effectTypeID)
         {
-            Effect effect = _.GetFirstEffect(Object);
-            while (_.GetIsEffectValid(effect) == TRUE)
+            Effect effect = GetFirstEffect(Object);
+            while (GetIsEffectValid(effect))
             {
-                if (_.GetEffectType(effect) == effectTypeID)
+                if (GetEffectType(effect) == effectTypeID)
                 {
                     _.RemoveEffect(Object, effect);
                 }
 
-                effect = _.GetNextEffect(Object);
+                effect = GetNextEffect(Object);
             }
         }
 
@@ -359,12 +372,12 @@ namespace SWLOR.Game.Server.GameObject
             return Object.GetHashCode();
         }
 
-        public static implicit operator NWGameObject(NWObject o)
+        public static implicit operator uint(NWObject o)
         {
             return o.Object;
         }
 
-        public static implicit operator NWObject(NWGameObject o)
+        public static implicit operator NWObject(uint o)
         {
             return new NWObject(o);
         }

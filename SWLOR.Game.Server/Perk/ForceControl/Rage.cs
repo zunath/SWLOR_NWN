@@ -1,7 +1,10 @@
 ﻿using System;
-using NWN;
+using SWLOR.Game.Server.NWN;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.VisualEffect;
 using SWLOR.Game.Server.Service;
 
 namespace SWLOR.Game.Server.Perk.ForceControl
@@ -128,13 +131,14 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             }
 
             // Build a linked effect which handles applying these bonuses and penalties.
-            Effect strEffect = _.EffectAbilityIncrease(_.ABILITY_STRENGTH, strBonus);
-            Effect conEffect = _.EffectAbilityIncrease(_.ABILITY_CONSTITUTION, conBonus);
+            Effect visualEffect = _.EffectVisualEffect(VisualEffect.Vfx_Dur_Aura_Red);
+            Effect strEffect = _.EffectAbilityIncrease(AbilityType.Strength, strBonus);
+            Effect conEffect = _.EffectAbilityIncrease(AbilityType.Constitution, conBonus);
             Effect acEffect = _.EffectACDecrease(acPenalty);
             Effect attackEffect = _.EffectModifyAttacks(attacks);
             Effect finalEffect = _.EffectLinkEffects(strEffect, conEffect);
             finalEffect = _.EffectLinkEffects(finalEffect, acEffect);
-
+                       
             // Only apply the attack effect if this spell tier increases it.
             if (attacks > 0)
             {
@@ -142,11 +146,20 @@ namespace SWLOR.Game.Server.Perk.ForceControl
             }
             finalEffect = _.TagEffect(finalEffect, "FORCE_ABILITY_RAGE");
 
-            Effect damageEffect = _.EffectDamage(hpPenalty);
+            Effect damageEffect = _.EffectDamage(hpPenalty, DamageType.Divine);
 
             // Apply both effects.
-            _.ApplyEffectToObject(_.DURATION_TYPE_INSTANT, damageEffect, target);
-            _.ApplyEffectToObject(_.DURATION_TYPE_TEMPORARY, finalEffect, target, 6.1f);
+            creature.AssignCommand(() =>
+            {
+                _.ApplyEffectToObject(DurationType.Instant, damageEffect, creature.Object);
+                _.ApplyEffectToObject(DurationType.Temporary, finalEffect, creature.Object, 6.1f);
+                _.ApplyEffectToObject(DurationType.Temporary, visualEffect, creature.Object, 6.1f);
+            });
+            
+            if (creature.IsPlayer)
+            {
+                SkillService.RegisterPCToAllCombatTargetsForSkill(creature.Object, SkillType.ForceControl, null);
+            }
         }
     }
 }

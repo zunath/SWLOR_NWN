@@ -1,7 +1,5 @@
-﻿using NWN;
-using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
-using static NWN._;
 
 namespace SWLOR.Game.Server.Perk.General
 {

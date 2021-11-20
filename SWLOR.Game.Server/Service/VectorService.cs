@@ -1,14 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using NWN;
-using static NWN._;
+﻿using System.Numerics;
+using SWLOR.Game.Server.NWN;
+using static SWLOR.Game.Server.NWN._;
 using static System.Math;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Event.Area;
-using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
-using SWLOR.Game.Server.Messaging;
-using SWLOR.Game.Server.ValueObject;
 
 /*
         // inc_Vectors
@@ -17,7 +11,7 @@ using SWLOR.Game.Server.ValueObject;
         // Date: 29/11/06
         // Version: 1.02
         // Ported to C# by givemedeath - 20190901
-        // Description : Basic 3 dimensional Vector library.
+        // Description : Basic 3 dimensional Vector3 library.
         // Uses the Vectors learnt in late high school 
         // and first year uni maths.
         //
@@ -50,48 +44,48 @@ namespace SWLOR.Game.Server.Service
         public static Location MoveLocation(Location lCurrent, float fDirection, float fDistance, float fOffFacing = 0.0f, float fOffZ = 0.0f)
         {
 
-            Vector vThrow = VectorNormalize(AngleToVector(fDirection));
-            vThrow.m_X *= fDistance;
-            vThrow.m_Y *= fDistance;
+            Vector3 vThrow = VectorNormalize(AngleToVector(fDirection));
+            vThrow.X *= fDistance;
+            vThrow.Y *= fDistance;
 
-            vThrow.m_Z += fOffZ;
-            Vector position = GetPositionFromLocation(lCurrent);
-            position.m_X += vThrow.m_X;
-            position.m_Y += vThrow.m_Y;
+            vThrow.Z += fOffZ;
+            Vector3 position = GetPositionFromLocation(lCurrent);
+            position.X += vThrow.X;
+            position.Y += vThrow.Y;
             return Location(GetAreaFromLocation(lCurrent), position, GetFacingFromLocation(lCurrent) + fOffFacing);
         }
         
-        // Returns the Vector from vA to vB.
-        public static Vector AtoB(Vector vA, Vector vB)
+        // Returns the Vector3 from vA to vB.
+        public static Vector3 AtoB(Vector3 vA, Vector3 vB)
         {
             //return vB - vA;
-            return new Vector(vB.m_X - vA.m_X, vB.m_Y - vA.m_Y, vB.m_Z - vA.m_Z);            
+            return new Vector3(vB.X - vA.X, vB.Y - vA.Y, vB.Z - vA.Z);            
         }
 
 
-        // Returns a Vector fDist away from vRef at fAngle.
-        public static Vector VAtAngleToV(Vector vRef, float fDist, float fAngle)
+        // Returns a Vector3 fDist away from vRef at fAngle.
+        public static Vector3 VAtAngleToV(Vector3 vRef, float fDist, float fAngle)
         {
-            return new Vector(vRef.m_X + fDist * (float) Cos(fAngle), vRef.m_Y + fDist * (float) Sin(fAngle), vRef.m_Z);
+            return new Vector3(vRef.X + fDist * (float) Cos(fAngle), vRef.Y + fDist * (float) Sin(fAngle), vRef.Z);
         }
         
         /*
-        // Returns the projection of v2 onto v1. The Vector component of v2
+        // Returns the projection of v2 onto v1. The Vector3 component of v2
         // in the direction of, or along v1.
-        public static Vector VectorProjection(Vector v1, Vector v2)
+        public static Vector3 VectorProjection(Vector3 v1, Vector3 v2)
         {
             return (DotProduct(v1, v2) / VectorMagnitude(v1)) * VectorNormalize(v1);
         }
 
-        // Finds the scalar projection of v2 onto v1. The length of the Vector
+        // Finds the scalar projection of v2 onto v1. The length of the Vector3
         // projection of v2 on to v1.
-        public static float ScalarProjection(Vector v1, Vector v2)
+        public static float ScalarProjection(Vector3 v1, Vector3 v2)
         {
             return DotProduct(v1, v2) / VectorMagnitude(v1);
         }
 
         // Returns the enclosed angle between two Vectors.
-        public static float EnclosedAngle(Vector v1, Vector v2)
+        public static float EnclosedAngle(Vector3 v1, Vector3 v2)
         {
             return aCos(DotProduct(v1, v2) / (VectorMagnitude(v1) * VectorMagnitude(v2)));
         }
@@ -103,7 +97,7 @@ namespace SWLOR.Game.Server.Service
         // - the volume of a tetrahedron is one sixth the volume of the associated
         // parallelepiped.
         // - If the scalar triple product is 0.0, v1, v2 and v3 are co-planar
-        public static float ScalarTripleProduct(Vector v1, Vector v2, Vector v3)
+        public static float ScalarTripleProduct(Vector3 v1, Vector3 v2, Vector3 v3)
         {
             return fabs(DotProduct(v1, CrossProduct(v2, v3)));
         }
@@ -113,16 +107,16 @@ namespace SWLOR.Game.Server.Service
         // parallelogram with sides v1 and v2.
         // - the are of triangle made by v1 and v2 is half the area of the associated
         // parallelogram.
-        public static Vector CrossProduct(Vector v1, Vector v2)
+        public static Vector3 CrossProduct(Vector3 v1, Vector3 v2)
         {
-            return Vector(v1.m_Y * v2.m_Z - v2.m_Y * v1.m_Z, v2.m_X * v1.m_Z - v1.m_X * v2.m_Z, v1.m_X * v2.m_Y - v2.m_X * v1.m_Y);
+            return Vector3(v1.Y * v2.Z - v2.Y * v1.Z, v2.X * v1.Z - v1.X * v2.Z, v1.X * v2.Y - v2.X * v1.Y);
         }
 
 
         // Returns the dot product of two Vectors.
-        public static float DotProduct(Vector v1, Vector v2)
+        public static float DotProduct(Vector3 v1, Vector3 v2)
         {
-            return (v1.m_X * v2.m_X) + (v1.m_Y * v2.m_Y) + (v1.m_Z * v2.m_Z);
+            return (v1.X * v2.X) + (v1.Y * v2.Y) + (v1.Z * v2.Z);
         }
 
 
@@ -132,22 +126,22 @@ namespace SWLOR.Game.Server.Service
         // Determines the quadrant that v1 is relative to vOrigin.
         // Returns 0 if is at 0, 90, 180, or 270 degrees to the
         // positive x-axis.
-        public static int DetermineQuadrant(Vector vOrigin, Vector v1)
+        public static int DetermineQuadrant(Vector3 vOrigin, Vector3 v1)
         {
-            Vector vNew = AtoB(vOrigin, v1);
-            if (vNew.m_X > 0.0 && vNew.m_Y > 0.0)
+            Vector3 vNew = AtoB(vOrigin, v1);
+            if (vNew.X > 0.0 && vNew.Y > 0.0)
             {
                 return 1;
             }
-            else if (vNew.m_X < 0.0 && vNew.m_Y > 0.0)
+            else if (vNew.X < 0.0 && vNew.Y > 0.0)
             {
                 return 2;
             }
-            else if (vNew.m_X < 0.0 && vNew.m_Y < 0.0)
+            else if (vNew.X < 0.0 && vNew.Y < 0.0)
             {
                 return 3;
             }
-            else if (vNew.m_X > 0.0 && vNew.m_Y < 0.0)
+            else if (vNew.X > 0.0 && vNew.Y < 0.0)
             {
                 return 4;
             }
@@ -199,22 +193,22 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        // Returns the angle between a Vector (position) and the positive x-axis
-        public static float GetXAngle(Vector v1)
+        // Returns the angle between a Vector3 (position) and the positive x-axis
+        public static float GetXAngle(Vector3 v1)
         {
-            return cah(v1.m_X, VectorMagnitude(v1));
+            return cah(v1.X, VectorMagnitude(v1));
         }
 
-        // Returns the angle between a Vector (position) and the positive y-axis
-        public static float GetYAngle(Vector v1)
+        // Returns the angle between a Vector3 (position) and the positive y-axis
+        public static float GetYAngle(Vector3 v1)
         {
-            return cah(v1.m_Y, VectorMagnitude(v1));
+            return cah(v1.Y, VectorMagnitude(v1));
         }
 
-        // Returns the angle between a Vector (position) and the positive z-axis
-        public static float GetZAngle(Vector v1)
+        // Returns the angle between a Vector3 (position) and the positive z-axis
+        public static float GetZAngle(Vector3 v1)
         {
-            return cah(v1.m_Z, VectorMagnitude(v1));
+            return cah(v1.Z, VectorMagnitude(v1));
         }
 
 
@@ -289,10 +283,10 @@ namespace SWLOR.Game.Server.Service
         public static Location LocAtAngleToLocFacing(Location lRef, float fDist, float fAngle, float fNew)
         {
             NWObject oArea = GetAreaFromLocation(lRef);
-            Vector vRef = GetPositionFromLocation(lRef);
+            Vector3 vRef = GetPositionFromLocation(lRef);
             float fFacing = GetFacingFromLocation(lRef);
 
-            Vector vNewPos = VAtAngleToV(vRef, fDist, fFacing + fAngle);
+            Vector3 vNewPos = VAtAngleToV(vRef, fDist, fFacing + fAngle);
             return Location(oArea, vNewPos, fNew);
         }
     }

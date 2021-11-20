@@ -3,11 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using NWN;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.Store;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Enum;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -35,13 +36,13 @@ namespace SWLOR.Game.Server.Service
             foreach (var area in NWModule.Get().Areas)
             {
                 // Loop through any stores in this area.
-                foreach (var store in area.Objects.Where(x => x.ObjectType == _.OBJECT_TYPE_STORE))
+                foreach (var store in area.Objects.Where(x => x.ObjectType == ObjectType.Store))
                 {
                     // Loop through the store's inventory (i.e items which are being sold)
                     foreach (var item in store.InventoryItems)
                     {
                         // Mark this item so it doesn't get cleaned up.
-                        item.SetLocalInt("STORE_SERVICE_IS_STORE_ITEM", _.TRUE);
+                        SetLocalBool(item, "STORE_SERVICE_IS_STORE_ITEM", true);
                     }
 
                     _stores.Add(store);
@@ -51,7 +52,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleAcquireItem()
         {
-            NWItem item = _.GetModuleItemAcquired();
+            NWItem item = GetModuleItemAcquired();
             item.DeleteLocalInt("STORE_SERVICE_IS_STORE_ITEM");
         }
 
@@ -87,28 +88,28 @@ namespace SWLOR.Game.Server.Service
             if(!string.IsNullOrWhiteSpace(closeDateString))
             {
                 DateTime closeDate = DateTime.Parse(closeDateString);
-                if (DateTime.UtcNow < closeDate.AddMinutes(10)) return; // todo change to 10 minutes
+                if (DateTime.UtcNow < closeDate.AddMinutes(10)) return;
             }
 
             // By this point we know that the store needs to be cleaned up.
             // We'll look for any items which aren't part of this store and destroy them.
             foreach (var item in store.InventoryItems)
             {
-                if (item.GetLocalInt("STORE_SERVICE_IS_STORE_ITEM") == _.TRUE) continue;
+                if (GetLocalBool(item, "STORE_SERVICE_IS_STORE_ITEM") == true) continue;
                 item.Destroy();
             }
         }
 
         private static void OnStoreOpened()
         {
-            NWObject store = NWGameObject.OBJECT_SELF;
+            NWObject store = OBJECT_SELF;
             int playersAccessing = store.GetLocalInt("STORE_SERVICE_PLAYERS_ACCESSING") + 1;
             store.SetLocalInt("STORE_SERVICE_PLAYERS_ACCESSING", playersAccessing);
         }
 
         private static void OnStoreClosed()
         {
-            NWObject store = NWGameObject.OBJECT_SELF;
+            NWObject store = OBJECT_SELF;
             int playersAccessing = store.GetLocalInt("STORE_SERVICE_PLAYERS_ACCESSING") - 1;
             if (playersAccessing <= 0)
             {

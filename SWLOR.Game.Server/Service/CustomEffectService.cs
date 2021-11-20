@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.CustomEffect.Contracts;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
@@ -12,9 +11,6 @@ using SWLOR.Game.Server.Event.SWLOR;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWNX;
-using SWLOR.Game.Server.Perk;
-using SWLOR.Game.Server.Processor;
-
 using SWLOR.Game.Server.ValueObject;
 
 namespace SWLOR.Game.Server.Service
@@ -456,10 +452,10 @@ namespace SWLOR.Game.Server.Service
             NWCreature caster = oPC;
             if (!string.IsNullOrWhiteSpace(effect.CasterNWNObjectID))
             {
-                var obj = NWNXObject.StringToObject(effect.CasterNWNObjectID);
-                if (obj.IsValid)
+                var obj = _.StringToObject(effect.CasterNWNObjectID);
+                if (_.GetIsObjectValid(obj))
                 {
-                    caster = obj.Object;
+                    caster = obj;
                 }
             }
 

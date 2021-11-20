@@ -5,7 +5,7 @@ using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 
 namespace SWLOR.Game.Server.Service
@@ -23,6 +23,14 @@ namespace SWLOR.Game.Server.Service
             if (!dm.IsDM) return;
 
             var cdKey = GetPCPublicCDKey(dm);
+            var adminCDKeySetting = Environment.GetEnvironmentVariable("SWLOR_ADMIN_CD_KEY") ?? string.Empty;
+
+            if (adminCDKeySetting.ToUpper() == cdKey.ToUpper())
+            {
+                LogDMAuthorization(dm, true);
+                return;
+            }
+
             var entity = DataService.AuthorizedDM.GetByCDKeyAndActiveOrDefault(cdKey);
             if (entity == null || !entity.IsActive)
             {
@@ -39,6 +47,13 @@ namespace SWLOR.Game.Server.Service
             if (!player.IsPlayer && !player.IsDM) return DMAuthorizationType.None;
 
             string cdKey = GetPCPublicCDKey(player);
+            var adminCDKeySetting = Environment.GetEnvironmentVariable("SWLOR_ADMIN_CD_KEY") ?? string.Empty;
+
+            if (adminCDKeySetting.ToUpper() == cdKey.ToUpper())
+            {
+                LogDMAuthorization(player, true);
+                return DMAuthorizationType.Admin;
+            }
 
             AuthorizedDM entity = DataService.AuthorizedDM.GetByCDKeyAndActiveOrDefault(cdKey);
             if (entity == null) return DMAuthorizationType.None;

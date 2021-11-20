@@ -1,10 +1,10 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject.Dialog;
-using static NWN._;
 
 namespace SWLOR.Game.Server.Conversation
 {
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Conversation
             NWPlaceable door = GetDialogTarget().Object;
             NWArea area = door.Area;
             BuildingType type = (BuildingType)area.GetLocalInt("BUILDING_TYPE");
-            bool isPreview = area.GetLocalInt("IS_BUILDING_PREVIEW") == TRUE;
+            bool isPreview = area.GetLocalBool("IS_BUILDING_PREVIEW") == true;
             bool canPeek = type == BuildingType.Interior && !isPreview;
             bool canChangeApartment = type == BuildingType.Apartment && !isPreview;
 
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Conversation
 
             int numberFound = 0;
             int nth = 1;
-            NWCreature nearest = (_.GetNearestObjectToLocation(OBJECT_TYPE_CREATURE, location, nth));
+            NWCreature nearest = (_.GetNearestObjectToLocation(location, ObjectType.Creature, nth));
             while (nearest.IsValid)
             {
                 if (_.GetDistanceBetweenLocations(location, nearest.Location) > MaxDistance) break;
@@ -92,20 +92,20 @@ namespace SWLOR.Game.Server.Conversation
                 }
 
                 nth++;
-                nearest = (_.GetNearestObjectToLocation(OBJECT_TYPE_CREATURE, location, nth));
+                nearest = (_.GetNearestObjectToLocation(location, ObjectType.Creature, nth));
             }
 
             if (numberFound <= 0)
             {
-                _.FloatingTextStringOnCreature("You don't see anyone outside.", GetPC().Object, FALSE);
+                _.FloatingTextStringOnCreature("You don't see anyone outside.", GetPC().Object, false);
             }
             else if (numberFound == 1)
             {
-                _.FloatingTextStringOnCreature("You see one person outside.", GetPC().Object, FALSE);
+                _.FloatingTextStringOnCreature("You see one person outside.", GetPC().Object, false);
             }
             else
             {
-                _.FloatingTextStringOnCreature("You see " + numberFound + " people outside.", GetPC().Object, FALSE);
+                _.FloatingTextStringOnCreature("You see " + numberFound + " people outside.", GetPC().Object, false);
             }
 
         }

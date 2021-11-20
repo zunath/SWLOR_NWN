@@ -1,12 +1,11 @@
-﻿using NWN;
-using SWLOR.Game.Server.Data.Entity;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Item.Contracts;
+using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.Service;
 
 using SWLOR.Game.Server.ValueObject;
-using static NWN._;
 
 namespace SWLOR.Game.Server.Item.Medicine
 {
@@ -27,8 +26,8 @@ namespace SWLOR.Game.Server.Item.Medicine
             int rank = SkillService.GetPCSkillRank(player, SkillType.Medicine);
             int luck = PerkService.GetCreaturePerkLevel(player, PerkType.Lucky);
             int perkDurationBonus = PerkService.GetCreaturePerkLevel(player, PerkType.HealingKitExpert) * 6 + (luck * 2);
-            float duration = 30.0f + (rank * 0.4f) + perkDurationBonus;
-            int restoreAmount = 1 + item.GetLocalInt("HEALING_BONUS") + effectiveStats.Medicine + item.MedicineBonus;
+            float duration = 30.0f + (rank * 0.4f) + perkDurationBonus + effectiveStats.Medicine;
+            int restoreAmount = 1 + item.GetLocalInt("HEALING_BONUS") + (rank / 10);
             int delta = item.RecommendedLevel - rank;
             float effectivenessPercent = 1.0f;
 
@@ -37,7 +36,7 @@ namespace SWLOR.Game.Server.Item.Medicine
                 effectivenessPercent = effectivenessPercent - (delta * 0.1f);
             }
 
-            restoreAmount = (int)(restoreAmount * effectivenessPercent);
+            restoreAmount = (int)(restoreAmount * effectivenessPercent) + item.MedicineBonus;
 
             int perkBlastBonus = PerkService.GetCreaturePerkLevel(player, PerkType.ImmediateForcePack);
             if (perkBlastBonus > 0)
@@ -84,9 +83,9 @@ namespace SWLOR.Game.Server.Item.Medicine
             return true;
         }
 
-        public int AnimationID()
+        public Animation AnimationID()
         {
-            return ANIMATION_LOOPING_GET_MID;
+            return Animation.LoopingGetMid;
         }
 
         public float MaxDistance(NWCreature user, NWItem item, NWObject target, Location targetLocation)

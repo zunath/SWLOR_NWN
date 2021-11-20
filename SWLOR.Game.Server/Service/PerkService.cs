@@ -1,4 +1,4 @@
-﻿using NWN;
+﻿using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.GameObject;
@@ -8,13 +8,14 @@ using SWLOR.Game.Server.Perk;
 using SWLOR.Game.Server.ValueObject;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using SWLOR.Game.Server.Event.Feat;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.Event.SWLOR;
-using static NWN._;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Item;
+using static SWLOR.Game.Server.NWN._;
 using PerkExecutionType = SWLOR.Game.Server.Enumeration.PerkExecutionType;
 
 namespace SWLOR.Game.Server.Service
@@ -204,12 +205,12 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleEquipItem()
         {
-            NWPlayer oPC = (_.GetPCItemLastEquippedBy());
-            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
+            NWPlayer oPC = _.GetPCItemLastEquippedBy();
+            if (GetLocalBool(oPC, "IS_CUSTOMIZING_ITEM")) return; // Don't run heavy code when customizing equipment.
 
-            NWItem oItem = (_.GetPCItemLastEquipped());
+            NWItem oItem = _.GetPCItemLastEquipped();
             if (!oPC.IsPlayer || !oPC.IsInitializedAsPlayer) return;
-            if (oPC.GetLocalInt("LOGGED_IN_ONCE") == FALSE) return;
+            if (GetLocalBool(oPC, "LOGGED_IN_ONCE") == false) return;
 
             var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
             foreach (PCPerk pcPerk in executionPerks)
@@ -222,10 +223,10 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnModuleUnequipItem()
         {
-            NWPlayer oPC = (_.GetPCItemLastUnequippedBy());
+            NWPlayer oPC = _.GetPCItemLastUnequippedBy();
 
-            if (oPC.GetLocalInt("IS_CUSTOMIZING_ITEM") == _.TRUE) return; // Don't run heavy code when customizing equipment.
-            NWItem oItem = (_.GetPCItemLastUnequipped());
+            if (GetLocalBool(oPC, "IS_CUSTOMIZING_ITEM")) return; // Don't run heavy code when customizing equipment.
+            NWItem oItem = _.GetPCItemLastUnequipped();
             if (!oPC.IsPlayer) return;
 
             var executionPerks = GetPCPerksByExecutionType(oPC, PerkExecutionType.EquipmentBased);
@@ -256,10 +257,10 @@ namespace SWLOR.Game.Server.Service
 
         private static void OnHitCastSpell()
         {
-            NWPlayer oPC = NWGameObject.OBJECT_SELF;
+            NWPlayer oPC = _.OBJECT_SELF;
             if (!oPC.IsValid || !oPC.IsPlayer) return;
-            NWItem oItem = (_.GetSpellCastItem());
-            int type = oItem.BaseItemType;
+            NWItem oItem = _.GetSpellCastItem();
+            var type = oItem.BaseItemType;
             var pcPerks = DataService.PCPerk.GetAllByPlayerID(oPC.GlobalID).Where(x =>
             {
                 if (oPC.GlobalID != x.PlayerID) return false;
@@ -276,7 +277,7 @@ namespace SWLOR.Game.Server.Service
                 return true;
             });
 
-            if (type == BASE_ITEM_SMALLSHIELD || type == BASE_ITEM_LARGESHIELD || type == BASE_ITEM_TOWERSHIELD)
+            if (type == BaseItem.SmallShield || type == BaseItem.LargeShield || type == BaseItem.TowerShield)
             {
                 foreach (PCPerk pcPerk in pcPerks)
                 {
@@ -461,11 +462,11 @@ namespace SWLOR.Game.Server.Service
                 var perkFeatToGrant = DataService.PerkFeat.GetByPerkIDAndLevelUnlockedOrDefault(perkID, pcPerk.PerkLevel);
 
                 // Add the feat(s) to the player if it doesn't exist yet.
-                if (perkFeatToGrant != null && _.GetHasFeat(perkFeatToGrant.FeatID, oPC.Object) == FALSE)
+                if (perkFeatToGrant != null && _.GetHasFeat((Feat)perkFeatToGrant.FeatID, oPC.Object) == false)
                 {
-                    NWNXCreature.AddFeatByLevel(oPC, perkFeatToGrant.FeatID, 1);
+                    NWNXCreature.AddFeatByLevel(oPC, (Feat)perkFeatToGrant.FeatID, 1);
 
-                    var qbs = NWNXPlayerQuickBarSlot.UseFeat(perkFeatToGrant.FeatID);
+                    var qbs = NWNXPlayerQuickBarSlot.UseFeat((Feat)perkFeatToGrant.FeatID);
 
                     // Try to add the new feat to the player's hotbar.
                     if (NWNXPlayer.GetQuickBarSlot(oPC, 0).ObjectType == QuickBarSlotType.Empty)

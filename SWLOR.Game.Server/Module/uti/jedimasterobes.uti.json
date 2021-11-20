@@ -6,7 +6,7 @@
   },
   "ArmorPart_Belt": {
     "type": "byte",
-    "value": 140
+    "value": 63
   },
   "ArmorPart_LBicep": {
     "type": "byte",
@@ -42,7 +42,7 @@
   },
   "ArmorPart_Pelvis": {
     "type": "byte",
-    "value": 50
+    "value": 42
   },
   "ArmorPart_RBicep": {
     "type": "byte",
@@ -62,7 +62,7 @@
   },
   "ArmorPart_Robe": {
     "type": "byte",
-    "value": 221
+    "value": 0
   },
   "ArmorPart_RShin": {
     "type": "byte",
@@ -78,7 +78,7 @@
   },
   "ArmorPart_Torso": {
     "type": "byte",
-    "value": 131
+    "value": 53
   },
   "BaseItem": {
     "type": "int",
@@ -90,11 +90,11 @@
   },
   "Cloth1Color": {
     "type": "byte",
-    "value": 133
+    "value": 134
   },
   "Cloth2Color": {
     "type": "byte",
-    "value": 135
+    "value": 139
   },
   "Comment": {
     "type": "cexostring",
@@ -102,7 +102,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 3641037
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
@@ -368,68 +368,6 @@
         "Subtype": {
           "type": "word",
           "value": 13
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 46
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 100
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 113
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 57
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 40
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 124
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
         }
       }
     ]

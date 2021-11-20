@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using NWN;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.Bioware;
 using SWLOR.Game.Server.Data.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Event.Module;
 using SWLOR.Game.Server.GameObject;
 using SWLOR.Game.Server.Messaging;
+using SWLOR.Game.Server.NWN.Enum;
+using SWLOR.Game.Server.NWN.Enum.Item;
 using SWLOR.Game.Server.NWNX;
-
-using static NWN._;
+using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -73,16 +73,16 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer.VersionNumber < 3)
             {
                 // These IDs come from the Feat.2da file.
-                NWNXCreature.RemoveFeat(player, 1135); // Force Breach
-                NWNXCreature.RemoveFeat(player, 1136); // Force Lightning
-                NWNXCreature.RemoveFeat(player, 1137); // Force Heal
-                NWNXCreature.RemoveFeat(player, 1138); // Dark Heal
-                NWNXCreature.RemoveFeat(player, 1143); // Force Spread
-                NWNXCreature.RemoveFeat(player, 1144); // Dark Spread
-                NWNXCreature.RemoveFeat(player, 1145); // Force Push
-                NWNXCreature.RemoveFeat(player, 1125); // Force Aura
-                NWNXCreature.RemoveFeat(player, 1152); // Drain Life
-                NWNXCreature.RemoveFeat(player, 1134); // Chainspell
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedForceBreach); // Force Breach
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedForceLightning); // Force Lightning
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedForceHeal1); // Force Heal
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedDarkHeal); // Dark Heal
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedForceSpread); // Force Spread
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedDarkSpread); // Dark Spread
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedForcePush); // Force Push
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedForceAura); // Force Aura
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedDrainLife); // Drain Life
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedChainspell); // Chainspell
 
                 dbPlayer.VersionNumber = 3;
             }
@@ -90,25 +90,25 @@ namespace SWLOR.Game.Server.Service
             // VERSION 4: Give the Uncanny Dodge 1 feat to all characters.
             if (dbPlayer.VersionNumber < 4)
             {
-                NWNXCreature.AddFeatByLevel(player, FEAT_UNCANNY_DODGE_1, 1);
+                NWNXCreature.AddFeatByLevel(player, Feat.UncannyDodge1, 1);
                 dbPlayer.VersionNumber = 4;
             }
 
             // VERSION 5: We're doing another Force rework, so remove any force feats the player may have acquired.
             if (dbPlayer.VersionNumber < 5)
             {
-                NWNXCreature.RemoveFeat(player, 1135); // Force Breach
-                NWNXCreature.RemoveFeat(player, 1136); // Force Lightning
-                NWNXCreature.RemoveFeat(player, 1137); // Force Heal I
-                NWNXCreature.RemoveFeat(player, 1140); // Absorption Field
-                NWNXCreature.RemoveFeat(player, 1143); // Force Spread
-                NWNXCreature.RemoveFeat(player, 1145); // Force Push
-                NWNXCreature.RemoveFeat(player, 1125); // Force Aura
-                NWNXCreature.RemoveFeat(player, 1152); // Drain Life
-                NWNXCreature.RemoveFeat(player, 1134); // Chainspell
-                NWNXCreature.RemoveFeat(player, 1162); // Force Heal II
-                NWNXCreature.RemoveFeat(player, 1163); // Force Heal III
-                NWNXCreature.RemoveFeat(player, 1164); // Force Heal IV
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedForceBreach); // Force Breach
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedForceLightning); // Force Lightning
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedForceHeal1); // Force Heal I
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedAbsorptionField); // Absorption Field
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedForceSpread); // Force Spread
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedForcePush); // Force Push
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedForceAura); // Force Aura
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedDrainLife); // Drain Life
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedChainspell); // Chainspell
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedForceHeal2); // Force Heal II
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedForceHeal3); // Force Heal III
+                NWNXCreature.RemoveFeat(player, Feat.DeprecatedForceHeal4); // Force Heal IV
 
                 dbPlayer.VersionNumber = 5;
             }
@@ -140,16 +140,27 @@ namespace SWLOR.Game.Server.Service
                 // Point Blank Shot
                 if(PerkService.GetPCPerkByID(player.GlobalID, (int)PerkType.PointBlankShot) != null)
                 {
-                    NWNXCreature.AddFeat(player, FEAT_POINT_BLANK_SHOT);
+                    NWNXCreature.AddFeat(player, Feat.PointBlankShot);
                 }
 
                 // Rapid Reload
                 if (PerkService.GetPCPerkByID(player.GlobalID, (int) PerkType.RapidReload) != null)
                 {
-                    NWNXCreature.AddFeat(player, FEAT_RAPID_RELOAD);
+                    NWNXCreature.AddFeat(player, Feat.RapidReload);
                 }
 
                 dbPlayer.VersionNumber = 8;
+            }
+
+            // VERSION 9: Remove Weapon Finesse if player currently has it.
+            if (dbPlayer.VersionNumber < 9)
+            {
+                if (GetHasFeat(Feat.WeaponFinesse, player))
+                {
+                    NWNXCreature.RemoveFeat(player, Feat.WeaponFinesse);
+                }
+
+                dbPlayer.VersionNumber = 9;
             }
 
             DataService.SubmitDataChange(dbPlayer, DatabaseActionType.Update);
@@ -180,7 +191,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var serialized in serializedItems)
             {
                 var item = SerializationService.DeserializeItem(serialized.Data, player);
-                BiowareXP2.IPRemoveAllItemProperties(item, DURATION_TYPE_PERMANENT);
+                BiowareXP2.IPRemoveAllItemProperties(item, DurationType.Permanent);
                 foreach (var ip in serialized.ItemPropertiesToAdd)
                 {
                     BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
@@ -219,7 +230,7 @@ namespace SWLOR.Game.Server.Service
         private static void ProcessVersion6_ComponentBonuses(NWItem item, ItemProperty ip)
         {
             // Component Bonuses
-            if (_.GetItemPropertyType(ip) == (int)CustomItemPropertyType.ComponentBonus)
+            if (_.GetItemPropertyType(ip) == ItemPropertyType.ComponentBonus)
             {
                 // +AC Component Bonus
                 if (GetItemPropertySubType(ip) == (int)ComponentBonusType.ACUp)
@@ -248,19 +259,19 @@ namespace SWLOR.Game.Server.Service
         /// <param name="ip">The item property to check and remove, if applicable.</param>
         private static void ProcessVersion6_DeprecatedStats(NWItem item, ItemProperty ip)
         {
-            int[] ipsToRemove =
+            ItemPropertyType[] ipsToRemove =
             {
-                (int)CustomItemPropertyType.DarkPotencyBonus,
-                (int)CustomItemPropertyType.LightPotencyBonus,
-                (int)CustomItemPropertyType.MindPotencyBonus,
-                (int)CustomItemPropertyType.ElectricalPotencyBonus,
-                (int)CustomItemPropertyType.ForcePotencyBonus,
-                (int)CustomItemPropertyType.ForceAccuracyBonus,
-                (int)CustomItemPropertyType.ForceDefenseBonus,
-                (int)CustomItemPropertyType.ElectricalDefenseBonus,
-                (int)CustomItemPropertyType.MindDefenseBonus,
-                (int)CustomItemPropertyType.LightDefenseBonus,
-                (int)CustomItemPropertyType.DarkDefenseBonus
+                ItemPropertyType.DarkPotencyBonus,
+                ItemPropertyType.LightPotencyBonus,
+                ItemPropertyType.MindPotencyBonus,
+                ItemPropertyType.ElectricalPotencyBonus,
+                ItemPropertyType.ForcePotencyBonus,
+                ItemPropertyType.ForceAccuracyBonus,
+                ItemPropertyType.ForceDefenseBonus,
+                ItemPropertyType.ElectricalDefenseBonus,
+                ItemPropertyType.MindDefenseBonus,
+                ItemPropertyType.LightDefenseBonus,
+                ItemPropertyType.DarkDefenseBonus
             };
 
             if (ipsToRemove.Contains(_.GetItemPropertyType(ip)))

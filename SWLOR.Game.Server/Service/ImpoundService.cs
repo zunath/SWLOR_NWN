@@ -27,7 +27,27 @@ namespace SWLOR.Game.Server.Service
 
         public static void Impound(Guid playerID, NWItem item)
         {
-            PCImpoundedItem structureImpoundedItem = new PCImpoundedItem
+            PCImpoundedItem structureImpoundedItem;
+            // Processing a container, impound it's contents first.
+            if (item.HasInventory)
+            {
+                foreach (NWItem inventoryItem in item.InventoryItems)
+                {
+                    structureImpoundedItem = new PCImpoundedItem
+                    {
+                        DateImpounded = DateTime.UtcNow,
+                        PlayerID = playerID,
+                        ItemObject = SerializationService.Serialize(inventoryItem),
+                        ItemTag = inventoryItem.Tag,
+                        ItemResref = inventoryItem.Resref,
+                        ItemName = inventoryItem.Name
+                    };
+                    DataService.SubmitDataChange(structureImpoundedItem, DatabaseActionType.Insert);
+                }
+            }
+
+            // Impound parameter item.
+            structureImpoundedItem = new PCImpoundedItem
             {
                 DateImpounded = DateTime.UtcNow,
                 PlayerID = playerID,
@@ -36,7 +56,7 @@ namespace SWLOR.Game.Server.Service
                 ItemResref = item.Resref,
                 ItemName = item.Name
             };
-            DataService.SubmitDataChange(structureImpoundedItem, DatabaseActionType.Insert);
+            DataService.SubmitDataChange(structureImpoundedItem, DatabaseActionType.Insert);            
         }
     }
 }

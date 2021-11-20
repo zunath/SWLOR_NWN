@@ -1,13 +1,13 @@
 ﻿
 using System.Collections.Generic;
-using NWN;
+using SWLOR.Game.Server.NWN;
 
 
 namespace SWLOR.Game.Server.GameObject
 {
     public class NWModule : NWObject
     {
-        public NWModule(NWGameObject nwnObject) 
+        public NWModule(uint nwnObject) 
             : base(nwnObject)
         {
         }
@@ -32,7 +32,7 @@ namespace SWLOR.Game.Server.GameObject
         {
             get
             {
-                for (NWArea area = _.GetFirstArea(); _.GetIsObjectValid(area) == _.TRUE; area = _.GetNextArea())
+                for (NWArea area = _.GetFirstArea(); _.GetIsObjectValid(area) == true; area = _.GetNextArea())
                 {
                     yield return area;
                 }
@@ -66,11 +66,11 @@ namespace SWLOR.Game.Server.GameObject
             return Object.GetHashCode();
         }
 
-        public static implicit operator NWGameObject(NWModule o)
+        public static implicit operator uint(NWModule o)
         {
             return o.Object;
         }
-        public static implicit operator NWModule(NWGameObject o)
+        public static implicit operator NWModule(uint o)
         {
             return new NWModule(o);
         }

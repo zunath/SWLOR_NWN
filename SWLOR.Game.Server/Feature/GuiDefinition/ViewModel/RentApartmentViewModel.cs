@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var layout = Property.GetLayoutByType(layoutType);
 
             Name = layout.Name;
-            FurnitureLimit = $"Furniture Limit: {layout.FurnitureLimit} items";
+            FurnitureLimit = $"Furniture Limit: {layout.StructureLimit} items";
             InitialPrice = $"Initial Price: {layout.InitialPrice} cr";
             PricePerDay = $"Price Per Day: {layout.PricePerDay} cr";
         }

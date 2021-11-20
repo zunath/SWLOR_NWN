@@ -163,13 +163,13 @@ namespace SWLOR.Game.Server.Feature
             CreaturePlugin.AddFeatByLevel(player, FeatType.WeaponProficiencySimple, 1);
             CreaturePlugin.AddFeatByLevel(player, FeatType.UncannyDodge1, 1);
             CreaturePlugin.AddFeatByLevel(player, FeatType.ChatCommandTargeter, 1);
-            CreaturePlugin.AddFeatByLevel(player, FeatType.StructureTool, 1);
+            CreaturePlugin.AddFeatByLevel(player, FeatType.PropertyMenu, 1);
         }
 
         private static void InitializeHotBar(uint player)
         {
             var chatCommandTargeter = PlayerQuickBarSlot.UseFeat(FeatType.ChatCommandTargeter);
-            var structureTool = PlayerQuickBarSlot.UseFeat(FeatType.StructureTool);
+            var structureTool = PlayerQuickBarSlot.UseFeat(FeatType.PropertyMenu);
             
             PlayerPlugin.SetQuickBarSlot(player, 0, chatCommandTargeter);
             PlayerPlugin.SetQuickBarSlot(player, 1, structureTool);

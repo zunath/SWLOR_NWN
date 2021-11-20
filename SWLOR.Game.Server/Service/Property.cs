@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.DBService;
@@ -15,7 +17,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Property
     {
-        private static readonly Dictionary<StructureType, StructureAttribute> _activeFurniture = new();
+        private static readonly Dictionary<StructureType, StructureAttribute> _activeStructures = new();
         private static readonly Dictionary<PropertyLayoutType, PropertyLayoutTypeAttribute> _activeLayouts = new();
         private static readonly Dictionary<PropertyType, List<PropertyLayoutType>> _layoutsByPropertyType = new();
         private static readonly Dictionary<PropertyLayoutType, Vector4> _entrancesByLayout = new();
@@ -34,7 +36,7 @@ namespace SWLOR.Game.Server.Service
         {
             CachePropertyTypes();
             CachePermissions();
-            CacheFurniture();
+            CacheStructures();
             CacheInstanceTemplates();
         }
 
@@ -93,7 +95,6 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.ExtendLease,
                 PropertyPermissionType.CancelLease,
                 PropertyPermissionType.EnterProperty,
-                PropertyPermissionType.RenameStructures,
                 PropertyPermissionType.ChangeDescription
             };
 
@@ -105,7 +106,6 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.RenameProperty,
                 PropertyPermissionType.AccessStorage,
                 PropertyPermissionType.EnterProperty,
-                PropertyPermissionType.RenameStructures,
                 PropertyPermissionType.ChangeDescription
             };
 
@@ -116,7 +116,6 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.RetrieveStructures,
                 PropertyPermissionType.RenameProperty,
                 PropertyPermissionType.EnterProperty,
-                PropertyPermissionType.RenameStructures,
                 PropertyPermissionType.ChangeDescription
             };
 
@@ -129,24 +128,23 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.ExtendLease,
                 PropertyPermissionType.CancelLease,
                 PropertyPermissionType.EnterProperty,
-                PropertyPermissionType.RenameStructures,
                 PropertyPermissionType.ChangeDescription
             };
         }
 
         /// <summary>
-        /// When the module loads, read all furniture types and store them into the cache.
+        /// When the module loads, read all structure types and store them into the cache.
         /// </summary>
-        private static void CacheFurniture()
+        private static void CacheStructures()
         {
-            var furnitureTypes = Enum.GetValues(typeof(StructureType)).Cast<StructureType>();
-            foreach (var furniture in furnitureTypes)
+            var structureTypes = Enum.GetValues(typeof(StructureType)).Cast<StructureType>();
+            foreach (var structure in structureTypes)
             {
-                var furnitureDetail = furniture.GetAttribute<StructureType, StructureAttribute>();
+                var detail = structure.GetAttribute<StructureType, StructureAttribute>();
 
-                if (furnitureDetail.IsActive)
+                if (detail.IsActive)
                 {
-                    _activeFurniture[furniture] = furnitureDetail;
+                    _activeStructures[structure] = detail;
                 }
             }
         }
@@ -441,7 +439,7 @@ namespace SWLOR.Game.Server.Service
                 PropertyType = PropertyType.Apartment,
                 OwnerPlayerId = playerId,
                 IsPubliclyAccessible = false,
-                InteriorLayout = layout
+                Layout = layout
             };
 
             var permissions = new WorldPropertyPermission
@@ -475,6 +473,44 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Creates a structure inside a specific property.
+        /// </summary>
+        /// <param name="parentPropertyId">The parent property to associate this structure with.</param>
+        /// <param name="item">The item used to spawn the structure.</param>
+        /// <param name="type">The type of structure to spawn.</param>
+        /// <param name="location">The location to spawn the structure at.</param>
+        public static void CreateStructure(
+            string parentPropertyId, 
+            uint item,
+            StructureType type, 
+            Location location)
+        {
+            var structureDetail = GetStructureByType(type);
+            var position = GetPositionFromLocation(location);
+            var parentProperty = DB.Get<WorldProperty>(parentPropertyId);
+
+            var structure = new WorldProperty
+            {
+                CustomName = structureDetail.Name,
+                PropertyType = PropertyType.Structure,
+                SerializedItem = ObjectPlugin.Serialize(item),
+                OwnerPlayerId = string.Empty,
+                ParentPropertyId = parentPropertyId,
+                Position = position,
+                Orientation = 0.0f,
+                StructureType = type
+            };
+            parentProperty.ChildPropertyIds.Add(structure.Id);
+
+            DB.Set(structure);
+            DB.Set(parentProperty);
+
+            // Now spawn it within the game world.
+            var placeable = CreateObject(ObjectType.Placeable, structureDetail.Resref, location);
+            AssignPropertyId(placeable, structure.Id);
+        }
+
+        /// <summary>
         /// Retrieves a property layout by its type.
         /// </summary>
         /// <param name="type">The type of layout to retrieve.</param>
@@ -485,13 +521,13 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Retrieves a furniture detail by its type.
+        /// Retrieves a structure detail by its type.
         /// </summary>
         /// <param name="structure"></param>
         /// <returns></returns>
-        public static StructureAttribute GetFurnitureByType(StructureType structure)
+        public static StructureAttribute GetStructureByType(StructureType structure)
         {
-            return _activeFurniture[structure];
+            return _activeStructures[structure];
         }
 
         /// <summary>
@@ -652,7 +688,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var property = DB.Get<WorldProperty>(propertyId);
-            var entrance = _entrancesByLayout[property.InteriorLayout];
+            var entrance = _entrancesByLayout[property.Layout];
             var instance = GetRegisteredInstance(property.Id);
             var position = new Vector3(entrance.X, entrance.Y, entrance.Z);
             var location = Location(instance, position, entrance.W);
@@ -703,6 +739,140 @@ namespace SWLOR.Game.Server.Service
             DeleteLocalFloat(player, "PROPERTY_STORED_LOCATION_Z");
             DeleteLocalFloat(player, "PROPERTY_STORED_LOCATION_FACING");
             DeleteLocalObject(player, "PROPERTY_STORED_LOCATION_AREA");
+        }
+
+        /// <summary>
+        /// When the property menu feat is used, open the GUI window.
+        /// </summary>
+        [NWNEventHandler("feat_use_bef")]
+        public static void PropertyMenu()
+        {
+            var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
+
+            if (feat != FeatType.PropertyMenu) return;
+
+            var player = OBJECT_SELF;
+
+            if (Gui.IsWindowOpen(player, GuiWindowType.ManageStructures))
+            {
+                Gui.TogglePlayerWindow(player, GuiWindowType.ManageStructures);
+                return;
+            }
+
+            var area = GetArea(player);
+            var propertyId = GetPropertyId(area);
+
+            if (string.IsNullOrWhiteSpace(propertyId))
+            {
+                FloatingTextStringOnCreature($"This menu can only be accessed within player properties.", player, false);
+                return;
+            }
+
+            var playerId = GetObjectUUID(player);
+            var query = new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false);
+            var permission = DB.Search(query).FirstOrDefault();
+
+            if (permission == null ||
+                !permission.Permissions[PropertyPermissionType.RetrieveStructures] &&
+                !permission.Permissions[PropertyPermissionType.EditStructures])
+            {
+                FloatingTextStringOnCreature($"You do not have permission to access this property.", player, false);
+                return;
+            }
+            
+            Gui.TogglePlayerWindow(player, GuiWindowType.ManageStructures);
+        }
+
+        /// <summary>
+        /// Retrieves the structure type from an item.
+        /// Item's resref must start with 'structure_' and end with 4 numbers.
+        /// I.E: 'structure_0004'
+        /// Returns StructureType.Invalid on error.
+        /// </summary>
+        /// <param name="item">The item to retrieve from.</param>
+        /// <returns>A structure type associated with the item.</returns>
+        public static StructureType GetStructureTypeFromItem(uint item)
+        {
+            var resref = GetResRef(item);
+            if (!resref.StartsWith("structure_")) return StructureType.Invalid;
+
+            var id = resref.Substring(resref.Length - 4, 4);
+
+            if (!int.TryParse(id, out var structureId))
+            {
+                return StructureType.Invalid;
+            }
+
+            return (StructureType)structureId;
+        }
+
+        /// <summary>
+        /// Before an item is used, if it is a structure item, place it at the specified location.
+        /// </summary>
+        [NWNEventHandler("item_use_bef")]
+        public static void PlaceStructure()
+        {
+            EventsPlugin.SkipEvent();
+
+            var player = OBJECT_SELF;
+            var area = GetArea(player);
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
+            var propertyId = GetPropertyId(area);
+            var playerId = GetObjectUUID(player);
+
+            // Must be in a player property.
+            if (string.IsNullOrWhiteSpace(propertyId))
+            {
+                FloatingTextStringOnCreature($"Structures may only be placed within player properties.", player, false);
+                return;
+            }
+
+            var query = new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false);
+            var permission = DB.Search(query).FirstOrDefault();
+
+            // Player must have permission to edit structures.
+            if (permission == null ||
+                !permission.Permissions[PropertyPermissionType.EditStructures])
+            {
+                FloatingTextStringOnCreature($"You do not have permission to place structures within this property.", player, false);
+                return;
+            }
+            
+            var propertyQuery = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.Id), propertyId, false);
+            var property = DB.Search(propertyQuery).Single();
+            var structureLimit = property.ChildPropertyIds.Count;
+            var layout = GetLayoutByType(property.Layout);
+
+            // Over the structure limit.
+            if (structureLimit >= layout.StructureLimit)
+            {
+                FloatingTextStringOnCreature($"No more structures may be placed here.", player, false);
+                return;
+            }
+
+            // Structure can't be placed within this type of property.
+            var structureType = GetStructureTypeFromItem(item);
+            var structureDetail = GetStructureByType(structureType);
+
+            if (!structureDetail.RestrictedPropertyTypes.HasFlag(property.PropertyType))
+            {
+                FloatingTextStringOnCreature($"This type of structure cannot be placed within this type of property.", player, false);
+                return;
+            }
+
+            var position = Vector3(
+                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_X")),
+                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Y")),
+                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Z")));
+            var location = Location(area, position, 0.0f);
+
+            CreateStructure(propertyId, item, structureType, location);
+            DestroyObject(item);
         }
 
     }

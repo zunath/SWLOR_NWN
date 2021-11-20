@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         Invalid = 0,
         [PropertyPermission("Adjust Permissions", "This player can adjust the permissions of other players for this property.", true)]
         AdjustPermissions = 1,
-        [PropertyPermission("Edit Structures", "Toggles the ability to place structures and edit their locations.", true)]
+        [PropertyPermission("Edit Structures", "Toggles the ability to place structures and edit their details.", true)]
         EditStructures = 2,
         [PropertyPermission("Retrieve Structures", "Toggles the ability to pick up structures that have already been placed.", true)]
         RetrieveStructures = 3,
@@ -22,8 +22,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         CancelLease = 7,
         [PropertyPermission("Enter Property", "Toggles the ability to enter the property.", true)]
         EnterProperty = 8,
-        [PropertyPermission("Rename Structures", "Toggles the ability to rename structures within the property.", true)]
-        RenameStructures = 9,
+
         [PropertyPermission("Change Description", "Toggles the ability to change a property's description", true)]
         ChangeDescription = 10,
     }

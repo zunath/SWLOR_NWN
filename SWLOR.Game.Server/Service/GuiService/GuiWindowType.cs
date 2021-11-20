@@ -34,6 +34,6 @@
         ManageApartment = 28,
         CityHall = 29,
         PermissionManagement = 30,
-        ManageFurniture = 31
+        ManageStructures = 31
     }
 }

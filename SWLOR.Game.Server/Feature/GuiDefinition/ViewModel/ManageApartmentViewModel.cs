@@ -194,18 +194,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var apartmentToggles = new GuiBindingList<bool>();
             var permissionQuery = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
-            var dbPermissions = DB.Search(permissionQuery);
+            var dbPermissions = DB.Search(permissionQuery).ToList();
 
-            var propertyQuery = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
-                .AddFieldSearch(nameof(WorldProperty.Id), dbPermissions.Select(s => s.PropertyId));
-            var properties = DB.Search(propertyQuery);
-
-            foreach (var property in properties)
+            if (dbPermissions.Count > 0)
             {
-                _propertyIds.Add(property.Id);
-                apartmentNames.Add(property.CustomName);
-                apartmentToggles.Add(false);
+                var propertyQuery = new DBQuery<WorldProperty>()
+                    .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
+                    .AddFieldSearch(nameof(WorldProperty.Id), dbPermissions.Select(s => s.PropertyId));
+                var properties = DB.Search(propertyQuery);
+
+                foreach (var property in properties)
+                {
+                    _propertyIds.Add(property.Id);
+                    apartmentNames.Add(property.CustomName);
+                    apartmentToggles.Add(false);
+                }
             }
 
             ApartmentNames = apartmentNames;
@@ -239,7 +242,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var apartment = GetApartment();
                 var permissions = GetPermissions();
-                var layout = Property.GetLayoutByType(apartment.InteriorLayout);
+                var layout = Property.GetLayoutByType(apartment.Layout);
                 var furnitureCount = apartment.ChildPropertyIds.Count;
                 var leaseDate = apartment.Timers[PropertyTimerType.Lease];
                 var now = DateTime.UtcNow;
@@ -250,7 +253,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LayoutName = $"Layout: {layout.Name}";
                 InitialPrice = $"Initial Price: {layout.InitialPrice} cr";
                 PricePerDay = $"Price Per Day: {layout.PricePerDay} cr";
-                FurnitureLimit = $"Furniture Limit: {furnitureCount} / {layout.FurnitureLimit}";
+                FurnitureLimit = $"Furniture Limit: {furnitureCount} / {layout.StructureLimit}";
                 IsEnterEnabled = permissions.Permissions[PropertyPermissionType.EnterProperty];
                 IsManagePermissionsEnabled = permissions.GrantPermissions.Any(x => x.Value);
                 IsCancelLeaseEnabled = permissions.Permissions[PropertyPermissionType.CancelLease];
@@ -290,7 +293,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             var apartment = GetApartment();
-            var layout = Property.GetLayoutByType(apartment.InteriorLayout);
+            var layout = Property.GetLayoutByType(apartment.Layout);
             var leasedUntilDate = apartment.Timers[PropertyTimerType.Lease];
             var dayPrice = layout.PricePerDay;
             var weekPrice = layout.PricePerDay * 7;
@@ -377,7 +380,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!permissions.Permissions[PropertyPermissionType.ExtendLease])
                 return;
 
-            var layout = Property.GetLayoutByType(apartment.InteriorLayout);
+            var layout = Property.GetLayoutByType(apartment.Layout);
             var price = days * layout.PricePerDay;
             var dayWord = days == 1 ? "day" : "days";
             var currentLease = apartment.Timers[PropertyTimerType.Lease];

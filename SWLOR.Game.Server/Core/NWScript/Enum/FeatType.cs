@@ -1087,7 +1087,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         PlayerTool10 = 1115,
 
         // Custom Feats follow
-        StructureTool = 1116,
+        PropertyMenu = 1116,
         OpenRestMenu = 1117,
         Rest = 1118,
         RenameCraftedItem = 1119,

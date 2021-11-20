@@ -67,10 +67,12 @@ namespace SWLOR.Game.Server.Entity
         public bool IsPubliclyAccessible { get; set; }
 
         /// <summary>
-        /// The interior layout of this property.
-        /// This will only be set if PropertyType is a City, Starship, Apartment, or Building
+        /// The layout of this property.
+        /// For Starships, Apartments, and Buildings this is the interior.
+        /// For Cities, this is the detail for the exterior.
+        /// Structures do not use this property.
         /// </summary>
-        public PropertyLayoutType InteriorLayout { get; set; }
+        public PropertyLayoutType Layout { get; set; }
 
         /// <summary>
         /// The structure type of this property.
@@ -98,6 +100,11 @@ namespace SWLOR.Game.Server.Entity
         public float Orientation { get; set; }
 
         /// <summary>
+        /// Associated item which has been serialized. Only used if the PropertyType is a Structure.
+        /// </summary>
+        public string SerializedItem { get; set; }
+
+        /// <summary>
         /// Spawns the property into the game world.
         /// For structures, this means spawning a placeable at the location.
         /// For cities, starships, apartments, and buildings this means spawning area instances.
@@ -108,7 +115,7 @@ namespace SWLOR.Game.Server.Entity
             // Structures represent placeables within the game world such as furniture and buildings
             if (PropertyType == PropertyType.Structure)
             {
-                var furniture = Property.GetFurnitureByType(StructureType);
+                var furniture = Property.GetStructureByType(StructureType);
 
                 var position = Vector3(Position.X, Position.Y, Position.Z);
                 var location = Location(area, position, Orientation);
@@ -122,14 +129,14 @@ namespace SWLOR.Game.Server.Entity
                 uint targetArea;
 
                 // If no interior layout is defined, the provided area will be used.
-                if (InteriorLayout == PropertyLayoutType.Invalid)
+                if (Layout == PropertyLayoutType.Invalid)
                 {
                     targetArea = area;
                 }
                 // If there is an interior, create an instance and use that as our target.
                 else
                 {
-                    var layout = Property.GetLayoutByType(InteriorLayout);
+                    var layout = Property.GetLayoutByType(Layout);
                     targetArea = CreateArea(layout.AreaInstanceResref);
                     Property.RegisterInstance(Id, targetArea);
 

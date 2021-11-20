@@ -95,13 +95,23 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true)]
         ApartmentLargeStyle2Furnished = 9,
 
+        [PropertyLayoutType(
+            PropertyType.City,
+            "City",
+            20,
+            -1,
+            -1,
+            "",
+            true)]
+        City = 20,
+
     }
 
     public class PropertyLayoutTypeAttribute : Attribute
     {
         public PropertyType PropertyType { get; set; }
         public string Name { get; set; }
-        public int FurnitureLimit { get; set; }
+        public int StructureLimit { get; set; }
         public bool IsActive { get; set; }
         public int InitialPrice { get; set; }
         public int PricePerDay { get; set; }
@@ -110,7 +120,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         public PropertyLayoutTypeAttribute(
             PropertyType propertyType,
             string name,
-            int furnitureLimit,
+            int structureLimit,
             int initialPrice,
             int pricePerDay,
             string areaInstanceResref,
@@ -118,7 +128,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         {
             PropertyType = propertyType;
             Name = name;
-            FurnitureLimit = furnitureLimit;
+            StructureLimit = structureLimit;
             InitialPrice = initialPrice;
             PricePerDay = pricePerDay;
             AreaInstanceResref = areaInstanceResref;

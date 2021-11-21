@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ClearAllActions();
             BiowarePosition.TurnToFaceObject(target, activator);
             
-            AssignCommand(activator, () => ActionPlayAnimation(Animation.LoopingCustom10, 2));
+            AssignCommand(activator, () => ActionPlayAnimation(Animation.SaberThrow, 2));
 
             switch (level)
             {

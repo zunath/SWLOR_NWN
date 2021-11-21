@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     AssignCommand(user, () => ClearAllActions());
                     AssignCommand(user, () =>
                     {
-                        ActionPlayAnimation(Animation.LoopingCustom12);
+                        ActionPlayAnimation(Animation.ThrowGrenade);
                         ActionCastSpellAtLocation(spell, location, MetaMagic.Any, true, ProjectilePathType.Ballistic, true);
                     });
 

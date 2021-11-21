@@ -22,15 +22,15 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             builder.Create("cower")
                 .Description("Plays a cower animation.")
                 .Permissions(AuthorizationLevel.All)
-                .AnimationLoopingAction(Animation.LoopingCustom3);
+                .AnimationLoopingAction(Animation.HoldHead);
             builder.Create("crossarms")
                 .Description("Plays a cross arms animation.")
                 .Permissions(AuthorizationLevel.All)
-                .AnimationLoopingAction(Animation.LoopingCustom4);
+                .AnimationLoopingAction(Animation.CrossArms);
             builder.Create("crouch")
                 .Description("Plays a crouch animation.")
                 .Permissions(AuthorizationLevel.All)
-                .AnimationLoopingAction(Animation.LoopingCustom2);
+                .AnimationLoopingAction(Animation.Crouch);
             builder.Create("deadback")
                 .Description("Plays a dead back animation.")
                 .Permissions(AuthorizationLevel.All)
@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             builder.Create("point")
                 .Description("Plays a point animation.")
                 .Permissions(AuthorizationLevel.All)
-                .AnimationLoopingAction(Animation.LoopingCustom1);
+                .AnimationLoopingAction(Animation.PointForward);
             builder.Create("read")
                 .Description("Plays a read animation.")
                 .Permissions(AuthorizationLevel.All)

@@ -21,7 +21,7 @@ Refer to the quick start guide below and be sure to post any issues on our forum
 
 1.) Install Git from here: https://git-scm.com/downloads
 
-2.) Install Visual Studio Community Edition 2019 from here: https://www.visualstudio.com/downloads/
+2.) Install Visual Studio Community Edition 2019 from here: https://www.visualstudio.com/downloads/ - note you need the latest version (16.11) that includes .NET 5.0, older versions will not work for SWLOR.
 
 3.) Start up Visual Studio.
 
@@ -34,6 +34,9 @@ Refer to the quick start guide below and be sure to post any issues on our forum
 7.) Click Clone and wait until it finishes downloading the files.
 
 8.) Open the project you just cloned.
+
+# Building the project
+In Visual Studio, right click the SWLOR.Game.Server project in the right hand bar and select Build (or Rebuild). 
 
 # Hosting a Server
 

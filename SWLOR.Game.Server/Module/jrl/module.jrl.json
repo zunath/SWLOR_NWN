@@ -34,7 +34,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Additional Fuel Tank (Medium)"
+            "0": "[Armorsmith] 1x Additional Fuel Tank (Medium)"
           }
         },
         "Picture": {
@@ -85,7 +85,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Additional Fuel Tank (Small)"
+            "0": "[Armorsmith] 1x Additional Fuel Tank (Small)"
           }
         },
         "Picture": {
@@ -136,7 +136,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Additional Stronidium Tank (Medium)"
+            "0": "[Armorsmith] 1x Additional Stronidium Tank (Medium)"
           }
         },
         "Picture": {
@@ -187,7 +187,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Additional Stronidium Tank (Small)"
+            "0": "[Armorsmith] 1x Additional Stronidium Tank (Small)"
           }
         },
         "Picture": {
@@ -238,7 +238,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Basic Breastplate"
+            "0": "[Armorsmith] 1x Basic Breastplate"
           }
         },
         "Picture": {
@@ -289,7 +289,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Basic Force Boots"
+            "0": "[Armorsmith] 1x Basic Force Boots"
           }
         },
         "Picture": {
@@ -340,7 +340,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Basic Force Helmet"
+            "0": "[Armorsmith] 1x Basic Force Helmet"
           }
         },
         "Picture": {
@@ -391,7 +391,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Basic Force Robes"
+            "0": "[Armorsmith] 1x Basic Force Robes"
           }
         },
         "Picture": {
@@ -442,7 +442,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Basic Heavy Boots"
+            "0": "[Armorsmith] 1x Basic Heavy Boots"
           }
         },
         "Picture": {
@@ -493,7 +493,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Basic Heavy Helmet"
+            "0": "[Armorsmith] 1x Basic Heavy Helmet"
           }
         },
         "Picture": {
@@ -544,7 +544,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Basic Large Shield"
+            "0": "[Armorsmith] 1x Basic Large Shield"
           }
         },
         "Picture": {
@@ -595,7 +595,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Basic Leather Tunic"
+            "0": "[Armorsmith] 1x Basic Leather Tunic"
           }
         },
         "Picture": {
@@ -646,7 +646,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Basic Light Boots"
+            "0": "[Armorsmith] 1x Basic Light Boots"
           }
         },
         "Picture": {
@@ -697,7 +697,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Basic Light Helmet"
+            "0": "[Armorsmith] 1x Basic Light Helmet"
           }
         },
         "Picture": {
@@ -748,7 +748,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Basic Power Glove"
+            "0": "[Armorsmith] 1x Basic Power Glove"
           }
         },
         "Picture": {
@@ -799,7 +799,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Basic Small Shield"
+            "0": "[Armorsmith] 1x Basic Small Shield"
           }
         },
         "Picture": {
@@ -850,7 +850,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Basic Tower Shield"
+            "0": "[Armorsmith] 1x Basic Tower Shield"
           }
         },
         "Picture": {
@@ -901,7 +901,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Breastplate I"
+            "0": "[Armorsmith] 1x Breastplate I"
           }
         },
         "Picture": {
@@ -952,7 +952,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Breastplate II"
+            "0": "[Armorsmith] 1x Breastplate II"
           }
         },
         "Picture": {
@@ -1003,7 +1003,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Breastplate III"
+            "0": "[Armorsmith] 1x Breastplate III"
           }
         },
         "Picture": {
@@ -1054,7 +1054,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Breastplate IV"
+            "0": "[Armorsmith] 1x Breastplate IV"
           }
         },
         "Picture": {
@@ -1105,7 +1105,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Fiberplast Padding"
+            "0": "[Armorsmith] 1x Fiberplast Padding"
           }
         },
         "Picture": {
@@ -1156,7 +1156,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Armor Core"
+            "0": "[Armorsmith] 1x Force Armor Core"
           }
         },
         "Picture": {
@@ -1207,7 +1207,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Armor Repair Kit I"
+            "0": "[Armorsmith] 1x Force Armor Repair Kit I"
           }
         },
         "Picture": {
@@ -1258,7 +1258,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Armor Repair Kit II"
+            "0": "[Armorsmith] 1x Force Armor Repair Kit II"
           }
         },
         "Picture": {
@@ -1309,7 +1309,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Armor Repair Kit III"
+            "0": "[Armorsmith] 1x Force Armor Repair Kit III"
           }
         },
         "Picture": {
@@ -1360,7 +1360,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Armor Repair Kit IV"
+            "0": "[Armorsmith] 1x Force Armor Repair Kit IV"
           }
         },
         "Picture": {
@@ -1411,7 +1411,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Armor Segment"
+            "0": "[Armorsmith] 1x Force Armor Segment"
           }
         },
         "Picture": {
@@ -1462,7 +1462,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Belt I"
+            "0": "[Armorsmith] 1x Force Belt I"
           }
         },
         "Picture": {
@@ -1513,7 +1513,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Belt II"
+            "0": "[Armorsmith] 1x Force Belt II"
           }
         },
         "Picture": {
@@ -1564,7 +1564,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Belt III"
+            "0": "[Armorsmith] 1x Force Belt III"
           }
         },
         "Picture": {
@@ -1615,7 +1615,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Boots I"
+            "0": "[Armorsmith] 1x Force Boots I"
           }
         },
         "Picture": {
@@ -1666,7 +1666,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Boots II"
+            "0": "[Armorsmith] 1x Force Boots II"
           }
         },
         "Picture": {
@@ -1717,7 +1717,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Boots III"
+            "0": "[Armorsmith] 1x Force Boots III"
           }
         },
         "Picture": {
@@ -1768,7 +1768,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Boots IV"
+            "0": "[Armorsmith] 1x Force Boots IV"
           }
         },
         "Picture": {
@@ -1819,7 +1819,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Helmet I"
+            "0": "[Armorsmith] 1x Force Helmet I"
           }
         },
         "Picture": {
@@ -1870,7 +1870,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Helmet II"
+            "0": "[Armorsmith] 1x Force Helmet II"
           }
         },
         "Picture": {
@@ -1921,7 +1921,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Helmet III"
+            "0": "[Armorsmith] 1x Force Helmet III"
           }
         },
         "Picture": {
@@ -1972,7 +1972,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Helmet IV"
+            "0": "[Armorsmith] 1x Force Helmet IV"
           }
         },
         "Picture": {
@@ -2023,7 +2023,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Necklace I"
+            "0": "[Armorsmith] 1x Force Necklace I"
           }
         },
         "Picture": {
@@ -2074,7 +2074,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Necklace II"
+            "0": "[Armorsmith] 1x Force Necklace II"
           }
         },
         "Picture": {
@@ -2125,7 +2125,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Necklace III"
+            "0": "[Armorsmith] 1x Force Necklace III"
           }
         },
         "Picture": {
@@ -2176,7 +2176,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Necklace IV"
+            "0": "[Armorsmith] 1x Force Necklace IV"
           }
         },
         "Picture": {
@@ -2227,7 +2227,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Robes I"
+            "0": "[Armorsmith] 1x Force Robes I"
           }
         },
         "Picture": {
@@ -2278,7 +2278,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Robes II"
+            "0": "[Armorsmith] 1x Force Robes II"
           }
         },
         "Picture": {
@@ -2329,7 +2329,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Robes III"
+            "0": "[Armorsmith] 1x Force Robes III"
           }
         },
         "Picture": {
@@ -2380,7 +2380,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Force Robes IV"
+            "0": "[Armorsmith] 1x Force Robes IV"
           }
         },
         "Picture": {
@@ -2431,7 +2431,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Armor Core"
+            "0": "[Armorsmith] 1x Heavy Armor Core"
           }
         },
         "Picture": {
@@ -2482,7 +2482,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Armor Repair Kit I"
+            "0": "[Armorsmith] 1x Heavy Armor Repair Kit I"
           }
         },
         "Picture": {
@@ -2533,7 +2533,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Armor Repair Kit II"
+            "0": "[Armorsmith] 1x Heavy Armor Repair Kit II"
           }
         },
         "Picture": {
@@ -2584,7 +2584,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Armor Repair Kit III"
+            "0": "[Armorsmith] 1x Heavy Armor Repair Kit III"
           }
         },
         "Picture": {
@@ -2635,7 +2635,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Armor Repair Kit IV"
+            "0": "[Armorsmith] 1x Heavy Armor Repair Kit IV"
           }
         },
         "Picture": {
@@ -2686,7 +2686,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Armor Segment"
+            "0": "[Armorsmith] 1x Heavy Armor Segment"
           }
         },
         "Picture": {
@@ -2737,7 +2737,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Belt I"
+            "0": "[Armorsmith] 1x Heavy Belt I"
           }
         },
         "Picture": {
@@ -2788,7 +2788,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Belt II"
+            "0": "[Armorsmith] 1x Heavy Belt II"
           }
         },
         "Picture": {
@@ -2839,7 +2839,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Belt III"
+            "0": "[Armorsmith] 1x Heavy Belt III"
           }
         },
         "Picture": {
@@ -2890,7 +2890,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Boots I"
+            "0": "[Armorsmith] 1x Heavy Boots I"
           }
         },
         "Picture": {
@@ -2941,7 +2941,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Boots II"
+            "0": "[Armorsmith] 1x Heavy Boots II"
           }
         },
         "Picture": {
@@ -2992,7 +2992,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Boots III"
+            "0": "[Armorsmith] 1x Heavy Boots III"
           }
         },
         "Picture": {
@@ -3043,7 +3043,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Boots IV"
+            "0": "[Armorsmith] 1x Heavy Boots IV"
           }
         },
         "Picture": {
@@ -3094,7 +3094,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Crest I"
+            "0": "[Armorsmith] 1x Heavy Crest I"
           }
         },
         "Picture": {
@@ -3145,7 +3145,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Crest II"
+            "0": "[Armorsmith] 1x Heavy Crest II"
           }
         },
         "Picture": {
@@ -3196,7 +3196,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Crest III"
+            "0": "[Armorsmith] 1x Heavy Crest III"
           }
         },
         "Picture": {
@@ -3247,7 +3247,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Crest IV"
+            "0": "[Armorsmith] 1x Heavy Crest IV"
           }
         },
         "Picture": {
@@ -3298,7 +3298,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Helmet I"
+            "0": "[Armorsmith] 1x Heavy Helmet I"
           }
         },
         "Picture": {
@@ -3349,7 +3349,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Helmet II"
+            "0": "[Armorsmith] 1x Heavy Helmet II"
           }
         },
         "Picture": {
@@ -3400,7 +3400,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Helmet III"
+            "0": "[Armorsmith] 1x Heavy Helmet III"
           }
         },
         "Picture": {
@@ -3451,7 +3451,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Heavy Helmet IV"
+            "0": "[Armorsmith] 1x Heavy Helmet IV"
           }
         },
         "Picture": {
@@ -3502,7 +3502,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Hull Plating"
+            "0": "[Armorsmith] 1x Hull Plating"
           }
         },
         "Picture": {
@@ -3553,7 +3553,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Large Shield I"
+            "0": "[Armorsmith] 1x Large Shield I"
           }
         },
         "Picture": {
@@ -3604,7 +3604,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Large Shield II"
+            "0": "[Armorsmith] 1x Large Shield II"
           }
         },
         "Picture": {
@@ -3655,7 +3655,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Large Shield III"
+            "0": "[Armorsmith] 1x Large Shield III"
           }
         },
         "Picture": {
@@ -3706,7 +3706,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Large Shield IV"
+            "0": "[Armorsmith] 1x Large Shield IV"
           }
         },
         "Picture": {
@@ -3757,7 +3757,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Leather Tunic I"
+            "0": "[Armorsmith] 1x Leather Tunic I"
           }
         },
         "Picture": {
@@ -3808,7 +3808,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Leather Tunic II"
+            "0": "[Armorsmith] 1x Leather Tunic II"
           }
         },
         "Picture": {
@@ -3859,7 +3859,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Leather Tunic III"
+            "0": "[Armorsmith] 1x Leather Tunic III"
           }
         },
         "Picture": {
@@ -3910,7 +3910,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Leather Tunic IV"
+            "0": "[Armorsmith] 1x Leather Tunic IV"
           }
         },
         "Picture": {
@@ -3961,7 +3961,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Armor Core"
+            "0": "[Armorsmith] 1x Light Armor Core"
           }
         },
         "Picture": {
@@ -4012,7 +4012,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Armor Repair Kit I"
+            "0": "[Armorsmith] 1x Light Armor Repair Kit I"
           }
         },
         "Picture": {
@@ -4063,7 +4063,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Armor Repair Kit II"
+            "0": "[Armorsmith] 1x Light Armor Repair Kit II"
           }
         },
         "Picture": {
@@ -4114,7 +4114,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Armor Repair Kit III"
+            "0": "[Armorsmith] 1x Light Armor Repair Kit III"
           }
         },
         "Picture": {
@@ -4165,7 +4165,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Armor Repair Kit IV"
+            "0": "[Armorsmith] 1x Light Armor Repair Kit IV"
           }
         },
         "Picture": {
@@ -4216,7 +4216,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Armor Segment"
+            "0": "[Armorsmith] 1x Light Armor Segment"
           }
         },
         "Picture": {
@@ -4267,7 +4267,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Belt I"
+            "0": "[Armorsmith] 1x Light Belt I"
           }
         },
         "Picture": {
@@ -4318,7 +4318,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Belt II"
+            "0": "[Armorsmith] 1x Light Belt II"
           }
         },
         "Picture": {
@@ -4369,7 +4369,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Belt III"
+            "0": "[Armorsmith] 1x Light Belt III"
           }
         },
         "Picture": {
@@ -4420,7 +4420,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Boots I"
+            "0": "[Armorsmith] 1x Light Boots I"
           }
         },
         "Picture": {
@@ -4471,7 +4471,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Boots II"
+            "0": "[Armorsmith] 1x Light Boots II"
           }
         },
         "Picture": {
@@ -4522,7 +4522,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Boots III"
+            "0": "[Armorsmith] 1x Light Boots III"
           }
         },
         "Picture": {
@@ -4573,7 +4573,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Boots IV"
+            "0": "[Armorsmith] 1x Light Boots IV"
           }
         },
         "Picture": {
@@ -4624,7 +4624,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Choker I"
+            "0": "[Armorsmith] 1x Light Choker I"
           }
         },
         "Picture": {
@@ -4675,7 +4675,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Choker II"
+            "0": "[Armorsmith] 1x Light Choker II"
           }
         },
         "Picture": {
@@ -4726,7 +4726,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Choker III"
+            "0": "[Armorsmith] 1x Light Choker III"
           }
         },
         "Picture": {
@@ -4777,7 +4777,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Choker IV"
+            "0": "[Armorsmith] 1x Light Choker IV"
           }
         },
         "Picture": {
@@ -4828,7 +4828,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Helmet I"
+            "0": "[Armorsmith] 1x Light Helmet I"
           }
         },
         "Picture": {
@@ -4879,7 +4879,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Helmet II"
+            "0": "[Armorsmith] 1x Light Helmet II"
           }
         },
         "Picture": {
@@ -4930,7 +4930,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Helmet III"
+            "0": "[Armorsmith] 1x Light Helmet III"
           }
         },
         "Picture": {
@@ -4981,7 +4981,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Light Helmet IV"
+            "0": "[Armorsmith] 1x Light Helmet IV"
           }
         },
         "Picture": {
@@ -5032,7 +5032,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Metal Reinforcement"
+            "0": "[Armorsmith] 1x Metal Reinforcement"
           }
         },
         "Picture": {
@@ -5083,7 +5083,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Power Glove I"
+            "0": "[Armorsmith] 1x Power Glove I"
           }
         },
         "Picture": {
@@ -5134,7 +5134,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Power Glove II"
+            "0": "[Armorsmith] 1x Power Glove II"
           }
         },
         "Picture": {
@@ -5185,7 +5185,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Power Glove III"
+            "0": "[Armorsmith] 1x Power Glove III"
           }
         },
         "Picture": {
@@ -5236,7 +5236,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Power Glove IV"
+            "0": "[Armorsmith] 1x Power Glove IV"
           }
         },
         "Picture": {
@@ -5287,7 +5287,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Prism Force Necklace"
+            "0": "[Armorsmith] 1x Prism Force Necklace"
           }
         },
         "Picture": {
@@ -5338,7 +5338,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Prism Heavy Necklace"
+            "0": "[Armorsmith] 1x Prism Heavy Necklace"
           }
         },
         "Picture": {
@@ -5389,7 +5389,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Prism Light Necklace"
+            "0": "[Armorsmith] 1x Prism Light Necklace"
           }
         },
         "Picture": {
@@ -5440,7 +5440,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Prismatic Force Belt"
+            "0": "[Armorsmith] 1x Prismatic Force Belt"
           }
         },
         "Picture": {
@@ -5491,7 +5491,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Prismatic Heavy Belt"
+            "0": "[Armorsmith] 1x Prismatic Heavy Belt"
           }
         },
         "Picture": {
@@ -5542,7 +5542,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Prismatic Light Belt"
+            "0": "[Armorsmith] 1x Prismatic Light Belt"
           }
         },
         "Picture": {
@@ -5593,7 +5593,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Shield Repair Kit I"
+            "0": "[Armorsmith] 1x Shield Repair Kit I"
           }
         },
         "Picture": {
@@ -5644,7 +5644,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Shield Repair Kit II"
+            "0": "[Armorsmith] 1x Shield Repair Kit II"
           }
         },
         "Picture": {
@@ -5695,7 +5695,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Shield Repair Kit III"
+            "0": "[Armorsmith] 1x Shield Repair Kit III"
           }
         },
         "Picture": {
@@ -5746,7 +5746,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Shield Repair Kit IV"
+            "0": "[Armorsmith] 1x Shield Repair Kit IV"
           }
         },
         "Picture": {
@@ -5797,7 +5797,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Small Shield I"
+            "0": "[Armorsmith] 1x Small Shield I"
           }
         },
         "Picture": {
@@ -5848,7 +5848,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Small Shield II"
+            "0": "[Armorsmith] 1x Small Shield II"
           }
         },
         "Picture": {
@@ -5899,7 +5899,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Small Shield III"
+            "0": "[Armorsmith] 1x Small Shield III"
           }
         },
         "Picture": {
@@ -5950,7 +5950,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Small Shield IV"
+            "0": "[Armorsmith] 1x Small Shield IV"
           }
         },
         "Picture": {
@@ -6001,7 +6001,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Tower Shield I"
+            "0": "[Armorsmith] 1x Tower Shield I"
           }
         },
         "Picture": {
@@ -6052,7 +6052,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Tower Shield II"
+            "0": "[Armorsmith] 1x Tower Shield II"
           }
         },
         "Picture": {
@@ -6103,7 +6103,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Tower Shield III"
+            "0": "[Armorsmith] 1x Tower Shield III"
           }
         },
         "Picture": {
@@ -6154,7 +6154,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Armorsmith Guild Task: 1x Tower Shield IV"
+            "0": "[Armorsmith] 1x Tower Shield IV"
           }
         },
         "Picture": {
@@ -6800,7 +6800,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Cooldown Reduction I"
+            "0": "[Engineering] 1x Cooldown Reduction I"
           }
         },
         "Picture": {
@@ -6851,7 +6851,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Cooldown Reduction II"
+            "0": "[Engineering] 1x Cooldown Reduction II"
           }
         },
         "Picture": {
@@ -6902,7 +6902,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Cooldown Reduction III"
+            "0": "[Engineering] 1x Cooldown Reduction III"
           }
         },
         "Picture": {
@@ -6953,7 +6953,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Armor Class I"
+            "0": "[Engineering] 1x Armor Class I"
           }
         },
         "Picture": {
@@ -7004,7 +7004,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Armor Class II"
+            "0": "[Engineering] 1x Armor Class II"
           }
         },
         "Picture": {
@@ -7055,7 +7055,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Armor Class III"
+            "0": "[Engineering] 1x Armor Class III"
           }
         },
         "Picture": {
@@ -7106,7 +7106,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Armorsmith I"
+            "0": "[Engineering] 1x Armorsmith I"
           }
         },
         "Picture": {
@@ -7157,7 +7157,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Armorsmith II"
+            "0": "[Engineering] 1x Armorsmith II"
           }
         },
         "Picture": {
@@ -7208,7 +7208,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Armorsmith III"
+            "0": "[Engineering] 1x Armorsmith III"
           }
         },
         "Picture": {
@@ -7259,7 +7259,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Attack Bonus I"
+            "0": "[Engineering] 1x Attack Bonus I"
           }
         },
         "Picture": {
@@ -7310,7 +7310,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Attack Bonus II"
+            "0": "[Engineering] 1x Attack Bonus II"
           }
         },
         "Picture": {
@@ -7361,7 +7361,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Attack Bonus III"
+            "0": "[Engineering] 1x Attack Bonus III"
           }
         },
         "Picture": {
@@ -7412,7 +7412,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Auxiliary Shield Generator (Medium)"
+            "0": "[Engineering] 1x Auxiliary Shield Generator (Medium)"
           }
         },
         "Picture": {
@@ -7463,7 +7463,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Auxiliary Shield Generator (Small)"
+            "0": "[Engineering] 1x Auxiliary Shield Generator (Small)"
           }
         },
         "Picture": {
@@ -7514,7 +7514,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Auxiliary Targeter (Basic)"
+            "0": "[Engineering] 1x Auxiliary Targeter (Basic)"
           }
         },
         "Picture": {
@@ -7565,7 +7565,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Auxiliary Targeter (Improved)"
+            "0": "[Engineering] 1x Auxiliary Targeter (Improved)"
           }
         },
         "Picture": {
@@ -7616,7 +7616,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Auxiliary Thruster (Medium)"
+            "0": "[Engineering] 1x Auxiliary Thruster (Medium)"
           }
         },
         "Picture": {
@@ -7667,7 +7667,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Auxiliary Thruster (Small)"
+            "0": "[Engineering] 1x Auxiliary Thruster (Small)"
           }
         },
         "Picture": {
@@ -7718,7 +7718,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Base Attack Bonus I"
+            "0": "[Engineering] 1x Base Attack Bonus I"
           }
         },
         "Picture": {
@@ -7769,7 +7769,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Base Attack Bonus II"
+            "0": "[Engineering] 1x Base Attack Bonus II"
           }
         },
         "Picture": {
@@ -7820,7 +7820,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Base Attack Bonus III"
+            "0": "[Engineering] 1x Base Attack Bonus III"
           }
         },
         "Picture": {
@@ -7871,7 +7871,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Basic Blaster Pistol"
+            "0": "[Engineering] 1x Basic Blaster Pistol"
           }
         },
         "Picture": {
@@ -7922,7 +7922,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Basic Blaster Rifle"
+            "0": "[Engineering] 1x Basic Blaster Rifle"
           }
         },
         "Picture": {
@@ -7973,7 +7973,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Basic Lightsaber (Blue)"
+            "0": "[Engineering] 1x Basic Lightsaber (Blue)"
           }
         },
         "Picture": {
@@ -8024,7 +8024,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Basic Lightsaber (Green)"
+            "0": "[Engineering] 1x Basic Lightsaber (Green)"
           }
         },
         "Picture": {
@@ -8075,7 +8075,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Basic Lightsaber (Red)"
+            "0": "[Engineering] 1x Basic Lightsaber (Red)"
           }
         },
         "Picture": {
@@ -8126,7 +8126,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Basic Lightsaber (Yellow)"
+            "0": "[Engineering] 1x Basic Lightsaber (Yellow)"
           }
         },
         "Picture": {
@@ -8177,7 +8177,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Basic Mineral Scanner"
+            "0": "[Engineering] 1x Basic Mineral Scanner"
           }
         },
         "Picture": {
@@ -8228,7 +8228,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Basic Resource Harvester"
+            "0": "[Engineering] 1x Basic Resource Harvester"
           }
         },
         "Picture": {
@@ -8279,7 +8279,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Basic Resource Scanner"
+            "0": "[Engineering] 1x Basic Resource Scanner"
           }
         },
         "Picture": {
@@ -8330,7 +8330,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Basic Saberstaff (Blue)"
+            "0": "[Engineering] 1x Basic Saberstaff (Blue)"
           }
         },
         "Picture": {
@@ -8381,7 +8381,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Basic Saberstaff (Green)"
+            "0": "[Engineering] 1x Basic Saberstaff (Green)"
           }
         },
         "Picture": {
@@ -8432,7 +8432,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Basic Saberstaff (Red)"
+            "0": "[Engineering] 1x Basic Saberstaff (Red)"
           }
         },
         "Picture": {
@@ -8483,7 +8483,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Basic Saberstaff (Yellow)"
+            "0": "[Engineering] 1x Basic Saberstaff (Yellow)"
           }
         },
         "Picture": {
@@ -8534,7 +8534,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Blaster Pistol I"
+            "0": "[Engineering] 1x Blaster Pistol I"
           }
         },
         "Picture": {
@@ -8585,7 +8585,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Blaster Pistol II"
+            "0": "[Engineering] 1x Blaster Pistol II"
           }
         },
         "Picture": {
@@ -8636,7 +8636,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Blaster Pistol III"
+            "0": "[Engineering] 1x Blaster Pistol III"
           }
         },
         "Picture": {
@@ -8687,7 +8687,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Blaster Pistol IV"
+            "0": "[Engineering] 1x Blaster Pistol IV"
           }
         },
         "Picture": {
@@ -8738,7 +8738,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Blaster Pistol Repair Kit I"
+            "0": "[Engineering] 1x Blaster Pistol Repair Kit I"
           }
         },
         "Picture": {
@@ -8789,7 +8789,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Blaster Pistol Repair Kit II"
+            "0": "[Engineering] 1x Blaster Pistol Repair Kit II"
           }
         },
         "Picture": {
@@ -8840,7 +8840,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Blaster Pistol Repair Kit III"
+            "0": "[Engineering] 1x Blaster Pistol Repair Kit III"
           }
         },
         "Picture": {
@@ -8891,7 +8891,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Blaster Pistol Repair Kit IV"
+            "0": "[Engineering] 1x Blaster Pistol Repair Kit IV"
           }
         },
         "Picture": {
@@ -8942,7 +8942,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Blaster Rifle I"
+            "0": "[Engineering] 1x Blaster Rifle I"
           }
         },
         "Picture": {
@@ -8993,7 +8993,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Blaster Rifle II"
+            "0": "[Engineering] 1x Blaster Rifle II"
           }
         },
         "Picture": {
@@ -9044,7 +9044,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Blaster Rifle III"
+            "0": "[Engineering] 1x Blaster Rifle III"
           }
         },
         "Picture": {
@@ -9095,7 +9095,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Blaster Rifle IV"
+            "0": "[Engineering] 1x Blaster Rifle IV"
           }
         },
         "Picture": {
@@ -9146,7 +9146,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Blaster Rifle Repair Kit I"
+            "0": "[Engineering] 1x Blaster Rifle Repair Kit I"
           }
         },
         "Picture": {
@@ -9197,7 +9197,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Blaster Rifle Repair Kit II"
+            "0": "[Engineering] 1x Blaster Rifle Repair Kit II"
           }
         },
         "Picture": {
@@ -9248,7 +9248,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Blaster Rifle Repair Kit III"
+            "0": "[Engineering] 1x Blaster Rifle Repair Kit III"
           }
         },
         "Picture": {
@@ -9299,7 +9299,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Blaster Rifle Repair Kit IV"
+            "0": "[Engineering] 1x Blaster Rifle Repair Kit IV"
           }
         },
         "Picture": {
@@ -9350,7 +9350,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Blue Crystal Cluster"
+            "0": "[Engineering] 1x Blue Crystal Cluster"
           }
         },
         "Picture": {
@@ -9401,7 +9401,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Charisma I"
+            "0": "[Engineering] 1x Charisma I"
           }
         },
         "Picture": {
@@ -9452,7 +9452,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Charisma II"
+            "0": "[Engineering] 1x Charisma II"
           }
         },
         "Picture": {
@@ -9503,7 +9503,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Charisma III"
+            "0": "[Engineering] 1x Charisma III"
           }
         },
         "Picture": {
@@ -9554,7 +9554,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Cloaking Generator (Medium)"
+            "0": "[Engineering] 1x Cloaking Generator (Medium)"
           }
         },
         "Picture": {
@@ -9605,7 +9605,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Cloaking Generator (Small)"
+            "0": "[Engineering] 1x Cloaking Generator (Small)"
           }
         },
         "Picture": {
@@ -9656,7 +9656,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Constitution I"
+            "0": "[Engineering] 1x Constitution I"
           }
         },
         "Picture": {
@@ -9707,7 +9707,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Constitution II"
+            "0": "[Engineering] 1x Constitution II"
           }
         },
         "Picture": {
@@ -9758,7 +9758,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Constitution III"
+            "0": "[Engineering] 1x Constitution III"
           }
         },
         "Picture": {
@@ -9809,7 +9809,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Cooking I"
+            "0": "[Engineering] 1x Cooking I"
           }
         },
         "Picture": {
@@ -9860,7 +9860,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Cooking II"
+            "0": "[Engineering] 1x Cooking II"
           }
         },
         "Picture": {
@@ -9911,7 +9911,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Cooking III"
+            "0": "[Engineering] 1x Cooking III"
           }
         },
         "Picture": {
@@ -9962,7 +9962,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Damage I"
+            "0": "[Engineering] 1x Damage I"
           }
         },
         "Picture": {
@@ -10013,7 +10013,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Damage II"
+            "0": "[Engineering] 1x Damage II"
           }
         },
         "Picture": {
@@ -10064,7 +10064,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Damage III"
+            "0": "[Engineering] 1x Damage III"
           }
         },
         "Picture": {
@@ -10115,7 +10115,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Dark Defense I"
+            "0": "[Engineering] 1x Dark Defense I"
           }
         },
         "Picture": {
@@ -10166,7 +10166,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Dark Defense II"
+            "0": "[Engineering] 1x Dark Defense II"
           }
         },
         "Picture": {
@@ -10217,7 +10217,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Dark Defense III"
+            "0": "[Engineering] 1x Dark Defense III"
           }
         },
         "Picture": {
@@ -10268,7 +10268,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Dark Potency I"
+            "0": "[Engineering] 1x Dark Potency I"
           }
         },
         "Picture": {
@@ -10319,7 +10319,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Dark Potency II"
+            "0": "[Engineering] 1x Dark Potency II"
           }
         },
         "Picture": {
@@ -10370,7 +10370,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Dark Potency III"
+            "0": "[Engineering] 1x Dark Potency III"
           }
         },
         "Picture": {
@@ -10421,7 +10421,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Dexterity I"
+            "0": "[Engineering] 1x Dexterity I"
           }
         },
         "Picture": {
@@ -10472,7 +10472,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Dexterity II"
+            "0": "[Engineering] 1x Dexterity II"
           }
         },
         "Picture": {
@@ -10523,7 +10523,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Dexterity III"
+            "0": "[Engineering] 1x Dexterity III"
           }
         },
         "Picture": {
@@ -10574,7 +10574,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Durability I"
+            "0": "[Engineering] 1x Durability I"
           }
         },
         "Picture": {
@@ -10625,7 +10625,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Durability II"
+            "0": "[Engineering] 1x Durability II"
           }
         },
         "Picture": {
@@ -10676,7 +10676,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Durability III"
+            "0": "[Engineering] 1x Durability III"
           }
         },
         "Picture": {
@@ -10727,7 +10727,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Electrical Defense I"
+            "0": "[Engineering] 1x Electrical Defense I"
           }
         },
         "Picture": {
@@ -10778,7 +10778,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Electrical Defense II"
+            "0": "[Engineering] 1x Electrical Defense II"
           }
         },
         "Picture": {
@@ -10829,7 +10829,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Electrical Defense III"
+            "0": "[Engineering] 1x Electrical Defense III"
           }
         },
         "Picture": {
@@ -10880,7 +10880,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Electrical Potency I"
+            "0": "[Engineering] 1x Electrical Potency I"
           }
         },
         "Picture": {
@@ -10931,7 +10931,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Electrical Potency II"
+            "0": "[Engineering] 1x Electrical Potency II"
           }
         },
         "Picture": {
@@ -10982,7 +10982,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Electrical Potency III"
+            "0": "[Engineering] 1x Electrical Potency III"
           }
         },
         "Picture": {
@@ -11033,7 +11033,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Emitter"
+            "0": "[Engineering] 1x Emitter"
           }
         },
         "Picture": {
@@ -11084,7 +11084,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Engineering I"
+            "0": "[Engineering] 1x Engineering I"
           }
         },
         "Picture": {
@@ -11135,7 +11135,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Engineering II"
+            "0": "[Engineering] 1x Engineering II"
           }
         },
         "Picture": {
@@ -11186,7 +11186,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Engineering III"
+            "0": "[Engineering] 1x Engineering III"
           }
         },
         "Picture": {
@@ -11237,7 +11237,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Enhancement Bonus I"
+            "0": "[Engineering] 1x Enhancement Bonus I"
           }
         },
         "Picture": {
@@ -11288,7 +11288,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Enhancement Bonus II"
+            "0": "[Engineering] 1x Enhancement Bonus II"
           }
         },
         "Picture": {
@@ -11339,7 +11339,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Enhancement Bonus III"
+            "0": "[Engineering] 1x Enhancement Bonus III"
           }
         },
         "Picture": {
@@ -11390,7 +11390,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Fabrication I"
+            "0": "[Engineering] 1x Fabrication I"
           }
         },
         "Picture": {
@@ -11441,7 +11441,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Fabrication II"
+            "0": "[Engineering] 1x Fabrication II"
           }
         },
         "Picture": {
@@ -11492,7 +11492,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Fabrication III"
+            "0": "[Engineering] 1x Fabrication III"
           }
         },
         "Picture": {
@@ -11543,7 +11543,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x First Aid I"
+            "0": "[Engineering] 1x First Aid I"
           }
         },
         "Picture": {
@@ -11594,7 +11594,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x First Aid II"
+            "0": "[Engineering] 1x First Aid II"
           }
         },
         "Picture": {
@@ -11645,7 +11645,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x First Aid III"
+            "0": "[Engineering] 1x First Aid III"
           }
         },
         "Picture": {
@@ -11696,7 +11696,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x FP I"
+            "0": "[Engineering] 1x FP I"
           }
         },
         "Picture": {
@@ -11747,7 +11747,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x FP II"
+            "0": "[Engineering] 1x FP II"
           }
         },
         "Picture": {
@@ -11798,7 +11798,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x FP III"
+            "0": "[Engineering] 1x FP III"
           }
         },
         "Picture": {
@@ -11849,7 +11849,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x FP Regen"
+            "0": "[Engineering] 1x FP Regen"
           }
         },
         "Picture": {
@@ -11900,7 +11900,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x FP Regen II"
+            "0": "[Engineering] 1x FP Regen II"
           }
         },
         "Picture": {
@@ -11951,7 +11951,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x FP Regen III"
+            "0": "[Engineering] 1x FP Regen III"
           }
         },
         "Picture": {
@@ -12002,7 +12002,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Fuel Cell"
+            "0": "[Engineering] 1x Fuel Cell"
           }
         },
         "Picture": {
@@ -12053,7 +12053,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Fuel Cell"
+            "0": "[Engineering] 1x Fuel Cell"
           }
         },
         "Picture": {
@@ -12104,7 +12104,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Fuel Cell"
+            "0": "[Engineering] 1x Fuel Cell"
           }
         },
         "Picture": {
@@ -12155,7 +12155,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Fuel Cell"
+            "0": "[Engineering] 1x Fuel Cell"
           }
         },
         "Picture": {
@@ -12206,7 +12206,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Fuel Cell"
+            "0": "[Engineering] 1x Fuel Cell"
           }
         },
         "Picture": {
@@ -12257,7 +12257,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Green Crystal Cluster"
+            "0": "[Engineering] 1x Green Crystal Cluster"
           }
         },
         "Picture": {
@@ -12308,7 +12308,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Harvesting I"
+            "0": "[Engineering] 1x Harvesting I"
           }
         },
         "Picture": {
@@ -12359,7 +12359,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Harvesting II"
+            "0": "[Engineering] 1x Harvesting II"
           }
         },
         "Picture": {
@@ -12410,7 +12410,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Harvesting III"
+            "0": "[Engineering] 1x Harvesting III"
           }
         },
         "Picture": {
@@ -12461,7 +12461,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Hit Points I"
+            "0": "[Engineering] 1x Hit Points I"
           }
         },
         "Picture": {
@@ -12512,7 +12512,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Hit Points II"
+            "0": "[Engineering] 1x Hit Points II"
           }
         },
         "Picture": {
@@ -12563,7 +12563,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Hit Points III"
+            "0": "[Engineering] 1x Hit Points III"
           }
         },
         "Picture": {
@@ -12614,7 +12614,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x HP Regen"
+            "0": "[Engineering] 1x HP Regen"
           }
         },
         "Picture": {
@@ -12665,7 +12665,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x HP Regen II"
+            "0": "[Engineering] 1x HP Regen II"
           }
         },
         "Picture": {
@@ -12716,7 +12716,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x HP Regen III"
+            "0": "[Engineering] 1x HP Regen III"
           }
         },
         "Picture": {
@@ -12767,7 +12767,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Hyperdrive"
+            "0": "[Engineering] 1x Hyperdrive"
           }
         },
         "Picture": {
@@ -12818,7 +12818,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Improved Enmity"
+            "0": "[Engineering] 1x Improved Enmity"
           }
         },
         "Picture": {
@@ -12869,7 +12869,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Improved Enmity II"
+            "0": "[Engineering] 1x Improved Enmity II"
           }
         },
         "Picture": {
@@ -12920,7 +12920,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Improved Enmity III"
+            "0": "[Engineering] 1x Improved Enmity III"
           }
         },
         "Picture": {
@@ -12971,7 +12971,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Intelligence I"
+            "0": "[Engineering] 1x Intelligence I"
           }
         },
         "Picture": {
@@ -13022,7 +13022,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Intelligence II"
+            "0": "[Engineering] 1x Intelligence II"
           }
         },
         "Picture": {
@@ -13073,7 +13073,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Intelligence III"
+            "0": "[Engineering] 1x Intelligence III"
           }
         },
         "Picture": {
@@ -13124,7 +13124,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Level Decrease I"
+            "0": "[Engineering] 1x Level Decrease I"
           }
         },
         "Picture": {
@@ -13175,7 +13175,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Level Increase I"
+            "0": "[Engineering] 1x Level Increase I"
           }
         },
         "Picture": {
@@ -13226,7 +13226,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Light Defense I"
+            "0": "[Engineering] 1x Light Defense I"
           }
         },
         "Picture": {
@@ -13277,7 +13277,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Light Defense II"
+            "0": "[Engineering] 1x Light Defense II"
           }
         },
         "Picture": {
@@ -13328,7 +13328,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Light Defense III"
+            "0": "[Engineering] 1x Light Defense III"
           }
         },
         "Picture": {
@@ -13379,7 +13379,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Light Potency I"
+            "0": "[Engineering] 1x Light Potency I"
           }
         },
         "Picture": {
@@ -13430,7 +13430,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Light Potency II"
+            "0": "[Engineering] 1x Light Potency II"
           }
         },
         "Picture": {
@@ -13481,7 +13481,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Light Potency III"
+            "0": "[Engineering] 1x Light Potency III"
           }
         },
         "Picture": {
@@ -13532,7 +13532,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Light Starship Blaster"
+            "0": "[Engineering] 1x Light Starship Blaster"
           }
         },
         "Picture": {
@@ -13583,7 +13583,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber I (Blue)"
+            "0": "[Engineering] 1x Lightsaber I (Blue)"
           }
         },
         "Picture": {
@@ -13634,7 +13634,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber I (Green)"
+            "0": "[Engineering] 1x Lightsaber I (Green)"
           }
         },
         "Picture": {
@@ -13685,7 +13685,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber I (Red)"
+            "0": "[Engineering] 1x Lightsaber I (Red)"
           }
         },
         "Picture": {
@@ -13736,7 +13736,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber I (Yellow)"
+            "0": "[Engineering] 1x Lightsaber I (Yellow)"
           }
         },
         "Picture": {
@@ -13787,7 +13787,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber II (Blue)"
+            "0": "[Engineering] 1x Lightsaber II (Blue)"
           }
         },
         "Picture": {
@@ -13838,7 +13838,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber II (Green)"
+            "0": "[Engineering] 1x Lightsaber II (Green)"
           }
         },
         "Picture": {
@@ -13889,7 +13889,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber II (Red)"
+            "0": "[Engineering] 1x Lightsaber II (Red)"
           }
         },
         "Picture": {
@@ -13940,7 +13940,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber II (Yellow)"
+            "0": "[Engineering] 1x Lightsaber II (Yellow)"
           }
         },
         "Picture": {
@@ -13991,7 +13991,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber III (Blue)"
+            "0": "[Engineering] 1x Lightsaber III (Blue)"
           }
         },
         "Picture": {
@@ -14042,7 +14042,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber III (Green)"
+            "0": "[Engineering] 1x Lightsaber III (Green)"
           }
         },
         "Picture": {
@@ -14093,7 +14093,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber III (Red)"
+            "0": "[Engineering] 1x Lightsaber III (Red)"
           }
         },
         "Picture": {
@@ -14144,7 +14144,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber III (Yellow)"
+            "0": "[Engineering] 1x Lightsaber III (Yellow)"
           }
         },
         "Picture": {
@@ -14195,7 +14195,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber IV (Blue)"
+            "0": "[Engineering] 1x Lightsaber IV (Blue)"
           }
         },
         "Picture": {
@@ -14246,7 +14246,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber IV (Green)"
+            "0": "[Engineering] 1x Lightsaber IV (Green)"
           }
         },
         "Picture": {
@@ -14297,7 +14297,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber IV (Red)"
+            "0": "[Engineering] 1x Lightsaber IV (Red)"
           }
         },
         "Picture": {
@@ -14348,7 +14348,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber IV (Yellow)"
+            "0": "[Engineering] 1x Lightsaber IV (Yellow)"
           }
         },
         "Picture": {
@@ -14399,7 +14399,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber Repair Kit I"
+            "0": "[Engineering] 1x Lightsaber Repair Kit I"
           }
         },
         "Picture": {
@@ -14450,7 +14450,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber Repair Kit II"
+            "0": "[Engineering] 1x Lightsaber Repair Kit II"
           }
         },
         "Picture": {
@@ -14501,7 +14501,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber Repair Kit III"
+            "0": "[Engineering] 1x Lightsaber Repair Kit III"
           }
         },
         "Picture": {
@@ -14552,7 +14552,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Lightsaber Repair Kit IV"
+            "0": "[Engineering] 1x Lightsaber Repair Kit IV"
           }
         },
         "Picture": {
@@ -14603,7 +14603,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Luck I"
+            "0": "[Engineering] 1x Luck I"
           }
         },
         "Picture": {
@@ -14654,7 +14654,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Luck II"
+            "0": "[Engineering] 1x Luck II"
           }
         },
         "Picture": {
@@ -14705,7 +14705,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Meditate I"
+            "0": "[Engineering] 1x Meditate I"
           }
         },
         "Picture": {
@@ -14756,7 +14756,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Meditate II"
+            "0": "[Engineering] 1x Meditate II"
           }
         },
         "Picture": {
@@ -14807,7 +14807,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Mind Defense I"
+            "0": "[Engineering] 1x Mind Defense I"
           }
         },
         "Picture": {
@@ -14858,7 +14858,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Mind Defense II"
+            "0": "[Engineering] 1x Mind Defense II"
           }
         },
         "Picture": {
@@ -14909,7 +14909,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Mind Defense III"
+            "0": "[Engineering] 1x Mind Defense III"
           }
         },
         "Picture": {
@@ -14960,7 +14960,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Mind Potency I"
+            "0": "[Engineering] 1x Mind Potency I"
           }
         },
         "Picture": {
@@ -15011,7 +15011,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Mind Potency II"
+            "0": "[Engineering] 1x Mind Potency II"
           }
         },
         "Picture": {
@@ -15062,7 +15062,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Mind Potency III"
+            "0": "[Engineering] 1x Mind Potency III"
           }
         },
         "Picture": {
@@ -15113,7 +15113,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Pistol Barrel"
+            "0": "[Engineering] 1x Pistol Barrel"
           }
         },
         "Picture": {
@@ -15164,7 +15164,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Power Crystal Cluster"
+            "0": "[Engineering] 1x Power Crystal Cluster"
           }
         },
         "Picture": {
@@ -15215,7 +15215,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Ranged Weapon Core"
+            "0": "[Engineering] 1x Ranged Weapon Core"
           }
         },
         "Picture": {
@@ -15266,7 +15266,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Red Crystal Cluster"
+            "0": "[Engineering] 1x Red Crystal Cluster"
           }
         },
         "Picture": {
@@ -15317,7 +15317,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Reduced Enmity I"
+            "0": "[Engineering] 1x Reduced Enmity I"
           }
         },
         "Picture": {
@@ -15368,7 +15368,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Reduced Enmity II"
+            "0": "[Engineering] 1x Reduced Enmity II"
           }
         },
         "Picture": {
@@ -15419,7 +15419,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Reduced Enmity III"
+            "0": "[Engineering] 1x Reduced Enmity III"
           }
         },
         "Picture": {
@@ -15470,7 +15470,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Resource Harvester I"
+            "0": "[Engineering] 1x Resource Harvester I"
           }
         },
         "Picture": {
@@ -15521,7 +15521,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Resource Harvester II"
+            "0": "[Engineering] 1x Resource Harvester II"
           }
         },
         "Picture": {
@@ -15572,7 +15572,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Resource Harvester III"
+            "0": "[Engineering] 1x Resource Harvester III"
           }
         },
         "Picture": {
@@ -15623,7 +15623,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Resource Harvester IV"
+            "0": "[Engineering] 1x Resource Harvester IV"
           }
         },
         "Picture": {
@@ -15674,7 +15674,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Resource Scanner I"
+            "0": "[Engineering] 1x Resource Scanner I"
           }
         },
         "Picture": {
@@ -15725,7 +15725,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Resource Scanner II"
+            "0": "[Engineering] 1x Resource Scanner II"
           }
         },
         "Picture": {
@@ -15776,7 +15776,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Resource Scanner III"
+            "0": "[Engineering] 1x Resource Scanner III"
           }
         },
         "Picture": {
@@ -15827,7 +15827,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Resource Scanner IV"
+            "0": "[Engineering] 1x Resource Scanner IV"
           }
         },
         "Picture": {
@@ -15878,7 +15878,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Rifle Barrel"
+            "0": "[Engineering] 1x Rifle Barrel"
           }
         },
         "Picture": {
@@ -15929,7 +15929,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saber Hilt"
+            "0": "[Engineering] 1x Saber Hilt"
           }
         },
         "Picture": {
@@ -15980,7 +15980,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff I (Blue)"
+            "0": "[Engineering] 1x Saberstaff I (Blue)"
           }
         },
         "Picture": {
@@ -16031,7 +16031,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff I (Green)"
+            "0": "[Engineering] 1x Saberstaff I (Green)"
           }
         },
         "Picture": {
@@ -16082,7 +16082,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff I (Red)"
+            "0": "[Engineering] 1x Saberstaff I (Red)"
           }
         },
         "Picture": {
@@ -16133,7 +16133,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff I (Yellow)"
+            "0": "[Engineering] 1x Saberstaff I (Yellow)"
           }
         },
         "Picture": {
@@ -16184,7 +16184,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff II (Blue)"
+            "0": "[Engineering] 1x Saberstaff II (Blue)"
           }
         },
         "Picture": {
@@ -16235,7 +16235,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff II (Green)"
+            "0": "[Engineering] 1x Saberstaff II (Green)"
           }
         },
         "Picture": {
@@ -16286,7 +16286,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff II (Red)"
+            "0": "[Engineering] 1x Saberstaff II (Red)"
           }
         },
         "Picture": {
@@ -16337,7 +16337,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff II (Yellow)"
+            "0": "[Engineering] 1x Saberstaff II (Yellow)"
           }
         },
         "Picture": {
@@ -16388,7 +16388,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff III (Blue)"
+            "0": "[Engineering] 1x Saberstaff III (Blue)"
           }
         },
         "Picture": {
@@ -16439,7 +16439,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff III (Green)"
+            "0": "[Engineering] 1x Saberstaff III (Green)"
           }
         },
         "Picture": {
@@ -16490,7 +16490,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff III (Red)"
+            "0": "[Engineering] 1x Saberstaff III (Red)"
           }
         },
         "Picture": {
@@ -16541,7 +16541,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff III (Yellow)"
+            "0": "[Engineering] 1x Saberstaff III (Yellow)"
           }
         },
         "Picture": {
@@ -16592,7 +16592,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff IV (Blue)"
+            "0": "[Engineering] 1x Saberstaff IV (Blue)"
           }
         },
         "Picture": {
@@ -16643,7 +16643,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff IV (Green)"
+            "0": "[Engineering] 1x Saberstaff IV (Green)"
           }
         },
         "Picture": {
@@ -16694,7 +16694,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff IV (Red)"
+            "0": "[Engineering] 1x Saberstaff IV (Red)"
           }
         },
         "Picture": {
@@ -16745,7 +16745,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff IV (Yellow)"
+            "0": "[Engineering] 1x Saberstaff IV (Yellow)"
           }
         },
         "Picture": {
@@ -16796,7 +16796,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff Repair Kit I"
+            "0": "[Engineering] 1x Saberstaff Repair Kit I"
           }
         },
         "Picture": {
@@ -16847,7 +16847,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff Repair Kit II"
+            "0": "[Engineering] 1x Saberstaff Repair Kit II"
           }
         },
         "Picture": {
@@ -16898,7 +16898,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff Repair Kit III"
+            "0": "[Engineering] 1x Saberstaff Repair Kit III"
           }
         },
         "Picture": {
@@ -16949,7 +16949,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Saberstaff Repair Kit IV"
+            "0": "[Engineering] 1x Saberstaff Repair Kit IV"
           }
         },
         "Picture": {
@@ -17000,7 +17000,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Scanning Array (Medium)"
+            "0": "[Engineering] 1x Scanning Array (Medium)"
           }
         },
         "Picture": {
@@ -17051,7 +17051,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Scanning Array (Small)"
+            "0": "[Engineering] 1x Scanning Array (Small)"
           }
         },
         "Picture": {
@@ -17102,7 +17102,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Sneak Attack I"
+            "0": "[Engineering] 1x Sneak Attack I"
           }
         },
         "Picture": {
@@ -17153,7 +17153,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Sneak Attack II"
+            "0": "[Engineering] 1x Sneak Attack II"
           }
         },
         "Picture": {
@@ -17204,7 +17204,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Sneak Attack III"
+            "0": "[Engineering] 1x Sneak Attack III"
           }
         },
         "Picture": {
@@ -17255,7 +17255,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Starship Auxiliary Blaster"
+            "0": "[Engineering] 1x Starship Auxiliary Blaster"
           }
         },
         "Picture": {
@@ -17306,7 +17306,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Starship Auxiliary Light Cannon"
+            "0": "[Engineering] 1x Starship Auxiliary Light Cannon"
           }
         },
         "Picture": {
@@ -17357,7 +17357,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Strength I"
+            "0": "[Engineering] 1x Strength I"
           }
         },
         "Picture": {
@@ -17408,7 +17408,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Strength II"
+            "0": "[Engineering] 1x Strength II"
           }
         },
         "Picture": {
@@ -17459,7 +17459,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Strength III"
+            "0": "[Engineering] 1x Strength III"
           }
         },
         "Picture": {
@@ -17510,7 +17510,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Weaponsmith I"
+            "0": "[Engineering] 1x Weaponsmith I"
           }
         },
         "Picture": {
@@ -17561,7 +17561,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Weaponsmith II"
+            "0": "[Engineering] 1x Weaponsmith II"
           }
         },
         "Picture": {
@@ -17612,7 +17612,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Weaponsmith III"
+            "0": "[Engineering] 1x Weaponsmith III"
           }
         },
         "Picture": {
@@ -17663,7 +17663,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Wisdom I"
+            "0": "[Engineering] 1x Wisdom I"
           }
         },
         "Picture": {
@@ -17714,7 +17714,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Wisdom II"
+            "0": "[Engineering] 1x Wisdom II"
           }
         },
         "Picture": {
@@ -17765,7 +17765,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Wisdom III"
+            "0": "[Engineering] 1x Wisdom III"
           }
         },
         "Picture": {
@@ -17816,7 +17816,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Engineering Guild Task: 1x Yellow Crystal Cluster"
+            "0": "[Engineering] 1x Yellow Crystal Cluster"
           }
         },
         "Picture": {
@@ -17867,7 +17867,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Altar, Evil"
+            "0": "[Fabrication] 1x Altar, Evil"
           }
         },
         "Picture": {
@@ -17918,7 +17918,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Altar, Hand"
+            "0": "[Fabrication] 1x Altar, Hand"
           }
         },
         "Picture": {
@@ -17969,7 +17969,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Altar, Stone"
+            "0": "[Fabrication] 1x Altar, Stone"
           }
         },
         "Picture": {
@@ -18020,7 +18020,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Armorsmith Workbench"
+            "0": "[Fabrication] 1x Armorsmith Workbench"
           }
         },
         "Picture": {
@@ -18071,7 +18071,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Barrel"
+            "0": "[Fabrication] 1x Barrel"
           }
         },
         "Picture": {
@@ -18122,7 +18122,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Basic Fuel Silo"
+            "0": "[Fabrication] 1x Basic Fuel Silo"
           }
         },
         "Picture": {
@@ -18173,7 +18173,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Basic Resource Drill"
+            "0": "[Fabrication] 1x Basic Resource Drill"
           }
         },
         "Picture": {
@@ -18224,7 +18224,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Basic Resource Silo"
+            "0": "[Fabrication] 1x Basic Resource Silo"
           }
         },
         "Picture": {
@@ -18275,7 +18275,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Basic Stronidium Silo"
+            "0": "[Fabrication] 1x Basic Stronidium Silo"
           }
         },
         "Picture": {
@@ -18326,7 +18326,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Bear Skin Rug"
+            "0": "[Fabrication] 1x Bear Skin Rug"
           }
         },
         "Picture": {
@@ -18377,7 +18377,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Bed Roll"
+            "0": "[Fabrication] 1x Bed Roll"
           }
         },
         "Picture": {
@@ -18428,7 +18428,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Bed, Extra Large"
+            "0": "[Fabrication] 1x Bed, Extra Large"
           }
         },
         "Picture": {
@@ -18479,7 +18479,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Bed, Large"
+            "0": "[Fabrication] 1x Bed, Large"
           }
         },
         "Picture": {
@@ -18530,7 +18530,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Bed, Stone, Yellow"
+            "0": "[Fabrication] 1x Bed, Stone, Yellow"
           }
         },
         "Picture": {
@@ -18581,7 +18581,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Bed, Wood, Yellow"
+            "0": "[Fabrication] 1x Bed, Wood, Yellow"
           }
         },
         "Picture": {
@@ -18632,7 +18632,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Bench, Large"
+            "0": "[Fabrication] 1x Bench, Large"
           }
         },
         "Picture": {
@@ -18683,7 +18683,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Bench, Stone, Dwarven"
+            "0": "[Fabrication] 1x Bench, Stone, Dwarven"
           }
         },
         "Picture": {
@@ -18734,7 +18734,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Bench, Wood"
+            "0": "[Fabrication] 1x Bench, Wood"
           }
         },
         "Picture": {
@@ -18785,7 +18785,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Bench, Wood, Large"
+            "0": "[Fabrication] 1x Bench, Wood, Large"
           }
         },
         "Picture": {
@@ -18836,7 +18836,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Bench, Wood, Small"
+            "0": "[Fabrication] 1x Bench, Wood, Small"
           }
         },
         "Picture": {
@@ -18887,7 +18887,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Bench, Wood, Small 2"
+            "0": "[Fabrication] 1x Bench, Wood, Small 2"
           }
         },
         "Picture": {
@@ -18938,7 +18938,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Bird Cage"
+            "0": "[Fabrication] 1x Bird Cage"
           }
         },
         "Picture": {
@@ -18989,7 +18989,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Birdbath"
+            "0": "[Fabrication] 1x Birdbath"
           }
         },
         "Picture": {
@@ -19040,7 +19040,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Book Shelf"
+            "0": "[Fabrication] 1x Book Shelf"
           }
         },
         "Picture": {
@@ -19091,7 +19091,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Brazier, Round"
+            "0": "[Fabrication] 1x Brazier, Round"
           }
         },
         "Picture": {
@@ -19142,7 +19142,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Brazier, Stone"
+            "0": "[Fabrication] 1x Brazier, Stone"
           }
         },
         "Picture": {
@@ -19193,7 +19193,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Bunk Bed"
+            "0": "[Fabrication] 1x Bunk Bed"
           }
         },
         "Picture": {
@@ -19244,7 +19244,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Cage"
+            "0": "[Fabrication] 1x Cage"
           }
         },
         "Picture": {
@@ -19295,7 +19295,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Candelabra"
+            "0": "[Fabrication] 1x Candelabra"
           }
         },
         "Picture": {
@@ -19346,7 +19346,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Candle"
+            "0": "[Fabrication] 1x Candle"
           }
         },
         "Picture": {
@@ -19397,7 +19397,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Carpet"
+            "0": "[Fabrication] 1x Carpet"
           }
         },
         "Picture": {
@@ -19448,7 +19448,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Carpet, Red"
+            "0": "[Fabrication] 1x Carpet, Red"
           }
         },
         "Picture": {
@@ -19499,7 +19499,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Carpet, Red, Small"
+            "0": "[Fabrication] 1x Carpet, Red, Small"
           }
         },
         "Picture": {
@@ -19550,7 +19550,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Carpet, Round, Blue"
+            "0": "[Fabrication] 1x Carpet, Round, Blue"
           }
         },
         "Picture": {
@@ -19601,7 +19601,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Chair, Shell"
+            "0": "[Fabrication] 1x Chair, Shell"
           }
         },
         "Picture": {
@@ -19652,7 +19652,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Chair, Stone"
+            "0": "[Fabrication] 1x Chair, Stone"
           }
         },
         "Picture": {
@@ -19703,7 +19703,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Chair, Wood"
+            "0": "[Fabrication] 1x Chair, Wood"
           }
         },
         "Picture": {
@@ -19754,7 +19754,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Chair, Wood, Medium"
+            "0": "[Fabrication] 1x Chair, Wood, Medium"
           }
         },
         "Picture": {
@@ -19805,7 +19805,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Chair, Wood, Small"
+            "0": "[Fabrication] 1x Chair, Wood, Small"
           }
         },
         "Picture": {
@@ -19856,7 +19856,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Chandelier"
+            "0": "[Fabrication] 1x Chandelier"
           }
         },
         "Picture": {
@@ -19907,7 +19907,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Chest"
+            "0": "[Fabrication] 1x Chest"
           }
         },
         "Picture": {
@@ -19958,7 +19958,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Computing Module"
+            "0": "[Fabrication] 1x Computing Module"
           }
         },
         "Picture": {
@@ -20009,7 +20009,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Construction Parts"
+            "0": "[Fabrication] 1x Construction Parts"
           }
         },
         "Picture": {
@@ -20060,7 +20060,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Cookpot"
+            "0": "[Fabrication] 1x Cookpot"
           }
         },
         "Picture": {
@@ -20111,7 +20111,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Cot"
+            "0": "[Fabrication] 1x Cot"
           }
         },
         "Picture": {
@@ -20162,7 +20162,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Couch, Wood, Yellow"
+            "0": "[Fabrication] 1x Couch, Wood, Yellow"
           }
         },
         "Picture": {
@@ -20213,7 +20213,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Crate"
+            "0": "[Fabrication] 1x Crate"
           }
         },
         "Picture": {
@@ -20264,7 +20264,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Cushions"
+            "0": "[Fabrication] 1x Cushions"
           }
         },
         "Picture": {
@@ -20315,7 +20315,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Dartboard"
+            "0": "[Fabrication] 1x Dartboard"
           }
         },
         "Picture": {
@@ -20366,7 +20366,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Desk"
+            "0": "[Fabrication] 1x Desk"
           }
         },
         "Picture": {
@@ -20417,7 +20417,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Doorway, Metal"
+            "0": "[Fabrication] 1x Doorway, Metal"
           }
         },
         "Picture": {
@@ -20468,7 +20468,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Doorway, Stone"
+            "0": "[Fabrication] 1x Doorway, Stone"
           }
         },
         "Picture": {
@@ -20519,7 +20519,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Dran Statue "
+            "0": "[Fabrication] 1x Dran Statue "
           }
         },
         "Picture": {
@@ -20570,7 +20570,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Drow Altar"
+            "0": "[Fabrication] 1x Drow Altar"
           }
         },
         "Picture": {
@@ -20621,7 +20621,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Drow Bar"
+            "0": "[Fabrication] 1x Drow Bar"
           }
         },
         "Picture": {
@@ -20672,7 +20672,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Drow Chair"
+            "0": "[Fabrication] 1x Drow Chair"
           }
         },
         "Picture": {
@@ -20723,7 +20723,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Drow Table"
+            "0": "[Fabrication] 1x Drow Table"
           }
         },
         "Picture": {
@@ -20774,7 +20774,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Easel"
+            "0": "[Fabrication] 1x Easel"
           }
         },
         "Picture": {
@@ -20825,7 +20825,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Engineering Bench"
+            "0": "[Fabrication] 1x Engineering Bench"
           }
         },
         "Picture": {
@@ -20876,7 +20876,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Fabrication Terminal"
+            "0": "[Fabrication] 1x Fabrication Terminal"
           }
         },
         "Picture": {
@@ -20927,7 +20927,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Female Statue"
+            "0": "[Fabrication] 1x Female Statue"
           }
         },
         "Picture": {
@@ -20978,7 +20978,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Flaming Statue"
+            "0": "[Fabrication] 1x Flaming Statue"
           }
         },
         "Picture": {
@@ -21029,7 +21029,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Floor-anchored shackles"
+            "0": "[Fabrication] 1x Floor-anchored shackles"
           }
         },
         "Picture": {
@@ -21080,7 +21080,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Footstool"
+            "0": "[Fabrication] 1x Footstool"
           }
         },
         "Picture": {
@@ -21131,7 +21131,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Fountain"
+            "0": "[Fabrication] 1x Fountain"
           }
         },
         "Picture": {
@@ -21182,7 +21182,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Fuel Silo I"
+            "0": "[Fabrication] 1x Fuel Silo I"
           }
         },
         "Picture": {
@@ -21233,7 +21233,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Fuel Silo II"
+            "0": "[Fabrication] 1x Fuel Silo II"
           }
         },
         "Picture": {
@@ -21284,7 +21284,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Fuel Silo III"
+            "0": "[Fabrication] 1x Fuel Silo III"
           }
         },
         "Picture": {
@@ -21335,7 +21335,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Fuel Silo IV"
+            "0": "[Fabrication] 1x Fuel Silo IV"
           }
         },
         "Picture": {
@@ -21386,7 +21386,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Gnomish Contraption"
+            "0": "[Fabrication] 1x Gnomish Contraption"
           }
         },
         "Picture": {
@@ -21437,7 +21437,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Gong"
+            "0": "[Fabrication] 1x Gong"
           }
         },
         "Picture": {
@@ -21488,7 +21488,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Illithid Chair"
+            "0": "[Fabrication] 1x Illithid Chair"
           }
         },
         "Picture": {
@@ -21539,7 +21539,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Illithid Table"
+            "0": "[Fabrication] 1x Illithid Table"
           }
         },
         "Picture": {
@@ -21590,7 +21590,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Jukebox"
+            "0": "[Fabrication] 1x Jukebox"
           }
         },
         "Picture": {
@@ -21641,7 +21641,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Keg"
+            "0": "[Fabrication] 1x Keg"
           }
         },
         "Picture": {
@@ -21692,7 +21692,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Ladder, Dark"
+            "0": "[Fabrication] 1x Ladder, Dark"
           }
         },
         "Picture": {
@@ -21743,7 +21743,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Ladder, Light"
+            "0": "[Fabrication] 1x Ladder, Light"
           }
         },
         "Picture": {
@@ -21794,7 +21794,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Lamp Post"
+            "0": "[Fabrication] 1x Lamp Post"
           }
         },
         "Picture": {
@@ -21845,7 +21845,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Large Building"
+            "0": "[Fabrication] 1x Large Building"
           }
         },
         "Picture": {
@@ -21896,7 +21896,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Large Control Tower"
+            "0": "[Fabrication] 1x Large Control Tower"
           }
         },
         "Picture": {
@@ -21947,7 +21947,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Large Structure Frame"
+            "0": "[Fabrication] 1x Large Structure Frame"
           }
         },
         "Picture": {
@@ -21998,7 +21998,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Mainframe"
+            "0": "[Fabrication] 1x Mainframe"
           }
         },
         "Picture": {
@@ -22049,7 +22049,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Map"
+            "0": "[Fabrication] 1x Map"
           }
         },
         "Picture": {
@@ -22100,7 +22100,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Medical Terminal"
+            "0": "[Fabrication] 1x Medical Terminal"
           }
         },
         "Picture": {
@@ -22151,7 +22151,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Medium Building"
+            "0": "[Fabrication] 1x Medium Building"
           }
         },
         "Picture": {
@@ -22202,7 +22202,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Medium Control Tower"
+            "0": "[Fabrication] 1x Medium Control Tower"
           }
         },
         "Picture": {
@@ -22253,7 +22253,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Medium Structure Frame"
+            "0": "[Fabrication] 1x Medium Structure Frame"
           }
         },
         "Picture": {
@@ -22304,7 +22304,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Mining Well"
+            "0": "[Fabrication] 1x Mining Well"
           }
         },
         "Picture": {
@@ -22355,7 +22355,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Mining Well Platform"
+            "0": "[Fabrication] 1x Mining Well Platform"
           }
         },
         "Picture": {
@@ -22406,7 +22406,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Mirror"
+            "0": "[Fabrication] 1x Mirror"
           }
         },
         "Picture": {
@@ -22457,7 +22457,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Molecular Reassembly Terminal"
+            "0": "[Fabrication] 1x Molecular Reassembly Terminal"
           }
         },
         "Picture": {
@@ -22508,7 +22508,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Monster Statue"
+            "0": "[Fabrication] 1x Monster Statue"
           }
         },
         "Picture": {
@@ -22559,7 +22559,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Mysterious Obelisk"
+            "0": "[Fabrication] 1x Mysterious Obelisk"
           }
         },
         "Picture": {
@@ -22610,7 +22610,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Net"
+            "0": "[Fabrication] 1x Net"
           }
         },
         "Picture": {
@@ -22661,7 +22661,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Obelisk, Large"
+            "0": "[Fabrication] 1x Obelisk, Large"
           }
         },
         "Picture": {
@@ -22712,7 +22712,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Obelisk, Small"
+            "0": "[Fabrication] 1x Obelisk, Small"
           }
         },
         "Picture": {
@@ -22763,7 +22763,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Ottoman"
+            "0": "[Fabrication] 1x Ottoman"
           }
         },
         "Picture": {
@@ -22814,7 +22814,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Overgrown Pillar"
+            "0": "[Fabrication] 1x Overgrown Pillar"
           }
         },
         "Picture": {
@@ -22865,7 +22865,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Painting 1"
+            "0": "[Fabrication] 1x Painting 1"
           }
         },
         "Picture": {
@@ -22916,7 +22916,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Painting 2"
+            "0": "[Fabrication] 1x Painting 2"
           }
         },
         "Picture": {
@@ -22967,7 +22967,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Pedestal"
+            "0": "[Fabrication] 1x Pedestal"
           }
         },
         "Picture": {
@@ -23018,7 +23018,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Pedestal, Evil"
+            "0": "[Fabrication] 1x Pedestal, Evil"
           }
         },
         "Picture": {
@@ -23069,7 +23069,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Pedestal, Sword"
+            "0": "[Fabrication] 1x Pedestal, Sword"
           }
         },
         "Picture": {
@@ -23120,7 +23120,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Pillar, Flame"
+            "0": "[Fabrication] 1x Pillar, Flame"
           }
         },
         "Picture": {
@@ -23171,7 +23171,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Pillar, Rounded"
+            "0": "[Fabrication] 1x Pillar, Rounded"
           }
         },
         "Picture": {
@@ -23222,7 +23222,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Pillar, Stone"
+            "0": "[Fabrication] 1x Pillar, Stone"
           }
         },
         "Picture": {
@@ -23273,7 +23273,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Pillar, Wood"
+            "0": "[Fabrication] 1x Pillar, Wood"
           }
         },
         "Picture": {
@@ -23324,7 +23324,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Pillar, Wood, Dark"
+            "0": "[Fabrication] 1x Pillar, Wood, Dark"
           }
         },
         "Picture": {
@@ -23375,7 +23375,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Potted Plant"
+            "0": "[Fabrication] 1x Potted Plant"
           }
         },
         "Picture": {
@@ -23426,7 +23426,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Power Core"
+            "0": "[Fabrication] 1x Power Core"
           }
         },
         "Picture": {
@@ -23477,7 +23477,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Power Relay"
+            "0": "[Fabrication] 1x Power Relay"
           }
         },
         "Picture": {
@@ -23528,7 +23528,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Refinery"
+            "0": "[Fabrication] 1x Refinery"
           }
         },
         "Picture": {
@@ -23579,7 +23579,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Resource Drill I"
+            "0": "[Fabrication] 1x Resource Drill I"
           }
         },
         "Picture": {
@@ -23630,7 +23630,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Resource Drill II"
+            "0": "[Fabrication] 1x Resource Drill II"
           }
         },
         "Picture": {
@@ -23681,7 +23681,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Resource Drill III"
+            "0": "[Fabrication] 1x Resource Drill III"
           }
         },
         "Picture": {
@@ -23732,7 +23732,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Resource Drill IV"
+            "0": "[Fabrication] 1x Resource Drill IV"
           }
         },
         "Picture": {
@@ -23783,7 +23783,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Resource Silo I"
+            "0": "[Fabrication] 1x Resource Silo I"
           }
         },
         "Picture": {
@@ -23834,7 +23834,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Resource Silo II"
+            "0": "[Fabrication] 1x Resource Silo II"
           }
         },
         "Picture": {
@@ -23885,7 +23885,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Resource Silo III"
+            "0": "[Fabrication] 1x Resource Silo III"
           }
         },
         "Picture": {
@@ -23936,7 +23936,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Resource Silo IV"
+            "0": "[Fabrication] 1x Resource Silo IV"
           }
         },
         "Picture": {
@@ -23987,7 +23987,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Rope Coil"
+            "0": "[Fabrication] 1x Rope Coil"
           }
         },
         "Picture": {
@@ -24038,7 +24038,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Round Wooden Table"
+            "0": "[Fabrication] 1x Round Wooden Table"
           }
         },
         "Picture": {
@@ -24089,7 +24089,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Rune Pillar"
+            "0": "[Fabrication] 1x Rune Pillar"
           }
         },
         "Picture": {
@@ -24140,7 +24140,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Sea Idol"
+            "0": "[Fabrication] 1x Sea Idol"
           }
         },
         "Picture": {
@@ -24191,7 +24191,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Shrine of Umberlee"
+            "0": "[Fabrication] 1x Shrine of Umberlee"
           }
         },
         "Picture": {
@@ -24242,7 +24242,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Small Building"
+            "0": "[Fabrication] 1x Small Building"
           }
         },
         "Picture": {
@@ -24293,7 +24293,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Small Control Tower"
+            "0": "[Fabrication] 1x Small Control Tower"
           }
         },
         "Picture": {
@@ -24344,7 +24344,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Small Structure Frame"
+            "0": "[Fabrication] 1x Small Structure Frame"
           }
         },
         "Picture": {
@@ -24395,7 +24395,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Sphinx Statue"
+            "0": "[Fabrication] 1x Sphinx Statue"
           }
         },
         "Picture": {
@@ -24446,7 +24446,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Starship 1 (Light Transport 1)"
+            "0": "[Fabrication] 1x Starship 1 (Light Transport 1)"
           }
         },
         "Picture": {
@@ -24497,7 +24497,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Starship 2 (Light Escort 1)"
+            "0": "[Fabrication] 1x Starship 2 (Light Escort 1)"
           }
         },
         "Picture": {
@@ -24548,7 +24548,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Starship Dock"
+            "0": "[Fabrication] 1x Starship Dock"
           }
         },
         "Picture": {
@@ -24599,7 +24599,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Starship Repair Kit"
+            "0": "[Fabrication] 1x Starship Repair Kit"
           }
         },
         "Picture": {
@@ -24650,7 +24650,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Statue of Lathander"
+            "0": "[Fabrication] 1x Statue of Lathander"
           }
         },
         "Picture": {
@@ -24701,7 +24701,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Statue, Cyric"
+            "0": "[Fabrication] 1x Statue, Cyric"
           }
         },
         "Picture": {
@@ -24752,7 +24752,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Statue, Guardian"
+            "0": "[Fabrication] 1x Statue, Guardian"
           }
         },
         "Picture": {
@@ -24803,7 +24803,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Statue, Huge"
+            "0": "[Fabrication] 1x Statue, Huge"
           }
         },
         "Picture": {
@@ -24854,7 +24854,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Statue, Monster"
+            "0": "[Fabrication] 1x Statue, Monster"
           }
         },
         "Picture": {
@@ -24905,7 +24905,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Statue, Wizard"
+            "0": "[Fabrication] 1x Statue, Wizard"
           }
         },
         "Picture": {
@@ -24956,7 +24956,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Statue, Wyvern "
+            "0": "[Fabrication] 1x Statue, Wyvern "
           }
         },
         "Picture": {
@@ -25007,7 +25007,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Stronidium Silo I"
+            "0": "[Fabrication] 1x Stronidium Silo I"
           }
         },
         "Picture": {
@@ -25058,7 +25058,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Stronidium Silo II"
+            "0": "[Fabrication] 1x Stronidium Silo II"
           }
         },
         "Picture": {
@@ -25109,7 +25109,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Stronidium Silo III"
+            "0": "[Fabrication] 1x Stronidium Silo III"
           }
         },
         "Picture": {
@@ -25160,7 +25160,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Stronidium Silo IV"
+            "0": "[Fabrication] 1x Stronidium Silo IV"
           }
         },
         "Picture": {
@@ -25211,7 +25211,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Table, Stone, Large"
+            "0": "[Fabrication] 1x Table, Stone, Large"
           }
         },
         "Picture": {
@@ -25262,7 +25262,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Table, Stone, Small"
+            "0": "[Fabrication] 1x Table, Stone, Small"
           }
         },
         "Picture": {
@@ -25313,7 +25313,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Table, Wood"
+            "0": "[Fabrication] 1x Table, Wood"
           }
         },
         "Picture": {
@@ -25364,7 +25364,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Table, Wood, Large"
+            "0": "[Fabrication] 1x Table, Wood, Large"
           }
         },
         "Picture": {
@@ -25415,7 +25415,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Table, Wood, With Fish"
+            "0": "[Fabrication] 1x Table, Wood, With Fish"
           }
         },
         "Picture": {
@@ -25466,7 +25466,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Throne, Wood"
+            "0": "[Fabrication] 1x Throne, Wood"
           }
         },
         "Picture": {
@@ -25517,7 +25517,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Throw Rug"
+            "0": "[Fabrication] 1x Throw Rug"
           }
         },
         "Picture": {
@@ -25568,7 +25568,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Tome"
+            "0": "[Fabrication] 1x Tome"
           }
         },
         "Picture": {
@@ -25619,7 +25619,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Torch Bracket"
+            "0": "[Fabrication] 1x Torch Bracket"
           }
         },
         "Picture": {
@@ -25670,7 +25670,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Urn"
+            "0": "[Fabrication] 1x Urn"
           }
         },
         "Picture": {
@@ -25721,7 +25721,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Vase, Rounded"
+            "0": "[Fabrication] 1x Vase, Rounded"
           }
         },
         "Picture": {
@@ -25772,7 +25772,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Vase, Tall"
+            "0": "[Fabrication] 1x Vase, Tall"
           }
         },
         "Picture": {
@@ -25823,7 +25823,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Weaponsmith Bench"
+            "0": "[Fabrication] 1x Weaponsmith Bench"
           }
         },
         "Picture": {
@@ -25874,7 +25874,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Window"
+            "0": "[Fabrication] 1x Window"
           }
         },
         "Picture": {
@@ -25925,7 +25925,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Fabrication Guild Task: 1x Wookiee Rug"
+            "0": "[Fabrication] 1x Wookiee Rug"
           }
         },
         "Picture": {
@@ -26214,7 +26214,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Amphi-Hydrus Brain"
+            "0": "[Hunter] Retrieve 6x Amphi-Hydrus Brain"
           }
         },
         "Picture": {
@@ -26265,7 +26265,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Amphi-Hydrus Brain Stem"
+            "0": "[Hunter] Retrieve 6x Amphi-Hydrus Brain Stem"
           }
         },
         "Picture": {
@@ -26316,7 +26316,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Damaged Blue Crystal"
+            "0": "[Hunter] Retrieve 6x Damaged Blue Crystal"
           }
         },
         "Picture": {
@@ -26367,7 +26367,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Damaged Green Crystal"
+            "0": "[Hunter] Retrieve 6x Damaged Green Crystal"
           }
         },
         "Picture": {
@@ -26418,7 +26418,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Damaged Red Crystal"
+            "0": "[Hunter] Retrieve 6x Damaged Red Crystal"
           }
         },
         "Picture": {
@@ -26469,7 +26469,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Damaged Yellow Crystal"
+            "0": "[Hunter] Retrieve 6x Damaged Yellow Crystal"
           }
         },
         "Picture": {
@@ -26520,7 +26520,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Kath Hound Fur"
+            "0": "[Hunter] Retrieve 6x Kath Hound Fur"
           }
         },
         "Picture": {
@@ -26571,7 +26571,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Kath Hound Meat"
+            "0": "[Hunter] Retrieve 6x Kath Hound Meat"
           }
         },
         "Picture": {
@@ -26622,7 +26622,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Kath Hound Tooth"
+            "0": "[Hunter] Retrieve 6x Kath Hound Tooth"
           }
         },
         "Picture": {
@@ -26673,7 +26673,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Mandalore Herb"
+            "0": "[Hunter] Retrieve 6x Mandalore Herb"
           }
         },
         "Picture": {
@@ -26724,7 +26724,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Mandalorian Blaster Parts"
+            "0": "[Hunter] Retrieve 6x Mandalorian Blaster Parts"
           }
         },
         "Picture": {
@@ -26775,7 +26775,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Mandalorian Dog Tags"
+            "0": "[Hunter] Retrieve 6x Mandalorian Dog Tags"
           }
         },
         "Picture": {
@@ -26826,7 +26826,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Mandalorian Large Vibroblade Parts"
+            "0": "[Hunter] Retrieve 6x Mandalorian Large Vibroblade Parts"
           }
         },
         "Picture": {
@@ -26877,7 +26877,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Mandalorian Lightsaber Parts"
+            "0": "[Hunter] Retrieve 6x Mandalorian Lightsaber Parts"
           }
         },
         "Picture": {
@@ -26928,7 +26928,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Mandalorian Plexi-plate"
+            "0": "[Hunter] Retrieve 6x Mandalorian Plexi-plate"
           }
         },
         "Picture": {
@@ -26979,7 +26979,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Mandalorian Polearm Parts"
+            "0": "[Hunter] Retrieve 6x Mandalorian Polearm Parts"
           }
         },
         "Picture": {
@@ -27030,7 +27030,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Mandalorian Vibroblade Parts"
+            "0": "[Hunter] Retrieve 6x Mandalorian Vibroblade Parts"
           }
         },
         "Picture": {
@@ -27081,7 +27081,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Mynock Tooth"
+            "0": "[Hunter] Retrieve 6x Mynock Tooth"
           }
         },
         "Picture": {
@@ -27132,7 +27132,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Mynock Tooth"
+            "0": "[Hunter] Retrieve 6x Mynock Tooth"
           }
         },
         "Picture": {
@@ -27183,7 +27183,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Mynock Wing"
+            "0": "[Hunter] Retrieve 6x Mynock Wing"
           }
         },
         "Picture": {
@@ -27234,7 +27234,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Mynock Wing"
+            "0": "[Hunter] Retrieve 6x Mynock Wing"
           }
         },
         "Picture": {
@@ -27285,7 +27285,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Warocas Leg"
+            "0": "[Hunter] Retrieve 6x Warocas Leg"
           }
         },
         "Picture": {
@@ -27336,7 +27336,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Warocas Meat"
+            "0": "[Hunter] Retrieve 6x Warocas Meat"
           }
         },
         "Picture": {
@@ -27387,7 +27387,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Retrieve 6x Warocas Spine"
+            "0": "[Hunter] Retrieve 6x Warocas Spine"
           }
         },
         "Picture": {
@@ -28577,7 +28577,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Basic Baton C"
+            "0": "[Weaponsmith] 1x Basic Baton C"
           }
         },
         "Picture": {
@@ -28628,7 +28628,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Basic Baton M"
+            "0": "[Weaponsmith] 1x Basic Baton M"
           }
         },
         "Picture": {
@@ -28679,7 +28679,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Basic Baton MS"
+            "0": "[Weaponsmith] 1x Basic Baton MS"
           }
         },
         "Picture": {
@@ -28730,7 +28730,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Basic Finesse Vibroblade D"
+            "0": "[Weaponsmith] 1x Basic Finesse Vibroblade D"
           }
         },
         "Picture": {
@@ -28781,7 +28781,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Basic Finesse Vibroblade K"
+            "0": "[Weaponsmith] 1x Basic Finesse Vibroblade K"
           }
         },
         "Picture": {
@@ -28832,7 +28832,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Basic Finesse Vibroblade R"
+            "0": "[Weaponsmith] 1x Basic Finesse Vibroblade R"
           }
         },
         "Picture": {
@@ -28883,7 +28883,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Basic Finesse Vibroblade SS"
+            "0": "[Weaponsmith] 1x Basic Finesse Vibroblade SS"
           }
         },
         "Picture": {
@@ -28934,7 +28934,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Basic Heavy Vibroblade GA"
+            "0": "[Weaponsmith] 1x Basic Heavy Vibroblade GA"
           }
         },
         "Picture": {
@@ -28985,7 +28985,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Basic Heavy Vibroblade GS"
+            "0": "[Weaponsmith] 1x Basic Heavy Vibroblade GS"
           }
         },
         "Picture": {
@@ -29036,7 +29036,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Basic Polearm H"
+            "0": "[Weaponsmith] 1x Basic Polearm H"
           }
         },
         "Picture": {
@@ -29087,7 +29087,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Basic Polearm S"
+            "0": "[Weaponsmith] 1x Basic Polearm S"
           }
         },
         "Picture": {
@@ -29138,7 +29138,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Basic Quarterstaff"
+            "0": "[Weaponsmith] 1x Basic Quarterstaff"
           }
         },
         "Picture": {
@@ -29189,7 +29189,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Basic Twin Vibroblade DA"
+            "0": "[Weaponsmith] 1x Basic Twin Vibroblade DA"
           }
         },
         "Picture": {
@@ -29240,7 +29240,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Basic Twin Vibroblade TS"
+            "0": "[Weaponsmith] 1x Basic Twin Vibroblade TS"
           }
         },
         "Picture": {
@@ -29291,7 +29291,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Basic Vibroblade BA"
+            "0": "[Weaponsmith] 1x Basic Vibroblade BA"
           }
         },
         "Picture": {
@@ -29342,7 +29342,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Basic Vibroblade BS"
+            "0": "[Weaponsmith] 1x Basic Vibroblade BS"
           }
         },
         "Picture": {
@@ -29393,7 +29393,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Basic Vibroblade K"
+            "0": "[Weaponsmith] 1x Basic Vibroblade K"
           }
         },
         "Picture": {
@@ -29444,7 +29444,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Basic Vibroblade LS"
+            "0": "[Weaponsmith] 1x Basic Vibroblade LS"
           }
         },
         "Picture": {
@@ -29495,7 +29495,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Baton C1"
+            "0": "[Weaponsmith] 1x Baton C1"
           }
         },
         "Picture": {
@@ -29546,7 +29546,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Baton C2"
+            "0": "[Weaponsmith] 1x Baton C2"
           }
         },
         "Picture": {
@@ -29597,7 +29597,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Baton C3"
+            "0": "[Weaponsmith] 1x Baton C3"
           }
         },
         "Picture": {
@@ -29648,7 +29648,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Baton C4"
+            "0": "[Weaponsmith] 1x Baton C4"
           }
         },
         "Picture": {
@@ -29699,7 +29699,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Baton M1"
+            "0": "[Weaponsmith] 1x Baton M1"
           }
         },
         "Picture": {
@@ -29750,7 +29750,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Baton M2"
+            "0": "[Weaponsmith] 1x Baton M2"
           }
         },
         "Picture": {
@@ -29801,7 +29801,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Baton M3"
+            "0": "[Weaponsmith] 1x Baton M3"
           }
         },
         "Picture": {
@@ -29852,7 +29852,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Baton M4"
+            "0": "[Weaponsmith] 1x Baton M4"
           }
         },
         "Picture": {
@@ -29903,7 +29903,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Baton MS1"
+            "0": "[Weaponsmith] 1x Baton MS1"
           }
         },
         "Picture": {
@@ -29954,7 +29954,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Baton MS2"
+            "0": "[Weaponsmith] 1x Baton MS2"
           }
         },
         "Picture": {
@@ -30005,7 +30005,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Baton MS3"
+            "0": "[Weaponsmith] 1x Baton MS3"
           }
         },
         "Picture": {
@@ -30056,7 +30056,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Baton MS4"
+            "0": "[Weaponsmith] 1x Baton MS4"
           }
         },
         "Picture": {
@@ -30107,7 +30107,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Baton Repair Kit I"
+            "0": "[Weaponsmith] 1x Baton Repair Kit I"
           }
         },
         "Picture": {
@@ -30158,7 +30158,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Baton Repair Kit II"
+            "0": "[Weaponsmith] 1x Baton Repair Kit II"
           }
         },
         "Picture": {
@@ -30209,7 +30209,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Baton Repair Kit III"
+            "0": "[Weaponsmith] 1x Baton Repair Kit III"
           }
         },
         "Picture": {
@@ -30260,7 +30260,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Baton Repair Kit IV"
+            "0": "[Weaponsmith] 1x Baton Repair Kit IV"
           }
         },
         "Picture": {
@@ -30311,7 +30311,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade D1"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade D1"
           }
         },
         "Picture": {
@@ -30362,7 +30362,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade D2"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade D2"
           }
         },
         "Picture": {
@@ -30413,7 +30413,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade D3"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade D3"
           }
         },
         "Picture": {
@@ -30464,7 +30464,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade D4"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade D4"
           }
         },
         "Picture": {
@@ -30515,7 +30515,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade K1"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade K1"
           }
         },
         "Picture": {
@@ -30566,7 +30566,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade K2"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade K2"
           }
         },
         "Picture": {
@@ -30617,7 +30617,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade K3"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade K3"
           }
         },
         "Picture": {
@@ -30668,7 +30668,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade K4"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade K4"
           }
         },
         "Picture": {
@@ -30719,7 +30719,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade R1"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade R1"
           }
         },
         "Picture": {
@@ -30770,7 +30770,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade R2"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade R2"
           }
         },
         "Picture": {
@@ -30821,7 +30821,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade R3"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade R3"
           }
         },
         "Picture": {
@@ -30872,7 +30872,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade R4"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade R4"
           }
         },
         "Picture": {
@@ -30923,7 +30923,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade Repair Kit I"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade Repair Kit I"
           }
         },
         "Picture": {
@@ -30974,7 +30974,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade Repair Kit II"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade Repair Kit II"
           }
         },
         "Picture": {
@@ -31025,7 +31025,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade Repair Kit III"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade Repair Kit III"
           }
         },
         "Picture": {
@@ -31076,7 +31076,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade Repair Kit IV"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade Repair Kit IV"
           }
         },
         "Picture": {
@@ -31127,7 +31127,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade SS1"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade SS1"
           }
         },
         "Picture": {
@@ -31178,7 +31178,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade SS2"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade SS2"
           }
         },
         "Picture": {
@@ -31229,7 +31229,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade SS3"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade SS3"
           }
         },
         "Picture": {
@@ -31280,7 +31280,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Finesse Vibroblade SS4"
+            "0": "[Weaponsmith] 1x Finesse Vibroblade SS4"
           }
         },
         "Picture": {
@@ -31331,7 +31331,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Heavy Vibroblade GA1"
+            "0": "[Weaponsmith] 1x Heavy Vibroblade GA1"
           }
         },
         "Picture": {
@@ -31382,7 +31382,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Heavy Vibroblade GA2"
+            "0": "[Weaponsmith] 1x Heavy Vibroblade GA2"
           }
         },
         "Picture": {
@@ -31433,7 +31433,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Heavy Vibroblade GA3"
+            "0": "[Weaponsmith] 1x Heavy Vibroblade GA3"
           }
         },
         "Picture": {
@@ -31484,7 +31484,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Heavy Vibroblade GA4"
+            "0": "[Weaponsmith] 1x Heavy Vibroblade GA4"
           }
         },
         "Picture": {
@@ -31535,7 +31535,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Heavy Vibroblade GS1"
+            "0": "[Weaponsmith] 1x Heavy Vibroblade GS1"
           }
         },
         "Picture": {
@@ -31586,7 +31586,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Heavy Vibroblade GS2"
+            "0": "[Weaponsmith] 1x Heavy Vibroblade GS2"
           }
         },
         "Picture": {
@@ -31637,7 +31637,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Heavy Vibroblade GS3"
+            "0": "[Weaponsmith] 1x Heavy Vibroblade GS3"
           }
         },
         "Picture": {
@@ -31688,7 +31688,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Heavy Vibroblade GS4"
+            "0": "[Weaponsmith] 1x Heavy Vibroblade GS4"
           }
         },
         "Picture": {
@@ -31739,7 +31739,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Heavy Vibroblade Repair Kit I"
+            "0": "[Weaponsmith] 1x Heavy Vibroblade Repair Kit I"
           }
         },
         "Picture": {
@@ -31790,7 +31790,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Heavy Vibroblade Repair Kit II"
+            "0": "[Weaponsmith] 1x Heavy Vibroblade Repair Kit II"
           }
         },
         "Picture": {
@@ -31841,7 +31841,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Heavy Vibroblade Repair Kit III"
+            "0": "[Weaponsmith] 1x Heavy Vibroblade Repair Kit III"
           }
         },
         "Picture": {
@@ -31892,7 +31892,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Heavy Vibroblade Repair Kit IV"
+            "0": "[Weaponsmith] 1x Heavy Vibroblade Repair Kit IV"
           }
         },
         "Picture": {
@@ -31943,7 +31943,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Large Blade"
+            "0": "[Weaponsmith] 1x Large Blade"
           }
         },
         "Picture": {
@@ -31994,7 +31994,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Large Handle"
+            "0": "[Weaponsmith] 1x Large Handle"
           }
         },
         "Picture": {
@@ -32045,7 +32045,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Martial Arts Weapon Repair Kit I"
+            "0": "[Weaponsmith] 1x Martial Arts Weapon Repair Kit I"
           }
         },
         "Picture": {
@@ -32096,7 +32096,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Martial Arts Weapon Repair Kit II"
+            "0": "[Weaponsmith] 1x Martial Arts Weapon Repair Kit II"
           }
         },
         "Picture": {
@@ -32147,7 +32147,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Martial Arts Weapon Repair Kit III"
+            "0": "[Weaponsmith] 1x Martial Arts Weapon Repair Kit III"
           }
         },
         "Picture": {
@@ -32198,7 +32198,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Martial Arts Weapon Repair Kit IV"
+            "0": "[Weaponsmith] 1x Martial Arts Weapon Repair Kit IV"
           }
         },
         "Picture": {
@@ -32249,7 +32249,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Medium Blade"
+            "0": "[Weaponsmith] 1x Medium Blade"
           }
         },
         "Picture": {
@@ -32300,7 +32300,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Medium Handle"
+            "0": "[Weaponsmith] 1x Medium Handle"
           }
         },
         "Picture": {
@@ -32351,7 +32351,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Metal Baton Frame"
+            "0": "[Weaponsmith] 1x Metal Baton Frame"
           }
         },
         "Picture": {
@@ -32402,7 +32402,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Polearm H1"
+            "0": "[Weaponsmith] 1x Polearm H1"
           }
         },
         "Picture": {
@@ -32453,7 +32453,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Polearm H2"
+            "0": "[Weaponsmith] 1x Polearm H2"
           }
         },
         "Picture": {
@@ -32504,7 +32504,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Polearm H3"
+            "0": "[Weaponsmith] 1x Polearm H3"
           }
         },
         "Picture": {
@@ -32555,7 +32555,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Polearm H4"
+            "0": "[Weaponsmith] 1x Polearm H4"
           }
         },
         "Picture": {
@@ -32606,7 +32606,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Polearm Repair Kit I"
+            "0": "[Weaponsmith] 1x Polearm Repair Kit I"
           }
         },
         "Picture": {
@@ -32657,7 +32657,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Polearm Repair Kit II"
+            "0": "[Weaponsmith] 1x Polearm Repair Kit II"
           }
         },
         "Picture": {
@@ -32708,7 +32708,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Polearm Repair Kit III"
+            "0": "[Weaponsmith] 1x Polearm Repair Kit III"
           }
         },
         "Picture": {
@@ -32759,7 +32759,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Polearm Repair Kit IV"
+            "0": "[Weaponsmith] 1x Polearm Repair Kit IV"
           }
         },
         "Picture": {
@@ -32810,7 +32810,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Polearm S1"
+            "0": "[Weaponsmith] 1x Polearm S1"
           }
         },
         "Picture": {
@@ -32861,7 +32861,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Polearm S2"
+            "0": "[Weaponsmith] 1x Polearm S2"
           }
         },
         "Picture": {
@@ -32912,7 +32912,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Polearm S3"
+            "0": "[Weaponsmith] 1x Polearm S3"
           }
         },
         "Picture": {
@@ -32963,7 +32963,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Polearm S4"
+            "0": "[Weaponsmith] 1x Polearm S4"
           }
         },
         "Picture": {
@@ -33014,7 +33014,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Quarterstaff I"
+            "0": "[Weaponsmith] 1x Quarterstaff I"
           }
         },
         "Picture": {
@@ -33065,7 +33065,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Quarterstaff II"
+            "0": "[Weaponsmith] 1x Quarterstaff II"
           }
         },
         "Picture": {
@@ -33116,7 +33116,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Quarterstaff III"
+            "0": "[Weaponsmith] 1x Quarterstaff III"
           }
         },
         "Picture": {
@@ -33167,7 +33167,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Quarterstaff IV"
+            "0": "[Weaponsmith] 1x Quarterstaff IV"
           }
         },
         "Picture": {
@@ -33218,7 +33218,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Shaft"
+            "0": "[Weaponsmith] 1x Shaft"
           }
         },
         "Picture": {
@@ -33269,7 +33269,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Small Blade"
+            "0": "[Weaponsmith] 1x Small Blade"
           }
         },
         "Picture": {
@@ -33320,7 +33320,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Small Handle"
+            "0": "[Weaponsmith] 1x Small Handle"
           }
         },
         "Picture": {
@@ -33371,7 +33371,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Twin Vibroblade DA1"
+            "0": "[Weaponsmith] 1x Twin Vibroblade DA1"
           }
         },
         "Picture": {
@@ -33422,7 +33422,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Twin Vibroblade DA2"
+            "0": "[Weaponsmith] 1x Twin Vibroblade DA2"
           }
         },
         "Picture": {
@@ -33473,7 +33473,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Twin Vibroblade DA3"
+            "0": "[Weaponsmith] 1x Twin Vibroblade DA3"
           }
         },
         "Picture": {
@@ -33524,7 +33524,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Twin Vibroblade DA4"
+            "0": "[Weaponsmith] 1x Twin Vibroblade DA4"
           }
         },
         "Picture": {
@@ -33575,7 +33575,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Twin Vibroblade Repair Kit I"
+            "0": "[Weaponsmith] 1x Twin Vibroblade Repair Kit I"
           }
         },
         "Picture": {
@@ -33626,7 +33626,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Twin Vibroblade Repair Kit II"
+            "0": "[Weaponsmith] 1x Twin Vibroblade Repair Kit II"
           }
         },
         "Picture": {
@@ -33677,7 +33677,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Twin Vibroblade Repair Kit III"
+            "0": "[Weaponsmith] 1x Twin Vibroblade Repair Kit III"
           }
         },
         "Picture": {
@@ -33728,7 +33728,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Twin Vibroblade Repair Kit IV"
+            "0": "[Weaponsmith] 1x Twin Vibroblade Repair Kit IV"
           }
         },
         "Picture": {
@@ -33779,7 +33779,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Twin Vibroblade TS1"
+            "0": "[Weaponsmith] 1x Twin Vibroblade TS1"
           }
         },
         "Picture": {
@@ -33830,7 +33830,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Twin Vibroblade TS2"
+            "0": "[Weaponsmith] 1x Twin Vibroblade TS2"
           }
         },
         "Picture": {
@@ -33881,7 +33881,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Twin Vibroblade TS3"
+            "0": "[Weaponsmith] 1x Twin Vibroblade TS3"
           }
         },
         "Picture": {
@@ -33932,7 +33932,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Twin Vibroblade TS4"
+            "0": "[Weaponsmith] 1x Twin Vibroblade TS4"
           }
         },
         "Picture": {
@@ -33983,7 +33983,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade BA1"
+            "0": "[Weaponsmith] 1x Vibroblade BA1"
           }
         },
         "Picture": {
@@ -34034,7 +34034,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade BA2"
+            "0": "[Weaponsmith] 1x Vibroblade BA2"
           }
         },
         "Picture": {
@@ -34085,7 +34085,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade BA3"
+            "0": "[Weaponsmith] 1x Vibroblade BA3"
           }
         },
         "Picture": {
@@ -34136,7 +34136,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade BA4"
+            "0": "[Weaponsmith] 1x Vibroblade BA4"
           }
         },
         "Picture": {
@@ -34187,7 +34187,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade BS1"
+            "0": "[Weaponsmith] 1x Vibroblade BS1"
           }
         },
         "Picture": {
@@ -34238,7 +34238,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade BS2"
+            "0": "[Weaponsmith] 1x Vibroblade BS2"
           }
         },
         "Picture": {
@@ -34289,7 +34289,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade BS3"
+            "0": "[Weaponsmith] 1x Vibroblade BS3"
           }
         },
         "Picture": {
@@ -34340,7 +34340,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade BS4"
+            "0": "[Weaponsmith] 1x Vibroblade BS4"
           }
         },
         "Picture": {
@@ -34391,7 +34391,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade K1"
+            "0": "[Weaponsmith] 1x Vibroblade K1"
           }
         },
         "Picture": {
@@ -34442,7 +34442,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade K2"
+            "0": "[Weaponsmith] 1x Vibroblade K2"
           }
         },
         "Picture": {
@@ -34493,7 +34493,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade K3"
+            "0": "[Weaponsmith] 1x Vibroblade K3"
           }
         },
         "Picture": {
@@ -34544,7 +34544,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade K4"
+            "0": "[Weaponsmith] 1x Vibroblade K4"
           }
         },
         "Picture": {
@@ -34595,7 +34595,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade LS1"
+            "0": "[Weaponsmith] 1x Vibroblade LS1"
           }
         },
         "Picture": {
@@ -34646,7 +34646,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade LS2"
+            "0": "[Weaponsmith] 1x Vibroblade LS2"
           }
         },
         "Picture": {
@@ -34697,7 +34697,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade LS3"
+            "0": "[Weaponsmith] 1x Vibroblade LS3"
           }
         },
         "Picture": {
@@ -34748,7 +34748,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade LS4"
+            "0": "[Weaponsmith] 1x Vibroblade LS4"
           }
         },
         "Picture": {
@@ -34799,7 +34799,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade Repair Kit I"
+            "0": "[Weaponsmith] 1x Vibroblade Repair Kit I"
           }
         },
         "Picture": {
@@ -34850,7 +34850,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade Repair Kit II"
+            "0": "[Weaponsmith] 1x Vibroblade Repair Kit II"
           }
         },
         "Picture": {
@@ -34901,7 +34901,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade Repair Kit III"
+            "0": "[Weaponsmith] 1x Vibroblade Repair Kit III"
           }
         },
         "Picture": {
@@ -34952,7 +34952,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Vibroblade Repair Kit IV"
+            "0": "[Weaponsmith] 1x Vibroblade Repair Kit IV"
           }
         },
         "Picture": {
@@ -35003,7 +35003,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Weaponsmith Guild Task: 1x Wood Baton Frame"
+            "0": "[Weaponsmith] 1x Wood Baton Frame"
           }
         },
         "Picture": {
@@ -35071,7 +35071,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 10x CZ-220 Mynock"
+            "0": "[Hunter] Vanquish 10x CZ-220 Mynock"
           }
         },
         "Picture": {
@@ -35139,7 +35139,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 10x CZ-220 Malfunctioning Droid"
+            "0": "[Hunter] Vanquish 10x CZ-220 Malfunctioning Droid"
           }
         },
         "Picture": {
@@ -35207,7 +35207,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 1x CZ-220 Colicoid Experiment"
+            "0": "[Hunter] Vanquish 1x CZ-220 Colicoid Experiment"
           }
         },
         "Picture": {
@@ -35275,7 +35275,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 10x Viscara Kath Hound"
+            "0": "[Hunter] Vanquish 10x Viscara Kath Hound"
           }
         },
         "Picture": {
@@ -35343,7 +35343,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 10x Viscara Warocas"
+            "0": "[Hunter] Vanquish 10x Viscara Warocas"
           }
         },
         "Picture": {
@@ -35411,7 +35411,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 10x Wildwoods Outlaw"
+            "0": "[Hunter] Vanquish 10x Wildwoods Outlaw"
           }
         },
         "Picture": {
@@ -35479,7 +35479,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 8x Wildwoods Gimpassa"
+            "0": "[Hunter] Vanquish 8x Wildwoods Gimpassa"
           }
         },
         "Picture": {
@@ -35547,7 +35547,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 10x Wildwoods Kinrath"
+            "0": "[Hunter] Vanquish 10x Wildwoods Kinrath"
           }
         },
         "Picture": {
@@ -35615,7 +35615,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 10x Mandalorian Warrior"
+            "0": "[Hunter] Vanquish 10x Mandalorian Warrior"
           }
         },
         "Picture": {
@@ -35683,7 +35683,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 10x Mandalorian Ranger"
+            "0": "[Hunter] Vanquish 10x Mandalorian Ranger"
           }
         },
         "Picture": {
@@ -35751,7 +35751,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 1x Mandalorian War Hero"
+            "0": "[Hunter] Vanquish 1x Mandalorian War Hero"
           }
         },
         "Picture": {
@@ -35819,7 +35819,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 10x Valley Cairnmog"
+            "0": "[Hunter] Vanquish 10x Valley Cairnmog"
           }
         },
         "Picture": {
@@ -35887,7 +35887,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 10x Valley Raivor"
+            "0": "[Hunter] Vanquish 10x Valley Raivor"
           }
         },
         "Picture": {
@@ -35955,7 +35955,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 10x Valley Nashtah"
+            "0": "[Hunter] Vanquish 10x Valley Nashtah"
           }
         },
         "Picture": {
@@ -36023,7 +36023,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 10x Crystal Spider"
+            "0": "[Hunter] Vanquish 10x Crystal Spider"
           }
         },
         "Picture": {
@@ -36091,7 +36091,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 10x Mon Cala Aradile"
+            "0": "[Hunter] Vanquish 10x Mon Cala Aradile"
           }
         },
         "Picture": {
@@ -36159,7 +36159,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 10x Mon Cala Viper"
+            "0": "[Hunter] Vanquish 10x Mon Cala Viper"
           }
         },
         "Picture": {
@@ -36227,7 +36227,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 10x Mon Cala Amphi-Hydrus"
+            "0": "[Hunter] Vanquish 10x Mon Cala Amphi-Hydrus"
           }
         },
         "Picture": {
@@ -36295,7 +36295,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 1x Vellen Fleshleader"
+            "0": "[Hunter] Vanquish 1x Vellen Fleshleader"
           }
         },
         "Picture": {
@@ -36363,7 +36363,7 @@
         "Name": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hunter's Guild Task: Vanquish 10x Vellen Flesheater"
+            "0": "[Hunter] Vanquish 10x Vellen Flesheater"
           }
         },
         "Picture": {

@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         SaberThrow,
         ThrowGrenade,
         MaleFemaleKiss,
-        MalleFemaleWaltz,
+        MaleFemaleWaltz,
         MaleFemaleHug,
         Push,
         ParadeRest,

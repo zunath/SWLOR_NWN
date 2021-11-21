@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Service.ChatCommandService
         public ExecuteChatCommandDelegate DoAction { get; set; }
         public ValidateArgumentsDelegate ValidateArguments { get; set; }
         public bool RequiresTarget { get; set; }
+        public bool IsEmote { get; set; }
 
     }
 }

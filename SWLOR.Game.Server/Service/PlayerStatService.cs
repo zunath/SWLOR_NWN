@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Service
             NWItem item = _.GetPCItemLastUnequipped();
 
             RemoveCachedEffectiveStats(item);
-            ApplyStatChanges(player, null);
+            ApplyStatChanges(player, item);
         }
 
         private static void OnSkillGained(NWPlayer player)
@@ -293,7 +293,7 @@ namespace SWLOR.Game.Server.Service
 
             int totalAC = _.GetAC(player) - baseAC;
 
-            // Shield Oath and Precision Targeting affect a percentage of the TOTAL armor class on a creature.
+            // Precision Targeting affects a percentage of the TOTAL armor class on a creature.
             var stance = CustomEffectService.GetCurrentStanceType(player);
             if (stance == CustomEffectType.PrecisionTargeting)
             {

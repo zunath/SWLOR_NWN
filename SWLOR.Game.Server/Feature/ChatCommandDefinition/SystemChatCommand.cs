@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
             BugCommand(builder);
             HelpCommand(builder);
+            ListEmotesCommand(builder);
 
             return builder.Build();
         }
@@ -167,6 +168,16 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     {
                         SendMessageToPC(user, Service.ChatCommand.HelpTextPlayer);
                     }
+                });
+        }
+        private static void ListEmotesCommand(ChatCommandBuilder builder)
+        {
+            builder.Create("listemotes")
+                .Description("Displays all emotes available to you.")
+                .Permissions(AuthorizationLevel.All)
+                .Action((user, target, location, args) =>
+                {
+                    SendMessageToPC(user, Service.ChatCommand.HelpTextEmote);
                 });
         }
     }

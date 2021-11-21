@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<string, ChatCommandDetail> _chatCommands = new Dictionary<string, ChatCommandDetail>();
         public static string HelpTextPlayer { get; private set; }
+        public static string HelpTextEmote { get; private set; }
         public static string HelpTextDM { get; private set; }
         public static string HelpTextAdmin { get; private set; }
 
@@ -189,7 +190,14 @@ namespace SWLOR.Game.Server.Service
 
                 if (definition.Authorization.HasFlag(AuthorizationLevel.Player))
                 {
-                    HelpTextPlayer += ColorToken.Green("/" + text) + ColorToken.White(": " + definition.Description) + "\n";
+                    if (definition.IsEmote == true)
+                    {
+                        HelpTextEmote += ColorToken.Green("/" + text) + ColorToken.White(": " + definition.Description) + "\n";
+                    }
+                    else
+                    {
+                        HelpTextPlayer += ColorToken.Green("/" + text) + ColorToken.White(": " + definition.Description) + "\n";
+                    }
                 }
 
                 if (definition.Authorization.HasFlag(AuthorizationLevel.DM))

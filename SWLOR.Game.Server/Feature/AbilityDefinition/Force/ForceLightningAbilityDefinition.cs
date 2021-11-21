@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             AssignCommand(activator, () =>
             {
                 PlaySound("frc_lghtning");
-                ActionPlayAnimation(Animation.LoopingCustom64, 1.0f,4.0f);
+                ActionPlayAnimation(Animation.CastOutAnimation, 1.0f,4.0f);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
                 ApplyEffectToObject(DurationType.Temporary, elecBeam, target, 4.0f);
             });

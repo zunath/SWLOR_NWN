@@ -999,6 +999,105 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC]Arcona"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item022"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC]Devaronian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item021"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC]Kaleesh"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item023"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC]Kaleesh(Hood)"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item024"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC]KarkarodonA"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item013"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC]KarkarodonB"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item014"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC]KarkarodonC"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item015"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC]Neimoidian"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item017"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC]Shaman"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item025"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Alch's Hood"
                     },
                     "RESREF": {
@@ -13887,17 +13986,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "yshrensaber001"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Zez-Kai Ell's Master Robes"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "item025"
                     }
                   }
                 ]

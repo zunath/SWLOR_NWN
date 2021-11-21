@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsResizable(true)
                 .SetInitialGeometry(0, 0, 545f, 295.5f)
                 .SetTitle("Manage Structures")
+                .BindOnClosed(model => model.OnCloseWindow())
 
                 .AddColumn(col =>
                 {
@@ -75,6 +76,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddTextEdit()
                             .BindValue(model => model.StructureName)
+                            .BindIsEnabled(model => model.IsStructureNameEnabled)
                             .SetPlaceholder("Structure Name")
                             .SetMaxLength(32);
                     });
@@ -82,27 +84,120 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetText("Position / Facing")
+                            .SetText("Position")
                             .SetHeight(20f);
                     });
 
                     col.AddRow(row =>
                     {
-                        row.AddTextEdit()
-                            .SetPlaceholder("X")
-                            .BindValue(model => model.XPosition);
+                        row.AddSpacer();
 
-                        row.AddTextEdit()
-                            .SetPlaceholder("Y")
-                            .BindValue(model => model.YPosition);
+                        row.AddButtonImage()
+                            .SetImageResref("arrow_up")
+                            .SetTooltip("Y-Axis +")
+                            .BindOnClicked(model => model.OnYAxisUp())
+                            .SetWidth(32f)
+                            .SetHeight(32f);
 
-                        row.AddTextEdit()
-                            .SetPlaceholder("Z")
-                            .BindValue(model => model.XPosition);
+                        row.AddButtonImage()
+                            .SetImageResref("arrow_down")
+                            .SetTooltip("Y-Axis -")
+                            .BindOnClicked(model => model.OnYAxisDown())
+                            .SetWidth(32f)
+                            .SetHeight(32f);
 
-                        row.AddTextEdit()
-                            .SetPlaceholder("Facing")
-                            .BindValue(model => model.Facing);
+                        row.AddButtonImage()
+                            .SetImageResref("arrow_right")
+                            .SetTooltip("X-Axis +")
+                            .BindOnClicked(model => model.OnXAxisUp())
+                            .SetWidth(32f)
+                            .SetHeight(32f);
+
+                        row.AddButtonImage()
+                            .SetImageResref("arrow_left")
+                            .SetTooltip("X-Axis -")
+                            .BindOnClicked(model => model.OnXAxisDown())
+                            .SetWidth(32f)
+                            .SetHeight(32f);
+
+                        row.AddButtonImage()
+                            .SetImageResref("arrow_zup")
+                            .SetTooltip("Z-Axis +")
+                            .BindOnClicked(model => model.OnZAxisUp())
+                            .SetWidth(32f)
+                            .SetHeight(32f);
+
+                        row.AddButtonImage()
+                            .SetImageResref("arrow_zdown")
+                            .SetTooltip("Z-Axis -")
+                            .BindOnClicked(model => model.OnZAxisDown())
+                            .SetWidth(32f)
+                            .SetHeight(32f);
+
+                        row.AddButtonImage()
+                            .SetImageResref("level")
+                            .SetTooltip("Z-Axis Reset")
+                            .BindOnClicked(model => model.OnZAxisReset())
+                            .SetWidth(32f)
+                            .SetHeight(32f);
+
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText("Facing")
+                            .SetHeight(20f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+
+                        row.AddButtonImage()
+                            .SetImageResref("clockwise")
+                            .SetTooltip("Clockwise")
+                            .BindOnClicked(model => model.OnRotateClockwise())
+                            .SetWidth(32f)
+                            .SetHeight(32f);
+
+                        row.AddButtonImage()
+                            .SetImageResref("counterclockwise")
+                            .SetTooltip("Counter-Clockwise")
+                            .BindOnClicked(model => model.OnRotateCounterClockwise())
+                            .SetWidth(32f)
+                            .SetHeight(32f);
+
+                        row.AddButtonImage()
+                            .SetImageResref("north")
+                            .SetTooltip("North")
+                            .BindOnClicked(model => model.OnSetFacingNorth())
+                            .SetWidth(32f)
+                            .SetHeight(32f);
+
+                        row.AddButtonImage()
+                            .SetImageResref("south")
+                            .SetTooltip("South")
+                            .BindOnClicked(model => model.OnSetFacingSouth())
+                            .SetWidth(32f)
+                            .SetHeight(32f);
+                        
+                        row.AddButtonImage()
+                            .SetImageResref("east")
+                            .SetTooltip("East")
+                            .BindOnClicked(model => model.OnSetFacingEast())
+                            .SetWidth(32f)
+                            .SetHeight(32f);
+
+                        row.AddButtonImage()
+                            .SetImageResref("west")
+                            .SetTooltip("West")
+                            .BindOnClicked(model => model.OnSetFacingWest())
+                            .SetWidth(32f)
+                            .SetHeight(32f);
+
+                        row.AddSpacer();
                     });
                     
                     col.AddRow(row =>
@@ -115,21 +210,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddButton()
                             .SetText("Save Changes")
                             .BindOnClicked(model => model.OnSaveChanges())
+                            .BindIsEnabled(model => model.IsStructureNameEnabled)
                             .SetHeight(35f);
 
                         row.AddButton()
                             .SetText("Discard Changes")
                             .BindOnClicked(model => model.OnDiscardChanges())
+                            .BindIsEnabled(model => model.IsStructureNameEnabled)
                             .SetHeight(35f);
                     });
 
                     col.AddRow(row =>
                     {
+                        row.AddSpacer();
                         row.AddButton()
                             .SetText("Retrieve Structure")
                             .BindOnClicked(model => model.OnRetrieveStructure())
                             .BindIsEnabled(model => model.IsRetrieveStructureEnabled)
                             .SetHeight(35f);
+                        row.AddSpacer();
                     });
                 });
 

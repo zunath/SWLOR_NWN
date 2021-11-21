@@ -104,57 +104,5 @@ namespace SWLOR.Game.Server.Entity
         /// </summary>
         public string SerializedItem { get; set; }
 
-        /// <summary>
-        /// Spawns the property into the game world.
-        /// For structures, this means spawning a placeable at the location.
-        /// For cities, starships, apartments, and buildings this means spawning area instances.
-        /// </summary>
-        /// <param name="area">The area to spawn the property into. Leave OBJECT_INVALID if spawning an instance.</param>
-        public void SpawnIntoWorld(uint area)
-        {
-            // Structures represent placeables within the game world such as furniture and buildings
-            if (PropertyType == PropertyType.Structure)
-            {
-                var furniture = Property.GetStructureByType(StructureType);
-
-                var position = Vector3(Position.X, Position.Y, Position.Z);
-                var location = Location(area, position, Orientation);
-
-                var placeable = CreateObject(ObjectType.Placeable, furniture.Resref, location);
-                Property.AssignPropertyId(placeable, Id);
-            }
-            // All other property types are area instances or regular areas (in the case of cities)
-            else
-            {
-                uint targetArea;
-
-                // If no interior layout is defined, the provided area will be used.
-                if (Layout == PropertyLayoutType.Invalid)
-                {
-                    targetArea = area;
-                }
-                // If there is an interior, create an instance and use that as our target.
-                else
-                {
-                    var layout = Property.GetLayoutByType(Layout);
-                    targetArea = CreateArea(layout.AreaInstanceResref);
-                    Property.RegisterInstance(Id, targetArea);
-
-                    SetName(targetArea, CustomName);
-                }
-
-                if (ChildPropertyIds.Count > 0)
-                {
-                    var query = new DBQuery<WorldProperty>()
-                        .AddFieldSearch(nameof(Id), ChildPropertyIds);
-                    var children = DB.Search(query);
-
-                    foreach (var child in children)
-                    {
-                        child.SpawnIntoWorld(targetArea);
-                    }
-                }
-            }
-        }
     }
 }

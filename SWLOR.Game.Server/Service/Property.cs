@@ -28,6 +28,8 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<string, Location> _propertyInstancesEntrances = new();
         private static readonly Dictionary<PropertyType, List<PropertyPermissionType>> _permissionsByPropertyType = new();
 
+        private static readonly Dictionary<string, uint> _structurePropertyIdToPlaceable = new();
+
         /// <summary>
         /// When the module loads, cache all relevant data into memory.
         /// </summary>
@@ -408,7 +410,7 @@ namespace SWLOR.Game.Server.Service
             propertiesWithInstances.AddRange(starships);
             foreach (var property in propertiesWithInstances)
             {
-                property.SpawnIntoWorld(OBJECT_INVALID);
+                SpawnIntoWorld(property, OBJECT_INVALID);
             }
 
             var cities = DB.Search(new DBQuery<WorldProperty>()
@@ -416,7 +418,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var city in cities)
             {
                 var area = Cache.GetAreaByResref(city.ParentPropertyId);
-                city.SpawnIntoWorld(area);
+                SpawnIntoWorld(city, area);
             }
         }
 
@@ -457,7 +459,7 @@ namespace SWLOR.Game.Server.Service
             DB.Set(property);
             DB.Set(permissions);
 
-            property.SpawnIntoWorld(OBJECT_INVALID);
+            SpawnIntoWorld(property, OBJECT_INVALID);
 
             return property;
         }
@@ -508,6 +510,8 @@ namespace SWLOR.Game.Server.Service
             // Now spawn it within the game world.
             var placeable = CreateObject(ObjectType.Placeable, structureDetail.Resref, location);
             AssignPropertyId(placeable, structure.Id);
+
+            _structurePropertyIdToPlaceable[structure.Id] = placeable;
         }
 
         /// <summary>
@@ -579,6 +583,18 @@ namespace SWLOR.Game.Server.Service
         public static List<PropertyPermissionType> GetPermissionsByPropertyType(PropertyType type)
         {
             return _permissionsByPropertyType[type];
+        }
+
+        /// <summary>
+        /// Retrieves a placeable associated with a property Id.
+        /// </summary>
+        /// <param name="propertyId">The property Id to search for</param>
+        /// <returns>A placeable or OBJECT_INVALID if not found.</returns>
+        public static uint GetPlaceableByPropertyId(string propertyId)
+        {
+            return !_structurePropertyIdToPlaceable.ContainsKey(propertyId) 
+                ? OBJECT_INVALID 
+                : _structurePropertyIdToPlaceable[propertyId];
         }
 
         /// <summary>
@@ -873,7 +889,63 @@ namespace SWLOR.Game.Server.Service
 
             CreateStructure(propertyId, item, structureType, location);
             DestroyObject(item);
+
+            SendMessageToPC(player, $"Furniture Limit: {property.ChildPropertyIds.Count} / {layout.StructureLimit}");
         }
 
+        /// <summary>
+        /// Spawns the property into the game world.
+        /// For structures, this means spawning a placeable at the location.
+        /// For cities, starships, apartments, and buildings this means spawning area instances.
+        /// </summary>
+        /// <param name="area">The area to spawn the property into. Leave OBJECT_INVALID if spawning an instance.</param>
+        private static void SpawnIntoWorld(WorldProperty property, uint area)
+        {
+            // Structures represent placeables within the game world such as furniture and buildings
+            if (property.PropertyType == PropertyType.Structure)
+            {
+                var furniture = Property.GetStructureByType(property.StructureType);
+
+                var position = Vector3(property.Position.X, property.Position.Y, property.Position.Z);
+                var location = Location(area, position, property.Orientation);
+
+                var placeable = CreateObject(ObjectType.Placeable, furniture.Resref, location);
+                AssignPropertyId(placeable, property.Id);
+
+                _structurePropertyIdToPlaceable[property.Id] = placeable;
+            }
+            // All other property types are area instances or regular areas (in the case of cities)
+            else
+            {
+                uint targetArea;
+
+                // If no interior layout is defined, the provided area will be used.
+                if (property.Layout == PropertyLayoutType.Invalid)
+                {
+                    targetArea = area;
+                }
+                // If there is an interior, create an instance and use that as our target.
+                else
+                {
+                    var layout = Property.GetLayoutByType(property.Layout);
+                    targetArea = CreateArea(layout.AreaInstanceResref);
+                    Property.RegisterInstance(property.Id, targetArea);
+
+                    SetName(targetArea, property.CustomName);
+                }
+
+                if (property.ChildPropertyIds.Count > 0)
+                {
+                    var query = new DBQuery<WorldProperty>()
+                        .AddFieldSearch(nameof(WorldProperty.Id), property.ChildPropertyIds);
+                    var children = DB.Search(query);
+
+                    foreach (var child in children)
+                    {
+                        SpawnIntoWorld(child, targetArea);
+                    }
+                }
+            }
+        }
     }
 }

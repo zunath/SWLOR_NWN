@@ -34,6 +34,7 @@
         ManageApartment = 28,
         CityHall = 29,
         PermissionManagement = 30,
-        ManageStructures = 31
+        ManageStructures = 31,
+        PropertyItemStorage = 32,
     }
 }

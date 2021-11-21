@@ -52,7 +52,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             row.AddButton()
                                 .SetText("Buy Apartment")
                                 .SetHeight(35f)
-                                .BindOnClicked(model => model.OnBuyApartment());
+                                .BindOnClicked(model => model.OnBuyApartment())
+                                .BindIsVisible(model => model.IsAtTerminal);
                             row.AddSpacer();
                         });
                     });
@@ -112,7 +113,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindOnClicked(model => model.OnEnterApartment())
                                 .BindIsEnabled(model => model.IsEnterEnabled)
                                 .SetHeight(35f)
-                                .SetWidth(250f);
+                                .SetWidth(250f)
+                                .BindIsVisible(model => model.IsAtTerminal);
                         });
 
                         col.AddRow(row =>

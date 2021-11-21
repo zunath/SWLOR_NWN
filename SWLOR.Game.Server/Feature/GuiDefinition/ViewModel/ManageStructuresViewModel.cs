@@ -5,6 +5,7 @@ using System.Numerics;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -19,8 +20,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static readonly GuiColor _green = new(0, 255, 0);
         private static readonly GuiColor _red = new(255, 0, 0);
 
-        private const int StructuresPerPage = 25;
+        private const int StructuresPerPage = 20;
         private int SelectedStructureIndex { get; set; }
+        private bool _skipPaginationSearch;
 
         private readonly List<string> _structurePropertyIds = new();
 
@@ -60,7 +62,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public int SelectedPageIndex
         {
             get => Get<int>();
-            set => Set(value);
+            set
+            {
+                Set(value);
+
+                if (!_skipPaginationSearch)
+                {
+                    DiscardChanges();
+                    ClearStructureHighlight();
+                    Search();
+                }
+            }
         }
 
         public string StructureName
@@ -109,6 +121,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void UpdatePagination(long totalRecordCount)
         {
+            _skipPaginationSearch = true;
             var pageNumbers = new GuiBindingList<GuiComboEntry>();
             var pages = (int)(totalRecordCount / StructuresPerPage + (totalRecordCount % StructuresPerPage == 0 ? 0 : 1));
 
@@ -129,6 +142,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // set it to the last page in the list.
             else if (SelectedPageIndex > pages - 1)
                 SelectedPageIndex = pages - 1;
+
+            _skipPaginationSearch = false;
         }
 
         private void Search()
@@ -157,10 +172,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 structureToggles.Add(false);
             }
 
-
             StructureNames = structureNames;
             StructureToggles = structureToggles;
-
         }
 
         private WorldPropertyPermission GetPermission()
@@ -197,6 +210,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
+            _skipPaginationSearch = true;
             Instructions = string.Empty;
             InstructionColor = _green;
 
@@ -217,6 +231,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             WatchOnClient(model => model.SelectedPageIndex);
             WatchOnClient(model => model.StructureName);
+            _skipPaginationSearch = false;
         }
 
         private void LoadStructure()
@@ -279,30 +294,54 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnPreviousPage() => () =>
         {
+            _skipPaginationSearch = true;
             var newPage = SelectedPageIndex - 1;
             if (newPage < 0)
                 newPage = 0;
 
             SelectedPageIndex = newPage;
+
+            DiscardChanges();
+            ClearStructureHighlight();
+            Search();
+            _skipPaginationSearch = false;
         };
 
         public Action OnNextPage() => () =>
         {
+            _skipPaginationSearch = true;
             var newPage = SelectedPageIndex + 1;
             if (newPage > PageNumbers.Count - 1)
                 newPage = PageNumbers.Count - 1;
 
             SelectedPageIndex = newPage;
+
+            DiscardChanges();
+            ClearStructureHighlight();
+            Search();
+            _skipPaginationSearch = false;
         };
 
         public Action OnManageProperty() => () =>
         {
+            var area = GetArea(Player);
+            var propertyId = Property.GetPropertyId(area);
+            var property = DB.Get<WorldProperty>(propertyId);
 
+            if (property.PropertyType == PropertyType.Apartment)
+            {
+                var payload = new ManageApartmentPayload(propertyId);
+                Gui.TogglePlayerWindow(Player, GuiWindowType.ManageApartment, payload);
+            }
+            else
+            {
+                // todo: manage building window
+            }
         };
 
         public Action OnOpenStorage() => () =>
         {
-
+            Gui.TogglePlayerWindow(Player, GuiWindowType.PropertyItemStorage);
         };
 
         public Action OnRetrieveStructure() => () =>

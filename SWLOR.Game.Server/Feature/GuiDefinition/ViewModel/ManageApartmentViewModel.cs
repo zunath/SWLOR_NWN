@@ -12,7 +12,7 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class ManageApartmentViewModel: GuiViewModelBase<ManageApartmentViewModel, GuiPayloadBase>
+    public class ManageApartmentViewModel: GuiViewModelBase<ManageApartmentViewModel, ManageApartmentPayload>
     {
         public const int MaxNameLength = 50;
         public const int MaxDescriptionLength = 200;
@@ -162,6 +162,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsAtTerminal
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         private WorldProperty GetApartment()
         {
             var selectedPropertyId = _propertyIds[SelectedApartmentIndex];
@@ -185,35 +191,51 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return permission;
         }
 
-        protected override void Initialize(GuiPayloadBase initialPayload)
+        protected override void Initialize(ManageApartmentPayload initialPayload)
         {
             _propertyIds.Clear();
-            SelectedApartmentIndex = -1;
             var playerId = GetObjectUUID(Player);
             var apartmentNames = new GuiBindingList<string>();
             var apartmentToggles = new GuiBindingList<bool>();
-            var permissionQuery = new DBQuery<WorldPropertyPermission>()
-                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
-            var dbPermissions = DB.Search(permissionQuery).ToList();
+            var selectedApartmentIndex = -1;
 
-            if (dbPermissions.Count > 0)
+            if (initialPayload != null && !string.IsNullOrWhiteSpace(initialPayload.SpecificPropertyId))
             {
-                var propertyQuery = new DBQuery<WorldProperty>()
-                    .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
-                    .AddFieldSearch(nameof(WorldProperty.Id), dbPermissions.Select(s => s.PropertyId));
-                var properties = DB.Search(propertyQuery);
-
-                foreach (var property in properties)
-                {
-                    _propertyIds.Add(property.Id);
-                    apartmentNames.Add(property.CustomName);
-                    apartmentToggles.Add(false);
-                }
+                var property = DB.Get<WorldProperty>(initialPayload.SpecificPropertyId);
+                apartmentNames.Add(property.CustomName);
+                apartmentToggles.Add(true);
+                _propertyIds.Add(property.Id);
+                selectedApartmentIndex = 0;
+                IsAtTerminal = false;
             }
+            else
+            {
+                var permissionQuery = new DBQuery<WorldPropertyPermission>()
+                    .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
+                var dbPermissions = DB.Search(permissionQuery).ToList();
 
+                if (dbPermissions.Count > 0)
+                {
+                    var propertyQuery = new DBQuery<WorldProperty>()
+                        .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
+                        .AddFieldSearch(nameof(WorldProperty.Id), dbPermissions.Select(s => s.PropertyId));
+                    var properties = DB.Search(propertyQuery);
+
+                    foreach (var property in properties)
+                    {
+                        _propertyIds.Add(property.Id);
+                        apartmentNames.Add(property.CustomName);
+                        apartmentToggles.Add(false);
+                    }
+                }
+
+                IsAtTerminal = true;
+            }
+            
             ApartmentNames = apartmentNames;
             ApartmentToggles = apartmentToggles;
-            
+            SelectedApartmentIndex = selectedApartmentIndex;
+
             LoadApartment();
             WatchOnClient(model => model.CustomName);
             WatchOnClient(model => model.CustomDescription);

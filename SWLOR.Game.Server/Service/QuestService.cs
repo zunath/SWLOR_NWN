@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Service
                     continue;
                 }
 
-                if (GetDistanceBetween(creature, oPC) <= 0.0f || GetDistanceBetween(creature, oPC) > 20.0f)
+                if (GetDistanceBetween(creature, oPC) <= 0.0f || GetDistanceBetween(creature, oPC) > 40.0f)
                 {
                     oPC = GetNextFactionMember(oKiller);
                     continue;

@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Entity
             ParentPropertyId = string.Empty;
             ChildPropertyIds = new List<string>();
             Timers = new Dictionary<PropertyTimerType, DateTime>();
+            ItemStorage = new Dictionary<string, string>();
         }
 
         /// <summary>
@@ -103,6 +104,15 @@ namespace SWLOR.Game.Server.Entity
         /// Associated item which has been serialized. Only used if the PropertyType is a Structure.
         /// </summary>
         public string SerializedItem { get; set; }
+
+        /// <summary>
+        /// The number of items that can be stored within the property.
+        /// For Buildings, Apartments, and Starships, this is the maximum number of items that can be stored.
+        /// For Structures, this is how much storage they increase to their parent property.
+        /// </summary>
+        public int ItemStorageCount { get; set; }
+
+        public Dictionary<string, string> ItemStorage { get; set; }
 
     }
 }

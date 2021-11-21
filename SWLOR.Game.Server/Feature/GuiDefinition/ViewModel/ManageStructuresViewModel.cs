@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Entity;
@@ -15,10 +16,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class ManageStructuresViewModel: GuiViewModelBase<ManageStructuresViewModel, GuiPayloadBase>
     {
+        private static readonly GuiColor _green = new(0, 255, 0);
+        private static readonly GuiColor _red = new(255, 0, 0);
+
         private const int StructuresPerPage = 25;
         private int SelectedStructureIndex { get; set; }
 
         private readonly List<string> _structurePropertyIds = new();
+
+        private Vector3 _currentPosition;
+        private float _currentFacing;
+
+        public string Instructions
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public GuiColor InstructionColor
+        {
+            get => Get<GuiColor>();
+            set => Set(value);
+        }
 
         public GuiBindingList<string> StructureNames
         {
@@ -50,12 +69,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public bool IsStructureNameEnabled
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
         public string FurnitureCount
         {
             get => Get<string>();
@@ -75,6 +88,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public bool IsRetrieveStructureEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsEditStructureEnabled
         {
             get => Get<bool>();
             set => Set(value);
@@ -155,27 +174,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return DB.Search(query).FirstOrDefault();
         }
 
-        private void LoadPermissions()
+        private void LoadPropertyPermissions()
         {
             var permission = GetPermission();
+            IsEditStructureEnabled = false;
+            IsManagePropertyEnabled = false;
+            IsRetrieveStructureEnabled = false;
+            IsOpenStorageEnabled = false;
 
-            if (permission == null)
+            if (permission != null)
             {
-                IsStructureNameEnabled = false;
-                IsManagePropertyEnabled = false;
-                IsRetrieveStructureEnabled = false;
-                IsOpenStorageEnabled = false;
-            }
-            else
-            {
-                IsManagePropertyEnabled = false; // todo: what determines this?
-                IsRetrieveStructureEnabled = permission.Permissions[PropertyPermissionType.RetrieveStructures];
+                // Has one of the permissions found on the Manage Property window or
+                // can grant other players permissions.
+                IsManagePropertyEnabled = permission.Permissions[PropertyPermissionType.CancelLease] ||
+                                          permission.Permissions[PropertyPermissionType.ExtendLease] ||
+                                          permission.Permissions[PropertyPermissionType.RenameProperty] ||
+                                          permission.Permissions[PropertyPermissionType.ChangeDescription] ||
+                                          permission.GrantPermissions.Any(x => x.Value);
                 IsOpenStorageEnabled = permission.Permissions[PropertyPermissionType.AccessStorage];
             }
         }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
+            Instructions = string.Empty;
+            InstructionColor = _green;
+
             var area = GetArea(Player);
             var propertyId = Property.GetPropertyId(area);
 
@@ -188,7 +212,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             StructureName = string.Empty;
             SelectedPageIndex = 0;
-            LoadPermissions();
+            LoadPropertyPermissions();
             Search();
 
             WatchOnClient(model => model.SelectedPageIndex);
@@ -200,8 +224,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (SelectedStructureIndex == -1)
             {
                 StructureName = string.Empty;
-                IsStructureNameEnabled = false;
-
+                IsEditStructureEnabled = false;
+                IsRetrieveStructureEnabled = false;
+                _currentPosition = new Vector3();
+                _currentFacing = 0f;
             }
             else
             {
@@ -211,14 +237,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var permission = GetPermission();
 
                 PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, VisualEffect.Vfx_Dur_Aura_Green);
+                _currentPosition = GetPosition(placeable);
+                _currentFacing = GetFacing(placeable);
 
                 StructureName = structure.CustomName;
-                IsStructureNameEnabled = permission.Permissions[PropertyPermissionType.EditStructures];
+                IsEditStructureEnabled = permission.Permissions[PropertyPermissionType.EditStructures];
+                IsRetrieveStructureEnabled = permission.Permissions[PropertyPermissionType.RetrieveStructures];
             }
         }
 
         private void ClearStructureHighlight()
         {
+            if (SelectedStructureIndex <= -1)
+                return;
+
             var propertyId = _structurePropertyIds[SelectedStructureIndex];
             var placeable = Property.GetPlaceableByPropertyId(propertyId);
             PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, VisualEffect.None);
@@ -227,6 +259,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnCloseWindow() => () =>
         {
             ClearStructureHighlight();
+            DiscardChanges();
         };
 
         public Action OnSelectStructure() => () =>
@@ -235,6 +268,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 StructureToggles[SelectedStructureIndex] = false;
                 ClearStructureHighlight();
+                DiscardChanges();
             }
 
             SelectedStructureIndex = NuiGetEventArrayIndex();
@@ -273,17 +307,98 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnRetrieveStructure() => () =>
         {
+            ShowModal($"Are you sure you want to retrieve this structure?", () =>
+            {
+                var structure = GetStructure();
+                var parentProperty = DB.Get<WorldProperty>(structure.ParentPropertyId);
+                var placeable = Property.GetPlaceableByPropertyId(structure.Id);
+                var permission = GetPermission();
 
+                // Permissions are missing now.
+                if (permission == null || !permission.Permissions[PropertyPermissionType.RetrieveStructures])
+                {
+                    Instructions = $"No permission!";
+                    InstructionColor = _red;
+                    return;
+                }
+
+                // Removing this structure would reduce the item storage cap below the number of items actually
+                // in storage. 
+                if (parentProperty.ItemStorage.Count > parentProperty.ItemStorageCount - structure.ItemStorageCount)
+                {
+                    Instructions = $"Remove items from storage first.";
+                    return;
+                }
+                
+                var item = ObjectPlugin.Deserialize(structure.SerializedItem);
+                ObjectPlugin.AcquireItem(Player, item);
+
+                parentProperty.ChildPropertyIds.Remove(structure.Id);
+                parentProperty.ItemStorageCount -= structure.ItemStorageCount;
+
+                DB.Set(parentProperty);
+                DB.Delete<WorldProperty>(structure.Id);
+
+                StructureNames.RemoveAt(SelectedStructureIndex);
+                StructureToggles.RemoveAt(SelectedStructureIndex);
+                _structurePropertyIds.RemoveAt(SelectedStructureIndex);
+                SelectedStructureIndex = -1;
+
+                DestroyObject(placeable);
+
+                LoadStructure();
+            });
         };
 
         public Action OnSaveChanges() => () =>
         {
+            if (StructureName.Length <= 0)
+            {
+                Instructions = $"Name is required.";
+                InstructionColor = _red;
+                return;
+            }
 
+            var structure = GetStructure();
+            var placeable = Property.GetPlaceableByPropertyId(structure.Id);
+            _currentFacing = GetFacing(placeable);
+            _currentPosition = GetPosition(placeable);
+
+            structure.Position = _currentPosition;
+            structure.Orientation = _currentFacing;
+            structure.CustomName = StructureName;
+
+            DB.Set(structure);
+
+            StructureNames[SelectedStructureIndex] = StructureName;
+
+            Instructions = $"Structure saved!";
+            InstructionColor = _green;
         };
+
+        private void DiscardChanges()
+        {
+            if (SelectedStructureIndex <= -1)
+                return;
+
+            var structure = GetStructure();
+            var placeable = Property.GetPlaceableByPropertyId(structure.Id);
+            StructureName = structure.CustomName;
+
+            // Copy the values since there is a delay before the action is fired and another
+            // structure may have been selected by the user by that point.
+            var facing = _currentFacing;
+            var position = new Vector3(_currentPosition.X, _currentPosition.Y, _currentPosition.Z);
+            AssignCommand(placeable, () =>
+            {
+                SetFacing(facing);
+                ObjectPlugin.SetPosition(placeable, position);
+            });
+        }
 
         public Action OnDiscardChanges() => () =>
         {
-
+            DiscardChanges();
         };
 
         public Action OnRotateClockwise() => () =>
@@ -296,9 +411,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 facing -= 360f;
 
             AssignCommand(placeable, () => SetFacing(facing));
-
-            structure.Orientation = facing;
-            DB.Set(structure);
         };
 
         public Action OnRotateCounterClockwise() => () =>
@@ -311,9 +423,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 facing -= 360f;
 
             AssignCommand(placeable, () => SetFacing(facing));
-
-            structure.Orientation = facing;
-            DB.Set(structure);
         };
 
         private void AdjustFacing(float facing)
@@ -321,9 +430,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var structure = GetStructure();
             var placeable = Property.GetPlaceableByPropertyId(structure.Id);
             AssignCommand(placeable, () => SetFacing(facing));
-
-            structure.Orientation = facing;
-            DB.Set(structure);
         }
 
         public Action OnSetFacingNorth() => () =>
@@ -356,9 +462,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             position.Z += z;
 
             ObjectPlugin.SetPosition(placeable, position);
-
-            structure.Position = position;
-            DB.Set(structure);
         }
 
         public Action OnYAxisUp() => () =>
@@ -405,9 +508,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             position.Z = z;
             ObjectPlugin.SetPosition(placeable, position);
-
-            structure.Position = position;
-            DB.Set(structure);
         };
     }
 }

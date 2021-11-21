@@ -7,986 +7,1183 @@ namespace SWLOR.Game.Server.Service.PropertyService
         [Structure("Invalid", 
             "", 
             "Invalid", 
-            false)]
+            false, 
+            0)]
         Invalid = 0,
         [Structure("Obelisk, Large", 
             "x0_obelisk", 
             "", 
-            true)]
+            true, 
+            1)]
         ObeliskLarge = 4,
         [Structure("Jukebox", 
             "jukebox", 
             "", 
-            true)]
+            true, 
+            1)]
         Jukebox = 5,
         [Structure("Obelisk, Small", 
             "nw_plc_seaobelsk", 
             "", 
-            true)]
+            true, 
+            1)]
         ObeliskSmall = 6,
         [Structure("Ladder, Light", 
             "x0_weatheredladd", 
             "", 
-            true)]
+            true, 
+            1)]
         LadderLight = 7,
         [Structure("Ladder, Dark", 
             "x0_ladder", 
             "", 
-            true)]
+            true, 
+            1)]
         LadderDark = 8,
         [Structure("Statue, Huge", 
             "x2_plc_statue_h", 
             "", 
-            true)]
+            true, 
+            1)]
         StatueHuge = 9,
         [Structure("Mining Well", 
             "x2_plc_minewell", 
             "", 
-            true)]
+            true, 
+            1)]
         MiningWell = 10,
         [Structure("Statue, Wizard", 
             "x3_plc_gg001", 
             "", 
-            true)]
+            true, 
+            1)]
         StatueWizard = 12,
         [Structure("Gong", 
             "plc_gong", 
             "", 
-            true)]
+            true, 
+            1)]
         Gong = 13,
         [Structure("Statue, Monster", 
             "plc_statue3", 
             "", 
-            true)]
+            true, 
+            1)]
         StatueMonster = 14,
         [Structure("Brazier, Stone", 
             "plc_brazier", 
             "", 
-            true)]
+            true, 
+            1)]
         BrazierStone = 17,
         [Structure("Statue, Guardian", 
             "plc_statue1", 
             "", 
-            true)]
+            true, 
+            1)]
         StatueGuardian = 18,
         [Structure("Doorway, Metal", 
             "x0_doormetal", 
             "", 
-            true)]
+            true, 
+            1)]
         DoorwayMetal = 19,
         [Structure("Flaming Statue", 
             "x2_plc_statue_fl", 
             "", 
-            true)]
+            true, 
+            1)]
         FlamingStatue = 20,
         [Structure("Brazier, Round", 
             "x3_plc_brazier", 
             "", 
-            true)]
+            true, 
+            1)]
         BrazierRound = 21,
         [Structure("Pedestal", 
             "plc_pedestal", 
             "", 
-            true)]
+            true, 
+            1)]
         Pedestal = 22,
         [Structure("Rope Coil", 
             "nw_plc_ropecoil1", 
             "", 
-            true)]
+            true, 
+            1)]
         RopeCoil = 23,
         [Structure("Statue, Wyvern ", 
             "x3_plc_statuew", 
             "", 
-            true)]
+            true, 
+            1)]
         StatueWyvern = 24,
         [Structure("Pedestal, Evil", 
             "x3_plc_pedestal", 
             "",
-            true)]
+            true, 
+            1)]
         PedestalEvil = 25,
         [Structure("Birdbath", 
             "plc_birdbath", 
             "", 
-            true)]
+            true, 
+            1)]
         Birdbath = 26,
         [Structure("Sphinx Statue", 
             "x0_sphinxstatue", 
             "", 
-            true)]
+            true, 
+            1)]
         SphinxStatue = 27,
         [Structure("Mining Well Platform", 
             "x2_plc_minewellb", 
             "", 
-            true)]
+            true, 
+            1)]
         MiningWellPlatform = 28,
         [Structure("Pedestal, Sword", 
             "x3_plc_pedsword", 
             "", 
-            true)]
+            true, 
+            1)]
         PedestalSword = 29,
         [Structure("Doorway, Stone", 
             "x0_stonewalldoor", 
             "", 
-            true)]
+            true, 
+            1)]
         DoorwayStone = 30,
         [Structure("Female Statue", 
             "x2_plc_statue_f", 
             "", 
-            true)]
+            true, 
+            1)]
         FemaleStatue = 31,
         [Structure("Gnomish Contraption", 
             "plc_gnomcntrptn", 
             "", 
-            true)]
+            true, 
+            1)]
         GnomishContraption = 32,
         [Structure("Pillar, Stone", 
             "plc_pillar3", 
             "", 
-            true)]
+            true, 
+            1)]
         PillarStone = 33,
         [Structure("Statue of Lathander", 
             "x2_plc_statue_la", 
             "", 
-            true)]
+            true, 
+            1)]
         StatueOfLathander = 35,
         [Structure("Pillar, Flame", 
             "plc_pillar1", 
             "", 
-            true)]
+            true, 
+            1)]
         PillarFlame = 36,
         [Structure("Cage", 
             "plc_animalcage", 
             "", 
-            true)]
+            true, 
+            1)]
         Cage = 37,
         [Structure("Lamp Post", 
             "plc_lamppost", 
             "", 
-            true)]
+            true, 
+            1)]
         LampPost = 38,
         [Structure("Torch Bracket", 
             "plc_freetorch", 
             "", 
-            true)]
+            true, 
+            1)]
         TorchBracket = 39,
         [Structure("Pillar, Wood", 
             "plc_pillar2", 
             "", 
-            true)]
+            true, 
+            1)]
         PillarWood = 40,
         [Structure("Statue, Cyric", 
             "x3_plc_statuec", 
             "", 
-            true)]
+            true, 
+            1)]
         StatueCyric = 41,
         [Structure("Sea Idol", 
             "nw_plc_seaidol", 
             "", 
-            true)]
+            true, 
+            1)]
         SeaIdol = 42,
         [Structure("Fountain", 
             "plc_fountain", 
             "", 
-            true)]
+            true, 
+            1)]
         Fountain = 43,
         [Structure("Monster Statue", 
             "x2_plc_statue_mo", 
             "", 
-            true)]
+            true, 
+            1)]
         MonsterStatue = 44,
         [Structure("Easel", 
             "plc_pntingeasel", 
             "", 
-            true)]
+            true, 
+            1)]
         Easel = 45,
         [Structure("Keg", 
             "plc_keg", 
             "", 
-            true)]
+            true, 
+            1)]
         Keg = 47,
         [Structure("Dran Statue ", 
             "x2_plc_statu_dra", 
             "", 
-            true)]
+            true, 
+            1)]
         DranStatue = 48,
         [Structure("Net", 
             "nw_plc_net", 
             "", 
-            true)]
+            true, 
+            1)]
         Net = 51,
         [Structure("Bed, Extra Large", 
             "x0_largebed", 
             "", 
-            true)]
+            true, 
+            1)]
         BedExtraLarge = 52,
         [Structure("Carpet, Round, Blue", 
             "x0_roundrugorien", 
             "", 
-            true)]
+            true, 
+            1)]
         CarpetRoundBlue = 54,
         [Structure("Altar, Evil", 
             "plc_altrevil", 
             "", 
-            true)]
+            true, 1)]
         AltarEvil = 55,
         [Structure("Table, Wood, Large", 
             "x3_plc_table002", 
             "", 
-            true)]
+            true, 
+            1)]
         TableWoodLarge = 56,
         [Structure("Table, Wood, With Fish", 
             "x3_plc_table001", 
             "", 
-            true)]
+            true, 
+            1)]
         TableWoodWithFish = 57,
         [Structure("Table, Stone, Small", 
             "nw_plc_seatable", 
             "", 
-            true)]
+            true, 
+            1)]
         TableStoneSmall = 58,
         [Structure("Altar, Hand", 
             "plc_altrod", 
             "", 
-            true)]
+            true, 
+            1)]
         AltarHand = 59,
         [Structure("Window", 
             "x0_window", 
             "", 
-            true)]
+            true, 
+            1)]
         Window = 60,
         [Structure("Cushions", 
             "x0_cushions", 
             "", 
-            true)]
+            true, 
+            1)]
         Cushions = 61,
         [Structure("Candle", 
             "nw_plc_candle1", 
             "", 
-            true)]
+            true, 
+            1)]
         Candle = 62,
         [Structure("Bear Skin Rug", 
             "x0_bearskinrug1", 
             "", 
-            true)]
+            true, 
+            1)]
         BearSkinRug = 64,
         [Structure("Chandelier", 
             "x0_chandelier", 
             "", 
-            true)]
+            true, 
+            1)]
         Chandelier = 65,
         [Structure("Urn", 
             "plc_urn", 
             "", 
-            true)]
+            true, 
+            1)]
         Urn = 67,
         [Structure("Altar, Stone", 
             "plc_altrneutral", 
             "", 
-            true)]
+            true, 
+            1)]
         AltarStone = 68,
         [Structure("Cot", 
             "plc_cot", 
             "", 
-            true)]
+            true, 
+            1)]
         Cot = 69,
         [Structure("Table, Wood", 
             "plc_table", 
             "", 
-            true)]
+            true, 
+            1)]
         TableWood = 70,
         [Structure("Throw Rug", 
             "plc_throwrug", 
             "", 
-            true)]
+            true, 
+            1)]
         ThrowRug = 72,
         [Structure("Table, Stone, Large", 
             "nw_plc_dwarftabl", 
             "", 
-            true)]
+            true, 
+            1)]
         TableStoneLarge = 73,
         [Structure("Bed, Stone, Yellow", 
             "nw_plc_dwarfbed", 
             "", 
-            true)]
+            true, 
+            1)]
         BedStoneYellow = 74,
         [Structure("Bed, Large", 
             "x0_beddouble", 
             "", 
-            true)]
+            true, 
+            1)]
         BedLarge = 75,
         [Structure("Vase, Rounded", 
             "x0_vaseflower", 
             "", 
-            true)]
+            true, 
+            1)]
         VaseRounded = 76,
         [Structure("Carpet", 
             "x0_ruglarge", 
             "", 
-            true)]
+            true, 
+            1)]
         Carpet = 77,
         [Structure("Bed, Wood, Yellow", 
             "plc_bed", 
             "", 
-            true)]
+            true, 
+            1)]
         BedWoodYellow = 78,
         [Structure("Overgrown Pillar", 
             "x0_overgrownrui", 
             "", 
-            true)]
+            true, 
+            1)]
         OvergrownPillar = 79,
         [Structure("Tome", 
             "x0_tome", 
             "", 
-            true)]
+            true, 
+            1)]
         Tome = 80,
         [Structure("Bird Cage", 
             "plc_birdcage", 
             "", 
-            true)]
+            true, 
+            1)]
         BirdCage = 81,
         [Structure("Pillar, Wood, Dark", 
             "x3_plc_pillar1", 
             "", 
-            true)]
+            true, 
+            1)]
         PillarWoodDark = 82,
         [Structure("Bunk Bed", 
             "x2_plc_bunkbed", 
             "", 
-            true)]
+            true, 
+            1)]
         BunkBed = 83,
         [Structure("Vase, Tall", 
             "x0_bigvase", 
             "", 
-            true)]
+            true, 
+            1)]
         VaseTall = 84,
         [Structure("Bed Roll", 
             "plc_bedrolls", 
             "", 
-            true)]
+            true, 
+            1)]
         BedRoll = 85,
         [Structure("Ottoman", 
             "x0_ottoman", 
             "", 
-            true)]
+            true, 
+            1)]
         Ottoman = 86,
         [Structure("Pillar, Rounded", 
             "x0_ruinedpillar", 
             "", 
-            true)]
+            true, 
+            1)]
         PillarRounded = 88,
         [Structure("Painting 2", 
             "x0_painting2", 
             "", 
-            true)]
+            true, 
+            1)]
         Painting2 = 89,
         [Structure("Candelabra", 
             "plc_candelabra", 
             "", 
-            true)]
+            true, 
+            1)]
         Candelabra = 90,
         [Structure("Potted Plant", 
             "plc_pottedplant", 
             "", 
-            true)]
+            true, 
+            1)]
         PottedPlant = 91,
         [Structure("Painting 1", 
             "x0_painting", 
             "", 
-            true)]
+            true, 
+            1)]
         Painting1 = 92,
         [Structure("Carpet, Fancy", 
             "x0_rugoriental", 
             "", 
-            true)]
+            true, 
+            1)]
         CarpetFancy = 93,
         [Structure("Illithid Table", 
             "x2_plc_tablemind", 
             "", 
-            true)]
+            true, 
+            1)]
         IllithidTable = 95,
         [Structure("Carpet, Fancy, Smaller", 
             "x0_rugoriental2", 
             "", 
-            true)]
+            true, 
+            1)]
         CarpetFancySmaller = 96,
         [Structure("Drow Altar", 
             "x2_plc_drowaltar", 
             "", 
-            true)]
+            true, 
+            1)]
         DrowAltar = 97,
         [Structure("Dartboard", 
             "x3_plc_dartbrd", 
             "", 
-            true)]
+            true, 
+            1)]
         Dartboard = 98,
         [Structure("Map", 
             "x0_maps", 
             "", 
-            true)]
+            true, 
+            1)]
         Map = 99,
         [Structure("Floor-anchored shackles", 
             "plc_flrshackles", 
             "", 
-            true)]
+            true, 
+            1)]
         FloorAnchoredShackles = 100,
         [Structure("Round Wooden Table", 
             "x2_plc_tablernd", 
             "", 
-            true)]
+            true, 
+            1)]
         RoundWoodenTable = 101,
         [Structure("Drow Bar", 
             "x2_plc_drowbar", 
             "", 
-            true)]
+            true, 
+            1)]
         DrowBar = 102,
         [Structure("Shrine of Umberlee", 
             "nw_plc_shrnumbr1", 
             "", 
-            true)]
+            true, 
+            1)]
         ShrineOfUmberlee = 103,
         [Structure("Rune Pillar", 
             "x0_runepillar", 
             "", 
-            true)]
+            true, 
+            1)]
         RunePillar = 104,
         [Structure("Mirror", 
             "x2_plc_mirror", 
             "", 
-            true)]
+            true, 
+            1)]
         Mirror = 106,
         [Structure("Footstool", 
             "plc_footstool", 
             "", 
-            true)]
+            true, 
+            1)]
         Footstool = 107,
         [Structure("Drow Table", 
             "x2_plc_tabledrow", 
             "", 
-            true)]
+            true, 
+            1)]
         DrowTable = 108,
         [Structure("Bench, Stone, Dwarven", 
             "bench_stonedwarf", 
-            "", true)]
+            "", 
+            true, 
+            1)]
         BenchStoneDwarven = 111,
         [Structure("Illithid Chair", 
             "illithid_chair", 
             "", 
-            true)]
+            true, 
+            1)]
         IllithidChair = 112,
         [Structure("Bench, Wood", 
             "bench_wood", 
             "", 
-            true)]
+            true, 
+            1)]
         BenchWood = 113,
         [Structure("Chair, Wood, Medium", 
             "chair_med_wood", 
             "", 
-            true)]
+            true, 
+            1)]
         ChairWoodMedium = 114,
         [Structure("Bench, Large", 
             "bench_large", 
             "", 
-            true)]
+            true, 
+            1)]
         BenchLarge = 115,
         [Structure("Drow Chair", 
             "drow_chair", 
             "", 
-            true)]
+            true, 
+            1)]
         DrowChair = 116,
         [Structure("Bench, Wood, Large", 
             "bench_largewood", 
             "", 
-            true)]
+            true, 
+            1)]
         BenchWoodLarge = 117,
         [Structure("Bench, Wood, Small", 
             "bench_woodsmall", 
             "", 
-            true)]
+            true, 
+            1)]
         BenchWoodSmall = 118,
         [Structure("Chair, Wood", 
             "chair_wood", 
             "", 
-            true)]
+            true, 
+            1)]
         ChairWood = 119,
         [Structure("Chair, Wood, Small", 
             "chair_wood_small", 
             "", 
-            true)]
+            true, 
+            1)]
         ChairWoodSmall = 120,
         [Structure("Throne, Wood", 
             "thronewood001", 
             "", 
-            true)]
+            true, 
+            1)]
         ThroneWood = 121,
         [Structure("Chair, Stone", 
             "chair_stone", 
             "", 
-            true)]
+            true, 
+            1)]
         ChairStone = 122,
         [Structure("Bench, Wood, Small 2", 
             "bench_wood2", 
             "", 
-            true)]
+            true, 
+            1)]
         BenchWoodSmall2 = 123,
         [Structure("Chair, Shell", 
             "chair_shell", 
             "", 
-            true)]
+            true, 
+            1)]
         ChairShell = 124,
         [Structure("Couch, Wood, Yellow", 
             "couch_wood", 
             "", 
-            true)]
+            true, 
+            1)]
         CouchWoodYellow = 125,
         [Structure("Weapon Rack, Wall Mounted", 
             "swlorweaponrack", 
             "", 
-            true)]
+            true, 
+            1)]
         WeaponRackWallMounted = 126,
         [Structure("Statue, Twi'lek", 
             "statue_twilek", 
             "", 
-            true)]
+            true, 
+            1)]
         StatueTwilek = 127,
         [Structure("Chair, Chancellor", 
             "chair_chancellor", 
             "", 
-            true)]
+            true, 
+            1)]
         ChairChancellor = 128,
         [Structure("Statue, Robed Woman", 
             "statue_woman", 
             "", 
-            true)]
+            true, 
+            1)]
         StatueRobedWoman = 129,
         [Structure("Armchair, High  Back (Orange)", 
             "_mdrn_pl_chair09", 
             "", 
-            true)]
+            true, 
+            1)]
         ArmchairHighBackOrange = 130,
         [Structure("Armchair, High  Back (Blue)", 
             "_mdrn_pl_chair10", 
             "", 
-            true)]
+            true, 
+            1)]
         ArmchairHighBackBlue = 131,
         [Structure("Bench", 
             "_mdrn_pl_df_chb", 
             "", 
-            true)]
+            true, 
+            1)]
         Bench = 132,
         [Structure("Banner, Wall, Lizard", 
             "_mdrn_pl_bannr03", 
             "", 
-            true)]
+            true, 
+            1)]
         BannerWallLizard = 133,
         [Structure("Bathtub ", 
             "_mdrn_pl_bathtb1 ", 
             "", 
-            true)]
+            true, 
+            1)]
         Bathtub = 134,
         [Structure("Bed, High Back (Black/Grey) ", 
             "_mdrn_pl_beddbgr", 
             "", 
-            true)]
+            true, 
+            1)]
         BedHighBackBlackGrey = 135,
         [Structure("Bed, High Back (Blue)", 
             "_mdrn_pl_bedsgbl", 
             "", 
-            true)]
+            true, 
+            1)]
         BedHighBackBlue = 136,
         [Structure("Bed, Medical/Exam", 
             "_mdrn_pl_bmdcl", 
             "", 
-            true)]
+            true, 
+            1)]
         BedMedicalExam = 137,
         [Structure("Bookshelf, Pedestal (White)", 
             "_mdrn_pl_bookcs5", 
             "", 
-            true)]
+            true, 
+            1)]
         BookshelfPedestalWhite = 138,
         [Structure("Cabinet, Curved (Grey/White)", 
             "_mdrn_pl_cabint3", 
             "", 
-            true)]
+            true, 
+            1)]
         CabinetCurvedGreyWhite = 139,
         [Structure("Bed, Side Table", 
             "_mdrn_pl_bedmode", 
             "", 
-            true)]
+            true, 
+            1)]
         BedSideTable = 140,
         [Structure("Bed, Low", 
             "_mdrn_pl_beddbsc", 
             "", 
-            true)]
+            true, 
+            1)]
         BedLow = 141,
         [Structure("Banner, Standing", 
             "_mdrn_pl_bannr04", 
             "", 
-            true)]
+            true, 
+            1)]
         BannerStanding = 142,
         [Structure("Chair, Crew (Grey)", 
             "_mdrn_pl_chrgren", 
             "", 
-            true)]
+            true, 
+            1)]
         ChairCrewGrey = 143,
         [Structure("Chair, Open Frame (Brown)", 
             "_mdrn_pl_chair32", 
             "", 
-            true)]
+            true, 
+            1)]
         ChairOpenFrameBrown = 144,
         [Structure("Chair, Pedestal /w Arms", 
             "_mdrn_pl_chairbl", 
             "", 
-            true)]
+            true, 
+            1)]
         ChairPedestalWithArms = 145,
         [Structure("Chair, Pedestal, Padded (Red)", 
             "_mdrn_pl_chairpr", 
             "", 
-            true)]
+            true, 
+            1)]
         ChairPedestalPaddedRed = 146,
         [Structure("Chair, Pedestal, Panel", 
             "_mdrn_pl_chair31", 
             "", 
-            true)]
+            true, 
+            1)]
         ChairPedestalPanel = 147,
         [Structure("Console, Floor Mounted (Blue Screens)", 
             "_mdrn_pl_cons001", 
             "", 
-            true)]
+            true, 
+            1)]
         ConsoleFloorMountedBlueScreens = 148,
         [Structure("Console, Floor Mounted (Green Screens)", 
             "_mdrn_pl_conso04", 
             "", 
-            true)]
+            true, 
+            1)]
         ConsoleFloorMountedGreenScreens = 149,
         [Structure("Cot /w Table", 
             "_mdrn_pl_cotsf", 
             "", 
-            true)]
+            true, 
+            1)]
         CotWithTable = 150,
         [Structure("Desk, Control Board Inlay", 
             "_mdrn_pl_df_dscb", 
             "", 
-            true)]
+            true, 
+            1)]
         DeskControlBoardInlay = 151,
         [Structure("Desk, Control Center", 
             "_mdrn_pl_conso03", 
             "", 
-            true)]
+            true, 
+            1)]
         DeskControlCenter = 152,
         [Structure("Desk, Control Center, Large Screen", 
             "_mdrn_pl_conso27", 
             "", 
-            true)]
+            true, 
+            1)]
         DeskControlCenterLargeScreen = 153,
         [Structure("Desk, Control Center, Wide", 
             "_mdrn_pl_conso19", 
             "", 
-            true)]
+            true, 
+            1)]
         DeskControlCenterWide = 154,
         [Structure("Desk, Corner /w Terminal", 
             "_mdrn_pl_deskcn1", 
             "", 
-            true)]
+            true, 
+            1)]
         DeskCornerwTerminal = 155,
         [Structure("Desk, Information/Control Center", 
             "_mdrn_pl_df_dicc", 
             "", 
-            true)]
+            true, 
+            1)]
         DeskInformationControlCenter = 156,
         [Structure("Desk, Wall /w Terminal", 
             "_mdrn_pl_deskter", 
             "", 
-            true)]
+            true, 
+            1)]
         DeskWallwTerminal = 157,
         [Structure("Desk, Wall /w Terminal, Wide", 
             "_mdrn_pl_desktew", 
             "", 
-            true)]
+            true, 
+            1)]
         DeskWallwTerminalWide = 158,
         [Structure("Work Station, Droid Repair", 
             "_mdrn_pl_conso08", 
             "", 
-            true)]
+            true, 
+            1)]
         WorkStationDroidRepair = 159,
         [Structure("Footlocker, Modern (Keyed Entry)", 
             "_mdrn_pl_df_fmke", 
             "", 
-            true)]
+            true, 
+            1)]
         FootlockerModernKeyedEntry = 160,
         [Structure("Fountain, Oval", 
             "_mdrn_pl_fountn2", 
             "", 
-            true)]
+            true, 
+            1)]
         FountainOval = 161,
         [Structure("Holo Display", 
             "_mdrn_pl_holod01", 
             "", 
-            true)]
+            true, 
+            1)]
         HoloDisplay = 162,
         [Structure("Holo Display 2", 
             "_mdrn_pl_holod03", 
             "", 
-            true)]
+            true, 
+            1)]
         HoloDisplay2 = 163,
         [Structure("Holo Display 4", 
             "_mdrn_pl_holod05", 
             "", 
-            true)]
+            true, 
+            1)]
         HoloDisplay4 = 164,
         [Structure("Holo Display 5", 
             "_mdrn_pl_holod06", 
             "", 
-            true)]
+            true, 
+            1)]
         HoloDisplay5 = 165,
         [Structure("Holo Projector 1", 
             "_mdrn_pl_holoco2", 
             "", 
-            true)]
+            true, 
+            1)]
         HoloProjector1 = 166,
         [Structure("Holo Projector 2", 
             "_mdrn_pl_holobas", 
             "", 
-            true)]
+            true, 
+            1)]
         HoloProjector2 = 167,
         [Structure("Instrument Panel, Large Monitor (Technical Data)", 
             "_mdrn_pl_instptd", 
             "", 
-            true)]
+            true, 
+            1)]
         InstrumentPanelLargeMonitorTechnicalData = 168,
         [Structure("Kolto Tank (Empty)", 
             "_mdrn_pl_clntnke", 
             "", 
-            true)]
+            true, 
+            1)]
         KoltoTankEmpty = 169,
         [Structure("Lamp, Eggs (Pink)", 
             "_mdrn_pl_lampd09", 
             "", 
-            true)]
+            true, 
+            1)]
         LampEggsPink = 170,
         [Structure("Lamp, On Poles", 
             "_mdrn_pl_lampd04", 
             "", 
-            true)]
+            true, 
+            1)]
         LampOnPoles = 171,
         [Structure("Lantern, Post, Marble", 
             "_mdrn_pl_lamp4", 
             "", 
-            true)]
+            true, 
+            1)]
         LanternPostMarble = 172,
         [Structure("Locker, Metal Trapezoid", 
             "_mdrn_pl_rustedl", 
             "", 
-            true)]
+            true, 
+            1)]
         LockerMetalTrapezoid = 173,
         [Structure("Mirror (Small)", 
             "_mdrn_pl_mirror1", 
             "", 
-            true)]
+            true, 
+            1)]
         MirrorSmall = 174,
         [Structure("Monitor, Wall, Logo Display (Blue)", 
             "_mdrn_pl_screend", 
             "", 
-            true)]
+            true, 
+            1)]
         MonitorWallLogoDisplayBlue = 175,
         [Structure("Ornament, Solar System", 
             "_mdrn_pl_ornamnt", 
             "", 
-            true)]
+            true, 
+            1)]
         OrnamentSolarSystem = 176,
         [Structure("Ottoman, Decorated (Black)", 
             "_mdrn_pl_ottomn2", 
             "", 
-            true)]
+            true, 
+            1)]
         OttomanDecoratedBlack = 177,
         [Structure("Pipes, Conduit (with Power Controls)", 
             "_mdrn_pl_df_pcpc", 
             "", 
-            true)]
+            true, 
+            1)]
         PipesConduitwithPowerControls = 178,
         [Structure("Cylinder, Cross Top", 
             "_mdrn_pl_conta38", 
             "", 
-            true)]
+            true, 
+            1)]
         CylinderCrossTop = 179,
         [Structure("Pot, Bush, Clipped", 
             "_mdrn_pl_flowrp2", 
             "", 
-            true)]
+            true, 
+            1)]
         PotBushClipped = 180,
         [Structure("Pot, Bush, Flowers", 
             "_mdrn_pl_flowrby", 
             "", 
-            true)]
+            true, 
+            1)]
         PotBushFlowers = 181,
         [Structure("Pot, Bush, Tall", 
             "_mdrn_pl_flowrpi", 
             "", 
-            true)]
+            true, 
+            1)]
         PotBushTall = 182,
         [Structure("Pot, Clay Urn", 
             "_mdrn_pl_pottery", 
             "", 
-            true)]
+            true, 
+            1)]
         PotClayUrn = 183,
         [Structure("Pot, Flower, Daisy", 
             "_mdrn_pl_flowpt1", 
             "", 
-            true)]
+            true, 
+            1)]
         PotFlowerDaisy = 184,
         [Structure("Pot, Flower, Yellow", 
             "_mdrn_pl_flowpt2", 
             "", 
-            true)]
+            true, 
+            1)]
         PotFlowerYellow = 185,
         [Structure("Pot, Long Leaf 1", 
             "_mdrn_pl_plant09", 
             "", 
-            true)]
+            true, 
+            1)]
         PotLongLeaf1 = 186,
         [Structure("Pot, Plant, Aloa", 
             "_mdrn_pl_flowspk", 
             "", 
-            true)]
+            true, 
+            1)]
         PotPlantAloa = 187,
         [Structure("Pot, Plant, Tropical", 
             "_mdrn_pl_potplnt", 
             "", 
-            true)]
+            true, 
+            1)]
         PotPlantTropical = 188,
         [Structure("Pot, Urn, Grecian", 
             "_mdrn_pl_flowr02", 
             "", 
-            true)]
+            true, 
+            1)]
         PotUrnGrecian = 189,
         [Structure("Skeleton, Medical Display", 
             "_mdrn_pl_skeleto", 
             "", 
-            true)]
+            true, 
+            1)]
         SkeletonMedicalDisplay = 190,
         [Structure("Chest, Trapezoid (White)", 
             "_mdrn_pl_conta14", 
             "", 
-            true)]
+            true, 
+            1)]
         ChestTrapezoidWhite = 191,
         [Structure("Space Suit (Tan)", 
             "_mdrn_pl_spcest1", 
             "", 
-            true)]
+            true, 
+            1)]
         SpaceSuitTan = 192,
         [Structure("Specimen Tube (Alien)", 
             "_mdrn_pl_alntbea", 
             "", 
-            true)]
+            true, 
+            1)]
         SpecimenTubeAlien = 193,
         [Structure("Specimen Tube, Empty", 
             "_mdrn_pl_tubeemp", 
             "", 
-            true)]
+            true, 
+            1)]
         SpecimenTubeEmpty = 194,
         [Structure("Specimen Tube, Tall", 
             "_mdrn_pl_tube", 
             "", 
-            true)]
+            true, 
+            1)]
         SpecimenTubeTall = 195,
         [Structure("Statue, Bust on Column", 
             "_mdrn_pl_bust", 
             "", 
-            true)]
+            true, 
+            1)]
         StatueBustonColumn = 196,
         [Structure("Statue, Kneeling Man", 
             "_mdrn_pl_statue1", 
             "", 
-            true)]
+            true, 
+            1)]
         StatueKneelingMan = 197,
         [Structure("Statue, Robed Figure /w Staff", 
             "_mdrn_pl_statu11", 
             "", 
-            true)]
+            true, 
+            1)]
         StatueRobedFigurewStaff = 198,
         [Structure("Statue, Senator", 
             "_mdrn_pl_statue2", 
             "", 
-            true)]
+            true, 
+            1)]
         StatueSenator = 199,
         [Structure("Storage Tank, Hemisphere /w Monitor", 
             "_mdrn_pl_machin1", 
             "", 
-            true)]
+            true, 
+            1)]
         StorageTankHemispherewMonitor = 200,
         [Structure("Stuffed Toy, Bantha", 
             "_mdrn_pl_stuffed", 
             "", 
-            true)]
+            true, 
+            1)]
         StuffedToyBantha = 201,
         [Structure("Table, Coffee, Elegant (White)", 
             "_mdrn_pl_table10", 
             "", 
-            true)]
+            true, 
+            1)]
         TableCoffeeElegantWhite = 202,
         [Structure("Table, Conference, Centre Cloth", 
             "_mdrn_pl_cnfrtbl", 
             "", 
-            true)]
+            true, 
+            1)]
         TableConferenceCentreCloth = 203,
         [Structure("Table, Oval, Centre Leg (Dark)", 
             "_mdrn_pl_table15", 
             "", 
-            true)]
+            true, 
+            1)]
         TableOvalCentreLegDark = 204,
         [Structure("Table, Oval, Low (Blue)", 
             "_mdrn_pl_tabl001", 
             "", 
-            true)]
+            true, 
+            1)]
         TableOvalLowBlue = 205,
         [Structure("Table, Round, Low (Blue)", 
             "_mdrn_pl_table19", 
             "", 
-            true)]
+            true, 
+            1)]
         TableRoundLowBlue = 206,
         [Structure("Table, Stone (Blue)", 
             "_mdrn_pl_table24", 
             "", 
-            true)]
+            true, 
+            1)]
         TableStoneBlue = 207,
         [Structure("Table, Stone (Brown)", 
             "_mdrn_pl_table23", 
             "", 
-            true)]
+            true, 
+            1)]
         TableStoneBrown = 208,
         [Structure("Table, Wall, Oval", 
             "_mdrn_pl_table32", 
             "", 
-            true)]
+            true, 
+            1)]
         TableWallOval = 209,
         [Structure("Toilet, White /w Cistern", 
             "_mdrn_pl_toilet", 
             "", 
-            true)]
+            true, 
+            1)]
         ToiletWhitewCistern = 210,
         [Structure("Wall Light, Curved", 
             "_mdrn_pl_lights4", 
             "", 
-            true)]
+            true, 
+            1)]
         WallLightCurved = 211,
         [Structure("Wall Light, Octagon", 
             "_mdrn_pl_lights6", 
             "", 
-            true)]
+            true, 
+            1)]
         WallLightOctagon = 212,
         [Structure("Wardrobe, Curved (White)", 
             "_mdrn_pl_armoir3", 
             "", 
-            true)]
+            true, 
+            1)]
         WardrobeCurvedWhite = 213,
         [Structure("Washbasin, Lever Faucet", 
             "_mdrn_pl_sinka", 
             "", 
-            true)]
+            true, 
+            1)]
         WashbasinLeverFaucet = 214,
         [Structure("Weapon Rack", 
             "_mdrn_pl_weaprck", 
             "", 
-            true)]
+            true,
+            2)]
         WeaponRack = 215,
     }
 
@@ -996,6 +1193,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         public string Description { get; set; }
         public bool IsActive { get; set; }
         public string Resref { get; set; }
+        public int ItemStorage { get; set; }
         public PropertyType RestrictedPropertyTypes { get; set; }
 
         public StructureAttribute(
@@ -1003,6 +1201,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             string resref, 
             string description, 
             bool isActive,
+            int itemStorage,
             PropertyType restrictedPropertyTypes = 
                 PropertyType.Apartment | 
                 PropertyType.Building | 
@@ -1013,6 +1212,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Resref = resref;
             Description = description;
             IsActive = isActive;
+            ItemStorage = itemStorage;
             RestrictedPropertyTypes = restrictedPropertyTypes;
         }
     }

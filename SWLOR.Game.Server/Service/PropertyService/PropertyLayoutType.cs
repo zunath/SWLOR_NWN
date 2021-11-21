@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType.Invalid,
             "Invalid", 
             0,
+            0,
             999999,
             999999,
             "", 
@@ -17,6 +18,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType.Apartment,
             "Small Apartment - Style 1",
             30, 
+            25,
             5000, 
             200,
             "apartment_002", 
@@ -26,6 +28,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType.Apartment,
             "Small Apartment - Style 2", 
             30, 
+            25,
             5000, 
             200,
             "playerap_s_unf", 
@@ -35,6 +38,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType.Apartment,
             "Small Apartment - Style 2 (Furnished)",
             15, 
+            25,
             7000,
             300,
             "playerap_s_fur", 
@@ -44,6 +48,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType.Apartment,
             "Medium Apartment - Style 1",
             50, 
+            40,
             10000, 
             300,
             "apartment_2", 
@@ -53,6 +58,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType.Apartment,
             "Medium Apartment - Style 2", 
             50, 
+            40,
             10000, 
             300,
             "playerap_m_unf", 
@@ -62,6 +68,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType.Apartment,
             "Medium Apartment - Style 2 (Furnished)", 
             25, 
+            40,
             13000, 
             400,
             "playerap_m_fur", 
@@ -71,6 +78,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType.Apartment,
             "Large Apartment - Style 1", 
             70, 
+            80,
             25000, 
             800,
             "apartment_3", 
@@ -80,6 +88,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType.Apartment,
             "Large Apartment - Style 2", 
             70, 
+            80,
             25000, 
             800,
             "playerap_l_unf", 
@@ -89,6 +98,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType.Apartment,
             "Large Apartment - Style 2 (Furnished)",
             35, 
+            80,
             30000, 
             900,
             "playerap_l_fur", 
@@ -99,6 +109,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType.City,
             "City",
             20,
+            0,
             -1,
             -1,
             "",
@@ -112,6 +123,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         public PropertyType PropertyType { get; set; }
         public string Name { get; set; }
         public int StructureLimit { get; set; }
+        public int ItemStorageLimit { get; set; }
         public bool IsActive { get; set; }
         public int InitialPrice { get; set; }
         public int PricePerDay { get; set; }
@@ -121,6 +133,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType propertyType,
             string name,
             int structureLimit,
+            int itemStorageLimit,
             int initialPrice,
             int pricePerDay,
             string areaInstanceResref,
@@ -129,6 +142,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType = propertyType;
             Name = name;
             StructureLimit = structureLimit;
+            ItemStorageLimit = itemStorageLimit;
             InitialPrice = initialPrice;
             PricePerDay = pricePerDay;
             AreaInstanceResref = areaInstanceResref;

@@ -89,7 +89,6 @@ namespace SWLOR.Game.Server.Service
             // Assign the list of permissions associated with each property type.
             _permissionsByPropertyType[PropertyType.Apartment] = new List<PropertyPermissionType>
             {
-                PropertyPermissionType.AdjustPermissions,
                 PropertyPermissionType.EditStructures,
                 PropertyPermissionType.RetrieveStructures,
                 PropertyPermissionType.RenameProperty,
@@ -102,7 +101,6 @@ namespace SWLOR.Game.Server.Service
 
             _permissionsByPropertyType[PropertyType.Building] = new List<PropertyPermissionType>
             {
-                PropertyPermissionType.AdjustPermissions,
                 PropertyPermissionType.EditStructures,
                 PropertyPermissionType.RetrieveStructures,
                 PropertyPermissionType.RenameProperty,
@@ -113,7 +111,6 @@ namespace SWLOR.Game.Server.Service
 
             _permissionsByPropertyType[PropertyType.Starship] = new List<PropertyPermissionType>
             {
-                PropertyPermissionType.AdjustPermissions,
                 PropertyPermissionType.EditStructures,
                 PropertyPermissionType.RetrieveStructures,
                 PropertyPermissionType.RenameProperty,
@@ -123,7 +120,6 @@ namespace SWLOR.Game.Server.Service
 
             _permissionsByPropertyType[PropertyType.City] = new List<PropertyPermissionType>
             {
-                PropertyPermissionType.AdjustPermissions,
                 PropertyPermissionType.EditStructures,
                 PropertyPermissionType.RetrieveStructures,
                 PropertyPermissionType.RenameProperty,
@@ -431,6 +427,8 @@ namespace SWLOR.Game.Server.Service
         public static WorldProperty CreateApartment(uint player, PropertyLayoutType layout)
         {
             var playerId = GetObjectUUID(player);
+            var layoutDetail = GetLayoutByType(layout);
+
             var property = new WorldProperty
             {
                 Timers =
@@ -441,7 +439,8 @@ namespace SWLOR.Game.Server.Service
                 PropertyType = PropertyType.Apartment,
                 OwnerPlayerId = playerId,
                 IsPubliclyAccessible = false,
-                Layout = layout
+                Layout = layout,
+                ItemStorageCount = layoutDetail.ItemStorageLimit
             };
 
             var permissions = new WorldPropertyPermission
@@ -490,6 +489,7 @@ namespace SWLOR.Game.Server.Service
             var structureDetail = GetStructureByType(type);
             var position = GetPositionFromLocation(location);
             var parentProperty = DB.Get<WorldProperty>(parentPropertyId);
+            var structureItemStorage = structureDetail.ItemStorage; // todo: add structure bonus property increases
 
             var structure = new WorldProperty
             {
@@ -500,9 +500,12 @@ namespace SWLOR.Game.Server.Service
                 ParentPropertyId = parentPropertyId,
                 Position = position,
                 Orientation = 0.0f,
-                StructureType = type
+                StructureType = type,
+                ItemStorageCount = structureItemStorage
             };
+            
             parentProperty.ChildPropertyIds.Add(structure.Id);
+            parentProperty.ItemStorageCount += structureItemStorage; 
 
             DB.Set(structure);
             DB.Set(parentProperty);
@@ -890,7 +893,7 @@ namespace SWLOR.Game.Server.Service
             CreateStructure(propertyId, item, structureType, location);
             DestroyObject(item);
 
-            SendMessageToPC(player, $"Furniture Limit: {property.ChildPropertyIds.Count} / {layout.StructureLimit}");
+            SendMessageToPC(player, $"Furniture Limit: {property.ChildPropertyIds.Count+1} / {layout.StructureLimit}");
         }
 
         /// <summary>

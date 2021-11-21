@@ -6,8 +6,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
     {
         [PropertyPermission("Invalid", "Invalid", false)]
         Invalid = 0,
-        [PropertyPermission("Adjust Permissions", "This player can adjust the permissions of other players for this property.", true)]
-        AdjustPermissions = 1,
+
         [PropertyPermission("Edit Structures", "Toggles the ability to place structures and edit their details.", true)]
         EditStructures = 2,
         [PropertyPermission("Retrieve Structures", "Toggles the ability to pick up structures that have already been placed.", true)]

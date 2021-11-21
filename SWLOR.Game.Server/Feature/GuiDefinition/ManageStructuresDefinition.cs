@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+﻿using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
@@ -17,6 +18,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 .AddColumn(col =>
                 {
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .BindText(model => model.Instructions)
+                            .BindColor(model => model.InstructionColor)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetVerticalAlign(NuiVerticalAlign.Middle)
+                            .SetHeight(20f);
+                    });
+
                     col.AddRow(row =>
                     {
                         row.AddList(template =>
@@ -76,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddTextEdit()
                             .BindValue(model => model.StructureName)
-                            .BindIsEnabled(model => model.IsStructureNameEnabled)
+                            .BindIsEnabled(model => model.IsEditStructureEnabled)
                             .SetPlaceholder("Structure Name")
                             .SetMaxLength(32);
                     });
@@ -97,49 +108,56 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetTooltip("Y-Axis +")
                             .BindOnClicked(model => model.OnYAxisUp())
                             .SetWidth(32f)
-                            .SetHeight(32f);
+                            .SetHeight(32f)
+                            .BindIsEnabled(model => model.IsEditStructureEnabled);
 
                         row.AddButtonImage()
                             .SetImageResref("arrow_down")
                             .SetTooltip("Y-Axis -")
                             .BindOnClicked(model => model.OnYAxisDown())
                             .SetWidth(32f)
-                            .SetHeight(32f);
+                            .SetHeight(32f)
+                            .BindIsEnabled(model => model.IsEditStructureEnabled);
 
                         row.AddButtonImage()
                             .SetImageResref("arrow_right")
                             .SetTooltip("X-Axis +")
                             .BindOnClicked(model => model.OnXAxisUp())
                             .SetWidth(32f)
-                            .SetHeight(32f);
+                            .SetHeight(32f)
+                            .BindIsEnabled(model => model.IsEditStructureEnabled);
 
                         row.AddButtonImage()
                             .SetImageResref("arrow_left")
                             .SetTooltip("X-Axis -")
                             .BindOnClicked(model => model.OnXAxisDown())
                             .SetWidth(32f)
-                            .SetHeight(32f);
+                            .SetHeight(32f)
+                            .BindIsEnabled(model => model.IsEditStructureEnabled);
 
                         row.AddButtonImage()
                             .SetImageResref("arrow_zup")
                             .SetTooltip("Z-Axis +")
                             .BindOnClicked(model => model.OnZAxisUp())
                             .SetWidth(32f)
-                            .SetHeight(32f);
+                            .SetHeight(32f)
+                            .BindIsEnabled(model => model.IsEditStructureEnabled);
 
                         row.AddButtonImage()
                             .SetImageResref("arrow_zdown")
                             .SetTooltip("Z-Axis -")
                             .BindOnClicked(model => model.OnZAxisDown())
                             .SetWidth(32f)
-                            .SetHeight(32f);
+                            .SetHeight(32f)
+                            .BindIsEnabled(model => model.IsEditStructureEnabled);
 
                         row.AddButtonImage()
                             .SetImageResref("level")
                             .SetTooltip("Z-Axis Reset")
                             .BindOnClicked(model => model.OnZAxisReset())
                             .SetWidth(32f)
-                            .SetHeight(32f);
+                            .SetHeight(32f)
+                            .BindIsEnabled(model => model.IsEditStructureEnabled);
 
                         row.AddSpacer();
                     });
@@ -160,42 +178,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetTooltip("Clockwise")
                             .BindOnClicked(model => model.OnRotateClockwise())
                             .SetWidth(32f)
-                            .SetHeight(32f);
+                            .SetHeight(32f)
+                            .BindIsEnabled(model => model.IsEditStructureEnabled);
 
                         row.AddButtonImage()
                             .SetImageResref("counterclockwise")
                             .SetTooltip("Counter-Clockwise")
                             .BindOnClicked(model => model.OnRotateCounterClockwise())
                             .SetWidth(32f)
-                            .SetHeight(32f);
+                            .SetHeight(32f)
+                            .BindIsEnabled(model => model.IsEditStructureEnabled);
 
                         row.AddButtonImage()
                             .SetImageResref("north")
                             .SetTooltip("North")
                             .BindOnClicked(model => model.OnSetFacingNorth())
                             .SetWidth(32f)
-                            .SetHeight(32f);
+                            .SetHeight(32f)
+                            .BindIsEnabled(model => model.IsEditStructureEnabled);
 
                         row.AddButtonImage()
                             .SetImageResref("south")
                             .SetTooltip("South")
                             .BindOnClicked(model => model.OnSetFacingSouth())
                             .SetWidth(32f)
-                            .SetHeight(32f);
+                            .SetHeight(32f)
+                            .BindIsEnabled(model => model.IsEditStructureEnabled);
                         
                         row.AddButtonImage()
                             .SetImageResref("east")
                             .SetTooltip("East")
                             .BindOnClicked(model => model.OnSetFacingEast())
                             .SetWidth(32f)
-                            .SetHeight(32f);
+                            .SetHeight(32f)
+                            .BindIsEnabled(model => model.IsEditStructureEnabled);
 
                         row.AddButtonImage()
                             .SetImageResref("west")
                             .SetTooltip("West")
                             .BindOnClicked(model => model.OnSetFacingWest())
                             .SetWidth(32f)
-                            .SetHeight(32f);
+                            .SetHeight(32f)
+                            .BindIsEnabled(model => model.IsEditStructureEnabled);
 
                         row.AddSpacer();
                     });
@@ -210,13 +234,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddButton()
                             .SetText("Save Changes")
                             .BindOnClicked(model => model.OnSaveChanges())
-                            .BindIsEnabled(model => model.IsStructureNameEnabled)
+                            .BindIsEnabled(model => model.IsEditStructureEnabled)
                             .SetHeight(35f);
 
                         row.AddButton()
                             .SetText("Discard Changes")
                             .BindOnClicked(model => model.OnDiscardChanges())
-                            .BindIsEnabled(model => model.IsStructureNameEnabled)
+                            .BindIsEnabled(model => model.IsEditStructureEnabled)
                             .SetHeight(35f);
                     });
 

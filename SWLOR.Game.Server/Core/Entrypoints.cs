@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using OpenTelemetry;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using SWLOR.Game.Server.Core.Async;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
@@ -44,15 +47,9 @@ namespace SWLOR.Game.Server.Core
 
             try
             {
-                using (new Profiler($"{nameof(Entrypoints)}:TaskRunner"))
-                {
-                    NwTask.MainThreadSynchronizationContext.Update();
-                }
+                NwTask.MainThreadSynchronizationContext.Update();
                 
-                using (new Profiler($"{nameof(Entrypoints)}:Scheduler.Process()"))
-                {
-                    Scheduler.Process();
-                }
+                Scheduler.Process();
             }
             catch (Exception ex)
             {
@@ -86,12 +83,13 @@ namespace SWLOR.Game.Server.Core
         //
         public static void OnStart()
         {
-            using (new Profiler(nameof(OnStart)))
-            {
-                Console.WriteLine("Registering scripts...");
-                LoadHandlersFromAssembly();
-                Console.WriteLine("Scripts registered successfully.");
-            }
+            Console.WriteLine("Setup tracing");
+
+            _ = Metrics.Initialize();
+
+            Console.WriteLine("Registering scripts...");
+            LoadHandlersFromAssembly();
+            Console.WriteLine("Scripts registered successfully.");
         }
 
         //
@@ -128,11 +126,9 @@ namespace SWLOR.Game.Server.Core
                 {
                     foreach (var action in _conditionalScripts[script])
                     {
-                        using (new Profiler(action.Name))
-                        {
-                            var actionResult = action.Action.Invoke();
-                            if (result) result = actionResult;
-                        }
+                        var actionResult = action.Action.Invoke();
+                        if (result) result = actionResult;
+                        
                     }
                 }
 
@@ -146,10 +142,8 @@ namespace SWLOR.Game.Server.Core
                     {
                         try
                         {
-                            using (new Profiler(action.Name))
-                            {
-                                action.Action();
-                            }
+                            action.Action();
+                            
                         }
                         catch (Exception ex)
                         {
@@ -168,6 +162,9 @@ namespace SWLOR.Game.Server.Core
 
         private static void LoadHandlersFromAssembly()
         {
+            var a = Metrics.Create("LoadHandlersFromAssembly");
+            a.Start();
+
             _scripts = new Dictionary<string, List<ActionScript>>();
             _conditionalScripts = new Dictionary<string, List<ConditionalScript>>();
 
@@ -182,6 +179,9 @@ namespace SWLOR.Game.Server.Core
                 foreach (var attr in mi.GetCustomAttributes(typeof(NWNEventHandler), false))
                 {
                     var script = ((NWNEventHandler)attr).Script;
+                    var a2 = Metrics.Create($"load-{script}", a.Context);
+                    a2.Start();
+
                     if (script.Length > MaxCharsInScriptName || script.Length == 0)
                     {
                         Console.WriteLine($"Script name '{script}' is invalid on method {mi.Name}.");
@@ -221,8 +221,11 @@ namespace SWLOR.Game.Server.Core
                         Log.Write(LogGroup.Error, $"Method '{mi.Name}' tied to script '{script}' has an invalid return type. This script was NOT loaded.", true);
                     }
 
+                    a2.Stop();
                 }
             }
+
+            a.Stop();
         }
 
         /// <summary>
@@ -232,15 +235,12 @@ namespace SWLOR.Game.Server.Core
         /// </summary>
         private static void RunOneSecondPCIntervalEvent()
         {
-            using (new Profiler(nameof(RunOneSecondPCIntervalEvent)))
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
-                for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
-                {
-                    var oldObjectSelf = Internal.OBJECT_SELF;
-                    Internal.OBJECT_SELF = player;
-                    RunScripts("interval_pc_1s");
-                    Internal.OBJECT_SELF = oldObjectSelf;
-                }
+                var oldObjectSelf = Internal.OBJECT_SELF;
+                Internal.OBJECT_SELF = player;
+                RunScripts("interval_pc_1s");
+                Internal.OBJECT_SELF = oldObjectSelf;
             }
         }
     }

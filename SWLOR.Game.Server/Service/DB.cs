@@ -202,18 +202,19 @@ namespace SWLOR.Game.Server.Service
             {
                 RedisValue data;
 
-                using (new Profiler("RedisGet"))
-                {
-                    data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{key}").ToString();
-                }
+                var redisActivity = Metrics.Create("redis-access");
+                redisActivity.Start();
+                
+                data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{key}").ToString();
+                
+                redisActivity.Stop();
+
 
                 if (string.IsNullOrWhiteSpace(data))
                     return default;
 
-                using (new Profiler("Deserialization"))
-                {
-                    return JsonConvert.DeserializeObject<T>(data);
-                }
+                
+                return JsonConvert.DeserializeObject<T>(data);                
             }
         }
 

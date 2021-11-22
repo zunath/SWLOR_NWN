@@ -11,8 +11,8 @@ services:
             - "6379:6379"
         networks:
             swlor_network:
-                ipv4_address: 172.22.0.100
                 
+
     redis-commander:
         container_name: redis-commander
         hostname: redis-commander
@@ -26,29 +26,17 @@ services:
             - "8081:8081"
         networks:
             swlor_network:
-                ipv4_address: 172.22.0.99
+  
 
-    influxdb:
-        hostname: influxdb
-        image: influxdb:1.7
+    prometheus: 
+        hostname: prometheus
+        image: prom/prometheus
         restart: unless-stopped
-        environment:
-            - INFLUXDB_DB=metrics
-            - INFLUXDB_ADMIN_USER=admin
-            - INFLUXDB_ADMIN_PASSWORD=admin
-            - INFLUXDB_USER=docker
-            - INFLUXDB_USER_PASSWORD=docker
-            - INFLUXDB_UDP_ENABLED=true
-            - INFLUXDB_UDP_BIND_ADDRESS=:8089
-            - INFLUXDB_UDP_DATABASE=metrics
-        volumes:
-        - ${PWD-.}/influxdb:/var/lib/influxdb
-        logging:
-            driver: "none"
+        ports:
+            - "9090:9090"        
         networks:
             swlor_network:
-                ipv4_address: 172.22.0.102
-            
+
     grafana:
         hostname: grafana
         image: grafana/grafana:6.0.1
@@ -58,13 +46,13 @@ services:
         ports:
             - "3000:3000"
         depends_on:
-            - influxdb
+            - prometheus
         volumes:
             - ./grafana-provisioning:/etc/grafana/provisioning
         networks:
             swlor_network:
-                ipv4_address: 172.22.0.103
             
+
     swlor-server:
         hostname: nwnx-server
         image: nwnxee/unified:latest
@@ -73,6 +61,7 @@ services:
         tty: true
         depends_on:
             - redis
+            - prometheus
         volumes:
             - ${PWD-.}/logs:/nwn/run/logs.0
             - ${PWD-.}/:/nwn/home
@@ -82,11 +71,7 @@ services:
             - "5121:5121/udp"
         networks:
           swlor_network:
-            ipv4_address: 172.22.0.101
-            
+         
+          
 networks:
     swlor_network:
-        ipam:
-            driver: default
-            config:
-                - subnet: 172.22.0.0/16

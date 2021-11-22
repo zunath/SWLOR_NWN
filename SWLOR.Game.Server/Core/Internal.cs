@@ -1,3 +1,4 @@
+using OpenTelemetry.Trace;
 using System;
 using System.Collections.Generic;
 
@@ -31,16 +32,26 @@ namespace SWLOR.Game.Server.Core
             var ret = 0;
             OBJECT_SELF = oidSelf;
             ScriptContexts.Push(new ScriptContext { OwnerObject = oidSelf, ScriptName = script });
+            var activity = Metrics.Create(script);
             try
             {
+                activity?.Start();
                 ret = Entrypoints.OnRunScript(script, oidSelf);
             }
             catch (Exception e)
             {
+                activity?.SetTag("otel.status_code", StatusCode.Error);
                 Console.WriteLine(e.ToString());
+            } 
+            finally
+            {
+                ScriptContexts.Pop();
+                OBJECT_SELF = ScriptContexts.Count == 0 ? OBJECT_INVALID : ScriptContexts.Peek().OwnerObject;
+
+                activity?.SetTag("OBJECT_SELF", OBJECT_SELF);
+                activity?.Stop();
             }
-            ScriptContexts.Pop();
-            OBJECT_SELF = ScriptContexts.Count == 0 ? OBJECT_INVALID : ScriptContexts.Peek().OwnerObject;
+
             return ret;
         }
 

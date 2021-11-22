@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         DualWieldingStance,
         DualWieldingStance2,
         CastOutAnimation,
-        LoopingCustom65,
+        ForceLeap,
         LoopingCustom66,
         LoopingCustom67,
         LoopingCustom68,

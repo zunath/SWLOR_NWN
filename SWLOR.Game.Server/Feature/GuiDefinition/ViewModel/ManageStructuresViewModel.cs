@@ -193,7 +193,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsEditStructureEnabled = false;
             IsManagePropertyEnabled = false;
             IsRetrieveStructureEnabled = false;
-            IsOpenStorageEnabled = false;
 
             if (permission != null)
             {
@@ -204,8 +203,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                                           permission.Permissions[PropertyPermissionType.RenameProperty] ||
                                           permission.Permissions[PropertyPermissionType.ChangeDescription] ||
                                           permission.GrantPermissions.Any(x => x.Value);
-                IsOpenStorageEnabled = permission.Permissions[PropertyPermissionType.AccessStorage];
             }
+
+            // Item storage permissions
+            var area = GetArea(Player);
+            var propertyId = Property.GetPropertyId(area);
+            var playerId = GetObjectUUID(Player);
+            var permissions = Property.GetCategoryPermissions(playerId, propertyId);
+
+            IsOpenStorageEnabled = permissions.Count > 0;
         }
 
         protected override void Initialize(GuiPayloadBase initialPayload)

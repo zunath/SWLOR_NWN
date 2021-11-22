@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Stores a specific object in the database by an arbitrary key.
+        /// Stores a specific object in the database by its Id.
         /// </summary>
         /// <typeparam name="T">The type of data to store</typeparam>
         /// <param name="entity">The data to store.</param>

@@ -155,7 +155,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindOnClicked(model => model.OnCancelLease())
                                 .SetHeight(35f)
                                 .SetWidth(250f)
-                                .BindIsEnabled(model => model.IsCancelLeaseEnabled);
+                                .BindIsEnabled(model => model.IsCancelLeaseEnabled)
+                                .BindIsVisible(model => model.IsAtTerminal);
                         });
                     });
 

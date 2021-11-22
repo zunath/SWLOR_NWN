@@ -79,7 +79,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var query = new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.OwnerPlayerId), playerId, false)
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment);
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment)
+                .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
             var dbApartment = DB.Search(query).FirstOrDefault();
 
             return dbApartment == null;
@@ -170,6 +171,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Property.EnterProperty(Player, property.Id);
 
                     Gui.TogglePlayerWindow(Player, GuiWindowType.RentApartment);
+
+                    if (Gui.IsWindowOpen(Player, GuiWindowType.ManageApartment))
+                    {
+                        Gui.TogglePlayerWindow(Player, GuiWindowType.ManageApartment);
+                    }
                 });
         };
 

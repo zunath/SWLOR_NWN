@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.HousingService;
 using SWLOR.Game.Server.Service.PropertyService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -25,7 +24,6 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<string, uint> _instanceTemplates = new();
         private static readonly Dictionary<string, uint> _propertyInstances = new();
-        private static readonly Dictionary<string, Location> _propertyInstancesEntrances = new();
         private static readonly Dictionary<PropertyType, List<PropertyPermissionType>> _permissionsByPropertyType = new();
 
         private static readonly Dictionary<string, uint> _structurePropertyIdToPlaceable = new();
@@ -92,7 +90,6 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.EditStructures,
                 PropertyPermissionType.RetrieveStructures,
                 PropertyPermissionType.RenameProperty,
-                PropertyPermissionType.AccessStorage,
                 PropertyPermissionType.ExtendLease,
                 PropertyPermissionType.CancelLease,
                 PropertyPermissionType.EnterProperty,
@@ -104,7 +101,6 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.EditStructures,
                 PropertyPermissionType.RetrieveStructures,
                 PropertyPermissionType.RenameProperty,
-                PropertyPermissionType.AccessStorage,
                 PropertyPermissionType.EnterProperty,
                 PropertyPermissionType.ChangeDescription
             };
@@ -127,6 +123,12 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.CancelLease,
                 PropertyPermissionType.EnterProperty,
                 PropertyPermissionType.ChangeDescription
+            };
+
+            _permissionsByPropertyType[PropertyType.Category] = new List<PropertyPermissionType>
+            {
+                PropertyPermissionType.AccessStorage,
+                PropertyPermissionType.EditStorageCategories
             };
         }
 
@@ -218,16 +220,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Unregisters an area instance for a given property Id.
-        /// </summary>
-        /// <param name="propertyId">The property Id</param>
-        public static void UnregisterInstance(string propertyId)
-        {
-            _propertyInstances.Remove(propertyId);
-            _propertyInstancesEntrances.Remove(propertyId);
-        }
-
-        /// <summary>
         /// Retrieves the instanced area associated with a specific property Id.
         /// </summary>
         /// <param name="propertyId">The property Id</param>
@@ -281,6 +273,7 @@ namespace SWLOR.Game.Server.Service
 
         private static void DeleteProperty(WorldProperty property)
         {
+            // Recursively clear any children properties tied to this property.
             if (property.ChildPropertyIds.Count > 0)
             {
                 var query = new DBQuery<WorldProperty>()
@@ -293,6 +286,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            // Clear permissions for the property.
             var permissionsQuery = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), property.Id, false);
             var permissions = DB.Search(permissionsQuery);
@@ -303,6 +297,34 @@ namespace SWLOR.Game.Server.Service
                 Log.Write(LogGroup.Property, $"Deleted property permission for property '{permission.PropertyId}' and player '{permission.PlayerId}'.");
             }
 
+            // Clear item categories and their permissions
+            var categoriesQuery = new DBQuery<WorldPropertyCategory>()
+                .AddFieldSearch(nameof(WorldPropertyCategory.ParentPropertyId), property.Id, false);
+            var categories = DB.Search(categoriesQuery).ToList();
+            var categoryPropertyIds = categories.Select(s => s.Id).ToList();
+
+            // Clear any permissions tied to categories.
+            if (categoryPropertyIds.Count > 0)
+            {
+                permissionsQuery = new DBQuery<WorldPropertyPermission>()
+                    .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), categoryPropertyIds);
+                permissions = DB.Search(permissionsQuery).ToList();
+
+                foreach (var permission in permissions)
+                {
+                    DB.Delete<WorldPropertyPermission>(permission.Id);
+                    Log.Write(LogGroup.Property, $"Deleted property permission for category '{permission.PropertyId}'.");
+                }
+            }
+
+            // Clear the actual categories (and any associated items)
+            foreach (var category in categories)
+            {
+                DB.Delete<WorldPropertyCategory>(category.Id);
+                Log.Write(LogGroup.Property, $"Deleted property category '{category.Name}', id: '{category.Id}' from property '{category.ParentPropertyId}'");
+            }
+
+            // Finally delete the entire property.
             DB.Delete<WorldProperty>(property.Id);
             Log.Write(LogGroup.Property, $"Property '{property.CustomName}' deleted.");
         }
@@ -419,6 +441,37 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Creates a list of default item categories for use in freshly made properties.
+        /// </summary>
+        /// <returns>A list of categories</returns>
+        private static List<WorldPropertyCategory> CreateDefaultCategories(string parentPropertyId)
+        {
+            return new List<WorldPropertyCategory>
+            {
+                new WorldPropertyCategory
+                {
+                    ParentPropertyId = parentPropertyId,
+                    Name = "Weapons"
+                },
+                new WorldPropertyCategory
+                {
+                    ParentPropertyId = parentPropertyId,
+                    Name = "Armor"
+                },
+                new WorldPropertyCategory
+                {
+                    ParentPropertyId = parentPropertyId,
+                    Name = "Crafting"
+                },
+                new WorldPropertyCategory
+                {
+                    ParentPropertyId = parentPropertyId,
+                    Name = "Miscellaneous"
+                },
+            };
+        }
+
+        /// <summary>
         /// Creates a new apartment in the database for a given player.
         /// </summary>
         /// <param name="player">The player to associate the apartment with.</param>
@@ -426,7 +479,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The new world property.</returns>
         public static WorldProperty CreateApartment(uint player, PropertyLayoutType layout)
         {
-            var playerId = GetObjectUUID(player);
+            var ownerId = GetObjectUUID(player);
             var layoutDetail = GetLayoutByType(layout);
 
             var property = new WorldProperty
@@ -437,7 +490,7 @@ namespace SWLOR.Game.Server.Service
                 },
                 CustomName = $"{GetName(player)}'s Apartment",
                 PropertyType = PropertyType.Apartment,
-                OwnerPlayerId = playerId,
+                OwnerPlayerId = ownerId,
                 IsPubliclyAccessible = false,
                 Layout = layout,
                 ItemStorageCount = layoutDetail.ItemStorageLimit
@@ -446,7 +499,7 @@ namespace SWLOR.Game.Server.Service
             var permissions = new WorldPropertyPermission
             {
                 PropertyId = property.Id,
-                PlayerId = playerId
+                PlayerId = ownerId
             };
             
             foreach (var permission in _permissionsByPropertyType[PropertyType.Apartment])
@@ -457,6 +510,26 @@ namespace SWLOR.Game.Server.Service
 
             DB.Set(property);
             DB.Set(permissions);
+
+            // Create the default item storage categories and give permission to the owner for all categories.
+            foreach (var category in CreateDefaultCategories(property.Id))
+            {
+                DB.Set(category);
+
+                var categoryPermission = new WorldPropertyPermission
+                {
+                    PropertyId = category.Id,
+                    PlayerId = ownerId
+                };
+
+                foreach (var permission in _permissionsByPropertyType[PropertyType.Category])
+                {
+                    categoryPermission.Permissions[permission] = true;
+                    categoryPermission.GrantPermissions[permission] = true;
+                }
+
+                DB.Set(categoryPermission);
+            }
 
             SpawnIntoWorld(property, OBJECT_INVALID);
 
@@ -515,6 +588,27 @@ namespace SWLOR.Game.Server.Service
             AssignPropertyId(placeable, structure.Id);
 
             _structurePropertyIdToPlaceable[structure.Id] = placeable;
+        }
+
+        /// <summary>
+        /// Retrieves a list of permissions associated with the item storage of a property for a given player.
+        /// </summary>
+        /// <param name="playerId">The player Id to search for</param>
+        /// <param name="propertyId">The property Id to search for</param>
+        /// <returns>A list of permissions</returns>
+        public static List<WorldPropertyPermission> GetCategoryPermissions(string playerId, string propertyId)
+        {
+            var categoriesQuery = new DBQuery<WorldPropertyCategory>()
+                .AddFieldSearch(nameof(WorldPropertyCategory.ParentPropertyId), propertyId, false);
+            var categories = DB.Search(categoriesQuery).ToList();
+            var categoryIds = categories.Select(s => s.Id).ToList();
+
+            var permissionQuery = new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), categoryIds)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
+            var permissions = DB.Search(permissionQuery);
+
+            return permissions.ToList();
         }
 
         /// <summary>

@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         Building = 2,
         Starship = 4,
         City = 8,
-        Structure = 16
+        Structure = 16,
+        Category = 32
     }
 }

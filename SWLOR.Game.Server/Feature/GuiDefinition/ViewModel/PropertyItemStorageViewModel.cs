@@ -406,7 +406,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnExamineItem() => () =>
         {
+            var index = NuiGetEventArrayIndex();
+            var categoryId = _categoryIds[SelectedCategoryIndex];
+            var itemId = _itemIds[index];
+            var category = DB.Get<WorldPropertyCategory>(categoryId);
 
+            if (!category.Items.ContainsKey(itemId))
+            {
+                Instructions = "Item no longer in storage.";
+                InstructionsColor = _red;
+                return;
+            }
+
+            var dbItem = category.Items[itemId];
+            var item = ObjectPlugin.Deserialize(dbItem.Data);
+            var payload = new ExamineItemPayload(GetName(item), GetDescription(item), Item.BuildItemPropertyString(item));
+            Gui.TogglePlayerWindow(Player, GuiWindowType.ExamineItem, payload);
+            DestroyObject(item);
         };
 
         public Action OnSelectCategory() => () =>

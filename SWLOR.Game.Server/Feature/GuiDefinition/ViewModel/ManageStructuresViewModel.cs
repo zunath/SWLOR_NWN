@@ -377,6 +377,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (itemCount > parentProperty.ItemStorageCount - structure.ItemStorageCount)
                 {
                     Instructions = $"Remove items from storage first.";
+                    InstructionColor = _red;
                     return;
                 }
                 

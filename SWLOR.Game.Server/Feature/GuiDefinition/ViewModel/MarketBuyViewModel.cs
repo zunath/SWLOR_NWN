@@ -264,8 +264,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbItem = DB.Get<MarketItem>(itemId);
 
             var item = ObjectPlugin.Deserialize(dbItem.Data);
-            SetLocalObject(Player, "EXAMINE_ITEM_WINDOW_TARGET", item);
-            Gui.TogglePlayerWindow(Player, GuiWindowType.ExamineItem);
+            var payload = new ExamineItemPayload(GetName(item), GetDescription(item), Item.BuildItemPropertyString(item));
+            Gui.TogglePlayerWindow(Player, GuiWindowType.ExamineItem, payload);
+            DestroyObject(item);
         };
 
         public Action OnClickBuy() => () =>

@@ -410,6 +410,23 @@ namespace SWLOR.Game.Server.Service
             return _windowTemplates[type];
         }
 
+        /// <summary>
+        /// When a player enters an area, close all NUI windows.
+        /// </summary>
+        [NWNEventHandler("area_enter")]
+        public static void CloseAllWindows()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            foreach (var (type, _) in _windowTemplates)
+            {
+                if(IsWindowOpen(player, type))
+                    TogglePlayerWindow(player, type);
+            }
+        }
+
         public class IdReservation
         {
             public int Count { get; set; }

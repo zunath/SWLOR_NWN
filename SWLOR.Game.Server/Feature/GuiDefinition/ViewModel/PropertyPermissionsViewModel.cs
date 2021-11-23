@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static readonly GuiColor _red = new GuiColor(255, 0, 0);
         private static readonly GuiColor _green = new GuiColor(0, 255, 0);
 
+        private bool _isCategory;
+        private PropertyType _propertyType;
+
         private string PropertyId { get; set; }
         private List<PropertyPermissionType> AvailablePermissions { get; set; }
         private int SelectedPlayerIndex { get; set; }
@@ -107,8 +110,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 PropertyId = PropertyId,
                 PlayerId = targetPlayerId,
-                Permissions = Property.GetPermissionsByPropertyType(PropertyType.Apartment).ToDictionary(x => x, _ => false),
-                GrantPermissions = Property.GetPermissionsByPropertyType(PropertyType.Apartment).ToDictionary(x => x, _ => false)
+                Permissions = Property.GetPermissionsByPropertyType(_propertyType).ToDictionary(x => x, _ => false),
+                GrantPermissions = Property.GetPermissionsByPropertyType(_propertyType).ToDictionary(x => x, _ => false)
             };
         }
 
@@ -147,7 +150,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var targetPlayerId = _playerIds[SelectedPlayerIndex];
             
             var dbPlayer = DB.Get<Player>(targetPlayerId);
-            var dbProperty = DB.Get<WorldProperty>(PropertyId);
             var grantorPermissions = DB.Search(new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false))
@@ -167,6 +169,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             PlayerName = dbPlayer.Name;
 
+            string ownerPlayerId;
+            if (_isCategory)
+            {
+                var dbCategory = DB.Get<WorldPropertyCategory>(PropertyId);
+                var dbProperty = DB.Get<WorldProperty>(dbCategory.ParentPropertyId);
+                ownerPlayerId = dbProperty.OwnerPlayerId;
+            }
+            else
+            {
+                var dbProperty = DB.Get<WorldProperty>(PropertyId);
+                ownerPlayerId = dbProperty.OwnerPlayerId;
+            }
+
             foreach (var type in AvailablePermissions)
             {
                 var permission = Property.GetPermissionByType(type);
@@ -176,12 +191,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 permissionStates.Add(targetPermissions.Permissions[type]);
                 permissionGrantingStates.Add(targetPermissions.GrantPermissions[type]);
 
-                if(CanAdjustPermission(grantorPermissions, targetPermissions, type, targetPlayerId, dbProperty.OwnerPlayerId)) 
+                if(CanAdjustPermission(grantorPermissions, targetPermissions, type, targetPlayerId, ownerPlayerId)) 
                     permissionEnabled.Add(true);
                 else
                     permissionEnabled.Add(false);
 
-                if(CanAdjustGrantPermission(grantorPermissions, type, targetPlayerId, dbProperty.OwnerPlayerId))
+                if(CanAdjustGrantPermission(grantorPermissions, type, targetPlayerId, ownerPlayerId))
                     grantPermissionEnabled.Add(true);
                 else
                     grantPermissionEnabled.Add(false);
@@ -201,11 +216,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PropertyId = initialPayload.PropertyId;
             SearchText = string.Empty;
             _playerIds.Clear();
+            _isCategory = initialPayload.IsCategory;
+            _propertyType = initialPayload.PropertyType;
 
             AvailablePermissions = initialPayload.AvailablePermissions;
 
-            var property = DB.Get<WorldProperty>(PropertyId);
-            PropertyName = property.CustomName;
+            if (_isCategory)
+            {
+                var category = DB.Get<WorldPropertyCategory>(PropertyId);
+                PropertyName = category.Name;
+            }
+            else
+            {
+                var property = DB.Get<WorldProperty>(PropertyId);
+                PropertyName = property.CustomName;
+            }
+
             PlayerNames = new GuiBindingList<string>();
             PlayerToggles = new GuiBindingList<bool>();
             PermissionStates = new GuiBindingList<bool>();

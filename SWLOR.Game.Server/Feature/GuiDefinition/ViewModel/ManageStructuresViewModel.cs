@@ -368,8 +368,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 // Removing this structure would reduce the item storage cap below the number of items actually
-                // in storage. 
-                if (parentProperty.ItemStorage.Count > parentProperty.ItemStorageCount - structure.ItemStorageCount)
+                // in storage.
+                var query = new DBQuery<WorldPropertyCategory>()
+                    .AddFieldSearch(nameof(WorldPropertyCategory.ParentPropertyId), structure.ParentPropertyId, false);
+                var categories = DB.Search(query).ToList();
+                var itemCount = categories.Sum(x => x.Items.Count);
+
+                if (itemCount > parentProperty.ItemStorageCount - structure.ItemStorageCount)
                 {
                     Instructions = $"Remove items from storage first.";
                     return;

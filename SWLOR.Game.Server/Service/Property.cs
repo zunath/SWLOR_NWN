@@ -93,7 +93,8 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.ExtendLease,
                 PropertyPermissionType.CancelLease,
                 PropertyPermissionType.EnterProperty,
-                PropertyPermissionType.ChangeDescription
+                PropertyPermissionType.ChangeDescription,
+                PropertyPermissionType.EditStorageCategories
             };
 
             _permissionsByPropertyType[PropertyType.Building] = new List<PropertyPermissionType>
@@ -102,7 +103,8 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.RetrieveStructures,
                 PropertyPermissionType.RenameProperty,
                 PropertyPermissionType.EnterProperty,
-                PropertyPermissionType.ChangeDescription
+                PropertyPermissionType.ChangeDescription,
+                PropertyPermissionType.EditStorageCategories
             };
 
             _permissionsByPropertyType[PropertyType.Starship] = new List<PropertyPermissionType>
@@ -111,7 +113,8 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.RetrieveStructures,
                 PropertyPermissionType.RenameProperty,
                 PropertyPermissionType.EnterProperty,
-                PropertyPermissionType.ChangeDescription
+                PropertyPermissionType.ChangeDescription,
+                PropertyPermissionType.EditStorageCategories
             };
 
             _permissionsByPropertyType[PropertyType.City] = new List<PropertyPermissionType>
@@ -127,8 +130,7 @@ namespace SWLOR.Game.Server.Service
 
             _permissionsByPropertyType[PropertyType.Category] = new List<PropertyPermissionType>
             {
-                PropertyPermissionType.AccessStorage,
-                PropertyPermissionType.EditStorageCategories
+                PropertyPermissionType.AccessStorage
             };
         }
 

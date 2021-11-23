@@ -18,7 +18,6 @@ namespace SWLOR.Game.Server.Entity
             ParentPropertyId = string.Empty;
             ChildPropertyIds = new List<string>();
             Timers = new Dictionary<PropertyTimerType, DateTime>();
-            ItemStorage = new Dictionary<string, string>();
         }
 
         /// <summary>
@@ -111,8 +110,6 @@ namespace SWLOR.Game.Server.Entity
         /// For Structures, this is how much storage they increase to their parent property.
         /// </summary>
         public int ItemStorageCount { get; set; }
-
-        public Dictionary<string, string> ItemStorage { get; set; }
 
     }
 }

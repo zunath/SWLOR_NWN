@@ -234,6 +234,17 @@
                     },
                     "RESREF": {
                       "type": "resref",
+                      "value": "dacbainoutfit_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dac Baine's Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
                       "value": "item027"
                     }
                   },
@@ -1771,6 +1782,22 @@
               "ID": {
                 "type": "byte",
                 "value": 7
+              },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poor Heavy Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pr_heavy_helm"
+                    }
+                  }
+                ]
               },
               "STRREF": {
                 "type": "dword",
@@ -3495,6 +3522,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "sanddemonbite"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Sand Worm Bite"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "sandwormbite"
                     }
                   },
                   {
@@ -15926,6 +15964,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Rief's Heavy Blaster"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item035"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rief's Outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "item030"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Submit Items"
                     },
                     "RESREF": {
@@ -17498,6 +17558,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Nulaa's Saber"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "pil_nulaasaber"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Ophidian Staff"
                     },
                     "RESREF": {
@@ -18018,6 +18089,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Dac's Flakgun"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "dakflakgun005"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Republic Commander Rifle"
                           },
                           "RESREF": {
@@ -18193,6 +18275,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "blaster_006"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Dac's Custom Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "blaster_008"
                           }
                         },
                         {

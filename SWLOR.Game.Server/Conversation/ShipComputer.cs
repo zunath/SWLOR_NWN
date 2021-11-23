@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Conversation
             PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
             BaseStructure baseStructure = DataService.BaseStructure.GetByID(structure.BaseStructureID);
 
-            NWPlaceable bay = SpaceService.GetCargoBay(GetPC().Area, null);
+            NWPlaceable bay = SpaceService.GetCargoBay(GetPC().Area, GetPC());
 
             int currentReinforcedFuel = pcBase.ReinforcedFuel;
             int currentFuel = pcBase.Fuel;

@@ -360,7 +360,7 @@ namespace SWLOR.Game.Server.Service
             return location.Substring(0, hyphen);            
         }
 
-        public static NWPlaceable GetCargoBay(NWArea starship, NWPlayer player)
+        public static NWPlaceable GetCargoBay(NWArea starship, NWCreature player)
         {
             if (starship == null || !starship.IsValid)
             {
@@ -386,6 +386,8 @@ namespace SWLOR.Game.Server.Service
             Guid structureID = new Guid(starship.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structureItems = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structureID);
             
+            // Note: the code to generate a valid location now generates an invalid location on most maps.  Worked around by always 
+            // providing a player object in the methods that call this one.
             NWLocation location = (player != null ? player.Location : (NWLocation) _.Location(starship, _.Vector3(1, 1, 0), 0));
             bay = _.CreateObject(ObjectType.Placeable, "resource_bay", location);
 
@@ -415,7 +417,7 @@ namespace SWLOR.Game.Server.Service
             Guid baseStructureGuid = new Guid(baseStructureID);
             PCBaseStructure structure = DataService.PCBaseStructure.GetByID(baseStructureGuid);
             PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
-            NWPlaceable bay = GetCargoBay(area, null);
+            NWPlaceable bay = GetCargoBay(area, ship);
 
             ship.SetLocalInt("WEAPONS", stats.weapons + GetCargoBonus(bay, ItemPropertyType.StarshipWeaponsBonus));
             ship.SetLocalInt("SHIELDS", stats.shields + GetCargoBonus(bay, ItemPropertyType.StarshipShieldsBonus));
@@ -759,7 +761,7 @@ namespace SWLOR.Game.Server.Service
             var shipAppearance = GetPCShipAppearanceByStyleID((int) shipBase.BuildingStyleID);
 
             int shipSpeed = GetShipStatsByAppearance(shipAppearance).speed + 
-                            25 * GetCargoBonus(GetCargoBay(ship, null), ItemPropertyType.StarshipSpeedBonus);
+                            25 * GetCargoBonus(GetCargoBay(ship, player), ItemPropertyType.StarshipSpeedBonus);
 
             NWPlaceable chair = _.GetNearestObjectByTag("pilot_chair", player);
             ClonePCAndSit(player, chair);

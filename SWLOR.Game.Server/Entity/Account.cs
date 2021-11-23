@@ -8,10 +8,20 @@ namespace SWLOR.Game.Server.Entity
     {
         public Account()
         {
+            Init();
+        }
+
+        public Account(string cdKey)
+        {
+            Id = cdKey;
+            Init();
+        }
+
+        private void Init()
+        {
             Achievements = new Dictionary<AchievementType, DateTime>();
             AchievementProgress = new AchievementProgress();
         }
-
 
         [Indexed]
         public ulong TimesLoggedIn { get; set; }

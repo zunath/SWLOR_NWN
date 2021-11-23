@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature
         private static void DrawStandardCharacterStatusComponent(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
             var currentHP = GetCurrentHitPoints(player);
             var maxHP = GetMaxHitPoints(player);
@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Feature
         private static void DrawForceCharacterStatusComponent(uint player)
         {
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
             var currentHP = GetCurrentHitPoints(player);
             var maxHP = GetMaxHitPoints(player);

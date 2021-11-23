@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                 .AppearsWhenAction((player, args) =>
                 {
                     var cdKey = GetPCPublicCDKey(player);
-                    var dbAccount = DB.Get<Account>(cdKey) ?? new Account();
+                    var dbAccount = DB.Get<Account>(cdKey) ?? new Account(cdKey);
 
                     return dbAccount.HasCompletedTutorial;
                 });

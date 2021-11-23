@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Service
 
             // Now iterate over the player's objects and adjust visibility.
             var playerId = GetObjectUUID(player);
-            var visibilities = (DB.Get<Player>(playerId) ?? new Player());
+            var visibilities = (DB.Get<Player>(playerId) ?? new Player(playerId));
             for(var index = visibilities.ObjectVisibilities.Count-1; index >= 0; index--)
             {
                 var (objectId, visibilityType) = visibilities.ObjectVisibilities.ElementAt(index);
@@ -90,9 +90,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             var playerId = GetObjectUUID(player);
-            var dbVisibility = DB.Get<Player>(playerId) ?? new Player();
+            var dbVisibility = DB.Get<Player>(playerId) ?? new Player(playerId);
             dbVisibility.ObjectVisibilities[visibilityObjectId] = type;
-            DB.Set(playerId, dbVisibility);
+            DB.Set(dbVisibility);
 
             VisibilityPlugin.SetVisibilityOverride(player, target, type);
         }

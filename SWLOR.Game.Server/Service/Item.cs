@@ -661,5 +661,36 @@ namespace SWLOR.Game.Server.Service
                 }
             }
         }
+
+        /// <summary>
+        /// Determines whether an item can be stored persistently in the database.
+        /// </summary>
+        /// <param name="player">The player attempting to persistently store the item.</param>
+        /// <param name="item">The item being stored.</param>
+        /// <returns>An error message if validation fails, otherwise an empty string if it succeeds.</returns>
+        public static string CanBePersistentlyStored(uint player, uint item)
+        {
+            if (GetItemPossessor(item) != player)
+            {
+                return "Item must be in your inventory.";
+            }
+
+            if (GetHasInventory(item))
+            {
+                return "Containers cannot be stored.";
+            }
+
+            if (GetBaseItemType(item) == BaseItem.Gold)
+            {
+                return "Credits cannot be placed inside.";
+            }
+
+            if (GetItemCursedFlag(item))
+            {
+                return "That item cannot be stored.";
+            }
+
+            return string.Empty;
+        }
     }
 }

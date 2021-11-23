@@ -1,14 +1,10 @@
-﻿using SWLOR.Game.Server.Service.SpaceService;
+﻿using System;
+using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Entity
 {
     public class PlayerShip: EntityBase
     {
-        public PlayerShip()
-        {
-            Status = new ShipStatus();
-        }
-
         [Indexed]
         public string PlayerId { get; set; }
         public ShipStatus Status { get; set; }

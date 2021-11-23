@@ -1,13 +1,9 @@
-﻿using System;
-using System.Text;
-using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Service;
+﻿using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service.GuiService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class ExamineItemViewModel: GuiViewModelBase<ExamineItemViewModel, GuiPayloadBase>
+    public class ExamineItemViewModel: GuiViewModelBase<ExamineItemViewModel, ExamineItemPayload>
     {
         public string WindowTitle
         {
@@ -27,26 +23,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        private uint GetItem()
+        protected override void Initialize(ExamineItemPayload initialPayload)
         {
-            return GetLocalObject(Player, "EXAMINE_ITEM_WINDOW_TARGET");
+            WindowTitle = initialPayload.ItemName;
+            Description = initialPayload.Description;
+            ItemProperties = initialPayload.ItemProperties;
         }
-
-        protected override void Initialize(GuiPayloadBase initialPayload)
-        {
-            var item = GetItem();
-            WindowTitle = GetName(item);
-            Description = GetDescription(item);
-
-            ItemProperties = Item.BuildItemPropertyString(item);
-        }
-
-        public Action OnCloseWindow() => () =>
-        {
-            var item = GetItem();
-            DestroyObject(item);
-        };
-
-        
     }
 }

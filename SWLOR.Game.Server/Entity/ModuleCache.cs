@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Entity
     {
         public ModuleCache()
         {
+            Id = "SWLOR";
             WalkmeshesByArea = new Dictionary<string, List<Vector3>>();
         }
 

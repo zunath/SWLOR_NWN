@@ -739,7 +739,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "BuildingExit"
+                "value": "PropertyExitDialog"
               }
             }
           ]
@@ -820,7 +820,7 @@
           "id": 14817,
           "type": "cexolocstring",
           "value": {
-            "0": "Player Home Entrance"
+            "0": "Property Entrance"
           }
         },
         "MapNote": {
@@ -833,7 +833,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "PLAYER_HOME_ENTRANCE"
+          "value": "PROPERTY_ENTRANCE"
         },
         "TemplateResRef": {
           "type": "resref",

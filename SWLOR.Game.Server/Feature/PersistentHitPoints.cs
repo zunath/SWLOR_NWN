@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature
             if (dbPlayer == null) return;
             dbPlayer.HP = GetCurrentHitPoints(player);
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>

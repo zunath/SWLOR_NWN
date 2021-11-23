@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
 
                     dbPlayer.UnallocatedXP -= amount;
-                    DB.Set(playerId, dbPlayer);
+                    DB.Set(dbPlayer);
 
                     Skill.GiveSkillXP(Player, _skillType, amount);
 

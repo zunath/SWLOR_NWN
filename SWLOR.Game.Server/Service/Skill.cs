@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Service
                 ApplyAbilityPoint(player, pcSkill.Rank, dbPlayer);
             }
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
 
             // Send out an event signifying that a player has received a skill rank increase.
             if(receivedRankUp)
@@ -243,7 +243,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Save all changes made.
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
             return true;
         }
 
@@ -266,7 +266,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
     }
 }

@@ -50,14 +50,14 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var cdKey = GetPCPublicCDKey(player);
-            var account = DB.Get<Account>(cdKey) ?? new Account();
+            var account = DB.Get<Account>(cdKey) ?? new Account(cdKey);
             if (account.Achievements.ContainsKey(achievementType)) return;
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var now = DateTime.UtcNow;
             account.Achievements[achievementType] = now;
-            DB.Set(cdKey, account);
+            DB.Set(account);
 
             // Player turned off achievement notifications. Nothing left to do here.
             if (!dbPlayer.Settings.DisplayAchievementNotification) return;

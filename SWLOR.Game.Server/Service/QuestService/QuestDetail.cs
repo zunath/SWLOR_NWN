@@ -207,7 +207,7 @@ namespace SWLOR.Game.Server.Service.QuestService
                 dbPlayer.Quests.Remove(QuestId);
             }
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
             SendMessageToPC(player, $"Quest '{Name}' has been abandoned!");
         }
 
@@ -235,7 +235,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             playerQuest.CurrentState = 1;
             playerQuest.DateLastCompleted = null;
             dbPlayer.Quests[QuestId] = playerQuest;
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
 
             var state = GetState(1);
             foreach (var objective in state.GetObjectives())
@@ -337,7 +337,7 @@ namespace SWLOR.Game.Server.Service.QuestService
 
                 // Save changes
                 dbPlayer.Quests[QuestId] = playerQuest;
-                DB.Set(playerId, dbPlayer);
+                DB.Set(dbPlayer);
 
                 // Create any extended data entries for the next state of the quest.
                 foreach (var objective in nextState.GetObjectives())
@@ -398,7 +398,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             quest.KillProgresses.Clear();
             quest.DateLastCompleted = DateTime.UtcNow;
             dbPlayer.Quests[QuestId] = quest;
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
 
             foreach (var action in OnCompleteActions)
             {

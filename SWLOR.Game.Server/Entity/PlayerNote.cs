@@ -1,4 +1,6 @@
-﻿namespace SWLOR.Game.Server.Entity
+﻿using System;
+
+namespace SWLOR.Game.Server.Entity
 {
     public class PlayerNote: EntityBase
     {

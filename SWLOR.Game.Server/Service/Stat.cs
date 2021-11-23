@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
             CreaturePlugin.SetMovementRateFactor(player, dbPlayer.MovementRate);
         }
@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer.FP > maxFP)
                     dbPlayer.FP = maxFP;
                 
-                DB.Set(playerId, dbPlayer);
+                DB.Set(dbPlayer);
             }
             // NPCs
             else
@@ -245,7 +245,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer.FP < 0)
                     dbPlayer.FP = 0;
                 
-                DB.Set(playerId, dbPlayer);
+                DB.Set(dbPlayer);
             }
             else
             {
@@ -284,7 +284,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer.Stamina > maxSTM)
                     dbPlayer.Stamina = maxSTM;
 
-                DB.Set(playerId, dbPlayer);
+                DB.Set(dbPlayer);
             }
             // NPCs
             else
@@ -323,7 +323,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer.Stamina < 0)
                     dbPlayer.Stamina = 0;
 
-                DB.Set(playerId, dbPlayer);
+                DB.Set(dbPlayer);
             }
             else
             {

@@ -835,7 +835,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         ShieldRechargeRate = shipDetail.ShieldRechargeRate
                     }
                 };
-                DB.Set(ship.Id.ToString(), ship);
+                DB.Set(ship);
 
                 // Update the UI with the new ship details.
                 ShipCountRegistered = $"Ships: {dbPlayerShips.Count + 1} / {Space.MaxRegisteredShips}";
@@ -879,7 +879,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         dbPlayer.ActiveShipId = Guid.Empty.ToString();
 
                     DB.Delete<PlayerShip>(shipId);
-                    DB.Set(playerId, dbPlayer);
+                    DB.Set(dbPlayer);
 
                     CreateItemOnObject(shipDetail.ItemResref, Player);
 
@@ -908,7 +908,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbShip = DB.Get<PlayerShip>(shipId);
 
             dbShip.Status.Name = ShipName;
-            DB.Set(shipId, dbShip);
+            DB.Set(dbShip);
 
             if (ActiveShipIndex == SelectedShipIndex)
             {
@@ -996,7 +996,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     moduleDetails.ModuleEquippedAction?.Invoke(Player, dbShip.Status);
 
-                    DB.Set(shipId, dbShip);
+                    DB.Set(dbShip);
 
                     DestroyObject(item);
                     LoadShip();
@@ -1013,7 +1013,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     moduleDetail.ModuleUnequippedAction?.Invoke(Player, dbShip.Status);
                     dbShip.Status.HighPowerModules.Remove(slot);
-                    DB.Set(shipId, dbShip);
+                    DB.Set(dbShip);
                     LoadShip();
                 });
             }
@@ -1054,7 +1054,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     moduleDetails.ModuleEquippedAction?.Invoke(Player, dbShip.Status);
 
-                    DB.Set(shipId, dbShip);
+                    DB.Set(dbShip);
 
                     DestroyObject(item);
                     LoadShip();
@@ -1071,7 +1071,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     moduleDetail.ModuleUnequippedAction?.Invoke(Player, dbShip.Status);
                     dbShip.Status.LowPowerModules.Remove(slot);
-                    DB.Set(shipId, dbShip);
+                    DB.Set(dbShip);
                     LoadShip();
                 });
             }
@@ -1152,7 +1152,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             dbPlayer.SelectedShipId = shipId;
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
 
             if (ActiveShipIndex > -1)
             {

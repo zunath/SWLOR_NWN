@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
             // Already been initialized. Don't do it again.
             if (dbPlayer.Version >= 1) return;
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature
             AssignCharacterType(player, dbPlayer);
             RegisterDefaultRespawnPoint(dbPlayer);
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         private static void AutoLevelPlayer(uint player)
@@ -163,13 +163,13 @@ namespace SWLOR.Game.Server.Feature
             CreaturePlugin.AddFeatByLevel(player, FeatType.WeaponProficiencySimple, 1);
             CreaturePlugin.AddFeatByLevel(player, FeatType.UncannyDodge1, 1);
             CreaturePlugin.AddFeatByLevel(player, FeatType.ChatCommandTargeter, 1);
-            CreaturePlugin.AddFeatByLevel(player, FeatType.StructureTool, 1);
+            CreaturePlugin.AddFeatByLevel(player, FeatType.PropertyMenu, 1);
         }
 
         private static void InitializeHotBar(uint player)
         {
             var chatCommandTargeter = PlayerQuickBarSlot.UseFeat(FeatType.ChatCommandTargeter);
-            var structureTool = PlayerQuickBarSlot.UseFeat(FeatType.StructureTool);
+            var structureTool = PlayerQuickBarSlot.UseFeat(FeatType.PropertyMenu);
             
             PlayerPlugin.SetQuickBarSlot(player, 0, chatCommandTargeter);
             PlayerPlugin.SetQuickBarSlot(player, 1, structureTool);

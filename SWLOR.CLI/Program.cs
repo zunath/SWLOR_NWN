@@ -8,6 +8,7 @@ namespace SWLOR.CLI
         private static readonly PlaceableBuilder _placeableBuilder = new();
         private static readonly LanguageBuilder _languageBuilder = new();
         private static readonly ModulePacker _modulePacker = new();
+        private static readonly StructureItemCreator _structureItemCreator = new();
 
         static void Main(string[] args)
         {
@@ -44,6 +45,11 @@ namespace SWLOR.CLI
                 CommandOptionType.SingleValue
             );
 
+            var structureOption = app.Option(
+                "-$|-s |--structure",
+                "Generates uti files in json format for all of the StructureType.cs enum values.",
+                CommandOptionType.NoValue);
+
             app.HelpOption("-? | -h | --help");
 
             app.OnExecute(() =>
@@ -71,6 +77,11 @@ namespace SWLOR.CLI
                 if (moduleUnpackOption.HasValue())
                 {
                     _modulePacker.UnpackModule(moduleUnpackOption.Value());
+                }
+
+                if (structureOption.HasValue())
+                {
+                    _structureItemCreator.Process();
                 }
 
                 return 0;

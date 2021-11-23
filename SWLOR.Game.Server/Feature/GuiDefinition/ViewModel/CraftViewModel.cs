@@ -962,7 +962,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (firstTime)
             {
                 dbPlayer.CraftedRecipes[_recipe] = DateTime.UtcNow;
-                DB.Set(playerId, dbPlayer);
+                DB.Set(dbPlayer);
             }
 
             // Give XP plus a percent bonus based on the quality achieved.

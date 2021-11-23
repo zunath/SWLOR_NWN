@@ -190,24 +190,18 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            if (GetHasInventory(item))
-            {
-                CancelEvent(player, "Containers cannot be stored.");
-                return;
-            }
-
             if (count >= limit)
             {
                 CancelEvent(player, "No more items can be placed inside.");
                 return;
             }
 
-            if (GetBaseItemType(item) == BaseItem.Gold)
+            var canBeStored = Item.CanBePersistentlyStored(player, item);
+            if (!string.IsNullOrWhiteSpace(canBeStored))
             {
-                CancelEvent(player, "Credits cannot be placed inside.");
+                CancelEvent(player, canBeStored);
                 return;
             }
-
             
             var itemId = GetObjectUUID(item);
             var data = ObjectPlugin.Serialize(item);
@@ -215,6 +209,7 @@ namespace SWLOR.Game.Server.Feature
 
             var dbItem = new InventoryItem
             {
+                Id = itemId,
                 StorageId = storageId,
                 PlayerId = isPrivate ? playerId : storageId,
                 Data = data,
@@ -224,7 +219,7 @@ namespace SWLOR.Game.Server.Feature
                 Tag = GetTag(item)
             };
 
-            DB.Set(itemId, dbItem);
+            DB.Set(dbItem);
             SendItemLimitMessage(player, true);
         }
 

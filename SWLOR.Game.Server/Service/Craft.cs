@@ -349,7 +349,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
             DestroyObject(item);
         }
 

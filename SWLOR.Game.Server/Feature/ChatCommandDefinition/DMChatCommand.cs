@@ -481,7 +481,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var dbPlayer = DB.Get<Player>(playerId);
                     dbPlayer.UnallocatedXP += amount;
                     
-                    DB.Set(playerId, dbPlayer);
+                    DB.Set(dbPlayer);
                     SendMessageToPC(target, $"A DM has awarded you with {amount} roleplay XP.");
                 });
         }
@@ -504,7 +504,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var dbPlayer = DB.Get<Player>(playerId);
                     dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow;
 
-                    DB.Set(playerId, dbPlayer);
+                    DB.Set(dbPlayer);
                     SendMessageToPC(target, $"A DM has reset your perk refund cooldown.");
                 });
         }
@@ -565,7 +565,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var playerId = GetObjectUUID(target);
                     var dbPlayer = DB.Get<Player>(playerId);
                     dbPlayer.RecastTimes.Clear();
-                    DB.Set(playerId, dbPlayer);
+                    DB.Set(dbPlayer);
                     
                     SendMessageToPC(user, $"You have reset all of {targetName}'s cooldowns.");
                     SendMessageToPC(target, "A DM has reset all of your cooldowns.");

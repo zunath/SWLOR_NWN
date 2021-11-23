@@ -26,9 +26,9 @@ namespace SWLOR.Game.Server.Service
                 BakeArea(area);
             }
             
-            var serverConfig = DB.Get<ModuleCache>("SWLOR") ?? new ModuleCache();
+            var serverConfig = DB.Get<ModuleCache>("SWLOR") ?? new ModuleCache{ Id = "SWLOR" };
             serverConfig.WalkmeshesByArea = _walkmeshesByArea;
-            DB.Set("SWLOR", serverConfig);
+            DB.Set(serverConfig);
 
             _bakingRan = true;
             Console.WriteLine($"Baked {_walkmeshesByArea.Count} areas.");

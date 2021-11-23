@@ -16,10 +16,10 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var cdKey = GetPCPublicCDKey(player);
-            var dbAccount = DB.Get<Account>(cdKey) ?? new Account();
+            var dbAccount = DB.Get<Account>(cdKey) ?? new Account(cdKey);
 
             dbAccount.TimesLoggedIn++;
-            DB.Set(cdKey, dbAccount);
+            DB.Set(dbAccount);
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature
             var dbAccount = DB.Get<Account>(cdKey);
 
             dbAccount.AchievementProgress.EnemiesKilled++;
-            DB.Set(cdKey, dbAccount);
+            DB.Set(dbAccount);
 
             var kills = dbAccount.AchievementProgress.EnemiesKilled;
 
@@ -78,7 +78,7 @@ namespace SWLOR.Game.Server.Feature
             var dbAccount = DB.Get<Account>(cdKey);
 
             dbAccount.AchievementProgress.PerksLearned++;
-            DB.Set(cdKey, dbAccount);
+            DB.Set(dbAccount);
 
             var numberLearned = dbAccount.AchievementProgress.PerksLearned;
 
@@ -117,7 +117,7 @@ namespace SWLOR.Game.Server.Feature
             var dbAccount = DB.Get<Account>(cdKey);
 
             dbAccount.AchievementProgress.SkillsLearned++;
-            DB.Set(cdKey, dbAccount);
+            DB.Set(dbAccount);
 
             var numberLearned = dbAccount.AchievementProgress.SkillsLearned;
 
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature
             var dbAccount = DB.Get<Account>(cdKey);
 
             dbAccount.AchievementProgress.QuestsCompleted++;
-            DB.Set(cdKey, dbAccount);
+            DB.Set(dbAccount);
 
             var numberCompleted = dbAccount.AchievementProgress.QuestsCompleted;
 
@@ -219,7 +219,7 @@ namespace SWLOR.Game.Server.Feature
             var dbAccount = DB.Get<Account>(cdKey);
 
             dbAccount.AchievementProgress.ItemsCrafted++;
-            DB.Set(cdKey, dbAccount);
+            DB.Set(dbAccount);
 
             var numberCompleted = dbAccount.AchievementProgress.ItemsCrafted;
             if (numberCompleted >= 1)

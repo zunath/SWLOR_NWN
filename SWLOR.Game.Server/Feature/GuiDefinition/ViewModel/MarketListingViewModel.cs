@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     !record.Name.ToLower().Contains(SearchText.ToLower()))
                     continue;
 
-                _itemIds.Add(record.ItemId);
+                _itemIds.Add(record.Id);
                 itemIconResrefs.Add(record.IconResref);
                 itemNames.Add($"{record.Quantity}x {record.Name}");
                 _itemPrices.Add(record.Price);
@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var listing = new MarketItem
             {
                 MarketId = marketDetail.MarketId,
-                ItemId = GetObjectUUID(item),
+                Id = GetObjectUUID(item),
                 MarketName = marketDetail.Name,
                 PlayerId = GetObjectUUID(Player),
                 SellerName = GetName(Player),
@@ -214,10 +214,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Category = PlayerMarket.GetItemMarketCategory(item)
             };
 
-            DB.Set(listing.ItemId, listing);
+            DB.Set(listing);
             DestroyObject(item);
 
-            _itemIds.Add(listing.ItemId);
+            _itemIds.Add(listing.Id);
             ItemIconResrefs.Add(listing.IconResref);
             ItemNames.Add($"{listing.Quantity}x {listing.Name}");
             _itemPrices.Add(listing.Price);
@@ -300,7 +300,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // Do the update for this record.
                 dbListing.Price = _itemPrices[index];
                 dbListing.IsListed = ItemListed[index];
-                DB.Set(id, dbListing);
+                DB.Set(dbListing);
             }
             
             LoadData();
@@ -361,7 +361,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             GiveGoldToCreature(Player, credits);
             dbPlayer.MarketTill = 0;
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
 
             IsShopTillEnabled = false;
             ShopTill = "Shop Till: 0 cr";

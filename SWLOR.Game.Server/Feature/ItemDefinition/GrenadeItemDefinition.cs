@@ -120,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 var unlockTime = DateTime.UtcNow.AddSeconds(6);
                 dbPlayer.RecastTimes[RecastGroup.Grenades] = unlockTime;
 
-                DB.Set(playerId, dbPlayer);
+                DB.Set(dbPlayer);
             }
         }
 

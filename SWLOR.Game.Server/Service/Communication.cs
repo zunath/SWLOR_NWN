@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
             
             SetLocalBool(player, "DISPLAY_HOLONET", dbPlayer.Settings.IsHolonetEnabled);
         }
@@ -628,7 +628,7 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(player);
                 var dbPlayer = DB.Get<Player>(playerId);
                 dbPlayer.EmoteStyle = style;
-                DB.Set(playerId, dbPlayer);
+                DB.Set(dbPlayer);
             }
         }
     }

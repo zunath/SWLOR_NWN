@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             dbOutfit.Outfits[SelectedSlotIndex].Name = Name;
 
-            DB.Set(playerId, dbOutfit);
+            DB.Set(dbOutfit);
             IsSaveEnabled = false;
             SlotNames[SelectedSlotIndex] = Name;
         };
@@ -202,7 +202,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 dbOutfit.Outfits[SelectedSlotIndex].RightShoulderId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder);
                 dbOutfit.Outfits[SelectedSlotIndex].RightThighId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh);
 
-                DB.Set(playerId, dbOutfit);
+                DB.Set(dbOutfit);
 
                 IsLoadEnabled = true;
                 UpdateDetails(dbOutfit.Outfits[SelectedSlotIndex]);
@@ -335,7 +335,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             dbOutfit.Outfits.Add(newOutfit);
 
-            DB.Set(playerId, dbOutfit);
+            DB.Set(dbOutfit);
             SlotNames.Add(newOutfit.Name);
             SlotToggles.Add(false);
         };
@@ -348,7 +348,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var dbOutfit = DB.Get<PlayerOutfit>(playerId) ?? new PlayerOutfit();
 
                 dbOutfit.Outfits.RemoveAt(SelectedSlotIndex);
-                DB.Set(playerId, dbOutfit);
+                DB.Set(dbOutfit);
 
                 SlotNames.RemoveAt(SelectedSlotIndex);
                 SlotToggles.RemoveAt(SelectedSlotIndex);

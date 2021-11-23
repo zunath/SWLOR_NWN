@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
             // Reapply quest journal entries on log-in.
             // An NWN quirk requires this to be on a short delay because journal entries are wiped on login.
@@ -385,7 +385,7 @@ namespace SWLOR.Game.Server.Service
 
             // Decrement the required items and update the DB.
             dbPlayer.Quests[questId].ItemProgresses[resref]--;
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
 
             // Attempt to advance the quest.
             // If player hasn't completed the other objectives, nothing will happen when this is called.

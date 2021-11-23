@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using OpenTelemetry;
@@ -162,8 +163,7 @@ namespace SWLOR.Game.Server.Core
 
         private static void LoadHandlersFromAssembly()
         {
-            var a = Metrics.Create("LoadHandlersFromAssembly");
-            a.Start();
+            var a1 = Metrics.ActivitySource.StartActivity("LoadHandlersFromAssembly", ActivityKind.Server);
 
             _scripts = new Dictionary<string, List<ActionScript>>();
             _conditionalScripts = new Dictionary<string, List<ConditionalScript>>();
@@ -179,8 +179,7 @@ namespace SWLOR.Game.Server.Core
                 foreach (var attr in mi.GetCustomAttributes(typeof(NWNEventHandler), false))
                 {
                     var script = ((NWNEventHandler)attr).Script;
-                    var a2 = Metrics.Create($"load-{script}", a.Context);
-                    a2.Start();
+                    var a2 = Metrics.ActivitySource.StartActivity($"load-{script}", ActivityKind.Server, a1.Context);
 
                     if (script.Length > MaxCharsInScriptName || script.Length == 0)
                     {
@@ -225,7 +224,7 @@ namespace SWLOR.Game.Server.Core
                 }
             }
 
-            a.Stop();
+            a1.Stop();
         }
 
         /// <summary>

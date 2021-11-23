@@ -1,6 +1,7 @@
 using OpenTelemetry.Trace;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace SWLOR.Game.Server.Core
 {
@@ -32,10 +33,9 @@ namespace SWLOR.Game.Server.Core
             var ret = 0;
             OBJECT_SELF = oidSelf;
             ScriptContexts.Push(new ScriptContext { OwnerObject = oidSelf, ScriptName = script });
-            var activity = Metrics.Create(script);
+            var activity = Metrics.ActivitySource.StartActivity(script, ActivityKind.Server);
             try
             {
-                activity?.Start();
                 ret = Entrypoints.OnRunScript(script, oidSelf);
             }
             catch (Exception e)

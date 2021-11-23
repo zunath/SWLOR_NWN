@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
@@ -202,8 +203,7 @@ namespace SWLOR.Game.Server.Service
             {
                 RedisValue data;
 
-                var redisActivity = Metrics.Create("redis-access");
-                redisActivity.Start();
+                var redisActivity = Metrics.ActivitySource.StartActivity("redis-access", ActivityKind.Server);
                 
                 data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{key}").ToString();
                 

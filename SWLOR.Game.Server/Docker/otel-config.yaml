@@ -1,0 +1,40 @@
+﻿receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+
+processors:
+  batch:
+  memory_limiter:
+
+exporters:
+  otlp:
+    endpoint: otelcol:4317
+  
+  zipkin:
+    endpoint: "http://zipkin:9411/api/v2/spans"
+    format: proto
+
+  logging:
+    loglevel: debug
+
+extensions:
+  health_check:
+  pprof:
+    endpoint: :1888
+  zpages:
+    endpoint: :55679
+
+service:
+  extensions: [health_check,pprof,zpages]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [logging, zipkin]
+    ## Metrics should be set up with Prometheus
+    # metrics:
+    #    receivers: [otlp]
+    #    processors: [batch]
+    #    exporters: [otlp]

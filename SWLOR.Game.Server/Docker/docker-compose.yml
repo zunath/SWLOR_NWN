@@ -26,31 +26,46 @@ services:
             - "8081:8081"
         networks:
             swlor_network:
-  
 
-    prometheus: 
-        hostname: prometheus
-        image: prom/prometheus
+    zipkin: 
+        hostname: zipkin
+        image: openzipkin/zipkin:latest
         restart: unless-stopped
         ports:
-            - "9090:9090"        
+            - "9411:9411"
         networks:
             swlor_network:
 
-    grafana:
-        hostname: grafana
-        image: grafana/grafana:6.0.1
-        restart: unless-stopped
-        environment:
-            - GF_SECURITY_ADMIN_PASSWORD=admin
-        ports:
-            - "3000:3000"
+    otel-collector:
+        hostname: otel-collector
+        image: otel/opentelemetry-collector-contrib-dev:latest
         depends_on:
-            - prometheus
+            - zipkin
         volumes:
-            - ./grafana-provisioning:/etc/grafana/provisioning
+            - ${PWD-.}/otel-config.yaml:/etc/otel/config.yaml
+        ports: 
+            - "1888:1888"   # pprof extension
+            - "13133:13133" # health_check extension
+            - "4317:4317"        # OTLP gRPC receiver
+            - "55679:55679" # zpages extension        
         networks:
             swlor_network:
+
+
+    #grafana:
+    #    hostname: grafana
+    #    image: grafana/grafana:6.0.1
+    #    restart: unless-stopped
+    #    environment:
+    #        - GF_SECURITY_ADMIN_PASSWORD=admin
+    #    ports:
+    #        - "3000:3000"
+    #    depends_on:
+    #        - jaeger
+    #    volumes:
+    #        - ./grafana-provisioning:/etc/grafana/provisioning
+    #    networks:
+    #        swlor_network:
             
 
     swlor-server:
@@ -61,7 +76,7 @@ services:
         tty: true
         depends_on:
             - redis
-            - prometheus
+            - otel-collector
         volumes:
             - ${PWD-.}/logs:/nwn/run/logs.0
             - ${PWD-.}/:/nwn/home

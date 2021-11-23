@@ -323,14 +323,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var weekPrice = layout.PricePerDay * 7;
             var gold = GetGold(Player);
             var now = DateTime.UtcNow;
+            var permission = GetPermissions();
 
             ExtendLease1DayText = $"Extend 1 Day ({dayPrice} cr)";
             IsExtendLease1DayEnabled = gold >= dayPrice &&
-                                       leasedUntilDate.AddDays(1) < now.AddDays(MaxLeaseDays);
+                                       leasedUntilDate.AddDays(1) < now.AddDays(MaxLeaseDays) &&
+                                       permission.Permissions[PropertyPermissionType.ExtendLease];
 
             ExtendLease7DaysText = $"Extend 7 Days ({weekPrice} cr)";
             IsExtendLease7DaysEnabled = gold >= weekPrice &&
-                                        leasedUntilDate.AddDays(7) < now.AddDays(MaxLeaseDays);
+                                        leasedUntilDate.AddDays(7) < now.AddDays(MaxLeaseDays) &&
+                                        permission.Permissions[PropertyPermissionType.ExtendLease];
 
             IsEnterEnabled = leasedUntilDate > now;
         }

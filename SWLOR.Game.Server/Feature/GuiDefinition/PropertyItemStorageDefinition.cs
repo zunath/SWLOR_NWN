@@ -61,12 +61,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 row.AddButton()
                                     .SetText("Add Category")
                                     .BindOnClicked(model => model.OnAddCategory())
-                                    .SetHeight(35f);
+                                    .SetHeight(35f)
+                                    .BindIsEnabled(model => model.CanAddCategory);
+
                                 row.AddButton()
                                     .SetText("Delete Category")
                                     .BindOnClicked(model => model.OnDeleteCategory())
                                     .BindIsEnabled(model => model.IsCategorySelected)
-                                    .SetHeight(35f);
+                                    .SetHeight(35f)
+                                    .BindIsEnabled(model => model.CanDeleteCategory);
                             });
                             col.AddRow(row =>
                             {
@@ -74,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 row.AddButton()
                                     .SetText("Permissions")
                                     .BindOnClicked(model => model.OnEditPermissions())
-                                    .BindIsEnabled(model => model.IsCategorySelected)
+                                    .BindIsEnabled(model => model.CanEditPermissions)
                                     .SetHeight(35f);
                                 row.AddSpacer();
                             });
@@ -89,13 +92,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetPlaceholder("Name")
                                     .SetMaxLength(32)
                                     .SetWidth(300f)
-                                    .BindIsEnabled(model => model.IsCategorySelected);
+                                    .BindIsEnabled(model => model.CanEditCategory);
 
                                 row.AddButton()
                                     .SetText("Save")
                                     .SetHeight(35f)
                                     .BindOnClicked(model => model.OnSaveName())
-                                    .BindIsEnabled(model => model.IsCategorySelected);
+                                    .BindIsEnabled(model => model.CanEditCategory);
                             });
 
                             col.AddRow(row =>

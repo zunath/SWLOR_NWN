@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var pageNumbers = new GuiBindingList<GuiComboEntry>();
             var pages = (int)(totalRecordCount / StructuresPerPage + (totalRecordCount % StructuresPerPage == 0 ? 0 : 1));
 
-            // Always add page 1. In the event no items are for sale,
+            // Always add page 1. In the event no structures are available,
             // it still needs to be displayed.
             pageNumbers.Add(new GuiComboEntry($"Page 1", 0));
             for (var x = 2; x <= pages; x++)

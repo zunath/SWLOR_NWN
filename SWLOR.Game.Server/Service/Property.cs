@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.CancelLease,
                 PropertyPermissionType.EnterProperty,
                 PropertyPermissionType.ChangeDescription,
-                PropertyPermissionType.EditStorageCategories
+                PropertyPermissionType.EditCategories
             };
 
             _permissionsByPropertyType[PropertyType.Building] = new List<PropertyPermissionType>
@@ -104,7 +104,7 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.RenameProperty,
                 PropertyPermissionType.EnterProperty,
                 PropertyPermissionType.ChangeDescription,
-                PropertyPermissionType.EditStorageCategories
+                PropertyPermissionType.EditCategories
             };
 
             _permissionsByPropertyType[PropertyType.Starship] = new List<PropertyPermissionType>
@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.RenameProperty,
                 PropertyPermissionType.EnterProperty,
                 PropertyPermissionType.ChangeDescription,
-                PropertyPermissionType.EditStorageCategories
+                PropertyPermissionType.EditCategories
             };
 
             _permissionsByPropertyType[PropertyType.City] = new List<PropertyPermissionType>
@@ -884,14 +884,30 @@ namespace SWLOR.Game.Server.Service
             }
 
             var playerId = GetObjectUUID(player);
-            var query = new DBQuery<WorldPropertyPermission>()
+            var permissionQuery = new DBQuery<WorldPropertyPermission>()
                 .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
                 .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false);
-            var permission = DB.Search(query).FirstOrDefault();
+            var permission = DB.Search(permissionQuery).FirstOrDefault();
 
+            var categoryQuery = new DBQuery<WorldPropertyCategory>()
+                .AddFieldSearch(nameof(WorldPropertyCategory.ParentPropertyId), propertyId, false);
+            var categoryIds = DB.Search(categoryQuery).Select(s => s.Id).ToList();
+            long categoryPermissionCount = 0;
+
+            if (categoryIds.Count > 0)
+            {
+                permissionQuery = new DBQuery<WorldPropertyPermission>()
+                    .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
+                    .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), categoryIds);
+                categoryPermissionCount = DB.SearchCount(permissionQuery);
+            }
+
+            // Player can access this menu only if they have permission to manipulate structures,
+            // retrieve structures, or access the property's item storage.
             if (permission == null ||
                 !permission.Permissions[PropertyPermissionType.RetrieveStructures] &&
-                !permission.Permissions[PropertyPermissionType.EditStructures])
+                !permission.Permissions[PropertyPermissionType.EditStructures] &&
+                categoryPermissionCount <= 0)
             {
                 FloatingTextStringOnCreature($"You do not have permission to access this property.", player, false);
                 return;

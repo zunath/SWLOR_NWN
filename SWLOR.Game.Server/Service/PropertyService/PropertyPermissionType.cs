@@ -8,8 +8,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
         Invalid = 0,
 
         // Categories
-        [PropertyPermission("Edit Storage Categories", "Toggles the ability to create or delete storage categories.", true)]
-        EditStorageCategories = 1,
+        [PropertyPermission("Edit Categories", "Toggles the ability to create or delete item categories.", true)]
+        EditCategories = 1,
 
         // Apartments, Buildings, Starships
         [PropertyPermission("Edit Structures", "Toggles the ability to place structures and edit their details.", true)]

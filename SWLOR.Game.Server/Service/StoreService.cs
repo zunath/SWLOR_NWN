@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Service
             int ticks = module.GetLocalInt("STORE_SERVICE_TICKS") + 1;
 
             // Check to see if it's time to clean stores.
-            if (ticks >= 300) // 300 ticks * 6 seconds = 30 minutes
+            if (ticks >= 600) // 600 ticks * 6 seconds = 60 minutes
             {
                 foreach (var store in _stores)
                 {
@@ -81,15 +81,15 @@ namespace SWLOR.Game.Server.Service
             if (!store.IsValid) return;
 
             // Only process if no players are accessing it.
-            if (store.GetLocalInt("STORE_SERVICE_PLAYERS_ACCESSING") > 0) return;
+            //if (store.GetLocalInt("STORE_SERVICE_PLAYERS_ACCESSING") > 0) return;
 
-            // Only process if the store was closed more than 10 minutes ago.
-            string closeDateString = store.GetLocalString("STORE_SERVICE_LAST_CLOSE_DATE");
-            if(!string.IsNullOrWhiteSpace(closeDateString))
-            {
-                DateTime closeDate = DateTime.Parse(closeDateString);
-                if (DateTime.UtcNow < closeDate.AddMinutes(10)) return;
-            }
+            //// Only process if the store was closed more than 10 minutes ago.
+            //string closeDateString = store.GetLocalString("STORE_SERVICE_LAST_CLOSE_DATE");
+            //if(!string.IsNullOrWhiteSpace(closeDateString))
+            //{
+            //    DateTime closeDate = DateTime.Parse(closeDateString);
+            //    if (DateTime.UtcNow < closeDate.AddMinutes(10)) return;
+            //}
 
             // By this point we know that the store needs to be cleaned up.
             // We'll look for any items which aren't part of this store and destroy them.

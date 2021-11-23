@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature
             mapPin.Id = GetNumberOfMapPins(player) + 1;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
             var area = GetArea(player);
             var areaResref = GetResRef(area);
 
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature
 
             dbPlayer.MapPins[areaResref].Add(mapPin);
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace SWLOR.Game.Server.Feature
                 }
             }
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature
                 }
             }
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.Feature
             SetLocalBool(player, "MAP_PINS_LOADED", true);
 
             // Save any changes to the IDs.
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>

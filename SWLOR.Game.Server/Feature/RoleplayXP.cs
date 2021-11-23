@@ -49,8 +49,8 @@ namespace SWLOR.Game.Server.Feature
         {
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
-            var playerID = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerID) ?? new Player();
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
             if (dbPlayer.RoleplayProgress.RPPoints >= 50)
             {
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature
                 dbPlayer.RoleplayProgress.RPPoints = 0;
                 dbPlayer.RoleplayProgress.TotalRPExpGained += (ulong)xp;
                 dbPlayer.UnallocatedXP += xp;
-                DB.Set(playerID, dbPlayer);
+                DB.Set(dbPlayer);
                 
                 SendMessageToPC(player, $"You gained {xp} roleplay XP.");
             }
@@ -114,7 +114,7 @@ namespace SWLOR.Game.Server.Feature
                 if (now <= lastSend.AddSeconds(1))
                 {
                     dbPlayer.RoleplayProgress.SpamMessageCount++;
-                    DB.Set(playerID, dbPlayer);
+                    DB.Set(dbPlayer);
                     return;
                 }
             }
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature
             if (!CanReceiveRPPoint(player, channel)) return;
 
             dbPlayer.RoleplayProgress.RPPoints++;
-            DB.Set(playerID, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>

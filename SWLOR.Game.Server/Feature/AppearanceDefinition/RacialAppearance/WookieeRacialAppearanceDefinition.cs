@@ -2,8 +2,8 @@
 {
     public class WookieeRacialAppearanceDefinition: RacialAppearanceBaseDefinition
     {
-        public override int[] MaleHeads { get; } = { 119, 192, 193 };
-        public override int[] FemaleHeads { get; } = { 110, 185, 186, 192, 193, 195 };
+        public override int[] MaleHeads { get; } = { 117, 119, 192, 193 };
+        public override int[] FemaleHeads { get; } = { 110, 185, 186, 190, 192, 193, 195 };
         public override int[] Torsos { get; } = { 208, 209 };
         public override int[] Pelvis { get; } = { 208, 209 };
         public override int[] RightBicep { get; } = { 208 };

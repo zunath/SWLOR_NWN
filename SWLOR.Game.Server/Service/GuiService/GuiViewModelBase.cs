@@ -226,6 +226,9 @@ namespace SWLOR.Game.Server.Service.GuiService
         protected void WatchOnClient<TProperty>(Expression<Func<TDerived, TProperty>> expression)
         {
             var propertyName = GuiHelper<TDerived>.GetPropertyName(expression);
+            if (!_propertyValues.ContainsKey(propertyName))
+                _propertyValues[propertyName] = new PropertyDetail();
+            
             var value = _propertyValues[propertyName].Value;
             var json = _converter.ToJson(value);
 
@@ -233,6 +236,14 @@ namespace SWLOR.Game.Server.Service.GuiService
             NuiSetBind(Player, WindowToken, propertyName, json);
         }
         
+        /// <summary>
+        /// Displays a modal window on top of the active window being displayed.
+        /// </summary>
+        /// <param name="prompt">The text to display to the user inside the modal.</param>
+        /// <param name="confirmAction">The action to run when the player confirms.</param>
+        /// <param name="cancelAction">The action to run when the player cancels.</param>
+        /// <param name="confirmText">The confirmation text to display.</param>
+        /// <param name="cancelText">The cancel text to display.</param>
         protected void ShowModal(
             string prompt, 
             Action confirmAction, 
@@ -247,6 +258,18 @@ namespace SWLOR.Game.Server.Service.GuiService
             Gui.ShowModal(Player, WindowType);
         }
 
-
+        /// <summary>
+        /// Changes an element's layout to a different partial view.
+        /// The partial view must be defined within the window's definition.
+        /// Only groups may be targeted with this method.
+        /// </summary>
+        /// <param name="elementId">The element Id of the element to target.</param>
+        /// <param name="partialName">The new partial to display.</param>
+        protected void ChangePartialView(string elementId, string partialName)
+        {
+            var window = Gui.GetWindowTemplate(WindowType);
+            var partial = window.PartialViews[partialName];
+            NuiSetGroupLayout(Player, WindowToken, elementId, partial);
+        }
     }
 }

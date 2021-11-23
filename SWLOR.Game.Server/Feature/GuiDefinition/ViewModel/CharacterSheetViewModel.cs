@@ -109,6 +109,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public int BAB
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public int Control
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public int Craftsmanship
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
         public bool IsMightUpgradeAvailable
         {
             get => Get<bool>();
@@ -210,7 +228,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.UpgradedStats[ability]++;
             CreaturePlugin.ModifyRawAbilityScore(Player, ability, 1);
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
 
             FloatingTextStringOnCreature($"Your {abilityName} attribute has increased!", Player, false);
             LoadData();
@@ -277,6 +295,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(Player))), GetGender(Player));
             SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
             AP = $"{dbPlayer.TotalAPAcquired} / 30 ({dbPlayer.UnallocatedAP})";
+            BAB = GetBaseAttackBonus(Player);
+            Control = dbPlayer.Control;
+            Craftsmanship = dbPlayer.Craftsmanship;
+
             IsMightUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Might] < MaxUpgrades;
             IsPerceptionUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Perception] < MaxUpgrades;
             IsVitalityUpgradeAvailable = dbPlayer.UnallocatedAP > 0 && dbPlayer.UpgradedStats[AbilityType.Vitality] < MaxUpgrades;

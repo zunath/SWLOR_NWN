@@ -1,4 +1,5 @@
 ﻿using System;
+using SWLOR.Game.Server.Core.Beamdog;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
@@ -200,6 +201,17 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         {
             var newGroup = new GuiGroup<T>();
             group(newGroup);
+            Elements.Add(newGroup);
+
+            return newGroup;
+        }
+
+        public GuiGroup<T> AddPartialView(string partialName)
+        {
+            var newGroup = new GuiGroup<T>();
+            newGroup.SetId(partialName);
+            newGroup.SetScrollbars(NuiScrollbars.None);
+            newGroup.SetShowBorder(false);
             Elements.Add(newGroup);
 
             return newGroup;

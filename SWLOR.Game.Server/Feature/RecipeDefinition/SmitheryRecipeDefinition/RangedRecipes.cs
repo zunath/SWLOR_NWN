@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(6)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 1)
-                .ModSlots(RecipeModType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 7)
                 .Component("elec_ruined", 4);
 
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(16)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 2)
-                .ModSlots(RecipeModType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 7)
                 .Component("elec_flawed", 4);
 
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(26)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 3)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 7)
                 .Component("elec_good", 4);
 
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(36)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 4)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 7)
                 .Component("elec_imperfect", 4);
 
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(46)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 5)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 7)
                 .Component("elec_high", 4);
         }
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(2)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 1)
-                .ModSlots(RecipeModType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 3)
                 .Component("wood", 2);
 
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(12)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 2)
-                .ModSlots(RecipeModType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 3)
                 .Component("fine_wood", 2);
 
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(22)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 3)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 3)
                 .Component("ancient_wood", 2);
 
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(32)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 4)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 3)
                 .Component("aracia_wood", 2);
 
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(42)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 5)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 3)
                 .Component("hyphae_wood", 2);
         }
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(9)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 1)
-                .ModSlots(RecipeModType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 10)
                 .Component("elec_ruined", 5);
 
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(19)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 2)
-                .ModSlots(RecipeModType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 10)
                 .Component("elec_flawed", 5);
 
@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(29)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 3)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 10)
                 .Component("elec_good", 5);
 
@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(39)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 4)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 10)
                 .Component("elec_imperfect", 5);
 
@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(49)
                 .Quantity(1)
                 .RequirementPerk(PerkType.RangedBlueprints, 5)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 10)
                 .Component("elec_high", 5);
         }

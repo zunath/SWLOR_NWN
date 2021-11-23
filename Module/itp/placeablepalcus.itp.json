@@ -67671,17 +67671,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Building Exit"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "building_exit"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Cargo Barrel"
                     },
                     "RESREF": {
@@ -68270,6 +68259,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "house_ext_3"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Property Exit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "building_exit"
                     }
                   },
                   {
@@ -75320,17 +75320,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Cybertech Terminal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "cybertech_termin"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Desk"
                     },
                     "RESREF": {
@@ -75347,17 +75336,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "fabrication_term"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Medical Terminal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "medical_term"
                     }
                   },
                   {

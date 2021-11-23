@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
             var area = OBJECT_SELF;
             var areaResref = GetResRef(area);
 
@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature
 
             dbPlayer.MapProgressions[areaResref] = progression;
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>

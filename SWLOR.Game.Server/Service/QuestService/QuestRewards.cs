@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Service.QuestService
             var dbPlayer = DB.Get<Player>(playerId);
             dbPlayer.UnallocatedXP += Amount;
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
             SendMessageToPC(player, $"You earned {Amount} XP!");
         }
     }

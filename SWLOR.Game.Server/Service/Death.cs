@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
             // Already have a respawn point, no need to set the default one.
             if (!string.IsNullOrWhiteSpace(dbPlayer.RespawnAreaResref)) return;
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.RespawnAreaResref = areaResref;
             dbPlayer.RespawnLocationOrientation = facing;
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Service
                 multiplier = 15;
             
             dbPlayer.XPDebt = dbPlayer.TotalSPAcquired * multiplier;
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
 
             return dbPlayer.XPDebt;
         }

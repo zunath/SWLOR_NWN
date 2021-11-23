@@ -19611,15 +19611,15 @@
         },
         "X": {
           "type": "float",
-          "value": 19.51632308959961
+          "value": 19.51480865478516
         },
         "Y": {
           "type": "float",
-          "value": 5.106667518615723
+          "value": 5.117198467254639
         },
         "Z": {
           "type": "float",
-          "value": 0.0
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -26430,7 +26430,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 309
+          "value": 20623
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -26454,16 +26454,17 @@
         },
         "CurrentHP": {
           "type": "short",
-          "value": 15
+          "value": 10
         },
         "Description": {
-          "id": 66884,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": ""
+          }
         },
         "DisarmDC": {
           "type": "byte",
-          "value": 15
+          "value": 0
         },
         "Faction": {
           "type": "dword",
@@ -26471,7 +26472,7 @@
         },
         "Fort": {
           "type": "byte",
-          "value": 16
+          "value": 5
         },
         "Hardness": {
           "type": "byte",
@@ -26483,7 +26484,7 @@
         },
         "HP": {
           "type": "short",
-          "value": 15
+          "value": 10
         },
         "Interruptable": {
           "type": "byte",
@@ -26506,9 +26507,10 @@
           "value": 0
         },
         "LocName": {
-          "id": 66778,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "Apartment Terminal"
+          }
         },
         "OnClick": {
           "type": "resref",
@@ -26564,7 +26566,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "test"
+          "value": "apartment_term"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -26572,7 +26574,7 @@
         },
         "OpenLockDC": {
           "type": "byte",
-          "value": 18
+          "value": 0
         },
         "Plot": {
           "type": "byte",
@@ -26580,7 +26582,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 665
+          "value": 0
         },
         "Ref": {
           "type": "byte",
@@ -26592,11 +26594,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "Bread"
+          "value": "apartment_term"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "x0_bread"
+          "value": "apartment_term"
         },
         "TrapDetectable": {
           "type": "byte",
@@ -26636,15 +26638,15 @@
         },
         "X": {
           "type": "float",
-          "value": 18.29132461547852
+          "value": 19.39574813842773
         },
         "Y": {
           "type": "float",
-          "value": 7.57900857925415
+          "value": 8.262966156005859
         },
         "Z": {
           "type": "float",
-          "value": 0.03000004962086678
+          "value": 0.02999396808445454
         }
       }
     ]

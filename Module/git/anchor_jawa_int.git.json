@@ -1784,7 +1784,7 @@
               "__struct_id": 2,
               "Orientation": {
                 "type": "float",
-                "value": -3.092493772506714
+                "value": -3.092493295669556
               },
               "X": {
                 "type": "float",
@@ -2707,7 +2707,7 @@
               "__struct_id": 2,
               "Orientation": {
                 "type": "float",
-                "value": -3.117037773132324
+                "value": -3.117037296295166
               },
               "X": {
                 "type": "float",
@@ -2991,7 +2991,7 @@
               "__struct_id": 2,
               "Orientation": {
                 "type": "float",
-                "value": 2.748884677886963
+                "value": 2.748884439468384
               },
               "X": {
                 "type": "float",
@@ -3412,7 +3412,7 @@
               "__struct_id": 2,
               "Orientation": {
                 "type": "float",
-                "value": -2.871602535247803
+                "value": -2.871602296829224
               },
               "X": {
                 "type": "float",

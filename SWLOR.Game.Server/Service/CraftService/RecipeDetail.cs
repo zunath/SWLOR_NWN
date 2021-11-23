@@ -14,16 +14,16 @@ namespace SWLOR.Game.Server.Service.CraftService
         public RecipeCategoryType Category { get; set; }
         public bool IsActive { get; set; }
         public int Level { get; set; }
-        public RecipeModType ModType { get; set; }
-        public int ModSlots { get; set; }
+        public RecipeEnhancementType EnhancementType { get; set; }
+        public int EnhancementSlots { get; set; }
 
         public RecipeDetail()
         {
             IsActive = true;
             Quantity = 1;
             Category = RecipeCategoryType.Uncategorized;
-            ModType = RecipeModType.None;
-            ModSlots = 0;
+            EnhancementType = RecipeEnhancementType.None;
+            EnhancementSlots = 0;
 
             Requirements = new List<IRecipeRequirement>();
             Components = new Dictionary<string, int>();

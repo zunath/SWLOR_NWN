@@ -38,7 +38,10 @@ namespace SWLOR.Game.Server.Service
                 return;
             var targetedObject = GetTargetingModeSelectedObject();
 
-            _playerTargetingActions[player](targetedObject);
+            if (GetIsObjectValid(targetedObject))
+            {
+                _playerTargetingActions[player](targetedObject);
+            }
         }
     }
 }

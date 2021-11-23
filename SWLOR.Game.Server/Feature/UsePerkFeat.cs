@@ -379,7 +379,7 @@ namespace SWLOR.Game.Server.Feature
                 var recastDate = DateTime.UtcNow.AddSeconds(delaySeconds);
                 dbPlayer.RecastTimes[group] = recastDate;
 
-                DB.Set(playerId, dbPlayer);
+                DB.Set(dbPlayer);
             }
 
         }

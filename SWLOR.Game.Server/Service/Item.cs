@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.PerkService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -516,5 +518,179 @@ namespace SWLOR.Game.Server.Service
             BaseItem.QuarterStaff,
             BaseItem.LightMace,
         };
+
+
+        /// <summary>
+        /// Retrieves the icon used on the UIs. 
+        /// </summary>
+        /// <param name="item">The item to retrieve the icon for.</param>
+        /// <returns>A resref of the icon to use.</returns>
+        public static string GetIconResref(uint item)
+        {
+            var baseItem = GetBaseItemType(item);
+
+            if (baseItem == BaseItem.Cloak) // Cloaks use PLTs so their default icon doesn't really work
+                return "iit_cloak";
+            else if (baseItem == BaseItem.SpellScroll || baseItem == BaseItem.EnchantedScroll)
+            {// Scrolls get their icon from the cast spell property
+                if (GetItemHasItemProperty(item, ItemPropertyType.CastSpell))
+                {
+                    for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+                    {
+                        if (GetItemPropertyType(ip) == ItemPropertyType.CastSpell)
+                            return Get2DAString("iprp_spells", "Icon", GetItemPropertySubType(ip));
+                    }
+                }
+            }
+            else if (Get2DAString("baseitems", "ModelType", (int)baseItem) == "0")
+            {// Create the icon resref for simple modeltype items
+                var sSimpleModelId = GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0).ToString();
+                while (GetStringLength(sSimpleModelId) < 3)
+                {
+                    sSimpleModelId = "0" + sSimpleModelId;
+                }
+
+                var sDefaultIcon = Get2DAString("baseitems", "DefaultIcon", (int)baseItem);
+                switch (baseItem)
+                {
+                    case BaseItem.MiscSmall:
+                    case BaseItem.CraftMaterialSmall:
+                        sDefaultIcon = "iit_smlmisc_" + sSimpleModelId;
+                        break;
+                    case BaseItem.MiscMedium:
+                    case BaseItem.CraftMaterialMedium:
+                    case BaseItem.CraftBase:
+                        sDefaultIcon = "iit_midmisc_" + sSimpleModelId;
+                        break;
+                    case BaseItem.MiscLarge:
+                        sDefaultIcon = "iit_talmisc_" + sSimpleModelId;
+                        break;
+                    case BaseItem.MiscThin:
+                        sDefaultIcon = "iit_thnmisc_" + sSimpleModelId;
+                        break;
+                }
+
+                var nLength = GetStringLength(sDefaultIcon);
+                if (GetSubString(sDefaultIcon, nLength - 4, 1) == "_")// Some items have a default icon of xx_yyy_001, we strip the last 4 symbols if that is the case
+                    sDefaultIcon = GetStringLeft(sDefaultIcon, nLength - 4);
+                var sIcon = sDefaultIcon + "_" + sSimpleModelId;
+                if (ResManGetAliasFor(sIcon, ResType.TGA) != "")// Check if the icon actually exists, if not, we'll fall through and return the default icon
+                    return sIcon;
+            }
+
+            // For everything else use the item's default icon
+            return Get2DAString("baseitems", "DefaultIcon", (int)baseItem);
+        }
+
+        /// <summary>
+        /// Builds a string containing all of the item properties on an item.
+        /// </summary>
+        /// <param name="item">The item to use.</param>
+        /// <returns>A string containing all of the item properties.</returns>
+        public static string BuildItemPropertyString(uint item)
+        {
+            var sb = new StringBuilder();
+
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                BuildSingleItemPropertyString(sb, ip);
+                sb.Append("\n");
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Builds a list of strings containing all of the item properties on an item.
+        /// </summary>
+        /// <param name="item">The item to use.</param>
+        /// <returns>A list containing all of the item properties.</returns>
+        public static GuiBindingList<string> BuildItemPropertyList(uint item)
+        {
+            var list = new GuiBindingList<string>();
+            var sb = new StringBuilder();
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                BuildSingleItemPropertyString(sb, ip);
+                list.Add(sb.ToString());
+                sb.Clear();
+            }
+
+            return list;
+        }
+
+        private static void BuildSingleItemPropertyString(StringBuilder sb, ItemProperty ip)
+        {
+            var typeId = (int)GetItemPropertyType(ip);
+            var name = GetStringByStrRef(Convert.ToInt32(Get2DAString("itempropdef", "GameStrRef", typeId)));
+            sb.Append(name);
+
+            var subTypeId = GetItemPropertySubType(ip);
+            if (subTypeId != -1)
+            {
+                var subTypeResref = Get2DAString("itempropdef", "SubTypeResRef", typeId);
+                var strRefId = StringToInt(Get2DAString(subTypeResref, "Name", subTypeId));
+                if (strRefId != 0)
+                {
+                    var text = $" {GetStringByStrRef(strRefId)}";
+                    sb.Append(text);
+                }
+            }
+
+            var param1 = GetItemPropertyParam1(ip);
+            if (param1 != -1)
+            {
+                var paramResref = Get2DAString("iprp_paramtable", "TableResRef", param1);
+                var strRef = StringToInt(Get2DAString(paramResref, "Name", GetItemPropertyParam1Value(ip)));
+                if (strRef != 0)
+                {
+                    var text = $" {GetStringByStrRef(strRef)}";
+                    sb.Append(text);
+                }
+            }
+
+            var costTable = GetItemPropertyCostTable(ip);
+            if (costTable != -1)
+            {
+                var costTableResref = Get2DAString("iprp_costtable", "Name", costTable);
+                var strRef = StringToInt(Get2DAString(costTableResref, "Name", GetItemPropertyCostTableValue(ip)));
+                if (strRef != 0)
+                {
+                    var text = $" {GetStringByStrRef(strRef)}";
+                    sb.Append(text);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Determines whether an item can be stored persistently in the database.
+        /// </summary>
+        /// <param name="player">The player attempting to persistently store the item.</param>
+        /// <param name="item">The item being stored.</param>
+        /// <returns>An error message if validation fails, otherwise an empty string if it succeeds.</returns>
+        public static string CanBePersistentlyStored(uint player, uint item)
+        {
+            if (GetItemPossessor(item) != player)
+            {
+                return "Item must be in your inventory.";
+            }
+
+            if (GetHasInventory(item))
+            {
+                return "Containers cannot be stored.";
+            }
+
+            if (GetBaseItemType(item) == BaseItem.Gold)
+            {
+                return "Credits cannot be placed inside.";
+            }
+
+            if (GetItemCursedFlag(item))
+            {
+                return "That item cannot be stored.";
+            }
+
+            return string.Empty;
+        }
     }
 }

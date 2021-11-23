@@ -1175,6 +1175,83 @@
           "type": "resref",
           "value": "playerap_s_unf"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "hutlar_smuggleba"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "hutlar_testsite"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "hutlar_valley"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "narshadaar_midoc"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "moncalabeachside"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "moncalacoralunde"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "moncaladungeon1"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "moncalajungelsu"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "moncalawildjungl"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "moncalacoralhcav"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "moncalasunkenlab"
+        }
       }
     ]
   },
@@ -1184,7 +1261,7 @@
   },
   "Mod_CustomTlk": {
     "type": "cexostring",
-    "value": "swlor_tlk"
+    "value": "swlor2_tlk"
   },
   "Mod_CutSceneList": {
     "type": "list",
@@ -1243,238 +1320,231 @@
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_2da"
+          "value": "swlor2_2da"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_mtr"
+          "value": "swlor2_mtr"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_dds"
+          "value": "swlor2_dds"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_dwk"
+          "value": "swlor2_dwk"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_gui"
+          "value": "swlor2_gui"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_ini"
+          "value": "swlor2_ini"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_itp"
+          "value": "swlor2_itp"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_mdl"
+          "value": "swlor2_mdl"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_music"
+          "value": "swlor2_music"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_plt"
+          "value": "swlor2_plt"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_portraits"
+          "value": "swlor2_portraits"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_pwk"
+          "value": "swlor2_pwk"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_set"
+          "value": "swlor2_set"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_shd"
+          "value": "swlor2_shd"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_ssf"
+          "value": "swlor2_ssf"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_tga"
+          "value": "swlor2_tga"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_txi"
+          "value": "swlor2_txi"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_utp"
+          "value": "swlor2_utp"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_wav"
+          "value": "swlor2_wav"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_wok"
+          "value": "swlor2_wok"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_add_doors"
+          "value": "swlor2_add_doors"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_add_loads"
+          "value": "swlor2_add_loads"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_add_skies"
+          "value": "swlor2_add_skies"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_ext_tiles"
+          "value": "swlor2_ext_tiles"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_add_tiles1"
+          "value": "swlor2_add_tiles"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_add_tiles2"
+          "value": "swlor2_core0"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_core0"
+          "value": "swlor2_core1"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_core1"
+          "value": "swlor2_core2"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_core2"
+          "value": "swlor2_core3"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_core3"
+          "value": "swlor2_core4"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_core4"
+          "value": "swlor2_core5"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_core5"
+          "value": "swlor2_core6"
         }
       },
       {
         "__struct_id": 8,
         "Mod_Hak": {
           "type": "cexostring",
-          "value": "swlor_core6"
-        }
-      },
-      {
-        "__struct_id": 8,
-        "Mod_Hak": {
-          "type": "cexostring",
-          "value": "swlor_core7"
+          "value": "swlor2_core7"
         }
       }
     ]

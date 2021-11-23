@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.TaxiDestinations[detail.RegionId].Add(type);
             SendMessageToPC(player, $"'{detail.Name}' registered into taxi destinations!");
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
 
         /// <summary>

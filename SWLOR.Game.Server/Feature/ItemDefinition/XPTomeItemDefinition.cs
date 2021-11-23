@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     dbPlayer.NumberPerkResetsAvailable++;
 
-                    DB.Set(playerId, dbPlayer);
+                    DB.Set(dbPlayer);
 
                     SendMessageToPC(user, $"You gain a reset token. (Total: {dbPlayer.NumberPerkResetsAvailable})");
                     DestroyObject(item);

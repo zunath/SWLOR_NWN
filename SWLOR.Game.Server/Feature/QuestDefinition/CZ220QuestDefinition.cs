@@ -45,10 +45,10 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                     KeyItem.RemoveKeyItem(player, KeyItemType.CraftingTerminalDroidOperatorsWorkReceipt);
 
                     var cdKey = GetPCPublicCDKey(player);
-                    var dbAccount = DB.Get<Account>(cdKey) ?? new Account();
+                    var dbAccount = DB.Get<Account>(cdKey) ?? new Account(cdKey);
                     dbAccount.HasCompletedTutorial = true;
 
-                    DB.Set(cdKey, dbAccount);
+                    DB.Set(dbAccount);
                 });
         }
 

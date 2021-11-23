@@ -38,7 +38,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",
@@ -50,17 +52,17 @@
   },
   "Leather2Color": {
     "type": "byte",
-    "value": 23
+    "value": 45
   },
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Republic Trooper Helmet"
+      "0": "[NPC] Republic Trooper Helmet"
     }
   },
   "Metal1Color": {
     "type": "byte",
-    "value": 167
+    "value": 43
   },
   "Metal2Color": {
     "type": "byte",
@@ -89,11 +91,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 50
+          "value": 49
         },
         "CostValue": {
           "type": "word",
-          "value": 8
+          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -105,7 +107,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 117
+          "value": 116
         },
         "Subtype": {
           "type": "word",

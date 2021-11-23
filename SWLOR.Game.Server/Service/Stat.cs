@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId) ?? new Player();
+            var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
 
             CreaturePlugin.SetMovementRateFactor(player, dbPlayer.MovementRate);
         }
@@ -205,7 +205,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer.FP > maxFP)
                     dbPlayer.FP = maxFP;
                 
-                DB.Set(playerId, dbPlayer);
+                DB.Set(dbPlayer);
             }
             // NPCs
             else
@@ -245,7 +245,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer.FP < 0)
                     dbPlayer.FP = 0;
                 
-                DB.Set(playerId, dbPlayer);
+                DB.Set(dbPlayer);
             }
             else
             {
@@ -284,7 +284,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer.Stamina > maxSTM)
                     dbPlayer.Stamina = maxSTM;
 
-                DB.Set(playerId, dbPlayer);
+                DB.Set(dbPlayer);
             }
             // NPCs
             else
@@ -323,7 +323,7 @@ namespace SWLOR.Game.Server.Service
                 if (dbPlayer.Stamina < 0)
                     dbPlayer.Stamina = 0;
 
-                DB.Set(playerId, dbPlayer);
+                DB.Set(dbPlayer);
             }
             else
             {
@@ -521,6 +521,28 @@ namespace SWLOR.Game.Server.Service
         public static void AdjustDefense(Player entity, CombatDamageType type, int adjustBy)
         {
             entity.Defenses[type] += adjustBy;
+        }
+
+        /// <summary>
+        /// Modifies a player's control by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustControl(Player entity, int adjustBy)
+        {
+            entity.Control += adjustBy;
+        }
+
+        /// <summary>
+        /// Modifies a player's craftsmanship by a certain amount.
+        /// This method will not persist the changes so be sure you call DB.Set after calling this.
+        /// </summary>
+        /// <param name="entity">The entity to modify</param>
+        /// <param name="adjustBy">The amount to adjust by</param>
+        public static void AdjustCraftsmanship(Player entity, int adjustBy)
+        {
+            entity.Craftsmanship += adjustBy;
         }
 
         /// <summary>

@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var record in results)
             {
-                _itemIds.Add(record.ItemId);
+                _itemIds.Add(record.Id);
                 _itemPrices.Add(record.Price);
                 itemIconResrefs.Add(record.IconResref);
                 itemNames.Add($"{record.Quantity}x {record.Name}");
@@ -264,8 +264,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbItem = DB.Get<MarketItem>(itemId);
 
             var item = ObjectPlugin.Deserialize(dbItem.Data);
-            SetLocalObject(Player, "EXAMINE_ITEM_WINDOW_TARGET", item);
-            Gui.TogglePlayerWindow(Player, GuiWindowType.ExamineItem);
+            var payload = new ExamineItemPayload(GetName(item), GetDescription(item), Item.BuildItemPropertyString(item));
+            Gui.TogglePlayerWindow(Player, GuiWindowType.ExamineItem, payload);
+            DestroyObject(item);
         };
 
         public Action OnClickBuy() => () =>
@@ -331,7 +332,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var dbSeller = DB.Get<Player>(sellerPlayerId);
                 var proceeds = (int)(price - (price * market.TaxRate));
                 dbSeller.MarketTill += proceeds;
-                DB.Set(sellerPlayerId, dbSeller);
+                DB.Set(dbSeller);
             });
         };
 

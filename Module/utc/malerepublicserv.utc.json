@@ -265,7 +265,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Male Republic Server Supervisor"
+      "0": "Republic Server Supervisor"
     }
   },
   "fortbonus": {
@@ -328,7 +328,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 2
+    "value": 114
   },
   "PerceptionRange": {
     "type": "byte",
@@ -629,7 +629,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "MaleRepublicServerSupervisor"
+    "value": "RepublicServerSupervisor"
   },
   "Tail_New": {
     "type": "dword",

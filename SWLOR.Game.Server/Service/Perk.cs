@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Core;
-using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service.PerkService;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -113,7 +108,7 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer.UnlockedPerks.ContainsKey(perkType)) return;
 
             dbPlayer.UnlockedPerks[perkType] = DateTime.UtcNow;
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
         }
     }
 }

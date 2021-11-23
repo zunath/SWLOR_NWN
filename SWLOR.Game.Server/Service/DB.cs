@@ -83,7 +83,6 @@ namespace SWLOR.Game.Server.Service
                 var attribute = prop.GetCustomAttribute(typeof(IndexedAttribute));
                 if (attribute != null)
                 {
-                    var detail = (IndexedAttribute)attribute;
                     if (prop.PropertyType == typeof(int) ||
                         prop.PropertyType == typeof(int?) ||
                         prop.PropertyType == typeof(ulong) ||
@@ -141,18 +140,17 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Stores a specific object in the database by an arbitrary key.
+        /// Stores a specific object in the database by its Id.
         /// </summary>
         /// <typeparam name="T">The type of data to store</typeparam>
         /// <param name="entity">The data to store.</param>
-        /// <param name="key">The arbitrary key to set this object under.</param>
-        public static void Set<T>(string key, T entity)
+        public static void Set<T>(T entity)
             where T : EntityBase
         {
             var type = typeof(T);
             var data = JsonConvert.SerializeObject(entity);
             var keyPrefix = _keyPrefixByType[type];
-            var indexKey = $"Index:{keyPrefix}:{key}";
+            var indexKey = $"Index:{keyPrefix}:{entity.Id}";
             var indexData = new Dictionary<string, RedisValue>();
 
             foreach (var prop in _indexedPropertiesByName[type])
@@ -181,34 +179,33 @@ namespace SWLOR.Game.Server.Service
             }
 
             _searchClientsByType[type].ReplaceDocument(indexKey, indexData);
-            _multiplexer.GetDatabase().JsonSet($"{keyPrefix}:{key}", data);
-            _cachedEntities[key] = entity;
+            _multiplexer.GetDatabase().JsonSet($"{keyPrefix}:{entity.Id}", data);
+            _cachedEntities[entity.Id] = entity;
         }
 
         /// <summary>
         /// Retrieves a specific object in the database by an arbitrary key.
         /// </summary>
         /// <typeparam name="T">The type of data to retrieve</typeparam>
-        /// <param name="key">The arbitrary key the data is stored under</param>
+        /// <param name="id">The arbitrary key the data is stored under</param>
         /// <returns>The object stored in the database under the specified key</returns>
-        public static T Get<T>(string key)
+        public static T Get<T>(string id)
             where T: EntityBase
         {
             var keyPrefix = _keyPrefixByType[typeof(T)];
-            if (_cachedEntities.ContainsKey(key))
+            if (_cachedEntities.ContainsKey(id))
             {
-                return (T)_cachedEntities[key];
+                return (T)_cachedEntities[id];
             }
             else
             {
                 RedisValue data;
 
                 var redisActivity = Metrics.ActivitySource.StartActivity("redis-access", ActivityKind.Server);
-                
-                data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{key}").ToString();
-                
-                redisActivity.Stop();
 
+                data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{id}").ToString();
+
+                redisActivity.Stop();
 
                 if (string.IsNullOrWhiteSpace(data))
                     return default;
@@ -222,31 +219,31 @@ namespace SWLOR.Game.Server.Service
         /// Returns true if an entry with the specified key exists.
         /// Returns false if not.
         /// </summary>
-        /// <param name="key">The key of the entity.</param>
+        /// <param name="id">The key of the entity.</param>
         /// <returns>true if found, false otherwise.</returns>
-        public static bool Exists<T>(string key)
+        public static bool Exists<T>(string id)
             where T : EntityBase
         {
             var keyPrefix = _keyPrefixByType[typeof(T)];
-            if (_cachedEntities.ContainsKey(key))
+            if (_cachedEntities.ContainsKey(id))
                 return true;
             else
-                return _multiplexer.GetDatabase().KeyExists($"{keyPrefix}:{key}");
+                return _multiplexer.GetDatabase().KeyExists($"{keyPrefix}:{id}");
         }
 
         /// <summary>
         /// Deletes an entry by a specified key.
         /// </summary>
         /// <typeparam name="T">The type of entity to delete.</typeparam>
-        /// <param name="key">The key of the entity</param>
-        public static void Delete<T>(string key)
+        /// <param name="id">The key of the entity</param>
+        public static void Delete<T>(string id)
             where T: EntityBase
         {
             var keyPrefix = _keyPrefixByType[typeof(T)];
-            var indexKey = $"Index:{keyPrefix}:{key}";
+            var indexKey = $"Index:{keyPrefix}:{id}";
             _searchClientsByType[typeof(T)].DeleteDocument(indexKey);
-            _multiplexer.GetDatabase().JsonDelete($"{keyPrefix}:{key}");
-            _cachedEntities.Remove(key);
+            _multiplexer.GetDatabase().JsonDelete($"{keyPrefix}:{id}");
+            _cachedEntities.Remove(id);
         }
 
         /// <summary>

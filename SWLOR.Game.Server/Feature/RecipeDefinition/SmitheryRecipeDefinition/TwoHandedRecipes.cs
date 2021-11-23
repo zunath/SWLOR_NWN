@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(8)
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 1)
-                .ModSlots(RecipeModType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 9)
                 .Component("wood", 5);
 
@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(18)
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 2)
-                .ModSlots(RecipeModType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 9)
                 .Component("fine_wood", 5);
 
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(28)
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 3)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 9)
                 .Component("ancient_wood", 5);
 
@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(38)
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 4)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 9)
                 .Component("aracia_wood", 5);
 
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(48)
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 9)
                 .Component("hyphae_wood", 5);
         }
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(7)
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 1)
-                .ModSlots(RecipeModType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 8)
                 .Component("wood", 4);
 
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(17)
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 2)
-                .ModSlots(RecipeModType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 8)
                 .Component("fine_wood", 4);
 
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(27)
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 3)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 8)
                 .Component("ancient_wood", 4);
 
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(37)
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 4)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 8)
                 .Component("aracia_wood", 4);
 
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(47)
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("aracia_wood", 8)
                 .Component("hyphae_wood", 4);
         }
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(8)
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 1)
-                .ModSlots(RecipeModType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_veldite", 5)
                 .Component("wood", 3);
 
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(18)
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 2)
-                .ModSlots(RecipeModType.Weapon, 1)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 1)
                 .Component("ref_scordspar", 5)
                 .Component("fine_wood", 3);
 
@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(28)
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 3)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_plagionite", 5)
                 .Component("ancient_wood", 3);
 
@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(38)
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 4)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_keromber", 5)
                 .Component("aracia_wood", 3);
 
@@ -188,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Level(48)
                 .Quantity(1)
                 .RequirementPerk(PerkType.TwoHandedBlueprints, 5)
-                .ModSlots(RecipeModType.Weapon, 2)
+                .EnhancementSlots(RecipeEnhancementType.Weapon, 2)
                 .Component("ref_jasioclase", 5)
                 .Component("hyphae_wood", 3);
         }

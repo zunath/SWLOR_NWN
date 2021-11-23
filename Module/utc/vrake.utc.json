@@ -171,14 +171,14 @@
         "__struct_id": 1,
         "EquippedRes": {
           "type": "resref",
-          "value": "helmet_fb001"
+          "value": "helmet_fb003"
         }
       },
       {
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "robe_sand_m001"
+          "value": "robe_sand_m003"
         }
       }
     ]
@@ -775,6 +775,26 @@
   "IsPC": {
     "type": "byte",
     "value": 0
+  },
+  "ItemList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "InventoryRes": {
+          "type": "resref",
+          "value": "saberstaff_y_001"
+        },
+        "Repos_PosX": {
+          "type": "word",
+          "value": 0
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
+        }
+      }
+    ]
   },
   "LastName": {
     "type": "cexolocstring",

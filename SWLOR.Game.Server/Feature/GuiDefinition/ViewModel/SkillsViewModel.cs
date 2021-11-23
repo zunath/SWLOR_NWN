@@ -199,7 +199,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             dbPlayer.Skills[selectedSkill].IsLocked = isLocked;
 
-            DB.Set(playerId, dbPlayer);
+            DB.Set(dbPlayer);
 
             DecayLockColors[index] = GetDecayLockColor(isLocked, true);
             DecayLockTexts[index] = GetDecayLockText(isLocked, true);

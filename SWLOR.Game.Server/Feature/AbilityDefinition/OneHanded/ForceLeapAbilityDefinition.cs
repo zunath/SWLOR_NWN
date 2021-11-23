@@ -41,6 +41,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 return "This is a one-handed ability.";
             }
 
+            if (GetDistanceBetween(activator, target) < 8)
+            {
+                return "You must get further away from the target to use this ability.";
+            }
+
             return string.Empty;
         }
 
@@ -66,19 +71,37 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     break;
             }
 
-            const float Delay = 3f;
+            const float Delay = 1.2f;
             ClearAllActions();
-            ApplyEffectToObject(DurationType.Temporary, EffectDisappearAppear(GetLocation(target)), activator, Delay);
+            AssignCommand(activator, () =>
+            {
+                PlaySound("plr_force_flip");
+                ActionPlayAnimation(Animation.ForceLeap, 2.0f, 1.0f);
+            });
 
             var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
             var damage = Combat.CalculateDamage(dmg, willpower, defense, vitality, false);
+            var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var rightHandBaseItemType = GetBaseItemType(weapon);
 
             DelayCommand(Delay, () =>
             {                
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Sonic), target);
                 ApplyEffectToObject(DurationType.Temporary, EffectStunned(), target, 2f);
+                AssignCommand(activator, () =>
+                {
+                    if (rightHandBaseItemType == BaseItem.Lightsaber)
+                    {
+                        PlaySound("cb_ht_saberchan1");
+                    }
+                    else
+                    {
+                        PlaySound("cb_ht_critical");
+                    }
+                    ActionJumpToObject(target);
+                });
             });
 
             Enmity.ModifyEnmityOnAll(activator, 1);
@@ -90,7 +113,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             builder.Create(FeatType.ForceLeap1, PerkType.ForceLeap)
                 .Name("Force Leap I")
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
-                .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
@@ -102,7 +124,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             builder.Create(FeatType.ForceLeap2, PerkType.ForceLeap)
                 .Name("Force Leap II")
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
-                .HasActivationDelay(2.0f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()
@@ -114,7 +135,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             builder.Create(FeatType.ForceLeap3, PerkType.ForceLeap)
                 .Name("Force Leap III")
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
-                .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
                 .UnaffectedByHeavyArmor()

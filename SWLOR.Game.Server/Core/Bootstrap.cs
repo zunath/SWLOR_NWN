@@ -257,6 +257,8 @@ namespace SWLOR.Game.Server.Core
 
             NativeFunctions = Marshal.PtrToStructure<BootstrapArgs>(arg);
 
+            using var tracerProvider = Metrics.Initialize();
+
             AllHandlers handlers;
             handlers.MainLoop = OnMainLoop;
             handlers.RunScript = OnRunScript;

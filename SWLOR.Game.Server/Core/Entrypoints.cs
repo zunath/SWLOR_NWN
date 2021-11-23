@@ -86,8 +86,6 @@ namespace SWLOR.Game.Server.Core
         {
             Console.WriteLine("Setup tracing");
 
-            _ = Metrics.Initialize();
-
             Console.WriteLine("Registering scripts...");
             LoadHandlersFromAssembly();
             Console.WriteLine("Scripts registered successfully.");

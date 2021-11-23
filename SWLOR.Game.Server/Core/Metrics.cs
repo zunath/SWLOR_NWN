@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Core
     public static class Metrics
     {
         public static readonly ActivitySource ActivitySource = null;
-        static readonly string _sourceName = "nwn.swlor.jaeger";
+        static readonly string _sourceName = "nwn.swlor.logging";
 
         static Metrics()
         {

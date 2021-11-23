@@ -46,7 +46,7 @@ services:
         ports: 
             - "1888:1888"   # pprof extension
             - "13133:13133" # health_check extension
-            - "4317:4317"        # OTLP gRPC receiver
+            - "4317:4317"   # OTLP gRPC receiver
             - "55679:55679" # zpages extension        
         networks:
             swlor_network:
@@ -61,7 +61,7 @@ services:
     #    ports:
     #        - "3000:3000"
     #    depends_on:
-    #        - jaeger
+    #        - otel-collector
     #    volumes:
     #        - ./grafana-provisioning:/etc/grafana/provisioning
     #    networks:

@@ -42192,7 +42192,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 8.968310171678829e-044
+                "value": 8.183583031656932e-043
               },
               "XPosition": {
                 "type": "float",
@@ -42541,7 +42541,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 8.183583031656932e-043
+                "value": 8.968310171678829e-044
               },
               "XPosition": {
                 "type": "float",
@@ -42638,7 +42638,7 @@
         },
         "ScriptHeartbeat": {
           "type": "resref",
-          "value": ""
+          "value": "script_1"
         },
         "ScriptOnBlocked": {
           "type": "resref",
@@ -42654,7 +42654,7 @@
         },
         "ScriptSpawn": {
           "type": "resref",
-          "value": "sw_staticholo"
+          "value": ""
         },
         "ScriptSpellAt": {
           "type": "resref",
@@ -43112,6 +43112,41 @@
           "type": "resref",
           "value": "hohenmaster"
         },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.PermanentVisualEffect"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "PERMANENT_VFX_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 478
+              }
+            }
+          ]
+        },
         "WalkRate": {
           "type": "int",
           "value": 4
@@ -43484,7 +43519,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 0.0
+                "value": 8.183583031656932e-043
               },
               "XPosition": {
                 "type": "float",
@@ -43771,7 +43806,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 8.183583031656932e-043
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -43868,7 +43903,7 @@
         },
         "ScriptHeartbeat": {
           "type": "resref",
-          "value": ""
+          "value": "script_1"
         },
         "ScriptOnBlocked": {
           "type": "resref",
@@ -43884,7 +43919,7 @@
         },
         "ScriptSpawn": {
           "type": "resref",
-          "value": "sw_staticholo"
+          "value": ""
         },
         "ScriptSpellAt": {
           "type": "resref",
@@ -44130,6 +44165,41 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "verrackrealla"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.PermanentVisualEffect"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "PERMANENT_VFX_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 478
+              }
+            }
+          ]
         },
         "WalkRate": {
           "type": "int",
@@ -44535,7 +44605,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 0.0
+                "value": 8.183583031656932e-043
               },
               "XPosition": {
                 "type": "float",
@@ -44822,7 +44892,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 8.183583031656932e-043
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -44919,7 +44989,7 @@
         },
         "ScriptHeartbeat": {
           "type": "resref",
-          "value": ""
+          "value": "script_1"
         },
         "ScriptOnBlocked": {
           "type": "resref",
@@ -44935,7 +45005,7 @@
         },
         "ScriptSpawn": {
           "type": "resref",
-          "value": "sw_staticholo"
+          "value": ""
         },
         "ScriptSpellAt": {
           "type": "resref",
@@ -45181,6 +45251,41 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "zhettathorne"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.PermanentVisualEffect"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "PERMANENT_VFX_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 478
+              }
+            }
+          ]
         },
         "WalkRate": {
           "type": "int",
@@ -45886,7 +45991,7 @@
         },
         "ScriptHeartbeat": {
           "type": "resref",
-          "value": ""
+          "value": "script_1"
         },
         "ScriptOnBlocked": {
           "type": "resref",
@@ -45902,7 +46007,7 @@
         },
         "ScriptSpawn": {
           "type": "resref",
-          "value": "sw_staticholo"
+          "value": ""
         },
         "ScriptSpellAt": {
           "type": "resref",
@@ -46148,6 +46253,41 @@
         "TemplateResRef": {
           "type": "resref",
           "value": "knightberynmorns"
+        },
+        "VarTable": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "SCRIPT_1"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Placeable.PermanentVisualEffect"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "PERMANENT_VFX_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 478
+              }
+            }
+          ]
         },
         "WalkRate": {
           "type": "int",
@@ -365014,7 +365154,9 @@
         "LocalizedName": {
           "id": 14814,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": "Map Note"
+          }
         },
         "MapNote": {
           "id": 14815,
@@ -365029,7 +365171,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "NW_MAPNOTE001"
+          "value": "MN_HallOfMemories"
         },
         "TemplateResRef": {
           "type": "resref",

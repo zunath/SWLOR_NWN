@@ -26,7 +26,11 @@ namespace SWLOR.Game.Server.Scripts.Placeable
                 _.ApplyEffectToObject(DurationType.Permanent, _.EffectVisualEffect(vfxID), self);
             }
 
-            _.SetEventScript(self, EventScript.Placeable_OnHeartbeat, string.Empty);
+            var type = _.GetObjectType(self);
+            if(type == ObjectType.Placeable)
+                _.SetEventScript(self, EventScript.Placeable_OnHeartbeat, string.Empty);
+            else if (type == ObjectType.Creature)
+                _.SetEventScript(self, EventScript.Creature_OnHeartbeat, string.Empty);
         }
     }
 }

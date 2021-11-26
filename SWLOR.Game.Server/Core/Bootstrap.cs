@@ -1,4 +1,6 @@
+using OpenTelemetry.Trace;
 using System;
+using System.Diagnostics;
 using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -257,8 +259,6 @@ namespace SWLOR.Game.Server.Core
 
             NativeFunctions = Marshal.PtrToStructure<BootstrapArgs>(arg);
 
-            using var tracerProvider = Metrics.Initialize();
-
             AllHandlers handlers;
             handlers.MainLoop = OnMainLoop;
             handlers.RunScript = OnRunScript;
@@ -268,6 +268,8 @@ namespace SWLOR.Game.Server.Core
 
             try
             {
+                using var tracerProvider = Metrics.Initialize();
+                using var a1 = Metrics.ActivitySource.StartActivity("LoadHandlersFromAssembly", ActivityKind.Server);
                 Entrypoints.OnStart();
             }
             catch (Exception e)

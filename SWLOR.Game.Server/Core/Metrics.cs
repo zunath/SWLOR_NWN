@@ -8,21 +8,17 @@ namespace SWLOR.Game.Server.Core
 {
     public static class Metrics
     {
-        public static readonly ActivitySource ActivitySource = null;
-        static readonly string _sourceName = "nwn.swlor.logging";
-
-        static Metrics()
-        {
-            ActivitySource = new ActivitySource(_sourceName, "1.0.0");
-        }
+        public static readonly ActivitySource ActivitySource = new ActivitySource("nwn.swlor.logging", "1.0.0");
+        public static readonly string SourceName = "nwn.swlor.logging";
 
         public static TracerProvider Initialize()
         {
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             return Sdk.CreateTracerProviderBuilder()
-                .AddSource(_sourceName)
+                .AddGrpcClientInstrumentation()
+                .AddSource(SourceName)
                 .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("swlor"))
-                .AddOtlpExporter(config => 
+                .AddOtlpExporter(config =>
                 {
                     config.Endpoint = new Uri("http://otel-collector:4317");
                     config.Protocol = OpenTelemetry.Exporter.OtlpExportProtocol.Grpc;

@@ -84,8 +84,6 @@ namespace SWLOR.Game.Server.Core
         //
         public static void OnStart()
         {
-            Console.WriteLine("Setup tracing");
-
             Console.WriteLine("Registering scripts...");
             LoadHandlersFromAssembly();
             Console.WriteLine("Scripts registered successfully.");
@@ -161,8 +159,6 @@ namespace SWLOR.Game.Server.Core
 
         private static void LoadHandlersFromAssembly()
         {
-            var a1 = Metrics.ActivitySource.StartActivity("LoadHandlersFromAssembly", ActivityKind.Server);
-
             _scripts = new Dictionary<string, List<ActionScript>>();
             _conditionalScripts = new Dictionary<string, List<ConditionalScript>>();
 
@@ -177,11 +173,12 @@ namespace SWLOR.Game.Server.Core
                 foreach (var attr in mi.GetCustomAttributes(typeof(NWNEventHandler), false))
                 {
                     var script = ((NWNEventHandler)attr).Script;
-                    var a2 = Metrics.ActivitySource.StartActivity($"load-{script}", ActivityKind.Server, a1.Context);
-
+                    //using var a2 = Metrics.ActivitySource.StartActivity($"load-{script}", ActivityKind.Server, a1.Context);
+                        
                     if (script.Length > MaxCharsInScriptName || script.Length == 0)
                     {
                         Console.WriteLine($"Script name '{script}' is invalid on method {mi.Name}.");
+                        //a2?.SetTag("otel.status_code", StatusCode.Error);
                         throw new ApplicationException();
                     }
 
@@ -200,7 +197,7 @@ namespace SWLOR.Game.Server.Core
                         });
                     }
                     // Otherwise it's a normal script.
-                    else if(mi.ReturnType == typeof(void))
+                    else if (mi.ReturnType == typeof(void))
                     {
                         var del = (Action)mi.CreateDelegate(typeof(Action));
 
@@ -217,12 +214,8 @@ namespace SWLOR.Game.Server.Core
                     {
                         Log.Write(LogGroup.Error, $"Method '{mi.Name}' tied to script '{script}' has an invalid return type. This script was NOT loaded.", true);
                     }
-
-                    a2.Stop();
                 }
             }
-
-            a1.Stop();
         }
 
         /// <summary>

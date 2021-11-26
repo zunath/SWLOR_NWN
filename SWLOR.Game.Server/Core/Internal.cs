@@ -12,6 +12,8 @@ namespace SWLOR.Game.Server.Core
 
         public static void OnMainLoop(ulong frame)
         {
+            //using var tracerProvider = Metrics.Initialize();
+
             try
             {
                 Entrypoints.OnMainLoop(frame);
@@ -30,6 +32,8 @@ namespace SWLOR.Game.Server.Core
         private static Stack<ScriptContext> ScriptContexts = new Stack<ScriptContext>();
         public static int OnRunScript(string script, uint oidSelf)
         {
+            //using var tracerProvider = Metrics.Initialize();
+
             var ret = 0;
             OBJECT_SELF = oidSelf;
             ScriptContexts.Push(new ScriptContext { OwnerObject = oidSelf, ScriptName = script });
@@ -65,6 +69,8 @@ namespace SWLOR.Game.Server.Core
 
         public static void OnClosure(ulong eid, uint oidSelf)
         {
+            //using var tracerProvider = Metrics.Initialize();
+
             var old = OBJECT_SELF;
             OBJECT_SELF = oidSelf;
             try
@@ -81,6 +87,8 @@ namespace SWLOR.Game.Server.Core
 
         public static void OnSignal(string signal)
         {
+            //using var tracerProvider = Metrics.Initialize();
+
             try
             {
                 switch (signal)

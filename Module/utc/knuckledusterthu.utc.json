@@ -118,11 +118,11 @@
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 36
+    "value": 123
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 30
+    "value": 100
   },
   "Comment": {
     "type": "cexostring",
@@ -328,11 +328,26 @@
         "__struct_id": 0,
         "InventoryRes": {
           "type": "resref",
-          "value": "npc_pistol"
+          "value": "club_cox"
         },
         "Repos_PosX": {
           "type": "word",
           "value": 0
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 1,
+        "InventoryRes": {
+          "type": "resref",
+          "value": "npc_pistol"
+        },
+        "Repos_PosX": {
+          "type": "word",
+          "value": 1
         },
         "Repos_Posy": {
           "type": "word",

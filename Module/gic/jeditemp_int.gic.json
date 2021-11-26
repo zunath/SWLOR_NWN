@@ -4751,13 +4751,6 @@
         "__struct_id": 9,
         "Comment": {
           "type": "cexostring",
-          "value": ""
-        }
-      },
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
           "value": "Source: Placeable Lightshafts with pwk by Demigog"
         }
       },
@@ -9974,6 +9967,90 @@
         "Comment": {
           "type": "cexostring",
           "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: DK Furniture Plus by Nethy"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: DK Furniture Plus by Nethy"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: DK Furniture Plus by Nethy"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: DK Furniture Plus by Nethy"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: DK Furniture Plus by Nethy"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: DK Furniture Plus by Nethy"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: DK Furniture Plus by Nethy"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: DK Furniture Plus by Nethy"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: DK Furniture Plus by Nethy"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: DK Furniture Plus by Nethy"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: DK Furniture Plus by Nethy"
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Source: DK Furniture Plus by Nethy"
         }
       }
     ]

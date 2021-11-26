@@ -2026,6 +2026,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Jedi Temple Guard Mask"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "templeguardmask"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Katar's Armour"
                     },
                     "RESREF": {

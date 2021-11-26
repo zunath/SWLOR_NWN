@@ -56,12 +56,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             AssignCommand(activator, () =>
             {
-
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
                 PlaySound("plr_force_blast");
                 DoFireball(target);
             });
-
 
             DelayCommand(delay, () =>
             {
@@ -117,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction(ImpactAction);
         }
-        public static void DoFireball(uint target)
+        private static void DoFireball(uint target)
         {
             var missile = EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_Fireball);
             ApplyEffectToObject(DurationType.Instant, missile, target);

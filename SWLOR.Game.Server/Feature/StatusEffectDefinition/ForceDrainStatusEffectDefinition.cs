@@ -56,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 {
                     if (!Ability.GetAbilityResisted(source, target))
                     {
+                        PlaySound("plr_force_absorb");
                         ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Drain, target, BodyNode.Hand), source, 2.0F);
                         ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Drain, source, BodyNode.Hand), target, 2.0F);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
@@ -78,6 +79,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 {
                     if (!Ability.GetAbilityResisted(source, target))
                     {
+                        PlaySound("plr_force_absorb");
                         ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Drain, target, BodyNode.Hand), source, 2.0F);
                         ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Drain, source, BodyNode.Hand), target, 2.0F);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
@@ -100,6 +102,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 {
                     if (!Ability.GetAbilityResisted(source, target))
                     {
+                        PlaySound("plr_force_absorb");
                         ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Drain, target, BodyNode.Hand), source, 2.0F);
                         ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Drain, source, BodyNode.Hand), target, 2.0F);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
@@ -122,6 +125,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 {
                     if (!Ability.GetAbilityResisted(source, target))
                     {
+                        PlaySound("plr_force_absorb");
                         ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Drain, target, BodyNode.Hand), source, 2.0F);
                         ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Drain, source, BodyNode.Hand), target, 2.0F);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);

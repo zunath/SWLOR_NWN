@@ -33,6 +33,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 {
                     if (!Ability.GetAbilityResisted(source, target))
                     {
+                        PlaySound("plr_force_absorb");
+                        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Drain, target, BodyNode.Hand), source, 2.0F);
+                        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Drain, source, BodyNode.Hand), target, 2.0F);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Reduce_Ability_Score), target);
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(1), target);
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(1), target);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), source);
@@ -51,6 +56,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 {
                     if (!Ability.GetAbilityResisted(source, target))
                     {
+                        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Drain, target, BodyNode.Hand), source, 2.0F);
+                        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Drain, source, BodyNode.Hand), target, 2.0F);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Reduce_Ability_Score), target);
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(2), target);
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(2), target);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), source);
@@ -69,6 +78,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 {
                     if (!Ability.GetAbilityResisted(source, target))
                     {
+                        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Drain, target, BodyNode.Hand), source, 2.0F);
+                        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Drain, source, BodyNode.Hand), target, 2.0F);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Reduce_Ability_Score), target);
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(3), target);
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(3), target);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), source);
@@ -87,6 +100,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 {
                     if (!Ability.GetAbilityResisted(source, target))
                     {
+                        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Drain, target, BodyNode.Hand), source, 2.0F);
+                        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Drain, source, BodyNode.Hand), target, 2.0F);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Reduce_Ability_Score), target);
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(4), target);
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(4), target);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), source);
@@ -105,6 +122,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 {
                     if (!Ability.GetAbilityResisted(source, target))
                     {
+                        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Drain, target, BodyNode.Hand), source, 2.0F);
+                        ApplyEffectToObject(DurationType.Temporary, EffectBeam(VisualEffect.Vfx_Beam_Drain, source, BodyNode.Hand), target, 2.0F);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
+                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Reduce_Ability_Score), target);
                         ApplyEffectToObject(DurationType.Instant, EffectDamage(5), target);
                         ApplyEffectToObject(DurationType.Instant, EffectHeal(5), target);
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), source);

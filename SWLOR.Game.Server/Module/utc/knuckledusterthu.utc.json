@@ -118,11 +118,11 @@
   },
   "Color_Tattoo1": {
     "type": "byte",
-    "value": 36
+    "value": 123
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 30
+    "value": 100
   },
   "Comment": {
     "type": "cexostring",

@@ -31,7 +31,7 @@
       },
       "MusicDay": {
         "type": "int",
-        "value": 0
+        "value": 374
       },
       "MusicDelay": {
         "type": "int",
@@ -39,7 +39,7 @@
       },
       "MusicNight": {
         "type": "int",
-        "value": 0
+        "value": 375
       }
     }
   },
@@ -93770,11 +93770,11 @@
         },
         "LinkedTo": {
           "type": "cexostring",
-          "value": ""
+          "value": "SithLake_Out"
         },
         "LinkedToFlags": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "LoadScreenID": {
           "type": "word",
@@ -93868,7 +93868,7 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "SithLakeIn"
+          "value": "SithLake_In"
         },
         "TemplateResRef": {
           "type": "resref",

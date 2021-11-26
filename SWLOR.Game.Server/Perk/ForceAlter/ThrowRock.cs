@@ -65,20 +65,28 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             var result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Universal, true);
 
             // +/- percent change based on resistance
-            float delta = 0.01f * result.Delta;
+            var delta = 0.01f * result.Delta;
             damage = damage + (int)(damage * delta);
+            var targetLocation = _.GetLocation(creature);
+            var delay = _.GetDistanceBetweenLocations(creature.Location, targetLocation) / 18.0f + 0.35f;
 
             creature.AssignCommand(() =>
             {
-                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, DamageType.Bludgeoning), target);
+                DoRock(target);
+                _.PlaySound("plr_force_throw");
             });
+
+            creature.DelayAssignCommand(() =>
+            {
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage, DamageType.Bludgeoning), target);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Dust_Explosion), target);
+            }, delay);
 
             if (creature.IsPlayer)
             {
                 SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
             }
 
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Dust_Explosion), target);
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)
@@ -109,6 +117,11 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         public void OnConcentrationTick(NWCreature creature, NWObject target, int perkLevel, int tick)
         {
 
+        }
+        public void DoRock(NWObject target)
+        {
+            var missile = _.EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_Rock);
+            _.ApplyEffectToObject(DurationType.Instant, missile, target);
         }
     }
 }

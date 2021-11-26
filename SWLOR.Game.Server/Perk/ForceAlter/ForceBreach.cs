@@ -67,18 +67,28 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             // +/- percent change based on resistance
             float delta = 0.01f * result.Delta;
             damage = damage + (int)(damage * delta);
+            var targetLocation = _.GetLocation(creature);
+            var delay = _.GetDistanceBetweenLocations(creature.Location, targetLocation) / 18.0f + 0.35f;
 
             creature.AssignCommand(() =>
             {
-                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage), target);
+                _.PlaySound("plr_force_blast");
+                DoFireball(target);               
             });
+
+            creature.DelayAssignCommand(() =>
+            {
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(damage), target);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Silence), target);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.VFX_IMP_KIN_L), target);
+            }, delay);
+
 
             if (creature.IsPlayer)
             {
                 SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
             }
-
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Silence), target);
+            
         }
 
         public void OnPurchased(NWCreature creature, int newLevel)
@@ -110,5 +120,11 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
         {
             
         }
+        public void DoFireball(NWObject target)
+        {
+            var missile = _.EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_Fireball);
+            _.ApplyEffectToObject(DurationType.Instant, missile, target);
+        }
+
     }
 }

@@ -107,10 +107,19 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 amount = 0;
             }
 
+            var targetLocation = _.GetLocation(creature);
+            var delay = _.GetDistanceBetweenLocations(creature.Location, targetLocation) / 18.0f + 0.35f;
+
             creature.AssignCommand(() =>
             {
-                _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(amount, DamageType.Negative), target);
+                _.PlaySound("plr_force_absorb");
+                _.ApplyEffectToObject(DurationType.Temporary, _.EffectBeam(VisualEffect.Vfx_Beam_Drain, target, BodyNode.Hand), creature, 2.0F);
+                _.ApplyEffectToObject(DurationType.Temporary, _.EffectBeam(VisualEffect.Vfx_Beam_Drain, creature, BodyNode.Hand), target, 2.0F);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
+                _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Reduce_Ability_Score), target);
             });
+
+
 
             // Only apply a heal if caster is not at max HP. Otherwise they'll get unnecessary spam.
             if (creature.CurrentHP < creature.MaxHP)
@@ -118,12 +127,13 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                 _.ApplyEffectToObject(DurationType.Instant, _.EffectHeal(amount), creature);
             }
 
-            if(creature.IsPlayer)
+            _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(amount, DamageType.Negative), target);
+
+            if (creature.IsPlayer)
             {
                 SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
             }
 
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Com_Hit_Negative), target);
         }
     }
 }

@@ -51,13 +51,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var defense = Stat.GetDefense(target, CombatDamageType.Force);
             var targetWillpower = GetAbilityModifier(AbilityType.Willpower, target);
             var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, false);
-            
+            var delay = GetDistanceBetweenLocations(GetLocation(activator), targetLocation) / 18.0f + 0.35f;
+
             AssignCommand(activator, () =>
             {
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
-                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Silence), target);
+                PlaySound("plr_force_blast");
+                DoFireball(target);
             });
-            
+
+            DelayCommand(delay, () =>
+            {
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Silence), target);
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.VFX_IMP_KIN_L), target);
+            });
+
             Enmity.ModifyEnmityOnAll(activator, 1);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
@@ -67,7 +76,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst1, PerkType.ForceBurst)
                 .Name("Force Burst I")
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
-                .HasActivationDelay(2.0f)
                 .RequirementFP(2)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
@@ -79,7 +87,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst2, PerkType.ForceBurst)
                 .Name("Force Burst II")
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
-                .HasActivationDelay(2.0f)
                 .RequirementFP(3)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
@@ -91,7 +98,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst3, PerkType.ForceBurst)
                 .Name("Force Burst III")
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
-                .HasActivationDelay(2.0f)
                 .RequirementFP(4)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
@@ -103,11 +109,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst4, PerkType.ForceBurst)
                 .Name("Force Burst IV")
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
-                .HasActivationDelay(4.0f)
                 .RequirementFP(5)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction(ImpactAction);
+        }
+        private static void DoFireball(uint target)
+        {
+            var missile = EffectVisualEffect(VisualEffect.Vfx_Imp_Mirv_Fireball);
+            ApplyEffectToObject(DurationType.Instant, missile, target);
         }
     }
 }

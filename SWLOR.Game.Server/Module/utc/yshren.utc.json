@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 97
+    "value": 142
   },
   "Appearance_Type": {
     "type": "word",
@@ -144,7 +144,7 @@
   },
   "Color_Tattoo2": {
     "type": "byte",
-    "value": 1
+    "value": 20
   },
   "Comment": {
     "type": "cexostring",
@@ -201,13 +201,6 @@
         "EquippedRes": {
           "type": "resref",
           "value": "yshrensaber001"
-        }
-      },
-      {
-        "__struct_id": 512,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "hastejedi2"
         }
       }
     ]
@@ -643,6 +636,21 @@
         "Repos_PosX": {
           "type": "word",
           "value": 1
+        },
+        "Repos_Posy": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 2,
+        "InventoryRes": {
+          "type": "resref",
+          "value": "hastejedi2"
+        },
+        "Repos_PosX": {
+          "type": "word",
+          "value": 3
         },
         "Repos_Posy": {
           "type": "word",

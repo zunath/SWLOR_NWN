@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.NWN;
+﻿using System;
+using SWLOR.Game.Server.NWN;
 using SWLOR.Game.Server.AI;
 using SWLOR.Game.Server.GameObject;
 
@@ -9,6 +10,7 @@ namespace SWLOR.Game.Server.ValueObject
         public NWObject Spawn { get; set; }
         public float RespawnTime { get; set; }
         public float Timer { get; set; }
+        public DateTime Expires { get; set; }
         public int SpawnTableID { get; set; }
         public string Resref { get; set; }
         public NWLocation SpawnLocation { get; set; }

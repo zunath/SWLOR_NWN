@@ -455,7 +455,11 @@ namespace SWLOR.Game.Server.Service
             // Spawn expiry.
             if (spawn.Expires < DateTime.UtcNow)
             {
-                DestroyObject(spawn.Spawn);                
+                NWPlaceable prop = spawn.Spawn.GetLocalObject("RESOURCE_PROP_OBJ");
+                if (prop.IsValid)
+                    DestroyObject(prop);
+
+                DestroyObject(spawn.Spawn);
             }
             // Don't process anything that's valid.  Put this in an else branch as object destruction
             // happens after script completion. 

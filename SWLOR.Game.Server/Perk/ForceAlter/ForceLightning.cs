@@ -98,15 +98,15 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             
             creature.AssignCommand(() =>
             {
+                _.PlaySound("plr_force_lightn");
                 _.ApplyEffectToObject(DurationType.Instant, _.EffectDamage(amount, DamageType.Electrical), target);
+                _.ApplyEffectToObject(DurationType.Temporary, _.EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, creature, BodyNode.Hand), target, 1.0F);
             });
 
             if (creature.IsPlayer)
             {
                 SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
             }
-
-            _.ApplyEffectToObject(DurationType.Instant, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Lightning_S), target);
         }
     }
 }

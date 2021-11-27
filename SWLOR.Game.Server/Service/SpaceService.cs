@@ -374,6 +374,7 @@ namespace SWLOR.Game.Server.Service
                 NWObject accessor = bay.GetLocalObject("BAY_ACCESSOR");
                 if (!accessor.IsValid)
                 {
+                    bay.DestroyAllInventoryItems();
                     bay.Destroy();
                 }
                 else

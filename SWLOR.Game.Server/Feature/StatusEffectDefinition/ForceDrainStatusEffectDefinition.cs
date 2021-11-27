@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using Random = SWLOR.Game.Server.Service.Random;
-
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public class ForceDrainStatusEffectDefinition : IStatusEffectListDefinition
@@ -23,7 +20,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             return builder.Build();
         }
-
         private void ForceDrain1(StatusEffectBuilder builder)
         {
             builder.Create(StatusEffectType.ForceDrain1)
@@ -33,9 +29,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 {
                     if (!Ability.GetAbilityResisted(source, target))
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectDamage(1), target);
-                        ApplyEffectToObject(DurationType.Instant, EffectHeal(1), target);
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), source);
+                        DoDamageAndVFX(VisualEffect.Vfx_Beam_Drain, 1, 1, target, source);
                     }                   
 
                     Enmity.ModifyEnmityOnAll(source, 1);
@@ -51,9 +45,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 {
                     if (!Ability.GetAbilityResisted(source, target))
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectDamage(2), target);
-                        ApplyEffectToObject(DurationType.Instant, EffectHeal(2), target);
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), source);
+                        DoDamageAndVFX(VisualEffect.Vfx_Beam_Drain, 2, 2, target, source);
                     }
 
                     Enmity.ModifyEnmityOnAll(source, 1);
@@ -69,9 +61,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 {
                     if (!Ability.GetAbilityResisted(source, target))
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectDamage(3), target);
-                        ApplyEffectToObject(DurationType.Instant, EffectHeal(3), target);
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), source);
+                        DoDamageAndVFX(VisualEffect.Vfx_Beam_Drain, 3, 3, target, source);
                     }
 
                     Enmity.ModifyEnmityOnAll(source, 1);
@@ -87,9 +77,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 {
                     if (!Ability.GetAbilityResisted(source, target))
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectDamage(4), target);
-                        ApplyEffectToObject(DurationType.Instant, EffectHeal(4), target);
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), source);
+                        DoDamageAndVFX(VisualEffect.Vfx_Beam_Drain, 4, 4, target, source);
                     }
 
                     Enmity.ModifyEnmityOnAll(source, 1);
@@ -105,14 +93,23 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 {
                     if (!Ability.GetAbilityResisted(source, target))
                     {
-                        ApplyEffectToObject(DurationType.Instant, EffectDamage(5), target);
-                        ApplyEffectToObject(DurationType.Instant, EffectHeal(5), target);
-                        ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), source);
+                        DoDamageAndVFX(VisualEffect.Vfx_Beam_Drain, 5, 5, target, source);
                     }
 
                     Enmity.ModifyEnmityOnAll(source, 1);
                     CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3);
                 });
+        }
+        private void DoDamageAndVFX(VisualEffect vfx1, int damageAmt, int healAmt, uint target, uint source)
+        {
+            PlaySound("plr_force_absorb");
+            ApplyEffectToObject(DurationType.Temporary, EffectBeam(vfx1, target, BodyNode.Hand), source, 2.0F);
+            ApplyEffectToObject(DurationType.Temporary, EffectBeam(vfx1, source, BodyNode.Hand), target, 2.0F);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Reduce_Ability_Score), target);
+            ApplyEffectToObject(DurationType.Instant, EffectDamage(damageAmt), target);
+            ApplyEffectToObject(DurationType.Instant, EffectHeal(healAmt), target);
+            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Pulse_Negative), source);
         }
     }
 }

@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 93.0
+    "value": 18.0
   },
   "ClassList": {
     "type": "list",
@@ -23,11 +23,11 @@
         "__struct_id": 2,
         "Class": {
           "type": "int",
-          "value": 15
+          "value": 6
         },
         "ClassLevel": {
           "type": "short",
-          "value": 10
+          "value": 25
         }
       }
     ]
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 15
+    "value": 14
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -125
+    "value": -94
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 4000
+    "value": 2000
   },
   "DecayTime": {
     "type": "dword",
@@ -79,14 +79,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "viperbite"
+          "value": "sandwormbite"
         }
       },
       {
         "__struct_id": 32768,
         "EquippedRes": {
           "type": "resref",
-          "value": "viperbite"
+          "value": "sandwormbite"
         }
       }
     ]
@@ -98,6 +98,13 @@
   "FeatList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1172
+        }
+      },
       {
         "__struct_id": 1,
         "Feat": {
@@ -130,20 +137,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 456
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 532
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 23
         }
       },
@@ -152,6 +145,20 @@
         "Feat": {
           "type": "word",
           "value": 1118
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 746
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1265
         }
       },
       {
@@ -183,7 +190,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 4000
+    "value": 2000
   },
   "Int": {
     "type": "byte",
@@ -217,11 +224,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 4020
+    "value": 2050
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 12
+    "value": 2
   },
   "NoPermDeath": {
     "type": "byte",
@@ -518,11 +525,11 @@
   },
   "StartingPackage": {
     "type": "byte",
-    "value": 77
+    "value": 6
   },
   "Str": {
     "type": "byte",
-    "value": 100
+    "value": 60
   },
   "Subrace": {
     "type": "cexostring",
@@ -544,6 +551,41 @@
     "type": "resref",
     "value": "sandworm"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_ID_1"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 118
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NPC_GROUP"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 31
+        }
+      }
+    ]
+  },
   "WalkRate": {
     "type": "int",
     "value": 5
@@ -558,6 +600,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 90
   }
 }

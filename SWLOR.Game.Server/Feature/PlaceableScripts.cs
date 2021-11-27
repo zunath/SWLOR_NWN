@@ -1,4 +1,5 @@
 ﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
@@ -64,22 +65,26 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
-        /// Applies a permanent VFX on a placeable on heartbeat, then removes the heartbeat script.
+        /// Applies a permanent VFX on a placeable or creature on heartbeat, then removes the heartbeat script.
         /// </summary>
         [NWNEventHandler("permanent_vfx")]
         public static void ApplyPermanentVisualEffect()
         {
-            var placeable = OBJECT_SELF;
+            var target = OBJECT_SELF;
 
-            var vfxId = GetLocalInt(placeable, "PERMANENT_VFX_ID");
+            var vfxId = GetLocalInt(target, "PERMANENT_VFX_ID");
             var vfx = vfxId > 0 ? (VisualEffect) vfxId : VisualEffect.None;
             
             if (vfx != VisualEffect.None)
             {
-                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(vfx), placeable);
+                ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect(vfx), target);
             }
 
-            SetEventScript(placeable, EventScript.Placeable_OnHeartbeat, string.Empty);
+            var type = GetObjectType(target);
+            if(type == ObjectType.Placeable)
+                SetEventScript(target, EventScript.Placeable_OnHeartbeat, string.Empty);
+            else if (type == ObjectType.Creature)
+                SetEventScript(target, EventScript.Creature_OnHeartbeat, string.Empty);
         }
 
         /// <summary>

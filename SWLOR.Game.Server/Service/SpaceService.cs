@@ -399,7 +399,7 @@ namespace SWLOR.Game.Server.Service
             {
                 SerializationService.DeserializeItem(item.ItemObject, bay);
             }
-
+            
             return bay;
         }
 
@@ -448,6 +448,12 @@ namespace SWLOR.Game.Server.Service
                     prop = _.GetNextItemProperty(item);
                 }
             }
+
+            DelayCommand(0.1f, () =>
+            {
+                bay.DestroyAllInventoryItems();
+                bay.Destroy();
+            });
 
             return bonus;
         }

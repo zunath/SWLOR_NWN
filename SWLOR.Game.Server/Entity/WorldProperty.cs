@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
-using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PropertyService;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Entity
 {
@@ -18,6 +14,7 @@ namespace SWLOR.Game.Server.Entity
             ParentPropertyId = string.Empty;
             ChildPropertyIds = new List<string>();
             Timers = new Dictionary<PropertyTimerType, DateTime>();
+            Positions = new Dictionary<PropertyLocationType, PropertyLocation>();
         }
 
         /// <summary>
@@ -60,6 +57,13 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<PropertyTimerType, DateTime> Timers { get; set; }
 
         /// <summary>
+        /// Tracks positions specific to this property.
+        /// Most properties will use a Static position but in the event the property is mobile, such as Starships,
+        /// multiple positions may need to be tracked.
+        /// </summary>
+        public Dictionary<PropertyLocationType, PropertyLocation> Positions { get; set; }
+
+        /// <summary>
         /// If true, the property will be publicly accessible.
         /// This will only be set if the PropertyType is a Building
         /// </summary>
@@ -88,16 +92,6 @@ namespace SWLOR.Game.Server.Entity
         /// </summary>
         [Indexed]
         public bool IsQueuedForDeletion { get; set; }
-
-        /// <summary>
-        /// Position of the property. Only used if the PropertyType is a Structure.
-        /// </summary>
-        public Vector3 Position { get; set; }
-
-        /// <summary>
-        /// Orientation/facing of the property. Only used if the PropertyType is a Structure.
-        /// </summary>
-        public float Orientation { get; set; }
 
         /// <summary>
         /// Associated item which has been serialized. Only used if the PropertyType is a Structure.

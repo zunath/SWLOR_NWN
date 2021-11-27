@@ -48,12 +48,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddButton()
                             .SetText("Register Ship")
                             .BindIsEnabled(model => model.IsRegisterEnabled)
-                            .BindOnClicked(model => model.OnClickRegisterShip());
+                            .BindOnClicked(model => model.OnClickRegisterShip())
+                            .SetHeight(35f);
 
                         row.AddButton()
                             .SetText("Unregister Ship")
                             .BindIsEnabled(model => model.IsUnregisterEnabled)
-                            .BindOnClicked(model => model.OnClickUnregisterShip());
+                            .BindOnClicked(model => model.OnClickUnregisterShip())
+                            .SetHeight(35f);
                     });
                 })
 
@@ -261,7 +263,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddButton()
                             .SetText("Make Active")
                             .BindIsEnabled(model => model.IsMakeActiveEnabled)
-                            .BindOnClicked(model => model.OnClickMakeActive());
+                            .BindOnClicked(model => model.OnClickMakeActive())
+                            .SetHeight(35f);
                         row.AddSpacer();
                     });
                 })

@@ -562,6 +562,8 @@ namespace SWLOR.Game.Server.Service
             Location location)
         {
             var structureDetail = GetStructureByType(type);
+            var area = GetAreaFromLocation(location);
+            var areaResref = GetResRef(area);
             var position = GetPositionFromLocation(location);
             var parentProperty = DB.Get<WorldProperty>(parentPropertyId);
             var structureItemStorage = structureDetail.ItemStorage; // todo: add structure bonus property increases
@@ -573,12 +575,19 @@ namespace SWLOR.Game.Server.Service
                 SerializedItem = ObjectPlugin.Serialize(item),
                 OwnerPlayerId = string.Empty,
                 ParentPropertyId = parentPropertyId,
-                Position = position,
-                Orientation = 0.0f,
                 StructureType = type,
                 ItemStorageCount = structureItemStorage
             };
-            
+
+            structure.Positions[PropertyLocationType.StaticPosition] = new PropertyLocation
+            {
+                AreaResref = areaResref,
+                Orientation = 0.0f,
+                X = position.X,
+                Y = position.Y,
+                Z = position.Z
+            };
+
             parentProperty.ChildPropertyIds.Add(structure.Id);
             parentProperty.ItemStorageCount += structureItemStorage; 
 
@@ -1013,16 +1022,18 @@ namespace SWLOR.Game.Server.Service
         /// For structures, this means spawning a placeable at the location.
         /// For cities, starships, apartments, and buildings this means spawning area instances.
         /// </summary>
+        /// <param name="property">The property to spawn into the world.</param>
         /// <param name="area">The area to spawn the property into. Leave OBJECT_INVALID if spawning an instance.</param>
         private static void SpawnIntoWorld(WorldProperty property, uint area)
         {
             // Structures represent placeables within the game world such as furniture and buildings
             if (property.PropertyType == PropertyType.Structure)
             {
-                var furniture = Property.GetStructureByType(property.StructureType);
+                var furniture = GetStructureByType(property.StructureType);
 
-                var position = Vector3(property.Position.X, property.Position.Y, property.Position.Z);
-                var location = Location(area, position, property.Orientation);
+                var staticPosition = property.Positions[PropertyLocationType.StaticPosition];
+                var position = Vector3(staticPosition.X, staticPosition.Y, staticPosition.Z);
+                var location = Location(area, position, staticPosition.Orientation);
 
                 var placeable = CreateObject(ObjectType.Placeable, furniture.Resref, location);
                 AssignPropertyId(placeable, property.Id);
@@ -1042,9 +1053,9 @@ namespace SWLOR.Game.Server.Service
                 // If there is an interior, create an instance and use that as our target.
                 else
                 {
-                    var layout = Property.GetLayoutByType(property.Layout);
+                    var layout = GetLayoutByType(property.Layout);
                     targetArea = CreateArea(layout.AreaInstanceResref);
-                    Property.RegisterInstance(property.Id, targetArea);
+                    RegisterInstance(property.Id, targetArea);
 
                     SetName(targetArea, property.CustomName);
                 }

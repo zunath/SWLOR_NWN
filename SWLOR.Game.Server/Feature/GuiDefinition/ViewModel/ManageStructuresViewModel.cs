@@ -415,8 +415,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _currentFacing = GetFacing(placeable);
             _currentPosition = GetPosition(placeable);
 
-            structure.Position = _currentPosition;
-            structure.Orientation = _currentFacing;
+            structure.Positions[PropertyLocationType.StaticPosition] = new PropertyLocation
+            {
+                X = _currentPosition.X,
+                Y = _currentPosition.Y,
+                Z = _currentPosition.Z,
+                Orientation = _currentFacing,
+                AreaResref = string.Empty
+            };
+
             structure.CustomName = StructureName;
 
             DB.Set(structure);

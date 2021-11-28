@@ -1162,6 +1162,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 0.125
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Neutral"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Player Starship"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "player_starship"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 14.0
                     },
                     "FACTION": {

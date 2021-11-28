@@ -3605,7 +3605,7 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "DOCKING_WAYPOINT"
+                "value": "STARPORT_LANDING_WAYPOINT"
               },
               "Type": {
                 "type": "dword",
@@ -3614,6 +3614,21 @@
               "Value": {
                 "type": "cexostring",
                 "value": "VISCARA_LANDING"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "STARPORT_TELEPORT_WAYPOINT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "Viscara_Orbit"
               }
             }
           ]
@@ -3867,7 +3882,22 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "DOCKING_WAYPOINT"
+                "value": "STARPORT_TELEPORT_WAYPOINT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "CZ220_Orbit"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "STARPORT_LANDING_WAYPOINT"
               },
               "Type": {
                 "type": "dword",

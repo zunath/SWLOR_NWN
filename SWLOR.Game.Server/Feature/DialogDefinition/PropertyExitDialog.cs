@@ -43,6 +43,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             // Players should only have the "Emergency Exit" option.
             if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
             {
+                page.Header += "\nYou may perform an emergency exit to return to the last dock at which this ship landed. If you are the last person on board, the ship will be towed back, damaging the ship's shields and hull.";
+
                 page.AddResponse(ColorToken.Red("Emergency Exit"), () =>
                 {
                     var propertyLocation = property.Positions[PropertyLocationType.DockPosition];

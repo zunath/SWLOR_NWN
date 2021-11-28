@@ -1481,9 +1481,12 @@ namespace SWLOR.Game.Server.Service
             if (dbProperty.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
             {
                 dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition);
-                DB.Set(dbProperty);
 
-                // todo: apply penalties
+                dbShip.Status.Shield = 0;
+                dbShip.Status.Hull = 1;
+
+                DB.Set(dbProperty);
+                DB.Set(dbShip);
             }
 
             DestroyObject(shipClone);

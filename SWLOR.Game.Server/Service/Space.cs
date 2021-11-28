@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Vector3 = System.Numerics.Vector3;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -33,7 +34,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly HashSet<string> _shipItemResrefs = new();
         private static readonly HashSet<string> _shipModuleItemTags = new();
 
-        private static readonly Dictionary<string, uint> _activelyPilotedShips = new();
+        private static readonly Dictionary<string, uint> _shipClones = new();
 
         /// <summary>
         /// When the module loads, cache all space data into memory.
@@ -350,8 +351,8 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (_activelyPilotedShips.ContainsKey(dbShip.Id) &&
-                !GetIsObjectValid(_activelyPilotedShips[dbShip.Id]))
+            if (_shipClones.ContainsKey(dbShip.Id) &&
+                !GetIsObjectValid(_shipClones[dbShip.Id]))
             {
                 SendMessageToPC(player, ColorToken.Red("This ship's controls are in use."));
                 return;
@@ -551,9 +552,9 @@ namespace SWLOR.Game.Server.Service
 
             // If the ship is in the "actively piloted" list, it means it's in space.
             // Destroy the NPC clone that's associated with this ship since the player is taking over the controls.
-            if (_activelyPilotedShips.ContainsKey(dbPlayerShip.Id))
+            if (_shipClones.ContainsKey(dbPlayerShip.Id))
             {
-                var clone = _activelyPilotedShips[dbPlayerShip.Id];
+                var clone = _shipClones[dbPlayerShip.Id];
                 if (GetIsObjectValid(clone))
                 {
                     DestroyObject(clone);
@@ -562,7 +563,7 @@ namespace SWLOR.Game.Server.Service
             // Otherwise add the ship to the list and associate an invalid object to its clone.
             else
             {
-                _activelyPilotedShips[dbPlayerShip.Id] = OBJECT_INVALID;
+                _shipClones[dbPlayerShip.Id] = OBJECT_INVALID;
             }
         }
 
@@ -699,13 +700,13 @@ namespace SWLOR.Game.Server.Service
                 SetCreatureAppearanceType(clone, shipDetail.Appearance);
                 SetName(clone, dbProperty.CustomName);
 
-                _activelyPilotedShips[dbShip.Id] = clone;
+                _shipClones[dbShip.Id] = clone;
             }
             // Otherwise the assumption is the ship is docked. A clone isn't needed and the ship should be removed
             // from the cache.
             else
             {
-                _activelyPilotedShips.Remove(dbShip.Id);
+                _shipClones.Remove(dbShip.Id);
             }
 
             // Destroy the NPC clone.
@@ -1203,6 +1204,10 @@ namespace SWLOR.Game.Server.Service
                     var targetPlayerId = GetObjectUUID(target);
                     var dbTargetPlayer = DB.Get<Player>(targetPlayerId);
                     var dbPlayerShip = DB.Get<PlayerShip>(dbTargetPlayer.ActiveShipId);
+                    var instance = Property.GetRegisteredInstance(dbPlayerShip.PropertyId);
+                    var location = Location(instance.Area, Vector3.Zero, 0.0f);
+
+                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_ShakeScreen), location);
 
                     dbPlayerShip.Status.Shield = targetShipStatus.Shield;
                     dbPlayerShip.Status.Hull = targetShipStatus.Hull;
@@ -1222,7 +1227,12 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Applies death to a creature.
-        /// If this is a PC, their ship will be destroyed.
+        /// If this is a PC:
+        ///     - The ship modules will either drop or be destroyed.
+        ///     - The ship will require repairs
+        ///     - The pilot will be killed (inflicting default death system penalties)
+        ///     - Everyone inside the ship instance will be killed (inflicting default death system penalties)
+        ///     - The ship will relocate back to the last dock it was at
         /// If this is an NPC, they will be killed and explode in spectacular fashion.
         /// </summary>
         /// <param name="creature">The creature who will be killed.</param>
@@ -1231,15 +1241,15 @@ namespace SWLOR.Game.Server.Service
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), creature);
 
             // When a player dies, they have a chance to drop every module installed on their ship.
-            // The ship also gets permanently destroyed and removed from their database record.
-            // Finally, they return to their stored respawn point.
             if (GetIsPC(creature))
             {
+                const int ChanceToDropModule = 65;
                 var deathLocation = GetLocation(creature);
                 var playerId = GetObjectUUID(creature);
                 var dbPlayer = DB.Get<Player>(playerId);
                 var dbPlayerShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
-                const int ChanceToDropModule = 65;
+                var dbProperty = DB.Get<WorldProperty>(dbPlayerShip.PropertyId);
+                var instance = Property.GetRegisteredInstance(dbPlayerShip.PropertyId);
 
                 // Give a chance to drop each installed module.
                 foreach (var (_, shipModule) in dbPlayerShip.Status.HighPowerModules)
@@ -1261,6 +1271,13 @@ namespace SWLOR.Game.Server.Service
                         DestroyObject(deserialized);
                     }
                 }
+
+                // Player always loses all modules regardless if they actually dropped.
+                dbPlayerShip.Status.HighPowerModules.Clear();
+                dbPlayerShip.Status.LowPowerModules.Clear();
+                dbPlayerShip.PlayerHotBars.Clear();
+                dbPlayerShip.Status.Hull = 1;
+                dbPlayerShip.Status.Shield = 0;
 
                 // Exit space mode
                 ClearCurrentTarget(creature);
@@ -1286,34 +1303,31 @@ namespace SWLOR.Game.Server.Service
                     dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(creature);
                 }
 
-                // Jump player to their respawn point.
-                var respawnArea = Cache.GetAreaByResref(dbPlayer.RespawnAreaResref);
-                var respawnLocation = Location(
-                    respawnArea,
-                    Vector3(
-                        dbPlayer.RespawnLocationX,
-                        dbPlayer.RespawnLocationY,
-                        dbPlayer.RespawnLocationZ),
-                    dbPlayer.RespawnLocationOrientation);
-
-                AssignCommand(creature, () =>
-                {
-                    ClearAllActions();
-                    ActionJumpToLocation(respawnLocation);
-                });
-
-                // Remove the destroyed ship from the player's data.
-                DB.Delete<PlayerShip>(dbPlayerShip.Id);
                 dbPlayer.ActiveShipId = Guid.Empty.ToString();
 
+                // Removing the current position of the ship will automatically send it back to the last dock it was at.
+                if (dbProperty.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
+                {
+                    dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition);
+                }
+
                 // Update the changes
+                DB.Set(dbProperty);
+                DB.Set(dbPlayerShip);
                 DB.Set(dbPlayer);
+
+                // Murder everyone inside the ship's instance.
+                foreach (var player in instance.Players)
+                {
+                    ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Fnf_Fireball), player);
+                    ApplyEffectToObject(DurationType.Instant, EffectDeath(), player);
+
+                    FloatingTextStringOnCreature(ColorToken.Red("The ship has exploded!"), player, false);
+                }
             }
-            // Simply kill NPCs
-            else
-            {
-                ApplyEffectToObject(DurationType.Instant, EffectDeath(), creature);
-            }
+
+            // Apply normal death mechanics on top of the ship ones.
+            ApplyEffectToObject(DurationType.Instant, EffectDeath(), creature);
         }
 
         /// <summary>
@@ -1431,6 +1445,48 @@ namespace SWLOR.Game.Server.Service
                 ClearCurrentTarget(creature);
                 SetCurrentTarget(creature, self, VisualEffect.Vfx_Dur_Aura_Red);
             }
+        }
+
+        /// <summary>
+        /// Performs an emergency exit on a ship.
+        /// This will send the ship back to the last place it docked if there are no players in the property 
+        /// and no one is currently piloting the ship.
+        /// </summary>
+        /// <param name="instance">The area instance</param>
+        public static void PerformEmergencyExit(uint instance)
+        {
+            var propertyId = Property.GetPropertyId(instance);
+            var shipQuery = new DBQuery<PlayerShip>()
+                .AddFieldSearch(nameof(PlayerShip.PropertyId), propertyId, false);
+            var dbShip = DB.Search(shipQuery).FirstOrDefault();
+
+            if (dbShip == null)
+                return;
+
+            var playerCount = AreaPlugin.GetNumberOfPlayersInArea(instance);
+            var shipClone = _shipClones.ContainsKey(dbShip.Id)
+                ? _shipClones[dbShip.Id]
+                : OBJECT_INVALID;
+            var isPiloted = !GetIsObjectValid(shipClone);
+
+            // Other players are in the instance or someone is piloting the ship.
+            // No need to send the ship back to the dock.
+            if (playerCount > 1 || isPiloted)
+                return;
+
+            // No one's in the ship and it's lost in space. Let's send it back to the last dock
+            // and apply penalties.
+            var dbProperty = DB.Get<WorldProperty>(propertyId);
+
+            if (dbProperty.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
+            {
+                dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition);
+                DB.Set(dbProperty);
+
+                // todo: apply penalties
+            }
+
+            DestroyObject(shipClone);
         }
     }
 }

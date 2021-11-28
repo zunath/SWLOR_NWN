@@ -47,6 +47,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 {
                     var propertyLocation = property.Positions[PropertyLocationType.DockPosition];
                     ReturnToLastDockedPosition(player, propertyLocation);
+
+                    Space.PerformEmergencyExit(area);
                 });
             }
             // The existence of a "Last Docked" position means this is a starship currently docked at a starport.

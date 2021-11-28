@@ -392,7 +392,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DB.Set(apartment);
 
                 var instance = Property.GetRegisteredInstance(apartment.Id);
-                SetName(instance, CustomName);
+                SetName(instance.Area, CustomName);
 
                 Instruction = $"Saved successfully.";
                 InstructionColor = _green;

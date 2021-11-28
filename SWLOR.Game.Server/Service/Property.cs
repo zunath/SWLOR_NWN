@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<PropertyPermissionType, PropertyPermissionAttribute> _activePermissions = new();
 
         private static readonly Dictionary<string, uint> _instanceTemplates = new();
-        private static readonly Dictionary<string, uint> _propertyInstances = new();
+        private static readonly Dictionary<string, PropertyInstance> _propertyInstances = new();
         private static readonly Dictionary<PropertyType, List<PropertyPermissionType>> _permissionsByPropertyType = new();
 
         private static readonly Dictionary<string, uint> _structurePropertyIdToPlaceable = new();
@@ -232,7 +232,7 @@ namespace SWLOR.Game.Server.Service
         public static void RegisterInstance(string propertyId, uint instance)
         {
             AssignPropertyId(instance, propertyId);
-            _propertyInstances[propertyId] = instance;
+            _propertyInstances[propertyId] = new PropertyInstance(instance);
         }
 
         /// <summary>
@@ -240,7 +240,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="propertyId">The property Id</param>
         /// <returns>An area associated with the property Id.</returns>
-        public static uint GetRegisteredInstance(string propertyId)
+        public static PropertyInstance GetRegisteredInstance(string propertyId)
         {
             return _propertyInstances[propertyId];
         }
@@ -889,6 +889,45 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// When a player enters a property instance, add them to the list of players.
+        /// </summary>
+        [NWNEventHandler("area_enter")]
+        public static void EnterPropertyInstance()
+        {
+            var player = GetExitingObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var propertyId = GetPropertyId(OBJECT_SELF);
+
+            if (!_propertyInstances.ContainsKey(propertyId))
+                return;
+
+            if (!_propertyInstances[propertyId].Players.Contains(player))
+                _propertyInstances[propertyId].Players.Add(player);
+        }
+
+        /// <summary>
+        /// When a player exits a property instance, remove them from the list of players.
+        /// </summary>
+        [NWNEventHandler("area_exit")]
+        public static void ExitPropertyInstance()
+        {
+            var player = GetExitingObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var propertyId = GetPropertyId(OBJECT_SELF);
+
+            if (!_propertyInstances.ContainsKey(propertyId))
+                return;
+
+            if (_propertyInstances[propertyId].Players.Contains(player))
+                _propertyInstances[propertyId].Players.Remove(player);
+        }
+
+
+        /// <summary>
         /// Sends a player to a specific property's instance.
         /// </summary>
         /// <param name="player">The player to send.</param>
@@ -905,7 +944,7 @@ namespace SWLOR.Game.Server.Service
             var entrance = _entrancesByLayout[property.Layout];
             var instance = GetRegisteredInstance(property.Id);
             var position = new Vector3(entrance.X, entrance.Y, entrance.Z);
-            var location = Location(instance, position, entrance.W);
+            var location = Location(instance.Area, position, entrance.W);
 
             StoreOriginalLocation(player);
             AssignCommand(player, () =>

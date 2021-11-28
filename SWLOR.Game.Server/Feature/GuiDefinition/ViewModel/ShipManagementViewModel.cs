@@ -956,7 +956,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DB.Set(ship);
 
                 var instance = Property.GetRegisteredInstance(property.Id);
-                SetName(instance, property.CustomName);
+                SetName(instance.Area, property.CustomName);
 
                 // Update the UI with the new ship details.
                 ShipCountRegistered = $"Ships: {dbPlayerShips.Count + 1} / {Space.MaxRegisteredShips}";
@@ -1025,7 +1025,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbShip = DB.Get<PlayerShip>(shipId);
             var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
             var instance = Property.GetRegisteredInstance(dbShip.PropertyId);
-            SetName(instance, ShipName);
+            SetName(instance.Area, ShipName);
 
             dbProperty.CustomName = ShipName;
             DB.Set(dbProperty);
@@ -1264,7 +1264,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var shipDetail = Space.GetShipDetailByItemTag(dbShip.Status.ItemTag);
             var instance = Property.GetRegisteredInstance(dbShip.PropertyId);
             var entrance = Property.GetEntrancePosition(shipDetail.Layout);
-            var location = Location(instance, Vector3(entrance.X, entrance.Y, entrance.Z), entrance.W);
+            var location = Location(instance.Area, Vector3(entrance.X, entrance.Y, entrance.Z), entrance.W);
 
             AssignCommand(Player, () =>
             {

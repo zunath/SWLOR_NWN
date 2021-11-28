@@ -441,6 +441,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string RepairText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public bool IsRepairEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         private List<PlayerShip> GetMyShips()
         {
             var playerId = GetObjectUUID(Player);
@@ -466,6 +478,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .ToList();
 
             return ships;
+        }
+
+        private int CalculateRepairBill(PlayerShip ship)
+        {
+            var shieldDiff = ship.Status.MaxShield - ship.Status.Shield;
+            var hullDiff = ship.Status.MaxHull - ship.Status.Hull;
+
+            return shieldDiff * 50 + hullDiff * 100;
         }
 
         protected override void Initialize(ShipManagementPayload initialPayload)
@@ -589,6 +609,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsBoardShipEnabled = false;
                 IsNameEnabled = false;
                 ShipLocation = string.Empty;
+                IsRepairEnabled = false;
+                RepairText = "Repair";
             }
             else
             {
@@ -603,6 +625,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var permission = DB.Search(permissionQuery).Single();
                 var currentLocation = GetShipLocation(property);
                 var isAtCurrentLocation = currentLocation == GetArea(Player);
+                var gold = GetGold(Player);
+                var repairPrice = CalculateRepairBill(ship);
 
                 ShipName = property.CustomName;
                 ShipType = $"Type: {shipDetail.Name}";
@@ -841,6 +865,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsRefitEnabled = permission.Permissions[PropertyPermissionType.RefitShip] && isAtCurrentLocation;
                 IsPermissionsEnabled = permission.GrantPermissions.Any(x => x.Value) && isAtCurrentLocation;
                 ShipLocation = currentLocation == OBJECT_INVALID ? "Space" : GetName(currentLocation);
+                IsRepairEnabled = (ship.Status.Shield < ship.Status.MaxShield ||
+                                  ship.Status.Hull < ship.Status.MaxHull) &&
+                                  gold >= repairPrice &&
+                                  isAtCurrentLocation;
+                RepairText = $"Repair ({repairPrice} cr)";
             }
 
             ToggleRegisterButtons();
@@ -1322,6 +1351,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadShips(ships);
             ToggleRegisterButtons();
             LoadShip();
+        };
+
+        public Action OnClickRepair() => () =>
+        {
+            var shipId = _shipIds[SelectedShipIndex];
+            var dbShip = DB.Get<PlayerShip>(shipId);
+            var price = CalculateRepairBill(dbShip);
+
+            ShowModal($"Repairs will cost you {price} credits. Will you pay for repairs?", () =>
+            {
+                var gold = GetGold(Player);
+
+                if (gold < price)
+                {
+                    FloatingTextStringOnCreature(ColorToken.Red("Not enough credits!"), Player, false);
+                    return;
+                }
+
+                AssignCommand(Player, () =>
+                {
+                    TakeGoldFromCreature(price, Player, true);
+                });
+
+                dbShip.Status.Shield = dbShip.Status.MaxShield;
+                dbShip.Status.Hull = dbShip.Status.MaxHull;
+                DB.Set(dbShip);
+
+                FloatingTextStringOnCreature(ColorToken.Green("Ship repaired!"), Player, false);
+                LoadShip();
+            });
         };
     }
 }

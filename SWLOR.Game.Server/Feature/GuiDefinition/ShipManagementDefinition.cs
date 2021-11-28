@@ -150,6 +150,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(row =>
                     {
+                        row.AddSpacer();
+                        row.AddButton()
+                            .BindIsEnabled(model => model.IsRepairEnabled)
+                            .BindText(model => model.RepairText)
+                            .BindOnClicked(model => model.OnClickRepair())
+                            .SetHeight(35f);
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
                         row.AddLabel()
                             .SetText("High-Powered Slots")
                             .SetHeight(20f);

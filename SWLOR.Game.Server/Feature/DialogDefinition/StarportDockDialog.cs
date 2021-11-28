@@ -85,6 +85,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.AddResponse("Dock Ship", () =>
             {
+                if (Enmity.HasEnmity(player))
+                {
+                    SendMessageToPC(player, ColorToken.Red("You cannot dock while being targeted."));
+                    return;
+                }
+
                 var spaceArea = GetAreaFromLocation(model.SpaceLocation);
                 var spaceAreaResref = GetResRef(spaceArea);
                 var spacePosition = GetPositionFromLocation(model.SpaceLocation);
@@ -120,13 +126,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 };
 
                 DB.Set(dbProperty);
-
-                AssignCommand(player, () =>
-                {
-                    ActionJumpToLocation(model.LandingLocation);
-                });
-
-                Space.ExitSpaceMode(player);
+                
+                Space.WarpPlayerInsideShip(player);
             });
         }
     }

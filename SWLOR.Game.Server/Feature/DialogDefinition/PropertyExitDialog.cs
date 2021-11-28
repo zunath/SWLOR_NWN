@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             // Players should only have the "Emergency Exit" option.
             if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
             {
-                page.AddResponse("Emergency Exit", () =>
+                page.AddResponse(ColorToken.Red("Emergency Exit"), () =>
                 {
                     var propertyLocation = property.Positions[PropertyLocationType.DockPosition];
                     ReturnToLastDockedPosition(player, propertyLocation);

@@ -19,9 +19,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     col.AddRow(row =>
                     {
+                        row.AddToggleButton()
+                            .SetText("My Ships")
+                            .SetHeight(35f)
+                            .BindOnClicked(model => model.OnClickMyShips())
+                            .BindIsToggled(model => model.IsMyShipsToggled);
+
+                        row.AddToggleButton()
+                            .SetText("Other Ships")
+                            .SetHeight(35f)
+                            .BindOnClicked(model => model.OnClickOtherShips())
+                            .BindIsToggled(model => model.IsOtherShipsToggled);
+                    });
+
+                    col.AddRow(row =>
+                    {
                         row.AddSpacer();
                         row.AddLabel()
                             .BindText(model => model.ShipCountRegistered)
+                            .BindIsVisible(model => model.IsMyShipsToggled)
                             .SetHeight(20f);
                         row.AddSpacer();
                     });
@@ -36,8 +52,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindOnClicked(model => model.OnClickShip())
                                     .BindText(model => model.ShipNames)
                                     .BindTooltip(model => model.ShipNames)
-                                    .BindIsToggled(model => model.ShipToggles)
-                                    .BindColor(model => model.ShipColors);
+                                    .BindIsToggled(model => model.ShipToggles);
                             });
                         })
                             .BindRowCount(model => model.ShipNames);

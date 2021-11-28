@@ -210,5 +210,16 @@ namespace SWLOR.Game.Server.Service
 
             _enemyEnmityTables.Remove(enemy);
         }
+
+        /// <summary>
+        /// Determines if a creature has enmity towards any other creature.
+        /// </summary>
+        /// <param name="creature">The creature to check</param>
+        /// <returns>true if creature has enmity on any other creature, false otherwise</returns>
+        public static bool HasEnmity(uint creature)
+        {
+            return _creatureToEnemies.ContainsKey(creature)
+                   && _creatureToEnemies[creature].Count > 0;
+        }
     }
 }

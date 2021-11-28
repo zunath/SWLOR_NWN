@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly HashSet<string> _shipItemResrefs = new();
         private static readonly HashSet<string> _shipModuleItemTags = new();
 
-        private static readonly HashSet<string> _activelyPilotedShips = new();
+        private static readonly Dictionary<string, uint> _activelyPilotedShips = new();
 
         /// <summary>
         /// When the module loads, cache all space data into memory.
@@ -55,8 +55,9 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("mod_enter")]
         public static void EnterServer()
         {
+            var player = GetEnteringObject();
             ReloadPlayerTlkStrings();
-            WarpPlayerOutOfSpace();
+            WarpPlayerInsideShip(player);
         }
 
         /// <summary>
@@ -339,12 +340,6 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (_activelyPilotedShips.Contains(propertyId))
-            {
-                SendMessageToPC(player, ColorToken.Red("This ship's controls are in use."));
-                return;
-            }
-
             var shipQuery = new DBQuery<PlayerShip>()
                 .AddFieldSearch(nameof(PlayerShip.PropertyId), propertyId, false);
             var dbShip = DB.Search(shipQuery).FirstOrDefault();
@@ -352,6 +347,19 @@ namespace SWLOR.Game.Server.Service
             if (dbShip == null)
             {
                 SendMessageToPC(player, ColorToken.Red("ERROR: Could not locate ship. Notify an admin."));
+                return;
+            }
+
+            if (_activelyPilotedShips.ContainsKey(dbShip.Id) &&
+                !GetIsObjectValid(_activelyPilotedShips[dbShip.Id]))
+            {
+                SendMessageToPC(player, ColorToken.Red("This ship's controls are in use."));
+                return;
+            }
+
+            if (!CanPlayerUseShip(player, dbShip.Status))
+            {
+                SendMessageToPC(player, ColorToken.Red("You do not have the ability to pilot this ship."));
                 return;
             }
 
@@ -541,7 +549,21 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbPlayer);
             DB.Set(dbPlayerShip);
 
-            _activelyPilotedShips.Add(dbPlayerShip.Id);
+            // If the ship is in the "actively piloted" list, it means it's in space.
+            // Destroy the NPC clone that's associated with this ship since the player is taking over the controls.
+            if (_activelyPilotedShips.ContainsKey(dbPlayerShip.Id))
+            {
+                var clone = _activelyPilotedShips[dbPlayerShip.Id];
+                if (GetIsObjectValid(clone))
+                {
+                    DestroyObject(clone);
+                }
+            }
+            // Otherwise add the ship to the list and associate an invalid object to its clone.
+            else
+            {
+                _activelyPilotedShips[dbPlayerShip.Id] = OBJECT_INVALID;
+            }
         }
 
         /// <summary>
@@ -549,9 +571,8 @@ namespace SWLOR.Game.Server.Service
         /// Note that if the server rebooted since they logged off, the normal persistent locations script
         /// will take over and send them to the last dock they were at.
         /// </summary>
-        private static void WarpPlayerOutOfSpace()
+        public static void WarpPlayerInsideShip(uint player)
         {
-            var player = GetEnteringObject();
             ExitSpaceMode(player);
 
             if (!GetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET"))
@@ -628,6 +649,8 @@ namespace SWLOR.Game.Server.Service
             var dbPlayer = DB.Get<Player>(playerId);
             var shipId = dbPlayer.ActiveShipId;
             var dbShip = DB.Get<PlayerShip>(shipId);
+            var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
+            var shipDetail = GetShipDetailByItemTag(dbShip.Status.ItemTag);
 
             ClearCurrentTarget(player);
             SetCreatureAppearanceType(player, dbPlayer.OriginalAppearanceType);
@@ -656,10 +679,34 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
             }
             
-            DB.Set(dbPlayer);
-            DB.Set(dbShip);
+            // The existence of a current location on a ship property indicates it is currently in space.
+            // Spawn an NPC representing the ship at the location of the player.
+            if (dbProperty.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
+            {
+                var location = GetLocation(player);
+                var position = GetPositionFromLocation(location);
+                dbProperty.Positions[PropertyLocationType.CurrentPosition] = new PropertyLocation
+                {
+                    AreaResref = GetResRef(GetAreaFromLocation(location)),
+                    X = position.X,
+                    Y = position.Y,
+                    Z = position.Z,
+                    Orientation = GetFacingFromLocation(location)
+                };
+                DB.Set(dbProperty);
 
-            _activelyPilotedShips.Remove(dbShip.Id);
+                var clone = CreateObject(ObjectType.Creature, "player_starship", location);
+                SetCreatureAppearanceType(clone, shipDetail.Appearance);
+                SetName(clone, dbProperty.CustomName);
+
+                _activelyPilotedShips[dbShip.Id] = clone;
+            }
+            // Otherwise the assumption is the ship is docked. A clone isn't needed and the ship should be removed
+            // from the cache.
+            else
+            {
+                _activelyPilotedShips.Remove(dbShip.Id);
+            }
 
             // Destroy the NPC clone.
             var copy = GetLocalObject(player, "SPACE_PILOT_CLONE");
@@ -668,10 +715,10 @@ namespace SWLOR.Game.Server.Service
                 DestroyObject(copy);
             }
 
-            if (_activelyPilotedShips.Contains(shipId))
-                _activelyPilotedShips.Remove(shipId);
-
             DeleteLocalObject(player, "SPACE_PILOT_CLONE");
+
+            DB.Set(dbPlayer);
+            DB.Set(dbShip);
         }
 
         /// <summary>

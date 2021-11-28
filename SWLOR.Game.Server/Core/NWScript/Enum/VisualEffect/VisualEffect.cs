@@ -534,13 +534,15 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect
         Vfx_Imp_Starburst_Green = 644,
         Vfx_Imp_Starburst_Red = 645,
         Vfx_Imp_Nightmare_Head_Hit = 670,
+
+        Vfx_Target_Marker = 813,
+
+        Vfx_Placement_Grid = 821,
         Vfx_Imp_Mirv_Rock = 822,
         Vfx_Imp_Mirv_Fireball = 823,
         VFX_IMP_KIN_L = 824,
         Vfx_Beam_Drain = 825,
 
 
-        Vfx_Placement_Grid = 821,
-        Vfx_Target_Marker = 822
     }
 }

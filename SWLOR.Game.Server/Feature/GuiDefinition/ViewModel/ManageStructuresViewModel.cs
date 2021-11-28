@@ -111,6 +111,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string ManageButtonText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         private WorldProperty GetStructure()
         {
             var propertyId = _structurePropertyIds[SelectedStructureIndex];
@@ -198,8 +204,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 // Has one of the permissions found on the Manage Property window or
                 // can grant other players permissions.
-                IsManagePropertyEnabled = permission.Permissions[PropertyPermissionType.CancelLease] ||
-                                          permission.Permissions[PropertyPermissionType.ExtendLease] ||
+                IsManagePropertyEnabled = permission.Permissions.ContainsKey(PropertyPermissionType.CancelLease) && permission.Permissions[PropertyPermissionType.CancelLease] ||
+                                          permission.Permissions.ContainsKey(PropertyPermissionType.ExtendLease) && permission.Permissions[PropertyPermissionType.ExtendLease] ||
                                           permission.Permissions[PropertyPermissionType.RenameProperty] ||
                                           permission.Permissions[PropertyPermissionType.ChangeDescription] ||
                                           permission.GrantPermissions.Any(x => x.Value);
@@ -230,6 +236,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            var property = DB.Get<WorldProperty>(propertyId);
+            ManageButtonText = property.PropertyType == PropertyType.Starship
+                ? "Permissions"
+                : "Manage Property";
             StructureName = string.Empty;
             SelectedPageIndex = 0;
             LoadPropertyPermissions();
@@ -339,9 +349,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var payload = new ManageApartmentPayload(propertyId);
                 Gui.TogglePlayerWindow(Player, GuiWindowType.ManageApartment, payload);
             }
+            else if(property.PropertyType == PropertyType.Starship)
+            {
+                var payload = new PropertyPermissionPayload(PropertyType.Starship, propertyId, false);
+                Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
+            }
             else
             {
-                // todo: manage building window
+                // todo: buildings
             }
         };
 

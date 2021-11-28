@@ -1,6 +1,8 @@
 ﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.PropertyService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
@@ -57,12 +59,37 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private void MainPageInit(DialogPage page)
         {
             var player = GetPC();
+            var playerId = GetObjectUUID(player);
             var model = GetDataModel<Model>();
 
             page.Header = "Would you like to dock your ship onto this location?";
 
             page.AddResponse("Dock Ship", () =>
             {
+                var area = GetAreaFromLocation(model.LandingLocation);
+                var areaResref = GetResRef(area);
+                var position = GetPositionFromLocation(model.LandingLocation);
+                var orientation = GetFacingFromLocation(model.LandingLocation);
+
+                // Clear the ship property's space position and update its last docked position with the new destination.
+                var dbPlayer = DB.Get<Player>(playerId);
+                var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
+                var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
+                dbProperty.Positions.Remove(PropertyLocationType.SpacePosition);
+
+                dbProperty.Positions[PropertyLocationType.DockPosition] = new PropertyLocation
+                {
+                    AreaResref = areaResref,
+                    X = position.X,
+                    Y = position.Y,
+                    Z = position.Z,
+                    Orientation = orientation
+                };
+
+                dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition);
+
+                DB.Set(dbProperty);
+
                 AssignCommand(player, () =>
                 {
                     ActionJumpToLocation(model.LandingLocation);

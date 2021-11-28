@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -264,13 +265,43 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// When a player enters a space area, update the property's space position.
+        /// </summary>
+        [NWNEventHandler("area_enter")]
+        public static void UpdateSpacePosition()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (!IsPlayerInSpaceMode(player)) return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
+            var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
+            var position = GetPosition(player);
+            var areaResref = GetResRef(OBJECT_SELF);
+            var orientation = GetFacing(player);
+
+            dbProperty.Positions[PropertyLocationType.CurrentPosition] = new PropertyLocation
+            {
+                X = position.X,
+                Y = position.Y,
+                Z = position.Z,
+                Orientation = orientation,
+                AreaResref = areaResref
+            };
+
+            DB.Set(dbProperty);
+        }
+
+        /// <summary>
         /// When a creature leaves an area, their current target is cleared.
         /// </summary>
         [NWNEventHandler("area_exit")]
         public static void ClearTargetOnAreaExit()
         {
             var player = GetExitingObject();
-            if (!GetIsPC(player)) return;
+            if (GetIsDM(player)) return;
 
             ClearCurrentTarget(player);
         }
@@ -1085,9 +1116,8 @@ namespace SWLOR.Game.Server.Service
                 });
 
                 // Remove the destroyed ship from the player's data.
-                DB.Delete<PlayerShip>(dbPlayerShip.Id.ToString());
+                DB.Delete<PlayerShip>(dbPlayerShip.Id);
                 dbPlayer.ActiveShipId = Guid.Empty.ToString();
-                dbPlayer.SelectedShipId = Guid.Empty.ToString();
 
                 // Update the changes
                 DB.Set(dbPlayer);

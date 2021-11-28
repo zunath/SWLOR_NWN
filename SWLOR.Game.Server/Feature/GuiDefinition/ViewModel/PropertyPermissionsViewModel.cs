@@ -218,8 +218,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _playerIds.Clear();
             _isCategory = initialPayload.IsCategory;
             _propertyType = initialPayload.PropertyType;
-
-            AvailablePermissions = initialPayload.AvailablePermissions;
+            
+            AvailablePermissions = Property.GetPermissionsByPropertyType(_propertyType);
 
             if (_isCategory)
             {

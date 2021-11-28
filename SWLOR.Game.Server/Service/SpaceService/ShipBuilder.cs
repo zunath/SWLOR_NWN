@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Service.SpaceService
 {
@@ -155,6 +156,17 @@ namespace SWLOR.Game.Server.Service.SpaceService
 
             _activeShip.RequiredPerks[perkType] = requiredLevel;
 
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the interior layout type used by the associated property on this ship.
+        /// </summary>
+        /// <param name="layout">The layout to assign.</param>
+        /// <returns>A ship builder with the configured options.</returns>
+        public ShipBuilder InteriorLayout(PropertyLayoutType layout)
+        {
+            _activeShip.Layout = layout;
             return this;
         }
 

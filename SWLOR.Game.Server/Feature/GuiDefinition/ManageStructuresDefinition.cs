@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddButton()
                             .BindOnClicked(model => model.OnManageProperty())
                             .BindIsEnabled(model => model.IsManagePropertyEnabled)
-                            .SetText("Manage Property")
+                            .BindText(model => model.ManageButtonText)
                             .SetHeight(35f);
 
                         row.AddButton()

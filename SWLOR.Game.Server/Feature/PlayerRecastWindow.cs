@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Feature
             var dbPlayer = DB.Get<Player>(playerId);
 
             var query = new DBQuery<PlayerShip>()
-                .AddFieldSearch(nameof(PlayerShip.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(PlayerShip.OwnerPlayerId), playerId, false)
                 .AddFieldSearch(nameof(PlayerShip.Id), dbPlayer.ActiveShipId.ToString(), false);
             var dbPlayerShip = DB.Search(query).FirstOrDefault();
 

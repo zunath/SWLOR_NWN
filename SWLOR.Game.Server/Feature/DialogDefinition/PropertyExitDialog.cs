@@ -39,19 +39,22 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.Header = $"What would you like to do?";
 
-            // The existence of a space position means this is a starship currently in space.
+            // The existence of a current position means this is a starship currently in space.
             // Players should only have the "Emergency Exit" option.
-            if (property.Positions.ContainsKey(PropertyLocationType.SpacePosition))
+            if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
             {
-                var propertyLocation = property.Positions[PropertyLocationType.LastDockedPosition];
-                ReturnToLastDockedPosition(player, propertyLocation);
+                page.AddResponse("Emergency Exit", () =>
+                {
+                    var propertyLocation = property.Positions[PropertyLocationType.DockPosition];
+                    ReturnToLastDockedPosition(player, propertyLocation);
+                });
             }
             // The existence of a "Last Docked" position means this is a starship currently docked at a starport.
-            else if (property.Positions.ContainsKey(PropertyLocationType.LastDockedPosition))
+            else if (property.Positions.ContainsKey(PropertyLocationType.DockPosition))
             {
                 page.AddResponse("Exit", () =>
                 {
-                    var propertyLocation = property.Positions[PropertyLocationType.LastDockedPosition];
+                    var propertyLocation = property.Positions[PropertyLocationType.DockPosition];
                     ReturnToLastDockedPosition(player, propertyLocation);
                 });
             }

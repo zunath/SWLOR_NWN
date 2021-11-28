@@ -106,6 +106,28 @@ namespace SWLOR.Game.Server.Service.PropertyService
         ApartmentLargeStyle2Furnished = 9,
 
         [PropertyLayoutType(
+            PropertyType.Starship,
+            "Light Freighter 1",
+            30,
+            25,
+            0,
+            0,
+            "starship1_int",
+            true)]
+        LightFreighter1 = 10,
+
+        [PropertyLayoutType(
+            PropertyType.Starship,
+            "Light Escort 1",
+            30,
+            25,
+            0,
+            0,
+            "starship2_int",
+            true)]
+        LightEscort1 = 11,
+
+        [PropertyLayoutType(
             PropertyType.City,
             "City",
             20,
@@ -114,7 +136,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             -1,
             "",
             true)]
-        City = 20,
+        City = 80,
 
     }
 

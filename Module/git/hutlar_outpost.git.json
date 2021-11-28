@@ -6096,6 +6096,21 @@
                 "type": "cexostring",
                 "value": "Hutlar_Orbit"
               }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "STARPORT_LANDING_WAYPOINT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "HUTLAR_LANDING"
+              }
             }
           ]
         },
@@ -6985,6 +7000,21 @@
               "Value": {
                 "type": "cexostring",
                 "value": "Hutlar_Orbit"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "STARPORT_LANDING_WAYPOINT"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 3
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "HUTLAR_LANDING"
               }
             }
           ]

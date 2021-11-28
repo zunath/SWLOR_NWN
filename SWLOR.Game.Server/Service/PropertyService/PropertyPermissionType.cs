@@ -37,11 +37,19 @@ namespace SWLOR.Game.Server.Service.PropertyService
 
         // Apartments, Buildings, Starships
         [PropertyPermission("Enter Property", "Toggles the ability to enter the property.", true)]
-        EnterProperty = 8,
+        EnterProperty = 8, 
+
+        // Starships
+        [PropertyPermission("Pilot Ship", "Toggles the ability to pilot the starship.", true)]
+        PilotShip = 9,
 
         // Apartments, Buildings, Starships
         [PropertyPermission("Change Description", "Toggles the ability to change a property's description", true)]
         ChangeDescription = 10,
+
+        // Starships
+        [PropertyPermission("Refit Ship", "Toggles the ability to refit a ship.", true)]
+        RefitShip = 11
     }
 
     public class PropertyPermissionAttribute : Attribute

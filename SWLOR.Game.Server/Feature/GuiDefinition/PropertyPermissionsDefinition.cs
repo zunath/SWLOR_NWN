@@ -134,11 +134,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 row2.AddButton()
                                     .SetHeight(35f)
                                     .BindOnClicked(model => model.OnClickSaveChanges())
+                                    .BindIsEnabled(model => model.IsPlayerSelected)
                                     .SetText("Save Changes");
 
                                 row2.AddButton()
                                     .SetHeight(35f)
                                     .BindOnClicked(model => model.OnClickReset())
+                                    .BindIsEnabled(model => model.IsPlayerSelected)
                                     .SetText("Reset Changes");
                             });
 

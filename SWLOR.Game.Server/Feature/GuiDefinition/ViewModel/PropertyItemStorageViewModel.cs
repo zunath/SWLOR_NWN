@@ -413,9 +413,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!categoryPermission.GrantPermissions.Any(x => x.Value))
                 return;
 
-            var availablePermissions = Property.GetPermissionsByPropertyType(PropertyType.Category);
-
-            var payload = new PropertyPermissionPayload(PropertyType.Category, categoryId, true, availablePermissions);
+            var payload = new PropertyPermissionPayload(PropertyType.Category, categoryId, true);
             Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
         };
 

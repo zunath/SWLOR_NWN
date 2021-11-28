@@ -104,6 +104,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsPlayerSelected
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         private WorldPropertyPermission CreateEmptyPermissions(string targetPlayerId)
         {
             return new WorldPropertyPermission
@@ -218,8 +224,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _playerIds.Clear();
             _isCategory = initialPayload.IsCategory;
             _propertyType = initialPayload.PropertyType;
-
-            AvailablePermissions = initialPayload.AvailablePermissions;
+            IsPlayerSelected = false;
+            
+            AvailablePermissions = Property.GetPermissionsByPropertyType(_propertyType);
 
             if (_isCategory)
             {
@@ -250,6 +257,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             Instruction = string.Empty;
             SelectedPlayerIndex = -1;
+            IsPlayerSelected = false;
             _playerIds.Clear();
             var playerNames = new GuiBindingList<string>();
             var playerToggles = new GuiBindingList<bool>();
@@ -310,6 +318,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PlayerToggles[SelectedPlayerIndex] = true;
 
             LoadPlayerInfo();
+            IsPlayerSelected = true;
         };
 
         public Action OnClickSaveChanges() => () =>

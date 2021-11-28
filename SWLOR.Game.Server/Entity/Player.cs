@@ -62,7 +62,6 @@ namespace SWLOR.Game.Server.Entity
             };
 
             ActiveShipId = Guid.Empty.ToString();
-            SelectedShipId = Guid.Empty.ToString();
             IsUsingDualPistolMode = false;
             EmoteStyle = EmoteStyle.Regular;
             MovementRate = 1.0f;
@@ -137,7 +136,6 @@ namespace SWLOR.Game.Server.Entity
         public EmoteStyle EmoteStyle { get; set; }
         public string SerializedHotBar { get; set; }
         public string ActiveShipId { get; set; }
-        public string SelectedShipId { get; set; }
         public AppearanceType OriginalAppearanceType { get; set; }
         public float MovementRate { get; set; }
         public int AbilityRecastReduction { get; set; }

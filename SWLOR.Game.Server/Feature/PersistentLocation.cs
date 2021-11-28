@@ -15,9 +15,16 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player whose data will be stored to the database.</param>
         public static void SaveLocation(uint player)
         {
-            if (!GetIsPC(player) || GetIsDM(player)) return;
-
             var area = GetArea(player);
+            var areaResref = GetResRef(area);
+            var isSpace = GetLocalBool(area, "SPACE") || GetName(area).StartsWith("Space -");
+
+            if (!GetIsPC(player) || GetIsDM(player) || areaResref == "ooc_area" || isSpace)
+                return;
+
+            // If the area isn't in the cache, it must be an instance. Don't save locations inside instances.
+            if (Cache.GetAreaByResref(areaResref) == OBJECT_INVALID) return;
+
             var position = GetPosition(player);
             var orientation = GetFacing(player);
             var playerId = GetObjectUUID(player);
@@ -39,13 +46,6 @@ namespace SWLOR.Game.Server.Feature
         public static void SaveLocationOnAreaEnter()
         {
             var player = GetEnteringObject();
-            var area = GetArea(player);
-            var areaResref = GetResRef(area);
-            if (!GetIsPC(player) || GetIsDM(player) || areaResref == "ooc_area") return;
-
-            // If the area isn't in the cache, it must be an instance. Don't save locations inside instances.
-            if (Cache.GetAreaByResref(areaResref) == OBJECT_INVALID) return;
-
             SaveLocation(player);
         }
 
@@ -56,19 +56,8 @@ namespace SWLOR.Game.Server.Feature
         public static void SaveLocationOnRest()
         {
             var player = GetLastPCRested();
-            if (!GetIsPC(player) || GetIsDM(player) || GetLastRestEventType() != RestEventType.Started) return;
-
-            SaveLocation(player);
-        }
-
-        /// <summary>
-        /// Saves a player's location on module exit.
-        /// </summary>
-        [NWNEventHandler("mod_exit")]
-        public static void SaveLocationOnModuleExit()
-        {
-            var player = GetExitingObject();
-            if (!GetIsPC(player) || GetIsDM(player)) return;
+            if (GetLastRestEventType() != RestEventType.Started) 
+                return;
 
             SaveLocation(player);
         }

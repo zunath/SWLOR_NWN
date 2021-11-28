@@ -17,13 +17,14 @@ namespace SWLOR.Game.Server.Service
     public static class Property
     {
         private static readonly Dictionary<StructureType, StructureAttribute> _activeStructures = new();
+        private static readonly Dictionary<PropertyType, PropertyTypeAttribute> _propertyTypes = new();
         private static readonly Dictionary<PropertyLayoutType, PropertyLayoutTypeAttribute> _activeLayouts = new();
         private static readonly Dictionary<PropertyType, List<PropertyLayoutType>> _layoutsByPropertyType = new();
         private static readonly Dictionary<PropertyLayoutType, Vector4> _entrancesByLayout = new();
         private static readonly Dictionary<PropertyPermissionType, PropertyPermissionAttribute> _activePermissions = new();
 
         private static readonly Dictionary<string, uint> _instanceTemplates = new();
-        private static readonly Dictionary<string, uint> _propertyInstances = new();
+        private static readonly Dictionary<string, PropertyInstance> _propertyInstances = new();
         private static readonly Dictionary<PropertyType, List<PropertyPermissionType>> _permissionsByPropertyType = new();
 
         private static readonly Dictionary<string, uint> _structurePropertyIdToPlaceable = new();
@@ -35,6 +36,7 @@ namespace SWLOR.Game.Server.Service
         public static void CacheData()
         {
             CachePropertyTypes();
+            CachePropertyLayoutTypes();
             CachePermissions();
             CacheStructures();
             CacheInstanceTemplates();
@@ -52,6 +54,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         private static void CachePropertyTypes()
+        {
+            var propertyTypes = Enum.GetValues(typeof(PropertyType)).Cast<PropertyType>();
+            foreach (var type in propertyTypes)
+            {
+                var detail = type.GetAttribute<PropertyType, PropertyTypeAttribute>();
+                _propertyTypes[type] = detail;
+            }
+        }
+
+        private static void CachePropertyLayoutTypes()
         {
             var layoutTypes = Enum.GetValues(typeof(PropertyLayoutType)).Cast<PropertyLayoutType>();
             foreach (var type in layoutTypes)
@@ -114,7 +126,9 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.RenameProperty,
                 PropertyPermissionType.EnterProperty,
                 PropertyPermissionType.ChangeDescription,
-                PropertyPermissionType.EditCategories
+                PropertyPermissionType.EditCategories,
+                PropertyPermissionType.PilotShip,
+                PropertyPermissionType.RefitShip
             };
 
             _permissionsByPropertyType[PropertyType.City] = new List<PropertyPermissionType>
@@ -218,7 +232,7 @@ namespace SWLOR.Game.Server.Service
         public static void RegisterInstance(string propertyId, uint instance)
         {
             AssignPropertyId(instance, propertyId);
-            _propertyInstances[propertyId] = instance;
+            _propertyInstances[propertyId] = new PropertyInstance(instance);
         }
 
         /// <summary>
@@ -226,7 +240,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="propertyId">The property Id</param>
         /// <returns>An area associated with the property Id.</returns>
-        public static uint GetRegisteredInstance(string propertyId)
+        public static PropertyInstance GetRegisteredInstance(string propertyId)
         {
             return _propertyInstances[propertyId];
         }
@@ -270,6 +284,21 @@ namespace SWLOR.Game.Server.Service
             {
                 Log.Write(LogGroup.Property, $"Property '{property.CustomName}' scheduled for deletion. Peforming delete now.");
                 DeleteProperty(property);
+            }
+
+            // Starship properties should have their current location wiped on every boot.
+            // This ensures the player's ship doesn't get lost in space when they're thrown out of an instance.
+            query = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Starship);
+            properties = DB.Search(query);
+
+            foreach (var property in properties)
+            {
+                if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
+                {
+                    property.Positions.Remove(PropertyLocationType.CurrentPosition);
+                    DB.Set(property);
+                }
             }
         }
 
@@ -473,38 +502,36 @@ namespace SWLOR.Game.Server.Service
             };
         }
 
-        /// <summary>
-        /// Creates a new apartment in the database for a given player.
-        /// </summary>
-        /// <param name="player">The player to associate the apartment with.</param>
-        /// <param name="layout">The layout to use.</param>
-        /// <returns>The new world property.</returns>
-        public static WorldProperty CreateApartment(uint player, PropertyLayoutType layout)
+        private static WorldProperty CreateProperty(
+            uint player, 
+            PropertyType type, 
+            PropertyLayoutType layout, 
+            uint targetArea = OBJECT_INVALID,
+            Action<WorldProperty> constructionAction = null)
         {
             var ownerId = GetObjectUUID(player);
             var layoutDetail = GetLayoutByType(layout);
+            var propertyDetail = _propertyTypes[type];
 
             var property = new WorldProperty
             {
-                Timers =
-                {
-                    { PropertyTimerType.Lease, DateTime.UtcNow.AddDays(7) }
-                },
-                CustomName = $"{GetName(player)}'s Apartment",
-                PropertyType = PropertyType.Apartment,
+                CustomName = $"{GetName(player)}'s {propertyDetail.Name}",
+                PropertyType = type,
                 OwnerPlayerId = ownerId,
                 IsPubliclyAccessible = false,
                 Layout = layout,
                 ItemStorageCount = layoutDetail.ItemStorageLimit
             };
 
+            constructionAction?.Invoke(property);
+
             var permissions = new WorldPropertyPermission
             {
                 PropertyId = property.Id,
                 PlayerId = ownerId
             };
-            
-            foreach (var permission in _permissionsByPropertyType[PropertyType.Apartment])
+
+            foreach (var permission in _permissionsByPropertyType[type])
             {
                 permissions.Permissions[permission] = true;
                 permissions.GrantPermissions[permission] = true;
@@ -513,39 +540,102 @@ namespace SWLOR.Game.Server.Service
             DB.Set(property);
             DB.Set(permissions);
 
-            // Create the default item storage categories and give permission to the owner for all categories.
-            foreach (var category in CreateDefaultCategories(property.Id))
+            if (propertyDetail.HasStorage)
             {
-                DB.Set(category);
-
-                var categoryPermission = new WorldPropertyPermission
+                // Create the default item storage categories and give permission to the owner for all categories.
+                foreach (var category in CreateDefaultCategories(property.Id))
                 {
-                    PropertyId = category.Id,
-                    PlayerId = ownerId
-                };
+                    DB.Set(category);
 
-                foreach (var permission in _permissionsByPropertyType[PropertyType.Category])
-                {
-                    categoryPermission.Permissions[permission] = true;
-                    categoryPermission.GrantPermissions[permission] = true;
+                    var categoryPermission = new WorldPropertyPermission
+                    {
+                        PropertyId = category.Id,
+                        PlayerId = ownerId
+                    };
+
+                    foreach (var permission in _permissionsByPropertyType[PropertyType.Category])
+                    {
+                        categoryPermission.Permissions[permission] = true;
+                        categoryPermission.GrantPermissions[permission] = true;
+                    }
+
+                    DB.Set(categoryPermission);
                 }
-
-                DB.Set(categoryPermission);
             }
 
-            SpawnIntoWorld(property, OBJECT_INVALID);
+            if (propertyDetail.ExistsInGameWorld)
+            {
+                SpawnIntoWorld(property, targetArea);
+            }
 
             return property;
         }
 
-        public static void CreateStarship(uint player, PropertyLayoutType layout)
+        /// <summary>
+        /// Creates a new apartment in the database for a given player.
+        /// </summary>
+        /// <param name="player">The player to associate the apartment with.</param>
+        /// <param name="layout">The layout to use.</param>
+        /// <returns>The new world property.</returns>
+        public static WorldProperty CreateApartment(uint player, PropertyLayoutType layout)
         {
-
+            return CreateProperty(player, PropertyType.Apartment, layout, OBJECT_INVALID, property =>
+            {
+                property.Timers[PropertyTimerType.Lease] = DateTime.UtcNow.AddDays(7);
+            });
         }
 
-        public static void CreateBuilding(uint player, PropertyLayoutType layout)
+        /// <summary>
+        /// Creates a new starship in the database for a given player and returns the world property.
+        /// </summary>
+        /// <param name="player">The player to associate the starship with.</param>
+        /// <param name="layout">The layout to use.</param>
+        /// <param name="spaceLocation">Location of the space transfer point (when a player is converted to a ship)</param>
+        /// <param name="landingLocation">Location of the ground transfer point (when a player is converted back to normal)</param>
+        /// <returns>The new world property.</returns>
+        public static WorldProperty CreateStarship(uint player, PropertyLayoutType layout, Location spaceLocation, Location landingLocation)
         {
+            var spacePosition = GetPositionFromLocation(spaceLocation);
+            var spaceOrientation = GetFacingFromLocation(spaceLocation);
+            var spaceArea = GetAreaFromLocation(spaceLocation);
+            var spaceAreaResref = GetResRef(spaceArea);
 
+            var landingPosition = GetPositionFromLocation(landingLocation);
+            var landingOrientation = GetFacingFromLocation(landingLocation);
+            var landingArea = GetAreaFromLocation(landingLocation);
+            var landingAreaResref = GetResRef(landingArea);
+
+            return CreateProperty(player, PropertyType.Starship, layout, OBJECT_INVALID, property =>
+            {
+                property.Positions[PropertyLocationType.DockPosition] = new PropertyLocation
+                {
+                    X = landingPosition.X,
+                    Y = landingPosition.Y,
+                    Z = landingPosition.Z,
+                    Orientation = landingOrientation,
+                    AreaResref = landingAreaResref
+                };
+
+                property.Positions[PropertyLocationType.SpacePosition] = new PropertyLocation
+                {
+                    X = spacePosition.X,
+                    Y = spacePosition.Y,
+                    Z = spacePosition.Z,
+                    Orientation = spaceOrientation,
+                    AreaResref = spaceAreaResref
+                };
+            });
+        }
+
+        /// <summary>
+        /// Creates a new building in the database for a given player and returns the world property.
+        /// </summary>
+        /// <param name="player">The player to associate the building with.</param>
+        /// <param name="layout">The layout to use.</param>
+        /// <returns>The new world property.</returns>
+        public static WorldProperty CreateBuilding(uint player, PropertyLayoutType layout)
+        {
+            return CreateProperty(player, PropertyType.Building, layout); // todo: need to target the city and area to add this to.
         }
 
         /// <summary>
@@ -562,6 +652,8 @@ namespace SWLOR.Game.Server.Service
             Location location)
         {
             var structureDetail = GetStructureByType(type);
+            var area = GetAreaFromLocation(location);
+            var areaResref = GetResRef(area);
             var position = GetPositionFromLocation(location);
             var parentProperty = DB.Get<WorldProperty>(parentPropertyId);
             var structureItemStorage = structureDetail.ItemStorage; // todo: add structure bonus property increases
@@ -573,12 +665,19 @@ namespace SWLOR.Game.Server.Service
                 SerializedItem = ObjectPlugin.Serialize(item),
                 OwnerPlayerId = string.Empty,
                 ParentPropertyId = parentPropertyId,
-                Position = position,
-                Orientation = 0.0f,
                 StructureType = type,
                 ItemStorageCount = structureItemStorage
             };
-            
+
+            structure.Positions[PropertyLocationType.StaticPosition] = new PropertyLocation
+            {
+                AreaResref = areaResref,
+                Orientation = 0.0f,
+                X = position.X,
+                Y = position.Y,
+                Z = position.Z
+            };
+
             parentProperty.ChildPropertyIds.Add(structure.Id);
             parentProperty.ItemStorageCount += structureItemStorage; 
 
@@ -790,6 +889,45 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// When a player enters a property instance, add them to the list of players.
+        /// </summary>
+        [NWNEventHandler("area_enter")]
+        public static void EnterPropertyInstance()
+        {
+            var player = GetExitingObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var propertyId = GetPropertyId(OBJECT_SELF);
+
+            if (!_propertyInstances.ContainsKey(propertyId))
+                return;
+
+            if (!_propertyInstances[propertyId].Players.Contains(player))
+                _propertyInstances[propertyId].Players.Add(player);
+        }
+
+        /// <summary>
+        /// When a player exits a property instance, remove them from the list of players.
+        /// </summary>
+        [NWNEventHandler("area_exit")]
+        public static void ExitPropertyInstance()
+        {
+            var player = GetExitingObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var propertyId = GetPropertyId(OBJECT_SELF);
+
+            if (!_propertyInstances.ContainsKey(propertyId))
+                return;
+
+            if (_propertyInstances[propertyId].Players.Contains(player))
+                _propertyInstances[propertyId].Players.Remove(player);
+        }
+
+
+        /// <summary>
         /// Sends a player to a specific property's instance.
         /// </summary>
         /// <param name="player">The player to send.</param>
@@ -806,7 +944,7 @@ namespace SWLOR.Game.Server.Service
             var entrance = _entrancesByLayout[property.Layout];
             var instance = GetRegisteredInstance(property.Id);
             var position = new Vector3(entrance.X, entrance.Y, entrance.Z);
-            var location = Location(instance, position, entrance.W);
+            var location = Location(instance.Area, position, entrance.W);
 
             StoreOriginalLocation(player);
             AssignCommand(player, () =>
@@ -1013,16 +1151,18 @@ namespace SWLOR.Game.Server.Service
         /// For structures, this means spawning a placeable at the location.
         /// For cities, starships, apartments, and buildings this means spawning area instances.
         /// </summary>
+        /// <param name="property">The property to spawn into the world.</param>
         /// <param name="area">The area to spawn the property into. Leave OBJECT_INVALID if spawning an instance.</param>
         private static void SpawnIntoWorld(WorldProperty property, uint area)
         {
             // Structures represent placeables within the game world such as furniture and buildings
             if (property.PropertyType == PropertyType.Structure)
             {
-                var furniture = Property.GetStructureByType(property.StructureType);
+                var furniture = GetStructureByType(property.StructureType);
 
-                var position = Vector3(property.Position.X, property.Position.Y, property.Position.Z);
-                var location = Location(area, position, property.Orientation);
+                var staticPosition = property.Positions[PropertyLocationType.StaticPosition];
+                var position = Vector3(staticPosition.X, staticPosition.Y, staticPosition.Z);
+                var location = Location(area, position, staticPosition.Orientation);
 
                 var placeable = CreateObject(ObjectType.Placeable, furniture.Resref, location);
                 AssignPropertyId(placeable, property.Id);
@@ -1042,9 +1182,9 @@ namespace SWLOR.Game.Server.Service
                 // If there is an interior, create an instance and use that as our target.
                 else
                 {
-                    var layout = Property.GetLayoutByType(property.Layout);
+                    var layout = GetLayoutByType(property.Layout);
                     targetArea = CreateArea(layout.AreaInstanceResref);
-                    Property.RegisterInstance(property.Id, targetArea);
+                    RegisterInstance(property.Id, targetArea);
 
                     SetName(targetArea, property.CustomName);
                 }

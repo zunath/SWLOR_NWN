@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
 
 namespace SWLOR.Game.Server.Feature.ShipDefinition
@@ -30,7 +31,8 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxShield(20)
                 .ShieldRechargeRate(6)
                 .HighPowerNodes(3)
-                .LowPowerNodes(3);
+                .LowPowerNodes(3)
+                .InteriorLayout(PropertyLayoutType.LightFreighter1);
         }
         private void LightEscort()
         {
@@ -44,7 +46,8 @@ namespace SWLOR.Game.Server.Feature.ShipDefinition
                 .MaxShield(20)
                 .ShieldRechargeRate(6)
                 .HighPowerNodes(3)
-                .LowPowerNodes(3);
+                .LowPowerNodes(3)
+                .InteriorLayout(PropertyLayoutType.LightEscort1);
         }
     }
 }

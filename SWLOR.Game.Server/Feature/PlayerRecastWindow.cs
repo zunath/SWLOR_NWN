@@ -122,11 +122,7 @@ namespace SWLOR.Game.Server.Feature
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-
-            var query = new DBQuery<PlayerShip>()
-                .AddFieldSearch(nameof(PlayerShip.PlayerId), playerId, false)
-                .AddFieldSearch(nameof(PlayerShip.Id), dbPlayer.ActiveShipId.ToString(), false);
-            var dbPlayerShip = DB.Search(query).FirstOrDefault();
+            var dbPlayerShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
 
             if (dbPlayerShip == null)
                 throw new Exception($"Could not locate ship Id '{dbPlayer.ActiveShipId}' for player Id '{playerId}'.");

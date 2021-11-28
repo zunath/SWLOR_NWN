@@ -1454,7 +1454,7 @@
           "id": 66778,
           "type": "cexolocstring",
           "value": {
-            "0": "Building Exit"
+            "0": "Starship Exit"
           }
         },
         "OnClick": {
@@ -1584,21 +1584,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CONVERSATION"
               },
               "Type": {
@@ -1607,7 +1592,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "BuildingExit"
+                "value": "PropertyExitDialog"
               }
             }
           ]
@@ -2904,7 +2889,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "generic_convo"
+          "value": "ship_computer"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -2969,41 +2954,6 @@
         "Useable": {
           "type": "byte",
           "value": 1
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "CONVERSATION"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "ShipComputer"
-              }
-            }
-          ]
         },
         "Will": {
           "type": "byte",
@@ -4771,7 +4721,7 @@
         },
         "Static": {
           "type": "byte",
-          "value": 0
+          "value": 1
         },
         "Tag": {
           "type": "cexostring",
@@ -4811,7 +4761,7 @@
         },
         "Useable": {
           "type": "byte",
-          "value": 1
+          "value": 0
         },
         "VarTable": {
           "type": "list",

@@ -83,6 +83,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindText(model => model.ShipType)
                             .SetHeight(20f);
                     });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .BindText(model => model.ShipLocation)
+                            .SetHeight(20f);
+                    });
+
                     col.AddRow(row =>
                     {
                         row.AddLabel()

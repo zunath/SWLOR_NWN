@@ -417,6 +417,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string ShipLocation
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         protected override void Initialize(ShipManagementPayload initialPayload)
         {
             var playerId = GetObjectUUID(Player);
@@ -551,17 +557,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsRefitEnabled = false;
                 IsBoardShipEnabled = false;
                 IsNameEnabled = false;
+                ShipLocation = string.Empty;
             }
             else
             {
                 var shipId = _shipIds[SelectedShipIndex];
                 var ship = DB.Get<PlayerShip>(shipId);
                 var shipDetail = Space.GetShipDetailByItemTag(ship.Status.ItemTag);
+                var property = DB.Get<WorldProperty>(ship.PropertyId);
 
                 var permissionQuery = new DBQuery<WorldPropertyPermission>()
                     .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
                     .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), ship.PropertyId, false);
                 var permission = DB.Search(permissionQuery).Single();
+                var currentLocation = GetShipLocation(property);
+                var isAtCurrentLocation = currentLocation == GetArea(Player);
 
                 ShipName = ship.Status.Name;
                 ShipType = $"Type: {shipDetail.Name}";
@@ -795,19 +805,47 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     LowPower8Tooltip = detail.Name;
                 }
 
-                IsBoardShipEnabled = true;
-                IsNameEnabled = permission.Permissions[PropertyPermissionType.RenameProperty];
-                IsRefitEnabled = permission.Permissions[PropertyPermissionType.RefitShip];
-                IsPermissionsEnabled = permission.GrantPermissions.Any(x => x.Value);
+                IsBoardShipEnabled = isAtCurrentLocation;
+                IsNameEnabled = permission.Permissions[PropertyPermissionType.RenameProperty] && isAtCurrentLocation;
+                IsRefitEnabled = permission.Permissions[PropertyPermissionType.RefitShip] && isAtCurrentLocation;
+                IsPermissionsEnabled = permission.GrantPermissions.Any(x => x.Value) && isAtCurrentLocation;
+                ShipLocation = GetName(currentLocation);
             }
 
             ToggleRegisterButtons();
+        }
+        
+        private uint GetShipLocation(WorldProperty property)
+        {
+            if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
+            {
+                return OBJECT_INVALID;
+            }
+            else
+            {
+                var landingLocation = property.Positions[PropertyLocationType.DockPosition];
+                var area = Cache.GetAreaByResref(landingLocation.AreaResref);
+
+                return area;
+            }
         }
 
         private void ToggleRegisterButtons()
         {
             IsRegisterEnabled = _shipIds.Count < Space.MaxRegisteredShips;
-            IsUnregisterEnabled = SelectedShipIndex > -1;
+
+            if (SelectedShipIndex > -1)
+            {
+                var shipId = _shipIds[SelectedShipIndex];
+                var dbShip = DB.Get<PlayerShip>(shipId);
+                var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
+                var shipLocation = GetShipLocation(dbProperty);
+                IsUnregisterEnabled = shipLocation == GetArea(Player);
+            }
+            else
+            {
+                IsUnregisterEnabled = false;
+            }
         }
 
         public Action OnClickShip() => () =>

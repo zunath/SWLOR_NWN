@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using SWLOR.Game.Server.Service.SpaceService;
@@ -31,6 +32,8 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly HashSet<string> _shipItemResrefs = new();
         private static readonly HashSet<string> _shipModuleItemTags = new();
+
+        private static readonly HashSet<string> _activelyPilotedShips = new();
 
         /// <summary>
         /// When the module loads, cache all space data into memory.
@@ -307,6 +310,69 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// When the ship computer is used, check the user's permissions.
+        /// If player has permission and the ship isn't currently being controlled by another player,
+        /// send the player into space mode.
+        /// </summary>
+        [NWNEventHandler("ship_computer")]
+        public static void UseShipComputer()
+        {
+            var area = GetArea(OBJECT_SELF);
+            var player = GetLastUsedBy();
+            var playerId = GetObjectUUID(player);
+            var propertyId = Property.GetPropertyId(area);
+            var permissionQuery = new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), propertyId, false)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false);
+            var permission = DB.Search(permissionQuery).FirstOrDefault();
+
+            if (permission == null || !permission.Permissions[PropertyPermissionType.PilotShip])
+            {
+                SendMessageToPC(player, ColorToken.Red("You do not have permission to pilot this starship."));
+                return;
+            }
+
+            if (_activelyPilotedShips.Contains(propertyId))
+            {
+                SendMessageToPC(player, ColorToken.Red("This ship's controls are in use."));
+                return;
+            }
+
+            var shipQuery = new DBQuery<PlayerShip>()
+                .AddFieldSearch(nameof(PlayerShip.PropertyId), propertyId, false);
+            var dbShip = DB.Search(shipQuery).FirstOrDefault();
+
+            if (dbShip == null)
+            {
+                SendMessageToPC(player, ColorToken.Red("ERROR: Could not locate ship. Notify an admin."));
+                return;
+            }
+
+            EnterSpaceMode(player, dbShip.Id);
+
+            var dbProperty = DB.Get<WorldProperty>(propertyId);
+            PropertyLocation propertyLocation;
+
+            // The existence of a current location means the ship is currently in space.
+            // Warp the player to the ship's location.
+            if (dbProperty.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
+            {
+                propertyLocation = dbProperty.Positions[PropertyLocationType.CurrentPosition];
+            }
+            // Otherwise the player is docked. Warp the player to the space location of this dock.
+            else
+            {
+                propertyLocation = dbProperty.Positions[PropertyLocationType.SpacePosition];
+            }
+
+            var spaceArea = Cache.GetAreaByResref(propertyLocation.AreaResref);
+            var spacePosition = Vector3(propertyLocation.X, propertyLocation.Y, propertyLocation.Z);
+            var location = Location(spaceArea, spacePosition, propertyLocation.Orientation);
+
+            AssignCommand(player, () => ActionJumpToLocation(location));
+        }
+
+        /// <summary>
         /// Retrieves the slot number (1-30) of the ship module feat.
         /// </summary>
         /// <param name="feat">The feat to check</param>
@@ -455,8 +521,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Load the player's ship hot bar.
-            if (string.IsNullOrWhiteSpace(dbPlayerShip.SerializedHotBar) ||
-                !CreaturePlugin.DeserializeQuickbar(player, dbPlayerShip.SerializedHotBar))
+            if (!dbPlayerShip.PlayerHotBars.ContainsKey(playerId) ||
+                !CreaturePlugin.DeserializeQuickbar(player, dbPlayerShip.PlayerHotBars[playerId]))
             {
                 // Deserialization failed. Clear out the player's hot bar and start fresh.
                 for (var slot = 0; slot <= 35; slot++)
@@ -464,11 +530,13 @@ namespace SWLOR.Game.Server.Service
                     PlayerPlugin.SetQuickBarSlot(player, slot, PlayerQuickBarSlot.Empty(QuickBarSlotType.Empty));
                 }
 
-                dbPlayerShip.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
+                dbPlayerShip.PlayerHotBars[playerId] = CreaturePlugin.SerializeQuickbar(player);
             }
 
             DB.Set(dbPlayer);
             DB.Set(dbPlayerShip);
+
+            _activelyPilotedShips.Add(dbPlayerShip.Id);
         }
 
         /// <summary>
@@ -507,7 +575,7 @@ namespace SWLOR.Game.Server.Service
             Enmity.RemoveCreatureEnmity(player);
 
             // Save the ship's hot bar and unassign the active ship Id.
-            dbShip.SerializedHotBar = CreaturePlugin.SerializeQuickbar(player);
+            dbShip.PlayerHotBars[playerId] = CreaturePlugin.SerializeQuickbar(player);
             dbPlayer.ActiveShipId = Guid.Empty.ToString();
 
             // Remove all module feats from the player.
@@ -531,6 +599,8 @@ namespace SWLOR.Game.Server.Service
             
             DB.Set(dbPlayer);
             DB.Set(dbShip);
+
+            _activelyPilotedShips.Remove(dbShip.Id);
         }
 
         /// <summary>

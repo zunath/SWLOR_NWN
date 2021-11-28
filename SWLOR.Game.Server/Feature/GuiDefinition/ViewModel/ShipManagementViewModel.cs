@@ -454,7 +454,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 dbPlayerShips = DB.Search(query).ToList();
             }
 
-
             _shipIds.Clear();
             var shipNames = new GuiBindingList<string>();
             var shipToggles = new GuiBindingList<bool>();
@@ -463,10 +462,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ActiveShipIndex = -1;
             foreach (var ship in dbPlayerShips)
             {
+                var property = DB.Get<WorldProperty>(ship.PropertyId);
+
                 _shipIds.Add(ship.Id);
                 shipToggles.Add(false);
 
-                shipNames.Add(ship.Status.Name);
+                shipNames.Add(property.CustomName);
                 shipColors.Add(_white);
             }
 
@@ -573,7 +574,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var currentLocation = GetShipLocation(property);
                 var isAtCurrentLocation = currentLocation == GetArea(Player);
 
-                ShipName = ship.Status.Name;
+                ShipName = property.CustomName;
                 ShipType = $"Type: {shipDetail.Name}";
 
                 Shields = (float)ship.Status.Shield / ship.Status.MaxShield;
@@ -809,7 +810,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 IsNameEnabled = permission.Permissions[PropertyPermissionType.RenameProperty] && isAtCurrentLocation;
                 IsRefitEnabled = permission.Permissions[PropertyPermissionType.RefitShip] && isAtCurrentLocation;
                 IsPermissionsEnabled = permission.GrantPermissions.Any(x => x.Value) && isAtCurrentLocation;
-                ShipLocation = GetName(currentLocation);
+                ShipLocation = currentLocation == OBJECT_INVALID ? "Space" : GetName(currentLocation);
             }
 
             ToggleRegisterButtons();
@@ -907,7 +908,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Status = new ShipStatus
                     {
                         ItemTag = itemTag,
-                        Name = shipDetail.Name,
                         Shield = shipDetail.MaxShield,
                         MaxShield = shipDetail.MaxShield,
                         Hull = shipDetail.MaxHull,
@@ -925,12 +925,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DB.Set(ship);
 
                 var instance = Property.GetRegisteredInstance(property.Id);
-                SetName(instance, ship.Status.Name);
+                SetName(instance, property.CustomName);
 
                 // Update the UI with the new ship details.
                 ShipCountRegistered = $"Ships: {dbPlayerShips.Count + 1} / {Space.MaxRegisteredShips}";
                 _shipIds.Add(ship.Id);
-                ShipNames.Add(ship.Status.Name);
+                ShipNames.Add(property.CustomName);
                 ShipToggles.Add(false);
                 ShipColors.Add(_white);
                 ToggleRegisterButtons();
@@ -994,10 +994,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var shipId = _shipIds[SelectedShipIndex];
             var dbShip = DB.Get<PlayerShip>(shipId);
+            var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
             var instance = Property.GetRegisteredInstance(dbShip.PropertyId);
             SetName(instance, ShipName);
 
-            dbShip.Status.Name = ShipName;
+            dbProperty.CustomName = ShipName;
             DB.Set(dbShip);
 
             ShipNames[SelectedShipIndex] = ShipName;

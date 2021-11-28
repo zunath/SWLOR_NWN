@@ -52,6 +52,13 @@ namespace SWLOR.Game.Server.Service
             Scheduler.ScheduleRepeating(ProcessSpaceNPCAI, TimeSpan.FromSeconds(1));
         }
 
+        [NWNEventHandler("mod_enter")]
+        public static void EnterServer()
+        {
+            ReloadPlayerTlkStrings();
+            WarpPlayerOutOfSpace();
+        }
+
         /// <summary>
         /// Loads all of the implementations of IShipListDefinition into the cache.
         /// </summary>
@@ -348,22 +355,18 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            SetLocalLocation(player, "SPACE_INSTANCE_LOCATION", GetLocation(player));
+            SetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET", true);
             EnterSpaceMode(player, dbShip.Id);
 
             var dbProperty = DB.Get<WorldProperty>(propertyId);
-            PropertyLocation propertyLocation;
 
             // The existence of a current location means the ship is currently in space.
             // Warp the player to the ship's location.
-            if (dbProperty.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
-            {
-                propertyLocation = dbProperty.Positions[PropertyLocationType.CurrentPosition];
-            }
             // Otherwise the player is docked. Warp the player to the space location of this dock.
-            else
-            {
-                propertyLocation = dbProperty.Positions[PropertyLocationType.SpacePosition];
-            }
+            var propertyLocation = dbProperty.Positions.ContainsKey(PropertyLocationType.CurrentPosition) 
+                ? dbProperty.Positions[PropertyLocationType.CurrentPosition]
+                : dbProperty.Positions[PropertyLocationType.SpacePosition];
 
             var spaceArea = Cache.GetAreaByResref(propertyLocation.AreaResref);
             var spacePosition = Vector3(propertyLocation.X, propertyLocation.Y, propertyLocation.Z);
@@ -438,8 +441,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a player enters the game, reapply any custom TLK strings related to ship module feats.
         /// </summary>
-        [NWNEventHandler("mod_enter")]
-        public static void ReloadPlayerTlkStrings()
+        private static void ReloadPlayerTlkStrings()
         {
             var player = GetEnteringObject();
             if (!GetIsPC(player) || GetIsDM(player)) return;
@@ -464,7 +466,8 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if player is in space mode, false otherwise</returns>
         public static bool IsPlayerInSpaceMode(uint player)
         {
-            if (!GetIsPC(player) || GetIsDM(player)) return false;
+            if (!GetIsPC(player) || GetIsDM(player)) 
+                return false;
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
@@ -478,6 +481,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="shipId">The Id of the ship to enter space with.</param>
         public static void EnterSpaceMode(uint player, string shipId)
         {
+            ClonePlayerAndSit(player);
+
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var dbPlayerShip = DB.Get<PlayerShip>(shipId);
@@ -540,6 +545,57 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// When a player enters the module, if they were piloting a ship, send them to the instance.
+        /// Note that if the server rebooted since they logged off, the normal persistent locations script
+        /// will take over and send them to the last dock they were at.
+        /// </summary>
+        private static void WarpPlayerOutOfSpace()
+        {
+            var player = GetEnteringObject();
+            ExitSpaceMode(player);
+
+            if (!GetLocalBool(player, "SPACE_INSTANCE_LOCATION_SET"))
+                return;
+
+            var location = GetLocalLocation(player, "SPACE_INSTANCE_LOCATION");
+            AssignCommand(player, () => ActionJumpToLocation(location));
+
+            DeleteLocalLocation(player, "SPACE_INSTANCE_LOCATION");
+            DeleteLocalBool(player, "SPACE_INSTANCE_LOCATION_SET");
+        }
+
+        private static void ClonePlayerAndSit(uint player)
+        {
+            var chair = GetNearestObjectByTag("pilot_chair", player);
+            var location = GetLocation(player);
+            var copy = CopyObject(player, location, OBJECT_INVALID, "spaceship_copy");
+            ChangeToStandardFaction(copy, StandardFaction.Defender);
+            TakeGoldFromCreature(GetGold(copy), copy, true);
+
+            for (var item = GetFirstItemInInventory(copy); GetIsObjectValid(item); item = GetNextItemInInventory(copy))
+            {
+                SetDroppableFlag(item, false);
+                DestroyObject(item);
+            }
+
+            AssignCommand(copy, () =>
+            {
+                ClearAllActions();
+            });
+
+            DelayCommand(1f, () =>
+            {
+                AssignCommand(copy, () =>
+                {
+                    ActionSit(chair);
+                });
+            });
+
+            SetPlotFlag(copy, true);
+            SetLocalObject(player, "SPACE_PILOT_CLONE", copy);
+        }
+
+        /// <summary>
         /// Applies the custom TLKs related to a ship module feat.
         /// Also applies an override of the ship module onto the ship feat's texture.
         /// </summary>
@@ -565,6 +621,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player exiting space mode.</param>
         public static void ExitSpaceMode(uint player)
         {
+            if (!IsPlayerInSpaceMode(player))
+                return;
+
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var shipId = dbPlayer.ActiveShipId;
@@ -601,6 +660,18 @@ namespace SWLOR.Game.Server.Service
             DB.Set(dbShip);
 
             _activelyPilotedShips.Remove(dbShip.Id);
+
+            // Destroy the NPC clone.
+            var copy = GetLocalObject(player, "SPACE_PILOT_CLONE");
+            if (GetIsObjectValid(copy))
+            {
+                DestroyObject(copy);
+            }
+
+            if (_activelyPilotedShips.Contains(shipId))
+                _activelyPilotedShips.Remove(shipId);
+
+            DeleteLocalObject(player, "SPACE_PILOT_CLONE");
         }
 
         /// <summary>
@@ -908,7 +979,6 @@ namespace SWLOR.Game.Server.Service
             var shipStatus = new ShipStatus
             {
                 ItemTag = registeredEnemyType.ShipItemTag,
-                Name = shipDetail.Name,
                 Shield = shipDetail.MaxShield,
                 MaxShield = shipDetail.MaxShield,
                 Hull = shipDetail.MaxHull,

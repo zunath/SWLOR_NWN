@@ -285,6 +285,21 @@ namespace SWLOR.Game.Server.Service
                 Log.Write(LogGroup.Property, $"Property '{property.CustomName}' scheduled for deletion. Peforming delete now.");
                 DeleteProperty(property);
             }
+
+            // Starship properties should have their current location wiped on every boot.
+            // This ensures the player's ship doesn't get lost in space when they're thrown out of an instance.
+            query = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Starship);
+            properties = DB.Search(query);
+
+            foreach (var property in properties)
+            {
+                if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
+                {
+                    property.Positions.Remove(PropertyLocationType.CurrentPosition);
+                    DB.Set(property);
+                }
+            }
         }
 
         private static void DeleteProperty(WorldProperty property)

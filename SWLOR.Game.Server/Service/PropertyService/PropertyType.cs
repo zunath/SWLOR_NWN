@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         Structure = 16,
         [PropertyType("Category", false, false)]
         Category = 32,
-        [PropertyType("Bank", false, true)]
+        [PropertyType("Bank", true, true)]
         Bank = 64,
         [PropertyType("Medical Center", false, true)]
         MedicalCenter = 128,

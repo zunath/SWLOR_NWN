@@ -1185,6 +1185,15 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             2)]
         WeaponRack = 215,
+
+        [Structure("City Hall",
+            "city_hall",
+            "",
+            true,
+            0,
+            PropertyType.City)]
+        CityHall = 5000,
+
     }
 
     public class StructureAttribute : Attribute
@@ -1206,7 +1215,12 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 PropertyType.Apartment | 
                 PropertyType.CityHall | 
                 PropertyType.Starship | 
-                PropertyType.City)
+                PropertyType.City |
+                PropertyType.Bank |
+                PropertyType.MedicalCenter |
+                PropertyType.Starport |
+                PropertyType.Cantina |
+                PropertyType.House)
         {
             Name = name;
             Resref = resref;

@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PropertyService;
@@ -152,6 +153,7 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.RetrieveStructures,
                 PropertyPermissionType.RenameProperty,
                 PropertyPermissionType.ChangeDescription,
+                PropertyPermissionType.EditCategories,
             };
 
             _permissionsByPropertyType[PropertyType.MedicalCenter] = new List<PropertyPermissionType>
@@ -298,7 +300,6 @@ namespace SWLOR.Game.Server.Service
             var propertyTypesWithLeases = new[]
             {
                 (int)PropertyType.Apartment,
-                (int)PropertyType.City
             };
             var query = new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.PropertyType), propertyTypesWithLeases);
@@ -668,15 +669,46 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
+        public static void CreateCity(uint player, uint area, uint item, Location location)
+        {
+            var city = CreateProperty(player, PropertyType.City, PropertyLayoutType.City, area, property =>
+            {
+                property.ParentPropertyId = GetResRef(area);
+                AssignPropertyId(area, property.Id);
+            });
+
+            CreateBuilding(
+                player,
+                item,
+                city.Id,
+                PropertyType.CityHall,
+                PropertyLayoutType.CityHall,
+                StructureType.CityHall,
+                location);
+        }
+
         /// <summary>
-        /// Creates a new building in the database for a given player and returns the world property.
+        /// Creates a new structure and interior property associated with the building.
         /// </summary>
         /// <param name="player">The player to associate the building with.</param>
+        /// <param name="parentPropertyId">The parent property Id.</param>
+        /// <param name="propertyType">The type of property to create</param>
         /// <param name="layout">The layout to use.</param>
+        /// <param name="item">The item used to create the building.</param>
+        /// <param name="structureType">The type of structure to create.</param>
+        /// <param name="location">The location to spawn the structure.</param>
         /// <returns>The new world property.</returns>
-        public static WorldProperty CreateBuilding(uint player, PropertyLayoutType layout)
+        public static void CreateBuilding(
+            uint player, 
+            uint item, 
+            string parentPropertyId, 
+            PropertyType propertyType, 
+            PropertyLayoutType layout,
+            StructureType structureType,
+            Location location)
         {
-            return CreateProperty(player, PropertyType.CityHall, layout); // todo: need to target the city and area to add this to.
+            CreateStructure(parentPropertyId, item, structureType, location);
+            CreateProperty(player, propertyType, layout);
         }
 
         /// <summary>
@@ -1132,13 +1164,38 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("item_use_bef")]
         public static void PlaceStructure()
         {
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
+            if (!GetResRef(item).StartsWith("structure_"))
+                return;
+
             EventsPlugin.SkipEvent();
 
             var player = OBJECT_SELF;
             var area = GetArea(player);
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
             var propertyId = GetPropertyId(area);
             var playerId = GetObjectUUID(player);
+            var structureType = GetStructureTypeFromItem(item);
+            var position = Vector3(
+                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_X")),
+                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Y")),
+                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Z")));
+
+            // Special case: City Hall pulls up a menu with details about the land and an option to place it down, claiming the land.
+            if (structureType == StructureType.CityHall)
+            {
+                if (!GetLocalBool(area, "IS_BUILDABLE"))
+                {
+                    FloatingTextStringOnCreature("Cities cannot be founded here.", player, false);
+                    return;
+                }
+
+                SetLocalObject(player, "PROPERTY_CITY_HALL_ITEM", item);
+                SetLocalFloat(player, "PROPERTY_CITY_HALL_X", position.X);
+                SetLocalFloat(player, "PROPERTY_CITY_HALL_Y", position.Y);
+                SetLocalFloat(player, "PROPERTY_CITY_HALL_Z", position.Z);
+                Dialog.StartConversation(player, player, nameof(PlaceCityHallDialog));
+                return;
+            }
 
             // Must be in a player property.
             if (string.IsNullOrWhiteSpace(propertyId))
@@ -1174,7 +1231,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Structure can't be placed within this type of property.
-            var structureType = GetStructureTypeFromItem(item);
             var structureDetail = GetStructureByType(structureType);
 
             if (!structureDetail.RestrictedPropertyTypes.HasFlag(property.PropertyType))
@@ -1183,10 +1239,6 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var position = Vector3(
-                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_X")),
-                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Y")),
-                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Z")));
             var location = Location(area, position, 0.0f);
 
             CreateStructure(propertyId, item, structureType, location);
@@ -1224,9 +1276,11 @@ namespace SWLOR.Game.Server.Service
                 uint targetArea;
 
                 // If no interior layout is defined, the provided area will be used.
-                if (property.Layout == PropertyLayoutType.Invalid)
+                if (property.Layout == PropertyLayoutType.Invalid ||
+                    property.Layout == PropertyLayoutType.City)
                 {
                     targetArea = area;
+                    AssignPropertyId(targetArea, property.Id);
                 }
                 // If there is an interior, create an instance and use that as our target.
                 else

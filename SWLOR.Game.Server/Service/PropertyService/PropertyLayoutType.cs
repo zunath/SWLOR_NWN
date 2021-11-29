@@ -127,15 +127,24 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true)]
         LightEscort1 = 11,
 
-
+        [PropertyLayoutType(
+            PropertyType.CityHall,
+            "City Hall",
+            30,
+            0,
+            0,
+            0,
+            "house_int_3", // todo: update to the new city hall interior
+            true)]
+        CityHall = 98,
 
         [PropertyLayoutType(
             PropertyType.City,
             "City",
-            20,
-            0,
-            -1,
-            -1,
+            50, // For Cities, determines how many regular structures (non-buildings) can be placed in the area
+            20, // For Cities, determines how many buildings (non-structures) can be placed in the area
+            100000,
+            5000,
             "",
             true)]
         City = 99,

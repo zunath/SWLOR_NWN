@@ -452,8 +452,18 @@ namespace SWLOR.Game.Server.Service
 
         private static void ProcessSpawn(ObjectSpawn spawn, ObjectType objectType, NWArea area, bool forceSpawn)
         {
-            // Don't process anything that's valid.
-            if (spawn.Spawn.IsValid) return;
+            // Spawn expiry.
+            if (spawn.Expires < DateTime.UtcNow)
+            {
+                NWPlaceable prop = spawn.Spawn.GetLocalObject("RESOURCE_PROP_OBJ");
+                if (prop.IsValid)
+                    DestroyObject(prop);
+
+                DestroyObject(spawn.Spawn);
+            }
+            // Don't process anything that's valid.  Put this in an else branch as object destruction
+            // happens after script completion. 
+            else if (spawn.Spawn.IsValid) return;
 
             spawn.Timer += ObjectProcessingService.ProcessingTickInterval;
 
@@ -517,8 +527,18 @@ namespace SWLOR.Game.Server.Service
 
                 spawn.Spawn.SetLocalInt("AI_FLAGS", (int) aiFlags);
 
+                // Set expiry time for spawn.  Set creatures to 26 hours (i.e. longer than the server reset
+                // cycle, so never).  Set placeables to 1 hour, so blocking objects will move and resources
+                // will reset.
                 if (objectType == ObjectType.Creature)
+                {
                     AssignScriptEvents(spawn.Spawn.Object);
+                    spawn.Expires = DateTime.UtcNow.AddHours(26);
+                }
+                else
+                {
+                    spawn.Expires = DateTime.UtcNow.AddHours(1);
+                }
 
                 if (!string.IsNullOrWhiteSpace(spawn.SpawnRule))
                 {

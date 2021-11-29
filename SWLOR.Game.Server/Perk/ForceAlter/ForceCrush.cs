@@ -107,8 +107,9 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
             {
                 SkillService.RegisterPCToNPCForSkill(creature.Object, target, SkillType.ForceAlter);
             }
-
-            _.ApplyEffectToObject(DurationType.Temporary, _.EffectVisualEffect(VisualEffect.Vfx_Dur_Bigbys_Crushing_Hand), target, 6.1f);
+            _.PlaySound("plr_force_choke");
+            _.ApplyEffectToObject(DurationType.Temporary, _.EffectVisualEffect(VisualEffect.Vfx_Fnf_Demon_Hand), target, 6.1f);
+            _.ApplyEffectToObject(DurationType.Temporary, _.EffectVisualEffect(VisualEffect.Vfx_Imp_Starburst_Red), target, 6.1f);
         }
     }
 }

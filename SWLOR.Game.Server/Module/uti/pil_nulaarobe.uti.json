@@ -6,11 +6,11 @@
   },
   "ArmorPart_Belt": {
     "type": "byte",
-    "value": 0
+    "value": 7
   },
   "ArmorPart_LBicep": {
     "type": "byte",
-    "value": 153
+    "value": 30
   },
   "ArmorPart_LFArm": {
     "type": "byte",
@@ -34,7 +34,7 @@
   },
   "ArmorPart_LThigh": {
     "type": "byte",
-    "value": 1
+    "value": 17
   },
   "ArmorPart_Neck": {
     "type": "byte",
@@ -42,7 +42,7 @@
   },
   "ArmorPart_Pelvis": {
     "type": "byte",
-    "value": 1
+    "value": 10
   },
   "ArmorPart_RBicep": {
     "type": "byte",
@@ -62,7 +62,7 @@
   },
   "ArmorPart_Robe": {
     "type": "byte",
-    "value": 110
+    "value": 0
   },
   "ArmorPart_RShin": {
     "type": "byte",
@@ -74,11 +74,11 @@
   },
   "ArmorPart_RThigh": {
     "type": "byte",
-    "value": 1
+    "value": 17
   },
   "ArmorPart_Torso": {
     "type": "byte",
-    "value": 1
+    "value": 53
   },
   "BaseItem": {
     "type": "int",

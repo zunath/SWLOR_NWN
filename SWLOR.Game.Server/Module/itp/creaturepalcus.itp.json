@@ -10235,6 +10235,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 20.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Dac Baine"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "dacbaine001"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 43.0
                     },
                     "FACTION": {
@@ -10349,6 +10368,25 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 18.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Rief Hargith"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "riefhargith"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 16.0
                     },
                     "FACTION": {
@@ -10368,7 +10406,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 14.0
+                      "value": 18.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10406,7 +10444,7 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 16.0
+                      "value": 15.0
                     },
                     "FACTION": {
                       "type": "cexostring",
@@ -10753,73 +10791,6 @@
         "STRREF": {
           "type": "dword",
           "value": 6732
-        }
-      },
-      {
-        "__struct_id": 0,
-        "LIST": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "ID": {
-                "type": "byte",
-                "value": 150
-              },
-              "STRREF": {
-                "type": "dword",
-                "value": 16859853
-              }
-            },
-            {
-              "__struct_id": 0,
-              "ID": {
-                "type": "byte",
-                "value": 153
-              },
-              "STRREF": {
-                "type": "dword",
-                "value": 16859856
-              }
-            },
-            {
-              "__struct_id": 0,
-              "ID": {
-                "type": "byte",
-                "value": 152
-              },
-              "STRREF": {
-                "type": "dword",
-                "value": 16859855
-              }
-            },
-            {
-              "__struct_id": 0,
-              "ID": {
-                "type": "byte",
-                "value": 154
-              },
-              "STRREF": {
-                "type": "dword",
-                "value": 16859857
-              }
-            },
-            {
-              "__struct_id": 0,
-              "ID": {
-                "type": "byte",
-                "value": 151
-              },
-              "STRREF": {
-                "type": "dword",
-                "value": 16859854
-              }
-            }
-          ]
-        },
-        "NAME": {
-          "type": "cexostring",
-          "value": "World Creatures"
         }
       }
     ]

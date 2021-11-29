@@ -213,7 +213,8 @@ namespace SWLOR.Game.Server.Service
             if (item.BaseItemType == BaseItem.Armor ||
                 item.BaseItemType == BaseItem.Belt ||
                 item.BaseItemType == BaseItem.Cloak ||
-                item.BaseItemType == BaseItem.Boots)
+                item.BaseItemType == BaseItem.Boots ||
+                item.BaseItemType == BaseItem.Bracer)
             {
                 switch (item.CustomItemType)
                 {

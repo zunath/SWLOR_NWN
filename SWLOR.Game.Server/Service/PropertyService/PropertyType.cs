@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace SWLOR.Game.Server.Service.PropertyService
 {
@@ -10,8 +9,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
         Invalid = 0,
         [PropertyType("Apartment", true, true)]
         Apartment = 1,
-        [PropertyType("Building", true, true)]
-        Building = 2,
+        [PropertyType("City Hall", true, true)]
+        CityHall = 2,
         [PropertyType("Starship", true, true)]
         Starship = 4,
         [PropertyType("City", false, false)]
@@ -19,7 +18,17 @@ namespace SWLOR.Game.Server.Service.PropertyService
         [PropertyType("Structure", false, true)]
         Structure = 16,
         [PropertyType("Category", false, false)]
-        Category = 32
+        Category = 32,
+        [PropertyType("Bank", false, true)]
+        Bank = 64,
+        [PropertyType("Medical Center", false, true)]
+        MedicalCenter = 128,
+        [PropertyType("Starport", false, true)]
+        Starport = 256,
+        [PropertyType("Cantina", false, true)]
+        Cantina = 512,
+        [PropertyType("House", true, true)]
+        House = 1024,
     }
 
     public class PropertyTypeAttribute : Attribute

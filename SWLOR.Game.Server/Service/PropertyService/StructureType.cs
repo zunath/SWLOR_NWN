@@ -1204,7 +1204,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             int itemStorage,
             PropertyType restrictedPropertyTypes = 
                 PropertyType.Apartment | 
-                PropertyType.Building | 
+                PropertyType.CityHall | 
                 PropertyType.Starship | 
                 PropertyType.City)
         {

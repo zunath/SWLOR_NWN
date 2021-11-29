@@ -127,6 +127,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true)]
         LightEscort1 = 11,
 
+
+
         [PropertyLayoutType(
             PropertyType.City,
             "City",
@@ -136,7 +138,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             -1,
             "",
             true)]
-        City = 80,
+        City = 99,
 
     }
 

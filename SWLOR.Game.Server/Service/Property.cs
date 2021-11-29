@@ -5,6 +5,7 @@ using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.DBService;
@@ -109,14 +110,12 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.EditCategories
             };
 
-            _permissionsByPropertyType[PropertyType.Building] = new List<PropertyPermissionType>
+            _permissionsByPropertyType[PropertyType.CityHall] = new List<PropertyPermissionType>
             {
                 PropertyPermissionType.EditStructures,
                 PropertyPermissionType.RetrieveStructures,
                 PropertyPermissionType.RenameProperty,
-                PropertyPermissionType.EnterProperty,
-                PropertyPermissionType.ChangeDescription,
-                PropertyPermissionType.EditCategories
+                PropertyPermissionType.ChangeDescription
             };
 
             _permissionsByPropertyType[PropertyType.Starship] = new List<PropertyPermissionType>
@@ -145,6 +144,48 @@ namespace SWLOR.Game.Server.Service
             _permissionsByPropertyType[PropertyType.Category] = new List<PropertyPermissionType>
             {
                 PropertyPermissionType.AccessStorage
+            };
+
+            _permissionsByPropertyType[PropertyType.Bank] = new List<PropertyPermissionType>
+            {
+                PropertyPermissionType.EditStructures,
+                PropertyPermissionType.RetrieveStructures,
+                PropertyPermissionType.RenameProperty,
+                PropertyPermissionType.ChangeDescription,
+            };
+
+            _permissionsByPropertyType[PropertyType.MedicalCenter] = new List<PropertyPermissionType>
+            {
+                PropertyPermissionType.EditStructures,
+                PropertyPermissionType.RetrieveStructures,
+                PropertyPermissionType.RenameProperty,
+                PropertyPermissionType.ChangeDescription,
+            };
+
+            _permissionsByPropertyType[PropertyType.Starport] = new List<PropertyPermissionType>
+            {
+                PropertyPermissionType.EditStructures,
+                PropertyPermissionType.RetrieveStructures,
+                PropertyPermissionType.RenameProperty,
+                PropertyPermissionType.ChangeDescription,
+            };
+
+            _permissionsByPropertyType[PropertyType.Cantina] = new List<PropertyPermissionType>
+            {
+                PropertyPermissionType.EditStructures,
+                PropertyPermissionType.RetrieveStructures,
+                PropertyPermissionType.RenameProperty,
+                PropertyPermissionType.ChangeDescription,
+            };
+
+            _permissionsByPropertyType[PropertyType.House] = new List<PropertyPermissionType>
+            {
+                PropertyPermissionType.EditStructures,
+                PropertyPermissionType.RetrieveStructures,
+                PropertyPermissionType.RenameProperty,
+                PropertyPermissionType.ChangeDescription,
+                PropertyPermissionType.EnterProperty,
+                PropertyPermissionType.EditCategories,
             };
         }
 
@@ -635,7 +676,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The new world property.</returns>
         public static WorldProperty CreateBuilding(uint player, PropertyLayoutType layout)
         {
-            return CreateProperty(player, PropertyType.Building, layout); // todo: need to target the city and area to add this to.
+            return CreateProperty(player, PropertyType.CityHall, layout); // todo: need to target the city and area to add this to.
         }
 
         /// <summary>
@@ -656,7 +697,15 @@ namespace SWLOR.Game.Server.Service
             var areaResref = GetResRef(area);
             var position = GetPositionFromLocation(location);
             var parentProperty = DB.Get<WorldProperty>(parentPropertyId);
-            var structureItemStorage = structureDetail.ItemStorage; // todo: add structure bonus property increases
+            var structureItemStorage = structureDetail.ItemStorage;
+
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) != ItemPropertyType.StructureBonus)
+                    continue;
+
+                structureItemStorage += GetItemPropertyCostTableValue(ip);
+            }
 
             var structure = new WorldProperty
             {

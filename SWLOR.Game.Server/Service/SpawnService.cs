@@ -460,6 +460,7 @@ namespace SWLOR.Game.Server.Service
                     DestroyObject(prop);
 
                 DestroyObject(spawn.Spawn);
+                forceSpawn = true;
             }
             // Don't process anything that's valid.  Put this in an else branch as object destruction
             // happens after script completion. 

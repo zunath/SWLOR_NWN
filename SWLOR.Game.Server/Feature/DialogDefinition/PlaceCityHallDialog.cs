@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -98,12 +99,20 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                             return;
                         }
 
+                        if (Perk.GetEffectivePerkLevel(player, PerkType.CityManagement) < 1)
+                        {
+                            FloatingTextStringOnCreature("The City Management I perk is required to establish a city.", player, false);
+                            return;
+                        }
+
                         AssignCommand(player, () => TakeGoldFromCreature(city.InitialPrice, player, true));
 
                         var position = Vector3(model.X, model.Y, model.Z);
                         var location = Location(area, position, 0.0f);
 
                         Property.CreateCity(player, area, model.Item, location);
+
+                        EndConversation();
                     });
                 }
                 else

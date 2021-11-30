@@ -770,6 +770,8 @@ namespace SWLOR.Game.Server.Service
             AssignPropertyId(placeable, structure.Id);
 
             _structurePropertyIdToPlaceable[structure.Id] = placeable;
+
+            DestroyObject(item);
         }
 
         /// <summary>
@@ -1242,7 +1244,6 @@ namespace SWLOR.Game.Server.Service
             var location = Location(area, position, 0.0f);
 
             CreateStructure(propertyId, item, structureType, location);
-            DestroyObject(item);
 
             SendMessageToPC(player, $"Furniture Limit: {property.ChildPropertyIds.Count+1} / {layout.StructureLimit}");
         }

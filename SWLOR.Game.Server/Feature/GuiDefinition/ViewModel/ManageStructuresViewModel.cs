@@ -180,6 +180,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             StructureNames = structureNames;
             StructureToggles = structureToggles;
+
+            LoadStructure();
         }
 
         private WorldPropertyPermission GetPermission()
@@ -353,6 +355,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var payload = new PropertyPermissionPayload(PropertyType.Starship, propertyId, false);
                 Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
+            }
+            else if (property.PropertyType == PropertyType.City)
+            {
+                Gui.TogglePlayerWindow(Player, GuiWindowType.CityManagement);
             }
             else
             {

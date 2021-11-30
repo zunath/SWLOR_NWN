@@ -1194,6 +1194,45 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyType.City)]
         CityHall = 5000,
 
+        [Structure("Bank",
+            "bank",
+            "",
+            true,
+            0,
+            PropertyType.City)]
+        Bank = 5001,
+
+        [Structure("Medical Center",
+            "medical_center",
+            "",
+            true,
+            0,
+            PropertyType.City)]
+        MedicalCenter = 5002,
+
+        [Structure("Starport",
+            "starport",
+            "",
+            true,
+            0,
+            PropertyType.City)]
+        Starport = 5003,
+
+        [Structure("Cantina",
+            "cantina",
+            "",
+            true,
+            0,
+            PropertyType.City)]
+        Cantina = 5004,
+
+        [Structure("House",
+            "house",
+            "",
+            true,
+            0,
+            PropertyType.City)]
+        House = 5005,
     }
 
     public class StructureAttribute : Attribute

@@ -1,0 +1,116 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Numerics;
+using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Entity;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
+
+namespace SWLOR.Game.Server.Service.PropertyService
+{
+    public static class StructureChangedAction
+    {
+        private static readonly Dictionary<StructureType, Action<WorldProperty, uint>> _actions = new();
+
+        /// <summary>
+        /// Builds the actions which are run when certain structures are changed in the game world.
+        /// </summary>
+        /// <returns>A dictionary of spawn actions.</returns>
+        public static Dictionary<StructureType, Action<WorldProperty, uint>> BuildSpawnActions()
+        {
+            _actions[StructureType.CityHall] = CityHall();
+            _actions[StructureType.Bank] = Bank();
+            _actions[StructureType.MedicalCenter] = MedicalCenter();
+            _actions[StructureType.Starport] = Starport();
+            _actions[StructureType.Cantina] = Cantina();
+            _actions[StructureType.House] = House();
+
+            return _actions;
+        }
+
+        private static Location GetDoorLocation(uint building, float orientationOverride = 0f, float sqrtValue = 0f)
+        {
+            var area = GetArea(building);
+            var location = GetLocation(building);
+            var orientationAdjustment = orientationOverride != 0f ? orientationOverride : 200.31f;
+            var sqrtAdjustment = sqrtValue != 0f ? sqrtValue : 13.0f;
+
+            var position = GetPositionFromLocation(location);
+            var orientation = GetFacingFromLocation(location);
+
+            orientation = orientation + orientationAdjustment;
+            if (orientation > 360.0) 
+                orientation -= 360.0f;
+
+            var mod = sqrt(sqrtAdjustment) * sin(orientation);
+            position.X += mod;
+
+            mod = sqrt(sqrtAdjustment) * cos(orientation);
+            position.Y -= mod;
+            var doorLocation = Location(area, position, orientation);
+            return doorLocation;
+        }
+
+        private static void SpawnDoor(uint building, Location location)
+        {
+            var door = GetLocalObject(building, "PROPERTY_DOOR");
+            if (GetIsObjectValid(door))
+                DestroyObject(door);
+
+            door = CreateObject(ObjectType.Placeable, "building_ent1", location);
+            SetLocalObject(building, "PROPERTY_DOOR", door);
+
+            Property.AssignPropertyId(door, Property.GetPropertyId(building));
+        }
+
+        private static Action<WorldProperty, uint> CityHall()
+        {
+            return (property, building) =>
+            {
+                var location = GetDoorLocation(building, 245f, 95f);
+                SpawnDoor(building, location);
+            };
+        }
+
+        private static Action<WorldProperty, uint> Bank()
+        {
+            return (property, placeable) =>
+            {
+
+            };
+        }
+
+        private static Action<WorldProperty, uint> MedicalCenter()
+        {
+            return (property, placeable) =>
+            {
+
+            };
+        }
+
+        private static Action<WorldProperty, uint> Starport()
+        {
+            return (property, placeable) =>
+            {
+
+            };
+        }
+
+        private static Action<WorldProperty, uint> Cantina()
+        {
+            return (property, placeable) =>
+            {
+
+            };
+        }
+
+        private static Action<WorldProperty, uint> House()
+        {
+            return (property, placeable) =>
+            {
+
+            };
+        }
+
+    }
+}

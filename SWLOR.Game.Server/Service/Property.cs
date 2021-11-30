@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<PropertyType, List<PropertyPermissionType>> _permissionsByPropertyType = new();
 
         private static readonly Dictionary<string, uint> _structurePropertyIdToPlaceable = new();
+        private static readonly Dictionary<StructureType, Action<WorldProperty, uint>> _structureChangedActions = StructureChangedAction.BuildSpawnActions();
 
         /// <summary>
         /// When the module loads, cache all relevant data into memory.
@@ -691,7 +692,7 @@ namespace SWLOR.Game.Server.Service
         /// Creates a new structure and interior property associated with the building.
         /// </summary>
         /// <param name="player">The player to associate the building with.</param>
-        /// <param name="parentPropertyId">The parent property Id.</param>
+        /// <param name="parentCityId">The parent city Id.</param>
         /// <param name="propertyType">The type of property to create</param>
         /// <param name="layout">The layout to use.</param>
         /// <param name="item">The item used to create the building.</param>
@@ -701,14 +702,25 @@ namespace SWLOR.Game.Server.Service
         public static void CreateBuilding(
             uint player, 
             uint item, 
-            string parentPropertyId, 
+            string parentCityId, 
             PropertyType propertyType, 
             PropertyLayoutType layout,
             StructureType structureType,
             Location location)
         {
-            CreateStructure(parentPropertyId, item, structureType, location);
-            CreateProperty(player, propertyType, layout);
+            // Hierarchy goes:
+            //      City  (Top Level)
+            //      Structure (buildings)
+            //      Building interiors
+            var buildingStructure = CreateStructure(parentCityId, item, structureType, location);
+            
+            var interior = CreateProperty(player, propertyType, layout, OBJECT_INVALID, interiorProperty =>
+            {
+                interiorProperty.ParentPropertyId = buildingStructure.Id;
+            });
+
+            buildingStructure.ChildPropertyIds.Add(interior.Id);
+            DB.Set(buildingStructure);
         }
 
         /// <summary>
@@ -718,7 +730,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="item">The item used to spawn the structure.</param>
         /// <param name="type">The type of structure to spawn.</param>
         /// <param name="location">The location to spawn the structure at.</param>
-        public static void CreateStructure(
+        public static WorldProperty CreateStructure(
             string parentPropertyId, 
             uint item,
             StructureType type, 
@@ -772,6 +784,9 @@ namespace SWLOR.Game.Server.Service
             _structurePropertyIdToPlaceable[structure.Id] = placeable;
 
             DestroyObject(item);
+            RunStructureChangedEvent(type, structure, placeable);
+
+            return structure;
         }
 
         /// <summary>
@@ -1270,6 +1285,10 @@ namespace SWLOR.Game.Server.Service
                 AssignPropertyId(placeable, property.Id);
 
                 _structurePropertyIdToPlaceable[property.Id] = placeable;
+
+                // Some structures have custom spawn-in actions which also need to be run
+                // when brought into the world. 
+                RunStructureChangedEvent(property.StructureType, property, placeable);
             }
             // All other property types are area instances or regular areas (in the case of cities)
             else
@@ -1305,6 +1324,47 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// When a building entrance is used, port the player inside the instance if they have permission
+        /// or display an error message saying they don't have permission to enter.
+        /// </summary>
+        [NWNEventHandler("enter_property")]
+        public static void EnterBuilding()
+        {
+            var player = GetLastUsedBy();
+            var door = OBJECT_SELF;
+            
+            // Buildings only ever have one child which is the interior area instance
+            var buildingId = GetPropertyId(door);
+            var building = DB.Get<WorldProperty>(buildingId);
+            var interiorId = building.ChildPropertyIds.Single();
+            var interior = DB.Get<WorldProperty>(interiorId);
+
+            var instance = GetRegisteredInstance(interior.Id);
+            var entrance = GetEntrancePosition(interior.Layout);
+            var position = Vector3(entrance.X, entrance.Y, entrance.Z);
+            var location = Location(instance.Area, position, entrance.W);
+
+            // todo: permission checks
+
+            AssignCommand(player, () => ActionJumpToLocation(location));
+        }
+
+        /// <summary>
+        /// If a structure changed action is registered, this will perform the action on the specified
+        /// property and placeable. If not registered, nothing will happen.
+        /// </summary>
+        /// <param name="type">The type of structure</param>
+        /// <param name="property">The world property to target</param>
+        /// <param name="placeable">The placeable to target</param>
+        public static void RunStructureChangedEvent(StructureType type, WorldProperty property, uint placeable)
+        {
+            if (!_structureChangedActions.ContainsKey(type))
+                return;
+
+            _structureChangedActions[type](property, placeable);
         }
     }
 }

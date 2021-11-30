@@ -237,9 +237,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Gui.TogglePlayerWindow(Player, GuiWindowType.ManageStructures);
                 return;
             }
-
+            
             var property = DB.Get<WorldProperty>(propertyId);
-            ManageButtonText = property.PropertyType == PropertyType.Starship
+            ManageButtonText = (property.PropertyType == PropertyType.Starship || property.PropertyType == PropertyType.City)
                 ? "Permissions"
                 : "Manage Property";
             StructureName = string.Empty;
@@ -358,7 +358,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else if (property.PropertyType == PropertyType.City)
             {
-                Gui.TogglePlayerWindow(Player, GuiWindowType.CityManagement);
+                var payload = new PropertyPermissionPayload(PropertyType.City, propertyId, false);
+                Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
             }
             else
             {
@@ -453,6 +454,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             Instructions = $"Structure saved!";
             InstructionColor = _green;
+
+            Property.RunStructureChangedEvent(structure.StructureType, structure, placeable);
         };
 
         private void DiscardChanges()

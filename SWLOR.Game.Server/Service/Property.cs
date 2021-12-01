@@ -492,25 +492,57 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void LoadProperties()
         {
-            var apartments = DB.Search(new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment));
-            var starships = DB.Search(new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Starship));
+            var instanceTypes = _propertyTypes
+                .Where(x => x.Value.SpawnType == PropertySpawnType.Instance)
+                .Select(s => (int)s.Key)
+                .ToList();
+            var worldTypes = _propertyTypes
+                .Where(x => x.Value.SpawnType == PropertySpawnType.World)
+                .Select(s => (int)s.Key)
+                .ToList();
+            var areaTypes = _propertyTypes
+                .Where(x => x.Value.SpawnType == PropertySpawnType.Area)
+                .Select(s => (int)s.Key)
+                .ToList();
 
-            var propertiesWithInstances = new List<WorldProperty>();
-            propertiesWithInstances.AddRange(apartments);
-            propertiesWithInstances.AddRange(starships);
-            foreach (var property in propertiesWithInstances)
+            var instanceProperties = DB.Search(new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), instanceTypes));
+            var worldProperties = DB.Search(new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), worldTypes));
+            var areaProperties = DB.Search(new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), areaTypes));
+
+            foreach (var property in instanceProperties)
             {
                 SpawnIntoWorld(property, OBJECT_INVALID);
             }
-
-            var cities = DB.Search(new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.City));
-            foreach (var city in cities)
+            
+            foreach (var property in worldProperties)
             {
-                var area = Cache.GetAreaByResref(city.ParentPropertyId);
-                SpawnIntoWorld(city, area);
+                // If the parent is contained in the instance list, this world property needs to 
+                // be spawned inside the instance.
+                if (_propertyInstances.ContainsKey(property.ParentPropertyId))
+                {
+                    var instance = _propertyInstances[property.ParentPropertyId];
+                    SpawnIntoWorld(property, instance.Area);
+                }
+                // Otherwise the parent exists within a pre-existing area (non-instance).
+                // We need to find out which area it is by looking at the parent's parent Id,
+                // which will be the resref of the area.
+                else
+                {
+                    var parent = DB.Get<WorldProperty>(property.ParentPropertyId);
+                    var areaResref = parent.ParentPropertyId;
+                    var area = Cache.GetAreaByResref(areaResref);
+
+                    SpawnIntoWorld(property, area);
+                }
+            }
+
+            foreach (var property in areaProperties)
+            {
+                var area = Cache.GetAreaByResref(property.ParentPropertyId);
+                SpawnIntoWorld(property, area);
             }
         }
 
@@ -605,11 +637,8 @@ namespace SWLOR.Game.Server.Service
                     DB.Set(categoryPermission);
                 }
             }
-
-            if (propertyDetail.ExistsInGameWorld)
-            {
-                SpawnIntoWorld(property, targetArea);
-            }
+            
+            SpawnIntoWorld(property, targetArea);
 
             return property;
         }
@@ -717,6 +746,7 @@ namespace SWLOR.Game.Server.Service
             var interior = CreateProperty(player, propertyType, layout, OBJECT_INVALID, interiorProperty =>
             {
                 interiorProperty.ParentPropertyId = buildingStructure.Id;
+                interiorProperty.CustomName = buildingStructure.CustomName;
             });
 
             buildingStructure.ChildPropertyIds.Add(interior.Id);
@@ -879,6 +909,16 @@ namespace SWLOR.Game.Server.Service
         public static List<PropertyPermissionType> GetPermissionsByPropertyType(PropertyType type)
         {
             return _permissionsByPropertyType[type];
+        }
+
+        /// <summary>
+        /// Retrieves the property detail for a given type of property.
+        /// </summary>
+        /// <param name="type">The type of property to get.</param>
+        /// <returns>A property detail for the given type.</returns>
+        public static PropertyTypeAttribute GetPropertyDetail(PropertyType type)
+        {
+            return _propertyTypes[type];
         }
 
         /// <summary>
@@ -1272,8 +1312,10 @@ namespace SWLOR.Game.Server.Service
         /// <param name="area">The area to spawn the property into. Leave OBJECT_INVALID if spawning an instance.</param>
         private static void SpawnIntoWorld(WorldProperty property, uint area)
         {
-            // Structures represent placeables within the game world such as furniture and buildings
-            if (property.PropertyType == PropertyType.Structure)
+            var propertyDetail = _propertyTypes[property.PropertyType];
+
+            // World spawns represent placeables within the game world such as furniture and buildings
+            if (propertyDetail.SpawnType == PropertySpawnType.World)
             {
                 var furniture = GetStructureByType(property.StructureType);
 
@@ -1290,39 +1332,20 @@ namespace SWLOR.Game.Server.Service
                 // when brought into the world. 
                 RunStructureChangedEvent(property.StructureType, property, placeable);
             }
-            // All other property types are area instances or regular areas (in the case of cities)
-            else
+            // Instance spawns are instanced areas that are spawned dynamically into the game world.d
+            else if(propertyDetail.SpawnType == PropertySpawnType.Instance)
             {
-                uint targetArea;
-
                 // If no interior layout is defined, the provided area will be used.
-                if (property.Layout == PropertyLayoutType.Invalid ||
-                    property.Layout == PropertyLayoutType.City)
-                {
-                    targetArea = area;
-                    AssignPropertyId(targetArea, property.Id);
-                }
-                // If there is an interior, create an instance and use that as our target.
-                else
-                {
-                    var layout = GetLayoutByType(property.Layout);
-                    targetArea = CreateArea(layout.AreaInstanceResref);
-                    RegisterInstance(property.Id, targetArea);
+                var layout = GetLayoutByType(property.Layout);
+                var targetArea = CreateArea(layout.AreaInstanceResref);
+                RegisterInstance(property.Id, targetArea);
 
-                    SetName(targetArea, property.CustomName);
-                }
-
-                if (property.ChildPropertyIds.Count > 0)
-                {
-                    var query = new DBQuery<WorldProperty>()
-                        .AddFieldSearch(nameof(WorldProperty.Id), property.ChildPropertyIds);
-                    var children = DB.Search(query);
-
-                    foreach (var child in children)
-                    {
-                        SpawnIntoWorld(child, targetArea);
-                    }
-                }
+                SetName(targetArea, property.CustomName);
+            }
+            // Area spawns exist in a pre-built area.
+            else if(propertyDetail.SpawnType == PropertySpawnType.Area)
+            {
+                AssignPropertyId(area, property.Id);
             }
         }
 

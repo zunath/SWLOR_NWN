@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return DB.Search(query).FirstOrDefault();
         }
 
-        private void LoadPropertyPermissions()
+        private void LoadPropertyPermissions(WorldProperty property)
         {
             var permission = GetPermission();
             IsEditStructureEnabled = false;
@@ -218,8 +218,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var propertyId = Property.GetPropertyId(area);
             var playerId = GetObjectUUID(Player);
             var permissions = Property.GetCategoryPermissions(playerId, propertyId);
+            var propertyTypeDetail = Property.GetPropertyDetail(property.PropertyType);
 
-            IsOpenStorageEnabled = permissions.Count > 0;
+            IsOpenStorageEnabled = permissions.Count > 0 && propertyTypeDetail.HasStorage;
         }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
@@ -244,7 +245,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : "Manage Property";
             StructureName = string.Empty;
             SelectedPageIndex = 0;
-            LoadPropertyPermissions();
+            LoadPropertyPermissions(property);
             Search();
 
             WatchOnClient(model => model.SelectedPageIndex);

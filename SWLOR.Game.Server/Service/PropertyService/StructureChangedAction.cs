@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -51,7 +52,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             return doorLocation;
         }
 
-        private static void SpawnDoor(uint building, Location location)
+        private static void SpawnDoor(uint building, Location location, string name)
         {
             var door = GetLocalObject(building, "PROPERTY_DOOR");
             if (GetIsObjectValid(door))
@@ -61,6 +62,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             SetLocalObject(building, "PROPERTY_DOOR", door);
 
             Property.AssignPropertyId(door, Property.GetPropertyId(building));
+            SetName(door, name);
         }
 
         private static Action<WorldProperty, uint> CityHall()
@@ -68,7 +70,19 @@ namespace SWLOR.Game.Server.Service.PropertyService
             return (property, building) =>
             {
                 var location = GetDoorLocation(building, 245f, 95f);
-                SpawnDoor(building, location);
+                SpawnDoor(building, location, property.CustomName);
+
+                // If the interior has been linked, also update its name.
+                var interiorId = property.ChildPropertyIds.SingleOrDefault();
+                if (!string.IsNullOrWhiteSpace(interiorId))
+                {
+                    var interior = DB.Get<WorldProperty>(interiorId);
+                    interior.CustomName = property.CustomName;
+                    DB.Set(interior);
+
+                    var instance = Property.GetRegisteredInstance(interiorId);
+                    SetName(instance.Area, property.CustomName);
+                }
             };
         }
 

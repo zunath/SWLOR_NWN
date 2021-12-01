@@ -591,9 +591,9 @@ namespace SWLOR.Game.Server.Service
             var property = new WorldProperty
             {
                 CustomName = $"{GetName(player)}'s {propertyDetail.Name}",
+                IsPubliclyAccessible = propertyDetail.IsAlwaysPublic,
                 PropertyType = type,
                 OwnerPlayerId = ownerId,
-                IsPubliclyAccessible = false,
                 Layout = layout,
                 ItemStorageCount = layoutDetail.ItemStorageLimit
             };
@@ -1357,6 +1357,7 @@ namespace SWLOR.Game.Server.Service
         public static void EnterBuilding()
         {
             var player = GetLastUsedBy();
+            var playerId = GetObjectUUID(player);
             var door = OBJECT_SELF;
             
             // Buildings only ever have one child which is the interior area instance
@@ -1369,10 +1370,22 @@ namespace SWLOR.Game.Server.Service
             var entrance = GetEntrancePosition(interior.Layout);
             var position = Vector3(entrance.X, entrance.Y, entrance.Z);
             var location = Location(instance.Area, position, entrance.W);
+            var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), interiorId, false))
+                .SingleOrDefault();
 
-            // todo: permission checks
-
-            AssignCommand(player, () => ActionJumpToLocation(location));
+            // Building is publicly accessible or the player has permission to enter.
+            if (interior.IsPubliclyAccessible ||
+                !interior.IsPubliclyAccessible && permission != null && permission.Permissions[PropertyPermissionType.EnterProperty])
+            {
+                StoreOriginalLocation(player);
+                AssignCommand(player, () => ActionJumpToLocation(location));
+            }
+            else
+            {
+                SendMessageToPC(player, "You do not have permission to enter.");
+            }
         }
 
         /// <summary>

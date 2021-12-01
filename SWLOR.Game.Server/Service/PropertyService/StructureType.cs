@@ -1227,7 +1227,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         Cantina = 5004,
 
         [Structure("House",
-            "house",
+            "house1",
             "",
             true,
             0,

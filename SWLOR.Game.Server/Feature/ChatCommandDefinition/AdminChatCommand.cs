@@ -64,7 +64,13 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 {
                     var orientationOverride = float.Parse(args[0]);
                     var sqrtValue = float.Parse(args[1]);
-                    var placeable = GetObjectByTag("city_hall");
+                    var placeable = GetObjectByTag("house1");
+
+                    if (!GetIsObjectValid(placeable))
+                    {
+                        var waypoint = GetWaypointByTag("DEBUG_HOUSE");
+                        placeable = CreateObject(ObjectType.Placeable, "house1", GetLocation(waypoint));
+                    }
 
                     var doorLocation = GetDoorLocation(placeable, orientationOverride, sqrtValue);
 

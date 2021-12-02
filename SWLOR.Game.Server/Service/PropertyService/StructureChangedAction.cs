@@ -24,17 +24,15 @@ namespace SWLOR.Game.Server.Service.PropertyService
             _actions[StructureType.MedicalCenter] = MedicalCenter();
             _actions[StructureType.Starport] = Starport();
             _actions[StructureType.Cantina] = Cantina();
-            _actions[StructureType.House] = House();
+            _actions[StructureType.House] = House1();
 
             return _actions;
         }
 
-        private static Location GetDoorLocation(uint building, float orientationOverride = 0f, float sqrtValue = 0f)
+        private static Location GetDoorLocation(uint building, float orientationAdjustment, float sqrtAdjustment)
         {
             var area = GetArea(building);
             var location = GetLocation(building);
-            var orientationAdjustment = orientationOverride != 0f ? orientationOverride : 200.31f;
-            var sqrtAdjustment = sqrtValue != 0f ? sqrtValue : 13.0f;
 
             var position = GetPositionFromLocation(location);
             var orientation = GetFacingFromLocation(location);
@@ -65,64 +63,78 @@ namespace SWLOR.Game.Server.Service.PropertyService
             SetName(door, name);
         }
 
+        private static void AdjustBuildingName(WorldProperty property)
+        {
+            // If the interior has been linked, also update its name.
+            var interiorId = property.ChildPropertyIds.SingleOrDefault();
+            if (!string.IsNullOrWhiteSpace(interiorId))
+            {
+                var interior = DB.Get<WorldProperty>(interiorId);
+                interior.CustomName = property.CustomName;
+                DB.Set(interior);
+
+                var instance = Property.GetRegisteredInstance(interiorId);
+                SetName(instance.Area, property.CustomName);
+            }
+        }
+
         private static Action<WorldProperty, uint> CityHall()
         {
             return (property, building) =>
             {
                 var location = GetDoorLocation(building, 245f, 95f);
                 SpawnDoor(building, location, property.CustomName);
-
-                // If the interior has been linked, also update its name.
-                var interiorId = property.ChildPropertyIds.SingleOrDefault();
-                if (!string.IsNullOrWhiteSpace(interiorId))
-                {
-                    var interior = DB.Get<WorldProperty>(interiorId);
-                    interior.CustomName = property.CustomName;
-                    DB.Set(interior);
-
-                    var instance = Property.GetRegisteredInstance(interiorId);
-                    SetName(instance.Area, property.CustomName);
-                }
+                AdjustBuildingName(property);
             };
         }
 
         private static Action<WorldProperty, uint> Bank()
         {
-            return (property, placeable) =>
+            return (property, building) =>
             {
-
+                var location = GetDoorLocation(building, 205f, 55f);
+                SpawnDoor(building, location, property.CustomName);
+                AdjustBuildingName(property);
             };
         }
 
         private static Action<WorldProperty, uint> MedicalCenter()
         {
-            return (property, placeable) =>
+            return (property, building) =>
             {
-
+                var location = GetDoorLocation(building, 312f, 145f);
+                SpawnDoor(building, location, property.CustomName);
+                AdjustBuildingName(property);
             };
         }
 
         private static Action<WorldProperty, uint> Starport()
         {
-            return (property, placeable) =>
+            return (property, building) =>
             {
-
+                var location = GetDoorLocation(building, 90f, 220f);
+                SpawnDoor(building, location, property.CustomName);
+                AdjustBuildingName(property);
             };
         }
 
         private static Action<WorldProperty, uint> Cantina()
         {
-            return (property, placeable) =>
+            return (property, building) =>
             {
-
+                var location = GetDoorLocation(building, 90f, 50f);
+                SpawnDoor(building, location, property.CustomName);
+                AdjustBuildingName(property);
             };
         }
 
-        private static Action<WorldProperty, uint> House()
+        private static Action<WorldProperty, uint> House1()
         {
-            return (property, placeable) =>
+            return (property, building) =>
             {
-
+                var location = GetDoorLocation(building, 198f, 13.0f);
+                SpawnDoor(building, location, property.CustomName);
+                AdjustBuildingName(property);
             };
         }
 

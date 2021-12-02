@@ -277,7 +277,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LayoutName = $"Layout: {layout.Name}";
                 InitialPrice = $"Initial Price: {layout.InitialPrice} cr";
                 PricePerDay = $"Price Per Day: {layout.PricePerDay} cr";
-                FurnitureLimit = $"Furniture Limit: {furnitureCount} / {layout.StructureLimit}";
+                FurnitureLimit = $"Structure Limit: {furnitureCount} / {layout.StructureLimit}";
                 IsEnterEnabled = permissions.Permissions[PropertyPermissionType.EnterProperty];
                 IsManagePermissionsEnabled = permissions.GrantPermissions.Any(x => x.Value);
                 IsCancelLeaseEnabled = permissions.Permissions[PropertyPermissionType.CancelLease];

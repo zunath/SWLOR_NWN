@@ -128,17 +128,6 @@ namespace SWLOR.Game.Server.Service.PropertyService
         LightEscort1 = 11,
 
         [PropertyLayoutType(
-            PropertyType.CityHall,
-            "City Hall",
-            30,
-            0,
-            0,
-            0,
-            "house_int_3", // todo: update to the new city hall interior
-            true)]
-        CityHall = 98,
-
-        [PropertyLayoutType(
             PropertyType.City,
             "City",
             50, // For Cities, determines how many regular structures (non-buildings) can be placed in the area
@@ -147,7 +136,74 @@ namespace SWLOR.Game.Server.Service.PropertyService
             5000,
             "",
             true)]
-        City = 99,
+        City = 92,
+
+        [PropertyLayoutType(
+            PropertyType.CityHall,
+            "City Hall",
+            30,
+            0,
+            0,
+            0,
+            "house_int_3", // todo: update to the new interior
+            true)]
+        CityHall = 93,
+
+        [PropertyLayoutType(
+            PropertyType.Bank,
+            "Bank",
+            30,
+            0,
+            0,
+            0,
+            "house_int_3", // todo: update to the new interior
+            true)]
+        Bank = 94,
+
+        [PropertyLayoutType(
+            PropertyType.MedicalCenter,
+            "Medical Center",
+            30,
+            0,
+            0,
+            0,
+            "house_int_3", // todo: update to the new interior
+            true)]
+        MedicalCenter = 95,
+
+        [PropertyLayoutType(
+            PropertyType.Starport,
+            "Starport",
+            30,
+            0,
+            0,
+            0,
+            "house_int_3", // todo: update to the new interior
+            true)]
+        Starport = 96,
+
+        [PropertyLayoutType(
+            PropertyType.Cantina,
+            "Cantina",
+            30,
+            0,
+            0,
+            0,
+            "house_int_3", // todo: update to the new interior
+            true)]
+        Cantina = 97,
+
+        [PropertyLayoutType(
+            PropertyType.House,
+            "House",
+            30,
+            0,
+            0,
+            0,
+            "house_int_3", // todo: update to the new interior
+            true)]
+        House = 98,
+
 
     }
 

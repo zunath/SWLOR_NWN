@@ -578,42 +578,60 @@ namespace SWLOR.Game.Server.Service
         }
 
         private static WorldProperty CreateProperty(
-            uint player, 
+            uint creatorPlayer,
+            string ownerPlayerId, 
+            string propertyName,
             PropertyType type, 
             PropertyLayoutType layout, 
             uint targetArea = OBJECT_INVALID,
             Action<WorldProperty> constructionAction = null)
         {
-            var ownerId = GetObjectUUID(player);
+            var creatorPlayerId = GetObjectUUID(creatorPlayer);
             var layoutDetail = GetLayoutByType(layout);
             var propertyDetail = _propertyTypes[type];
 
             var property = new WorldProperty
             {
-                CustomName = $"{GetName(player)}'s {propertyDetail.Name}",
+                CustomName = propertyName,
                 IsPubliclyAccessible = propertyDetail.IsAlwaysPublic,
                 PropertyType = type,
-                OwnerPlayerId = ownerId,
+                OwnerPlayerId = ownerPlayerId,
                 Layout = layout,
                 ItemStorageCount = layoutDetail.ItemStorageLimit
             };
 
             constructionAction?.Invoke(property);
 
-            var permissions = new WorldPropertyPermission
+            var ownerPermissions = new WorldPropertyPermission
             {
                 PropertyId = property.Id,
-                PlayerId = ownerId
+                PlayerId = ownerPlayerId
             };
+
+            var creatorPermissions = creatorPlayerId == ownerPlayerId
+                ? null
+                : new WorldPropertyPermission
+                {
+                    PropertyId = property.Id,
+                    PlayerId = creatorPlayerId
+                };
 
             foreach (var permission in _permissionsByPropertyType[type])
             {
-                permissions.Permissions[permission] = true;
-                permissions.GrantPermissions[permission] = true;
+                ownerPermissions.Permissions[permission] = true;
+                ownerPermissions.GrantPermissions[permission] = true;
+
+                if (creatorPermissions != null)
+                {
+                    creatorPermissions.Permissions[permission] = true;
+                    creatorPermissions.GrantPermissions[permission] = true;
+                }
             }
 
             DB.Set(property);
-            DB.Set(permissions);
+            DB.Set(ownerPermissions);
+            if(creatorPermissions != null)
+                DB.Set(creatorPermissions);
 
             if (propertyDetail.HasStorage)
             {
@@ -625,7 +643,7 @@ namespace SWLOR.Game.Server.Service
                     var categoryPermission = new WorldPropertyPermission
                     {
                         PropertyId = category.Id,
-                        PlayerId = ownerId
+                        PlayerId = ownerPlayerId
                     };
 
                     foreach (var permission in _permissionsByPropertyType[PropertyType.Category])
@@ -651,7 +669,9 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The new world property.</returns>
         public static WorldProperty CreateApartment(uint player, PropertyLayoutType layout)
         {
-            return CreateProperty(player, PropertyType.Apartment, layout, OBJECT_INVALID, property =>
+            var playerId = GetObjectUUID(player);
+            var propertyName = $"{GetName(player)}'s Apartment";
+            return CreateProperty(player, playerId, propertyName, PropertyType.Apartment, layout, OBJECT_INVALID, property =>
             {
                 property.Timers[PropertyTimerType.Lease] = DateTime.UtcNow.AddDays(7);
             });
@@ -677,7 +697,10 @@ namespace SWLOR.Game.Server.Service
             var landingArea = GetAreaFromLocation(landingLocation);
             var landingAreaResref = GetResRef(landingArea);
 
-            return CreateProperty(player, PropertyType.Starship, layout, OBJECT_INVALID, property =>
+            var playerId = GetObjectUUID(player);
+            var propertyName = $"{GetName(player)}'s Starship";
+
+            return CreateProperty(player, playerId, propertyName, PropertyType.Starship, layout, OBJECT_INVALID, property =>
             {
                 property.Positions[PropertyLocationType.DockPosition] = new PropertyLocation
                 {
@@ -699,9 +722,20 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
+        /// <summary>
+        /// Creates a new city in the specified area and assigns the specified player to become the owner.
+        /// A city hall structure and interior will also be spawned at the specified location.
+        /// The specified item will be destroyed.
+        /// </summary>
+        /// <param name="player">The player who will become mayor.</param>
+        /// <param name="area">The area to claim.</param>
+        /// <param name="item">The item used to place the city hall</param>
+        /// <param name="location">The location to spawn city hall.</param>
         public static void CreateCity(uint player, uint area, uint item, Location location)
         {
-            var city = CreateProperty(player, PropertyType.City, PropertyLayoutType.City, area, property =>
+            var playerId = GetObjectUUID(player);
+            var propertyName = $"{GetName(player)}'s City";
+            var city = CreateProperty(player, playerId, propertyName, PropertyType.City, PropertyLayoutType.City, area, property =>
             {
                 property.ParentPropertyId = GetResRef(area);
                 AssignPropertyId(area, property.Id);
@@ -737,13 +771,25 @@ namespace SWLOR.Game.Server.Service
             StructureType structureType,
             Location location)
         {
+            var layoutDetail = GetLayoutByType(layout);
+            var playerId = GetObjectUUID(player);
+            var propertyName = $"{GetName(player)}'s {layoutDetail.Name}";
+            var city = DB.Get<WorldProperty>(parentCityId);
+
             // Hierarchy goes:
             //      City  (Top Level)
             //      Structure (buildings)
             //      Building interiors
             var buildingStructure = CreateStructure(parentCityId, item, structureType, location);
             
-            var interior = CreateProperty(player, propertyType, layout, OBJECT_INVALID, interiorProperty =>
+            var interior = CreateProperty(
+                player,
+                city.OwnerPlayerId,
+                propertyName, 
+                propertyType, 
+                layout, 
+                OBJECT_INVALID, 
+                interiorProperty =>
             {
                 interiorProperty.ParentPropertyId = buildingStructure.Id;
                 interiorProperty.CustomName = buildingStructure.CustomName;
@@ -786,7 +832,7 @@ namespace SWLOR.Game.Server.Service
                 CustomName = structureDetail.Name,
                 PropertyType = PropertyType.Structure,
                 SerializedItem = ObjectPlugin.Serialize(item),
-                OwnerPlayerId = string.Empty,
+                OwnerPlayerId = parentProperty.OwnerPlayerId,
                 ParentPropertyId = parentPropertyId,
                 StructureType = type,
                 ItemStorageCount = structureItemStorage
@@ -1274,22 +1320,29 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
             
-            var propertyQuery = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.Id), propertyId, false);
-            var property = DB.Search(propertyQuery).Single();
-            var structureLimit = property.ChildPropertyIds.Count;
+            var property = DB.Get<WorldProperty>(propertyId);
+            var structureCount = property.ChildPropertyIds.Count;
             var layout = GetLayoutByType(property.Layout);
+            var structureLimit = layout.StructureLimit;
+            var structureDetail = GetStructureByType(structureType);
+
+            // Special Case: Cities differentiate between structures and buildings.
+            // They use the ItemStorageLimit value for buildings and StructureLimit for everything else.
+            // Buildings are determined by structures whose restrictions are solely to "City" property types.
+            if (property.PropertyType == PropertyType.City &&
+                structureDetail.RestrictedPropertyTypes == PropertyType.City)
+            {
+                structureLimit = layout.ItemStorageLimit;
+            }
 
             // Over the structure limit.
-            if (structureLimit >= layout.StructureLimit)
+            if (structureCount >= structureLimit)
             {
                 FloatingTextStringOnCreature($"No more structures may be placed here.", player, false);
                 return;
             }
 
-            // Structure can't be placed within this type of property.
-            var structureDetail = GetStructureByType(structureType);
-
+            // Structure can't be placed within this type of property
             if (!structureDetail.RestrictedPropertyTypes.HasFlag(property.PropertyType))
             {
                 FloatingTextStringOnCreature($"This type of structure cannot be placed within this type of property.", player, false);
@@ -1298,9 +1351,25 @@ namespace SWLOR.Game.Server.Service
 
             var location = Location(area, position, 0.0f);
 
-            CreateStructure(propertyId, item, structureType, location);
+            // If no interior layout is defined, this is a basic structure.
+            if (structureDetail.LayoutType == PropertyLayoutType.Invalid)
+            {
+                CreateStructure(propertyId, item, structureType, location);
+            }
+            // Otherwise we have a layout which means an interior must be spawned.
+            else
+            {
+                var structureLayout = GetLayoutByType(structureDetail.LayoutType);
+                CreateBuilding(
+                    player, 
+                    item, 
+                    propertyId, 
+                    structureLayout.PropertyType, 
+                    structureDetail.LayoutType, 
+                    structureType, location);
+            }
 
-            SendMessageToPC(player, $"Furniture Limit: {property.ChildPropertyIds.Count+1} / {layout.StructureLimit}");
+            SendMessageToPC(player, $"Structure Limit: {property.ChildPropertyIds.Count+1} / {structureLimit}");
         }
 
         /// <summary>

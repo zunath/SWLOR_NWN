@@ -1191,7 +1191,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
             "",
             true,
             0,
-            PropertyType.City)]
+            PropertyType.City,
+            PropertyLayoutType.CityHall)]
         CityHall = 5000,
 
         [Structure("Bank",
@@ -1199,7 +1200,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
             "",
             true,
             0,
-            PropertyType.City)]
+            PropertyType.City,
+            PropertyLayoutType.Bank)]
         Bank = 5001,
 
         [Structure("Medical Center",
@@ -1207,7 +1209,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
             "",
             true,
             0,
-            PropertyType.City)]
+            PropertyType.City,
+            PropertyLayoutType.MedicalCenter)]
         MedicalCenter = 5002,
 
         [Structure("Starport",
@@ -1215,7 +1218,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
             "",
             true,
             0,
-            PropertyType.City)]
+            PropertyType.City,
+            PropertyLayoutType.Starport)]
         Starport = 5003,
 
         [Structure("Cantina",
@@ -1223,7 +1227,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
             "",
             true,
             0,
-            PropertyType.City)]
+            PropertyType.City,
+            PropertyLayoutType.Cantina)]
         Cantina = 5004,
 
         [Structure("House",
@@ -1231,7 +1236,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
             "",
             true,
             0,
-            PropertyType.City)]
+            PropertyType.City,
+            PropertyLayoutType.House)]
         House = 5005,
     }
 
@@ -1243,6 +1249,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         public string Resref { get; set; }
         public int ItemStorage { get; set; }
         public PropertyType RestrictedPropertyTypes { get; set; }
+        public PropertyLayoutType LayoutType { get; set; }
 
         public StructureAttribute(
             string name, 
@@ -1259,7 +1266,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 PropertyType.MedicalCenter |
                 PropertyType.Starport |
                 PropertyType.Cantina |
-                PropertyType.House)
+                PropertyType.House,
+            PropertyLayoutType layoutType = PropertyLayoutType.Invalid)
         {
             Name = name;
             Resref = resref;
@@ -1267,6 +1275,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             IsActive = isActive;
             ItemStorage = itemStorage;
             RestrictedPropertyTypes = restrictedPropertyTypes;
+            LayoutType = layoutType;
         }
     }
 }

@@ -1321,31 +1321,43 @@ namespace SWLOR.Game.Server.Service
             }
             
             var property = DB.Get<WorldProperty>(propertyId);
-            var structureCount = property.ChildPropertyIds.Count;
             var layout = GetLayoutByType(property.Layout);
-            var structureLimit = layout.StructureLimit;
+            int structureLimit;
             var structureDetail = GetStructureByType(structureType);
+            var structures = DB.Search(new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), propertyId, false)
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Structure));
+            int structureCount;
+            string fixtureName;
 
             // Special Case: Cities differentiate between structures and buildings.
-            // They use the ItemStorageLimit value for buildings and StructureLimit for everything else.
+            // They use the BuildingLimit value for buildings and StructureLimit for everything else.
             // Buildings are determined by structures whose restrictions are solely to "City" property types.
             if (property.PropertyType == PropertyType.City &&
                 structureDetail.RestrictedPropertyTypes == PropertyType.City)
             {
-                structureLimit = layout.ItemStorageLimit;
+                structureCount = structures.Count(x => GetStructureByType(x.StructureType).LayoutType != PropertyLayoutType.Invalid);
+                structureLimit = layout.BuildingLimit;
+                fixtureName = "Building";
+            }
+            else
+            {
+                structureCount = structures.Count(x => GetStructureByType(x.StructureType).LayoutType == PropertyLayoutType.Invalid);
+                structureLimit = layout.StructureLimit;
+                fixtureName = "Structure";
             }
 
             // Over the structure limit.
             if (structureCount >= structureLimit)
             {
-                FloatingTextStringOnCreature($"No more structures may be placed here.", player, false);
+                FloatingTextStringOnCreature($"{fixtureName} limit reached for this property.", player, false);
                 return;
             }
 
             // Structure can't be placed within this type of property
             if (!structureDetail.RestrictedPropertyTypes.HasFlag(property.PropertyType))
             {
-                FloatingTextStringOnCreature($"This type of structure cannot be placed within this type of property.", player, false);
+                FloatingTextStringOnCreature($"This {fixtureName} cannot be placed within this type of property.", player, false);
                 return;
             }
 
@@ -1369,7 +1381,7 @@ namespace SWLOR.Game.Server.Service
                     structureType, location);
             }
 
-            SendMessageToPC(player, $"Structure Limit: {property.ChildPropertyIds.Count+1} / {structureLimit}");
+            SendMessageToPC(player, $"{fixtureName} Limit: {structureCount+1} / {structureLimit}");
         }
 
         /// <summary>

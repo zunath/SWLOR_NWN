@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                               $"{ColorToken.Green("Initial Price:")} {city.InitialPrice} credits\n" +
                               $"{ColorToken.Green("Price Per Day:")} {city.PricePerDay} credits\n" +
                               $"{ColorToken.Green("Structure Limit:")} {city.StructureLimit}\n" +
-                              $"{ColorToken.Green("Building Limit:")} {city.ItemStorageLimit}\n\n" +
+                              $"{ColorToken.Green("Building Limit:")} {city.BuildingLimit}\n\n" +
                               $"{ColorToken.Red("WARNING:")} Placing this city hall will make you mayor of this land. Every three weeks (real world time) an election will be held to vote for the new mayor. You will be required to participate or you will lose your position as Mayor.\n\n" +
                               "Additionally, you will be required to pay upkeep on all structures placed. Failure to do so will result in decay of the structures. Failing to pay upkeep for four weeks (real world time) will result in the loss of the city.\n\n" +
                               "Credits paid cannot be refunded. Are you sure you want to claim this area and establish a city?";

@@ -140,6 +140,8 @@ namespace SWLOR.Game.Server.Entity
         public float MovementRate { get; set; }
         public int AbilityRecastReduction { get; set; }
         public int MarketTill { get; set; }
+        [Indexed]
+        public string CitizenPropertyId { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }

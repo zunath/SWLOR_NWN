@@ -50,18 +50,14 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var player = GetPC();
             var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
             var area = GetArea(player);
             var propertyId = Property.GetPropertyId(area);
             var model = GetDataModel<Model>();
 
-            var cityQuery = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.City)
-                .AddFieldSearch(nameof(WorldProperty.OwnerPlayerId), playerId, false);
-            var cityCount = DB.SearchCount(cityQuery);
-
-            if (cityCount > 0)
+            if (!string.IsNullOrWhiteSpace(dbPlayer.CitizenPropertyId))
             {
-                page.Header = "You are already mayor of another city. Abdicate your position to found a new city.";
+                page.Header = "You are already a citizen of another city. Revoke your citizenship first and try again.";
             }
             else if (!string.IsNullOrWhiteSpace(propertyId))
             {

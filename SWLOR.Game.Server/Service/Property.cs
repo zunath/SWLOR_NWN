@@ -734,6 +734,7 @@ namespace SWLOR.Game.Server.Service
         public static void CreateCity(uint player, uint area, uint item, Location location)
         {
             var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
             var propertyName = $"{GetName(player)}'s City";
             var city = CreateProperty(player, playerId, propertyName, PropertyType.City, PropertyLayoutType.City, area, property =>
             {
@@ -749,6 +750,9 @@ namespace SWLOR.Game.Server.Service
                 PropertyLayoutType.CityHall,
                 StructureType.CityHall,
                 location);
+
+            dbPlayer.CitizenPropertyId = city.Id;
+            DB.Set(dbPlayer);
         }
 
         /// <summary>

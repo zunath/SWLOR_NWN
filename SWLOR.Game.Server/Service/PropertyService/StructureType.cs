@@ -1192,7 +1192,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             0,
             PropertyType.City,
-            PropertyLayoutType.CityHall)]
+            PropertyLayoutType.CityHall,
+            false)]
         CityHall = 5000,
 
         [Structure("Bank",
@@ -1250,6 +1251,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
         public int ItemStorage { get; set; }
         public PropertyType RestrictedPropertyTypes { get; set; }
         public PropertyLayoutType LayoutType { get; set; }
+        public bool CanBeRetrieved { get; set; }
 
         public StructureAttribute(
             string name, 
@@ -1267,7 +1269,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 PropertyType.Starport |
                 PropertyType.Cantina |
                 PropertyType.House,
-            PropertyLayoutType layoutType = PropertyLayoutType.Invalid)
+            PropertyLayoutType layoutType = PropertyLayoutType.Invalid,
+            bool canBeRetrieved = true)
         {
             Name = name;
             Resref = resref;
@@ -1276,6 +1279,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             ItemStorage = itemStorage;
             RestrictedPropertyTypes = restrictedPropertyTypes;
             LayoutType = layoutType;
+            CanBeRetrieved = canBeRetrieved;
         }
     }
 }

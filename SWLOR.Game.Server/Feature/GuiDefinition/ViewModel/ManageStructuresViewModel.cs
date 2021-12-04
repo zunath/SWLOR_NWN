@@ -269,6 +269,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var structure = GetStructure();
                 var placeable = Property.GetPlaceableByPropertyId(propertyId);
                 var permission = GetPermission();
+                var structureDetail = Property.GetStructureByType(structure.StructureType);
 
                 PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, VisualEffect.Vfx_Dur_Aura_Green);
                 _currentPosition = GetPosition(placeable);
@@ -276,7 +277,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 StructureName = structure.CustomName;
                 IsEditStructureEnabled = permission.Permissions[PropertyPermissionType.EditStructures];
-                IsRetrieveStructureEnabled = permission.Permissions[PropertyPermissionType.RetrieveStructures];
+                IsRetrieveStructureEnabled = permission.Permissions[PropertyPermissionType.RetrieveStructures] && structureDetail.CanBeRetrieved;
             }
         }
 
@@ -386,6 +387,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (permission == null || !permission.Permissions[PropertyPermissionType.RetrieveStructures])
                 {
                     Instructions = $"No permission!";
+                    InstructionColor = _red;
+                    return;
+                }
+
+                var structureDetail = Property.GetStructureByType(structure.StructureType);
+
+                if (!structureDetail.CanBeRetrieved)
+                {
+                    Instructions = "This structure cannot be retrieved.";
                     InstructionColor = _red;
                     return;
                 }

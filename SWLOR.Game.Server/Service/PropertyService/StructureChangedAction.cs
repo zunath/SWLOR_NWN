@@ -11,22 +11,39 @@ namespace SWLOR.Game.Server.Service.PropertyService
 {
     public static class StructureChangedAction
     {
-        private static readonly Dictionary<StructureType, Action<WorldProperty, uint>> _actions = new();
+        private static readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _actions = new();
 
         /// <summary>
         /// Builds the actions which are run when certain structures are changed in the game world.
         /// </summary>
         /// <returns>A dictionary of spawn actions.</returns>
-        public static Dictionary<StructureType, Action<WorldProperty, uint>> BuildSpawnActions()
+        public static Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> BuildSpawnActions()
         {
-            _actions[StructureType.CityHall] = CityHall();
-            _actions[StructureType.Bank] = Bank();
-            _actions[StructureType.MedicalCenter] = MedicalCenter();
-            _actions[StructureType.Starport] = Starport();
-            _actions[StructureType.Cantina] = Cantina();
-            _actions[StructureType.House] = House1();
+            // Structure position changed actions
+            Assign(StructureType.CityHall, StructureChangeType.PositionChanged, CityHall());
+            Assign(StructureType.Bank, StructureChangeType.PositionChanged, Bank());
+            Assign(StructureType.MedicalCenter, StructureChangeType.PositionChanged, MedicalCenter());
+            Assign(StructureType.Starport, StructureChangeType.PositionChanged, Starport());
+            Assign(StructureType.Cantina, StructureChangeType.PositionChanged, Cantina());
+            Assign(StructureType.House, StructureChangeType.PositionChanged, House1());
+
+            // Structure retrieved actions
+            Assign(StructureType.CityHall, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.Bank, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.MedicalCenter, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.Starport, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.Cantina, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.House, StructureChangeType.Retrieved, ClearDoor());
 
             return _actions;
+        }
+
+        private static void Assign(StructureType structureType, StructureChangeType changeType, Action<WorldProperty, uint> action)
+        {
+            if (!_actions.ContainsKey(structureType))
+                _actions[structureType] = new Dictionary<StructureChangeType, Action<WorldProperty, uint>>();
+
+            _actions[structureType][changeType] = action;
         }
 
         private static Location GetDoorLocation(uint building, float orientationAdjustment, float sqrtAdjustment)
@@ -52,15 +69,19 @@ namespace SWLOR.Game.Server.Service.PropertyService
 
         private static void SpawnDoor(uint building, Location location, string name)
         {
-            var door = GetLocalObject(building, "PROPERTY_DOOR");
-            if (GetIsObjectValid(door))
-                DestroyObject(door);
-
-            door = CreateObject(ObjectType.Placeable, "building_ent1", location);
+            DestroyDoor(building);
+            var door = CreateObject(ObjectType.Placeable, "building_ent1", location);
             SetLocalObject(building, "PROPERTY_DOOR", door);
 
             Property.AssignPropertyId(door, Property.GetPropertyId(building));
             SetName(door, name);
+        }
+
+        private static void DestroyDoor(uint building)
+        {
+            var door = GetLocalObject(building, "PROPERTY_DOOR");
+            if (GetIsObjectValid(door))
+                DestroyObject(door);
         }
 
         private static void AdjustBuildingName(WorldProperty property)
@@ -76,6 +97,14 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 var instance = Property.GetRegisteredInstance(interiorId);
                 SetName(instance.Area, property.CustomName);
             }
+        }
+
+        private static Action<WorldProperty, uint> ClearDoor()
+        {
+            return (property, building) =>
+            {
+                DestroyDoor(building);
+            };
         }
 
         private static Action<WorldProperty, uint> CityHall()

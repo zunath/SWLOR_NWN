@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<PropertyType, List<PropertyPermissionType>> _permissionsByPropertyType = new();
 
         private static readonly Dictionary<string, uint> _structurePropertyIdToPlaceable = new();
-        private static readonly Dictionary<StructureType, Action<WorldProperty, uint>> _structureChangedActions = StructureChangedAction.BuildSpawnActions();
+        private static readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _structureChangedActions = StructureChangedAction.BuildSpawnActions();
 
         /// <summary>
         /// When the module loads, cache all relevant data into memory.
@@ -782,8 +782,8 @@ namespace SWLOR.Game.Server.Service
 
             // Hierarchy goes:
             //      City  (Top Level)
-            //      Structure (buildings)
-            //      Building interiors
+            //          -> Contains: Structure (buildings)
+            //              -> Contains: Building interiors
             var buildingStructure = CreateStructure(parentCityId, item, structureType, location);
             
             var interior = CreateProperty(
@@ -864,7 +864,7 @@ namespace SWLOR.Game.Server.Service
             _structurePropertyIdToPlaceable[structure.Id] = placeable;
 
             DestroyObject(item);
-            RunStructureChangedEvent(type, structure, placeable);
+            RunStructureChangedEvent(type, StructureChangeType.PositionChanged, structure, placeable);
 
             return structure;
         }
@@ -1415,7 +1415,7 @@ namespace SWLOR.Game.Server.Service
 
                 // Some structures have custom spawn-in actions which also need to be run
                 // when brought into the world. 
-                RunStructureChangedEvent(property.StructureType, property, placeable);
+                RunStructureChangedEvent(property.StructureType, StructureChangeType.PositionChanged, property, placeable);
             }
             // Instance spawns are instanced areas that are spawned dynamically into the game world.d
             else if(propertyDetail.SpawnType == PropertySpawnType.Instance)
@@ -1477,15 +1477,19 @@ namespace SWLOR.Game.Server.Service
         /// If a structure changed action is registered, this will perform the action on the specified
         /// property and placeable. If not registered, nothing will happen.
         /// </summary>
-        /// <param name="type">The type of structure</param>
+        /// <param name="structureType">The type of structure</param>
+        /// <param name="changeType">The type of change.</param>
         /// <param name="property">The world property to target</param>
         /// <param name="placeable">The placeable to target</param>
-        public static void RunStructureChangedEvent(StructureType type, WorldProperty property, uint placeable)
+        public static void RunStructureChangedEvent(StructureType structureType, StructureChangeType changeType, WorldProperty property, uint placeable)
         {
-            if (!_structureChangedActions.ContainsKey(type))
+            if (!_structureChangedActions.ContainsKey(structureType))
                 return;
 
-            _structureChangedActions[type](property, placeable);
+            if (!_structureChangedActions[structureType].ContainsKey(changeType))
+                return;
+
+            _structureChangedActions[structureType][changeType](property, placeable);
         }
     }
 }

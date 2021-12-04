@@ -428,8 +428,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _structurePropertyIds.RemoveAt(SelectedStructureIndex);
                 SelectedStructureIndex = -1;
 
+                Property.RunStructureChangedEvent(structure.StructureType, StructureChangeType.Retrieved, structure, placeable);
                 DestroyObject(placeable);
-
                 LoadStructure();
             });
         };
@@ -466,7 +466,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Instructions = $"Structure saved!";
             InstructionColor = _green;
 
-            Property.RunStructureChangedEvent(structure.StructureType, structure, placeable);
+            Property.RunStructureChangedEvent(structure.StructureType, StructureChangeType.PositionChanged, structure, placeable);
         };
 
         private void DiscardChanges()

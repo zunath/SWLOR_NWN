@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             BugCommand(builder);
             HelpCommand(builder);
             ListEmotesCommand(builder);
+            StuckCommand(builder);
 
             return builder.Build();
         }
@@ -42,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         {
                             return "You may only submit one bug report per minute. Please wait and try again.";
                         }
+                        SetLocalString(user, "BUG_REPORT_LAST_SUBMISSION", dateTime.ToString());
                     }
 
                     return string.Empty;
@@ -83,6 +85,38 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     SendMessageToPC(user, Service.ChatCommand.HelpTextEmote);
+                });
+        }
+        private static void StuckCommand(ChatCommandBuilder builder)
+        {
+
+            builder.Create("stuck")
+                .Description("Emergency Escape Command. Use this if you get stuck on a map.")
+                .Permissions(AuthorizationLevel.All)
+                .Validate((user, args) =>
+                {
+                    var lastSubmission = GetLocalString(user, "STUCK_REPORT_LAST_SUBMISSION");                    
+                    if (!string.IsNullOrWhiteSpace(lastSubmission))
+                    {
+                        var dateTime = DateTime.ParseExact(lastSubmission, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+
+                        if (DateTime.UtcNow <= dateTime)
+                        {
+                            return "You may only use the stuck command every five minutes. Please wait and try again.";
+                        }                        
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    var nextStuckAllowed = DateTime.UtcNow.AddMinutes(5);
+                    var waypoint = GetNearestObject(Core.NWScript.Enum.ObjectType.Waypoint,user);
+                    if (GetIsObjectValid(waypoint))
+                    {
+                        AssignCommand(user, () => { JumpToObject(waypoint); });
+                        SetLocalString(user, "STUCK_REPORT_LAST_SUBMISSION", nextStuckAllowed.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
+                    }
                 });
         }
     }

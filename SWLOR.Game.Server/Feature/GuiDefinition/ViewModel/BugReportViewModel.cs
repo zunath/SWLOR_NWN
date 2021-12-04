@@ -32,7 +32,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (string.IsNullOrWhiteSpace(BugReportText))
             {
-               // FloatingTextStringOnCreature("Please enter a description.", Player, false);
                 return;
             }
 

@@ -6,6 +6,7 @@ using Discord;
 using Discord.Webhook;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -26,16 +27,12 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
         private static void BugCommand(ChatCommandBuilder builder)
         {
+
             builder.Create("bug")
-                .Description("Report a bug to the developers. Please include as much detail as possible.")
+                .Description("Toggles the bug report window to submit bugs to the developers. Please include as much detail as possible.")
                 .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
                 {
-                    if (args.Length <= 0 || args[0].Length <= 0)
-                    {
-                        return "Please enter in a description for the bug.";
-                    }
-
                     var lastSubmission = GetLocalString(user, "BUG_REPORT_LAST_SUBMISSION");
                     if (!string.IsNullOrWhiteSpace(lastSubmission))
                     {
@@ -51,6 +48,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 })
                 .Action((user, target, location, args) =>
                 {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.BugReport);
+                    /*
                     var message = string.Empty;
 
                     foreach (var arg in args)
@@ -141,9 +140,10 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             await client.SendMessageAsync(string.Empty, embeds: new[] { embed.Build() });
                         }
                     });
-                    
-                    SetLocalString(user, "BUG_REPORT_LAST_SUBMISSION", nextReportAllowed.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
-                    SendMessageToPC(user, "Bug report submitted! Thank you for your report.");
+                    */
+
+                    //SetLocalString(user, "BUG_REPORT_LAST_SUBMISSION", nextReportAllowed.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture));
+                    //SendMessageToPC(user, "Bug report submitted! Thank you for your report.");
                 });
         }
 

@@ -541,6 +541,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var playerId = GetObjectUUID(Player);
                 var dbPlayer = DB.Get<Player>(playerId);
+                var selectedPerk = _filteredPerks[SelectedPerkIndex];
+                var perkDetail = Perk.GetPerkDetails(selectedPerk);
 
                 if (dbPlayer.NumberPerkResetsAvailable <= 0)
                 {
@@ -555,8 +557,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
                 else
                 {
-                    var selectedPerk = _filteredPerks[SelectedPerkIndex];
-                    var perkDetail = Perk.GetPerkDetails(selectedPerk);
+                    // Some individual perks have validation checks. 
+                    // Run that now if specified.
+                    var canRefund = perkDetail.RefundRequirement == null
+                        ? string.Empty
+                        : perkDetail.RefundRequirement(Player, selectedPerk, Perk.GetEffectivePerkLevel(Player, selectedPerk));
+                    if (!string.IsNullOrWhiteSpace(canRefund))
+                    {
+                        FloatingTextStringOnCreature(canRefund, Player, false);
+                        return;
+                    }
+
                     var pcPerkLevel = dbPlayer.Perks[selectedPerk];
                     var refundAmount = perkDetail.PerkLevels
                         .Where(x => x.Key <= pcPerkLevel)

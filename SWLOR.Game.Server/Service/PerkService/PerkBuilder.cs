@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.SkillService;
@@ -200,6 +201,18 @@ namespace SWLOR.Game.Server.Service.PerkService
         public PerkBuilder TriggerRefund(PerkTriggerPurchasedRefundedAction refundAction)
         {
             _activePerk.RefundedTriggers.Add(refundAction);
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a requirement check for refunding this perk. Check must pass otherwise the
+        /// refund action will fail.
+        /// </summary>
+        /// <param name="requirementAction">The action to run when a player attempts to refund this perk.</param>
+        /// <returns>A perk builder with the configured options</returns>
+        public PerkBuilder RefundRequirement(PerkRefundRequirementAction requirementAction)
+        {
+            _activePerk.RefundRequirement = requirementAction;
             return this;
         }
 

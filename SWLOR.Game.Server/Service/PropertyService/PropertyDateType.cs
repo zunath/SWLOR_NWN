@@ -5,7 +5,7 @@
         Invalid = 0,
         Lease = 1,
         Maintenance = 2,
-        Voting = 3,
+        ElectionStart = 3,
         BelowRequiredCitizens = 4,
     }
 }

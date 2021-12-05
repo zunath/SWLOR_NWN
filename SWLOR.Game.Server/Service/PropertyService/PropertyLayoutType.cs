@@ -159,7 +159,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             0,
             0,
             0,
-            "house_int_3", // todo: update to the new interior
+            "city_hall", // todo: update to the new interior
             true)]
         CityHall = 93,
 

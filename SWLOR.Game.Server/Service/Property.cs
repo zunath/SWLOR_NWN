@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Determines the number of citizens required to maintain a city.
         /// </summary>
-        public const int CitizensRequiredForCity = 10;
+        public const int CitizensRequiredForCity = 1; // todo: change back to 10 after done testing
 
         /// <summary>
         /// Determines the number of hours before the city will be destroyed due to
@@ -48,6 +48,16 @@ namespace SWLOR.Game.Server.Service
         ///       This is expected.
         /// </summary>
         public const int MinimumCitizensGracePeriodHours = 18;
+
+        /// <summary>
+        /// Determines the number of days citizens have to register for an election.
+        /// </summary>
+        public const int ElectionRegistrationDays = 14;
+
+        /// <summary>
+        /// Determines the number of days all citizens have to vote for an election.
+        /// </summary>
+        public const int ElectionVotingDays = 7;
 
         /// <summary>
         /// When the module loads, cache all relevant data into memory.
@@ -368,7 +378,8 @@ namespace SWLOR.Game.Server.Service
         /// 1.) Checking for the required number of citizens.
         ///     If this is the first reboot where they're under the requirement, 18 hours will be given to them for correction.
         ///     Otherwise if the timer has expired, the city will be destroyed.
-        /// 2.) Processing elections. todo: more detail + functionality
+        /// 2.) Processing elections. Moves the election process between stages and calculates votes at the end of the process.
+        ///     If a new mayor is elected, the previous mayor's permissions are removed and given to the new one.
         /// </summary>
         private static void ProcessCities()
         {
@@ -431,7 +442,167 @@ namespace SWLOR.Game.Server.Service
 
         private static void ProcessCityElections(DateTime now, WorldProperty city)
         {
+            var incumbentMayorId = city.OwnerPlayerId;
 
+            void TransferPermissions(string winnerPlayerId)
+            {
+                var mayorPermission = DB.Search(new DBQuery<WorldPropertyPermission>()
+                        .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), incumbentMayorId, false)
+                        .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), city.Id, false))
+                    .Single();
+
+                DB.Delete<WorldPropertyPermission>(mayorPermission.Id);
+                
+                var winnerPermission = DB.Search(new DBQuery<WorldPropertyPermission>()
+                        .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), winnerPlayerId, false)
+                        .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), city.Id, false))
+                    .SingleOrDefault() ?? new WorldPropertyPermission
+                {
+                    PlayerId = winnerPlayerId,
+                    PropertyId = city.Id
+                };
+
+                foreach (var permission in _permissionsByPropertyType[PropertyType.City])
+                {
+                    winnerPermission.Permissions[permission] = true;
+                    winnerPermission.GrantPermissions[permission] = true;
+                }
+
+                DB.Set(winnerPermission);
+            }
+
+            // No reason to process deleted cities. Skip.
+            if (city.IsQueuedForDeletion) return;
+
+            Log.Write(LogGroup.Property, $"Election process starting for city {city.CustomName} ({city.Id})");
+            var election = DB.Search(new DBQuery<Election>()
+                .AddFieldSearch(nameof(Election.PropertyId), city.Id, false))
+                .SingleOrDefault();
+
+            // Election hasn't started yet.
+            if (election == null)
+            {
+                // It's time to start a new election.
+                if (now >= city.Dates[PropertyDateType.ElectionStart])
+                {
+                    election = new Election
+                    {
+                        PropertyId = city.Id,
+                        Stage = ElectionStageType.Registration
+                    };
+
+                    DB.Set(election);
+                }
+            }
+            // Election has started. See if it's time to progress to the next stage.
+            else
+            {
+                var registrationCutOff = city.Dates[PropertyDateType.ElectionStart].AddDays(ElectionRegistrationDays);
+                var votingCutOff = registrationCutOff.AddDays(ElectionVotingDays);
+
+                // We're past the voting stage.
+                // Count up the votes for each candidate and determine the winner.
+                // Adjust mayors if incumbent lost.
+                if (now >= votingCutOff)
+                {
+                    var votes = new Dictionary<string, int>();
+                    foreach (var votedPlayerId in election.VoterSelections.Values)
+                    {
+                        if (!votes.ContainsKey(votedPlayerId))
+                            votes[votedPlayerId] = 0;
+
+                        votes[votedPlayerId]++;
+                    }
+
+                    var orderedVotes = votes.OrderByDescending(x => x.Value).ToList();
+
+                    // If top two are the same, incumbent mayor wins. Otherwise, take the person with the highest votes.
+                    if (orderedVotes.ElementAt(0).Value != orderedVotes.ElementAt(1).Value)
+                    {
+                        var winnerPlayerId = orderedVotes.ElementAt(0).Key;
+                        TransferPermissions(winnerPlayerId);
+                        city.OwnerPlayerId = winnerPlayerId;
+                        Log.Write(LogGroup.Property, $"Incumbent mayor '{incumbentMayorId}' lost the election. New mayor of {city.CustomName} is '{winnerPlayerId}'");
+                    }
+                    else
+                    {
+                        Log.Write(LogGroup.Property, $"Top 2 candidates were tied. Incumbent mayor '{incumbentMayorId}' wins the election.");
+                    }
+
+                    Log.Write(LogGroup.Property, $"Vote Counts:");
+                    foreach (var (candidatePlayerId, voteCount) in orderedVotes)
+                    {
+                        Log.Write(LogGroup.Property, $"{candidatePlayerId}: {voteCount} votes");
+                    }
+
+                    // The next election should occur in 3 weeks from the end of this election.
+                    // To avoid timing issues between server restarts, we use the start of this election as a reference point.
+                    city.Dates[PropertyDateType.ElectionStart] = city.Dates[PropertyDateType.ElectionStart]
+                        .AddDays(ElectionRegistrationDays + ElectionVotingDays) // This gets us to the end of the election
+                        .AddDays(21); // Then add another 3 weeks.
+
+                    DB.Set(city);
+                    DB.Delete<Election>(election.Id);
+                }
+                // Registration cut-off has passed. 
+                // If no one has registered, the incumbent mayor wins by default.
+                // If only one person has registered, they become mayor without proceeding to the voting stage.
+                //     -> If this was a different person from the incumbent, they receive mayor power immediately.
+                // Otherwise, the election proceeds to the voting stage.
+                else if (now >= registrationCutOff)
+                {
+                    // In the event that absolutely no one ran for election,
+                    // the incumbent mayor stays in power and another election is scheduled
+                    // three weeks from now. 
+                    if (election.CandidatePlayerIds.Count <= 0)
+                    {
+                        city.Dates[PropertyDateType.ElectionStart] = city.Dates[PropertyDateType.ElectionStart]
+                            .AddDays(ElectionRegistrationDays) // This gets us to the end of the registration period
+                            .AddDays(21); // Then add another 3 weeks.
+
+                        DB.Set(city);
+
+                        DB.Delete<Election>(election.Id);
+                        Log.Write(LogGroup.Property, $"No one ran for this election. Existing mayor '{incumbentMayorId}' wins by default.");
+                    }
+                    // In the event only one person ran for election, they automatically win
+                    // and the power shift occurs immediately. Another election is scheduled
+                    // three weeks from now.
+                    else if(election.CandidatePlayerIds.Count == 1)
+                    {
+                        var winnerPlayerId = election.CandidatePlayerIds[0];
+
+                        // The winner was the incumbent mayor. No changes are needed.
+                        if (winnerPlayerId == incumbentMayorId)
+                        {
+                            Log.Write(LogGroup.Property, $"Incumbent mayor '{incumbentMayorId}' ran unopposed. They retain mayor status.");
+                        }
+                        // Someone new won. Transfer mayor permissions over to the new player.
+                        else
+                        {
+                            city.OwnerPlayerId = winnerPlayerId;
+                            TransferPermissions(winnerPlayerId);
+                            Log.Write(LogGroup.Property, $"Only one person '{winnerPlayerId}' ran for mayor. They win by default.");
+                        }
+
+                        city.Dates[PropertyDateType.ElectionStart] = city.Dates[PropertyDateType.ElectionStart]
+                            .AddDays(ElectionRegistrationDays) // This gets us to the end of the registration period
+                            .AddDays(21); // Then add another 3 weeks.
+
+                        DB.Set(city);
+                        DB.Delete<Election>(election.Id);
+                    }
+                    // We're past the registration window. Move into the voting stage.
+                    else
+                    {
+                        election.Stage = ElectionStageType.Voting;
+
+                        DB.Set(election);
+                        Log.Write(LogGroup.Property, $"City '{city.CustomName}' ({city.Id}) has progressed into the Voting stage of the election.");
+                    }
+
+                }
+            }
         }
 
         private static void DeleteProperty(WorldProperty property)
@@ -849,7 +1020,7 @@ namespace SWLOR.Game.Server.Service
                 property.Dates[PropertyDateType.Maintenance] = now.AddDays(7);
 
                 // The first voting cycle will begin three weeks from now.
-                property.Dates[PropertyDateType.Voting] = now.AddDays(21);
+                property.Dates[PropertyDateType.ElectionStart] = now.AddDays(21);
 
                 // The property will be cleaned up on the first server reset after 18 hours have passed
                 // if there are less than the required number of citizens registered.

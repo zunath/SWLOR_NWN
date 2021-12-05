@@ -13,6 +13,7 @@ using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PropertyService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -33,6 +34,22 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _structureChangedActions = StructureChangedAction.BuildSpawnActions();
 
         /// <summary>
+        /// Determines the number of citizens required to maintain a city.
+        /// </summary>
+        public const int CitizensRequiredForCity = 10;
+
+        /// <summary>
+        /// Determines the number of hours before the city will be destroyed due to
+        /// lack of citizens. This starts at the time of city hall placement for the initial check.
+        /// At boot time, if the number of citizens is below the required amount, the player will have 18 hours
+        /// to rectify it. Failure to do so will result in the city being lost upon the next server reboot.
+        /// Note: Due to the cleanup occurring on server boot, which occurs once every 24 hours,
+        ///       it's possible the player will have more time than the value specified here.
+        ///       This is expected.
+        /// </summary>
+        public const int MinimumCitizensGracePeriodHours = 18;
+
+        /// <summary>
         /// When the module loads, cache all relevant data into memory.
         /// </summary>
         [NWNEventHandler("mod_cache")]
@@ -51,8 +68,9 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("mod_load")]
         public static void OnModuleLoad()
         {
-            CleanUpData();
             RefreshPermissions();
+            ProcessCities();
+            CleanUpData();
             LoadProperties();
         }
 
@@ -308,7 +326,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var property in properties)
             {
-                var lease = property.Timers[PropertyTimerType.Lease];
+                var lease = property.Dates[PropertyDateType.Lease];
                 if (lease <= now)
                 {
                     Log.Write(LogGroup.Property, $"Property '{property.CustomName}' has an expired lease. Expired on: {lease.ToString("G")}");
@@ -343,6 +361,77 @@ namespace SWLOR.Game.Server.Service
                     DB.Set(property);
                 }
             }
+        }
+
+        /// <summary>
+        /// Handles the processing of each individual city. The following will occur on each boot:
+        /// 1.) Checking for the required number of citizens.
+        ///     If this is the first reboot where they're under the requirement, 18 hours will be given to them for correction.
+        ///     Otherwise if the timer has expired, the city will be destroyed.
+        /// 2.) Processing elections. todo: more detail + functionality
+        /// </summary>
+        private static void ProcessCities()
+        {
+            var cityQuery = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.City)
+                .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
+            var cities = DB.Search(cityQuery);
+            var now = DateTime.UtcNow;
+
+            foreach (var city in cities)
+            {
+                ProcessCityCitizenRequirement(now, city);
+                ProcessCityElections(now, city);
+            }
+        }
+
+        private static void ProcessCityCitizenRequirement(DateTime now, WorldProperty city)
+        {
+            var citizenQuery = new DBQuery<Player>()
+                .AddFieldSearch(nameof(Player.CitizenPropertyId), city.Id, false);
+            var citizens = DB.Search(citizenQuery).ToList();
+            var citizenCount = citizens.Count;
+
+            // City is below the number of citizens required to maintain the city.
+            if (citizenCount < CitizensRequiredForCity)
+            {
+                if (city.Dates.ContainsKey(PropertyDateType.BelowRequiredCitizens))
+                {
+                    // The amount of time has elapsed. It's time to delete the city.
+                    if (now >= city.Dates[PropertyDateType.BelowRequiredCitizens])
+                    {
+                        city.IsQueuedForDeletion = true;
+
+                        Log.Write(LogGroup.Property, $"City '{city.CustomName}' in area '{city.ParentPropertyId}' has been queued for deletion because it fell under the required {CitizensRequiredForCity} citizens needed to maintain it.");
+                    }
+                    else
+                    {
+                        Log.Write(LogGroup.Property, $"City '{city.CustomName}' in area '{city.ParentPropertyId}' is below the required citizen count but time has not expired. Next check will occur on the next server reboot.");
+                    }
+                }
+                // This is the first restart where the city is below the required amount.
+                else
+                {
+                    city.Dates[PropertyDateType.BelowRequiredCitizens] = now.AddHours(MinimumCitizensGracePeriodHours);
+
+                    Log.Write(LogGroup.Property, $"City '{city.CustomName}' has fallen below the required {CitizensRequiredForCity} citizens required to maintain a city. An expiration has been applied");
+                }
+            }
+            // Otherwise they're at or above the required amount. Ensure the date is removed from the property.
+            else
+            {
+                if (city.Dates.ContainsKey(PropertyDateType.BelowRequiredCitizens))
+                {
+                    city.Dates.Remove(PropertyDateType.BelowRequiredCitizens);
+                }
+            }
+
+            DB.Set(city);
+        }
+
+        private static void ProcessCityElections(DateTime now, WorldProperty city)
+        {
+
         }
 
         private static void DeleteProperty(WorldProperty property)
@@ -396,6 +485,18 @@ namespace SWLOR.Game.Server.Service
             {
                 DB.Delete<WorldPropertyCategory>(category.Id);
                 Log.Write(LogGroup.Property, $"Deleted property category '{category.Name}', id: '{category.Id}' from property '{category.ParentPropertyId}'");
+            }
+
+            // Clear any citizenship assignments on players who may be citizens of this property.
+            var citizenQuery = new DBQuery<Player>()
+                .AddFieldSearch(nameof(Player.CitizenPropertyId), property.Id, false);
+            var citizens = DB.Search(citizenQuery);
+
+            foreach (var citizen in citizens)
+            {
+                Log.Write(LogGroup.Property, $"Citizenship revoked for player '{citizen.Name}' ({citizen.Id}) on property '{property.CustomName}' ({property.Id})");
+                citizen.CitizenPropertyId = string.Empty;
+                DB.Set(citizen);
             }
 
             // Finally delete the entire property.
@@ -597,7 +698,7 @@ namespace SWLOR.Game.Server.Service
                 PropertyType = type,
                 OwnerPlayerId = ownerPlayerId,
                 Layout = layout,
-                ItemStorageCount = layoutDetail.ItemStorageLimit
+                ItemStorageCount = layoutDetail.ItemStorageLimit,
             };
 
             constructionAction?.Invoke(property);
@@ -658,6 +759,8 @@ namespace SWLOR.Game.Server.Service
             
             SpawnIntoWorld(property, targetArea);
 
+            Log.Write(LogGroup.Property, $"{GetName(creatorPlayer)} ({GetPCPlayerName(creatorPlayer)} / {GetPCPublicCDKey(creatorPlayer)}) placed {propertyDetail.Name}.");
+
             return property;
         }
 
@@ -673,7 +776,7 @@ namespace SWLOR.Game.Server.Service
             var propertyName = $"{GetName(player)}'s Apartment";
             return CreateProperty(player, playerId, propertyName, PropertyType.Apartment, layout, OBJECT_INVALID, property =>
             {
-                property.Timers[PropertyTimerType.Lease] = DateTime.UtcNow.AddDays(7);
+                property.Dates[PropertyDateType.Lease] = DateTime.UtcNow.AddDays(7);
             });
         }
 
@@ -736,10 +839,21 @@ namespace SWLOR.Game.Server.Service
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var propertyName = $"{GetName(player)}'s City";
+            var now = DateTime.UtcNow;
             var city = CreateProperty(player, playerId, propertyName, PropertyType.City, PropertyLayoutType.City, area, property =>
             {
                 property.ParentPropertyId = GetResRef(area);
                 AssignPropertyId(area, property.Id);
+
+                // Maintenance fees will be collected one week from now.
+                property.Dates[PropertyDateType.Maintenance] = now.AddDays(7);
+
+                // The first voting cycle will begin three weeks from now.
+                property.Dates[PropertyDateType.Voting] = now.AddDays(21);
+
+                // The property will be cleaned up on the first server reset after 18 hours have passed
+                // if there are less than the required number of citizens registered.
+                property.Dates[PropertyDateType.BelowRequiredCitizens] = now.AddHours(18);
             });
 
             CreateBuilding(
@@ -753,6 +867,8 @@ namespace SWLOR.Game.Server.Service
 
             dbPlayer.CitizenPropertyId = city.Id;
             DB.Set(dbPlayer);
+
+            Log.Write(LogGroup.Property, $"{GetName(player)} ({GetPCPlayerName(player)} / {GetPCPublicCDKey(player)}) founded a new city in {GetName(area)}.");
         }
 
         /// <summary>

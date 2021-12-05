@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Entity
             CustomDescription = string.Empty;
             ParentPropertyId = string.Empty;
             ChildPropertyIds = new List<string>();
-            Timers = new Dictionary<PropertyTimerType, DateTime>();
+            Dates = new Dictionary<PropertyDateType, DateTime>();
             Positions = new Dictionary<PropertyLocationType, PropertyLocation>();
         }
 
@@ -52,9 +52,9 @@ namespace SWLOR.Game.Server.Entity
         public List<string> ChildPropertyIds { get; set; }
 
         /// <summary>
-        /// Tracks timers specific to this property.
+        /// Tracks dates and timers specific to this property.
         /// </summary>
-        public Dictionary<PropertyTimerType, DateTime> Timers { get; set; }
+        public Dictionary<PropertyDateType, DateTime> Dates { get; set; }
 
         /// <summary>
         /// Tracks positions specific to this property.

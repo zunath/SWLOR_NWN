@@ -872,6 +872,7 @@ namespace SWLOR.Game.Server.Service
                 OwnerPlayerId = ownerPlayerId,
                 Layout = layout,
                 ItemStorageCount = layoutDetail.ItemStorageLimit,
+                Level = 1
             };
 
             constructionAction?.Invoke(property);
@@ -1027,6 +1028,10 @@ namespace SWLOR.Game.Server.Service
                 // The property will be cleaned up on the first server reset after 18 hours have passed
                 // if there are less than the required number of citizens registered.
                 property.Dates[PropertyDateType.BelowRequiredCitizens] = now.AddHours(18);
+
+                // Initialize taxes at zero.
+                property.Taxes[PropertyTaxType.Citizenship] = 0f;
+                property.Taxes[PropertyTaxType.Transportation] = 0f;
             });
 
             CreateBuilding(

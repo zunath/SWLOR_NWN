@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Entity
             ChildPropertyIds = new List<string>();
             Dates = new Dictionary<PropertyDateType, DateTime>();
             Positions = new Dictionary<PropertyLocationType, PropertyLocation>();
+            Taxes = new Dictionary<PropertyTaxType, float>();
         }
 
         /// <summary>
@@ -64,6 +65,11 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<PropertyLocationType, PropertyLocation> Positions { get; set; }
 
         /// <summary>
+        /// Tracks taxes specific to this property.
+        /// </summary>
+        public Dictionary<PropertyTaxType, float> Taxes { get; set; }
+
+        /// <summary>
         /// If true, the property will be publicly accessible.
         /// This will only be set if the PropertyType is a Building
         /// </summary>
@@ -105,5 +111,11 @@ namespace SWLOR.Game.Server.Entity
         /// </summary>
         public int ItemStorageCount { get; set; }
 
+        /// <summary>
+        /// Determines the property's level. Most properties will only have one level.
+        /// Some exceptions include City properties where this determines
+        /// available structures and features available to the mayor.
+        /// </summary>
+        public int Level { get; set; }
     }
 }

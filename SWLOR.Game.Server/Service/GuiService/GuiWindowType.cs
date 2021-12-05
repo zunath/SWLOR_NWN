@@ -30,6 +30,7 @@
         
         ManageCitizenship = 24,
         ManageCity = 25,
+        Election = 26,
         RentApartment = 27,
         ManageApartment = 28,
         

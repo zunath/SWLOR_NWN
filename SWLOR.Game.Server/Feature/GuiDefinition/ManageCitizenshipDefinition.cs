@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+﻿using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
@@ -18,7 +19,45 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     col.AddRow(row =>
                     {
+                        row.AddList(template =>
+                        {
+                            template.AddCell(cell =>
+                            {
+                                cell.AddLabel()
+                                    .BindText(model => model.CityDetails)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                            });
+                        })
+                            .BindRowCount(model => model.CityDetails);
+                    });
 
+                    col.AddRow(row =>
+                    {
+                        row.AddButton()
+                            .BindText(model => model.RegisterRevokeButtonName)
+                            .BindOnClicked(model => model.RegisterRevoke())
+                            .BindColor(model => model.RegisterRevokeButtonColor)
+                            .SetHeight(35f);
+
+                        row.AddButton()
+                            .BindText(model => model.PayTaxesButtonName)
+                            .BindIsEnabled(model => model.IsPayTaxesEnabled)
+                            .BindOnClicked(model => model.PayTaxes())
+                            .SetHeight(35f);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+
+                        row.AddButton()
+                            .SetText("Election")
+                            .BindIsEnabled(model => model.IsElectionActive)
+                            .BindOnClicked(model => model.OpenElectionMenu())
+                            .SetHeight(35f);
+
+                        row.AddSpacer();
                     });
                 });
 

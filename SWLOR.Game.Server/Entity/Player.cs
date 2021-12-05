@@ -142,6 +142,7 @@ namespace SWLOR.Game.Server.Entity
         public int MarketTill { get; set; }
         [Indexed]
         public string CitizenPropertyId { get; set; }
+        public int PropertyOwedTaxes { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }

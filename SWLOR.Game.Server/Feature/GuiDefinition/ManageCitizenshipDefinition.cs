@@ -12,7 +12,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.ManageCitizenship)
                 .SetIsResizable(true)
                 .SetInitialGeometry(0, 0, 545f, 295.5f)
-                .SetTitle("Manage Citizenship");
+                .SetTitle("Manage Citizenship")
+                
+                .AddColumn(col =>
+                {
+                    col.AddRow(row =>
+                    {
+
+                    });
+                });
 
             return _builder.Build();
         }

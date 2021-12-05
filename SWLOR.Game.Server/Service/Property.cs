@@ -165,10 +165,12 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.EditStructures,
                 PropertyPermissionType.RetrieveStructures,
                 PropertyPermissionType.RenameProperty,
-                PropertyPermissionType.ExtendLease,
-                PropertyPermissionType.CancelLease,
                 PropertyPermissionType.EnterProperty,
-                PropertyPermissionType.ChangeDescription
+                PropertyPermissionType.ChangeDescription,
+                PropertyPermissionType.EditTaxes,
+                PropertyPermissionType.AccessTreasury,
+                PropertyPermissionType.ChangeSpecialization,
+                PropertyPermissionType.ManageUpkeep
             };
 
             _permissionsByPropertyType[PropertyType.Category] = new List<PropertyPermissionType>
@@ -1777,6 +1779,70 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             _structureChangedActions[structureType][changeType](property, placeable);
+        }
+
+        /// <summary>
+        /// When the Citizenship terminal is used, open the Manage Citizenship UI.
+        /// </summary>
+        [NWNEventHandler("open_citizenship")]
+        public static void OpenCitizenshipMenu()
+        {
+            var player = GetLastUsedBy();
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            var terminal = OBJECT_SELF;
+            var area = GetArea(terminal);
+            var propertyId = GetPropertyId(area);
+            var dbProperty = DB.Get<WorldProperty>(propertyId);
+            var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
+
+            // Player is a citizen of another city. Their citizenship needs to be revoked before
+            // they're able to access this terminal.
+            if (!string.IsNullOrWhiteSpace(dbPlayer.CitizenPropertyId) &&
+                dbPlayer.CitizenPropertyId != Guid.Empty.ToString() &&
+                dbBuilding.ParentPropertyId != dbPlayer.CitizenPropertyId)
+            {
+                SendMessageToPC(player, ColorToken.Red("You are a citizen of another city. You cannot access this terminal unless you revoke your citizenship first."));
+            }
+            else
+            {
+                Gui.TogglePlayerWindow(player, GuiWindowType.ManageCitizenship, null, terminal);
+            }
+        }
+
+        /// <summary>
+        /// When the City Management terminal is used, open the City Management UI.
+        /// </summary>
+        [NWNEventHandler("open_city_manage")]
+        public static void OpenCityManagementMenu()
+        {
+            var player = GetLastUsedBy();
+            var playerId = GetObjectUUID(player);
+            var terminal = OBJECT_SELF;
+            var area = GetArea(terminal);
+            var propertyId = GetPropertyId(area);
+            var dbProperty = DB.Get<WorldProperty>(propertyId);
+            var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
+
+            var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), dbBuilding.ParentPropertyId, false)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false))
+                .SingleOrDefault();
+
+            // Player has at least one permission. Display the window.
+            if (permission != null && (permission.Permissions[PropertyPermissionType.RenameProperty] ||
+                                       permission.Permissions[PropertyPermissionType.EditTaxes] ||
+                                       permission.Permissions[PropertyPermissionType.AccessTreasury] ||
+                                       permission.Permissions[PropertyPermissionType.ChangeSpecialization] ||
+                                       permission.Permissions[PropertyPermissionType.ManageUpkeep]))
+            {
+                Gui.TogglePlayerWindow(player, GuiWindowType.ManageCity, null, terminal);
+            }
+            else
+            {
+                SendMessageToPC(player, ColorToken.Red("You do not have permission to access this terminal."));
+            }
         }
     }
 }

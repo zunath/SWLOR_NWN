@@ -240,9 +240,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             
             var property = DB.Get<WorldProperty>(propertyId);
-            ManageButtonText = (property.PropertyType == PropertyType.Starship || property.PropertyType == PropertyType.City)
-                ? "Permissions"
-                : "Manage Property";
+            ManageButtonText = property.PropertyType == PropertyType.Apartment
+                ? "Manage Property"
+                : "Permissions";
             StructureName = string.Empty;
             SelectedPageIndex = 0;
             LoadPropertyPermissions(property);
@@ -353,19 +353,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var payload = new ManageApartmentPayload(propertyId);
                 Gui.TogglePlayerWindow(Player, GuiWindowType.ManageApartment, payload);
             }
-            else if(property.PropertyType == PropertyType.Starship)
+            else 
             {
-                var payload = new PropertyPermissionPayload(PropertyType.Starship, propertyId, false);
+                var payload = new PropertyPermissionPayload(property.PropertyType, propertyId, false);
                 Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
-            }
-            else if (property.PropertyType == PropertyType.City)
-            {
-                var payload = new PropertyPermissionPayload(PropertyType.City, propertyId, false);
-                Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
-            }
-            else
-            {
-                // todo: buildings
             }
         };
 

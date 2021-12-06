@@ -286,7 +286,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // Searches within City properties require that the players be a citizen.
                 if (!string.IsNullOrWhiteSpace(_cityId))
                 {
-                    query.AddFieldSearch(nameof(Entity.Player.CitizenPropertyId), PropertyId, false);
+                    query.AddFieldSearch(nameof(Entity.Player.CitizenPropertyId), _cityId, false);
                 }
 
                 dbPlayers = DB.Search(query);

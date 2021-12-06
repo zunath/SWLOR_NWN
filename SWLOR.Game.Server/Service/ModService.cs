@@ -201,6 +201,25 @@ namespace SWLOR.Game.Server.Service
             if (target.GetLocalInt(AbilityService.LAST_ATTACK + damager.GlobalID) != AbilityService.ATTACK_PHYSICAL) return;
 
             NWItem weapon = (_.GetLastWeaponUsed(damager.Object));
+
+            if (!weapon.IsValid)
+            {
+                // Double weapons don't show up correctly when their offhand makes an attack.
+                // So check for that case here.
+                if (_.GetObjectType(damager) == ObjectType.Creature)
+                {
+                    NWCreature attacker = data.Damager.Object;
+
+                    if (attacker.RightHand.BaseItemType == BaseItem.Saberstaff ||
+                        attacker.RightHand.BaseItemType == BaseItem.TwoBladedSword ||
+                        attacker.RightHand.BaseItemType == BaseItem.DoubleAxe ||
+                        attacker.RightHand.BaseItemType == BaseItem.DireMace)
+                    {
+                        weapon = attacker.RightHand;
+                    }
+                }
+            }
+
             int damageBonus = weapon.DamageBonus;
 
             NWPlayer player = (damager.Object);

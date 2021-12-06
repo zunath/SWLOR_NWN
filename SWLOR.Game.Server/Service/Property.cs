@@ -508,27 +508,33 @@ namespace SWLOR.Game.Server.Service
                 if (now >= votingCutOff)
                 {
                     var votes = new Dictionary<string, int>();
-                    foreach (var votedPlayerId in election.VoterSelections.Values)
+                    foreach (var voter in election.VoterSelections.Values)
                     {
-                        if (!votes.ContainsKey(votedPlayerId))
-                            votes[votedPlayerId] = 0;
+                        if (!votes.ContainsKey(voter.CandidatePlayerId))
+                            votes[voter.CandidatePlayerId] = 0;
 
-                        votes[votedPlayerId]++;
+                        votes[voter.CandidatePlayerId]++;
                     }
 
                     var orderedVotes = votes.OrderByDescending(x => x.Value).ToList();
 
-                    // If top two are the same, incumbent mayor wins. Otherwise, take the person with the highest votes.
-                    if (orderedVotes.ElementAt(0).Value != orderedVotes.ElementAt(1).Value)
+                    // Nobody voted at all. Incumbent stays in power.
+                    if (orderedVotes.Count <= 0)
+                    {
+                        Log.Write(LogGroup.Property, $"No one voted. Incumbent mayor '{incumbentMayorId}' stays in power.");
+                    }
+                    // If top two are the same, incumbent mayor wins.
+                    else if (orderedVotes.Count >= 2 && orderedVotes.ElementAt(0).Value != orderedVotes.ElementAt(1).Value)
+                    {
+                        Log.Write(LogGroup.Property, $"Top 2 candidates were tied. Incumbent mayor '{incumbentMayorId}' wins the election.");
+                    }
+                    // Otherwise, take the person with the highest votes.
+                    else 
                     {
                         var winnerPlayerId = orderedVotes.ElementAt(0).Key;
                         TransferPermissions(winnerPlayerId);
                         city.OwnerPlayerId = winnerPlayerId;
-                        Log.Write(LogGroup.Property, $"Incumbent mayor '{incumbentMayorId}' lost the election. New mayor of {city.CustomName} is '{winnerPlayerId}'");
-                    }
-                    else
-                    {
-                        Log.Write(LogGroup.Property, $"Top 2 candidates were tied. Incumbent mayor '{incumbentMayorId}' wins the election.");
+                        Log.Write(LogGroup.Property, $"New mayor of {city.CustomName} is '{winnerPlayerId}'");
                     }
 
                     Log.Write(LogGroup.Property, $"Vote Counts:");

@@ -45,19 +45,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindIsEnabled(model => model.IsPayTaxesEnabled)
                             .BindOnClicked(model => model.PayTaxes())
                             .SetHeight(35f);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
 
                         row.AddButton()
                             .SetText("Election")
                             .BindIsEnabled(model => model.IsElectionActive)
                             .BindOnClicked(model => model.OpenElectionMenu())
                             .SetHeight(35f);
-
-                        row.AddSpacer();
                     });
                 });
 

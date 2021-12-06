@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Election has not started.
             if (dbElection == null)
             {
-                cityDetails.Add($"Next Election: {dbCity.Dates[PropertyDateType.ElectionStart]:yyyy-MM-dd hh:mm:ss}");
+                cityDetails.Add($"Next Election [After server restart]: {dbCity.Dates[PropertyDateType.ElectionStart]:yyyy-MM-dd hh:mm:ss}");
             }
             // Election has started and we're in the registration process.
             else if (dbElection.Stage == ElectionStageType.Registration)
@@ -179,7 +179,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             var dbElection = DB.Get<Election>(_electionId);
                             dbElection.CandidatePlayerIds.Remove(playerId);
 
-                            var toRemove = dbElection.VoterSelections.Where(x => x.Value == playerId);
+                            var toRemove = dbElection.VoterSelections.Where(x => x.Value.CandidatePlayerId == playerId);
                             foreach (var vote in toRemove)
                             {
                                 dbElection.VoterSelections.Remove(vote.Key);
@@ -208,11 +208,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Chose to register citizenship.
             else
             {
-                ShowModal($"Registering as a citizen will grant you access to all public facilities within the city. You will be expected to pay all taxes and fees as mandated by the mayor. You will also be entitled to run for mayor yourself during the next election. Are you sure you want to become a citizen here?",
+                ShowModal($"Registering as a citizen will grant you access to all public facilities within the city. Registration costs 5000 credits and is paid to the planetary government for taxes and fees. Your character must be older than 30 days old and have a minimum of 100 cumulative skill ranks. You will be expected to pay all taxes and fees as mandated by the mayor. You will also be entitled to run for mayor yourself during the next election. Are you sure you want to become a citizen here?",
                     () =>
                     {
-                        var dbCity = DB.Get<WorldProperty>(_cityPropertyId);
+                        if (GetGold(Player) < 5000)
+                        {
+                            FloatingTextStringOnCreature("5000 credits are needed to register as a citizen.", Player, false);
+                            return;
+                        }
+
                         dbPlayer = DB.Get<Player>(playerId);
+                        if (dbPlayer.DateCreated.AddDays(30) > DateTime.UtcNow)
+                        {
+                            FloatingTextStringOnCreature("Your character must be 30 days or older to become a citizen of a city.", Player, false);
+                            return;
+                        }
+
+                        if (dbPlayer.TotalSPAcquired < 100)
+                        {
+                            FloatingTextStringOnCreature("You must have acquired a minimum of 100 skill ranks to become a citizen of a city.", Player, false);
+                            return;
+                        }
+
+                        AssignCommand(Player, () => TakeGoldFromCreature(5000, Player, true));
+
+                        var dbCity = DB.Get<WorldProperty>(_cityPropertyId);
                         dbPlayer.CitizenPropertyId = _cityPropertyId;
 
                         DB.Set(dbPlayer);
@@ -243,14 +263,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // Not enough to cover everything, but take what they have.
                 if (gold < dbPlayer.PropertyOwedTaxes)
                 {
-                    AssignCommand(Player, () => TakeGoldFromCreature(gold, Player));
+                    AssignCommand(Player, () => TakeGoldFromCreature(gold, Player, true));
                     Log.Write(LogGroup.Property, $"{GetName(Player)} paid {gold} credits towards taxes for property '{_cityPropertyId}'");
                     dbPlayer.PropertyOwedTaxes -= gold;
                 }
                 // Can cover everything. Take what's required.
                 else
                 {
-                    AssignCommand(Player, () => TakeGoldFromCreature(dbPlayer.PropertyOwedTaxes, Player));
+                    AssignCommand(Player, () => TakeGoldFromCreature(dbPlayer.PropertyOwedTaxes, Player, true));
                     Log.Write(LogGroup.Property, $"{GetName(Player)} paid {dbPlayer.PropertyOwedTaxes} credits towards taxes for property '{_cityPropertyId}'.");
                     dbPlayer.PropertyOwedTaxes = 0;
                 }

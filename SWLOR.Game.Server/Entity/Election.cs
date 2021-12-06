@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Entity
         public Election()
         {
             CandidatePlayerIds = new List<string>();
-            VoterSelections = new Dictionary<string, string>();
+            VoterSelections = new Dictionary<string, ElectionVoter>();
         }
 
         [Indexed]
@@ -18,7 +18,19 @@ namespace SWLOR.Game.Server.Entity
 
         public List<string> CandidatePlayerIds { get; set; }
 
-        public Dictionary<string, string> VoterSelections { get; set; }
+        public Dictionary<string, ElectionVoter> VoterSelections { get; set; }
 
+    }
+
+    public class ElectionVoter
+    {
+        public ElectionVoter()
+        {
+            VoterPlayerId = string.Empty;
+            CandidatePlayerId = string.Empty;
+        }
+
+        public string VoterPlayerId { get; set; }
+        public string CandidatePlayerId { get; set; }
     }
 }

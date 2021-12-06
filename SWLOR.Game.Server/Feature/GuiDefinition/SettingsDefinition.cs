@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             _builder.CreateWindow(GuiWindowType.Settings)
                 .SetIsResizable(true)
-                .SetInitialGeometry(0, 0, 339f, 261f)
+                .SetInitialGeometry(0, 0, 339f, 300f)
                 .SetTitle("Settings")
                 
                 .AddColumn(col =>
@@ -50,6 +50,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Show Holonet")
                             .SetTooltip("Shows or hides the Holonet (aka Shout) channel in your chat box.")
                             .BindIsChecked(model => model.DisplayHolonetChannel);
+
+                        row.AddSpacer();
+                    })
+                        .SetHeight(30f);
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+
+                        row.AddCheckBox()
+                            .SetText("Subdual Mode")
+                            .SetTooltip("Toggles Subdual Mode. If turned on, when you kill an opponent they will be brought to 1 hit point and be knocked down for a minute instead of dying.")
+                            .BindIsChecked(model => model.SubdualMode);
 
                         row.AddSpacer();
                     })

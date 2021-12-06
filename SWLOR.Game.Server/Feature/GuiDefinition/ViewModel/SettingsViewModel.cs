@@ -27,6 +27,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool SubdualMode
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             var playerId = GetObjectUUID(Player);
@@ -35,10 +41,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DisplayAchievementNotification = dbPlayer.Settings.DisplayAchievementNotification;
             DisplayHelmet = dbPlayer.Settings.ShowHelmet;
             DisplayHolonetChannel = dbPlayer.Settings.IsHolonetEnabled;
-            
+            SubdualMode = dbPlayer.Settings.IsSubdualModeEnabled;
+
             WatchOnClient(model => model.DisplayAchievementNotification);
             WatchOnClient(model => model.DisplayHelmet);
             WatchOnClient(model => model.DisplayHolonetChannel);
+            WatchOnClient(model => model.SubdualMode);
         }
 
         public Action OnSave() => () =>
@@ -49,6 +57,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.Settings.DisplayAchievementNotification = DisplayAchievementNotification;
             dbPlayer.Settings.ShowHelmet = DisplayHelmet;
             dbPlayer.Settings.IsHolonetEnabled = DisplayHolonetChannel;
+            dbPlayer.Settings.IsSubdualModeEnabled = SubdualMode;
 
             DB.Set(dbPlayer);
 
@@ -57,6 +66,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Post-save actions
             UpdateHelmetDisplay();
             UpdateHolonetSetting();
+            UpdateSubdualMode();
         };
 
         public Action OnCancel() => () =>
@@ -82,6 +92,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             SetLocalBool(Player, "DISPLAY_HOLONET", DisplayHolonetChannel);
         }
-
+        private void UpdateSubdualMode()
+        {
+            SetLocalBool(Player, "SUBDUAL_MODE", SubdualMode);
+        }
     }
 }

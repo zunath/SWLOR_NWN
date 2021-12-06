@@ -1308,7 +1308,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var shipId = _shipIds[SelectedShipIndex];
             var dbShip = DB.Get<PlayerShip>(shipId);
             
-            var payload = new PropertyPermissionPayload(PropertyType.Starship, dbShip.PropertyId, false);
+            var payload = new PropertyPermissionPayload(PropertyType.Starship, dbShip.PropertyId, string.Empty, false);
             Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload, TetherObject);
         };
 

@@ -348,14 +348,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var propertyId = Property.GetPropertyId(area);
             var property = DB.Get<WorldProperty>(propertyId);
 
+            // Apartments have their own management menu.
             if (property.PropertyType == PropertyType.Apartment)
             {
                 var payload = new ManageApartmentPayload(propertyId);
                 Gui.TogglePlayerWindow(Player, GuiWindowType.ManageApartment, payload);
             }
-            else 
+            // Cities use the same permissions menu as all other buildings, but the city Id is located on themselves
+            // instead of the parent building's parent.
+            else if (property.PropertyType == PropertyType.City)
             {
-                var payload = new PropertyPermissionPayload(property.PropertyType, propertyId, false);
+                var payload = new PropertyPermissionPayload(property.PropertyType, propertyId, propertyId, false);
+                Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
+            }
+            else
+            {
+                var parentBuilding = DB.Get<WorldProperty>(property.ParentPropertyId);
+                var cityId = parentBuilding.ParentPropertyId;
+                var payload = new PropertyPermissionPayload(property.PropertyType, propertyId, cityId, false);
                 Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
             }
         };

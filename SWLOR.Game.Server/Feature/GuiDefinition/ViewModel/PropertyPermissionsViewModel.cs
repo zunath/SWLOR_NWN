@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private bool _isCategory;
         private PropertyType _propertyType;
+        private string _cityId;
 
         private string PropertyId { get; set; }
         private List<PropertyPermissionType> AvailablePermissions { get; set; }
@@ -224,6 +225,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _playerIds.Clear();
             _isCategory = initialPayload.IsCategory;
             _propertyType = initialPayload.PropertyType;
+            _cityId = initialPayload.CityId;
             IsPlayerSelected = false;
             
             AvailablePermissions = Property.GetPermissionsByPropertyType(_propertyType);
@@ -280,6 +282,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     .AddFieldSearch(nameof(Entity.Player.Name), SearchText, true)
                     .AddFieldSearch(nameof(Entity.Player.IsDeleted), false)
                     .AddPaging(25, 0);
+
+                // Searches within City properties require that the players be a citizen.
+                if (!string.IsNullOrWhiteSpace(_cityId))
+                {
+                    query.AddFieldSearch(nameof(Entity.Player.CitizenPropertyId), PropertyId, false);
+                }
+
                 dbPlayers = DB.Search(query);
             }
 

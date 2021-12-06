@@ -475,7 +475,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var apartment = GetApartment();
-            var payload = new PropertyPermissionPayload(PropertyType.Apartment, apartment.Id, false);
+            var payload = new PropertyPermissionPayload(PropertyType.Apartment, apartment.Id, string.Empty, false);
 
             Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload, TetherObject);
         };

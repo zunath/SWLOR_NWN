@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ChatCommandService;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
@@ -110,8 +111,8 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 })
                 .Action((user, target, location, args) =>
                 {
-                    var nextStuckAllowed = DateTime.UtcNow.AddMinutes(5);
-                    var waypoint = GetNearestObject(Core.NWScript.Enum.ObjectType.Waypoint,user);
+                    var nextStuckAllowed = DateTime.UtcNow.AddMinutes(30);
+                    var waypoint = GetNearestObject(ObjectType.Waypoint,user);
                     if (GetIsObjectValid(waypoint))
                     {
                         AssignCommand(user, () => { JumpToObject(waypoint); });

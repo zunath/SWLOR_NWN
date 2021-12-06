@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Perk.TwinBlade
             }
             if (perkLevel >= 3)
             {
-                NWNXCreature.AddFeat(creature, Feat.TwoWeaponFighting);
+                NWNXCreature.AddFeat(creature, Feat.ImprovedTwoWeaponFighting);
             }
         }
 

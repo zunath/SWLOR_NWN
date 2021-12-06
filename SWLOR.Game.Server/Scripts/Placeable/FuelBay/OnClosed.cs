@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
             NWPlaceable objSelf = (_.OBJECT_SELF);
             NWObject parent = (objSelf.GetLocalObject("CONTROL_TOWER_PARENT"));
             parent.DeleteLocalObject("CONTROL_TOWER_FUEL_BAY");
+            objSelf.SetLocalBool("SETUP", true);
             objSelf.DestroyAllInventoryItems();
             objSelf.Destroy();
         }

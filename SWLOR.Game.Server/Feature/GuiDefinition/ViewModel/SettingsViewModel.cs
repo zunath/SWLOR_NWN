@@ -66,7 +66,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             // Post-save actions
             UpdateHelmetDisplay();
             UpdateHolonetSetting();
-            UpdateSubdualMode();
         };
 
         public Action OnCancel() => () =>
@@ -91,10 +90,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void UpdateHolonetSetting()
         {
             SetLocalBool(Player, "DISPLAY_HOLONET", DisplayHolonetChannel);
-        }
-        private void UpdateSubdualMode()
-        {
-            SetLocalBool(Player, "SUBDUAL_MODE", SubdualMode);
         }
     }
 }

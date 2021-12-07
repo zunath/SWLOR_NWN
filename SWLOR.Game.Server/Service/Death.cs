@@ -16,6 +16,8 @@ namespace SWLOR.Game.Server.Service
 
             var player = GetLastPlayerDied();
             var hostile = GetLastHostileActor(player);
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
 
             SetStandardFactionReputation(StandardFaction.Commoner, 100, player);
             SetStandardFactionReputation(StandardFaction.Merchant, 100, player);
@@ -28,7 +30,7 @@ namespace SWLOR.Game.Server.Service
                 factionMember = GetNextFactionMember(hostile, false);
             }
 
-            if (GetLocalBool(hostile, "SUBDUAL_MODE"))
+            if (dbPlayer.Settings.IsSubdualModeEnabled)
             {
                 SendMessageToPC(player, "You have been subdued.");
                 SetCurrentHitPoints(player, 1);                

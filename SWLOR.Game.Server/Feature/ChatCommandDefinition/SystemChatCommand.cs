@@ -43,8 +43,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         if (DateTime.UtcNow <= dateTime)
                         {
                             return "You may only submit one bug report per minute. Please wait and try again.";
-                        }
-                        SetLocalString(user, "BUG_REPORT_LAST_SUBMISSION", dateTime.ToString());
+                        }                        
                     }
 
                     return string.Empty;

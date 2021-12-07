@@ -1,8 +1,11 @@
 ﻿using System;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Event.Item;
 using SWLOR.Game.Server.GameObject;
+using SWLOR.Game.Server.Messaging;
 using SWLOR.Game.Server.NWN.Enum;
 using SWLOR.Game.Server.NWN.Enum.Item;
+using SWLOR.Game.Server.NWNX;
 using SWLOR.Game.Server.Service;
 using static SWLOR.Game.Server.NWN._;
 using BaseStructureType = SWLOR.Game.Server.Enumeration.BaseStructureType;
@@ -13,6 +16,8 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
     {
         public void SubscribeEvents()
         {
+            MessageHub.Instance.Subscribe<OnItemDisturbed>(message => OnItemDisturbed());
+
         }
 
         public void UnsubscribeEvents()
@@ -21,16 +26,28 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
 
         public void Main()
         {
-            NWPlayer player = GetLastDisturbed();
+        }
+
+        public void OnItemDisturbed()
+        {
             NWPlaceable bay = OBJECT_SELF;
-            var disturbType = GetInventoryDisturbType();
-            NWItem item = GetInventoryDisturbItem();
+
+            // Filer to only events created by a fuel bay, and ignore this event if it was triggered by clearing
+            // the inventory when the bay is being destroyed.
+            if (bay.Resref != "fuel_bay" || bay.GetLocalBool("SETUP") == true)
+            {
+                return;
+            }
+
+            NWItem item = StringToObject(NWNXEvents.GetEventData("ITEM"));
+            NWPlayer player = bay.GetLocalObject("BAY_ACCESSOR");
+            var disturbType = NWNXEvents.GetCurrentEvent();
             bool stronidiumOnly = GetLocalBool(bay, "CONTROL_TOWER_FUEL_TYPE");
             string allowedResref = stronidiumOnly ? "stronidium" : "fuel_cell";
             string structureID = bay.GetLocalString("PC_BASE_STRUCTURE_ID");
             
             // Check for either fuel cells or stronidium when adding an item to the container.
-            if (disturbType == DisturbType.Added)
+            if (disturbType == EventType.ItemInventoryAddItemAfter)
             {
                 if (item.Resref != allowedResref)
                 {
@@ -40,7 +57,7 @@ namespace SWLOR.Game.Server.Scripts.Placeable.FuelBay
                 }
             }
             // If the item removed wasn't fuel cells or stronidium, exit early. We don't need to do anything else.
-            else if (disturbType == DisturbType.Removed)
+            else if (disturbType == EventType.ItemInventoryRemoveItemAfter)
             {
                 if (item.Resref != allowedResref)
                 {

@@ -473,19 +473,22 @@ namespace SWLOR.Game.Server.Conversation
 
             area.SetLocalObject("FUEL_BAY", bay.Object);
             bay.SetLocalString("PC_BASE_STRUCTURE_ID", structureID.ToString());
+            bay.SetLocalBool("SETUP", true); // Disable OnDisturbed events
 
             if (isStronidium)
             {
-                if(pcBase.ReinforcedFuel > 0)
-                    _.CreateItemOnObject("stronidium", bay.Object, pcBase.ReinforcedFuel);
-
                 bay.SetLocalInt("CONTROL_TOWER_FUEL_TYPE", 1);
+
+                if (pcBase.ReinforcedFuel > 0)
+                    _.CreateItemOnObject("stronidium", bay.Object, pcBase.ReinforcedFuel);
             }
             else
             {
                 if (pcBase.Fuel > 0)
                     _.CreateItemOnObject("fuel_cell", bay.Object, pcBase.Fuel);
             }
+
+            bay.SetLocalBool("SETUP", false); // Re-enable OnDisturbed events
 
             oPC.AssignCommand(() => _.ActionInteractObject(bay.Object));
         }

@@ -127,6 +127,8 @@ namespace NWN.Scripts
             NWNXEvents.SubscribeEvent(EventType.DecrementItemStackSizeBefore, "item_dec_stack");
             NWNXEvents.SubscribeEvent(EventType.UseItemBefore, "item_use_before");
             NWNXEvents.SubscribeEvent(EventType.UseItemAfter, "item_use_after");
+            NWNXEvents.SubscribeEvent(EventType.ItemInventoryRemoveItemAfter, "item_inventory_disturb_after");
+            NWNXEvents.SubscribeEvent(EventType.ItemInventoryAddItemAfter, "item_inventory_disturb_after");
             NWNXDamage.SetDamageEventScript("mod_on_applydmg");
 
             // DM Hooks

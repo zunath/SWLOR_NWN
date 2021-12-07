@@ -38,11 +38,11 @@
         public const string ItemInventoryCloseBefore = "NWNX_ON_ITEM_INVENTORY_CLOSE_BEFORE";
         public const string ItemInventoryCloseAfter = "NWNX_ON_ITEM_INVENTORY_CLOSE_AFTER";
 
-        public const string ItemInventoryAddItemBefore = "NWNX_ON_ITEM_INVENTORY_ADD_ITEM_BEFORE";
-        public const string ItemInventoryAddItemAfter = "NWNX_ON_ITEM_INVENTORY_ADD_ITEM_AFTER";
+        public const string ItemInventoryAddItemBefore = "NWNX_ON_INVENTORY_ADD_ITEM_BEFORE";
+        public const string ItemInventoryAddItemAfter = "NWNX_ON_INVENTORY_ADD_ITEM_AFTER";
 
-        public const string ItemInventoryRemoveItemBefore = "NWNX_ON_ITEM_INVENTORY_REMOVE_ITEM_BEFORE";
-        public const string ItemInventoryRemoveItemAfter = "NWNX_ON_ITEM_INVENTORY_REMOVE_ITEM_AFTER";
+        public const string ItemInventoryRemoveItemBefore = "NWNX_ON_INVENTORY_REMOVE_ITEM_BEFORE";
+        public const string ItemInventoryRemoveItemAfter = "NWNX_ON_INVENTORY_REMOVE_ITEM_AFTER";
 
         public const string ItemAmmoReloadBefore = "NWNX_ON_ITEM_AMMO_RELOAD_BEFORE";
         public const string ItemAmmoReloadAfter = "NWNX_ON_ITEM_AMMO_RELOAD_AFTER";

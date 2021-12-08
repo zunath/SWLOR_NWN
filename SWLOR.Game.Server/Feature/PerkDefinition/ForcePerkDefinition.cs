@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.BurstOfSpeed1)
+                .GrantsFeat(FeatType.BurstOfSpeed1)                
 
                 .AddPerkLevel()
                 .Description("Increases your speed by 30% while concentrating.")
@@ -151,7 +151,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceStun2)
 
                 .AddPerkLevel()
-                .Description("Target and all other enemies within 10 are Tranquilized while the caster concentrates or, if resisted, get -5 to AB and Evasion.")
+                .Description("Target and all other enemies within 10m are Tranquilized while the caster concentrates or, if resisted, get -5 to AB and Evasion.")
                 .Price(10)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -267,7 +267,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Heals a single target for 10 HP every six seconds.")
-                .Price(5)
+                .Price(4)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceHeal5);
@@ -287,44 +287,43 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 8.5 DMG to a single target.")
-                .Price(4)
+                .Price(5)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceBurst2)
 
                 .AddPerkLevel()
                 .Description("Deals 12.0 DMG to a single target.")
-                .Price(4)
+                .Price(6)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceBurst3)
 
                 .AddPerkLevel()
                 .Description("Deals 13.5 DMG to a single target.")
-                .Price(4)
+                .Price(7)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceBurst4);
         }
-
-        private void ForceBody()
+        private void ForceMind()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceBody)
-                .Name("Force Body")
+            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceMind)
+                .Name("Force Mind")
 
                 .AddPerkLevel()
-                .Description("Converts 25% of the user's HP into FP.")
+                .Description("Converts 25% of the user's FP into HP.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceBody1)
+                .GrantsFeat(FeatType.ForceMind1)
 
                 .AddPerkLevel()
-                .Description("Converts 50% of the user's HP into FP.")
+                .Description("Converts 50% of the user's FP into HP.")
                 .Price(6)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceBody2);
+                .GrantsFeat(FeatType.ForceMind2);
         }
 
         private void DrainLife()
@@ -402,25 +401,24 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceLightning4);
         }
 
-        private void ForceMind()
+        private void ForceBody()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceMind)
-                .Name("Force Mind")
+            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceBody)
+                .Name("Force Body")
 
                 .AddPerkLevel()
-                .Description("Converts 25% of the user's FP into HP.")
+                .Description("Converts 25% of the user's HP into FP.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceMind1)
+                .GrantsFeat(FeatType.ForceBody1)
 
                 .AddPerkLevel()
-                .Description("Converts 50% of the user's FP into HP.")
+                .Description("Converts 50% of the user's HP into FP.")
                 .Price(6)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceMind2);
+                .GrantsFeat(FeatType.ForceBody2);
         }
-
     }
 }

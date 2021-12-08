@@ -71,8 +71,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceLightning1, PerkType.ForceLightning)
                 .Name("Force Lightning I")
-                .HasRecastDelay(RecastGroup.ForceLightning, 30f)
-                .RequirementFP(2)
+                .HasRecastDelay(RecastGroup.ForceLightning, 60f)
+                .RequirementFP(4)
                 .IsCastedAbility()
                 .HasImpactAction(ImpactAction);
         }
@@ -81,8 +81,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceLightning2, PerkType.ForceLightning)
                 .Name("Force Lightning II")
-                .HasRecastDelay(RecastGroup.ForceLightning, 30f)
-                .RequirementFP(3)
+                .HasRecastDelay(RecastGroup.ForceLightning, 60f)
+                .RequirementFP(5)
                 .IsCastedAbility()
                 .HasImpactAction(ImpactAction);
         }
@@ -91,8 +91,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceLightning3, PerkType.ForceLightning)
                 .Name("Force Lightning III")
-                .HasRecastDelay(RecastGroup.ForceLightning, 30f)
-                .RequirementFP(4)
+                .HasRecastDelay(RecastGroup.ForceLightning, 60f)
+                .RequirementFP(6)
                 .IsCastedAbility()
                 .HasImpactAction(ImpactAction);
         }
@@ -101,8 +101,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ForceLightning4, PerkType.ForceLightning)
                 .Name("Force Lightning IV")
-                .HasRecastDelay(RecastGroup.ForceLightning, 30f)
-                .RequirementFP(5)
+                .HasRecastDelay(RecastGroup.ForceLightning, 60f)
+                .RequirementFP(7)
                 .IsCastedAbility()
                 .HasImpactAction(ImpactAction);
         }

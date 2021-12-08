@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ApplyEffectToObject(DurationType.Instant, EffectHeal((int)(GetCurrentHitPoints(activator) * multiplier)), activator);
 
             // Recover FP on target.
-            Stat.RestoreFP(activator, -(int)(GetCurrentHitPoints(activator) * multiplier));
+            Stat.ReduceFP(activator, (int)(GetCurrentHitPoints(activator) * multiplier));
 
             // Play VFX
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Odd), target);

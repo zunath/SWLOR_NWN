@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst1, PerkType.ForceBurst)
                 .Name("Force Burst I")
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
-                .RequirementFP(2)
+                .RequirementFP(4)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction(ImpactAction);
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst2, PerkType.ForceBurst)
                 .Name("Force Burst II")
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
-                .RequirementFP(3)
+                .RequirementFP(5)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction(ImpactAction);
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst3, PerkType.ForceBurst)
                 .Name("Force Burst III")
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
-                .RequirementFP(4)
+                .RequirementFP(6)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction(ImpactAction);
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst4, PerkType.ForceBurst)
                 .Name("Force Burst IV")
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
-                .RequirementFP(5)
+                .RequirementFP(7)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction(ImpactAction);

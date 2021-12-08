@@ -51,16 +51,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             {
                 case 1:
                     dmg = 4.0f;
-                    inflict = true;
+                    if (d2() == 1) inflict = true;
                     duration = 30f;
                     break;
                 case 2:
                     dmg = 6.0f;
-                    inflict = true;
+                    if (d4() > 1) inflict = true;
                     duration = 60f;
                     break;
                 case 3:
                     dmg = 9.5f;
+                    inflict = true;
                     duration = 60f;
                     break;
                 default:

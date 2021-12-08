@@ -488,7 +488,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Your next attack deals an additional 8.0 DMG and has a 75% chance to inflict Bleed for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 20)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PiercingToss2)
 
                 .AddPerkLevel()
@@ -679,7 +678,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Your next attack deals an additional 8.5 DMG and has a 75% chance to inflict Bind for 1 minute.")
                 .Price(3)
                 .RequirementSkill(SkillType.Ranged, 20)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.CripplingShot2)
 
                 .AddPerkLevel()

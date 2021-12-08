@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Enables you to attach tier 5 defensive modules on starships.")
-                .Price(4)
+                .Price(3)
                 .RequirementSkill(SkillType.Piloting, 40)
                 .GrantsFeat(FeatType.DefensiveModules5);
         }
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Enables you to attach tier 5 offensive modules on starships.")
-                .Price(4)
+                .Price(3)
                 .RequirementSkill(SkillType.Piloting, 40)
                 .GrantsFeat(FeatType.OffensiveModules5);
         }
@@ -174,7 +174,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Enables you to attach tier 5 mining modules on starships.")
-                .Price(4)
+                .Price(3)
                 .RequirementSkill(SkillType.Piloting, 40)
                 .GrantsFeat(FeatType.MiningModules5);
         }

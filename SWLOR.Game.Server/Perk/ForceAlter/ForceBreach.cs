@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Perk.ForceAlter
                     throw new ArgumentOutOfRangeException(nameof(spellTier));
             }
 
-            var result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Dark, true);
+            var result = CombatService.CalculateAbilityResistance(creature, target.Object, SkillType.ForceAlter, ForceBalanceType.Universal, true);
 
             // +/- percent change based on resistance
             float delta = 0.01f * result.Delta;

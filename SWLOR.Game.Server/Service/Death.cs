@@ -16,6 +16,8 @@ namespace SWLOR.Game.Server.Service
 
             var player = GetLastPlayerDied();
             var hostile = GetLastHostileActor(player);
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
 
             SetStandardFactionReputation(StandardFaction.Commoner, 100, player);
             SetStandardFactionReputation(StandardFaction.Merchant, 100, player);
@@ -28,10 +30,27 @@ namespace SWLOR.Game.Server.Service
                 factionMember = GetNextFactionMember(hostile, false);
             }
 
-            const string RespawnMessage = "You have died. You can wait for another player to revive you or respawn to go to your home point.";
-            PopUpDeathGUIPanel(player, true, true, 0, RespawnMessage);
+            if (dbPlayer.Settings.IsSubdualModeEnabled)
+            {
+                SendMessageToPC(player, "You have been subdued.");
+                SetCurrentHitPoints(player, 1);                
+                ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), player, 60f);
+                ApplyEffectToObject(DurationType.Temporary, EffectSlow(), player, 300f);
+                ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(10), player, 300f);
+                ApplyEffectToObject(DurationType.Temporary, EffectAttackDecrease(10), player, 300f);
+                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Might, 10), player, 300f);
+                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Perception, 10), player, 300f);
+                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Social, 10), player, 300f);
+                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Vitality, 10), player, 300f);
+                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 10), player, 300f);
+            }
+            else
+            {
+                const string RespawnMessage = "You have died. You can wait for another player to revive you or respawn to go to your home point.";
+                PopUpDeathGUIPanel(player, true, true, 0, RespawnMessage);
 
-            WriteAudit(player);
+                WriteAudit(player);
+            }
         }
 
         /// <summary>

@@ -37,5 +37,6 @@
         PermissionManagement = 30,
         ManageStructures = 31,
         PropertyItemStorage = 32,
+        BugReport = 33,
     }
 }

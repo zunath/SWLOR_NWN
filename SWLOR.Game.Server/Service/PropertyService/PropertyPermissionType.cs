@@ -60,8 +60,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
         AccessTreasury = 13,
 
         // City
-        [PropertyPermission("Change Specialization", "Can adjust the city's specialization.", true)]
-        ChangeSpecialization = 14,
+        [PropertyPermission("Manage Upgrades", "Can purchase city upgrades with treasury money.", true)]
+        ManageUpgrades = 14,
 
         // City
         [PropertyPermission("Manage Upkeep", "Can pay maintenance fees.", true)]

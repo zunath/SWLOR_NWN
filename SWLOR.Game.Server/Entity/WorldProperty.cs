@@ -70,6 +70,11 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<PropertyTaxType, float> Taxes { get; set; }
 
         /// <summary>
+        /// Tracks upgrades specific to this property.
+        /// </summary>
+        public Dictionary<PropertyUpgradeType, int> Upgrades { get; set; }
+
+        /// <summary>
         /// If true, the property will be publicly accessible.
         /// This will only be set if the PropertyType is a Building
         /// </summary>
@@ -112,10 +117,9 @@ namespace SWLOR.Game.Server.Entity
         public int ItemStorageCount { get; set; }
 
         /// <summary>
-        /// Determines the property's level. Most properties will only have one level.
-        /// Some exceptions include City properties where this determines
-        /// available structures and features available to the mayor.
+        /// Tracks the amount of credits contained within the property's treasury.
+        /// Only applicable to City property types.
         /// </summary>
-        public int Level { get; set; }
+        public long Treasury { get; set; }
     }
 }

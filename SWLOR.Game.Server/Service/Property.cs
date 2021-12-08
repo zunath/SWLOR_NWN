@@ -34,9 +34,30 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _structureChangedActions = StructureChangedAction.BuildSpawnActions();
 
         /// <summary>
-        /// Determines the number of citizens required to maintain a city.
+        /// Determines the number of citizens required to maintain an outpost.  (Level 1)
+        /// If the property falls under this number, it will eventually be destroyed.
         /// </summary>
-        public const int CitizensRequiredForCity = 1; // todo: change back to 10 after done testing
+        public const int CitizensRequiredForOutpost = 1; // todo: change back to 10 after done testing
+
+        /// <summary>
+        /// Determines the number of citizens required to maintain a village.  (Level 2)
+        /// </summary>
+        public const int CitizensRequiredForVillage = 15;
+
+        /// <summary>
+        /// Determines the number of citizens required to maintain a township. (Level 3)
+        /// </summary>
+        public const int CitizensRequiredForTownship = 20;
+
+        /// <summary>
+        /// Determines the number of citizens required to maintain a city. (Level 4)
+        /// </summary>
+        public const int CitizensRequiredForCity = 30;
+
+        /// <summary>
+        /// Determines the number of citizens required to maintain a metropolis. (Level 5)
+        /// </summary>
+        public const int CitizensRequiredForMetropolis = 40;
 
         /// <summary>
         /// Determines the number of hours before the city will be destroyed due to
@@ -169,7 +190,7 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.ChangeDescription,
                 PropertyPermissionType.EditTaxes,
                 PropertyPermissionType.AccessTreasury,
-                PropertyPermissionType.ChangeSpecialization,
+                PropertyPermissionType.ManageUpgrades,
                 PropertyPermissionType.ManageUpkeep
             };
 
@@ -406,7 +427,7 @@ namespace SWLOR.Game.Server.Service
             var citizenCount = citizens.Count;
 
             // City is below the number of citizens required to maintain the city.
-            if (citizenCount < CitizensRequiredForCity)
+            if (citizenCount < CitizensRequiredForOutpost)
             {
                 if (city.Dates.ContainsKey(PropertyDateType.BelowRequiredCitizens))
                 {
@@ -415,7 +436,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         city.IsQueuedForDeletion = true;
 
-                        Log.Write(LogGroup.Property, $"City '{city.CustomName}' in area '{city.ParentPropertyId}' has been queued for deletion because it fell under the required {CitizensRequiredForCity} citizens needed to maintain it.");
+                        Log.Write(LogGroup.Property, $"City '{city.CustomName}' in area '{city.ParentPropertyId}' has been queued for deletion because it fell under the required {CitizensRequiredForOutpost} citizens needed to maintain it.");
                     }
                     else
                     {
@@ -427,7 +448,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     city.Dates[PropertyDateType.BelowRequiredCitizens] = now.AddHours(MinimumCitizensGracePeriodHours);
 
-                    Log.Write(LogGroup.Property, $"City '{city.CustomName}' has fallen below the required {CitizensRequiredForCity} citizens required to maintain a city. An expiration has been applied");
+                    Log.Write(LogGroup.Property, $"City '{city.CustomName}' has fallen below the required {CitizensRequiredForOutpost} citizens required to maintain a city. An expiration has been applied");
                 }
             }
             // Otherwise they're at or above the required amount. Ensure the date is removed from the property.
@@ -877,8 +898,7 @@ namespace SWLOR.Game.Server.Service
                 PropertyType = type,
                 OwnerPlayerId = ownerPlayerId,
                 Layout = layout,
-                ItemStorageCount = layoutDetail.ItemStorageLimit,
-                Level = 1
+                ItemStorageCount = layoutDetail.ItemStorageLimit
             };
 
             constructionAction?.Invoke(property);
@@ -1038,6 +1058,13 @@ namespace SWLOR.Game.Server.Service
                 // Initialize taxes at zero.
                 property.Taxes[PropertyTaxType.Citizenship] = 0f;
                 property.Taxes[PropertyTaxType.Transportation] = 0f;
+
+                // Upgrades
+                property.Upgrades[PropertyUpgradeType.CityLevel] = 1;
+                property.Upgrades[PropertyUpgradeType.BankLevel] = 1;
+                property.Upgrades[PropertyUpgradeType.MedicalCenterLevel] = 1;
+                property.Upgrades[PropertyUpgradeType.StarportLevel] = 1;
+                property.Upgrades[PropertyUpgradeType.CantinaLevel] = 1;
             });
 
             CreateBuilding(
@@ -1845,7 +1872,7 @@ namespace SWLOR.Game.Server.Service
             if (permission != null && (permission.Permissions[PropertyPermissionType.RenameProperty] ||
                                        permission.Permissions[PropertyPermissionType.EditTaxes] ||
                                        permission.Permissions[PropertyPermissionType.AccessTreasury] ||
-                                       permission.Permissions[PropertyPermissionType.ChangeSpecialization] ||
+                                       permission.Permissions[PropertyPermissionType.ManageUpgrades] ||
                                        permission.Permissions[PropertyPermissionType.ManageUpkeep]))
             {
                 Gui.TogglePlayerWindow(player, GuiWindowType.ManageCity, null, terminal);

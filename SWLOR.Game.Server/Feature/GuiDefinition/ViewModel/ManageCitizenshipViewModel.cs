@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             cityDetails.Add($"Mayor: {dbMayorPlayer.Name}");
             cityDetails.Add($"# Citizens: {dbCitizenCount}");
 
-            switch (dbCity.Level)
+            switch (dbCity.Upgrades[PropertyUpgradeType.CityLevel])
             {
                 case 1:
                     cityDetails.Add($"Level: Outpost");
@@ -251,6 +251,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
             ShowModal($"You owe {dbPlayer.PropertyOwedTaxes} credits. Will you pay this now?", () =>
             {
+                var dbCity = DB.Get<WorldProperty>(_cityPropertyId);
                 dbPlayer = DB.Get<Player>(playerId);
                 var gold = GetGold(Player);
 
@@ -265,6 +266,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     AssignCommand(Player, () => TakeGoldFromCreature(gold, Player, true));
                     Log.Write(LogGroup.Property, $"{GetName(Player)} paid {gold} credits towards taxes for property '{_cityPropertyId}'");
+                    dbCity.Treasury += gold;
                     dbPlayer.PropertyOwedTaxes -= gold;
                 }
                 // Can cover everything. Take what's required.
@@ -272,10 +274,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     AssignCommand(Player, () => TakeGoldFromCreature(dbPlayer.PropertyOwedTaxes, Player, true));
                     Log.Write(LogGroup.Property, $"{GetName(Player)} paid {dbPlayer.PropertyOwedTaxes} credits towards taxes for property '{_cityPropertyId}'.");
+                    dbCity.Treasury += dbPlayer.PropertyOwedTaxes;
                     dbPlayer.PropertyOwedTaxes = 0;
                 }
 
                 DB.Set(dbPlayer);
+                DB.Set(dbCity);
 
                 IsPayTaxesEnabled = dbPlayer.PropertyOwedTaxes > 0;
                 PayTaxesButtonName = $"Pay Taxes ({dbPlayer.PropertyOwedTaxes} cr)";

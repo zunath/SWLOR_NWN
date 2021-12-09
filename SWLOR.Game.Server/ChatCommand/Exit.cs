@@ -6,7 +6,7 @@ using SWLOR.Game.Server.GameObject;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Exits from space system flight mode.", CommandPermissionType.Player)]
+    [CommandDetails("Exits from space system flight mode.", CommandPermissionType.DM | CommandPermissionType.Admin | CommandPermissionType.Player)]
     public class Exit : IChatCommand
     {
         /// <summary>

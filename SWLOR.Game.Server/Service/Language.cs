@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Service
                 { SkillType.Shyriiwook, new TranslatorShyriiwook() },
                 { SkillType.Twileki, new TranslatorTwileki() },
                 { SkillType.Zabraki, new TranslatorZabraki() },
+                { SkillType.Togruti, new TranslatorTogruti() },
                 { SkillType.Mirialan, new TranslatorMirialan() },
                 { SkillType.MonCalamarian, new TranslatorMonCalamarian() },
                 { SkillType.Ugnaught, new TranslatorUgnaught() }

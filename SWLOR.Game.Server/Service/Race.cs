@@ -90,6 +90,12 @@ namespace SWLOR.Game.Server.Service
                 AppearanceType = AppearanceType.HalfOrc,
                 HeadId = 27
             };
+            _defaultRaceAppearancesMale[RacialType.Togruta] = new RacialAppearance
+            {
+                SkinColorId = 72,
+                HairColorId = 21,
+                HeadId = 212
+            };
             _defaultRaceAppearancesMale[RacialType.Trandoshan] = new RacialAppearance
             {
                 SkinColorId = 39,
@@ -218,6 +224,12 @@ namespace SWLOR.Game.Server.Service
                 HairColorId = 0,
                 AppearanceType = AppearanceType.HalfOrc,
                 HeadId = 18
+            };
+            _defaultRaceAppearancesFemale[RacialType.Togruta] = new RacialAppearance
+            {
+                SkinColorId = 22,
+                HairColorId = 83,
+                HeadId = 200
             };
             _defaultRaceAppearancesFemale[RacialType.Trandoshan] = new RacialAppearance
             {

@@ -1004,7 +1004,7 @@ namespace SWLOR.Game.Server.Service
         }
 
 
-        public static void JumpPCToBuildingInterior(NWPlayer player, NWArea area, int apartmentBuildingID = -1)
+        public static void JumpPCToBuildingInterior(NWPlayer player, NWArea area, int apartmentBuildingID = -1, NWLocation exitLocation = null)
         {
             NWObject exit = null;
 
@@ -1028,7 +1028,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Assign some local variables to the exit object, for later use.
-            exit.SetLocalLocation("PLAYER_HOME_EXIT_LOCATION", player.Location);
+            exit.SetLocalLocation("PLAYER_HOME_EXIT_LOCATION", exitLocation.Area.IsValid ? exitLocation : player.Location);
             exit.SetLocalInt("IS_BUILDING_DOOR", 1);
 
             // Assign apartment building ID to the exit only if we're working with an actual apartment.

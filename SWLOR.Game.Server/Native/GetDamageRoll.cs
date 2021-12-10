@@ -78,18 +78,7 @@ namespace SWLOR.Game.Server.Native
                                 dmg = Combat.GetDMGValueFromItemPropertyCostTableValue(ip.m_nCostTableValue);
                             }
                         }
-                    }
-
-                    // Ranged weapons use Perception (NWN's DEX)
-                    // All others use Might (NWN's STR)
-                    if (weapon.m_nBaseItem == (uint)BaseItem.Rifle ||
-                        weapon.m_nBaseItem == (uint)BaseItem.Pistol ||
-                        weapon.m_nBaseItem == (uint)BaseItem.Cannon ||
-                        weapon.m_nBaseItem == (uint)BaseItem.Longbow ||
-                        weapon.m_nBaseItem == (uint)BaseItem.Sling)
-                    {
-                        attackAttribute = attackerStats.m_nDexterityBase < 10 ? 0 : attackerStats.m_nDexterityModifier;
-                    }
+                    }                   
                 }
             }
 

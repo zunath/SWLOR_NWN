@@ -72,6 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             var perception = GetAbilityModifier(AbilityType.Perception, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
+
             var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, false);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
             if (inflictPoison) StatusEffect.Apply(activator, target, StatusEffectType.Poison, 60f);

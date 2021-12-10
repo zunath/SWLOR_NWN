@@ -44,7 +44,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var dmg = 0.0f;
-            var inflictBreach = false;
+            var inflict = false;
+            var breachTime = 0f;
             // If activator is in stealth mode, force them out of stealth mode.
             if (GetActionMode(activator, ActionMode.Stealth) == true)
                 SetActionMode(activator, ActionMode.Stealth, false);
@@ -53,15 +54,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             {
                 case 1:
                     dmg = 6.5f;
-                    if (d2() == 1) inflictBreach = true;
+                    if (d2() == 1) inflict = true;
+                    breachTime = 30f;
                     break;
                 case 2:
                     dmg = 8.0f;
-                    if (d4() > 1) inflictBreach = true;
+                    if (d4() > 1) inflict = true;
+                    breachTime = 60f;
                     break;
                 case 3:
                     dmg = 11.5f;
-                    inflictBreach = true;
+                    inflict = true;
+                    breachTime = 60f;
                     break;
                 default:
                     break;
@@ -72,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
             var damage = Combat.CalculateDamage(dmg, willpower, defense, vitality, false);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            if (inflictBreach) ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(2), target, 60f);
+            if (inflict) ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(2), target, breachTime);
 
             Enmity.ModifyEnmityOnAll(activator, 1);
             CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
@@ -82,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.SaberStrike1, PerkType.SaberStrike)
                 .Name("Saber Strike I")
-                .HasRecastDelay(RecastGroup.SaberStrike, 30f)
+                .HasRecastDelay(RecastGroup.SaberStrike, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
@@ -94,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.SaberStrike2, PerkType.SaberStrike)
                 .Name("Saber Strike II")
-                .HasRecastDelay(RecastGroup.SaberStrike, 30f)
+                .HasRecastDelay(RecastGroup.SaberStrike, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
@@ -106,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.SaberStrike3, PerkType.SaberStrike)
                 .Name("Saber Strike III")
-                .HasRecastDelay(RecastGroup.SaberStrike, 30f)
+                .HasRecastDelay(RecastGroup.SaberStrike, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(8)
                 .IsCastedAbility()

@@ -64,12 +64,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     var targetCreature = GetFirstObjectInShape(Shape.Sphere, radiusSize, GetLocation(target), true);
                     while (GetIsObjectValid(targetCreature))
                     {
-                        if (targetCreature != target && GetIsReactionTypeHostile(target, source) && 
+                        if (targetCreature != target && GetIsReactionTypeHostile(targetCreature, source) && 
                             !(GetRacialType(targetCreature) == RacialType.Cyborg || GetRacialType(targetCreature) == RacialType.Robot))
                         {
                             // Apply to nearest other creature, then move on to the next.
                             // Intentionally applying Mind Trick I so that it doesn't continue to chain exponentially.
-                            StatusEffect.Apply(source, target, StatusEffectType.MindTrick1, 0f);
+                            StatusEffect.Apply(source, targetCreature, StatusEffectType.MindTrick1, 0f);
                         }
                         targetCreature = GetNextObjectInShape(Shape.Sphere, radiusSize, GetLocation(target), true);
                     }

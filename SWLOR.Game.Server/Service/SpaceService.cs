@@ -374,8 +374,7 @@ namespace SWLOR.Game.Server.Service
                 NWObject accessor = bay.GetLocalObject("BAY_ACCESSOR");
                 if (!accessor.IsValid)
                 {
-                    bay.DestroyAllInventoryItems();
-                    bay.Destroy();
+                    CleanUpBayIfUnused(bay);
                 }
                 else
                 {
@@ -386,9 +385,10 @@ namespace SWLOR.Game.Server.Service
 
             Guid structureID = new Guid(starship.GetLocalString("PC_BASE_STRUCTURE_ID"));
             var structureItems = DataService.PCBaseStructureItem.GetAllByPCBaseStructureID(structureID);
-            
+
             // Note: the code to generate a valid location now generates an invalid location on most maps.  Worked around by always 
             // providing a player object in the methods that call this one.
+            LoggingService.Trace(TraceComponent.Space, "Creating bay");
             NWLocation location = (player != null ? player.Location : (NWLocation) _.Location(starship, _.Vector3(1, 1, 0), 0));
             bay = _.CreateObject(ObjectType.Placeable, "resource_bay", location);
 
@@ -419,7 +419,7 @@ namespace SWLOR.Game.Server.Service
             PCBaseStructure structure = DataService.PCBaseStructure.GetByID(baseStructureGuid);
             PCBase pcBase = DataService.PCBase.GetByID(structure.PCBaseID);
             NWPlaceable bay = GetCargoBay(area, ship);
-
+            LoggingService.Trace(TraceComponent.Space, "Initialising stats for ship " + ship.Name);
             ship.SetLocalInt("WEAPONS", stats.weapons + GetCargoBonus(bay, ItemPropertyType.StarshipWeaponsBonus));
             ship.SetLocalInt("SHIELDS", stats.shields + GetCargoBonus(bay, ItemPropertyType.StarshipShieldsBonus));
             ship.SetLocalInt("STEALTH", stats.stealth + GetCargoBonus(bay, ItemPropertyType.StarshipStealthBonus));
@@ -435,6 +435,7 @@ namespace SWLOR.Game.Server.Service
             int bonus = 0;
             if (bay == null) return bonus;
             if (!bay.IsValid) return bonus;
+            LoggingService.Trace(TraceComponent.Space, "Getting cargo bonus: " + Enum.GetName(typeof(ItemPropertyType), stat));
 
             // Get the starship's cargo inventory and look for enhancement items. 
             foreach (var item in bay.InventoryItems)
@@ -449,11 +450,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            DelayCommand(0.1f, () =>
-            {
-                bay.DestroyAllInventoryItems();
-                bay.Destroy();
-            });
+            CleanUpBayIfUnused(bay);
 
             return bonus;
         }
@@ -701,8 +698,10 @@ namespace SWLOR.Game.Server.Service
             shipCreature.Name = ship.Name;
             LoggingService.Trace(TraceComponent.Space, "Created ship " + shipCreature.Name + " in area " + shipCreature.Area.Name);
 
-            // Once the ship has spawned (and had its base stats set), adjust them for any mods we have on board.
-            _.AssignCommand(shipCreature, () => { UpdateCargoBonus(ship, shipCreature); });
+            // Once the ship has spawned (and had its base stats set in the OnSpawn handler), adjust them for any mods we have on board.
+            _.DelayCommand(0.2f, () => {
+                _.AssignCommand(shipCreature, () => { UpdateCargoBonus(ship, shipCreature); });
+            });
         }
 
         public static void RemoveShipInSpace(NWArea ship)
@@ -1672,6 +1671,25 @@ namespace SWLOR.Game.Server.Service
                 // Target not in range, turn!
                 _.DelayCommand(2.0f, () => { AdjustFacingAndAttack(creature); });
                 _.DelayCommand(4.0f, () => { AdjustFacingAndAttack(creature); });
+            }
+        }
+
+        private static void CleanUpBayIfUnused(NWPlaceable bay)
+        {
+            LoggingService.Trace(TraceComponent.Space, "Checking for bay cleanup");
+
+            NWObject accessor = bay.GetLocalObject("BAY_ACCESSOR");
+            if (!accessor.IsValid)
+            {
+                _.AssignCommand(bay, () =>
+                {
+                    DelayCommand(0.1f, () =>
+                    {
+                        LoggingService.Trace(TraceComponent.Space, "Cleaning up bay");
+                        bay.DestroyAllInventoryItems();
+                        bay.Destroy();
+                    });
+                });                
             }
         }
     }

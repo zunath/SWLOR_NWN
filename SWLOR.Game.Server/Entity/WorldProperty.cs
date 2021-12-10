@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Entity
             Dates = new Dictionary<PropertyDateType, DateTime>();
             Positions = new Dictionary<PropertyLocationType, PropertyLocation>();
             Taxes = new Dictionary<PropertyTaxType, float>();
+            Upgrades = new Dictionary<PropertyUpgradeType, int>();
         }
 
         /// <summary>

@@ -152,8 +152,9 @@ namespace SWLOR.Game.Server.Conversation
                 instance = BaseService.CreateAreaInstance(oPC, pcBaseID, true);
             }
 
-            // Port the player to the new instance.
-            BaseService.JumpPCToBuildingInterior(oPC, instance, apartmentBuildingID);
+            // Port the player to the new instance.  In case we are jumping from apartment to apartment, pass the exit location from
+            // the current apartment to use for exiting the new one (to avoid looping back here!). 
+            BaseService.JumpPCToBuildingInterior(oPC, instance, apartmentBuildingID, door.GetLocalLocation("PLAYER_HOME_EXIT_LOCATION"));
         }
 
         public override void EndDialog()

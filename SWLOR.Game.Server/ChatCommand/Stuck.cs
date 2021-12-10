@@ -7,7 +7,7 @@ using static SWLOR.Game.Server.NWN._;
 
 namespace SWLOR.Game.Server.ChatCommand
 {
-    [CommandDetails("Jumps you to your last saved location.", CommandPermissionType.Player)]
+    [CommandDetails("Jumps you to your last saved location.", CommandPermissionType.Player | CommandPermissionType.DM | CommandPermissionType.Admin)]
     public class Stuck: IChatCommand
     {
         public void DoAction(NWPlayer user, NWObject target, NWLocation targetLocation, params string[] args)

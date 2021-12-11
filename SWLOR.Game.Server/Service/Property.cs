@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Player = SWLOR.Game.Server.Entity.Player;
@@ -33,31 +34,14 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<string, uint> _structurePropertyIdToPlaceable = new();
         private static readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _structureChangedActions = StructureChangedAction.BuildSpawnActions();
 
-        /// <summary>
-        /// Determines the number of citizens required to maintain an outpost.  (Level 1)
-        /// If the property falls under this number, it will eventually be destroyed.
-        /// </summary>
-        public const int CitizensRequiredForOutpost = 1; // todo: change back to 10 after done testing
-
-        /// <summary>
-        /// Determines the number of citizens required to maintain a village.  (Level 2)
-        /// </summary>
-        public const int CitizensRequiredForVillage = 15;
-
-        /// <summary>
-        /// Determines the number of citizens required to maintain a township. (Level 3)
-        /// </summary>
-        public const int CitizensRequiredForTownship = 20;
-
-        /// <summary>
-        /// Determines the number of citizens required to maintain a city. (Level 4)
-        /// </summary>
-        public const int CitizensRequiredForCity = 30;
-
-        /// <summary>
-        /// Determines the number of citizens required to maintain a metropolis. (Level 5)
-        /// </summary>
-        public const int CitizensRequiredForMetropolis = 40;
+        private static readonly Dictionary<int, int> _citizensRequired = new()
+        {
+            { 1, 1 },  // todo: change back to 10 after done testing
+            { 2, 2 },  // todo: change back to 15 after done testing
+            { 3, 3 },  // todo: change back to 20 after done testing
+            { 4, 4 },  // todo: change back to 30 after done testing
+            { 5, 5 }   // todo: change back to 40 after done testing
+        };
 
         /// <summary>
         /// Determines the number of hours before the city will be destroyed due to
@@ -416,18 +400,36 @@ namespace SWLOR.Game.Server.Service
             {
                 ProcessCityCitizenRequirement(now, city);
                 ProcessCityElections(now, city);
+
+                if (now < city.Dates[PropertyDateType.Upkeep])
+                {
+                    Log.Write(LogGroup.Property, $"City '{city.CustomName}' ({city.Id}) upkeep isn't ready yet.");
+                    return;
+                }
+                else
+                {
+                    ProcessCityLevel(city);
+                    ProcessUpkeep(now, city);
+                    ProcessCitizenshipFees(city);
+
+                    // Next upkeep check should be 7 days from the previous one.
+                    city.Dates[PropertyDateType.Upkeep] = city.Dates[PropertyDateType.Upkeep].AddDays(7);
+                }
+
+                DB.Set(city);
             }
         }
 
         private static void ProcessCityCitizenRequirement(DateTime now, WorldProperty city)
         {
             var citizenQuery = new DBQuery<Player>()
-                .AddFieldSearch(nameof(Player.CitizenPropertyId), city.Id, false);
+                .AddFieldSearch(nameof(Player.CitizenPropertyId), city.Id, false)
+                .AddFieldSearch(nameof(Player.IsDeleted), false);
             var citizens = DB.Search(citizenQuery).ToList();
             var citizenCount = citizens.Count;
 
             // City is below the number of citizens required to maintain the city.
-            if (citizenCount < CitizensRequiredForOutpost)
+            if (citizenCount < _citizensRequired[1])
             {
                 if (city.Dates.ContainsKey(PropertyDateType.BelowRequiredCitizens))
                 {
@@ -436,7 +438,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         city.IsQueuedForDeletion = true;
 
-                        Log.Write(LogGroup.Property, $"City '{city.CustomName}' in area '{city.ParentPropertyId}' has been queued for deletion because it fell under the required {CitizensRequiredForOutpost} citizens needed to maintain it.");
+                        Log.Write(LogGroup.Property, $"City '{city.CustomName}' in area '{city.ParentPropertyId}' has been queued for deletion because it fell under the required {_citizensRequired[1]} citizens needed to maintain it.");
                     }
                     else
                     {
@@ -448,7 +450,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     city.Dates[PropertyDateType.BelowRequiredCitizens] = now.AddHours(MinimumCitizensGracePeriodHours);
 
-                    Log.Write(LogGroup.Property, $"City '{city.CustomName}' has fallen below the required {CitizensRequiredForOutpost} citizens required to maintain a city. An expiration has been applied");
+                    Log.Write(LogGroup.Property, $"City '{city.CustomName}' has fallen below the required {_citizensRequired[1]} citizens required to maintain a city. An expiration has been applied");
                 }
             }
             // Otherwise they're at or above the required amount. Ensure the date is removed from the property.
@@ -634,9 +636,140 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void ProcessUpkeep()
+        private static void ProcessCityLevel(WorldProperty city)
         {
+            Log.Write(LogGroup.Property, $"Processing city level for '{city.CustomName}' ({city.Id})...");
 
+            var mayor = DB.Get<Player>(city.OwnerPlayerId);
+            var citizenCount = DB.SearchCount(new DBQuery<Player>()
+                .AddFieldSearch(nameof(Player.CitizenPropertyId), city.Id, false)
+                .AddFieldSearch(nameof(Player.IsDeleted), false));
+            var currentLevel = city.Upgrades[PropertyUpgradeType.CityLevel];
+            var mayorLevel = mayor.Perks.ContainsKey(PerkType.CityManagement)
+                ? mayor.Perks[PerkType.CityManagement] + 1
+                : 0;
+            
+            // Mayor's perk level has fallen below the city level.
+            if (mayorLevel < currentLevel)
+            {
+                currentLevel = mayorLevel;
+                Log.Write(LogGroup.Property, $"City level reduced to {currentLevel} because mayor's perk level is {mayorLevel}");
+            }
+
+            var maxLevelThisCycle = 1;
+            for (var level = 1; level <= 5; level++)
+            {
+                // Mayor can't support a higher city level.
+                if (level > mayorLevel)
+                {
+                    Log.Write(LogGroup.Property, $"Mayor cannot support city level {level} or higher.");
+                    break;
+                }
+
+                // The citizen count requirements are met
+                if (citizenCount >= _citizensRequired[level])
+                {
+                    maxLevelThisCycle = level;
+                    Log.Write(LogGroup.Property, $"Meets citizen requirement for level {level} (Required amount: {_citizensRequired[level]})");
+                }
+            }
+
+            // Current level is higher than max level this cycle. Drop it down that value.
+            if (currentLevel > maxLevelThisCycle)
+            {
+                currentLevel = maxLevelThisCycle;
+                Log.Write(LogGroup.Property, $"City level dropped to {maxLevelThisCycle}");
+            }
+
+            // Upkeep hasn't been paid. City isn't eligible to increase in level.
+            if (city.Upkeep > 0)
+            {
+                Log.Write(LogGroup.Property, $"Unable to upgrade city because upkeep hasn't been fully paid.");
+            }
+            // The city can increase in level and upkeep has been paid. Perform the upgrade now.
+            else if (currentLevel < maxLevelThisCycle)
+            {
+                currentLevel++;
+                Log.Write(LogGroup.Property, $"City increased by one level this cycle.");
+            }
+
+            Log.Write(LogGroup.Property, $"City level changed to {currentLevel} from {city.Upgrades[PropertyUpgradeType.CityLevel]}");
+            city.Upgrades[PropertyUpgradeType.CityLevel] = currentLevel;
+            DB.Set(city);
+
+            Log.Write(LogGroup.Property, $"Finished processing city level for '{city.CustomName}' ({city.Id})");
+        }
+
+        private static void ProcessUpkeep(DateTime now, WorldProperty city)
+        {
+            Log.Write(LogGroup.Property, $"Processing city '{city.CustomName}' ({city.Id}) upkeep...");
+            
+            // If upkeep wasn't fully paid for this week, process the destruction date
+            if (city.Upkeep > 0)
+            {
+                Log.Write(LogGroup.Property, $"City upkeep was not paid for the past week.");
+
+                // This is a consecutive week in which upkeep wasn't paid. Check if it's time to destroy the city.
+                if (city.Dates.ContainsKey(PropertyDateType.DisrepairDestruction))
+                {
+                    if (now >= city.Dates[PropertyDateType.DisrepairDestruction])
+                    {
+                        Log.Write(LogGroup.Property, $"City upkeep was not paid for 30 days. City is marked for destruction.");
+                        city.IsQueuedForDeletion = true;
+                    }
+                }
+                else
+                {
+                    city.Dates[PropertyDateType.DisrepairDestruction] = now.AddDays(30);
+                    Log.Write(LogGroup.Property, $"This is the first week upkeep wasn't paid. Destruction will occur on {city.Dates[PropertyDateType.DisrepairDestruction]:yyyy-MM-dd hh:mm:ss}");
+                }
+
+            }
+            // Otherwise upkeep has been paid. Remove the disrepair destruction date if it exists.
+            else
+            {
+                if (city.Dates.ContainsKey(PropertyDateType.DisrepairDestruction))
+                {
+                    city.Dates.Remove(PropertyDateType.DisrepairDestruction);
+                    Log.Write(LogGroup.Property, $"City upkeep was paid. Removing destruction date.");
+                }
+            }
+            
+            // Calculate new upkeep price for this week.
+            var layout = GetLayoutByType(city.Layout);
+            const int UpgradeBasePrice = 10000;
+            var basePrice = layout.PricePerDay * 7;
+            var upgradePrice = 
+                (city.Upgrades[PropertyUpgradeType.BankLevel] - 1) * UpgradeBasePrice +
+                (city.Upgrades[PropertyUpgradeType.MedicalCenterLevel] - 1) * UpgradeBasePrice +
+                (city.Upgrades[PropertyUpgradeType.StarportLevel] - 1) * UpgradeBasePrice +
+                (city.Upgrades[PropertyUpgradeType.CantinaLevel] - 1) * UpgradeBasePrice;
+
+            Log.Write(LogGroup.Property, $"Weekly upkeep calcuated to be: {basePrice + upgradePrice} credits.");
+            city.Upkeep += basePrice + upgradePrice;
+            DB.Set(city);
+            Log.Write(LogGroup.Property, $"Total upkeep owed: {city.Upkeep} credits.");
+
+            Log.Write(LogGroup.Property, $"Finished processing city upkeep for '{city.CustomName}' ({city.Id})");
+        }
+
+        private static void ProcessCitizenshipFees(WorldProperty city)
+        {
+            Log.Write(LogGroup.Property, $"Processing citizenship fees for '{city.CustomName}' ({city.Id})");
+
+            var citizens = DB.Search(new DBQuery<Player>()
+                .AddFieldSearch(nameof(Player.CitizenPropertyId), city.Id, false)
+                .AddFieldSearch(nameof(Player.IsDeleted), false))
+                .ToList();
+
+            foreach (var citizen in citizens)
+            {
+                citizen.PropertyOwedTaxes += city.Taxes[PropertyTaxType.Citizenship];
+                Log.Write(LogGroup.Property, $"Citizen '{citizen.Name}' owes an additional {city.Taxes[PropertyTaxType.Citizenship]} credits for a total of {citizen.PropertyOwedTaxes} credits");
+                DB.Set(citizen);
+            }
+
+            Log.Write(LogGroup.Property, $"Finished processing citizenship fees for '{city.CustomName}' ({city.Id})");
         }
 
         private static void DeleteProperty(WorldProperty property)
@@ -1910,6 +2043,19 @@ namespace SWLOR.Game.Server.Service
             }
 
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Retrieves the number of citizens required for the next city level.
+        /// If level isn't supported, -1 will be returned.
+        /// </summary>
+        /// <param name="level">The level to retrieve</param>
+        /// <returns>The number of citizens required to level up the city.</returns>
+        public static int GetCitizensRequiredForNextCityLevel(int level)
+        {
+            return _citizensRequired.ContainsKey(level)
+                ? _citizensRequired[level]
+                : -1;
         }
     }
 }

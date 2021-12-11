@@ -253,7 +253,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // Can cover everything. Take what's required.
                 else
                 {
-                    AssignCommand(Player, () => TakeGoldFromCreature(dbPlayer.PropertyOwedTaxes, Player, true));
+                    var amount = dbPlayer.PropertyOwedTaxes;
+                    AssignCommand(Player, () => TakeGoldFromCreature(amount, Player, true));
                     Log.Write(LogGroup.Property, $"{GetName(Player)} paid {dbPlayer.PropertyOwedTaxes} credits towards taxes for property '{_cityPropertyId}'.");
                     dbCity.Treasury += dbPlayer.PropertyOwedTaxes;
                     dbPlayer.PropertyOwedTaxes = 0;

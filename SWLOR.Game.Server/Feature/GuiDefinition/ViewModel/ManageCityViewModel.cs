@@ -265,7 +265,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void RefreshCitizenList()
         {
             var dbCitizens = DB.Search(new DBQuery<Player>()
-                .AddFieldSearch(nameof(Entity.Player.CitizenPropertyId), _cityId, false));
+                .AddFieldSearch(nameof(Entity.Player.CitizenPropertyId), _cityId, false)
+                .AddFieldSearch(nameof(Entity.Player.IsDeleted), false));
 
             var citizenNames = new GuiBindingList<string>();
             var citizenCreditsOwed = new GuiBindingList<string>();
@@ -498,6 +499,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         return;
                     }
 
+                    Log.Write(LogGroup.Property, $"Player '{GetName(Player)}' ({GetPCPublicCDKey(Player)} / {GetObjectUUID(Player)}) paid city upkeep of {dbCity.Upkeep} credits for property '{dbCity.CustomName}' ({dbCity.Id}).");
+
                     dbCity.Treasury -= dbCity.Upkeep;
                     dbCity.Upkeep = 0;
 
@@ -505,8 +508,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     Instructions = "Upkeep paid successfully.";
                     InstructionsColor = _green;
-
-                    Log.Write(LogGroup.Property, $"Player '{GetName(Player)}' ({GetPCPublicCDKey(Player)} / {GetObjectUUID(Player)}) paid city upkeep of {dbCity.Upkeep} credits for property '{dbCity.CustomName}' ({dbCity.Id}).");
 
                     RefreshPropertyDetails();
                     RefreshUpkeep();

@@ -58,6 +58,49 @@ namespace SWLOR.Game.Server.Feature
             SendMessageToPC(GetLastUsedBy(), $"Election: {dbCity.Dates[PropertyDateType.ElectionStart]}");
         }
 
+        [NWNEventHandler("test5")]
+        public static void UpdateCharacterCreationDate()
+        {
+            var player = GetLastUsedBy();
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            dbPlayer.DateCreated = DateTime.UtcNow.AddDays(-60);
+            dbPlayer.TotalSPAcquired = 100;
+            DB.Set(dbPlayer);
+            SendMessageToPC(player, "Creation date updated");
+        }
+
+        [NWNEventHandler("test6")]
+        public static void UpdateUpkeepDate()
+        {
+            var area = GetArea(OBJECT_SELF);
+            var propertyId = Property.GetPropertyId(area);
+            var dbProperty = DB.Get<WorldProperty>(propertyId);
+            var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
+            var dbCity = DB.Get<WorldProperty>(dbBuilding.ParentPropertyId);
+
+            dbCity.Dates[PropertyDateType.Upkeep] = DateTime.UtcNow;
+
+            DB.Set(dbCity);
+            SendMessageToPC(GetLastUsedBy(), "Updated upkeep date on city");
+        }
+
+        [NWNEventHandler("test7")]
+        public static void UpdateDestructionDate()
+        {
+            var area = GetArea(OBJECT_SELF);
+            var propertyId = Property.GetPropertyId(area);
+            var dbProperty = DB.Get<WorldProperty>(propertyId);
+            var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
+            var dbCity = DB.Get<WorldProperty>(dbBuilding.ParentPropertyId);
+
+            dbCity.Dates[PropertyDateType.DisrepairDestruction] = DateTime.UtcNow;
+
+            DB.Set(dbCity);
+            SendMessageToPC(GetLastUsedBy(), "Updated disrepair destruction date on city");
+        }
+
         [NWNEventHandler("test")]
         public static void OpenMarketListing()
         {

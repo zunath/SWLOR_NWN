@@ -272,7 +272,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), PropertyId, false);
                 var playerIds = DB.Search(permissionQuery).Select(s => s.PlayerId);
                 var query = new DBQuery<Player>()
-                    .AddFieldSearch(nameof(Entity.Player.Id), playerIds);
+                    .AddFieldSearch(nameof(Entity.Player.Id), playerIds)
+                    .AddFieldSearch(nameof(Entity.Player.IsDeleted), false);
                 dbPlayers = DB.Search(query);
             }
             // Otherwise look for players by their names.

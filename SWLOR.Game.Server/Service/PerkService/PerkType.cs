@@ -139,7 +139,7 @@
         ArmorBlueprints = 132,
         AccessoryBlueprints = 133,
         Upkeep = 134,
-        CitySpecialization = 135,
+        // 135 is free
         RapidSynthesisSmithery = 136,
         CarefulSynthesisSmithery = 137,
         BasicTouchSmithery = 138,

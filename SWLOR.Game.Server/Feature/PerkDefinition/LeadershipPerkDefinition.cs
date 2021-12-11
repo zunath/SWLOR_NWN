@@ -19,7 +19,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         {
             CityManagement();
             Upkeep();
-            CitySpecialization();
 
             return _builder.Build();
         }
@@ -95,27 +94,15 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Weekly maintenance fees are reduced by 5%.")
-                .Price(2)
+                .Price(3)
                 .RequirementSkill(SkillType.Leadership, 10)
                 .GrantsFeat(FeatType.Upkeep1)
 
                 .AddPerkLevel()
                 .Description("Weekly maintenance fees are reduced by 10%.")
-                .Price(2)
+                .Price(3)
                 .RequirementSkill(SkillType.Leadership, 20)
                 .GrantsFeat(FeatType.Upkeep2);
-        }
-
-        private void CitySpecialization()
-        {
-            _builder.Create(PerkCategoryType.Leadership, PerkType.CitySpecialization)
-                .Name("City Specialization")
-
-                .AddPerkLevel()
-                .Description("You can select a specialization for your city.")
-                .Price(2)
-                .RequirementSkill(SkillType.Leadership, 10)
-                .GrantsFeat(FeatType.CitySpecialization);
         }
     }
 }

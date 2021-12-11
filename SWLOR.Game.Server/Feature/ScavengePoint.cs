@@ -51,8 +51,8 @@ namespace SWLOR.Game.Server.Feature
 
             var attempts = 1;
 
-            // Chance for a second attempt based on the hard look perk level.
-            if (Random.D100(1) <= hardLookLevel * 10)
+            // Chance for a second attempt based on the hard look perk level and the user's Perception modifier.
+            if (Random.D100(1) <= (hardLookLevel * 10 + GetAbilityModifier(AbilityType.Perception, user) * 5))
             {
                 attempts++;
             }

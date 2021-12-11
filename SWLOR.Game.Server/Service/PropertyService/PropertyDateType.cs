@@ -4,7 +4,7 @@
     {
         Invalid = 0,
         Lease = 1,
-        Maintenance = 2,
+        Upkeep = 2,
         ElectionStart = 3,
         BelowRequiredCitizens = 4,
     }

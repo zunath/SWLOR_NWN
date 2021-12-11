@@ -634,6 +634,11 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        private static void ProcessUpkeep()
+        {
+
+        }
+
         private static void DeleteProperty(WorldProperty property)
         {
             // Recursively clear any children properties tied to this property.
@@ -1046,7 +1051,7 @@ namespace SWLOR.Game.Server.Service
                 AssignPropertyId(area, property.Id);
 
                 // Maintenance fees will be collected one week from now.
-                property.Dates[PropertyDateType.Maintenance] = now.AddDays(7);
+                property.Dates[PropertyDateType.Upkeep] = now.AddDays(7);
 
                 // The first voting cycle will begin three weeks from now.
                 property.Dates[PropertyDateType.ElectionStart] = now.AddDays(21);

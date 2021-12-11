@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature
 
         private static string BuildRecommendedButtonText()
         {
-            return "Your character is guided by five core attributes: Might, Vitality, Perception, Willpower, and Diplomacy.\n\n" +
+            return "Your character is guided by five core attributes: Might, Vitality, Perception, Willpower, and Social.\n\n" +
                    "Might: Improves your melee power and carrying capacity.\n" +
                    "Vitality: Improves your max hit points, ether points, and stamina.\n" +
                    "Perception: Improves your ranged power and evasion.\n" +

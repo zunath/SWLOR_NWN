@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _targetRecordId = initialPayload.RecordId;
             _targetWindowType = initialPayload.WindowType;
             Price = initialPayload.CurrentPrice.ToString();
-            ItemName = $"Price For: {initialPayload.ItemName}";
+            ItemName = $"{initialPayload.PromptText} {initialPayload.ItemName}";
 
             WatchOnClient(model => model.Price);
         }

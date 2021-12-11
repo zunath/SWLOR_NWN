@@ -1056,8 +1056,8 @@ namespace SWLOR.Game.Server.Service
                 property.Dates[PropertyDateType.BelowRequiredCitizens] = now.AddHours(18);
 
                 // Initialize taxes at zero.
-                property.Taxes[PropertyTaxType.Citizenship] = 0f;
-                property.Taxes[PropertyTaxType.Transportation] = 0f;
+                property.Taxes[PropertyTaxType.Citizenship] = 0;
+                property.Taxes[PropertyTaxType.Transportation] = 0;
 
                 // Upgrades
                 property.Upgrades[PropertyUpgradeType.CityLevel] = 1;
@@ -1881,6 +1881,30 @@ namespace SWLOR.Game.Server.Service
             {
                 SendMessageToPC(player, ColorToken.Red("You do not have permission to access this terminal."));
             }
+        }
+
+        /// <summary>
+        /// Retrieves the name of a particular city level.
+        /// </summary>
+        /// <param name="level">The level to retrieve</param>
+        /// <returns>A string representing the city level.</returns>
+        public static string GetCityLevelName(int level)
+        {
+            switch (level)
+            {
+                case 1:
+                    return "Outpost";
+                case 2:
+                    return "Village";
+                case 3:
+                    return "Township";
+                case 4:
+                    return "City";
+                case 5:
+                    return "Metropolis";
+            }
+
+            return string.Empty;
         }
     }
 }

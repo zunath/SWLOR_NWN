@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Numerics;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Entity
@@ -15,7 +14,7 @@ namespace SWLOR.Game.Server.Entity
             ChildPropertyIds = new List<string>();
             Dates = new Dictionary<PropertyDateType, DateTime>();
             Positions = new Dictionary<PropertyLocationType, PropertyLocation>();
-            Taxes = new Dictionary<PropertyTaxType, float>();
+            Taxes = new Dictionary<PropertyTaxType, int>();
             Upgrades = new Dictionary<PropertyUpgradeType, int>();
         }
 
@@ -68,7 +67,7 @@ namespace SWLOR.Game.Server.Entity
         /// <summary>
         /// Tracks taxes specific to this property.
         /// </summary>
-        public Dictionary<PropertyTaxType, float> Taxes { get; set; }
+        public Dictionary<PropertyTaxType, int> Taxes { get; set; }
 
         /// <summary>
         /// Tracks upgrades specific to this property.
@@ -122,5 +121,11 @@ namespace SWLOR.Game.Server.Entity
         /// Only applicable to City property types.
         /// </summary>
         public long Treasury { get; set; }
+
+        /// <summary>
+        /// Tracks the amount of credits required to pay off the upkeep for this property.
+        /// Only applicable to City property types.
+        /// </summary>
+        public int Upkeep { get; set; }
     }
 }

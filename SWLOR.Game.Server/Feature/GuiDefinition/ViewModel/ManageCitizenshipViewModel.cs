@@ -76,26 +76,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             cityDetails.Add($"City Name: {dbCity.CustomName}");
             cityDetails.Add($"Mayor: {dbMayorPlayer.Name}");
             cityDetails.Add($"# Citizens: {dbCitizenCount}");
-
-            switch (dbCity.Upgrades[PropertyUpgradeType.CityLevel])
-            {
-                case 1:
-                    cityDetails.Add($"Level: Outpost");
-                    break;
-                case 2:
-                    cityDetails.Add($"Level: Village");
-                    break;
-                case 3:
-                    cityDetails.Add($"Level: Township");
-                    break;
-                case 4:
-                    cityDetails.Add($"Level: City");
-                    break;
-                case 5:
-                    cityDetails.Add($"Level: Metropolis");
-                    break;
-            }
-
+            cityDetails.Add($"Level: {Property.GetCityLevelName(dbCity.Upgrades[PropertyUpgradeType.CityLevel])}");
             cityDetails.Add($"Established: {dbCity.DateCreated:yyyy-MM-dd hh:mm:ss}");
 
             cityDetails.Add($"Taxes & Fees:");

@@ -31,12 +31,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         layoutRow.AddColumn(col =>
                         {
-
                             col.AddRow(row =>
                             {
                                 row.AddTextEdit()
                                     .BindValue(model => model.CityName)
                                     .SetPlaceholder("Name");
+                            });
+
+                            col.AddRow(row =>
+                            {
+                                row.AddLabel()
+                                    .BindText(model => model.CityLevel)
+                                    .SetHeight(25f)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetVerticalAlign(NuiVerticalAlign.Middle);
                             });
 
                             col.AddRow(row =>
@@ -61,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetText("Upgrade Banks")
                                     .SetHeight(35f)
                                     .BindOnClicked(model => model.UpgradeBankLevel())
-                                    .BindIsEnabled(model => model.CanManageUpgrades)
+                                    .BindIsEnabled(model => model.CanUpgradeBanks)
                                     .BindTooltip(model => model.BankNextUpgrade);
                             });
 
@@ -78,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetText("Upgrade Med. Centers")
                                     .SetHeight(35f)
                                     .BindOnClicked(model => model.UpgradeMedicalCenterLevel())
-                                    .BindIsEnabled(model => model.CanManageUpgrades)
+                                    .BindIsEnabled(model => model.CanUpgradeMedicalCenters)
                                     .BindTooltip(model => model.MedicalCenterNextUpgrade);
                             });
 
@@ -95,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetText("Upgrade Starports")
                                     .SetHeight(35f)
                                     .BindOnClicked(model => model.UpgradeStarportLevel())
-                                    .BindIsEnabled(model => model.CanManageUpgrades)
+                                    .BindIsEnabled(model => model.CanUpgradeStarports)
                                     .BindTooltip(model => model.StarportNextUpgrade);
                             });
 
@@ -112,7 +120,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetText("Upgrade Cantinas")
                                     .SetHeight(35f)
                                     .BindOnClicked(model => model.UpgradeCantinaLevel())
-                                    .BindIsEnabled(model => model.CanManageUpgrades)
+                                    .BindIsEnabled(model => model.CanUpgradeCantinas)
                                     .BindTooltip(model => model.CantinaNextUpgrade);
                             });
 
@@ -211,16 +219,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         template.AddCell(cell =>
                                         {
                                             cell.AddToggleButton()
-                                                .BindText(model => model.CitizenNames);
+                                                .BindText(model => model.CitizenNames)
+                                                .BindTooltip(model => model.CitizenNames);
                                         });
 
                                         template.AddCell(cell =>
                                         {
                                             cell.AddLabel()
-                                                .BindText(model => model.CitizenCreditsOwed);
+                                                .BindText(model => model.CitizenCreditsOwed)
+                                                .BindTooltip(model => model.CitizenCreditsOwed);
                                         });
                                     })
                                     .BindRowCount(model => model.CitizenNames);
+                            });
+
+                            col.AddRow(row =>
+                            {
+                                row.AddLabel()
+                                    .SetText("Upkeep")
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                    .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                    .SetHeight(25f);
+                            });
+
+                            col.AddRow(row =>
+                            {
+                                row.AddButton()
+                                    .BindText(model => model.UpkeepText)
+                                    .BindOnClicked(model => model.PayUpkeep())
+                                    .SetHeight(35f)
+                                    .SetWidth(350f);
                             });
                         });
                     });

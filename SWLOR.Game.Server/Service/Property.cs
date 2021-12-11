@@ -36,11 +36,11 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<int, int> _citizensRequired = new()
         {
-            { 1, 1 },  // todo: change back to 10 after done testing
-            { 2, 2 },  // todo: change back to 15 after done testing
-            { 3, 3 },  // todo: change back to 20 after done testing
-            { 4, 4 },  // todo: change back to 30 after done testing
-            { 5, 5 }   // todo: change back to 40 after done testing
+            { 1, 10 },
+            { 2, 15 },
+            { 3, 20 },
+            { 4, 30 },
+            { 5, 40 } 
         };
 
         /// <summary>

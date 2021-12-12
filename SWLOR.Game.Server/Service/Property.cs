@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<StructureType, StructureAttribute> _activeStructures = new();
         private static readonly Dictionary<PropertyType, PropertyTypeAttribute> _propertyTypes = new();
-        private static readonly Dictionary<PropertyLayoutType, PropertyLayoutTypeAttribute> _activeLayouts = new();
+        private static readonly Dictionary<PropertyLayoutType, PropertyLayout> _activeLayouts = new();
         private static readonly Dictionary<PropertyType, List<PropertyLayoutType>> _layoutsByPropertyType = new();
         private static readonly Dictionary<PropertyLayoutType, Vector4> _entrancesByLayout = new();
         private static readonly Dictionary<PropertyPermissionType, PropertyPermissionAttribute> _activePermissions = new();
@@ -101,22 +101,28 @@ namespace SWLOR.Game.Server.Service
 
         private static void CachePropertyLayoutTypes()
         {
-            var layoutTypes = Enum.GetValues(typeof(PropertyLayoutType)).Cast<PropertyLayoutType>();
-            foreach (var type in layoutTypes)
-            {
-                var layout = type.GetAttribute<PropertyLayoutType, PropertyLayoutTypeAttribute>();
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(w => typeof(IPropertyLayoutListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 
-                if (layout.IsActive)
+            foreach (var type in types)
+            {
+                var instance = (IPropertyLayoutListDefinition)Activator.CreateInstance(type);
+                var layouts = instance.Build();
+
+                foreach (var (layoutType, layout) in layouts)
                 {
-                    _activeLayouts[type] = layout;
+                    _activeLayouts[layoutType] = layout;
 
                     if (!_layoutsByPropertyType.ContainsKey(layout.PropertyType))
                         _layoutsByPropertyType[layout.PropertyType] = new List<PropertyLayoutType>();
 
-                    _layoutsByPropertyType[layout.PropertyType].Add(type);
-                    _entrancesByLayout[type] = GetEntrancePosition(layout.AreaInstanceResref);
+                    _layoutsByPropertyType[layout.PropertyType].Add(layoutType);
+                    _entrancesByLayout[layoutType] = GetEntrancePosition(layout.AreaInstanceResref);
                 }
             }
+
+            Console.WriteLine($"Loaded {_activeLayouts.Count} property layouts.");
         }
 
         private static void CachePermissions()
@@ -1360,7 +1366,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="type">The type of layout to retrieve.</param>
         /// <returns>A property layout</returns>
-        public static PropertyLayoutTypeAttribute GetLayoutByType(PropertyLayoutType type)
+        public static PropertyLayout GetLayoutByType(PropertyLayoutType type)
         {
             return _activeLayouts[type];
         }
@@ -1891,6 +1897,11 @@ namespace SWLOR.Game.Server.Service
                 RegisterInstance(property.Id, targetArea);
 
                 SetName(targetArea, property.CustomName);
+
+                if (layout.OnSpawnAction != null)
+                {
+                    layout.OnSpawnAction(targetArea);
+                }
             }
             // Area spawns exist in a pre-built area.
             else if(propertyDetail.SpawnType == PropertySpawnType.Area)

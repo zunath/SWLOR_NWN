@@ -1186,7 +1186,10 @@ namespace SWLOR.Game.Server.Service.PropertyService
             2)]
         WeaponRack = 215,
 
-        [Structure("City Hall",
+
+        // Buildings start here
+
+        [Structure("City Hall - Style 1",
             "city_hall",
             "",
             true,
@@ -1196,7 +1199,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             false)]
         CityHall = 5000,
 
-        [Structure("Bank",
+        [Structure("Bank - Style 1",
             "bank",
             "",
             true,
@@ -1205,7 +1208,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyLayoutType.Bank)]
         Bank = 5001,
 
-        [Structure("Medical Center",
+        [Structure("Medical Center - Style 1",
             "medical_center",
             "",
             true,
@@ -1214,7 +1217,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyLayoutType.MedicalCenter)]
         MedicalCenter = 5002,
 
-        [Structure("Starport",
+        [Structure("Starport - Style 1",
             "starport",
             "",
             true,
@@ -1223,7 +1226,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyLayoutType.Starport)]
         Starport = 5003,
 
-        [Structure("Cantina",
+        [Structure("Cantina - Style 1",
             "cantina",
             "",
             true,
@@ -1232,14 +1235,113 @@ namespace SWLOR.Game.Server.Service.PropertyService
             PropertyLayoutType.Cantina)]
         Cantina = 5004,
 
-        [Structure("House",
+        [Structure("Small House - Style 1",
             "house1",
             "",
             true,
             0,
             PropertyType.City,
-            PropertyLayoutType.House)]
-        House = 5005,
+            PropertyLayoutType.SmallHouseStyle1)]
+        SmallHouseStyle1 = 5005,
+
+        [Structure("Small House - Style 2",
+            "house1",
+            "",
+            true,
+            0,
+            PropertyType.City,
+            PropertyLayoutType.SmallHouseStyle2)]
+        SmallHouseStyle2 = 5006,
+
+        [Structure("Small House - Style 3",
+            "house1",
+            "",
+            true,
+            0,
+            PropertyType.City,
+            PropertyLayoutType.SmallHouseStyle3)]
+        SmallHouseStyle3 = 5007,
+
+        [Structure("Small House - Style 4",
+            "house1",
+            "",
+            true,
+            0,
+            PropertyType.City,
+            PropertyLayoutType.SmallHouseStyle4)]
+        SmallHouseStyle4 = 5008,
+
+        [Structure("Medium House - Style 1",
+            "house1",
+            "",
+            true,
+            0,
+            PropertyType.City,
+            PropertyLayoutType.MediumHouseStyle1)]
+        MediumHouseStyle1 = 5009,
+
+        [Structure("Medium House - Style 2",
+            "house1",
+            "",
+            true,
+            0,
+            PropertyType.City,
+            PropertyLayoutType.MediumHouseStyle2)]
+        MediumHouseStyle2 = 5010,
+
+        [Structure("Medium House - Style 3",
+            "house1",
+            "",
+            true,
+            0,
+            PropertyType.City,
+            PropertyLayoutType.MediumHouseStyle3)]
+        MediumHouseStyle3 = 5011,
+
+        [Structure("Medium House - Style 4",
+            "house1",
+            "",
+            true,
+            0,
+            PropertyType.City,
+            PropertyLayoutType.MediumHouseStyle4)]
+        MediumHouseStyle4 = 5012,
+
+        [Structure("Large House - Style 1",
+            "house1",
+            "",
+            true,
+            0,
+            PropertyType.City,
+            PropertyLayoutType.LargeHouseStyle1)]
+        LargeHouseStyle1 = 5013,
+
+        [Structure("Large House - Style 2",
+            "house1",
+            "",
+            true,
+            0,
+            PropertyType.City,
+            PropertyLayoutType.LargeHouseStyle2)]
+        LargeHouseStyle2 = 5014,
+
+        [Structure("Large House - Style 3",
+            "house1",
+            "",
+            true,
+            0,
+            PropertyType.City,
+            PropertyLayoutType.LargeHouseStyle3)]
+        LargeHouseStyle3 = 5015,
+
+        [Structure("Large House - Style 4",
+            "house1",
+            "",
+            true,
+            0,
+            PropertyType.City,
+            PropertyLayoutType.LargeHouseStyle4)]
+        LargeHouseStyle4 = 5016,
     }
 
     public class StructureAttribute : Attribute

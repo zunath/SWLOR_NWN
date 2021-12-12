@@ -213,15 +213,149 @@ namespace SWLOR.Game.Server.Service.PropertyService
 
         [PropertyLayoutType(
             PropertyType.House,
-            "House",
-            30,
+            "Small House - Style 1",
+            55,
+            40,
             0,
             0,
             0,
-            0,
-            "house_int_3", // todo: update to the new interior
+            "house_int_1", 
             true)]
-        House = 98,
+        SmallHouseStyle1 = 98,
+
+        [PropertyLayoutType(
+            PropertyType.House,
+            "Small House - Style 2",
+            55,
+            40,
+            0,
+            0,
+            0,
+            "house_int_4",
+            true)]
+        SmallHouseStyle2 = 99,
+
+        [PropertyLayoutType(
+            PropertyType.House,
+            "Small House - Style 3",
+            55,
+            40,
+            0,
+            0,
+            0,
+            "house_int_7",
+            true)]
+        SmallHouseStyle3 = 100,
+
+        [PropertyLayoutType(
+            PropertyType.House,
+            "Small House - Style 4",
+            55,
+            40,
+            0,
+            0,
+            0,
+            "house_int_10", 
+            true)]
+        SmallHouseStyle4 = 101,
+
+
+        [PropertyLayoutType(
+            PropertyType.House,
+            "Medium House - Style 1",
+            65,
+            60,
+            0,
+            0,
+            0,
+            "house_int_2",
+            true)]
+        MediumHouseStyle1 = 102,
+
+        [PropertyLayoutType(
+            PropertyType.House,
+            "Medium House - Style 2",
+            65,
+            60,
+            0,
+            0,
+            0,
+            "house_int_5",
+            true)]
+        MediumHouseStyle2 = 103,
+
+        [PropertyLayoutType(
+            PropertyType.House,
+            "Medium House - Style 3",
+            65,
+            60,
+            0,
+            0,
+            0,
+            "house_int_8",
+            true)]
+        MediumHouseStyle3 = 104,
+
+        [PropertyLayoutType(
+            PropertyType.House,
+            "Medium House - Style 4",
+            65,
+            60,
+            0,
+            0,
+            0,
+            "house_int_11",
+            true)]
+        MediumHouseStyle4 = 105,
+
+
+        [PropertyLayoutType(
+            PropertyType.House,
+            "Large House - Style 1",
+            75,
+            80,
+            0,
+            0,
+            0,
+            "house_int_3",
+            true)]
+        LargeHouseStyle1 = 106,
+
+        [PropertyLayoutType(
+            PropertyType.House,
+            "Large House - Style 2",
+            75,
+            80,
+            0,
+            0,
+            0,
+            "house_int_6",
+            true)]
+        LargeHouseStyle2 = 107,
+
+        [PropertyLayoutType(
+            PropertyType.House,
+            "Large House - Style 3",
+            75,
+            80,
+            0,
+            0,
+            0,
+            "house_int_9",
+            true)]
+        LargeHouseStyle3 = 108,
+
+        [PropertyLayoutType(
+            PropertyType.House,
+            "Large House - Style 4",
+            75,
+            80,
+            0,
+            0,
+            0,
+            "house_int_12",
+            true)]
+        LargeHouseStyle4 = 109,
 
 
     }

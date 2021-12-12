@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.MedicalCenter, StructureChangeType.PositionChanged, MedicalCenter());
             Assign(StructureType.Starport, StructureChangeType.PositionChanged, Starport());
             Assign(StructureType.Cantina, StructureChangeType.PositionChanged, Cantina());
-            Assign(StructureType.House, StructureChangeType.PositionChanged, House1());
+            Assign(StructureType.SmallHouseStyle1, StructureChangeType.PositionChanged, House1());
 
             // Structure retrieved actions
             Assign(StructureType.CityHall, StructureChangeType.Retrieved, ClearDoor());
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             Assign(StructureType.MedicalCenter, StructureChangeType.Retrieved, ClearDoor());
             Assign(StructureType.Starport, StructureChangeType.Retrieved, ClearDoor());
             Assign(StructureType.Cantina, StructureChangeType.Retrieved, ClearDoor());
-            Assign(StructureType.House, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.SmallHouseStyle1, StructureChangeType.Retrieved, ClearDoor());
 
             return _actions;
         }

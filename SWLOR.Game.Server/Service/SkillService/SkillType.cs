@@ -133,9 +133,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true, 
             "Ability to speak the Cheunh language.", 
             false)]
-
-
-        Togruti = 15,
+        Cheunh = 15,
 
         [Skill(SkillCategoryType.Languages, 
             "Togruti", 
@@ -143,10 +141,8 @@ namespace SWLOR.Game.Server.Service.SkillService
             true, 
             "Ability to speak the Togruti language.", 
             false)]
+        Togruti = 16,
 
-
-
-        Cheunh = 16,
 
         [Skill(SkillCategoryType.Languages, 
             "Zabraki", 
@@ -234,6 +230,14 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Ability to speak the Ugnaught language.", 
             false)]
         Ugnaught = 27,
+
+        [Skill(SkillCategoryType.Languages,
+            "Rodese",
+            20,
+            true,
+            "Ability to speak the Rodese language.",
+            false)]
+        Rodese = 28,
     }
 
     public class SkillAttribute : Attribute

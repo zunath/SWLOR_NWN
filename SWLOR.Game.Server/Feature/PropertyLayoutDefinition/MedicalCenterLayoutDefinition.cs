@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 
         private void MedicalCenter()
         {
-            _builder.Create(PropertyLayoutType.MedicalCenter)
+            _builder.Create(PropertyLayoutType.MedicalCenterStyle1)
                 .PropertyType(PropertyType.MedicalCenter)
                 .Name("Medical Center")
                 .StructureLimit(30)

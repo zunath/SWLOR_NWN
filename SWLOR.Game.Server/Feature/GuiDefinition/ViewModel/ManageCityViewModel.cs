@@ -428,7 +428,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return true;
         }
 
-        private void HandleUpgrade(PropertyUpgradeType upgradeType)
+        private void HandleUpgrade(PropertyUpgradeType upgradeType, PropertyType propertyType)
         {
             var dbCity = DB.Get<WorldProperty>(_cityId);
             var currentLevel = dbCity.Upgrades[upgradeType];
@@ -459,28 +459,54 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                     Instructions = "Upgrade purchased successfully!";
                     InstructionsColor = _green;
-                });
 
+                    Log.Write(LogGroup.Property, $"City upgrade '{upgradeType}' purchased by {GetName(Player)} for property '{dbCity.CustomName}' ({dbCity.Id}).");
+
+                    var structureTypes = Property.GetStructuresByInteriorPropertyType(propertyType);
+                    var structureTypeIds = structureTypes.Select(s => (int)s).ToList();
+
+                    if (structureTypeIds.Count > 0)
+                    {
+                        // Retrieve all interior property Ids in this city of the given type of property.
+                        // I.E: All banks, all medical centers, etc.
+                        var instancePropertyIds = DB.Search(new DBQuery<WorldProperty>()
+                            .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), _cityId, false)
+                            .AddFieldSearch(nameof(WorldProperty.StructureType), structureTypeIds))
+                            .SelectMany(s => s.ChildPropertyIds);
+
+                        foreach (var propertyId in instancePropertyIds)
+                        {
+                            var instance = Property.GetRegisteredInstance(propertyId);
+                            var layout = Property.GetLayoutByType(instance.LayoutType);
+
+                            if (layout.OnCityUpgradeAction != null)
+                            {
+                                layout.OnCityUpgradeAction(instance.Area, upgradeType, dbCity.Upgrades[upgradeType]-1);
+                            }
+                        }
+                    }
+                });
         }
+        
 
         public Action UpgradeBankLevel() => () =>
         {
-            HandleUpgrade(PropertyUpgradeType.BankLevel);
+            HandleUpgrade(PropertyUpgradeType.BankLevel, PropertyType.Bank);
         };
 
         public Action UpgradeMedicalCenterLevel() => () =>
         {
-            HandleUpgrade(PropertyUpgradeType.MedicalCenterLevel);
+            HandleUpgrade(PropertyUpgradeType.MedicalCenterLevel, PropertyType.MedicalCenter);
         };
 
         public Action UpgradeStarportLevel() => () =>
         {
-            HandleUpgrade(PropertyUpgradeType.StarportLevel);
+            HandleUpgrade(PropertyUpgradeType.StarportLevel, PropertyType.Starport);
         };
 
         public Action UpgradeCantinaLevel() => () =>
         {
-            HandleUpgrade(PropertyUpgradeType.CantinaLevel);
+            HandleUpgrade(PropertyUpgradeType.CantinaLevel, PropertyType.Cantina);
         };
 
         public Action PayUpkeep() => () =>

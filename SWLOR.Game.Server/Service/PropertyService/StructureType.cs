@@ -1195,7 +1195,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             0,
             PropertyType.City,
-            PropertyLayoutType.CityHall,
+            PropertyLayoutType.CityHallStyle1,
             false)]
         CityHall = 5000,
 
@@ -1205,7 +1205,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             0,
             PropertyType.City,
-            PropertyLayoutType.Bank)]
+            PropertyLayoutType.BankStyle1)]
         Bank = 5001,
 
         [Structure("Medical Center - Style 1",
@@ -1214,7 +1214,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             0,
             PropertyType.City,
-            PropertyLayoutType.MedicalCenter)]
+            PropertyLayoutType.MedicalCenterStyle1)]
         MedicalCenter = 5002,
 
         [Structure("Starport - Style 1",
@@ -1223,7 +1223,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             0,
             PropertyType.City,
-            PropertyLayoutType.Starport)]
+            PropertyLayoutType.StarportStyle1)]
         Starport = 5003,
 
         [Structure("Cantina - Style 1",
@@ -1232,7 +1232,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             0,
             PropertyType.City,
-            PropertyLayoutType.Cantina)]
+            PropertyLayoutType.CantinaStyle1)]
         Cantina = 5004,
 
         [Structure("Small House - Style 1",

@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 
         private void Starport()
         {
-            _builder.Create(PropertyLayoutType.Starport)
+            _builder.Create(PropertyLayoutType.StarportStyle1)
                 .PropertyType(PropertyType.Starport)
                 .Name("Starport")
                 .StructureLimit(30)

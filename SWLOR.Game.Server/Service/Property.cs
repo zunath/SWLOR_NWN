@@ -36,12 +36,14 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<int, int> _citizensRequired = new()
         {
-            { 1, 10 },
-            { 2, 15 },
-            { 3, 20 },
-            { 4, 30 },
-            { 5, 40 } 
+            { 1, 10 }, // Level 1 requires a minimum of 10 citizens
+            { 2, 15 }, // Level 2 requires a minimum of 15 citizens
+            { 3, 20 }, // Level 3 requires a minimum of 20 citizens
+            { 4, 30 }, // Level 4 requires a minimum of 30 citizens
+            { 5, 40 }  // Level 5 requires a minimum of 40 citizens
         };
+
+        private static readonly Dictionary<PropertyType, List<StructureType>> _structureTypesByPropertyType = new();
 
         /// <summary>
         /// Determines the number of hours before the city will be destroyed due to
@@ -75,6 +77,7 @@ namespace SWLOR.Game.Server.Service
             CachePermissions();
             CacheStructures();
             CacheInstanceTemplates();
+            CacheStructuresByPropertyType();
         }
 
         /// <summary>
@@ -268,6 +271,24 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// When the module loads, link structures back to their property types.
+        /// </summary>
+        private static void CacheStructuresByPropertyType()
+        {
+            foreach (var (structureType, detail) in _activeStructures)
+            {
+                if (detail.LayoutType == PropertyLayoutType.Invalid)
+                    continue;
+
+                var layout = GetLayoutByType(detail.LayoutType);
+                if (!_structureTypesByPropertyType.ContainsKey(layout.PropertyType))
+                    _structureTypesByPropertyType[layout.PropertyType] = new List<StructureType>();
+
+                _structureTypesByPropertyType[layout.PropertyType].Add(structureType);
+            }
+        }
+
+        /// <summary>
         /// Iterates over all areas to find the matching instance assigned to the specified resref.
         /// Then, the entrance waypoint is located and its coordinates are stored into cache.
         /// </summary>
@@ -314,10 +335,10 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="propertyId">The property Id</param>
         /// <param name="instance">The area instance to register</param>
-        public static void RegisterInstance(string propertyId, uint instance)
+        public static void RegisterInstance(string propertyId, uint instance, PropertyLayoutType layoutType)
         {
             AssignPropertyId(instance, propertyId);
-            _propertyInstances[propertyId] = new PropertyInstance(instance);
+            _propertyInstances[propertyId] = new PropertyInstance(instance, layoutType);
         }
 
         /// <summary>
@@ -1226,7 +1247,7 @@ namespace SWLOR.Game.Server.Service
                 item,
                 city.Id,
                 PropertyType.CityHall,
-                PropertyLayoutType.CityHall,
+                PropertyLayoutType.CityHallStyle1,
                 StructureType.CityHall,
                 location);
 
@@ -1462,6 +1483,19 @@ namespace SWLOR.Game.Server.Service
             return !_structurePropertyIdToPlaceable.ContainsKey(propertyId) 
                 ? OBJECT_INVALID 
                 : _structurePropertyIdToPlaceable[propertyId];
+        }
+
+        /// <summary>
+        /// Retrieves a list of structures which have an interior with the specified property type.
+        /// </summary>
+        /// <param name="propertyType">The property type to search for.</param>
+        /// <returns>A list of structure types.</returns>
+        public static List<StructureType> GetStructuresByInteriorPropertyType(PropertyType propertyType)
+        {
+            if (!_structureTypesByPropertyType.ContainsKey(propertyType))
+                return new List<StructureType>();
+
+            return _structureTypesByPropertyType[propertyType].ToList();
         }
 
         /// <summary>
@@ -1904,8 +1938,8 @@ namespace SWLOR.Game.Server.Service
                 // If no interior layout is defined, the provided area will be used.
                 var layout = GetLayoutByType(property.Layout);
                 var targetArea = CreateArea(layout.AreaInstanceResref);
-                RegisterInstance(property.Id, targetArea);
-
+                RegisterInstance(property.Id, targetArea, property.Layout);
+                
                 SetName(targetArea, property.CustomName);
 
                 if (layout.OnSpawnAction != null)

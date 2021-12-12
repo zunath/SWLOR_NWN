@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 
         private void Cantina()
         {
-            _builder.Create(PropertyLayoutType.Cantina)
+            _builder.Create(PropertyLayoutType.CantinaStyle1)
                 .PropertyType(PropertyType.Cantina)
                 .Name("Cantina")
                 .StructureLimit(30)

@@ -14,5 +14,6 @@ namespace SWLOR.Game.Server.Service.PropertyService
         public string AreaInstanceResref { get; set; }
 
         public Action<uint> OnSpawnAction { get; set; }
+        public Action<uint, PropertyUpgradeType, int> OnCityUpgradeAction { get; set; }
     }
 }

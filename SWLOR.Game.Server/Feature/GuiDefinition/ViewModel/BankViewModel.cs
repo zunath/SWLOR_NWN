@@ -85,6 +85,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ItemCountText = $"{itemCount} / {maxItems} Items";
             StoragePercentage = (float)itemCount / (float)maxItems;
 
+            // If a city's level has downgraded it's possible for the storage percentage to be higher than 100%.
+            // Clamp this down so as not to confuse the UI progress bar.
+            if (StoragePercentage > 1f)
+                StoragePercentage = 1f;
+
             IsDepositEnabled = _itemCount < maxItems;
         }
 

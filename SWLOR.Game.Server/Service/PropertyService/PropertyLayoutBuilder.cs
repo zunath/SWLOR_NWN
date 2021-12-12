@@ -135,6 +135,18 @@ namespace SWLOR.Game.Server.Service.PropertyService
         }
 
         /// <summary>
+        /// Runs an action when the layout's parent city is upgraded.
+        /// </summary>
+        /// <param name="action"></param>
+        /// <returns>A PropertyLayoutBuilder with the configured options.</returns>
+        public PropertyLayoutBuilder OnCityUpgraded(Action<uint, PropertyUpgradeType, int> action)
+        {
+            _currentLayout.OnCityUpgradeAction = action;
+
+            return this;
+        }
+
+        /// <summary>
         /// Builds a dictionary of layouts.
         /// </summary>
         /// <returns>A dictionary of layouts.</returns>

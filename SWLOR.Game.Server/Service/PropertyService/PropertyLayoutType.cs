@@ -17,11 +17,11 @@
         LightEscort1 = 11,
 
         City = 92,
-        CityHall = 93,
-        Bank = 94,
-        MedicalCenter = 95,
-        Starport = 96,
-        Cantina = 97,
+        CityHallStyle1 = 93,
+        BankStyle1 = 94,
+        MedicalCenterStyle1 = 95,
+        StarportStyle1 = 96,
+        CantinaStyle1 = 97,
 
         SmallHouseStyle1 = 98,
         SmallHouseStyle2 = 99,

@@ -20,6 +20,8 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             return _builder.Build();
         }
 
+        private static readonly Dictionary<uint, List<uint>> _bankWaypointsByArea = new();
+
         /// <summary>
         /// When a bank contained inside a property is used,
         /// ensure the user is a citizen of the city the bank is associated with.
@@ -56,8 +58,16 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             ExecuteScript("open_bank", bank);
         }
 
-        private void ProcessBank(uint waypoint, int storageCap, string bankId)
+        private void ProcessBank(uint area, uint waypoint, int storageCap, string bankId)
         {
+            if (!_bankWaypointsByArea.ContainsKey(area))
+                _bankWaypointsByArea[area] = new List<uint>();
+
+            if (!_bankWaypointsByArea[area].Contains(waypoint))
+            {
+                _bankWaypointsByArea[area].Add(waypoint);
+            }
+
             var placeable = GetLocalObject(waypoint, "BANK_TERMINAL_PLACEABLE");
 
             if (!GetIsObjectValid(placeable))
@@ -73,9 +83,14 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             }
         }
 
+        private int CalculateStorageCap(int level)
+        {
+            return 20 + level * 20;
+        }
+
         private void Bank()
         {
-            _builder.Create(PropertyLayoutType.Bank)
+            _builder.Create(PropertyLayoutType.BankStyle1)
                 .PropertyType(PropertyType.Bank)
                 .Name("Bank")
                 .StructureLimit(30)
@@ -90,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                     var dbProperty = DB.Get<WorldProperty>(propertyId);
                     var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
                     var upgradeLevel = Property.GetEffectiveUpgradeLevel(dbBuilding.ParentPropertyId, PropertyUpgradeType.BankLevel);
-                    var storageCap = 20 + upgradeLevel * 20;
+                    var storageCap = CalculateStorageCap(upgradeLevel);
                     var bankId = dbBuilding.ParentPropertyId;
 
                     var count = 1;
@@ -102,16 +117,32 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                     // of the normal four. Handle this scenario by checking what the reference object is before proceeding.
                     if (GetTag(referenceObject) == "BANK_TERMINAL_SPAWN")
                     {
-                        ProcessBank(referenceObject, storageCap, bankId);
+                        ProcessBank(area, referenceObject, storageCap, bankId);
                     }
 
                     var waypoint = GetNearestObjectByTag("BANK_TERMINAL_SPAWN", referenceObject, count);
                     while (GetIsObjectValid(waypoint))
                     {
-                        ProcessBank(waypoint, storageCap, bankId);
+                        ProcessBank(area, waypoint, storageCap, bankId);
 
                         count++;
                         waypoint = GetNearestObjectByTag("BANK_TERMINAL_SPAWN", referenceObject, count);
+                    }
+                })
+                .OnCityUpgraded((area, upgradeType, level) =>
+                {
+                    if (upgradeType != PropertyUpgradeType.BankLevel)
+                        return;
+
+                    if (!_bankWaypointsByArea.ContainsKey(area))
+                        return;
+
+                    var storageCap = CalculateStorageCap(level);
+                    foreach (var waypoint in _bankWaypointsByArea[area])
+                    {
+                        var placeable = GetLocalObject(waypoint, "BANK_TERMINAL_PLACEABLE");
+
+                        SetLocalInt(placeable, "STORAGE_ITEM_LIMIT", storageCap);
                     }
                 });
         }

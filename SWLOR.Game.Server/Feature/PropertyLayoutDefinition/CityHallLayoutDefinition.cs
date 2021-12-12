@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 
         private void CityHall()
         {
-            _builder.Create(PropertyLayoutType.CityHall)
+            _builder.Create(PropertyLayoutType.CityHallStyle1)
                 .PropertyType(PropertyType.CityHall)
                 .Name("City Hall")
                 .StructureLimit(30) 

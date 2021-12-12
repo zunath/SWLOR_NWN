@@ -65,12 +65,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             template.AddCell(cell =>
                             {
                                 cell.AddLabel()
-                                    .BindText(model => model.ItemNames);
+                                    .BindText(model => model.ItemNames)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                    .SetVerticalAlign(NuiVerticalAlign.Middle);
                             });
 
                             template.AddCell(cell =>
                             {
-                                cell.SetWidth(50f);
+                                cell.SetWidth(75f);
                                 cell.SetIsVariable(false);
 
                                 cell.AddButton()

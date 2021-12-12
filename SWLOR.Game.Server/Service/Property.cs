@@ -2057,5 +2057,61 @@ namespace SWLOR.Game.Server.Service
                 ? _citizensRequired[level]
                 : -1;
         }
+
+        /// <summary>
+        /// Retrieves the effective upgrade level of a city, taking into account the city's overall level
+        /// into the calculation.
+        /// </summary>
+        /// <param name="cityId">The property Id of the city.</param>
+        /// <param name="upgradeType">The type of upgrade to check</param>
+        /// <returns>A value ranging between 0 and 5.</returns>
+        public static int GetEffectiveUpgradeLevel(string cityId, PropertyUpgradeType upgradeType)
+        {
+            if (string.IsNullOrWhiteSpace(cityId))
+                return 0;
+
+            var property = DB.Get<WorldProperty>(cityId);
+            if (property == null)
+                return 0;
+
+            if (!property.Upgrades.ContainsKey(upgradeType))
+                return 0;
+
+            var cityLevel = property.Upgrades[PropertyUpgradeType.CityLevel];
+            var upgradeLevel = property.Upgrades[upgradeType];
+            var effectiveLevel = cityLevel < upgradeLevel ? cityLevel : upgradeLevel;
+            var structureType = StructureType.Invalid;
+
+            switch (upgradeType)
+            {
+                case PropertyUpgradeType.BankLevel:
+                    structureType = StructureType.Bank;
+                    break;
+                case PropertyUpgradeType.MedicalCenterLevel:
+                    structureType = StructureType.MedicalCenter;
+                    break;
+                case PropertyUpgradeType.StarportLevel:
+                    structureType = StructureType.Starport;
+                    break;
+                case PropertyUpgradeType.CantinaLevel:
+                    structureType = StructureType.Cantina;
+                    break;
+            }
+
+            if (structureType == StructureType.Invalid)
+                return 0;
+
+            // At least one building property of the given type must exist within the city.
+            var buildingCount = DB.SearchCount(new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false)
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Structure)
+                .AddFieldSearch(nameof(WorldProperty.StructureType), (int)structureType)
+                .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), cityId, false));
+
+            if (buildingCount <= 0)
+                return 0;
+
+            return effectiveLevel - 1;
+        }
     }
 }

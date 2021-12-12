@@ -482,10 +482,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private int CalculateRepairBill(PlayerShip ship)
         {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
             var shieldDiff = ship.Status.MaxShield - ship.Status.Shield;
             var hullDiff = ship.Status.MaxHull - ship.Status.Hull;
+            var price = shieldDiff * 50 + hullDiff * 100;
+            var starportBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.StarportLevel);
 
-            return shieldDiff * 50 + hullDiff * 100;
+            price -= (int)(price * (starportBonus * 0.05f));
+
+            return price;
         }
 
         protected override void Initialize(ShipManagementPayload initialPayload)

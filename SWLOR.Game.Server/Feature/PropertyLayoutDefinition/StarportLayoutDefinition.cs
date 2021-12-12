@@ -1,5 +1,10 @@
 ﻿using System.Collections.Generic;
+using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.PropertyService;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 {
@@ -12,6 +17,42 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
             Starport();
 
             return _builder.Build();
+        }
+
+        private void SpawnStarportFlightTerminals(uint area, PlanetType planetType)
+        {
+            var planet = Planet.GetPlanetByType(planetType);
+            void SpawnTerminal(uint waypoint)
+            {
+                var location = GetLocation(waypoint);
+                var terminal = CreateObject(ObjectType.Placeable, "flights_terminal", location);
+                SetName(terminal, $"{planet.Name} Starport Flights Terminal");
+
+                SetLocalInt(terminal, "CURRENT_LOCATION", (int)planetType);
+            }
+
+            const string WaypointTag = "STARPORT_FLIGHTS_TERMINAL";
+            var referenceObject = GetFirstObjectInArea(area);
+
+            if (GetTag(referenceObject) == WaypointTag)
+            {
+                SpawnTerminal(referenceObject);
+            }
+
+            var count = 1;
+            var waypoint = GetNearestObjectByTag(WaypointTag, referenceObject, count);
+            while (GetIsObjectValid(waypoint))
+            {
+                SpawnTerminal(waypoint);
+
+                count++;
+                waypoint = GetNearestObjectByTag(WaypointTag, referenceObject, count);
+            }
+        }
+
+        private void SpawnDockhands(uint area, PlanetType planet)
+        {
+
         }
 
         private void Starport()
@@ -27,7 +68,18 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                 .AreaInstance("starport")
                 .OnSpawn(instance =>
                 {
-                    // todo: spawn dockhands
+                    var propertyId = Property.GetPropertyId(instance);
+                    var dbProperty = DB.Get<WorldProperty>(propertyId);
+                    var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
+                    var dbCity = DB.Get<WorldProperty>(dbBuilding.ParentPropertyId);
+                    var area = Cache.GetAreaByResref(dbCity.ParentPropertyId);
+                    var planet = Planet.GetPlanetType(area);
+
+                    if (planet == PlanetType.Invalid)
+                        return;
+
+                    SpawnStarportFlightTerminals(instance, planet);
+                    SpawnDockhands(instance, planet);
                 });
         }
     }

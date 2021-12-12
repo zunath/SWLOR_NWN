@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
 
         private void LightEscort()
         {
-            _builder.Create(PropertyLayoutType.LightFreighter1)
+            _builder.Create(PropertyLayoutType.LightEscort1)
                 .PropertyType(PropertyType.Starship)
                 .Name("Light Escort 1")
                 .StructureLimit(30)

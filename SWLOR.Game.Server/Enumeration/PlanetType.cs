@@ -14,11 +14,34 @@ namespace SWLOR.Game.Server.Enumeration
     [Flags]
     public enum PlanetType
     {
+        [Planet("Invalid", "-- Invalid --", false)]
         Invalid = 0,
+        [Planet("Viscara", "Viscara - ", true)]
         Viscara = 1,
+        [Planet("Tatooine", "Tatooine - ", true)]
         Tatooine = 2,
+        [Planet("Mon Cala", "Mon Cala - ", true)]
         MonCala = 4,
+        [Planet("Hutlar", "Hutlar - ", true)]
         Hutlar = 8,
+        [Planet("CZ-220", "CZ-220 - ", true)]
         CZ220 = 16
+    }
+
+    public class PlanetAttribute : Attribute
+    {
+        public string Name { get; set; }
+        public string Prefix { get; set; }
+        public bool IsActive { get; set; }
+
+        public PlanetAttribute(
+            string name, 
+            string prefix,
+            bool isActive)
+        {
+            Name = name;
+            Prefix = prefix;
+            IsActive = isActive;
+        }
     }
 }

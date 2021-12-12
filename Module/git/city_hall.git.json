@@ -78,7 +78,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -1.570796251296997
+          "value": 1.570796251296997
         },
         "BodyBag": {
           "type": "byte",
@@ -315,15 +315,15 @@
         },
         "X": {
           "type": "float",
-          "value": 9.765544891357422
+          "value": 34.99211502075195
         },
         "Y": {
           "type": "float",
-          "value": 15.79295158386231
+          "value": 0.4692732989788055
         },
         "Z": {
           "type": "float",
-          "value": 2.384185791015625e-007
+          "value": 0.009999761357903481
         }
       },
       {
@@ -542,15 +542,15 @@
         },
         "X": {
           "type": "float",
-          "value": 16.31647872924805
+          "value": 52.49921417236328
         },
         "Y": {
           "type": "float",
-          "value": 10.38964080810547
+          "value": 28.60209083557129
         },
         "Z": {
           "type": "float",
-          "value": 0.0
+          "value": -5.7220458984375e-006
         }
       },
       {
@@ -569,7 +569,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -3.141592264175415
+          "value": -0.0
         },
         "BodyBag": {
           "type": "byte",
@@ -769,238 +769,11 @@
         },
         "X": {
           "type": "float",
-          "value": 11.23999977111816
+          "value": 26.04086494445801
         },
         "Y": {
           "type": "float",
-          "value": 4.179999828338623
-        },
-        "Z": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 9,
-        "AnimationState": {
-          "type": "byte",
-          "value": 0
-        },
-        "Appearance": {
-          "type": "dword",
-          "value": 309
-        },
-        "AutoRemoveKey": {
-          "type": "byte",
-          "value": 0
-        },
-        "Bearing": {
-          "type": "float",
-          "value": 2.994330167770386
-        },
-        "BodyBag": {
-          "type": "byte",
-          "value": 0
-        },
-        "CloseLockDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Conversation": {
-          "type": "resref",
-          "value": ""
-        },
-        "CurrentHP": {
-          "type": "short",
-          "value": 15
-        },
-        "Description": {
-          "id": 66884,
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "DisarmDC": {
-          "type": "byte",
-          "value": 15
-        },
-        "Faction": {
-          "type": "dword",
-          "value": 1
-        },
-        "Fort": {
-          "type": "byte",
-          "value": 16
-        },
-        "Hardness": {
-          "type": "byte",
-          "value": 5
-        },
-        "HasInventory": {
-          "type": "byte",
-          "value": 0
-        },
-        "HP": {
-          "type": "short",
-          "value": 15
-        },
-        "Interruptable": {
-          "type": "byte",
-          "value": 1
-        },
-        "KeyName": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "KeyRequired": {
-          "type": "byte",
-          "value": 0
-        },
-        "Lockable": {
-          "type": "byte",
-          "value": 0
-        },
-        "Locked": {
-          "type": "byte",
-          "value": 0
-        },
-        "LocName": {
-          "id": 66778,
-          "type": "cexolocstring",
-          "value": {
-            "0": "Registration Mode"
-          }
-        },
-        "OnClick": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnClosed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDamaged": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDeath": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDisarm": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnHeartbeat": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnInvDisturbed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnLock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnMeleeAttacked": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnOpen": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnSpellCastAt": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnTrapTriggered": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUnlock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUsed": {
-          "type": "resref",
-          "value": "test2"
-        },
-        "OnUserDefined": {
-          "type": "resref",
-          "value": ""
-        },
-        "OpenLockDC": {
-          "type": "byte",
-          "value": 18
-        },
-        "Plot": {
-          "type": "byte",
-          "value": 1
-        },
-        "PortraitId": {
-          "type": "word",
-          "value": 665
-        },
-        "Ref": {
-          "type": "byte",
-          "value": 0
-        },
-        "Static": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "Bread"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "x0_bread"
-        },
-        "TrapDetectable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapDetectDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapDisarmable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapFlag": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapOneShot": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapType": {
-          "type": "byte",
-          "value": 0
-        },
-        "Type": {
-          "type": "byte",
-          "value": 0
-        },
-        "Useable": {
-          "type": "byte",
-          "value": 1
-        },
-        "Will": {
-          "type": "byte",
-          "value": 0
-        },
-        "X": {
-          "type": "float",
-          "value": 5.51941728591919
-        },
-        "Y": {
-          "type": "float",
-          "value": 6.990976810455322
+          "value": 34.23268127441406
         },
         "Z": {
           "type": "float",
@@ -1015,7 +788,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 309
+          "value": 20627
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -1023,7 +796,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.650718450546265
+          "value": -1.570796012878418
         },
         "BodyBag": {
           "type": "byte",
@@ -1039,16 +812,17 @@
         },
         "CurrentHP": {
           "type": "short",
-          "value": 15
+          "value": 10
         },
         "Description": {
-          "id": 66884,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": ""
+          }
         },
         "DisarmDC": {
           "type": "byte",
-          "value": 15
+          "value": 0
         },
         "Faction": {
           "type": "dword",
@@ -1056,7 +830,7 @@
         },
         "Fort": {
           "type": "byte",
-          "value": 16
+          "value": 5
         },
         "Hardness": {
           "type": "byte",
@@ -1068,7 +842,7 @@
         },
         "HP": {
           "type": "short",
-          "value": 15
+          "value": 10
         },
         "Interruptable": {
           "type": "byte",
@@ -1091,10 +865,9 @@
           "value": 0
         },
         "LocName": {
-          "id": 66778,
           "type": "cexolocstring",
           "value": {
-            "0": "Voting mode"
+            "0": "Citizenship Terminal"
           }
         },
         "OnClick": {
@@ -1151,7 +924,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "test3"
+          "value": "open_citizenship"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -1159,7 +932,7 @@
         },
         "OpenLockDC": {
           "type": "byte",
-          "value": 18
+          "value": 0
         },
         "Plot": {
           "type": "byte",
@@ -1167,7 +940,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 665
+          "value": 0
         },
         "Ref": {
           "type": "byte",
@@ -1179,11 +952,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "Bread"
+          "value": "citizenship_terminal"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "x0_bread"
+          "value": "citizenship_term"
         },
         "TrapDetectable": {
           "type": "byte",
@@ -1223,11 +996,11 @@
         },
         "X": {
           "type": "float",
-          "value": 5.361139297485352
+          "value": 51.94980621337891
         },
         "Y": {
           "type": "float",
-          "value": 7.986218452453613
+          "value": 20.4889030456543
         },
         "Z": {
           "type": "float",
@@ -1242,7 +1015,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 309
+          "value": 20627
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -1250,7 +1023,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.650718450546265
+          "value": -1.570796012878418
         },
         "BodyBag": {
           "type": "byte",
@@ -1266,16 +1039,17 @@
         },
         "CurrentHP": {
           "type": "short",
-          "value": 15
+          "value": 10
         },
         "Description": {
-          "id": 66884,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": ""
+          }
         },
         "DisarmDC": {
           "type": "byte",
-          "value": 15
+          "value": 0
         },
         "Faction": {
           "type": "dword",
@@ -1283,7 +1057,7 @@
         },
         "Fort": {
           "type": "byte",
-          "value": 16
+          "value": 5
         },
         "Hardness": {
           "type": "byte",
@@ -1295,7 +1069,7 @@
         },
         "HP": {
           "type": "short",
-          "value": 15
+          "value": 10
         },
         "Interruptable": {
           "type": "byte",
@@ -1318,10 +1092,9 @@
           "value": 0
         },
         "LocName": {
-          "id": 66778,
           "type": "cexolocstring",
           "value": {
-            "0": "Past voting mode"
+            "0": "Citizenship Terminal"
           }
         },
         "OnClick": {
@@ -1378,7 +1151,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "test4"
+          "value": "open_citizenship"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -1386,7 +1159,7 @@
         },
         "OpenLockDC": {
           "type": "byte",
-          "value": 18
+          "value": 0
         },
         "Plot": {
           "type": "byte",
@@ -1394,7 +1167,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 665
+          "value": 0
         },
         "Ref": {
           "type": "byte",
@@ -1406,11 +1179,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "Bread"
+          "value": "citizenship_terminal"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "x0_bread"
+          "value": "citizenship_term"
         },
         "TrapDetectable": {
           "type": "byte",
@@ -1450,11 +1223,11 @@
         },
         "X": {
           "type": "float",
-          "value": 5.246111869812012
+          "value": 51.9113883972168
         },
         "Y": {
           "type": "float",
-          "value": 9.081821441650391
+          "value": 10.5008659362793
         },
         "Z": {
           "type": "float",
@@ -1469,7 +1242,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 309
+          "value": 20627
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -1477,7 +1250,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.429825305938721
+          "value": 1.570796251296997
         },
         "BodyBag": {
           "type": "byte",
@@ -1493,16 +1266,17 @@
         },
         "CurrentHP": {
           "type": "short",
-          "value": 15
+          "value": 10
         },
         "Description": {
-          "id": 66884,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": ""
+          }
         },
         "DisarmDC": {
           "type": "byte",
-          "value": 15
+          "value": 0
         },
         "Faction": {
           "type": "dword",
@@ -1510,7 +1284,7 @@
         },
         "Fort": {
           "type": "byte",
-          "value": 16
+          "value": 5
         },
         "Hardness": {
           "type": "byte",
@@ -1522,7 +1296,7 @@
         },
         "HP": {
           "type": "short",
-          "value": 15
+          "value": 10
         },
         "Interruptable": {
           "type": "byte",
@@ -1545,10 +1319,9 @@
           "value": 0
         },
         "LocName": {
-          "id": 66778,
           "type": "cexolocstring",
           "value": {
-            "0": "Update creation date"
+            "0": "Citizenship Terminal"
           }
         },
         "OnClick": {
@@ -1605,7 +1378,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "test5"
+          "value": "open_citizenship"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -1613,7 +1386,7 @@
         },
         "OpenLockDC": {
           "type": "byte",
-          "value": 18
+          "value": 0
         },
         "Plot": {
           "type": "byte",
@@ -1621,7 +1394,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 665
+          "value": 0
         },
         "Ref": {
           "type": "byte",
@@ -1633,11 +1406,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "Bread"
+          "value": "citizenship_terminal"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "x0_bread"
+          "value": "citizenship_term"
         },
         "TrapDetectable": {
           "type": "byte",
@@ -1677,11 +1450,11 @@
         },
         "X": {
           "type": "float",
-          "value": 13.70815658569336
+          "value": 6.850317478179932
         },
         "Y": {
           "type": "float",
-          "value": 7.132215976715088
+          "value": 21.14394569396973
         },
         "Z": {
           "type": "float",
@@ -1696,7 +1469,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 309
+          "value": 20627
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -1704,7 +1477,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.429825305938721
+          "value": 1.570796251296997
         },
         "BodyBag": {
           "type": "byte",
@@ -1720,16 +1493,17 @@
         },
         "CurrentHP": {
           "type": "short",
-          "value": 15
+          "value": 10
         },
         "Description": {
-          "id": 66884,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": ""
+          }
         },
         "DisarmDC": {
           "type": "byte",
-          "value": 15
+          "value": 0
         },
         "Faction": {
           "type": "dword",
@@ -1737,7 +1511,7 @@
         },
         "Fort": {
           "type": "byte",
-          "value": 16
+          "value": 5
         },
         "Hardness": {
           "type": "byte",
@@ -1749,7 +1523,7 @@
         },
         "HP": {
           "type": "short",
-          "value": 15
+          "value": 10
         },
         "Interruptable": {
           "type": "byte",
@@ -1772,10 +1546,9 @@
           "value": 0
         },
         "LocName": {
-          "id": 66778,
           "type": "cexolocstring",
           "value": {
-            "0": "Update Upkeep date"
+            "0": "Citizenship Terminal"
           }
         },
         "OnClick": {
@@ -1832,7 +1605,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "test6"
+          "value": "open_citizenship"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -1840,7 +1613,7 @@
         },
         "OpenLockDC": {
           "type": "byte",
-          "value": 18
+          "value": 0
         },
         "Plot": {
           "type": "byte",
@@ -1848,7 +1621,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 665
+          "value": 0
         },
         "Ref": {
           "type": "byte",
@@ -1860,11 +1633,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "Bread"
+          "value": "citizenship_terminal"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "x0_bread"
+          "value": "citizenship_term"
         },
         "TrapDetectable": {
           "type": "byte",
@@ -1904,11 +1677,11 @@
         },
         "X": {
           "type": "float",
-          "value": 13.61636257171631
+          "value": 7.037779808044434
         },
         "Y": {
           "type": "float",
-          "value": 8.455760002136231
+          "value": 28.59332847595215
         },
         "Z": {
           "type": "float",
@@ -1923,7 +1696,7 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 309
+          "value": 20627
         },
         "AutoRemoveKey": {
           "type": "byte",
@@ -1931,7 +1704,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": -2.429825305938721
+          "value": 1.570796251296997
         },
         "BodyBag": {
           "type": "byte",
@@ -1947,16 +1720,17 @@
         },
         "CurrentHP": {
           "type": "short",
-          "value": 15
+          "value": 10
         },
         "Description": {
-          "id": 66884,
           "type": "cexolocstring",
-          "value": {}
+          "value": {
+            "0": ""
+          }
         },
         "DisarmDC": {
           "type": "byte",
-          "value": 15
+          "value": 0
         },
         "Faction": {
           "type": "dword",
@@ -1964,7 +1738,7 @@
         },
         "Fort": {
           "type": "byte",
-          "value": 16
+          "value": 5
         },
         "Hardness": {
           "type": "byte",
@@ -1976,7 +1750,7 @@
         },
         "HP": {
           "type": "short",
-          "value": 15
+          "value": 10
         },
         "Interruptable": {
           "type": "byte",
@@ -1999,10 +1773,9 @@
           "value": 0
         },
         "LocName": {
-          "id": 66778,
           "type": "cexolocstring",
           "value": {
-            "0": "Change destruction date to now"
+            "0": "Citizenship Terminal"
           }
         },
         "OnClick": {
@@ -2059,7 +1832,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "test7"
+          "value": "open_citizenship"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -2067,7 +1840,7 @@
         },
         "OpenLockDC": {
           "type": "byte",
-          "value": 18
+          "value": 0
         },
         "Plot": {
           "type": "byte",
@@ -2075,7 +1848,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 665
+          "value": 0
         },
         "Ref": {
           "type": "byte",
@@ -2087,11 +1860,11 @@
         },
         "Tag": {
           "type": "cexostring",
-          "value": "Bread"
+          "value": "citizenship_terminal"
         },
         "TemplateResRef": {
           "type": "resref",
-          "value": "x0_bread"
+          "value": "citizenship_term"
         },
         "TrapDetectable": {
           "type": "byte",
@@ -2131,11 +1904,11 @@
         },
         "X": {
           "type": "float",
-          "value": 13.36717510223389
+          "value": 6.839961051940918
         },
         "Y": {
           "type": "float",
-          "value": 9.30958366394043
+          "value": 13.32333850860596
         },
         "Z": {
           "type": "float",
@@ -2206,15 +1979,204 @@
         },
         "XPosition": {
           "type": "float",
-          "value": 9.690464019775391
+          "value": 34.97154998779297
         },
         "YOrientation": {
           "type": "float",
-          "value": -1.0
+          "value": 1.0
         },
         "YPosition": {
           "type": "float",
-          "value": 14.47848987579346
+          "value": 1.738036394119263
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 1
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "id": 14814,
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNote": {
+          "id": 14815,
+          "type": "cexolocstring",
+          "value": {
+            "0": "Citizenship Terminals"
+          }
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "NW_MAPNOTE001"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_mapnote001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 50.43756484985352
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 19.40585327148438
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 1
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "id": 14814,
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNote": {
+          "id": 14815,
+          "type": "cexolocstring",
+          "value": {
+            "0": "Citizenship Terminals"
+          }
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "NW_MAPNOTE001"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_mapnote001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 9.388753890991211
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 20.19611167907715
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 1
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 1
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "id": 14814,
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNote": {
+          "id": 14815,
+          "type": "cexolocstring",
+          "value": {
+            "0": "City Management Terminal"
+          }
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "NW_MAPNOTE001"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "nw_mapnote001"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 25.88517951965332
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 32.47465896606445
         },
         "ZPosition": {
           "type": "float",

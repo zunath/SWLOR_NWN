@@ -1301,6 +1301,34 @@
           "type": "resref",
           "value": "city_hall"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "bank"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "medical_center"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "cantina"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "starport"
+        }
       }
     ]
   },
@@ -1336,19 +1364,19 @@
   },
   "Mod_Entry_Dir_X": {
     "type": "float",
-    "value": 0.0
+    "value": 3.894143674187944e-007
   },
   "Mod_Entry_Dir_Y": {
     "type": "float",
-    "value": 1.0
+    "value": -1.0
   },
   "Mod_Entry_X": {
     "type": "float",
-    "value": 18.0
+    "value": 32.0
   },
   "Mod_Entry_Y": {
     "type": "float",
-    "value": 5.0
+    "value": 55.0
   },
   "Mod_Entry_Z": {
     "type": "float",

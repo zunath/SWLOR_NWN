@@ -3605,21 +3605,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "STARPORT_LANDING_WAYPOINT"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "VISCARA_LANDING"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "STARPORT_TELEPORT_WAYPOINT"
               },
               "Type": {
@@ -3629,6 +3614,21 @@
               "Value": {
                 "type": "cexostring",
                 "value": "Viscara_Orbit"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Name": {
+                "type": "cexostring",
+                "value": "PLANET_TYPE_ID"
+              },
+              "Type": {
+                "type": "dword",
+                "value": 1
+              },
+              "Value": {
+                "type": "int",
+                "value": 1
               }
             }
           ]
@@ -3897,15 +3897,15 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "STARPORT_LANDING_WAYPOINT"
+                "value": "PLANET_TYPE_ID"
               },
               "Type": {
                 "type": "dword",
-                "value": 3
+                "value": 1
               },
               "Value": {
-                "type": "cexostring",
-                "value": "CZ220_LANDING"
+                "type": "int",
+                "value": 16
               }
             }
           ]

@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             var selectedShipInfo = string.Empty;
             var spaceWaypointTag = GetLocalString(OBJECT_SELF, "STARPORT_TELEPORT_WAYPOINT");
-            var landingWaypointTag = GetLocalString(OBJECT_SELF, "STARPORT_LANDING_WAYPOINT");
+            var landingWaypointTag = GetLocalString(OBJECT_SELF, "STARPORT_LANDING_WAYPOINT"); // todo use dynamic list
             
             page.Header = ColorToken.Green("Starport Menu") + "\n" +
                           selectedShipInfo + "\n" +

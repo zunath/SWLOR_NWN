@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
 using SWLOR.Game.Server.Service.PropertyService;
@@ -11,8 +12,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
     {
         private class Model
         {
+            public PlanetType Planet { get; set; }
             public Location SpaceLocation { get; set; }
-            public Location LandingLocation { get; set; }
         }
 
         private const string MainPageId = "MAIN_PAGE";
@@ -31,17 +32,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private void Initialize()
         {
             var self = OBJECT_SELF;
-            var landingWaypointTag = GetLocalString(self, "STARPORT_LANDING_WAYPOINT");
+            var planetType = (PlanetType)GetLocalInt(self, "PLANET_TYPE_ID");
             var spaceWaypointTag = GetLocalString(self, "STARPORT_TELEPORT_WAYPOINT");
             var player = GetPC();
-
-            if (string.IsNullOrWhiteSpace(landingWaypointTag))
-            {
-                Log.Write(LogGroup.Error, $"{GetName(self)} is missing the local variable 'STARPORT_LANDING_WAYPOINT' and cannot be used by players to dock their ships.");
-                SendMessageToPC(player, "This docking point is misconfigured. Notify an admin.");
-                EndConversation();
-                return;
-            }
 
             if (string.IsNullOrWhiteSpace(spaceWaypointTag))
             {
@@ -51,16 +44,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 return;
             }
 
-            var landingWaypoint = GetWaypointByTag(landingWaypointTag);
             var spaceWaypoint = GetWaypointByTag(spaceWaypointTag);
-
-            if (!GetIsObjectValid(landingWaypoint))
-            {
-                Log.Write(LogGroup.Error, $"The waypoint associated with '{GetName(self)}' cannot be found. Did you place it in an area?");
-                SendMessageToPC(player, "This docking point is misconfigured. Notify an admin.");
-                EndConversation();
-                return;
-            }
 
             if (!GetIsObjectValid(spaceWaypoint))
             {
@@ -70,9 +54,17 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 return;
             }
 
+            if (planetType == PlanetType.Invalid)
+            {
+                Log.Write(LogGroup.Error, $"{GetName(self)} is missing the local variable 'PLANET_TYPE_ID' or has an invalid value specified..");
+                SendMessageToPC(player, "This docking point is misconfigured. Notify an admin.");
+                EndConversation();
+                return;
+            }
+
             var model = GetDataModel<Model>();
             model.SpaceLocation = GetLocation(spaceWaypoint);
-            model.LandingLocation = GetLocation(landingWaypoint);
+            model.Planet = planetType;
         }
 
         private void MainPageInit(DialogPage page)
@@ -80,55 +72,63 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             var player = GetPC();
             var playerId = GetObjectUUID(player);
             var model = GetDataModel<Model>();
+            var dockPoints = Space.GetDockPointsByPlanet(model.Planet);
 
-            page.Header = "Would you like to dock your ship onto this location?";
+            page.Header = "Please select a location.";
 
-            page.AddResponse("Dock Ship", () =>
+            foreach (var (_, dockPoint) in dockPoints)
             {
-                if (Enmity.HasEnmity(player))
+                var dockName = dockPoint.IsNPC
+                    ? $"[NPC] {dockPoint.Name}"
+                    : $"[PC] {dockPoint.Name}";
+
+                page.AddResponse(dockName, () =>
                 {
-                    SendMessageToPC(player, ColorToken.Red("You cannot dock while being targeted."));
-                    return;
-                }
+                    if (Enmity.HasEnmity(player))
+                    {
+                        SendMessageToPC(player, ColorToken.Red("You cannot dock while being targeted."));
+                        return;
+                    }
 
-                var spaceArea = GetAreaFromLocation(model.SpaceLocation);
-                var spaceAreaResref = GetResRef(spaceArea);
-                var spacePosition = GetPositionFromLocation(model.SpaceLocation);
-                var spaceOrientation = GetFacingFromLocation(model.SpaceLocation);
+                    var spaceArea = GetAreaFromLocation(model.SpaceLocation);
+                    var spaceAreaResref = GetResRef(spaceArea);
+                    var spacePosition = GetPositionFromLocation(model.SpaceLocation);
+                    var spaceOrientation = GetFacingFromLocation(model.SpaceLocation);
 
-                var landingArea = GetAreaFromLocation(model.LandingLocation);
-                var landingAreaResref = GetResRef(landingArea);
-                var landingPosition = GetPositionFromLocation(model.LandingLocation);
-                var landingOrientation = GetFacingFromLocation(model.LandingLocation);
+                    var landingArea = GetAreaFromLocation(dockPoint.Location);
+                    var landingAreaResref = GetResRef(landingArea);
+                    var landingPosition = GetPositionFromLocation(dockPoint.Location);
+                    var landingOrientation = GetFacingFromLocation(dockPoint.Location);
 
-                // Clear the ship property's space position and update its last docked position with the new destination.
-                var dbPlayer = DB.Get<Player>(playerId);
-                var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
-                var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
-                dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition);
+                    // Clear the ship property's space position and update its last docked position with the new destination.
+                    var dbPlayer = DB.Get<Player>(playerId);
+                    var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
+                    var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
+                    dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition);
 
-                dbProperty.Positions[PropertyLocationType.DockPosition] = new PropertyLocation
-                {
-                    AreaResref = landingAreaResref,
-                    X = landingPosition.X,
-                    Y = landingPosition.Y,
-                    Z = landingPosition.Z,
-                    Orientation = landingOrientation
-                };
+                    dbProperty.Positions[PropertyLocationType.DockPosition] = new PropertyLocation
+                    {
+                        AreaResref = landingAreaResref,
+                        X = landingPosition.X,
+                        Y = landingPosition.Y,
+                        Z = landingPosition.Z,
+                        Orientation = landingOrientation
+                    };
 
-                dbProperty.Positions[PropertyLocationType.SpacePosition] = new PropertyLocation
-                {
-                    AreaResref = spaceAreaResref,
-                    X = spacePosition.X,
-                    Y = spacePosition.Y,
-                    Z = spacePosition.Z,
-                    Orientation = spaceOrientation
-                };
+                    dbProperty.Positions[PropertyLocationType.SpacePosition] = new PropertyLocation
+                    {
+                        AreaResref = spaceAreaResref,
+                        X = spacePosition.X,
+                        Y = spacePosition.Y,
+                        Z = spacePosition.Z,
+                        Orientation = spaceOrientation
+                    };
 
-                DB.Set(dbProperty);
-                
-                Space.WarpPlayerInsideShip(player);
-            });
+                    DB.Set(dbProperty);
+
+                    Space.WarpPlayerInsideShip(player);
+                });
+            }
         }
     }
 }

@@ -843,6 +843,16 @@ namespace SWLOR.Game.Server.Service
                 DB.Set(citizen);
             }
 
+            // Clear any bank items stored within this city.
+            var dbBankItems = DB.Search(new DBQuery<InventoryItem>()
+                .AddFieldSearch(nameof(InventoryItem.StorageId), property.Id, false));
+
+            foreach (var item in dbBankItems)
+            {
+                DB.Delete<InventoryItem>(item.Id);
+                Log.Write(LogGroup.Property, $"Deleted bank item '{item.Quantity}x {item.Name}' ({item.Tag} / {item.Resref}) from property '{property.Id}' which was stored by {item.PlayerId}");
+            }
+
             // Finally delete the entire property.
             DB.Delete<WorldProperty>(property.Id);
             Log.Write(LogGroup.Property, $"Property '{property.CustomName}' deleted.");
@@ -1888,7 +1898,7 @@ namespace SWLOR.Game.Server.Service
                 // when brought into the world. 
                 RunStructureChangedEvent(property.StructureType, StructureChangeType.PositionChanged, property, placeable);
             }
-            // Instance spawns are instanced areas that are spawned dynamically into the game world.d
+            // Instance spawns are instanced areas that are spawned dynamically into the game world.
             else if(propertyDetail.SpawnType == PropertySpawnType.Instance)
             {
                 // If no interior layout is defined, the provided area will be used.

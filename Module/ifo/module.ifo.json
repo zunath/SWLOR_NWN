@@ -1294,6 +1294,13 @@
           "type": "resref",
           "value": "v_sithlake_int"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "city_hall"
+        }
       }
     ]
   },

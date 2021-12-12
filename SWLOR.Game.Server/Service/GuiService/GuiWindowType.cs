@@ -26,14 +26,12 @@
         ChangeDescription = 21,
         Craft = 22,
         ManageStaff = 23,
-
-        
         ManageCitizenship = 24,
         ManageCity = 25,
         Election = 26,
         RentApartment = 27,
         ManageApartment = 28,
-        
+
         PermissionManagement = 30,
         ManageStructures = 31,
         PropertyItemStorage = 32,

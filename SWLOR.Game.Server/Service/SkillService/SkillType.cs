@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true, 
             "Ability to speak the Cheunh language.", 
             false)]
-        Cheunh = 15,
+        Togruti = 15,
 
         [Skill(SkillCategoryType.Languages, 
             "Togruti", 
@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             true, 
             "Ability to speak the Togruti language.", 
             false)]
-        Togruti = 16,
+        Cheunh = 16,
 
 
         [Skill(SkillCategoryType.Languages, 

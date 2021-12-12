@@ -111,7 +111,8 @@ namespace SWLOR.Game.Server.Service
             var dockPoint = new ShipDockPoint
             {
                 Location = GetLocation(waypoint),
-                Name = GetName(waypoint)
+                Name = GetName(waypoint),
+                IsNPC = isNPC
             };
 
             _dockPoints[planet][dockPointId] = dockPoint;

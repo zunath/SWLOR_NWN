@@ -45,7 +45,8 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum
         Echani = 161,
         MonCalamari = 162,
         Ugnaught = 163,
-        Togruta = 164
+        Togruta = 164,
+        Rodian = 165
 
     }
 }

@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _racialAppearances[RacialType.Echani] = new EchaniRacialAppearanceDefinition();
             _racialAppearances[RacialType.Cyborg] = new CyborgRacialAppearanceDefinition();
             _racialAppearances[RacialType.Cathar] = new CatharRacialAppearanceDefinition();
+            _racialAppearances[RacialType.Rodian] = new RodianRacialAppearanceDefinition();
             _racialAppearances[RacialType.Trandoshan] = new TrandoshanRacialAppearanceDefinition();
             _racialAppearances[RacialType.Togruta] = new TogrutaRacialAppearanceDefinition();
             _racialAppearances[RacialType.Wookiee] = new WookieeRacialAppearanceDefinition();

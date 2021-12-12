@@ -178,6 +178,15 @@ namespace SWLOR.Game.Server.Service
                 HeadId = 100,
                 PelvisId = 7
             };
+            _defaultRaceAppearancesMale[RacialType.Rodian] = new RacialAppearance
+            {
+                SkinColorId = 81,
+                HairColorId = 79,
+                AppearanceType = AppearanceType.Elf,
+                HeadId = 54,
+                RightHandId = 44,
+                LeftHandId = 44
+            };
 
             // Female appearances
             _defaultRaceAppearancesFemale[RacialType.Human] = new RacialAppearance();
@@ -311,6 +320,15 @@ namespace SWLOR.Game.Server.Service
                 HairColorId = 0,
                 HeadId = 100,
                 PelvisId = 7
+            };
+            _defaultRaceAppearancesFemale[RacialType.Rodian] = new RacialAppearance
+            {
+                SkinColorId = 81,
+                HairColorId = 79,
+                AppearanceType = AppearanceType.Elf,
+                HeadId = 10,
+                RightHandId = 44,
+                LeftHandId = 44
             };
 
         }

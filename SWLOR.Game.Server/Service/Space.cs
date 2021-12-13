@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Service
             while (GetIsObjectValid(waypoint))
             {
                 var area = GetArea(waypoint);
-                RegisterLandingPoint(waypoint, area, true);
+                RegisterLandingPoint(waypoint, area, true, string.Empty);
 
                 count++;
                 waypoint = GetObjectByTag("STARSHIP_DOCKPOINT", count);
@@ -90,7 +90,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="waypoint">The waypoint to register.</param>
         /// <param name="area">The area to use for registration.</param>
         /// <param name="isNPC">If true, will be marked as an NPC dock. Otherwise will be marked as a PC dock.</param>
-        public static void RegisterLandingPoint(uint waypoint, uint area, bool isNPC)
+        /// <param name="propertyId">If specified, references the world property Id of this landing point.</param>
+        public static void RegisterLandingPoint(uint waypoint, uint area, bool isNPC, string propertyId)
         {
             var dockPointId = GetLocalString(waypoint, "STARSHIP_DOCKPOINT_ID");
             if (!string.IsNullOrWhiteSpace(dockPointId))
@@ -112,7 +113,8 @@ namespace SWLOR.Game.Server.Service
             var dockPoint = new ShipDockPoint
             {
                 Location = GetLocation(waypoint),
-                Name = GetName(waypoint),
+                Name = string.IsNullOrWhiteSpace(propertyId) ? GetName(waypoint) : string.Empty,
+                PropertyId = propertyId,
                 IsNPC = isNPC
             };
 
@@ -1586,5 +1588,7 @@ namespace SWLOR.Game.Server.Service
 
             DestroyObject(shipClone);
         }
+
+
     }
 }

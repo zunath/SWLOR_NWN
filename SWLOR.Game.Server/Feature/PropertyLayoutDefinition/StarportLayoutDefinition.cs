@@ -167,7 +167,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                     SpawnDockhands(instance, planet);
 
                     var dockPoint = GetLandingWaypoint(instance);
-                    Space.RegisterLandingPoint(dockPoint, cityArea, false);
+                    Space.RegisterLandingPoint(dockPoint, cityArea, false, propertyId);
                 });
         }
     }

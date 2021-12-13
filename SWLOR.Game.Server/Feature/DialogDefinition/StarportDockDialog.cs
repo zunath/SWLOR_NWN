@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 var dockName = dockPoint.IsNPC
                     ? $"[NPC] {dockPoint.Name}"
-                    : $"[PC] {dockPoint.Name}";
+                    : $"[PC] {GetName(Property.GetRegisteredInstance(dockPoint.PropertyId).Area)}";
 
                 page.AddResponse(dockName, () =>
                 {

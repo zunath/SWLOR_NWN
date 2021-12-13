@@ -70,7 +70,18 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 page.AddResponse("Exit", () =>
                 {
-                    Property.JumpToOriginalLocation(player);
+                    // Building interiors will have a location set identifying where their doors are located.
+                    // Jump to this location if it's set.
+                    if (GetLocalBool(area, "BUILDING_EXIT_SET"))
+                    {
+                        var location = GetLocalLocation(area, "BUILDING_EXIT_LOCATION");
+                        AssignCommand(player, () => ActionJumpToLocation(location));
+                    }
+                    // Otherwise jump the player to their original location.
+                    else
+                    {
+                        Property.JumpToOriginalLocation(player);
+                    }
                 });
             }
         }

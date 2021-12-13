@@ -75,6 +75,18 @@ namespace SWLOR.Game.Server.Service.PropertyService
 
             Property.AssignPropertyId(door, Property.GetPropertyId(building));
             SetName(door, name);
+            AssignExitLocationToInstance(building, GetLocation(door));
+        }
+
+        private static void AssignExitLocationToInstance(uint building, Location location)
+        {
+            var propertyId = Property.GetPropertyId(building);
+            var dbBuilding = DB.Get<WorldProperty>(propertyId);
+            var instancePropertyId = dbBuilding.ChildPropertyIds.Single();
+            var instance = Property.GetRegisteredInstance(instancePropertyId);
+
+            SetLocalLocation(instance.Area, "BUILDING_EXIT_LOCATION", location);
+            SetLocalBool(instance.Area, "BUILDING_EXIT_SET", true);
         }
 
         private static void DestroyDoor(uint building)

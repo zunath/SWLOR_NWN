@@ -496,7 +496,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(ShipManagementPayload initialPayload)
         {
-            var playerId = GetObjectUUID(Player);
             List<PlayerShip> dbPlayerShips;
             if (!string.IsNullOrWhiteSpace(initialPayload.SpecificPropertyId))
             {

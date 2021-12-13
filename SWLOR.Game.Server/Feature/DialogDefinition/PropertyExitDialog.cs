@@ -21,7 +21,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private void ReturnToLastDockedPosition(uint player, PropertyLocation propertyLocation)
         {
-            var returningArea = Cache.GetAreaByResref(propertyLocation.AreaResref);
+            var returningArea = string.IsNullOrWhiteSpace(propertyLocation.AreaResref)
+                ? Property.GetRegisteredInstance(propertyLocation.InstancePropertyId).Area
+                : Cache.GetAreaByResref(propertyLocation.AreaResref);
+            
             var location = Location(
                 returningArea,
                 Vector3(propertyLocation.X, propertyLocation.Y, propertyLocation.Z),

@@ -511,7 +511,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _spaceLocation = Location(spaceArea, spacePosition, spacePropertyLocation.Orientation);
 
                 var landingPropertyLocation = dbProperty.Positions[PropertyLocationType.DockPosition];
-                var landingArea = Cache.GetAreaByResref(landingPropertyLocation.AreaResref);
+                var landingArea = string.IsNullOrWhiteSpace(landingPropertyLocation.AreaResref)
+                    ? Property.GetRegisteredInstance(landingPropertyLocation.InstancePropertyId).Area
+                    : Cache.GetAreaByResref(landingPropertyLocation.AreaResref);
                 var landingPosition = Vector3(landingPropertyLocation.X, landingPropertyLocation.Y, landingPropertyLocation.Z);
                 _landingLocation = Location(landingArea, landingPosition, landingPropertyLocation.Orientation);
 
@@ -890,7 +892,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
             {
                 var landingLocation = property.Positions[PropertyLocationType.DockPosition];
-                var area = Cache.GetAreaByResref(landingLocation.AreaResref);
+                var area = string.IsNullOrWhiteSpace(landingLocation.AreaResref)
+                    ? Property.GetRegisteredInstance(landingLocation.InstancePropertyId).Area
+                    : Cache.GetAreaByResref(landingLocation.AreaResref);
 
                 return area;
             }

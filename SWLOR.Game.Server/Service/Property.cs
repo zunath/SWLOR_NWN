@@ -1174,6 +1174,7 @@ namespace SWLOR.Game.Server.Service
             var landingOrientation = GetFacingFromLocation(landingLocation);
             var landingArea = GetAreaFromLocation(landingLocation);
             var landingAreaResref = GetResRef(landingArea);
+            var landingPropertyId = GetPropertyId(landingArea);
 
             var playerId = GetObjectUUID(player);
             var propertyName = $"{GetName(player)}'s Starship";
@@ -1186,7 +1187,8 @@ namespace SWLOR.Game.Server.Service
                     Y = landingPosition.Y,
                     Z = landingPosition.Z,
                     Orientation = landingOrientation,
-                    AreaResref = landingAreaResref
+                    AreaResref = string.IsNullOrWhiteSpace(landingPropertyId) ? landingAreaResref : string.Empty,
+                    InstancePropertyId = !string.IsNullOrWhiteSpace(landingPropertyId) ? landingPropertyId : string.Empty
                 };
 
                 property.Positions[PropertyLocationType.SpacePosition] = new PropertyLocation

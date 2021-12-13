@@ -14,17 +14,17 @@ namespace SWLOR.Game.Server.Enumeration
     [Flags]
     public enum PlanetType
     {
-        [Planet("Invalid", "-- Invalid --", false)]
+        [Planet("Invalid", "-- Invalid --", "", false)]
         Invalid = 0,
-        [Planet("Viscara", "Viscara - ", true)]
+        [Planet("Viscara", "Viscara - ", "Viscara_Orbit", true)]
         Viscara = 1,
-        [Planet("Tatooine", "Tatooine - ", true)]
+        [Planet("Tatooine", "Tatooine - ", "Tatooine_Orbit", true)]
         Tatooine = 2,
-        [Planet("Mon Cala", "Mon Cala - ", true)]
+        [Planet("Mon Cala", "Mon Cala - ", "MonCala_Orbit", true)]
         MonCala = 4,
-        [Planet("Hutlar", "Hutlar - ", true)]
+        [Planet("Hutlar", "Hutlar - ", "Hutlar_Orbit", true)]
         Hutlar = 8,
-        [Planet("CZ-220", "CZ-220 - ", true)]
+        [Planet("CZ-220", "CZ-220 - ", "CZ220_Orbit", true)]
         CZ220 = 16
     }
 
@@ -32,15 +32,18 @@ namespace SWLOR.Game.Server.Enumeration
     {
         public string Name { get; set; }
         public string Prefix { get; set; }
+        public string SpaceOrbitWaypointTag { get; set; }
         public bool IsActive { get; set; }
 
         public PlanetAttribute(
             string name, 
             string prefix,
+            string spaceOrbitWaypointTag,
             bool isActive)
         {
             Name = name;
             Prefix = prefix;
+            SpaceOrbitWaypointTag = spaceOrbitWaypointTag;
             IsActive = isActive;
         }
     }

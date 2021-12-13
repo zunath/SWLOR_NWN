@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Entity;
+﻿using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
@@ -35,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             var selectedShipInfo = string.Empty;
             var spaceWaypointTag = GetLocalString(OBJECT_SELF, "STARPORT_TELEPORT_WAYPOINT");
-            var landingWaypointTag = GetLocalString(OBJECT_SELF, "STARPORT_LANDING_WAYPOINT"); // todo use dynamic list
+            var landingWaypointTag = GetLocalString(OBJECT_SELF, "STARPORT_LANDING_WAYPOINT");
             
             page.Header = ColorToken.Green("Starport Menu") + "\n" +
                           selectedShipInfo + "\n" +
@@ -46,7 +47,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 EndConversation();
 
                 var spaceLocation = GetLocation(GetWaypointByTag(spaceWaypointTag));
-                var landingLocation = GetLocation(GetWaypointByTag(landingWaypointTag));
+                var landingLocation = string.IsNullOrWhiteSpace(landingWaypointTag) 
+                    ? GetLocalLocation(OBJECT_SELF, "STARPORT_LANDING_WAYPOINT")
+                    : GetLocation(GetWaypointByTag(landingWaypointTag));
 
                 var payload = new ShipManagementPayload(spaceLocation, landingLocation);
                 Gui.TogglePlayerWindow(player, GuiWindowType.ShipManagement, payload, OBJECT_SELF);

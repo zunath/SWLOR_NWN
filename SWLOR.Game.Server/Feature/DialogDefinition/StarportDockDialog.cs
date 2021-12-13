@@ -108,7 +108,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
                     dbProperty.Positions[PropertyLocationType.DockPosition] = new PropertyLocation
                     {
-                        AreaResref = landingAreaResref,
+                        AreaResref = dockPoint.IsNPC ? landingAreaResref : string.Empty,
+                        InstancePropertyId = dockPoint.IsNPC ? string.Empty : Property.GetPropertyId(landingArea),
                         X = landingPosition.X,
                         Y = landingPosition.Y,
                         Z = landingPosition.Z,

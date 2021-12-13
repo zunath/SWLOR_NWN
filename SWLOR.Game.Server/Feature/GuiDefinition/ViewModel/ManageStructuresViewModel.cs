@@ -354,13 +354,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var payload = new ManageApartmentPayload(propertyId);
                 Gui.TogglePlayerWindow(Player, GuiWindowType.ManageApartment, payload);
             }
-            // Cities use the same permissions menu as all other buildings, but the city Id is located on themselves
-            // instead of the parent building's parent.
+            // Cities use the same permissions menu as all other buildings,
+            // but the city Id is located on themselves instead of the parent building's parent.
             else if (property.PropertyType == PropertyType.City)
             {
                 var payload = new PropertyPermissionPayload(property.PropertyType, propertyId, propertyId, false);
                 Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
             }
+            else if (property.PropertyType == PropertyType.Starship)
+            {
+                var payload = new PropertyPermissionPayload(property.PropertyType, propertyId, string.Empty, false);
+                Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
+            }
+            // Buildings look at their parent's parent to determine the city Id.
             else
             {
                 var parentBuilding = DB.Get<WorldProperty>(property.ParentPropertyId);

@@ -1,4 +1,6 @@
-﻿using SWLOR.Game.Server.Core;
+﻿using System.Collections.Generic;
+using System.Linq;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
@@ -90,6 +92,18 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         return;
                     }
 
+                    // There's a chance the starport has been picked up since the menu was loaded.
+                    // If we can't locate the starport anymore, give an error message to the player.
+                    var dbStarport = DB.Get<WorldProperty>(dockPoint.PropertyId);
+                    if (!dockPoint.IsNPC)
+                    {
+                        if (dbStarport == null)
+                        {
+                            SendMessageToPC(player, ColorToken.Red("This starport is no longer available for docking."));
+                            return;
+                        }
+                    }
+
                     var spaceArea = GetAreaFromLocation(model.SpaceLocation);
                     var spaceAreaResref = GetResRef(spaceArea);
                     var spacePosition = GetPositionFromLocation(model.SpaceLocation);
@@ -105,6 +119,53 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     var dbShip = DB.Get<PlayerShip>(dbPlayer.ActiveShipId);
                     var dbProperty = DB.Get<WorldProperty>(dbShip.PropertyId);
                     dbProperty.Positions.Remove(PropertyLocationType.CurrentPosition);
+                    
+                    // Docking at an NPC starport will update the safety location to that dock.
+                    // In the event that the ship is docked at a player starport and it gets destroyed or
+                    // otherwise goes away, the player's ship will return back to the last NPC dock it visited.
+                    if (dockPoint.IsNPC)
+                    {
+                        dbProperty.Positions[PropertyLocationType.LastNPCDockPosition] = new PropertyLocation
+                        {
+                            AreaResref = landingAreaResref,
+                            X = landingPosition.X,
+                            Y = landingPosition.Y,
+                            Z = landingPosition.Z,
+                            Orientation = landingOrientation
+                        };
+                    }
+
+                    // Unregister from previous player starport, if necessary
+                    if (!dbProperty.ChildPropertyIds.ContainsKey(PropertyChildType.RegisteredStarport))
+                        dbProperty.ChildPropertyIds[PropertyChildType.RegisteredStarport] = new List<string>();
+
+                    var oldRegistration = dbProperty.ChildPropertyIds[PropertyChildType.RegisteredStarport].FirstOrDefault();
+                    if (oldRegistration != null)
+                    {
+                        var dbOldStarport = DB.Get<WorldProperty>(oldRegistration);
+                        if (dbOldStarport != null)
+                        {
+                            dbOldStarport.ChildPropertyIds[PropertyChildType.Starship].Remove(dbProperty.Id);
+                            DB.Set(dbOldStarport);
+
+                            Log.Write(LogGroup.Property, $"Unregistered player ship '{dbProperty.CustomName}' ({dbProperty.Id}) from old starport '{dbOldStarport.CustomName}' ({dbOldStarport.Id}).");
+                        }
+
+                        dbProperty.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();
+                    }
+
+                    if (!dockPoint.IsNPC)
+                    {
+                        // Register this starport to the player ship.
+                        dbProperty.ChildPropertyIds[PropertyChildType.RegisteredStarport].Add(dbStarport.Id);
+
+                        // Register this player ship to the star port.
+                        if (!dbStarport.ChildPropertyIds.ContainsKey(PropertyChildType.Starship))
+                            dbStarport.ChildPropertyIds[PropertyChildType.Starship] = new List<string>();
+
+                        dbStarport.ChildPropertyIds[PropertyChildType.Starship].Add(dbProperty.Id);
+                        DB.Set(dbStarport);
+                    }
 
                     dbProperty.Positions[PropertyLocationType.DockPosition] = new PropertyLocation
                     {

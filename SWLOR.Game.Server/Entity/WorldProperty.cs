@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Entity
             CustomName = string.Empty;
             CustomDescription = string.Empty;
             ParentPropertyId = string.Empty;
-            ChildPropertyIds = new List<string>();
+            ChildPropertyIds = new Dictionary<PropertyChildType, List<string>>();
             Dates = new Dictionary<PropertyDateType, DateTime>();
             Positions = new Dictionary<PropertyLocationType, PropertyLocation>();
             Taxes = new Dictionary<PropertyTaxType, int>();
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Entity
         /// <summary>
         /// Tracks the child property Ids contained inside this property.
         /// </summary>
-        public List<string> ChildPropertyIds { get; set; }
+        public Dictionary<PropertyChildType, List<string>> ChildPropertyIds { get; set; }
 
         /// <summary>
         /// Tracks dates and timers specific to this property.

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service.DBService;
@@ -393,17 +394,35 @@ namespace SWLOR.Game.Server.Service
 
             // Starship properties should have their current location wiped on every boot.
             // This ensures the player's ship doesn't get lost in space when they're thrown out of an instance.
-            query = new DBQuery<WorldProperty>()
+            var starshipQuery = new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Starship);
-            properties = DB.Search(query);
+            var starshipProperties = DB.Search(starshipQuery);
 
-            foreach (var property in properties)
+            foreach (var property in starshipProperties)
             {
                 if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
                 {
                     property.Positions.Remove(PropertyLocationType.CurrentPosition);
-                    DB.Set(property);
                 }
+
+                // In the event this starship was docked at a deleted player starport,
+                // it needs to be relocated to the NPC starport found on the planet
+                var dockPosition = property.Positions[PropertyLocationType.DockPosition];
+                if (!string.IsNullOrWhiteSpace(dockPosition.InstancePropertyId))
+                {
+                    var dbStarport = DB.Get<WorldProperty>(dockPosition.InstancePropertyId);
+                    if (dbStarport == null)
+                    {
+                        // The PC starport no longer exists (probably destroyed by the previous cleanup)
+                        // Luckily we track the last NPC starport they visited so we can simply replace
+                        // their docked position with it.
+                        property.Positions[PropertyLocationType.DockPosition] = property.Positions[PropertyLocationType.LastNPCDockPosition];
+
+                        Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
+                    }
+                }
+                
+                DB.Set(property);
             }
         }
 
@@ -802,15 +821,18 @@ namespace SWLOR.Game.Server.Service
         private static void DeleteProperty(WorldProperty property)
         {
             // Recursively clear any children properties tied to this property.
-            if (property.ChildPropertyIds.Count > 0)
+            foreach (var (_, propertyIds) in property.ChildPropertyIds)
             {
-                var query = new DBQuery<WorldProperty>()
-                    .AddFieldSearch(nameof(WorldProperty.Id), property.ChildPropertyIds);
-                var children = DB.Search(query);
-
-                foreach (var child in children)
+                if (propertyIds.Count > 0)
                 {
-                    DeleteProperty(child);
+                    var query = new DBQuery<WorldProperty>()
+                        .AddFieldSearch(nameof(WorldProperty.Id), propertyIds);
+                    var children = DB.Search(query);
+
+                    foreach (var child in children)
+                    {
+                        DeleteProperty(child);
+                    }
                 }
             }
 
@@ -1160,10 +1182,16 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to associate the starship with.</param>
         /// <param name="layout">The layout to use.</param>
+        /// <param name="planetType">The planet where this starship is being created.</param>
         /// <param name="spaceLocation">Location of the space transfer point (when a player is converted to a ship)</param>
         /// <param name="landingLocation">Location of the ground transfer point (when a player is converted back to normal)</param>
         /// <returns>The new world property.</returns>
-        public static WorldProperty CreateStarship(uint player, PropertyLayoutType layout, Location spaceLocation, Location landingLocation)
+        public static WorldProperty CreateStarship(
+            uint player, 
+            PropertyLayoutType layout, 
+            PlanetType planetType,
+            Location spaceLocation, 
+            Location landingLocation)
         {
             var spacePosition = GetPositionFromLocation(spaceLocation);
             var spaceOrientation = GetFacingFromLocation(spaceLocation);
@@ -1176,11 +1204,31 @@ namespace SWLOR.Game.Server.Service
             var landingAreaResref = GetResRef(landingArea);
             var landingPropertyId = GetPropertyId(landingArea);
 
+            // In the event the starport a ship is located at is destroyed or otherwise disappears,
+            // we need to know the location of the planet's NPC starport so the ship can be returned there.
+            // If we don't capture this correctly, the ship will be lost in limbo and the players won't be 
+            // able to access it.
+            var planet = Planet.GetPlanetByType(planetType);
+            var npcLandingWaypoint = GetWaypointByTag(planet.LandingWaypointTag);
+            var npcLandingPosition = GetPosition(npcLandingWaypoint);
+            var npcLandingOrientation = GetFacing(npcLandingWaypoint);
+            var npcLandingArea = GetArea(npcLandingWaypoint);
+            var npcLandingResref = GetResRef(npcLandingArea);
+
             var playerId = GetObjectUUID(player);
             var propertyName = $"{GetName(player)}'s Starship";
 
             return CreateProperty(player, playerId, propertyName, PropertyType.Starship, layout, OBJECT_INVALID, property =>
             {
+                property.Positions[PropertyLocationType.LastNPCDockPosition] = new PropertyLocation
+                {
+                    X = npcLandingPosition.X,
+                    Y = npcLandingPosition.Y,
+                    Z = npcLandingPosition.Z,
+                    Orientation = npcLandingOrientation,
+                    AreaResref = npcLandingResref
+                };
+
                 property.Positions[PropertyLocationType.DockPosition] = new PropertyLocation
                 {
                     X = landingPosition.X,
@@ -1280,7 +1328,6 @@ namespace SWLOR.Game.Server.Service
             Location location)
         {
             var layoutDetail = GetLayoutByType(layout);
-            var playerId = GetObjectUUID(player);
             var propertyName = $"{GetName(player)}'s {layoutDetail.Name}";
             var city = DB.Get<WorldProperty>(parentCityId);
 
@@ -1303,7 +1350,10 @@ namespace SWLOR.Game.Server.Service
                 interiorProperty.CustomName = buildingStructure.CustomName;
             });
 
-            buildingStructure.ChildPropertyIds.Add(interior.Id);
+            if (!buildingStructure.ChildPropertyIds.ContainsKey(PropertyChildType.Interior))
+                buildingStructure.ChildPropertyIds[PropertyChildType.Interior] = new List<string>();
+
+            buildingStructure.ChildPropertyIds[PropertyChildType.Interior].Add(interior.Id);
             DB.Set(buildingStructure);
         }
 
@@ -1355,7 +1405,10 @@ namespace SWLOR.Game.Server.Service
                 Z = position.Z
             };
 
-            parentProperty.ChildPropertyIds.Add(structure.Id);
+            if (!parentProperty.ChildPropertyIds.ContainsKey(PropertyChildType.Structure))
+                parentProperty.ChildPropertyIds[PropertyChildType.Structure] = new List<string>();
+
+            parentProperty.ChildPropertyIds[PropertyChildType.Structure].Add(structure.Id);
             parentProperty.ItemStorageCount += structureItemStorage; 
 
             DB.Set(structure);
@@ -1970,7 +2023,7 @@ namespace SWLOR.Game.Server.Service
             // Buildings only ever have one child which is the interior area instance
             var buildingId = GetPropertyId(door);
             var building = DB.Get<WorldProperty>(buildingId);
-            var interiorId = building.ChildPropertyIds.Single();
+            var interiorId = building.ChildPropertyIds[PropertyChildType.Interior].Single();
             var interior = DB.Get<WorldProperty>(interiorId);
 
             var instance = GetRegisteredInstance(interior.Id);

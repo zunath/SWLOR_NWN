@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -27,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private List<string> _shipIds { get; set; } = new List<string>();
         private Location _spaceLocation;
         private Location _landingLocation;
+        private PlanetType _planetType;
 
         public string ShipCountRegistered
         {
@@ -496,6 +498,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(ShipManagementPayload initialPayload)
         {
+            _planetType = initialPayload.PlanetType;
+
             List<PlayerShip> dbPlayerShips;
             if (!string.IsNullOrWhiteSpace(initialPayload.SpecificPropertyId))
             {
@@ -968,7 +972,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var shipDetail = Space.GetShipDetailByItemTag(itemTag);
 
                 // Spawn the property associated with this ship.
-                var property = Property.CreateStarship(Player, shipDetail.Layout, _spaceLocation, _landingLocation);
+                var property = Property.CreateStarship(
+                    Player, 
+                    shipDetail.Layout, 
+                    _planetType,
+                    _spaceLocation, 
+                    _landingLocation);
 
                 var ship = new PlayerShip
                 {

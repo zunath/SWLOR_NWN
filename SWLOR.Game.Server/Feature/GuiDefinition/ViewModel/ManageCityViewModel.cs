@@ -472,7 +472,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         var instancePropertyIds = DB.Search(new DBQuery<WorldProperty>()
                             .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), _cityId, false)
                             .AddFieldSearch(nameof(WorldProperty.StructureType), structureTypeIds))
-                            .SelectMany(s => s.ChildPropertyIds);
+                            .SelectMany(s => s.ChildPropertyIds[PropertyChildType.Interior]);
 
                         foreach (var propertyId in instancePropertyIds)
                         {

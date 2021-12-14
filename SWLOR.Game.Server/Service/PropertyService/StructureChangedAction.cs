@@ -20,18 +20,29 @@ namespace SWLOR.Game.Server.Service.PropertyService
         public static Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> BuildSpawnActions()
         {
             // Structure position changed actions
-            Assign(StructureType.CityHall, StructureChangeType.PositionChanged, CityHall());
-            Assign(StructureType.Bank, StructureChangeType.PositionChanged, Bank());
-            Assign(StructureType.MedicalCenter, StructureChangeType.PositionChanged, MedicalCenter());
-            Assign(StructureType.Starport, StructureChangeType.PositionChanged, Starport());
-            Assign(StructureType.Cantina, StructureChangeType.PositionChanged, Cantina());
-            Assign(StructureType.SmallHouseStyle1, StructureChangeType.PositionChanged, House1());
+            Assign(StructureType.CityHall, StructureChangeType.PositionChanged, ChangeCityHall());
+            Assign(StructureType.Bank, StructureChangeType.PositionChanged, ChangeBank());
+            Assign(StructureType.MedicalCenter, StructureChangeType.PositionChanged, ChangeMedicalCenter());
+            Assign(StructureType.Starport, StructureChangeType.PositionChanged, ChangeStarport());
+            Assign(StructureType.Cantina, StructureChangeType.PositionChanged, ChangeCantina());
+            Assign(StructureType.SmallHouseStyle1, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(StructureType.SmallHouseStyle2, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(StructureType.SmallHouseStyle3, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(StructureType.SmallHouseStyle4, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(StructureType.MediumHouseStyle1, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(StructureType.MediumHouseStyle2, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(StructureType.MediumHouseStyle3, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(StructureType.MediumHouseStyle4, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(StructureType.LargeHouseStyle1, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(StructureType.LargeHouseStyle2, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(StructureType.LargeHouseStyle3, StructureChangeType.PositionChanged, ChangeHouse());
+            Assign(StructureType.LargeHouseStyle4, StructureChangeType.PositionChanged, ChangeHouse());
 
             // Structure retrieved actions
             Assign(StructureType.CityHall, StructureChangeType.Retrieved, ClearDoor());
             Assign(StructureType.Bank, StructureChangeType.Retrieved, ClearDoor());
             Assign(StructureType.MedicalCenter, StructureChangeType.Retrieved, ClearDoor());
-            Assign(StructureType.Starport, StructureChangeType.Retrieved, ClearDoor());
+            Assign(StructureType.Starport, StructureChangeType.Retrieved, RetrieveStarport());
             Assign(StructureType.Cantina, StructureChangeType.Retrieved, ClearDoor());
             Assign(StructureType.SmallHouseStyle1, StructureChangeType.Retrieved, ClearDoor());
 
@@ -82,7 +93,11 @@ namespace SWLOR.Game.Server.Service.PropertyService
         {
             var propertyId = Property.GetPropertyId(building);
             var dbBuilding = DB.Get<WorldProperty>(propertyId);
-            var instancePropertyId = dbBuilding.ChildPropertyIds.Single();
+
+            if (!dbBuilding.ChildPropertyIds.ContainsKey(PropertyChildType.Interior))
+                return;
+
+            var instancePropertyId = dbBuilding.ChildPropertyIds[PropertyChildType.Interior].Single();
             var instance = Property.GetRegisteredInstance(instancePropertyId);
 
             SetLocalLocation(instance.Area, "BUILDING_EXIT_LOCATION", location);
@@ -99,7 +114,9 @@ namespace SWLOR.Game.Server.Service.PropertyService
         private static void AdjustBuildingName(WorldProperty property)
         {
             // If the interior has been linked, also update its name.
-            var interiorId = property.ChildPropertyIds.SingleOrDefault();
+            var interiorId = property.ChildPropertyIds.ContainsKey(PropertyChildType.Interior) 
+                ? property.ChildPropertyIds[PropertyChildType.Interior].SingleOrDefault()
+                : null;
             if (!string.IsNullOrWhiteSpace(interiorId))
             {
                 var interior = DB.Get<WorldProperty>(interiorId);
@@ -119,7 +136,39 @@ namespace SWLOR.Game.Server.Service.PropertyService
             };
         }
 
-        private static Action<WorldProperty, uint> CityHall()
+        private static Action<WorldProperty, uint> RetrieveStarport()
+        {
+            return (property, building) =>
+            {
+                DestroyDoor(building);
+
+                // If a starport is picked up, all of the player ships which are currently docked
+                // there need to be relocated back to the last safe NPC dock they visited.
+
+                var interiorId = property.ChildPropertyIds[PropertyChildType.Interior].SingleOrDefault();
+                if (string.IsNullOrWhiteSpace(interiorId))
+                    return;
+
+                var dbInterior = DB.Get<WorldProperty>(interiorId);
+                if (!dbInterior.ChildPropertyIds.ContainsKey(PropertyChildType.Starship))
+                    return;
+
+                foreach (var starshipId in dbInterior.ChildPropertyIds[PropertyChildType.Starship])
+                {
+                    var dbStarship = DB.Get<WorldProperty>(starshipId);
+
+                    if(dbStarship.ChildPropertyIds.ContainsKey(PropertyChildType.RegisteredStarport))
+                        dbStarship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();
+
+                    dbStarship.Positions[PropertyLocationType.DockPosition] = dbStarship.Positions[PropertyLocationType.LastNPCDockPosition];
+
+                    DB.Set(dbStarship);
+                    Log.Write(LogGroup.Property, $"Starship '{dbStarship.CustomName}' ({dbStarship.Id}) has been relocated to the last NPC dock it visited because the starport '{dbInterior.CustomName}' ({dbInterior.Id}) has been retrieved.");
+                }
+            };
+        }
+
+        private static Action<WorldProperty, uint> ChangeCityHall()
         {
             return (property, building) =>
             {
@@ -129,7 +178,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             };
         }
 
-        private static Action<WorldProperty, uint> Bank()
+        private static Action<WorldProperty, uint> ChangeBank()
         {
             return (property, building) =>
             {
@@ -139,7 +188,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             };
         }
 
-        private static Action<WorldProperty, uint> MedicalCenter()
+        private static Action<WorldProperty, uint> ChangeMedicalCenter()
         {
             return (property, building) =>
             {
@@ -149,7 +198,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             };
         }
 
-        private static Action<WorldProperty, uint> Starport()
+        private static Action<WorldProperty, uint> ChangeStarport()
         {
             return (property, building) =>
             {
@@ -159,7 +208,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             };
         }
 
-        private static Action<WorldProperty, uint> Cantina()
+        private static Action<WorldProperty, uint> ChangeCantina()
         {
             return (property, building) =>
             {
@@ -169,7 +218,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
             };
         }
 
-        private static Action<WorldProperty, uint> House1()
+        private static Action<WorldProperty, uint> ChangeHouse()
         {
             return (property, building) =>
             {

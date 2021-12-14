@@ -85,18 +85,6 @@ namespace SWLOR.Game.Server.Conversation
             // Always create one item with zero bonuses.
             header += componentType.Name + " (No Bonuses) [RL: 0] " + GetChanceColor(100) + "\n";
 
-            // Start by checking attack bonus since we're not storing this value as a local variable on the item.
-            foreach (var prop in item.ItemProperties)
-            {
-                var propTypeID = _.GetItemPropertyType(prop);
-                if (propTypeID == ItemPropertyType.AttackBonus)
-                {
-                    // Get the amount of Attack Bonus
-                    int amount = _.GetItemPropertyCostTableValue(prop);
-                    header += ProcessPropertyDetails(amount, componentType.Name, "Attack Bonus", 3);
-                }
-            }
-
             // Now check specific custom properties which are stored as local variables on the item.
             header += ProcessPropertyDetails(item.HarvestingBonus, componentType.Name, "Harvesting Bonus", 3);
             header += ProcessPropertyDetails(item.PilotingBonus, componentType.Name, "Piloting Bonus", 3);
@@ -117,6 +105,7 @@ namespace SWLOR.Game.Server.Conversation
             header += ProcessPropertyDetails(item.MedicineBonus, componentType.Name, "Medicine", 3);
             header += ProcessPropertyDetails(item.HPRegenBonus, componentType.Name, "HP Regen", 3);
             header += ProcessPropertyDetails(item.FPRegenBonus, componentType.Name, "FP Regen", 3);
+            header += ProcessPropertyDetails(item.BaseAttackBonus, componentType.Name, "Base Attack Bonus", 3, 6f);
             header += ProcessPropertyDetails(item.StructureBonus, componentType.Name, "Structure Bonus", 3);
             header += ProcessPropertyDetails(item.SneakAttackBonus, componentType.Name, "Sneak Attack", 3);
             header += ProcessPropertyDetails(item.DamageBonus, componentType.Name, "Damage", 3);

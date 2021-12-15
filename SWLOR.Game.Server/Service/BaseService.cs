@@ -1028,7 +1028,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Assign some local variables to the exit object, for later use.
-            exit.SetLocalLocation("PLAYER_HOME_EXIT_LOCATION", exitLocation.Area.IsValid ? exitLocation : player.Location);
+            if (exitLocation == null || !exitLocation.Area.IsValid)
+            {
+                exitLocation = player.Location;
+            }
+            exit.SetLocalLocation("PLAYER_HOME_EXIT_LOCATION", exitLocation);
             exit.SetLocalInt("IS_BUILDING_DOOR", 1);
 
             // Assign apartment building ID to the exit only if we're working with an actual apartment.

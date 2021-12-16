@@ -96,9 +96,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("You make melee attack rolls with your PER score if it is higher than your MGT score.")
-                .Price(5)
-                .RequirementSkill(SkillType.MartialArts, 35)
-                .RequirementCharacterType(CharacterType.Standard)
+                .Price(3)
+                .RequirementSkill(SkillType.MartialArts, 10)
                 .GrantsFeat(FeatType.MartialFinesse);
         }
 
@@ -472,7 +471,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Attacks up to 3 nearby enemies for 4.5 DMG each.")
                 .Price(3)
                 .RequirementSkill(SkillType.MartialArts, 20)
-                .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.SpinningWhirl2)
 
                 .AddPerkLevel()

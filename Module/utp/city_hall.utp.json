@@ -6,7 +6,7 @@
   },
   "Appearance": {
     "type": "dword",
-    "value": 1931
+    "value": 30281
   },
   "AutoRemoveKey": {
     "type": "byte",
@@ -87,7 +87,7 @@
     "id": 66778,
     "type": "cexolocstring",
     "value": {
-      "0": "Old Player House"
+      "0": "Player Building - City Hall"
     }
   },
   "OnClick": {
@@ -176,11 +176,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "old_house"
+    "value": "city_hall"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "old_house"
+    "value": "city_hall"
   },
   "TrapDetectable": {
     "type": "byte",

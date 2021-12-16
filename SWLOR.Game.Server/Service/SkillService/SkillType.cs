@@ -103,12 +103,12 @@ namespace SWLOR.Game.Server.Service.SkillService
         Gathering = 11,
 
         [Skill(SkillCategoryType.Utility,
-            "Diplomacy",
+            "Leadership",
             20,
             true,
             "Ability to handle people, negotiate, and manage relations.",
             true)]
-        Diplomacy = 12,
+        Leadership = 12,
 
         // Languages
         [Skill(SkillCategoryType.Languages, 

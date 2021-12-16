@@ -6,7 +6,7 @@
   },
   "Appearance": {
     "type": "dword",
-    "value": 20846
+    "value": 30280
   },
   "AutoRemoveKey": {
     "type": "byte",
@@ -87,7 +87,7 @@
     "id": 66778,
     "type": "cexolocstring",
     "value": {
-      "0": "Player Building - Exterior 3"
+      "0": "Player Building - Bank"
     }
   },
   "OnClick": {
@@ -176,11 +176,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "house_ext_3"
+    "value": "bank"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "house_ext_3"
+    "value": "bank"
   },
   "TrapDetectable": {
     "type": "byte",

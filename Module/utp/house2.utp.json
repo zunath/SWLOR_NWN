@@ -6,7 +6,7 @@
   },
   "Appearance": {
     "type": "dword",
-    "value": 7
+    "value": 20619
   },
   "AutoRemoveKey": {
     "type": "byte",
@@ -30,10 +30,10 @@
   },
   "CurrentHP": {
     "type": "short",
-    "value": 10
+    "value": 15
   },
   "Description": {
-    "id": 110859,
+    "id": 66884,
     "type": "cexolocstring",
     "value": {
       "0": ""
@@ -41,7 +41,7 @@
   },
   "DisarmDC": {
     "type": "byte",
-    "value": 0
+    "value": 15
   },
   "Faction": {
     "type": "dword",
@@ -49,7 +49,7 @@
   },
   "Fort": {
     "type": "byte",
-    "value": 5
+    "value": 16
   },
   "Hardness": {
     "type": "byte",
@@ -57,11 +57,11 @@
   },
   "HasInventory": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "HP": {
     "type": "short",
-    "value": 10
+    "value": 15
   },
   "Interruptable": {
     "type": "byte",
@@ -84,10 +84,10 @@
     "value": 0
   },
   "LocName": {
-    "id": 5348,
+    "id": 66778,
     "type": "cexolocstring",
     "value": {
-      "0": "Bank Chest"
+      "0": "Player Building - House 2"
     }
   },
   "OnClick": {
@@ -96,7 +96,7 @@
   },
   "OnClosed": {
     "type": "resref",
-    "value": "storage_close"
+    "value": ""
   },
   "OnDamaged": {
     "type": "resref",
@@ -116,7 +116,7 @@
   },
   "OnInvDisturbed": {
     "type": "resref",
-    "value": "bank_disturb"
+    "value": ""
   },
   "OnLock": {
     "type": "resref",
@@ -128,7 +128,7 @@
   },
   "OnOpen": {
     "type": "resref",
-    "value": "bank_open"
+    "value": ""
   },
   "OnSpellCastAt": {
     "type": "resref",
@@ -152,7 +152,7 @@
   },
   "OpenLockDC": {
     "type": "byte",
-    "value": 0
+    "value": 18
   },
   "PaletteID": {
     "type": "byte",
@@ -164,7 +164,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 365
+    "value": 0
   },
   "Ref": {
     "type": "byte",
@@ -176,11 +176,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "bank_chest"
+    "value": "house2"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "bank_chest"
+    "value": "house2"
   },
   "TrapDetectable": {
     "type": "byte",
@@ -212,102 +212,7 @@
   },
   "Useable": {
     "type": "byte",
-    "value": 1
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "STORAGE_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "TestBank"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "STORAGE_ITEM_LIMIT"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 30
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "ON_DISTURBED_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Item.Storage.Bank.OnDisturbedRemoved"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "ON_OPENED_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Item.Storage.Bank.OnOpened"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "ON_CLOSED_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Item.Storage.OnClosed"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "ON_ADD_ITEM_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Item.Storage.Bank.OnAddItem"
-        }
-      }
-    ]
+    "value": 0
   },
   "Will": {
     "type": "byte",

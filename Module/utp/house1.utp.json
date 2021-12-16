@@ -87,7 +87,7 @@
     "id": 66778,
     "type": "cexolocstring",
     "value": {
-      "0": "Player Building - Exterior 1"
+      "0": "Player Building - House 1"
     }
   },
   "OnClick": {
@@ -176,11 +176,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "house_ext_1"
+    "value": "house1"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "house_ext_1"
+    "value": "house1"
   },
   "TrapDetectable": {
     "type": "byte",

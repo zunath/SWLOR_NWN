@@ -180,6 +180,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             StructureNames = structureNames;
             StructureToggles = structureToggles;
+
+            LoadStructure();
         }
 
         private WorldPropertyPermission GetPermission()
@@ -193,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return DB.Search(query).FirstOrDefault();
         }
 
-        private void LoadPropertyPermissions()
+        private void LoadPropertyPermissions(WorldProperty property)
         {
             var permission = GetPermission();
             IsEditStructureEnabled = false;
@@ -216,8 +218,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var propertyId = Property.GetPropertyId(area);
             var playerId = GetObjectUUID(Player);
             var permissions = Property.GetCategoryPermissions(playerId, propertyId);
+            var propertyTypeDetail = Property.GetPropertyDetail(property.PropertyType);
 
-            IsOpenStorageEnabled = permissions.Count > 0;
+            IsOpenStorageEnabled = permissions.Count > 0 && propertyTypeDetail.HasStorage;
         }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
@@ -235,14 +238,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 Gui.TogglePlayerWindow(Player, GuiWindowType.ManageStructures);
                 return;
             }
-
+            
             var property = DB.Get<WorldProperty>(propertyId);
-            ManageButtonText = property.PropertyType == PropertyType.Starship
-                ? "Permissions"
-                : "Manage Property";
+            ManageButtonText = property.PropertyType == PropertyType.Apartment
+                ? "Manage Property"
+                : "Permissions";
             StructureName = string.Empty;
             SelectedPageIndex = 0;
-            LoadPropertyPermissions();
+            LoadPropertyPermissions(property);
             Search();
 
             WatchOnClient(model => model.SelectedPageIndex);
@@ -266,6 +269,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var structure = GetStructure();
                 var placeable = Property.GetPlaceableByPropertyId(propertyId);
                 var permission = GetPermission();
+                var structureDetail = Property.GetStructureByType(structure.StructureType);
 
                 PlayerPlugin.ApplyLoopingVisualEffectToObject(Player, placeable, VisualEffect.Vfx_Dur_Aura_Green);
                 _currentPosition = GetPosition(placeable);
@@ -273,7 +277,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 StructureName = structure.CustomName;
                 IsEditStructureEnabled = permission.Permissions[PropertyPermissionType.EditStructures];
-                IsRetrieveStructureEnabled = permission.Permissions[PropertyPermissionType.RetrieveStructures];
+                IsRetrieveStructureEnabled = permission.Permissions[PropertyPermissionType.RetrieveStructures] && structureDetail.CanBeRetrieved;
             }
         }
 
@@ -344,19 +348,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var propertyId = Property.GetPropertyId(area);
             var property = DB.Get<WorldProperty>(propertyId);
 
+            // Apartments have their own management menu.
             if (property.PropertyType == PropertyType.Apartment)
             {
                 var payload = new ManageApartmentPayload(propertyId);
                 Gui.TogglePlayerWindow(Player, GuiWindowType.ManageApartment, payload);
             }
-            else if(property.PropertyType == PropertyType.Starship)
+            // Cities use the same permissions menu as all other buildings,
+            // but the city Id is located on themselves instead of the parent building's parent.
+            else if (property.PropertyType == PropertyType.City)
             {
-                var payload = new PropertyPermissionPayload(PropertyType.Starship, propertyId, false);
+                var payload = new PropertyPermissionPayload(property.PropertyType, propertyId, propertyId, false);
                 Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
             }
+            else if (property.PropertyType == PropertyType.Starship)
+            {
+                var payload = new PropertyPermissionPayload(property.PropertyType, propertyId, string.Empty, false);
+                Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
+            }
+            // Buildings look at their parent's parent to determine the city Id.
             else
             {
-                // todo: buildings
+                var parentBuilding = DB.Get<WorldProperty>(property.ParentPropertyId);
+                var cityId = parentBuilding.ParentPropertyId;
+                var payload = new PropertyPermissionPayload(property.PropertyType, propertyId, cityId, false);
+                Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload);
             }
         };
 
@@ -382,6 +398,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
+                var structureDetail = Property.GetStructureByType(structure.StructureType);
+
+                if (!structureDetail.CanBeRetrieved)
+                {
+                    Instructions = "This structure cannot be retrieved.";
+                    InstructionColor = _red;
+                    return;
+                }
+
                 // Removing this structure would reduce the item storage cap below the number of items actually
                 // in storage.
                 var query = new DBQuery<WorldPropertyCategory>()
@@ -398,12 +423,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 
                 var item = ObjectPlugin.Deserialize(structure.SerializedItem);
                 ObjectPlugin.AcquireItem(Player, item);
-
-                parentProperty.ChildPropertyIds.Remove(structure.Id);
+                
+                // Remove the structure from the parent's child list.
+                parentProperty.ChildPropertyIds[PropertyChildType.Structure].Remove(structure.Id);
                 parentProperty.ItemStorageCount -= structure.ItemStorageCount;
 
                 DB.Set(parentProperty);
+
+                // Some structures have specific logic which must be run when they're picked up. Do that now.
+                Property.RunStructureChangedEvent(structure.StructureType, StructureChangeType.Retrieved, structure, placeable);
+
                 DB.Delete<WorldProperty>(structure.Id);
+
+                // Remove any child instances this structure contains.
+                if (structure.ChildPropertyIds.ContainsKey(PropertyChildType.Interior))
+                {
+                    foreach (var childId in structure.ChildPropertyIds[PropertyChildType.Interior])
+                    {
+                        DB.Delete<WorldProperty>(childId);
+                    }
+                }
 
                 StructureNames.RemoveAt(SelectedStructureIndex);
                 StructureToggles.RemoveAt(SelectedStructureIndex);
@@ -411,7 +450,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SelectedStructureIndex = -1;
 
                 DestroyObject(placeable);
-
                 LoadStructure();
             });
         };
@@ -447,6 +485,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             Instructions = $"Structure saved!";
             InstructionColor = _green;
+
+            Property.RunStructureChangedEvent(structure.StructureType, StructureChangeType.PositionChanged, structure, placeable);
         };
 
         private void DiscardChanges()

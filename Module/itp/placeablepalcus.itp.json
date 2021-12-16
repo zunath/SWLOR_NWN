@@ -67605,17 +67605,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Bank Chest"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "bank_chest"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Bank Terminal"
                     },
                     "RESREF": {
@@ -67687,6 +67676,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "_mdrn_pl_placec"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Citizenship Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "citizenship_term"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "City Management Terminal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "citymanage_term"
                     }
                   },
                   {
@@ -68144,17 +68155,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Old Player House"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "old_house"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Patch of Herbs"
                     },
                     "RESREF": {
@@ -68232,33 +68232,77 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Player Building - Exterior 1"
+                      "value": "Player Building - Bank"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "house_ext_1"
+                      "value": "bank"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Player Building - Exterior 2"
+                      "value": "Player Building - Cantina"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "house_ext_2"
+                      "value": "cantina"
                     }
                   },
                   {
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Player Building - Exterior 3"
+                      "value": "Player Building - City Hall"
                     },
                     "RESREF": {
                       "type": "resref",
-                      "value": "house_ext_3"
+                      "value": "city_hall"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Player Building - House 1"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "house1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Player Building - House 2"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "house2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Player Building - Medical Center"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "medical_center"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Player Building - Starport"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "starport"
                     }
                   },
                   {

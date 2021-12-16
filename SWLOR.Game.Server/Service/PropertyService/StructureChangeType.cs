@@ -1,8 +1,9 @@
 ﻿namespace SWLOR.Game.Server.Service.PropertyService
 {
-    public enum PropertyTimerType
+    public enum StructureChangeType
     {
         Invalid = 0,
-        Lease = 1,
+        PositionChanged = 1,
+        Retrieved = 2
     }
 }

@@ -88,8 +88,8 @@ namespace SWLOR.Game.Server.Service.PerkService
         [PerkCategory("Gathering", true)]
         Gathering = 27,
 
-        [PerkCategory("Diplomacy", true)]
-        Diplomacy = 28,
+        [PerkCategory("Leadership", true)]
+        Leadership = 28,
 
         [PerkCategory("Force - Light", true)]
         ForceLight = 29,

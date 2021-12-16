@@ -21,7 +21,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private void ReturnToLastDockedPosition(uint player, PropertyLocation propertyLocation)
         {
-            var returningArea = Cache.GetAreaByResref(propertyLocation.AreaResref);
+            var returningArea = string.IsNullOrWhiteSpace(propertyLocation.AreaResref)
+                ? Property.GetRegisteredInstance(propertyLocation.InstancePropertyId).Area
+                : Cache.GetAreaByResref(propertyLocation.AreaResref);
+            
             var location = Location(
                 returningArea,
                 Vector3(propertyLocation.X, propertyLocation.Y, propertyLocation.Z),
@@ -67,7 +70,18 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 page.AddResponse("Exit", () =>
                 {
-                    Property.JumpToOriginalLocation(player);
+                    // Building interiors will have a location set identifying where their doors are located.
+                    // Jump to this location if it's set.
+                    if (GetLocalBool(area, "BUILDING_EXIT_SET"))
+                    {
+                        var location = GetLocalLocation(area, "BUILDING_EXIT_LOCATION");
+                        AssignCommand(player, () => ActionJumpToLocation(location));
+                    }
+                    // Otherwise jump the player to their original location.
+                    else
+                    {
+                        Property.JumpToOriginalLocation(player);
+                    }
                 });
             }
         }

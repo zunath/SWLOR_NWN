@@ -56,7 +56,7 @@
   },
   "HasInventory": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "HP": {
     "type": "short",
@@ -76,7 +76,7 @@
   },
   "Lockable": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "Locked": {
     "type": "byte",
@@ -94,7 +94,7 @@
   },
   "OnClosed": {
     "type": "resref",
-    "value": "script_3"
+    "value": ""
   },
   "OnDamaged": {
     "type": "resref",
@@ -114,7 +114,7 @@
   },
   "OnInvDisturbed": {
     "type": "resref",
-    "value": "script_1"
+    "value": ""
   },
   "OnLock": {
     "type": "resref",
@@ -126,7 +126,7 @@
   },
   "OnOpen": {
     "type": "resref",
-    "value": "script_2"
+    "value": ""
   },
   "OnSpellCastAt": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "OnUsed": {
     "type": "resref",
-    "value": ""
+    "value": "open_bank"
   },
   "OnUserDefined": {
     "type": "resref",
@@ -219,7 +219,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "BANK_LIMIT"
+          "value": "STORAGE_ITEM_LIMIT"
         },
         "Type": {
           "type": "dword",
@@ -234,22 +234,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "BANK_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT_1"
+          "value": "STORAGE_ID"
         },
         "Type": {
           "type": "dword",
@@ -257,37 +242,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "Placeable.Bank.OnDisturbed"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Placeable.Bank.OnOpened"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT_3"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Placeable.Bank.OnClosed"
+          "value": "TEST_BANK"
         }
       }
     ]

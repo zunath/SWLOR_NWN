@@ -102,6 +102,7 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         ArmorEnhancement = 101,
         WeaponEnhancement = 102,
         EnhancementLevel = 104,
+        StructureBonus = 105,
 
         Evasion = 117,
         AbilityRecastReduction = 118,

@@ -6,7 +6,7 @@
   },
   "Appearance": {
     "type": "dword",
-    "value": 20619
+    "value": 20627
   },
   "AutoRemoveKey": {
     "type": "byte",
@@ -30,10 +30,9 @@
   },
   "CurrentHP": {
     "type": "short",
-    "value": 15
+    "value": 10
   },
   "Description": {
-    "id": 66884,
     "type": "cexolocstring",
     "value": {
       "0": ""
@@ -41,7 +40,7 @@
   },
   "DisarmDC": {
     "type": "byte",
-    "value": 15
+    "value": 0
   },
   "Faction": {
     "type": "dword",
@@ -49,7 +48,7 @@
   },
   "Fort": {
     "type": "byte",
-    "value": 16
+    "value": 5
   },
   "Hardness": {
     "type": "byte",
@@ -61,7 +60,7 @@
   },
   "HP": {
     "type": "short",
-    "value": 15
+    "value": 10
   },
   "Interruptable": {
     "type": "byte",
@@ -84,10 +83,9 @@
     "value": 0
   },
   "LocName": {
-    "id": 66778,
     "type": "cexolocstring",
     "value": {
-      "0": "Player Building - Exterior 2"
+      "0": "Citizenship Terminal"
     }
   },
   "OnClick": {
@@ -144,7 +142,7 @@
   },
   "OnUsed": {
     "type": "resref",
-    "value": ""
+    "value": "open_citizenship"
   },
   "OnUserDefined": {
     "type": "resref",
@@ -152,7 +150,7 @@
   },
   "OpenLockDC": {
     "type": "byte",
-    "value": 18
+    "value": 0
   },
   "PaletteID": {
     "type": "byte",
@@ -176,11 +174,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "house_ext_2"
+    "value": "citizenship_terminal"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "house_ext_2"
+    "value": "citizenship_term"
   },
   "TrapDetectable": {
     "type": "byte",
@@ -212,7 +210,7 @@
   },
   "Useable": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "Will": {
     "type": "byte",

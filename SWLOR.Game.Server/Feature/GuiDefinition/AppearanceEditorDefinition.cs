@@ -38,6 +38,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(row =>
                     {
+                        row.AddSpacer();
+
+                        row.AddButton()
+                            .SetText("Decrease Height")
+                            .SetHeight(24f)
+                            .SetWidth(128f)
+                            .BindOnClicked(model => model.OnDecreaseAppearanceScale());
+
+                        row.AddButton()
+                            .SetText("Increase Height")
+                            .SetHeight(24f)
+                            .SetWidth(128f)
+                            .BindOnClicked(model => model.OnIncreaseAppearanceScale());
+
+                        row.AddButton()
+                            .SetText("Save Height")
+                            .SetHeight(24f)
+                            .SetWidth(128f)
+                            .BindOnClicked(model => model.OnSaveAppearanceScale());
+
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
                         row.BindIsVisible(model => model.IsEquipmentSelected);
 
                         row.AddSpacer();

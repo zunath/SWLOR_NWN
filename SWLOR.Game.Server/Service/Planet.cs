@@ -84,5 +84,14 @@ namespace SWLOR.Game.Server.Service
         {
             return _planets[type];
         }
+
+        /// <summary>
+        /// Retrieves all of the active planets available.
+        /// </summary>
+        /// <returns>A dictionary containing the active planets.</returns>
+        public static Dictionary<PlanetType, PlanetAttribute> GetAllPlanets()
+        {
+            return _planets.ToDictionary(x => x.Key, y => y.Value);
+        }
     }
 }

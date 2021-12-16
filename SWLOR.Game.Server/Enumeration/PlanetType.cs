@@ -18,36 +18,42 @@ namespace SWLOR.Game.Server.Enumeration
             "-- Invalid --", 
             "", 
             "",
+            0,
             false)]
         Invalid = 0,
         [Planet("Viscara", 
             "Viscara - ", 
             "Viscara_Orbit",
             "VISCARA_LANDING",
+            100,
             true)]
         Viscara = 1,
         [Planet("Tatooine", 
             "Tatooine - ", 
             "Tatooine_Orbit",
             "TATOOINE_LANDING",
+            400,
             true)]
         Tatooine = 2,
         [Planet("Mon Cala", 
             "Mon Cala - ", 
             "MonCala_Orbit",
             "MON_CALA_LANDING",
+            200,
             true)]
         MonCala = 4,
         [Planet("Hutlar", 
             "Hutlar - ", 
             "Hutlar_Orbit",
             "HUTLAR_LANDING",
+            300,
             true)]
         Hutlar = 8,
         [Planet("CZ-220", 
             "CZ-220 - ", 
             "CZ220_Orbit", 
             "CZ220_LANDING",
+            100,
             true)]
         CZ220 = 16
     }
@@ -58,6 +64,7 @@ namespace SWLOR.Game.Server.Enumeration
         public string Prefix { get; set; }
         public string SpaceOrbitWaypointTag { get; set; }
         public string LandingWaypointTag { get; set; }
+        public int NPCTransportationFee { get; set; }
         public bool IsActive { get; set; }
 
         public PlanetAttribute(
@@ -65,12 +72,14 @@ namespace SWLOR.Game.Server.Enumeration
             string prefix,
             string spaceOrbitWaypointTag,
             string landingWaypointTag,
+            int npcTransportationFee,
             bool isActive)
         {
             Name = name;
             Prefix = prefix;
             SpaceOrbitWaypointTag = spaceOrbitWaypointTag;
             LandingWaypointTag = landingWaypointTag;
+            NPCTransportationFee = npcTransportationFee;
             IsActive = isActive;
         }
     }

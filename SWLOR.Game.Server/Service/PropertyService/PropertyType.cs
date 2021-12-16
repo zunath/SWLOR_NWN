@@ -5,29 +5,29 @@ namespace SWLOR.Game.Server.Service.PropertyService
     [Flags]
     public enum PropertyType
     {
-        [PropertyType("Invalid", false, false, PropertySpawnType.Invalid)]
+        [PropertyType("Invalid", false, PropertyPublicType.Invalid, PropertySpawnType.Invalid)]
         Invalid = 0,
-        [PropertyType("Apartment", true, false, PropertySpawnType.Instance)]
+        [PropertyType("Apartment", true, PropertyPublicType.AlwaysPrivate, PropertySpawnType.Instance)]
         Apartment = 1,
-        [PropertyType("City Hall", false, true, PropertySpawnType.Instance)]
+        [PropertyType("City Hall", false, PropertyPublicType.AlwaysPublic, PropertySpawnType.Instance)]
         CityHall = 2,
-        [PropertyType("Starship", true, false, PropertySpawnType.Instance)]
+        [PropertyType("Starship", true, PropertyPublicType.AlwaysPrivate, PropertySpawnType.Instance)]
         Starship = 4,
-        [PropertyType("City", false, true, PropertySpawnType.Area)]
+        [PropertyType("City", false, PropertyPublicType.AlwaysPublic, PropertySpawnType.Area)]
         City = 8,
-        [PropertyType("Structure", false, false, PropertySpawnType.World)]
+        [PropertyType("Structure", false, PropertyPublicType.Invalid, PropertySpawnType.World)]
         Structure = 16,
-        [PropertyType("Category", false, false, PropertySpawnType.Invalid)]
+        [PropertyType("Category", false, PropertyPublicType.Invalid, PropertySpawnType.Invalid)]
         Category = 32,
-        [PropertyType("Bank", true, true, PropertySpawnType.Instance)]
+        [PropertyType("Bank", true, PropertyPublicType.AlwaysPublic, PropertySpawnType.Instance)]
         Bank = 64,
-        [PropertyType("Medical Center", false, true, PropertySpawnType.Instance)]
+        [PropertyType("Medical Center", false, PropertyPublicType.AlwaysPublic, PropertySpawnType.Instance)]
         MedicalCenter = 128,
-        [PropertyType("Starport", false, true, PropertySpawnType.Instance)]
+        [PropertyType("Starport", false, PropertyPublicType.AlwaysPublic, PropertySpawnType.Instance)]
         Starport = 256,
-        [PropertyType("Cantina", false, true, PropertySpawnType.Instance)]
+        [PropertyType("Cantina", false, PropertyPublicType.AlwaysPublic, PropertySpawnType.Instance)]
         Cantina = 512,
-        [PropertyType("House", true, false, PropertySpawnType.Instance)]
+        [PropertyType("House", true, PropertyPublicType.Adjustable, PropertySpawnType.Instance)]
         House = 1024,
     }
 
@@ -35,18 +35,18 @@ namespace SWLOR.Game.Server.Service.PropertyService
     {
         public string Name { get; set; }
         public bool HasStorage { get; set; }
-        public bool IsAlwaysPublic { get; set; }
+        public PropertyPublicType PublicSetting { get; set; }
         public PropertySpawnType SpawnType { get; set; }
 
         public PropertyTypeAttribute(
             string name, 
             bool hasStorage, 
-            bool isAlwaysPublic,
+            PropertyPublicType publicSetting,
             PropertySpawnType spawnType)
         {
             Name = name;
             HasStorage = hasStorage;
-            IsAlwaysPublic = isAlwaysPublic;
+            PublicSetting = publicSetting;
             SpawnType = spawnType;
         }
     }

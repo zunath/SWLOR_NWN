@@ -1101,7 +1101,7 @@ namespace SWLOR.Game.Server.Service
             var property = new WorldProperty
             {
                 CustomName = propertyName,
-                IsPubliclyAccessible = propertyDetail.IsAlwaysPublic,
+                IsPubliclyAccessible = propertyDetail.PublicSetting == PropertyPublicType.AlwaysPublic,
                 PropertyType = type,
                 OwnerPlayerId = ownerPlayerId,
                 Layout = layout,

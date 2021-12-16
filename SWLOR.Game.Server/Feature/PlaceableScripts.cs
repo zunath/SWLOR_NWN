@@ -110,6 +110,22 @@ namespace SWLOR.Game.Server.Feature
                 AssignCommand(user, () => ActionStartConversation(target, string.Empty, true, false));
             }
         }
-        
+        /// <summary>
+        /// Handle sitting on an object.        
+        /// </summary>
+        [NWNEventHandler("sit")]
+        public static void Sit()
+        {
+            var user = GetLastUsedBy();
+
+            AssignCommand(user, () => ActionSit(OBJECT_SELF));
+            if (GetObjectVisualTransform(user, ObjectVisualTransform.Scale) == 1.0) return;
+
+            // Transformed creatures sit at the height of their transform. Normalise them to the height of the chair.
+            // We want to take the negative/opposite of their differential from "standard" and divide by 2.  So a 
+            // creature at 1.6 scale (0.6 above standard) should be Z-transformed by -0.3.
+            float fScale = GetObjectVisualTransform(user, ObjectVisualTransform.Scale) - 1.0f;
+            SetObjectVisualTransform(user, ObjectVisualTransform.TranslateZ, (-fScale) / 2.0f);           
+        }
     }
 }

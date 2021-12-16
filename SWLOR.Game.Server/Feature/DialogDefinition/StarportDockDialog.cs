@@ -149,6 +149,11 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                             DB.Set(dbOldStarport);
 
                             Log.Write(LogGroup.Property, $"Unregistered player ship '{dbProperty.CustomName}' ({dbProperty.Id}) from old starport '{dbOldStarport.CustomName}' ({dbOldStarport.Id}).");
+                            
+                            // Refresh the starport object we're working with in the event the "old" starport
+                            // is actually the current one. This ensures we don't get a duplicate starship property Id in the list.
+                            if(dbOldStarport.Id == dbStarport.Id)
+                                dbStarport = DB.Get<WorldProperty>(dockPoint.PropertyId);
                         }
 
                         dbProperty.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();
@@ -159,11 +164,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         // Register this starport to the player ship.
                         dbProperty.ChildPropertyIds[PropertyChildType.RegisteredStarport].Add(dbStarport.Id);
 
-                        // Register this player ship to the star port.
+                        // Register this player ship to the starport.
                         if (!dbStarport.ChildPropertyIds.ContainsKey(PropertyChildType.Starship))
                             dbStarport.ChildPropertyIds[PropertyChildType.Starship] = new List<string>();
 
-                        dbStarport.ChildPropertyIds[PropertyChildType.Starship].Add(dbProperty.Id);
+                        if(!dbStarport.ChildPropertyIds[PropertyChildType.Starship].Contains(dbProperty.Id))
+                            dbStarport.ChildPropertyIds[PropertyChildType.Starship].Add(dbProperty.Id);
                         DB.Set(dbStarport);
                     }
 

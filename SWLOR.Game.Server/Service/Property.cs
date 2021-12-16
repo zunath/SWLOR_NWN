@@ -821,8 +821,12 @@ namespace SWLOR.Game.Server.Service
         private static void DeleteProperty(WorldProperty property)
         {
             // Recursively clear any children properties tied to this property.
-            foreach (var (_, propertyIds) in property.ChildPropertyIds)
+            foreach (var (childType, propertyIds) in property.ChildPropertyIds)
             {
+                if (childType == PropertyChildType.RegisteredStarport ||
+                    childType == PropertyChildType.Starship)
+                    continue;
+
                 if (propertyIds.Count > 0)
                 {
                     var query = new DBQuery<WorldProperty>()
@@ -910,7 +914,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var propertyQuery = new DBQuery<WorldProperty>()
                     .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)type);
-                var dbProperties = DB.Search(propertyQuery);
+                var dbProperties = DB.Search(propertyQuery).ToList();
 
                 foreach (var property in dbProperties)
                 {

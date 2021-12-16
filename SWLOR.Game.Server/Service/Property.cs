@@ -782,9 +782,15 @@ namespace SWLOR.Game.Server.Service
             }
             
             // Calculate new upkeep price for this week.
+            var dbMayor = DB.Get<Player>(city.OwnerPlayerId);
+            var upkeepReductionPercent = dbMayor.Perks.ContainsKey(PerkType.Upkeep)
+                ? dbMayor.Perks[PerkType.Upkeep] * 0.05f
+                : 0;
             var layout = GetLayoutByType(city.Layout);
             const int UpgradeBasePrice = 10000;
             var basePrice = layout.PricePerDay * 7;
+            basePrice -= (int)(basePrice * upkeepReductionPercent);
+
             var upgradePrice = 
                 (city.Upgrades[PropertyUpgradeType.BankLevel] - 1) * UpgradeBasePrice +
                 (city.Upgrades[PropertyUpgradeType.MedicalCenterLevel] - 1) * UpgradeBasePrice +

@@ -92,41 +92,7 @@ namespace SWLOR.Game.Server.Native
             else
             {
                 // Get a reference to the weapon being used.
-                // First, figure out what sort of attack we're doing.  From NWN.Native.API.WeaponAttackType 
-                // MainhandWeapon = 1,
-                // OffhandWeapon = 2,
-                // CreatureLeftWeapon = 3,
-                // CreatureRightWeapon = 4,
-                // CreatureBiteWeapon = 5,
-                // AdditionalWeapon = 6,
-                // Unarmed = 7,
-                // AdditionalUnarmed = 8 
-                uint nativeAttackType = pAttackData.m_nWeaponAttackType;
                 weapon = pCombatRound.GetCurrentAttackWeapon();
-                /*
-                switch (nativeAttackType)
-                {
-                    case 1:
-                    case 6:
-                        weapon = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
-                        break;
-                    case 2:
-                        weapon = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand);
-                        break;
-                    case 3:
-                        weapon = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.CreatureWeaponLeft);
-                        break;
-                    case 4:
-                        weapon = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.CreatureWeaponRight);
-                        break;
-                    case 5:
-                        weapon = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.CreatureWeaponBite);
-                        break;
-                    case 7:
-                    case 8:
-                        // No weapon.
-                        break;
-                }*/
 
                 // If no weapon, use default attack type (Might).  Otherwise, look further.
                 if (weapon != null)
@@ -152,11 +118,11 @@ namespace SWLOR.Game.Server.Native
 
             switch (attackType)
             {
-                case 2:
+                case (uint)AttackType.Ranged:
                     attackAttribute = attackerStats.m_nDexterityModifier;
                     defendAttribute = defenderStats.m_nDexterityModifier;
                     break;
-                case 3:
+                case (uint)AttackType.Spirit:
                     attackAttribute = attackerStats.m_nWisdomModifier;
                     defendAttribute = defenderStats.m_nWisdomModifier;
                     break;

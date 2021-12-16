@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
@@ -573,6 +574,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadPartCategoryOptions();
             LoadItemParts();
             SelectedColorCategoryIndex = 0;
+        };
+        public Action OnDecreaseAppearanceScale() => () =>
+        {
+            float scale = GetObjectVisualTransform(Player, ObjectVisualTransform.Scale);
+            float increment = 0.01f;
+            float minimumScale = 0.85f;
+            
+            if (scale - increment < minimumScale)
+            {
+                scale = minimumScale;
+                SendMessageToPC(Player, "You cannot decrease your height any further.");
+            }
+            else
+            {
+                SetObjectVisualTransform(Player, ObjectVisualTransform.Scale, scale - increment);
+            }
+        };
+        public Action OnIncreaseAppearanceScale() => () =>
+        {
+            float scale = GetObjectVisualTransform(Player, ObjectVisualTransform.Scale);
+            float increment = 0.01f;
+            float maximumScale = 1.15f;
+
+            if (scale + increment > maximumScale)
+            {
+                scale = maximumScale;
+                SendMessageToPC(Player, "You cannot increase your height any further.");
+            }
+            else
+            {
+                SetObjectVisualTransform(Player, ObjectVisualTransform.Scale, scale + increment);
+            }
+        };
+
+        public Action OnSaveAppearanceScale() => () =>
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            dbPlayer.AppearanceScale = GetObjectVisualTransform(Player, ObjectVisualTransform.Scale);
+
+            DB.Set(dbPlayer);
         };
 
         public Action OnSelectColorCategory() => () =>

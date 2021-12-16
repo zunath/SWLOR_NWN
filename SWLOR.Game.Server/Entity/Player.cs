@@ -84,6 +84,7 @@ namespace SWLOR.Game.Server.Entity
             ObjectVisibilities = new Dictionary<string, VisibilityType>();
             WindowGeometries = new Dictionary<GuiWindowType, GuiRectangle>();
             SubdualMode = false;
+            AppearanceScale = 1.0f;
         }
 
 
@@ -164,6 +165,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<CombatDamageType, int> Defenses { get; set; }
         public Dictionary<GuiWindowType, GuiRectangle> WindowGeometries { get; set; }
         public bool SubdualMode { get; set; }
+        public float AppearanceScale { get; set; }
     }
 
     public class MapPin

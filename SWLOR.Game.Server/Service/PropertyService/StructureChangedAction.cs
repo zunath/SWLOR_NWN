@@ -138,33 +138,51 @@ namespace SWLOR.Game.Server.Service.PropertyService
 
         private static Action<WorldProperty, uint> RetrieveStarport()
         {
+            uint GetLandingWaypoint(uint area)
+            {
+                var referenceObject = GetFirstObjectInArea(area);
+
+                if (GetTag(referenceObject) == "STARSHIP_DOCKPOINT")
+                    return referenceObject;
+
+                return GetNearestObjectByTag("STARSHIP_DOCKPOINT", referenceObject);
+            }
+
             return (property, building) =>
             {
                 DestroyDoor(building);
 
                 // If a starport is picked up, all of the player ships which are currently docked
                 // there need to be relocated back to the last safe NPC dock they visited.
-
                 var interiorId = property.ChildPropertyIds[PropertyChildType.Interior].SingleOrDefault();
                 if (string.IsNullOrWhiteSpace(interiorId))
                     return;
 
                 var dbInterior = DB.Get<WorldProperty>(interiorId);
-                if (!dbInterior.ChildPropertyIds.ContainsKey(PropertyChildType.Starship))
-                    return;
-
-                foreach (var starshipId in dbInterior.ChildPropertyIds[PropertyChildType.Starship])
+                if (dbInterior.ChildPropertyIds.ContainsKey(PropertyChildType.Starship))
                 {
-                    var dbStarship = DB.Get<WorldProperty>(starshipId);
+                    foreach (var starshipId in dbInterior.ChildPropertyIds[PropertyChildType.Starship])
+                    {
+                        var dbStarship = DB.Get<WorldProperty>(starshipId);
 
-                    if(dbStarship.ChildPropertyIds.ContainsKey(PropertyChildType.RegisteredStarport))
-                        dbStarship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();
+                        if (dbStarship.ChildPropertyIds.ContainsKey(PropertyChildType.RegisteredStarport))
+                            dbStarship.ChildPropertyIds[PropertyChildType.RegisteredStarport].Clear();
 
-                    dbStarship.Positions[PropertyLocationType.DockPosition] = dbStarship.Positions[PropertyLocationType.LastNPCDockPosition];
+                        dbStarship.Positions[PropertyLocationType.DockPosition] = dbStarship.Positions[PropertyLocationType.LastNPCDockPosition];
 
-                    DB.Set(dbStarship);
-                    Log.Write(LogGroup.Property, $"Starship '{dbStarship.CustomName}' ({dbStarship.Id}) has been relocated to the last NPC dock it visited because the starport '{dbInterior.CustomName}' ({dbInterior.Id}) has been retrieved.");
+                        DB.Set(dbStarship);
+                        Log.Write(LogGroup.Property, $"Starship '{dbStarship.CustomName}' ({dbStarship.Id}) has been relocated to the last NPC dock it visited because the starport '{dbInterior.CustomName}' ({dbInterior.Id}) has been retrieved.");
+                    }
                 }
+
+                // The dock point needs to be unregistered from the space service so it no longer displays in the list
+                // of docking points.
+                var dbCity = DB.Get<WorldProperty>(property.ParentPropertyId);
+                var cityArea = Cache.GetAreaByResref(dbCity.ParentPropertyId);
+                var instance = Property.GetRegisteredInstance(interiorId);
+                var dockPoint = GetLandingWaypoint(instance.Area);
+
+                Space.RemoveLandingPoint(dockPoint, cityArea);
             };
         }
 

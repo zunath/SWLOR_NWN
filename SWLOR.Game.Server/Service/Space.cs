@@ -96,7 +96,6 @@ namespace SWLOR.Game.Server.Service
             var dockPointId = GetLocalString(waypoint, "STARSHIP_DOCKPOINT_ID");
             if (!string.IsNullOrWhiteSpace(dockPointId))
             {
-                Log.Write(LogGroup.Error, $"Dock point Id '{dockPointId}' has already been registered.");
                 return;
             }
 
@@ -128,10 +127,10 @@ namespace SWLOR.Game.Server.Service
         /// Once removed, this location will no longer be available to land at.
         /// </summary>
         /// <param name="waypoint">The waypoint to remove.</param>
-        public static void RemoveLandingPoint(uint waypoint)
+        /// <param name="cityArea">The area to remove from.</param>
+        public static void RemoveLandingPoint(uint waypoint, uint cityArea)
         {
-            var area = GetArea(waypoint);
-            var planet = Planet.GetPlanetType(area);
+            var planet = Planet.GetPlanetType(cityArea);
 
             // Only waypoints in recognized planets are tracked.
             if (planet == PlanetType.Invalid)

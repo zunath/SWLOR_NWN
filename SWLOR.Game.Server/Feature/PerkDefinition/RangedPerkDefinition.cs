@@ -196,7 +196,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.PistolBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + level;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -207,8 +207,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.PistolBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
 
                 })
@@ -219,7 +218,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.PistolBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + 1;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -230,31 +229,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.PistolBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
                 })
 
                 .AddPerkLevel()
-                .Description("Grants +1 BAB when equipped with a Pistol.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Pistol.")
+                .Price(12)
                 .RequirementSkill(SkillType.Ranged, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PistolMastery1)
 
                 .AddPerkLevel()
-                .Description("Grants +2 BAB when equipped with a Pistol.")
-                .Price(8)
-                .RequirementSkill(SkillType.Ranged, 40)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.PistolMastery2)
-
-                .AddPerkLevel()
-                .Description("Grants +3 BAB when equipped with a Pistol.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Pistol.")
+                .Price(12)
                 .RequirementSkill(SkillType.Ranged, 50)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.PistolMastery3);
+                .GrantsFeat(FeatType.PistolMastery2);
         }
 
         private void QuickDraw(PerkBuilder builder)
@@ -386,7 +377,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + level;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -397,8 +388,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
 
                 })
@@ -409,7 +399,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + 1;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -420,31 +410,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
                 })
 
                 .AddPerkLevel()
-                .Description("Grants +1 BAB when equipped with a Throwing Weapon.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Throwing Weapon.")
+                .Price(12)
                 .RequirementSkill(SkillType.Ranged, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ThrowingWeaponMastery1)
 
                 .AddPerkLevel()
-                .Description("Grants +2 BAB when equipped with a Throwing Weapon.")
-                .Price(8)
-                .RequirementSkill(SkillType.Ranged, 40)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.ThrowingWeaponMastery2)
-
-                .AddPerkLevel()
-                .Description("Grants +3 BAB when equipped with a Throwing Weapon.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Throwing Weapon.")
+                .Price(12)
                 .RequirementSkill(SkillType.Ranged, 50)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.ThrowingWeaponMastery3);
+                .GrantsFeat(FeatType.ThrowingWeaponMastery2);
         }
 
         private void ExplosiveToss(PerkBuilder builder)
@@ -576,7 +558,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.RifleBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + level;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -587,8 +569,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.RifleBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
 
                 })
@@ -599,7 +580,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.RifleBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + 1;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -610,31 +591,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.RifleBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
                 })
 
                 .AddPerkLevel()
-                .Description("Grants +1 BAB when equipped with a Rifle.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Rifle.")
+                .Price(12)
                 .RequirementSkill(SkillType.Ranged, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.RifleMastery1)
 
                 .AddPerkLevel()
-                .Description("Grants +2 BAB when equipped with a Rifle.")
-                .Price(8)
-                .RequirementSkill(SkillType.Ranged, 40)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.RifleMastery2)
-
-                .AddPerkLevel()
-                .Description("Grants +3 BAB when equipped with a Rifle.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Rifle.")
+                .Price(12)
                 .RequirementSkill(SkillType.Ranged, 50)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.RifleMastery3);
+                .GrantsFeat(FeatType.RifleMastery2);
         }
 
         private void TranquilizerShot(PerkBuilder builder)

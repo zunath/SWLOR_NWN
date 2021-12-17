@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + level;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -192,8 +192,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
 
                 })
@@ -204,7 +203,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + 1;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -215,31 +214,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
                 })
 
                 .AddPerkLevel()
-                .Description("Grants +1 BAB when equipped with a Heavy Vibroblade.")
+                .Description("Grants an additional attack when equipped with a Heavy Vibroblade.")
                 .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.HeavyVibrobladeMastery1)
 
                 .AddPerkLevel()
-                .Description("Grants +2 BAB when equipped with a Heavy Vibroblade.")
-                .Price(8)
-                .RequirementSkill(SkillType.TwoHanded, 40)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.HeavyVibrobladeMastery2)
-
-                .AddPerkLevel()
-                .Description("Grants +3 BAB when equipped with a Heavy Vibroblade.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Heavy Vibroblade.")
+                .Price(12)
                 .RequirementSkill(SkillType.TwoHanded, 50)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.HeavyVibrobladeMastery3);
+                .GrantsFeat(FeatType.HeavyVibrobladeMastery2);
         }
 
         private void CrescentMoon(PerkBuilder builder)
@@ -371,7 +362,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.PolearmBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + level;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -382,8 +373,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.PolearmBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
 
                 })
@@ -394,7 +384,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.PolearmBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + 1;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -405,31 +395,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.PolearmBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
                 })
 
                 .AddPerkLevel()
-                .Description("Grants +1 BAB when equipped with a Polearm.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Polearm.")
+                .Price(12)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PolearmMastery1)
-
+                
                 .AddPerkLevel()
-                .Description("Grants +2 BAB when equipped with a Polearm.")
-                .Price(8)
-                .RequirementSkill(SkillType.TwoHanded, 40)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.PolearmMastery2)
-
-                .AddPerkLevel()
-                .Description("Grants +3 BAB when equipped with a Polearm.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Polearm.")
+                .Price(12)
                 .RequirementSkill(SkillType.TwoHanded, 50)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.PolearmMastery3);
+                .GrantsFeat(FeatType.PolearmMastery2);
         }
 
         private void Skewer(PerkBuilder builder)
@@ -562,7 +544,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.TwinBladeBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + level;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -573,8 +555,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.TwinBladeBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
 
                 })
@@ -585,7 +566,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.TwinBladeBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + 1;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -596,31 +577,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.TwinBladeBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
                 })
 
                 .AddPerkLevel()
-                .Description("Grants +1 BAB when equipped with a Twin Blade.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Twin Blade.")
+                .Price(12)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.TwinBladeMastery1)
-
+                
                 .AddPerkLevel()
-                .Description("Grants +2 BAB when equipped with a Twin Blade.")
-                .Price(8)
-                .RequirementSkill(SkillType.TwoHanded, 40)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.TwinBladeMastery2)
-
-                .AddPerkLevel()
-                .Description("Grants +3 BAB when equipped with a Twin Blade.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Twin Blade.")
+                .Price(12)
                 .RequirementSkill(SkillType.TwoHanded, 50)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.TwinBladeMastery3);
+                .GrantsFeat(FeatType.TwinBladeMastery2);
         }
 
         private void LegSweep(PerkBuilder builder)
@@ -759,7 +732,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.SaberstaffBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + level;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -770,8 +743,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.SaberstaffBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
 
                 })
@@ -782,7 +754,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.SaberstaffBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + 1;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -793,31 +765,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.SaberstaffBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
                 })
 
                 .AddPerkLevel()
-                .Description("Grants +1 BAB when equipped with a Saberstaff.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Saberstaff.")
+                .Price(12)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.SaberstaffMastery1)
-
+                
                 .AddPerkLevel()
-                .Description("Grants +2 BAB when equipped with a Saberstaff.")
-                .Price(8)
-                .RequirementSkill(SkillType.TwoHanded, 40)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.SaberstaffMastery2)
-
-                .AddPerkLevel()
-                .Description("Grants +3 BAB when equipped with a Saberstaff.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Saberstaff.")
+                .Price(12)
                 .RequirementSkill(SkillType.TwoHanded, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.SaberstaffMastery3);
+                .GrantsFeat(FeatType.SaberstaffMastery2);
         }
 
         private void CircleSlash(PerkBuilder builder)

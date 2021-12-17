@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.KatarBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + level;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -177,8 +177,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.KatarBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
 
                 })
@@ -189,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.KatarBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + 1;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -200,31 +199,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.KatarBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
                 })
 
                 .AddPerkLevel()
-                .Description("Grants +1 BAB when equipped with a Katars.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Katars.")
+                .Price(12)
                 .RequirementSkill(SkillType.MartialArts, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.KatarMastery1)
-
+                
                 .AddPerkLevel()
-                .Description("Grants +2 BAB when equipped with a Katars.")
-                .Price(8)
-                .RequirementSkill(SkillType.MartialArts, 40)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.KatarMastery2)
-
-                .AddPerkLevel()
-                .Description("Grants +3 BAB when equipped with a Katars.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Katars.")
+                .Price(12)
                 .RequirementSkill(SkillType.MartialArts, 50)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.KatarMastery3);
+                .GrantsFeat(FeatType.KatarMastery2);
         }
 
         private void ElectricFist(PerkBuilder builder)
@@ -356,7 +347,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.StaffBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + level;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -367,8 +358,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.StaffBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
 
                 })
@@ -379,7 +369,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.StaffBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + 1;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -390,31 +380,23 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.StaffBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
                 })
 
                 .AddPerkLevel()
-                .Description("Grants +1 BAB when equipped with a Staff.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Staff.")
+                .Price(12)
                 .RequirementSkill(SkillType.MartialArts, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.StaffMastery1)
-
+                
                 .AddPerkLevel()
-                .Description("Grants +2 BAB when equipped with a Staff.")
-                .Price(8)
-                .RequirementSkill(SkillType.MartialArts, 40)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.StaffMastery2)
-
-                .AddPerkLevel()
-                .Description("Grants +3 BAB when equipped with a Staff.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Staff.")
+                .Price(12)
                 .RequirementSkill(SkillType.MartialArts, 50)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.StaffMastery3);
+                .GrantsFeat(FeatType.StaffMastery2);
         }
 
         private void Slam(PerkBuilder builder)

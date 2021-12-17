@@ -288,19 +288,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetText("BAB")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-
-                        row.AddLabel()
-                            .BindText(model => model.BAB)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
                             .SetText("Control")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);

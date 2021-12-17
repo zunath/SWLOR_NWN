@@ -284,7 +284,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Willpower = GetAbilityScore(Player, AbilityType.Willpower);
             Social = GetAbilityScore(Player, AbilityType.Social);
             Defense = Stat.GetDefense(Player, CombatDamageType.Physical);
-            Evasion = GetAC(Player);
+            Evasion = CreaturePlugin.GetBaseAC(Player);
             CharacterType = GetClassByPosition(1, Player) == ClassType.Standard ? "Standard" : "Force Sensitive";
             Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(Player))), GetGender(Player));
             SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";

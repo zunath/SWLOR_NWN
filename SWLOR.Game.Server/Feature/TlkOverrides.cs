@@ -42,8 +42,7 @@ namespace SWLOR.Game.Server.Feature
             SetTlkOverride(461, "Vitality represents the health and stamina of your character. It improves your max HP, FP, and stamina.");
             SetTlkOverride(462, "Willpower represents the attunement to the Force of your character. It improves your force attack and force defense.");
             SetTlkOverride(478, "Social measures the ability to negotiate and influence others. It improves your ability to negotiate mission rewards and improves Roleplay XP.");
-
-            SetTlkOverride(321, "EV");
+            
             SetTlkOverride(7099, "Evasion");
 
             SetTlkOverride(66751, "Holonet");

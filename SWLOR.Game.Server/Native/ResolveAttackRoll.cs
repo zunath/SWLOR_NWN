@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
 using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 using FeatType = SWLOR.Game.Server.Core.NWScript.Enum.FeatType;
+using ItemPropertyType = SWLOR.Game.Server.Core.NWScript.Enum.Item.ItemPropertyType;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -140,6 +141,30 @@ namespace SWLOR.Game.Server.Native
             //---------------------------------------------------------------------------------------------
             // Modifiers - put in modifiers here based on the type of attack (and type of weapon etc.).
             int modifiers = 0;
+
+            // Weapon AB or EB.
+            if (weapon != null)
+            {
+                // Retrieve item properties and cost table values. 
+                foreach (CNWItemProperty ip in weapon.m_lstPassiveProperties)
+                {
+                    if (ip.m_nPropertyName == (ushort)ItemPropertyType.AttackBonus ||
+                        ip.m_nPropertyName == (ushort)ItemPropertyType.EnhancementBonus)
+                    {
+                        Log.Write(LogGroup.Attack, "Weapon has attack or enhancement bonus: " + ip.m_nCostTableValue);
+                        modifiers += 5 * ip.m_nCostTableValue;
+                    }
+                }
+            }
+
+            // Defender Evasion (AC) bonuses.  Stored in the Base AC field of the creature (accessed via NWNX_Creature for non-Native scripts).
+            // To support NPCs, also read the Natural Base field.
+            var defenderEvasion = defenderStats.m_nACArmorBase + defenderStats.m_nACNaturalBase;
+            if (defenderEvasion > 0)
+            {
+                modifiers -= 5 * defenderEvasion;
+                Log.Write(LogGroup.Attack, "Defender has evasion bonus: " + defenderEvasion.ToString()); 
+            }
 
             // Defender stunned
             if (defender.m_nState == 6) // Stunned

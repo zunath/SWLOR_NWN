@@ -16,7 +16,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             var builder = new PerkBuilder();
             Doublehand(builder);
             DualWield(builder);
-            WeaponFinesse(builder);
             WeaponFocusVibroblades(builder);
             ImprovedCriticalVibroblades(builder);
             VibrobladeProficiency(builder);
@@ -121,18 +120,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.OneHanded, 45)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.Ambidexterity);
-        }
-
-        private void WeaponFinesse(PerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.OneHandedGeneral, PerkType.WeaponFinesse)
-                .Name("Weapon Finesse")
-
-                .AddPerkLevel()
-                .Description("You make melee attack rolls with your PER score if it is higher than your MGT score.")
-                .Price(3)
-                .RequirementSkill(SkillType.OneHanded, 10)
-                .GrantsFeat(FeatType.WeaponFinesse);
         }
 
         private void WeaponFocusVibroblades(PerkBuilder builder)

@@ -95,7 +95,10 @@ namespace SWLOR.Game.Server.Service.PerkService
         ForceLight = 29,
 
         [PerkCategory("Force - Dark", true)]
-        ForceDark = 30
+        ForceDark = 30,
+
+        [PerkCategory("General Perks", true)]
+        General = 31,
     }
 
     public class PerkCategoryAttribute : Attribute

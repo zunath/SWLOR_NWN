@@ -57,7 +57,7 @@
         Knockdown = 50,
         FlurryOfBlows = 51,
         InnerStrength = 52,
-        MartialFinesse = 53,
+        // 53 is free
         WeaponFocusKatars = 54,
         ImprovedCriticalKatars = 55,
         KatarProficiency = 56,

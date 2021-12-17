@@ -18,7 +18,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             Knockdown(builder);
             FlurryOfBlows(builder);
             InnerStrength(builder);
-            MartialFinesse(builder);
             WeaponFocusKatars(builder);
             ImprovedCriticalKatars(builder);
             KatarProficiency(builder);
@@ -87,18 +86,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 {
                     CreaturePlugin.SetCriticalRangeModifier(player, 0, 0, true, BaseItem.Gloves);
                 });
-        }
-
-        private void MartialFinesse(PerkBuilder builder)
-        {
-            builder.Create(PerkCategoryType.MartialArtsGeneral, PerkType.MartialFinesse)
-                .Name("Martial Finesse")
-
-                .AddPerkLevel()
-                .Description("You make melee attack rolls with your PER score if it is higher than your MGT score.")
-                .Price(3)
-                .RequirementSkill(SkillType.MartialArts, 10)
-                .GrantsFeat(FeatType.MartialFinesse);
         }
 
         private void WeaponFocusKatars(PerkBuilder builder)

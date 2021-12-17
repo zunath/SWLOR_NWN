@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Service;
 using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
 using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
@@ -150,8 +151,8 @@ namespace SWLOR.Game.Server.Native
             // Dev note: the GetItem method always creates a new instance of CNWActionNode so there should be no NPEs.
             // Note: this always returns object invalid for NPCs (2130706432) as their actions aren't represented the same way.
             uint oidTarget = defender.m_pActionQueue.GetItem(0).oidTarget;
-
-            if (oidTarget == 2130706432) // OBJECT_INVALID
+            
+            if (oidTarget == NWScript.OBJECT_INVALID)
             {
                 oidTarget = (uint) defender.m_ScriptVars.GetInt(new CExoString("I_LAST_ATTACKED"));
             }

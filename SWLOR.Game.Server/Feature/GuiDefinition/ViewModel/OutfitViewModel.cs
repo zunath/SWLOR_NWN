@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -12,6 +15,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
     public class OutfitViewModel: GuiViewModelBase<OutfitViewModel, GuiPayloadBase>
     {
         private const int MaxOutfits = 25;
+
+        private List<string> _outfitIds = new();
 
         public GuiBindingList<string> SlotNames
         {
@@ -71,19 +76,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        private List<PlayerOutfit> GetOutfits()
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbOutfits = DB.Search(new DBQuery<PlayerOutfit>()
+                .AddFieldSearch(nameof(PlayerOutfit.PlayerId), playerId, false));
+
+            return dbOutfits.ToList();
+        }
+
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             SelectedSlotIndex = -1;
             IsDeleteEnabled = false;
             Name = string.Empty;
 
-            var playerId = GetObjectUUID(Player);
-            var dbOutfits = DB.Get<PlayerOutfit>(playerId) ?? new PlayerOutfit();
+            var dbOutfits = GetOutfits();
             var slotNames = new GuiBindingList<string>();
             var slotToggles = new GuiBindingList<bool>();
+            _outfitIds.Clear();
 
-            foreach (var outfit in dbOutfits.Outfits)
+            foreach (var outfit in dbOutfits)
             {
+                _outfitIds.Add(outfit.Id);
                 slotNames.Add(outfit.Name);
                 slotToggles.Add(false);
             }
@@ -101,20 +116,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 SlotToggles[SelectedSlotIndex] = false;
             }
-
-            var playerId = GetObjectUUID(Player);
-            var dbOutfit = DB.Get<PlayerOutfit>(playerId) ?? new PlayerOutfit();
             SelectedSlotIndex = NuiGetEventArrayIndex();
+
+            var dbOutfit = DB.Get<PlayerOutfit>(_outfitIds[SelectedSlotIndex]);
             IsDeleteEnabled = true;
             IsSlotLoaded = true;
-            IsLoadEnabled = !string.IsNullOrWhiteSpace(dbOutfit.Outfits[SelectedSlotIndex].Data);
+            IsLoadEnabled = !string.IsNullOrWhiteSpace(dbOutfit.Data);
 
-            Name = dbOutfit.Outfits[SelectedSlotIndex].Name;
+            Name = dbOutfit.Name;
             SlotToggles[SelectedSlotIndex] = true;
-            UpdateDetails(dbOutfit.Outfits[SelectedSlotIndex]);
+            UpdateDetails(dbOutfit);
         };
 
-        private void UpdateDetails(PlayerOutfitDetail detail)
+        private void UpdateDetails(PlayerOutfit detail)
         {
             if (string.IsNullOrWhiteSpace(detail.Data))
             {
@@ -150,13 +164,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickSave() => () =>
         {
-            var playerId = GetObjectUUID(Player);
-            var dbOutfit = DB.Get<PlayerOutfit>(playerId) ?? new PlayerOutfit();
+            var dbOutfit = DB.Get<PlayerOutfit>(_outfitIds[SelectedSlotIndex]);
 
             if (Name.Length > 32)
                 Name = Name.Substring(0, 32);
 
-            dbOutfit.Outfits[SelectedSlotIndex].Name = Name;
+            dbOutfit.Name = Name;
 
             DB.Set(dbOutfit);
             IsSaveEnabled = false;
@@ -165,8 +178,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickStoreOutfit() => () =>
         {
-            var playerId = GetObjectUUID(Player);
-            var dbOutfit = DB.Get<PlayerOutfit>(playerId) ?? new PlayerOutfit();
+            var dbOutfit = DB.Get<PlayerOutfit>(_outfitIds[SelectedSlotIndex]);
 
             void DoSave()
             {
@@ -177,39 +189,39 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     return;
                 }
 
-                dbOutfit.Outfits[SelectedSlotIndex].Data = ObjectPlugin.Serialize(outfit);
+                dbOutfit.Data = ObjectPlugin.Serialize(outfit);
 
 
-                dbOutfit.Outfits[SelectedSlotIndex].NeckId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck);
-                dbOutfit.Outfits[SelectedSlotIndex].TorsoId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso);
-                dbOutfit.Outfits[SelectedSlotIndex].BeltId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt);
-                dbOutfit.Outfits[SelectedSlotIndex].PelvisId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis);
-                dbOutfit.Outfits[SelectedSlotIndex].RobeId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe);
+                dbOutfit.NeckId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Neck);
+                dbOutfit.TorsoId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso);
+                dbOutfit.BeltId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Belt);
+                dbOutfit.PelvisId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Pelvis);
+                dbOutfit.RobeId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe);
 
-                dbOutfit.Outfits[SelectedSlotIndex].LeftBicepId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep);
-                dbOutfit.Outfits[SelectedSlotIndex].LeftFootId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot);
-                dbOutfit.Outfits[SelectedSlotIndex].LeftForearmId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm);
-                dbOutfit.Outfits[SelectedSlotIndex].LeftHandId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand);
-                dbOutfit.Outfits[SelectedSlotIndex].LeftShinId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin);
-                dbOutfit.Outfits[SelectedSlotIndex].LeftShoulderId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder);
-                dbOutfit.Outfits[SelectedSlotIndex].LeftThighId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh);
+                dbOutfit.LeftBicepId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep);
+                dbOutfit.LeftFootId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot);
+                dbOutfit.LeftForearmId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm);
+                dbOutfit.LeftHandId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand);
+                dbOutfit.LeftShinId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin);
+                dbOutfit.LeftShoulderId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder);
+                dbOutfit.LeftThighId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh);
 
-                dbOutfit.Outfits[SelectedSlotIndex].RightBicepId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep);
-                dbOutfit.Outfits[SelectedSlotIndex].RightFootId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot);
-                dbOutfit.Outfits[SelectedSlotIndex].RightForearmId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm);
-                dbOutfit.Outfits[SelectedSlotIndex].RightHandId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand);
-                dbOutfit.Outfits[SelectedSlotIndex].RightShinId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin);
-                dbOutfit.Outfits[SelectedSlotIndex].RightShoulderId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder);
-                dbOutfit.Outfits[SelectedSlotIndex].RightThighId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh);
+                dbOutfit.RightBicepId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep);
+                dbOutfit.RightFootId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot);
+                dbOutfit.RightForearmId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm);
+                dbOutfit.RightHandId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand);
+                dbOutfit.RightShinId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin);
+                dbOutfit.RightShoulderId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder);
+                dbOutfit.RightThighId = GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh);
 
                 DB.Set(dbOutfit);
 
                 IsLoadEnabled = true;
-                UpdateDetails(dbOutfit.Outfits[SelectedSlotIndex]);
+                UpdateDetails(dbOutfit);
             }
 
             // Nothing is saved to this slot yet.
-            if (string.IsNullOrWhiteSpace(dbOutfit.Outfits[SelectedSlotIndex].Data))
+            if (string.IsNullOrWhiteSpace(dbOutfit.Data))
             {
                 DoSave();
             }
@@ -240,13 +252,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadOutfit()
         {
             var armor = GetItemInSlot(InventorySlot.Chest, Player);
-            var playerId = GetObjectUUID(Player);
-            var dbOutfit = DB.Get<PlayerOutfit>(playerId) ?? new PlayerOutfit();
-            var outfit = dbOutfit.Outfits[SelectedSlotIndex];
+            var dbOutfit = DB.Get<PlayerOutfit>(_outfitIds[SelectedSlotIndex]);
 
             // Get the temporary storage placeable and deserialize the outfit into it.
             var tempStorage = GetObjectByTag("OUTFIT_BARREL");
-            var deserialized = ObjectPlugin.Deserialize(outfit.Data);
+            var deserialized = ObjectPlugin.Deserialize(dbOutfit.Data);
             var copy = CopyItem(armor, tempStorage, true);
 
             copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep, (int)GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep), true);
@@ -320,22 +330,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickNew() => () =>
         {
             var playerId = GetObjectUUID(Player);
-            var dbOutfit = DB.Get<PlayerOutfit>(playerId) ?? new PlayerOutfit();
+            var outfitCount = DB.SearchCount(new DBQuery<PlayerOutfit>()
+                .AddFieldSearch(nameof(PlayerOutfit.PlayerId), playerId, false));
 
-            if (dbOutfit.Outfits.Count >= MaxOutfits)
+            if (outfitCount >= MaxOutfits)
             {
                 FloatingTextStringOnCreature($"You may only create {MaxOutfits} outfits.", Player, false);
                 return;
             }
 
-            var newOutfit = new PlayerOutfitDetail
+            var newOutfit = new PlayerOutfit
             {
-                Name = $"Outfit #{dbOutfit.Outfits.Count+1}"
+                Name = $"Outfit #{outfitCount+1}",
+                PlayerId = playerId
             };
-
-            dbOutfit.Outfits.Add(newOutfit);
-
-            DB.Set(dbOutfit);
+            
+            DB.Set(newOutfit);
+            _outfitIds.Add(newOutfit.Id);
             SlotNames.Add(newOutfit.Name);
             SlotToggles.Add(false);
         };
@@ -344,12 +355,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             ShowModal("Are you sure you want to delete this stored outfit?", () =>
             {
-                var playerId = GetObjectUUID(Player);
-                var dbOutfit = DB.Get<PlayerOutfit>(playerId) ?? new PlayerOutfit();
+                if (SelectedSlotIndex < 0)
+                    return;
 
-                dbOutfit.Outfits.RemoveAt(SelectedSlotIndex);
-                DB.Set(dbOutfit);
+                var outfitId = _outfitIds[SelectedSlotIndex];
+                var dbOutfit = DB.Get<PlayerOutfit>(outfitId);
+                
+                DB.Delete<PlayerOutfit>(dbOutfit.Id);
 
+                _outfitIds.RemoveAt(SelectedSlotIndex);
                 SlotNames.RemoveAt(SelectedSlotIndex);
                 SlotToggles.RemoveAt(SelectedSlotIndex);
 

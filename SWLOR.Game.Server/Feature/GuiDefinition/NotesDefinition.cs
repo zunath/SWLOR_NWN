@@ -1,4 +1,5 @@
-﻿using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+﻿using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition
@@ -12,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Notes)
                 .SetInitialGeometry(0, 0, 638f, 336f)
                 .SetTitle("Notes")
-                .SetIsResizable(false)
+                .SetIsResizable(true)
                 .BindOnClosed(model => model.OnCloseWindow())
 
                 .AddColumn(col =>
@@ -38,12 +39,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddButton()
                             .SetText("New Note")
                             .BindOnClicked(model => model.OnClickNewNote())
-                            .BindIsEnabled(model => model.IsNewEnabled);
+                            .BindIsEnabled(model => model.IsNewEnabled)
+                            .SetHeight(35f);
 
                         row.AddButton()
                             .SetText("Delete Note")
                             .BindOnClicked(model => model.OnClickDeleteNote())
-                            .BindIsEnabled(model => model.IsDeleteEnabled);
+                            .BindIsEnabled(model => model.IsDeleteEnabled)
+                            .SetHeight(35f);
                     });
                 })
 
@@ -62,12 +65,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(row =>
                     {
-                        row.AddTextEdit()
-                            .SetIsMultiline(true)
-                            .SetMaxLength(NotesViewModel.MaxNoteLength)
-                            .BindValue(model => model.ActiveNoteText)
-                            .BindIsEnabled(model => model.IsNoteSelected)
-                            .SetHeight(205f);
+                        row.AddGroup(group =>
+                        {
+                            group.AddTextEdit()
+                                .SetIsMultiline(true)
+                                .SetMaxLength(NotesViewModel.MaxNoteLength)
+                                .BindValue(model => model.ActiveNoteText)
+                                .BindIsEnabled(model => model.IsNoteSelected);
+                        })
+                            .SetScrollbars(NuiScrollbars.Both);
                     });
 
                     col.AddRow(row =>
@@ -75,11 +81,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddButton()
                             .BindOnClicked(model => model.OnClickSave())
                             .SetText("Save")
+                            .SetHeight(35f)
                             .BindIsEnabled(model => model.IsSaveEnabled);
 
                         row.AddButton()
                             .BindOnClicked(model => model.OnClickDiscardChanges())
                             .SetText("Discard Changes")
+                            .SetHeight(35f)
                             .BindIsEnabled(model => model.IsSaveEnabled);
                     });
                 });

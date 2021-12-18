@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
@@ -399,14 +400,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var feat in nextLevel.GrantedFeats)
             {
                 if (GetHasFeat(feat, Player)) continue;
+                CreaturePlugin.AddFeatByLevel(Player, feat, 1);
 
-                // If feat isn't registered or the ability doesn't have an impact action,
+                // If feat isn't registered or the ability doesn't have an impact or concentration action,
                 // don't add the feat to the player's hot bar.
                 if (!Ability.IsFeatRegistered(feat)) continue;
                 var abilityDetail = Ability.GetAbilityDetail(feat);
-                if (abilityDetail.ImpactAction == null) continue;
+                if (abilityDetail.ImpactAction == null && abilityDetail.ConcentrationStatusEffectType == StatusEffectType.Invalid) continue;
 
-                CreaturePlugin.AddFeatByLevel(Player, feat, 1);
                 AddFeatToHotBar(feat);
             }
         }

@@ -307,12 +307,18 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// When a creature dies, its details need to be queued up for a respawn.
+        /// NOTE: plc_death and crea_death will not trigger if the object is 'killed'
+        /// via DestroyObject.  Call this method directly if you need to use DestroyObject
+        /// on a respawning object.
         /// </summary>
         [NWNEventHandler("crea_death")]
         [NWNEventHandler("plc_death")]
-        public static void QueueRespawn()
+        public static void QueueRespawnOnDeath()
         {
-            var creature = OBJECT_SELF;
+            QueueRespawn(OBJECT_SELF);
+        }
+        public static void QueueRespawn(uint creature)
+        {
             var spawnId = GetLocalString(creature, "SPAWN_ID");
             if (string.IsNullOrWhiteSpace(spawnId)) return;
 

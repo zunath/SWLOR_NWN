@@ -113,6 +113,10 @@ namespace SWLOR.Game.Server.Feature
                 if (!GetIsObjectValid(firstItem))
                 {
                     DestroyObject(placeable);
+
+                    // DestroyObject bypasses the OnDeath event, and removes the object so we can't send events.
+                    // Queue the respawn by hand. 
+                    Spawn.QueueRespawn(placeable);
                 }
             }
 
@@ -133,6 +137,10 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsObjectValid(firstItem))
             {
                 DestroyObject(placeable);
+
+                // DestroyObject bypasses the OnDeath event, and removes the object so we can't send events.
+                // Queue the respawn by hand. 
+                Spawn.QueueRespawn(placeable);
             }
 
         }

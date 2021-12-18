@@ -270,6 +270,12 @@ namespace SWLOR.Game.Server.Service.GuiService
             var window = Gui.GetWindowTemplate(WindowType);
             var partial = window.PartialViews[partialName];
             NuiSetGroupLayout(Player, WindowToken, elementId, partial);
+
+            // The following two lines work around a NUI issue where the new partial view won't display on screen until the window resizes.
+            // We force a change to the geometry of the window to ensure it redraws appropriately.
+            // If/when a fix is implemented by Beamdog, this can be removed.
+            Geometry.Height += (int)Geometry.Height % 2 == 0 ? 1.0f : -1.0f;
+            OnPropertyChanged(nameof(Geometry));
         }
     }
 }

@@ -36,5 +36,8 @@
         ManageStructures = 31,
         PropertyItemStorage = 32,
         BugReport = 33,
+
+
+        Testing = 99,
     }
 }

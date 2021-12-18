@@ -374,6 +374,14 @@ namespace SWLOR.Game.Server.Service.QuestService
             quest.CurrentState = GetStates().Count();
             quest.TimesCompleted++;
 
+            // Note - we must update the database before we give rewards.  Otherwise rewards that update the
+            // database (e.g. key items) will be discarded when we commit this change.
+            quest.ItemProgresses.Clear();
+            quest.KillProgresses.Clear();
+            quest.DateLastCompleted = DateTime.UtcNow;
+            dbPlayer.Quests[QuestId] = quest;
+            DB.Set(dbPlayer);
+
             // No selected reward, simply give all available rewards to the player.
             if (selectedReward == null)
             {
@@ -393,12 +401,6 @@ namespace SWLOR.Game.Server.Service.QuestService
 
                 selectedReward.GiveReward(player);
             }
-
-            quest.ItemProgresses.Clear();
-            quest.KillProgresses.Clear();
-            quest.DateLastCompleted = DateTime.UtcNow;
-            dbPlayer.Quests[QuestId] = quest;
-            DB.Set(dbPlayer);
 
             foreach (var action in OnCompleteActions)
             {

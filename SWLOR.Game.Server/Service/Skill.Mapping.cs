@@ -44,7 +44,6 @@ namespace SWLOR.Game.Server.Service
             _itemToSkillMapping[BaseItem.Sickle] = SkillType.OneHanded;
             _itemToSkillMapping[BaseItem.Whip] = SkillType.OneHanded;
             _itemToSkillMapping[BaseItem.Lightsaber] = SkillType.OneHanded;
-            _itemToSkillMapping[BaseItem.Saberstaff] = SkillType.OneHanded;
 
             // Two-Handed Skills
             _itemToSkillMapping[BaseItem.DireMace] = SkillType.TwoHanded;
@@ -59,6 +58,7 @@ namespace SWLOR.Game.Server.Service
             _itemToSkillMapping[BaseItem.ShortSpear] = SkillType.TwoHanded;
             _itemToSkillMapping[BaseItem.TwoBladedSword] = SkillType.TwoHanded;
             _itemToSkillMapping[BaseItem.DoubleAxe] = SkillType.TwoHanded;
+            _itemToSkillMapping[BaseItem.Saberstaff] = SkillType.TwoHanded;
 
             // Martial Arts Skills
             _itemToSkillMapping[BaseItem.Club] = SkillType.MartialArts;

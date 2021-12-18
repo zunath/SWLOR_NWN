@@ -56,6 +56,26 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
 
+        /// <summary>
+        /// Sets a static value for whether to show the borders.
+        /// </summary>
+        /// <param name="showBorders">true to display the borders, false otherwise</param>
+        public GuiList<T> SetShowBorders(bool showBorders)
+        {
+            ShowBorder = showBorders;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets a static value for the scrollbars to display.
+        /// </summary>
+        /// <param name="scrollbars">The type of scrollbars to display, if any.</param>
+        public GuiList<T> SetScrollbars(NuiScrollbars scrollbars)
+        {
+            Scrollbars = scrollbars;
+            return this;
+        }
+
         public GuiList(GuiListTemplate<T> template)
         {
             Template = template;

@@ -16,7 +16,15 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private bool IsRowCountBound => !string.IsNullOrWhiteSpace(RowCountBindName);
 
         private float RowHeight { get; set; }
-        
+        private bool ShowBorder { get; set; }
+        private NuiScrollbars Scrollbars { get; set; }
+
+        public GuiList()
+        {
+            ShowBorder = true;
+            Scrollbars = NuiScrollbars.Y;
+        }
+
         /// <summary>
         /// Sets a static value for the row count.
         /// </summary>
@@ -65,7 +73,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             var template = Template.ToJson();
             var rowCount = IsRowCountBound ? Nui.Bind(RowCountBindName) : JsonInt(RowCount);
 
-            var json = Nui.List(template, rowCount, RowHeight);
+            var json = Nui.List(template, rowCount, RowHeight, ShowBorder, Scrollbars);
             return json;
         }
     }

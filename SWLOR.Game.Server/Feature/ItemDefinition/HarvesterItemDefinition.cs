@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
@@ -97,6 +98,8 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     {
                         SetLocalInt(target, "RESOURCE_COUNT", resourceCount);
                     }
+
+                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Summon_Monster_3), GetLocation(target));
                 });
         }
     }

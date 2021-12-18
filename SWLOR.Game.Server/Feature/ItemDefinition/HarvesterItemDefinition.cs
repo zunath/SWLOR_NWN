@@ -92,11 +92,10 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     if (resourceCount <= 0)
                     {
-                        DestroyObject(target);
-
                         // DestroyObject bypasses the OnDeath event, and removes the object so we can't send events.
-                        // Queue the respawn by hand. 
-                        Spawn.QueueRespawn(target);
+                        // Use EffectDeath to ensure that we trigger death processing.
+                        SetPlotFlag(target, false);
+                        ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
                     }
                     else
                     {

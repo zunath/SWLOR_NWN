@@ -313,12 +313,9 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         [NWNEventHandler("crea_death")]
         [NWNEventHandler("plc_death")]
-        public static void QueueRespawnOnDeath()
+        public static void QueueRespawn()
         {
-            QueueRespawn(OBJECT_SELF);
-        }
-        public static void QueueRespawn(uint creature)
-        {
+            uint creature = OBJECT_SELF;
             var spawnId = GetLocalString(creature, "SPAWN_ID");
             if (string.IsNullOrWhiteSpace(spawnId)) return;
 

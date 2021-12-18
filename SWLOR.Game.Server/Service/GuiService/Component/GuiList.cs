@@ -19,12 +19,6 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private bool ShowBorder { get; set; }
         private NuiScrollbars Scrollbars { get; set; }
 
-        public GuiList()
-        {
-            ShowBorder = true;
-            Scrollbars = NuiScrollbars.Y;
-        }
-
         /// <summary>
         /// Sets a static value for the row count.
         /// </summary>
@@ -80,6 +74,8 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         {
             Template = template;
             RowHeight = NuiStyle.RowHeight;
+            ShowBorder = true;
+            Scrollbars = NuiScrollbars.Y;
 
             Elements.Add(Template);
         }

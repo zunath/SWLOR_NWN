@@ -65,17 +65,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(row =>
                     {
-                        row.AddGroup(group =>
-                        {
-                            group.AddTextEdit()
-                                .SetIsMultiline(true)
-                                .SetMaxLength(NotesViewModel.MaxNoteLength)
-                                .BindValue(model => model.ActiveNoteText)
-                                .BindIsEnabled(model => model.IsNoteSelected);
-                        })
-                            .SetScrollbars(NuiScrollbars.Both);
+                        row.AddTextEdit()
+                            .SetIsMultiline(true)
+                            .SetMaxLength(NotesViewModel.MaxNoteLength)
+                            .BindValue(model => model.ActiveNoteText)
+                            .BindIsEnabled(model => model.IsNoteSelected)
+                            .SetHeight(205f);
                     });
 
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+                    });
+                    
                     col.AddRow(row =>
                     {
                         row.AddButton()

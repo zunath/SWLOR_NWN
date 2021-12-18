@@ -300,9 +300,6 @@ namespace SWLOR.Game.Server.Feature
             SetName(item, GetName(player) + "'s Survival Knife");
             SetItemCursedFlag(item, true);
 
-            item = CreateItemOnObject("tk_omnidye", player);
-            SetItemCursedFlag(item, true);
-
             GiveGoldToCreature(player, 100);
         }
 

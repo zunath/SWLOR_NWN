@@ -161,8 +161,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 })
 
                 .AddState()
-                .SetStateJournalText("Avix Tatham needs you to head down to the maintenance level and harvest some ore. When you have ten pieces, return to him to collect the work receipt.")
-                .AddCollectItemObjective("raw_veldite", 10)
+                .SetStateJournalText("Avix Tatham needs you to head down to the maintenance level and harvest some ore. When you have four pieces, return to him to collect the work receipt.")
+                .AddCollectItemObjective("raw_veldite", 4)
                 
 
                 .AddState()
@@ -178,8 +178,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteQuest("ore_collection")
 
                 .AddState()
-                .SetStateJournalText("Avix Tatham wants you to go down and gather more ore. This time, though, he needs you to refine it at one of the refineries near him. When you have ten pieces of refined Veldite return to him to give them to him.")
-                .AddCollectItemObjective("ref_veldite", 10)
+                .SetStateJournalText("Avix Tatham wants you to go down and gather more ore. This time, though, he needs you to refine it at one of the refineries near him. When you have four pieces of refined Veldite return to him to give them to him.")
+                .AddCollectItemObjective("ref_veldite", 4)
 
                 .AddState()
                 .SetStateJournalText("Speak to Avix Tatham for your reward.")

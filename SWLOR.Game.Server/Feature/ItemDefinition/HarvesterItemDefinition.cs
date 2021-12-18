@@ -25,6 +25,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
+            Harvester("harvest_r_old", 1, "veldite_vein");
             Harvester("harvest_r_b", 1, "veldite_vein");
             Harvester("harvest_r_1", 2, "veldite_vein", "scordspar_vein");
             Harvester("harvest_r_2", 3, "veldite_vein", "scordspar_vein", "plagionite_vein");

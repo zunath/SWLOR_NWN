@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Service
 {
     public enum LogGroup
     {
+        Attack,
         Connection,
         Error,
         Chat,

@@ -1091,6 +1091,9 @@ namespace SWLOR.Game.Server.Service
             var propertyId = GetPropertyId(area);
             var playerId = GetObjectUUID(player);
 
+            var structureType = GetStructureTypeFromItem(item);
+            if (structureType == StructureType.Invalid) return;
+
             // Must be in a player property.
             if (string.IsNullOrWhiteSpace(propertyId))
             {
@@ -1125,7 +1128,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             // Structure can't be placed within this type of property.
-            var structureType = GetStructureTypeFromItem(item);
             var structureDetail = GetStructureByType(structureType);
 
             if (!structureDetail.RestrictedPropertyTypes.HasFlag(property.PropertyType))

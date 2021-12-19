@@ -273,8 +273,8 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Retrieves the level of the last enemy a player was involved in combat with.
-        /// Returns zero if it has been longer than two minutes since the level was updated
-        /// or the value isn't there.
+        /// Returns -1 if it has been longer than two minutes since the level was updated
+        /// or the value isn't there (some creatures are level 0).
         /// </summary>
         /// <param name="player">The player to retrieve from</param>
         /// <returns>The level of the last enemy a player was involved in combat with or zero if expired/unavailable.</returns>
@@ -283,12 +283,12 @@ namespace SWLOR.Game.Server.Service
             var now = DateTime.UtcNow;
             var expirationString = GetLocalString(player, "COMBAT_POINT_LAST_NPC_EXPIRATION");
             if (string.IsNullOrWhiteSpace(expirationString))
-                return 0;
+                return -1;
 
             var expiration = DateTime.ParseExact(expirationString, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
 
             if (now >= expiration)
-                return 0;
+                return -1;
 
             return GetLocalInt(player, "COMBAT_POINT_LAST_NPC_LEVEL");
         }

@@ -73,7 +73,41 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public int Defense
+        public int DefensePhysical
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public int DefenseForce
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+
+        public int DefenseFire
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+
+        public int DefensePoison
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+
+        public int DefenseElectrical
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+
+        public int DefenseIce
         {
             get => Get<int>();
             set => Set(value);
@@ -275,7 +309,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PortraitResref = GetPortraitResRef(Player) + "l";
 
             HP = GetCurrentHitPoints(Player) + " / " + GetMaxHitPoints(Player);
-            FP = Stat.GetCurrentFP(Player, dbPlayer) + " / " + Stat.GetMaxFP(Player, dbPlayer);
+
+            if (dbPlayer.CharacterType == Enumeration.CharacterType.Standard)
+            {
+                FP = $"0 / 0";
+            }
+            else
+            {
+                FP = Stat.GetCurrentFP(Player, dbPlayer) + " / " + Stat.GetMaxFP(Player, dbPlayer);
+            }
+            
             STM = Stat.GetCurrentStamina(Player, dbPlayer) + " / " + Stat.GetMaxStamina(Player, dbPlayer);
             Name = GetName(Player);
             Might = GetAbilityScore(Player, AbilityType.Might);
@@ -283,9 +326,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Vitality = GetAbilityScore(Player, AbilityType.Vitality);
             Willpower = GetAbilityScore(Player, AbilityType.Willpower);
             Social = GetAbilityScore(Player, AbilityType.Social);
-            Defense = Stat.GetDefense(Player, CombatDamageType.Physical);
+
+            DefensePhysical = Stat.GetDefense(Player, CombatDamageType.Physical);
+            DefenseForce = Stat.GetDefense(Player, CombatDamageType.Force);
+            DefenseFire = Stat.GetDefense(Player, CombatDamageType.Fire);
+            DefensePoison = Stat.GetDefense(Player, CombatDamageType.Poison);
+            DefenseElectrical = Stat.GetDefense(Player, CombatDamageType.Electrical);
+            DefenseIce = Stat.GetDefense(Player, CombatDamageType.Ice);
             Evasion = CreaturePlugin.GetBaseAC(Player);
-            CharacterType = GetClassByPosition(1, Player) == ClassType.Standard ? "Standard" : "Force Sensitive";
+
+            CharacterType = dbPlayer.CharacterType == Enumeration.CharacterType.Standard ? "Standard" : "Force Sensitive";
             Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(Player))), GetGender(Player));
             SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
             AP = $"{dbPlayer.TotalAPAcquired} / 30 ({dbPlayer.UnallocatedAP})";

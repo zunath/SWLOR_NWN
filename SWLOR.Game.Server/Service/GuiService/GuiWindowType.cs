@@ -26,16 +26,18 @@
         ChangeDescription = 21,
         Craft = 22,
         ManageStaff = 23,
-
-        PropertyManagement = 24,
-        CityManagement = 25,
-        FurnitureManagement = 26,
+        ManageCitizenship = 24,
+        ManageCity = 25,
+        Election = 26,
         RentApartment = 27,
         ManageApartment = 28,
-        CityHall = 29,
+
         PermissionManagement = 30,
         ManageStructures = 31,
         PropertyItemStorage = 32,
         BugReport = 33,
+
+
+        Testing = 99,
     }
 }

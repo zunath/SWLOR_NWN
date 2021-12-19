@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
@@ -36,6 +37,8 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<string, uint> _shipClones = new();
 
+        private static readonly Dictionary<PlanetType, Dictionary<string, ShipDockPoint>> _dockPoints = new();
+
         /// <summary>
         /// When the module loads, cache all space data into memory.
         /// </summary>
@@ -59,6 +62,99 @@ namespace SWLOR.Game.Server.Service
             var player = GetEnteringObject();
             ReloadPlayerTlkStrings();
             WarpPlayerInsideShip(player);
+        }
+
+        /// <summary>
+        /// When the module loads, 
+        /// </summary>
+        [NWNEventHandler("mod_load")]
+        public static void LoadLandingPoints()
+        {
+            var count = 0;
+            var waypoint = GetObjectByTag("STARSHIP_DOCKPOINT", count);
+
+            while (GetIsObjectValid(waypoint))
+            {
+                var area = GetArea(waypoint);
+                RegisterLandingPoint(waypoint, area, true, string.Empty);
+
+                count++;
+                waypoint = GetObjectByTag("STARSHIP_DOCKPOINT", count);
+            }
+        }
+
+        /// <summary>
+        /// Registers a waypoint as a landing point.
+        /// Once added, this location will become available for players to land at.
+        /// </summary>
+        /// <param name="waypoint">The waypoint to register.</param>
+        /// <param name="area">The area to use for registration.</param>
+        /// <param name="isNPC">If true, will be marked as an NPC dock. Otherwise will be marked as a PC dock.</param>
+        /// <param name="propertyId">If specified, references the world property Id of this landing point.</param>
+        public static void RegisterLandingPoint(uint waypoint, uint area, bool isNPC, string propertyId)
+        {
+            var dockPointId = GetLocalString(waypoint, "STARSHIP_DOCKPOINT_ID");
+            if (!string.IsNullOrWhiteSpace(dockPointId))
+            {
+                return;
+            }
+
+            var planet = Planet.GetPlanetType(area);
+
+            // Only waypoints in recognized planets are tracked.
+            if (planet == PlanetType.Invalid)
+                return;
+
+            if (!_dockPoints.ContainsKey(planet))
+                _dockPoints[planet] = new Dictionary<string, ShipDockPoint>();
+
+            dockPointId = Guid.NewGuid().ToString();
+            var dockPoint = new ShipDockPoint
+            {
+                Location = GetLocation(waypoint),
+                Name = string.IsNullOrWhiteSpace(propertyId) ? GetName(waypoint) : string.Empty,
+                PropertyId = propertyId,
+                IsNPC = isNPC
+            };
+
+            _dockPoints[planet][dockPointId] = dockPoint;
+
+            SetLocalString(waypoint, "STARSHIP_DOCKPOINT_ID", dockPointId);
+        }
+
+        /// <summary>
+        /// Removes a waypoint from the landing point registration.
+        /// Once removed, this location will no longer be available to land at.
+        /// </summary>
+        /// <param name="waypoint">The waypoint to remove.</param>
+        /// <param name="cityArea">The area to remove from.</param>
+        public static void RemoveLandingPoint(uint waypoint, uint cityArea)
+        {
+            var planet = Planet.GetPlanetType(cityArea);
+
+            // Only waypoints in recognized planets are tracked.
+            if (planet == PlanetType.Invalid)
+                return;
+
+            var dockPointId = GetLocalString(waypoint, "STARSHIP_DOCKPOINT_ID");
+            if (_dockPoints.ContainsKey(planet) &&
+                _dockPoints[planet].ContainsKey(dockPointId))
+            {
+                _dockPoints[planet].Remove(dockPointId);
+            }
+        }
+
+        /// <summary>
+        /// Retrieves all of the registered dock points for a given planet.
+        /// </summary>
+        /// <param name="planetType">The planet to search.</param>
+        /// <returns>A dictionary of dock points.</returns>
+        public static Dictionary<string, ShipDockPoint> GetDockPointsByPlanet(PlanetType planetType)
+        {
+            if (!_dockPoints.ContainsKey(planetType))
+                return new Dictionary<string, ShipDockPoint>();
+
+            return _dockPoints[planetType].ToDictionary(x => x.Key, y => y.Value);
         }
 
         /// <summary>
@@ -1491,5 +1587,7 @@ namespace SWLOR.Game.Server.Service
 
             DestroyObject(shipClone);
         }
+
+
     }
 }

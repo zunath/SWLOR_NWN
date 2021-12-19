@@ -90,6 +90,12 @@ namespace SWLOR.Game.Server.Service
                 AppearanceType = AppearanceType.HalfOrc,
                 HeadId = 27
             };
+            _defaultRaceAppearancesMale[RacialType.Togruta] = new RacialAppearance
+            {
+                SkinColorId = 72,
+                HairColorId = 21,
+                HeadId = 212
+            };
             _defaultRaceAppearancesMale[RacialType.Trandoshan] = new RacialAppearance
             {
                 SkinColorId = 39,
@@ -172,6 +178,15 @@ namespace SWLOR.Game.Server.Service
                 HeadId = 100,
                 PelvisId = 7
             };
+            _defaultRaceAppearancesMale[RacialType.Rodian] = new RacialAppearance
+            {
+                SkinColorId = 81,
+                HairColorId = 79,
+                AppearanceType = AppearanceType.Elf,
+                HeadId = 54,
+                RightHandId = 44,
+                LeftHandId = 44
+            };
 
             // Female appearances
             _defaultRaceAppearancesFemale[RacialType.Human] = new RacialAppearance();
@@ -218,6 +233,12 @@ namespace SWLOR.Game.Server.Service
                 HairColorId = 0,
                 AppearanceType = AppearanceType.HalfOrc,
                 HeadId = 18
+            };
+            _defaultRaceAppearancesFemale[RacialType.Togruta] = new RacialAppearance
+            {
+                SkinColorId = 22,
+                HairColorId = 83,
+                HeadId = 200
             };
             _defaultRaceAppearancesFemale[RacialType.Trandoshan] = new RacialAppearance
             {
@@ -299,6 +320,15 @@ namespace SWLOR.Game.Server.Service
                 HairColorId = 0,
                 HeadId = 100,
                 PelvisId = 7
+            };
+            _defaultRaceAppearancesFemale[RacialType.Rodian] = new RacialAppearance
+            {
+                SkinColorId = 81,
+                HairColorId = 79,
+                AppearanceType = AppearanceType.Elf,
+                HeadId = 10,
+                RightHandId = 44,
+                LeftHandId = 44
             };
 
         }

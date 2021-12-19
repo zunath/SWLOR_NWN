@@ -16861,7 +16861,7 @@
         },
         "Bearing": {
           "type": "float",
-          "value": 2.159844636917114
+          "value": 1.434929627468613e-041
         },
         "BodyBag": {
           "type": "byte",
@@ -16931,9 +16931,7 @@
         "LocName": {
           "id": 66778,
           "type": "cexolocstring",
-          "value": {
-            "0": "SPACE BREAD"
-          }
+          "value": {}
         },
         "OnClick": {
           "type": "resref",
@@ -17061,15 +17059,15 @@
         },
         "X": {
           "type": "float",
-          "value": 20.09492111206055
+          "value": 19.52145767211914
         },
         "Y": {
           "type": "float",
-          "value": 36.9058837890625
+          "value": 36.02141571044922
         },
         "Z": {
           "type": "float",
-          "value": 0.01099981367588043
+          "value": 0.01099966745823622
         }
       }
     ]
@@ -17916,6 +17914,69 @@
         "YPosition": {
           "type": "float",
           "value": 13.37632751464844
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 4
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "CZ-220 Hangar"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STARSHIP_DOCKPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "starship_dockpoi"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 34.07766723632813
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 1.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 35.24573135375977
         },
         "ZPosition": {
           "type": "float",

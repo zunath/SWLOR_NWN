@@ -8,48 +8,64 @@ namespace SWLOR.Game.Server.Service.PropertyService
         Invalid = 0,
 
         // Categories
-        [PropertyPermission("Edit Categories", "Toggles the ability to create or delete item categories.", true)]
+        [PropertyPermission("Edit Categories", "Can create or delete item categories.", true)]
         EditCategories = 1,
 
         // Apartments, Buildings, Starships
-        [PropertyPermission("Edit Structures", "Toggles the ability to place structures and edit their details.", true)]
+        [PropertyPermission("Edit Structures", "Can place structures and edit their details.", true)]
         EditStructures = 2,
 
         // Apartments, Buildings, Starships
-        [PropertyPermission("Retrieve Structures", "Toggles the ability to pick up structures that have already been placed.", true)]
+        [PropertyPermission("Retrieve Structures", "Can pick up structures that have already been placed.", true)]
         RetrieveStructures = 3,
 
         // Apartments, Buildings, Starships
-        [PropertyPermission("Rename Property", "Toggles the ability to rename the property.", true)]
+        [PropertyPermission("Rename Property", "Can rename the property.", true)]
         RenameProperty = 4,
 
         // Apartments, Buildings, Starships
-        [PropertyPermission("Access Storage", "Toggles the ability to access item storage.", true)]
+        [PropertyPermission("Access Storage", "Can access item storage.", true)]
         AccessStorage = 5,
 
         // Apartments
-        [PropertyPermission("Extend Lease", "Toggles the ability to pay for lease extensions.", true)]
+        [PropertyPermission("Extend Lease", "Can pay for lease extensions.", true)]
         ExtendLease = 6,
 
         // Apartments
-        [PropertyPermission("Cancel Lease", "Toggles the ability to cancel a lease.", true)]
+        [PropertyPermission("Cancel Lease", "Can cancel a lease.", true)]
         CancelLease = 7,
 
         // Apartments, Buildings, Starships
-        [PropertyPermission("Enter Property", "Toggles the ability to enter the property.", true)]
+        [PropertyPermission("Enter Property", "Can enter the property.", true)]
         EnterProperty = 8, 
 
         // Starships
-        [PropertyPermission("Pilot Ship", "Toggles the ability to pilot the starship.", true)]
+        [PropertyPermission("Pilot Ship", "Can pilot the starship.", true)]
         PilotShip = 9,
 
         // Apartments, Buildings, Starships
-        [PropertyPermission("Change Description", "Toggles the ability to change a property's description", true)]
+        [PropertyPermission("Change Description", "Can change a property's description", true)]
         ChangeDescription = 10,
 
         // Starships
-        [PropertyPermission("Refit Ship", "Toggles the ability to refit a ship.", true)]
-        RefitShip = 11
+        [PropertyPermission("Refit Ship", "Can refit the ship.", true)]
+        RefitShip = 11,
+
+        // City
+        [PropertyPermission("Edit Taxes", "Can edit taxes for the entire city.", true)]
+        EditTaxes = 12,
+
+        // City
+        [PropertyPermission("Access Treasury", "Can withdraw/deposit credits into the city's treasury.", true)]
+        AccessTreasury = 13,
+
+        // City
+        [PropertyPermission("Manage Upgrades", "Can purchase city upgrades with treasury money.", true)]
+        ManageUpgrades = 14,
+
+        // City
+        [PropertyPermission("Manage Upkeep", "Can pay maintenance fees.", true)]
+        ManageUpkeep = 15,
     }
 
     public class PropertyPermissionAttribute : Attribute

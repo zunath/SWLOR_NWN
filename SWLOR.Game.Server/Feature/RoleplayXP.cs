@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.PropertyService;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
@@ -59,6 +60,8 @@ namespace SWLOR.Game.Server.Feature
                 var delta = dbPlayer.RoleplayProgress.RPPoints - 50;
                 var bonusXP = delta * 25;
                 var xp = BaseXP + bonusXP + socialModifier * (BaseXP / 4);
+                var cantinaBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.CantinaLevel);
+                xp += (int)(BaseXP * (cantinaBonus * 0.05f));
 
                 dbPlayer.RoleplayProgress.RPPoints = 0;
                 dbPlayer.RoleplayProgress.TotalRPExpGained += (ulong)xp;

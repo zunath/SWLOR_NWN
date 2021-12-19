@@ -34,11 +34,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         row.AddButton()
                             .SetText("New")
-                            .BindOnClicked(model => model.OnClickNew());
+                            .BindOnClicked(model => model.OnClickNew())
+                            .SetHeight(35f);
 
                         row.AddButton()
                             .SetText("Delete")
-                            .BindOnClicked(model => model.OnClickDelete());
+                            .BindOnClicked(model => model.OnClickDelete())
+                            .SetHeight(35f);
                     });
                 })
                 
@@ -74,12 +76,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddButton()
                             .SetText("Store Outfit")
-                            .BindOnClicked(model => model.OnClickStoreOutfit());
+                            .BindOnClicked(model => model.OnClickStoreOutfit())
+                            .SetHeight(35f);
 
                         row.AddButton()
                             .SetText("Load Outfit")
                             .BindIsEnabled(model => model.IsLoadEnabled)
-                            .BindOnClicked(model => model.OnClickLoadOutfit());
+                            .BindOnClicked(model => model.OnClickLoadOutfit())
+                            .SetHeight(35f);
 
                         row.AddSpacer();
                     });

@@ -267,8 +267,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var apartment = GetApartment();
                 var permissions = GetPermissions();
                 var layout = Property.GetLayoutByType(apartment.Layout);
-                var furnitureCount = apartment.ChildPropertyIds.Count;
-                var leaseDate = apartment.Timers[PropertyTimerType.Lease];
+                var furnitureCount = apartment.ChildPropertyIds[PropertyChildType.Structure].Count;
+                var leaseDate = apartment.Dates[PropertyDateType.Lease];
                 var now = DateTime.UtcNow;
 
                 ClearInstructions();
@@ -277,7 +277,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LayoutName = $"Layout: {layout.Name}";
                 InitialPrice = $"Initial Price: {layout.InitialPrice} cr";
                 PricePerDay = $"Price Per Day: {layout.PricePerDay} cr";
-                FurnitureLimit = $"Furniture Limit: {furnitureCount} / {layout.StructureLimit}";
+                FurnitureLimit = $"Structure Limit: {furnitureCount} / {layout.StructureLimit}";
                 IsEnterEnabled = permissions.Permissions[PropertyPermissionType.EnterProperty];
                 IsManagePermissionsEnabled = permissions.GrantPermissions.Any(x => x.Value);
                 IsCancelLeaseEnabled = permissions.Permissions[PropertyPermissionType.CancelLease];
@@ -318,7 +318,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var apartment = GetApartment();
             var layout = Property.GetLayoutByType(apartment.Layout);
-            var leasedUntilDate = apartment.Timers[PropertyTimerType.Lease];
+            var leasedUntilDate = apartment.Dates[PropertyDateType.Lease];
             var dayPrice = layout.PricePerDay;
             var weekPrice = layout.PricePerDay * 7;
             var gold = GetGold(Player);
@@ -410,7 +410,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var layout = Property.GetLayoutByType(apartment.Layout);
             var price = days * layout.PricePerDay;
             var dayWord = days == 1 ? "day" : "days";
-            var currentLease = apartment.Timers[PropertyTimerType.Lease];
+            var currentLease = apartment.Dates[PropertyDateType.Lease];
             var now = DateTime.UtcNow;
             var newLeaseDate = currentLease.AddDays(days);
 
@@ -426,7 +426,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 () =>
                 {
                     apartment = GetApartment();
-                    apartment.Timers[PropertyTimerType.Lease] = newLeaseDate;
+                    apartment.Dates[PropertyDateType.Lease] = newLeaseDate;
 
                     DB.Set(apartment);
 
@@ -475,7 +475,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var apartment = GetApartment();
-            var payload = new PropertyPermissionPayload(PropertyType.Apartment, apartment.Id, false);
+            var payload = new PropertyPermissionPayload(PropertyType.Apartment, apartment.Id, string.Empty, false);
 
             Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload, TetherObject);
         };

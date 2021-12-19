@@ -257,6 +257,12 @@ namespace SWLOR.Game.Server.Feature
                 case RacialType.Ugnaught:
                     languages.Add(SkillType.Ugnaught);
                     break;
+                case RacialType.Togruta:
+                    languages.Add(SkillType.Togruti);
+                    break;
+                case RacialType.Rodian:
+                    languages.Add(SkillType.Rodese);
+                    break;
             }
 
             // Fair warning: We're short-circuiting the skill system here.
@@ -298,9 +304,6 @@ namespace SWLOR.Game.Server.Feature
         {
             var item = CreateItemOnObject("survival_knife", player);
             SetName(item, GetName(player) + "'s Survival Knife");
-            SetItemCursedFlag(item, true);
-
-            item = CreateItemOnObject("tk_omnidye", player);
             SetItemCursedFlag(item, true);
 
             GiveGoldToCreature(player, 100);

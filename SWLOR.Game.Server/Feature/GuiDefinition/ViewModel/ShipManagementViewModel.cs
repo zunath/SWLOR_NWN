@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -27,6 +28,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private List<string> _shipIds { get; set; } = new List<string>();
         private Location _spaceLocation;
         private Location _landingLocation;
+        private PlanetType _planetType;
 
         public string ShipCountRegistered
         {
@@ -482,15 +484,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private int CalculateRepairBill(PlayerShip ship)
         {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
             var shieldDiff = ship.Status.MaxShield - ship.Status.Shield;
             var hullDiff = ship.Status.MaxHull - ship.Status.Hull;
+            var price = shieldDiff * 50 + hullDiff * 100;
+            var starportBonus = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.StarportLevel);
 
-            return shieldDiff * 50 + hullDiff * 100;
+            price -= (int)(price * (starportBonus * 0.05f));
+
+            return price;
         }
 
         protected override void Initialize(ShipManagementPayload initialPayload)
         {
-            var playerId = GetObjectUUID(Player);
+            _planetType = initialPayload.PlanetType;
+
             List<PlayerShip> dbPlayerShips;
             if (!string.IsNullOrWhiteSpace(initialPayload.SpecificPropertyId))
             {
@@ -505,7 +514,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _spaceLocation = Location(spaceArea, spacePosition, spacePropertyLocation.Orientation);
 
                 var landingPropertyLocation = dbProperty.Positions[PropertyLocationType.DockPosition];
-                var landingArea = Cache.GetAreaByResref(landingPropertyLocation.AreaResref);
+                var landingArea = string.IsNullOrWhiteSpace(landingPropertyLocation.AreaResref)
+                    ? Property.GetRegisteredInstance(landingPropertyLocation.InstancePropertyId).Area
+                    : Cache.GetAreaByResref(landingPropertyLocation.AreaResref);
                 var landingPosition = Vector3(landingPropertyLocation.X, landingPropertyLocation.Y, landingPropertyLocation.Z);
                 _landingLocation = Location(landingArea, landingPosition, landingPropertyLocation.Orientation);
 
@@ -884,7 +895,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
             {
                 var landingLocation = property.Positions[PropertyLocationType.DockPosition];
-                var area = Cache.GetAreaByResref(landingLocation.AreaResref);
+                var area = string.IsNullOrWhiteSpace(landingLocation.AreaResref)
+                    ? Property.GetRegisteredInstance(landingLocation.InstancePropertyId).Area
+                    : Cache.GetAreaByResref(landingLocation.AreaResref);
 
                 return area;
             }
@@ -959,7 +972,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var shipDetail = Space.GetShipDetailByItemTag(itemTag);
 
                 // Spawn the property associated with this ship.
-                var property = Property.CreateStarship(Player, shipDetail.Layout, _spaceLocation, _landingLocation);
+                var property = Property.CreateStarship(
+                    Player, 
+                    shipDetail.Layout, 
+                    _planetType,
+                    _spaceLocation, 
+                    _landingLocation);
 
                 var ship = new PlayerShip
                 {
@@ -1308,7 +1326,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var shipId = _shipIds[SelectedShipIndex];
             var dbShip = DB.Get<PlayerShip>(shipId);
             
-            var payload = new PropertyPermissionPayload(PropertyType.Starship, dbShip.PropertyId, false);
+            var payload = new PropertyPermissionPayload(PropertyType.Starship, dbShip.PropertyId, string.Empty, false);
             Gui.TogglePlayerWindow(Player, GuiWindowType.PermissionManagement, payload, TetherObject);
         };
 

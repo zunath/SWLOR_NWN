@@ -2,11 +2,11 @@
   "__data_type": "UTP ",
   "AnimationState": {
     "type": "byte",
-    "value": 2
+    "value": 4
   },
   "Appearance": {
     "type": "dword",
-    "value": 479
+    "value": 173
   },
   "AutoRemoveKey": {
     "type": "byte",
@@ -144,7 +144,7 @@
   },
   "OnUsed": {
     "type": "resref",
-    "value": "generic_convo"
+    "value": "enter_property"
   },
   "OnUserDefined": {
     "type": "resref",
@@ -164,7 +164,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 0
+    "value": 531
   },
   "Ref": {
     "type": "byte",
@@ -213,41 +213,6 @@
   "Useable": {
     "type": "byte",
     "value": 1
-  },
-  "VarTable": {
-    "type": "list",
-    "value": [
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Placeable.GenericConversation"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "CONVERSATION"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "BuildingEntrance"
-        }
-      }
-    ]
   },
   "Will": {
     "type": "byte",

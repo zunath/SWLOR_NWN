@@ -38,6 +38,8 @@ namespace SWLOR.Game.Server.Native
             var attackAttribute = attackerStats.m_nStrengthBase < 10 ? 0 : attackerStats.m_nStrengthModifier;
             var damage = 0;
             var specializationDMGBonus = 0f;
+            Log.Write(LogGroup.Attack, "DAMAGE: attacker strength mod: " + attackAttribute.ToString());
+            // TODO - ranged attacks (and other feat based damage) should not add the strength score.
 
             // Calculate attacker's DMG
             if (attacker != null)
@@ -48,6 +50,7 @@ namespace SWLOR.Game.Server.Native
 
                 if (weapon != null)
                 {
+                    // TODO - fix this to account for unarmed and creature weapons. See ResolveAttackRoll.
                     specializationDMGBonus = CalculateSpecializationDMG(attacker, weapon);
                 }
 
@@ -109,6 +112,7 @@ namespace SWLOR.Game.Server.Native
                 float vitality = target.m_pStats.m_nConstitutionModifier;
                 var defense = Stat.GetDefenseNative(target, CombatDamageType.Physical);
 
+                Log.Write(LogGroup.Attack, "DAMAGE: attacker damage attribute: " + dmg.ToString() + " defender defense attribute: " + defense.ToString());
                 damage = Combat.CalculateDamage(dmg, attackAttribute, defense, vitality, bCritical == 1);
 
                 // Plot target - zero damage

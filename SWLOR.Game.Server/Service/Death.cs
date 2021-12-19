@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.PropertyService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -163,8 +164,12 @@ namespace SWLOR.Game.Server.Service
             // 0 - 49
             else
                 multiplier = 15;
-            
-            dbPlayer.XPDebt = dbPlayer.TotalSPAcquired * multiplier;
+
+            var newDebt = dbPlayer.TotalSPAcquired * multiplier;
+            var effectiveMedicalCenterLevel = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.MedicalCenterLevel);
+            newDebt -= (int)(newDebt * (effectiveMedicalCenterLevel * 0.05f));
+
+            dbPlayer.XPDebt += newDebt;
             DB.Set(dbPlayer);
 
             return dbPlayer.XPDebt;

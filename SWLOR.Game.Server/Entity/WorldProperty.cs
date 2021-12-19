@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Numerics;
 using SWLOR.Game.Server.Service.PropertyService;
 
 namespace SWLOR.Game.Server.Entity
@@ -12,9 +11,11 @@ namespace SWLOR.Game.Server.Entity
             CustomName = string.Empty;
             CustomDescription = string.Empty;
             ParentPropertyId = string.Empty;
-            ChildPropertyIds = new List<string>();
-            Timers = new Dictionary<PropertyTimerType, DateTime>();
+            ChildPropertyIds = new Dictionary<PropertyChildType, List<string>>();
+            Dates = new Dictionary<PropertyDateType, DateTime>();
             Positions = new Dictionary<PropertyLocationType, PropertyLocation>();
+            Taxes = new Dictionary<PropertyTaxType, int>();
+            Upgrades = new Dictionary<PropertyUpgradeType, int>();
         }
 
         /// <summary>
@@ -49,12 +50,12 @@ namespace SWLOR.Game.Server.Entity
         /// <summary>
         /// Tracks the child property Ids contained inside this property.
         /// </summary>
-        public List<string> ChildPropertyIds { get; set; }
+        public Dictionary<PropertyChildType, List<string>> ChildPropertyIds { get; set; }
 
         /// <summary>
-        /// Tracks timers specific to this property.
+        /// Tracks dates and timers specific to this property.
         /// </summary>
-        public Dictionary<PropertyTimerType, DateTime> Timers { get; set; }
+        public Dictionary<PropertyDateType, DateTime> Dates { get; set; }
 
         /// <summary>
         /// Tracks positions specific to this property.
@@ -62,6 +63,16 @@ namespace SWLOR.Game.Server.Entity
         /// multiple positions may need to be tracked.
         /// </summary>
         public Dictionary<PropertyLocationType, PropertyLocation> Positions { get; set; }
+
+        /// <summary>
+        /// Tracks taxes specific to this property.
+        /// </summary>
+        public Dictionary<PropertyTaxType, int> Taxes { get; set; }
+
+        /// <summary>
+        /// Tracks upgrades specific to this property.
+        /// </summary>
+        public Dictionary<PropertyUpgradeType, int> Upgrades { get; set; }
 
         /// <summary>
         /// If true, the property will be publicly accessible.
@@ -105,5 +116,16 @@ namespace SWLOR.Game.Server.Entity
         /// </summary>
         public int ItemStorageCount { get; set; }
 
+        /// <summary>
+        /// Tracks the amount of credits contained within the property's treasury.
+        /// Only applicable to City property types.
+        /// </summary>
+        public long Treasury { get; set; }
+
+        /// <summary>
+        /// Tracks the amount of credits required to pay off the upkeep for this property.
+        /// Only applicable to City property types.
+        /// </summary>
+        public int Upkeep { get; set; }
     }
 }

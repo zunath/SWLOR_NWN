@@ -57,7 +57,7 @@
         Knockdown = 50,
         FlurryOfBlows = 51,
         InnerStrength = 52,
-        MartialFinesse = 53,
+        // 53 is free
         WeaponFocusKatars = 54,
         ImprovedCriticalKatars = 55,
         KatarProficiency = 56,
@@ -139,7 +139,7 @@
         ArmorBlueprints = 132,
         AccessoryBlueprints = 133,
         Upkeep = 134,
-        CitySpecialization = 135,
+        // 135 is free
         RapidSynthesisSmithery = 136,
         CarefulSynthesisSmithery = 137,
         BasicTouchSmithery = 138,

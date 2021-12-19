@@ -5,6 +5,7 @@
         public PropertyLocation()
         {
             AreaResref = string.Empty;
+            InstancePropertyId = string.Empty;
         }
 
         /// <summary>
@@ -32,5 +33,11 @@
         /// This will be an empty string if location is within an instance.
         /// </summary>
         public string AreaResref { get; set; }
+
+        /// <summary>
+        /// Gets or sets the property Id of the instance.
+        /// This will be an empty string if location is within a normal game area.
+        /// </summary>
+        public string InstancePropertyId { get; set; }
     }
 }

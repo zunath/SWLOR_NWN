@@ -148,7 +148,7 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "house_int_1"
+    "value": "house_int_3"
   },
   "Tile_List": {
     "type": "list",
@@ -2913,7 +2913,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 13
+    "value": 14
   },
   "Width": {
     "type": "int",

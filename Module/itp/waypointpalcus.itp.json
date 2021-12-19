@@ -389,6 +389,17 @@
                       "type": "resref",
                       "value": "pc_home_entrance"
                     }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Starship Dock Landing Point"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "starship_dockpoi"
+                    }
                   }
                 ]
               },

@@ -1,21 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SWLOR.Game.Server.Entity
+﻿namespace SWLOR.Game.Server.Entity
 {
     public class PlayerOutfit: EntityBase
     {
-
-        public List<PlayerOutfitDetail> Outfits { get; set; }
-
-        public PlayerOutfit()
-        {
-            Outfits = new List<PlayerOutfitDetail>();
-        }
-    }
-
-    public class PlayerOutfitDetail
-    {
+        [Indexed]
+        public string PlayerId { get; set; }
+        [Indexed]
         public string Name { get; set; }
         public string Data { get; set; }
 

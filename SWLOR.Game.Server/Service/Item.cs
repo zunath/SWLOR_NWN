@@ -519,6 +519,16 @@ namespace SWLOR.Game.Server.Service
             BaseItem.LightMace,
         };
 
+        /// <summary>
+        /// Retrieves the list of Creature base item types.
+        /// </summary>
+        public static List<BaseItem> CreatureBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.CreatureBludgeWeapon,
+            BaseItem.CreatureSlashWeapon,
+            BaseItem.CreaturePierceWeapon,
+            BaseItem.CreatureSlashPierceWeapon
+        };
 
         /// <summary>
         /// Retrieves the icon used on the UIs. 

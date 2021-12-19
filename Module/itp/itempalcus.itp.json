@@ -4287,6 +4287,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Bank"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5001"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Banner, Standing"
               },
               "RESREF": {
@@ -4628,6 +4639,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Cantina"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5004"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Carpet"
               },
               "RESREF": {
@@ -4809,6 +4831,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0191"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "City Hall"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5000"
               }
             },
             {
@@ -5244,6 +5277,17 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "House"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5005"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Illithid Chair"
               },
               "RESREF": {
@@ -5403,6 +5447,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0099"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Medical Center"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5002"
               }
             },
             {
@@ -5909,6 +5964,17 @@
               "RESREF": {
                 "type": "resref",
                 "value": "structure_0027"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Starport"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5003"
               }
             },
             {

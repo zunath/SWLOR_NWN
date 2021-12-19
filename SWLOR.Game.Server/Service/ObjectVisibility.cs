@@ -32,7 +32,6 @@ namespace SWLOR.Game.Server.Service
                         {
                             _defaultHiddenObjects.Add(obj);
                         }
-
                     }
                 }
             }

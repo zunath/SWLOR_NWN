@@ -103,12 +103,12 @@ namespace SWLOR.Game.Server.Service.SkillService
         Gathering = 11,
 
         [Skill(SkillCategoryType.Utility,
-            "Diplomacy",
+            "Leadership",
             20,
             true,
             "Ability to handle people, negotiate, and manage relations.",
             true)]
-        Diplomacy = 12,
+        Leadership = 12,
 
         // Languages
         [Skill(SkillCategoryType.Languages, 
@@ -134,6 +134,7 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Ability to speak the Cheunh language.", 
             false)]
         Cheunh = 16,
+
 
         [Skill(SkillCategoryType.Languages, 
             "Zabraki", 
@@ -221,6 +222,22 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Ability to speak the Ugnaught language.", 
             false)]
         Ugnaught = 27,
+
+        [Skill(SkillCategoryType.Languages,
+            "Rodese",
+            20,
+            true,
+            "Ability to speak the Rodese language.",
+            false)]
+        Rodese = 28,
+
+        [Skill(SkillCategoryType.Languages,
+            "Togruti",
+            20,
+            true,
+            "Ability to speak the Togruti language.",
+            false)]
+        Togruti = 29,
     }
 
     public class SkillAttribute : Attribute

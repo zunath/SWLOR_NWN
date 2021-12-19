@@ -16,7 +16,9 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private bool IsRowCountBound => !string.IsNullOrWhiteSpace(RowCountBindName);
 
         private float RowHeight { get; set; }
-        
+        private bool ShowBorder { get; set; }
+        private NuiScrollbars Scrollbars { get; set; }
+
         /// <summary>
         /// Sets a static value for the row count.
         /// </summary>
@@ -48,10 +50,32 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             return this;
         }
 
+        /// <summary>
+        /// Sets a static value for whether to show the borders.
+        /// </summary>
+        /// <param name="showBorders">true to display the borders, false otherwise</param>
+        public GuiList<T> SetShowBorders(bool showBorders)
+        {
+            ShowBorder = showBorders;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets a static value for the scrollbars to display.
+        /// </summary>
+        /// <param name="scrollbars">The type of scrollbars to display, if any.</param>
+        public GuiList<T> SetScrollbars(NuiScrollbars scrollbars)
+        {
+            Scrollbars = scrollbars;
+            return this;
+        }
+
         public GuiList(GuiListTemplate<T> template)
         {
             Template = template;
             RowHeight = NuiStyle.RowHeight;
+            ShowBorder = true;
+            Scrollbars = NuiScrollbars.Y;
 
             Elements.Add(Template);
         }
@@ -65,7 +89,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             var template = Template.ToJson();
             var rowCount = IsRowCountBound ? Nui.Bind(RowCountBindName) : JsonInt(RowCount);
 
-            var json = Nui.List(template, rowCount, RowHeight);
+            var json = Nui.List(template, rowCount, RowHeight, ShowBorder, Scrollbars);
             return json;
         }
     }

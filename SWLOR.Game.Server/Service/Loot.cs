@@ -334,12 +334,12 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(firstItem))
             {
                 DestroyObject(container);
-            }
 
-            AssignCommand(corpseOwner, () =>
-            {
-                SetIsDestroyable();
-            });
+                AssignCommand(corpseOwner, () =>
+                {
+                    SetIsDestroyable();
+                });
+            }
         }
 
         [NWNEventHandler("corpse_disturbed")]

@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature
         /// These are valid item types which will receive the OnHitCastSpell item property.
         /// Anything outside this set will not have this item property added automatically.
         /// </summary>
-        private static BaseItem[] _validItemTypes = {
+        private static readonly BaseItem[] _validItemTypes = {
                     BaseItem.Armor,
                     BaseItem.Arrow,
                     BaseItem.BastardSword,
@@ -80,7 +80,9 @@ namespace SWLOR.Game.Server.Feature
                     BaseItem.Trident,
                     BaseItem.TwoBladedSword,
                     BaseItem.WarHammer,
-                    BaseItem.Whip
+                    BaseItem.Whip,
+                    BaseItem.Lightsaber,
+                    BaseItem.Saberstaff
         };
 
         /// <summary>

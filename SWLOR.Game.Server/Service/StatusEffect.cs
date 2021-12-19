@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -15,10 +16,11 @@ namespace SWLOR.Game.Server.Service
         {
             public uint Source { get; set; }
             public DateTime Expiration { get; set; }
+            public FeatType ConcentrationFeatType { get; set; }
         }
 
-        private static readonly Dictionary<StatusEffectType, StatusEffectDetail> _statusEffects = new Dictionary<StatusEffectType, StatusEffectDetail>();
-        private static readonly Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>> _creaturesWithStatusEffects = new Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>>();
+        private static readonly Dictionary<StatusEffectType, StatusEffectDetail> _statusEffects = new();
+        private static readonly Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>> _creaturesWithStatusEffects = new();
 
         /// <summary>
         /// When the module loads, cache all status effects.
@@ -52,7 +54,8 @@ namespace SWLOR.Game.Server.Service
         /// <param name="target">The creature receiving the status effect.</param>
         /// <param name="statusEffectType">The type of status effect to give.</param>
         /// <param name="length">The amount of time the status effect should last. Set to 0.0f to make it permanent.</param>
-        public static void Apply(uint source, uint target, StatusEffectType statusEffectType, float length)
+        /// <param name="concentrationFeatType">If status effect is associated with a concentration ability, this will track the feat type used.</param>
+        public static void Apply(uint source, uint target, StatusEffectType statusEffectType, float length, FeatType concentrationFeatType = FeatType.Invalid)
         {
             if (!_creaturesWithStatusEffects.ContainsKey(target))
                 _creaturesWithStatusEffects[target] = new Dictionary<StatusEffectType, StatusEffectGroup>();
@@ -72,6 +75,7 @@ namespace SWLOR.Game.Server.Service
             // Set the group details.
             _creaturesWithStatusEffects[target][statusEffectType].Source = source;
             _creaturesWithStatusEffects[target][statusEffectType].Expiration = expiration;
+            _creaturesWithStatusEffects[target][statusEffectType].ConcentrationFeatType = concentrationFeatType;
 
             // Run the Grant Action, if applicable.
             var statusEffectDetail = _statusEffects[statusEffectType];
@@ -102,6 +106,17 @@ namespace SWLOR.Game.Server.Service
                 // Iterate over each status effect, cleaning them up if they've expired or executing their tick if applicable.
                 foreach (var (statusEffect, group) in statusEffects)
                 {
+                    // Concentration check - If caster is no longer channeling this feat, remove the status effect.
+                    if (group.ConcentrationFeatType != FeatType.Invalid)
+                    {
+                        var activeConcentration = Ability.GetActiveConcentration(group.Source);
+                        if (activeConcentration.Feat != group.ConcentrationFeatType)
+                        {
+                            Remove(creature, statusEffect);
+                            continue;
+                        }
+                    }
+
                     // Status effect has expired or creature is no longer valid. Remove it.
                     if (removeAllEffects || now > group.Expiration)
                     {
@@ -192,21 +207,5 @@ namespace SWLOR.Game.Server.Service
 
             return false;
         }
-
-        /// <summary>
-        /// Returns the source of a status effect which was applied onto a target creature.
-        /// If the status effect cannot be found, OBJECT_INVALID will be returned.
-        /// If source cannot be determined, OBJECT_INVALID will be returned.
-        /// </summary>
-        /// <param name="creature">The creature to check.</param>
-        /// <param name="statusEffectType">The status effect type to look for.</param>
-        /// <returns>The source of a status effect, or OBJECT_INVALID if it cannot be determined.</returns>
-        public static uint GetSource(uint creature, StatusEffectType statusEffectType)
-        {
-            if (!HasStatusEffect(creature, statusEffectType)) 
-                return OBJECT_INVALID;
-            return _creaturesWithStatusEffects[creature][statusEffectType].Source;
-        }
-
     }
 }

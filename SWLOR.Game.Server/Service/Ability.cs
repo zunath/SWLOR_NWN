@@ -249,7 +249,7 @@ namespace SWLOR.Game.Server.Service
         public static void StartConcentrationAbility(uint creature, uint target, FeatType feat, StatusEffectType statusEffectType)
         {
             _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(feat, statusEffectType);
-            StatusEffect.Apply(creature, target, statusEffectType, 0.0f);
+            StatusEffect.Apply(creature, target, statusEffectType, 0.0f, feat);
 
             Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} begins concentrating...");
         }

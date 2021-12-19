@@ -37,7 +37,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Knockdown a small target. If resisted, target is slowed for 6 seconds.")
                 .Price(2)
-                .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForcePush1)
 

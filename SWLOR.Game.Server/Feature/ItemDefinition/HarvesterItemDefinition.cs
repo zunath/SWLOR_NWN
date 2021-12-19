@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
@@ -25,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
         public Dictionary<string, ItemDetail> BuildItems()
         {
+            Harvester("harvest_r_old", 1, "veldite_vein");
             Harvester("harvest_r_b", 1, "veldite_vein");
             Harvester("harvest_r_1", 2, "veldite_vein", "scordspar_vein");
             Harvester("harvest_r_2", 3, "veldite_vein", "scordspar_vein", "plagionite_vein");
@@ -90,12 +92,17 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     if (resourceCount <= 0)
                     {
-                        DestroyObject(target);
+                        // DestroyObject bypasses the OnDeath event, and removes the object so we can't send events.
+                        // Use EffectDeath to ensure that we trigger death processing.
+                        SetPlotFlag(target, false);
+                        ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
                     }
                     else
                     {
                         SetLocalInt(target, "RESOURCE_COUNT", resourceCount);
                     }
+
+                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Summon_Monster_3), GetLocation(target));
                 });
         }
     }

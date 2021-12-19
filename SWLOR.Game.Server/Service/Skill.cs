@@ -66,7 +66,7 @@ namespace SWLOR.Game.Server.Service
             {
                 SendMessageToPC(player, $"You earned {details.Name} skill experience. ({xp})");
             }
-            else
+            else if (debtRemoved == 0)
             {
                 return;
             }

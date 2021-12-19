@@ -2,9 +2,12 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Random = SWLOR.Game.Server.Service.Random;
 
@@ -48,6 +51,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
             var amount = baseAmount + willpowerMod * 10 + Random.D10(1);
 
+            // limit xp to amount *actually* healed.
+            if (amount > (GetMaxHitPoints(target) - GetCurrentHitPoints(target)))
+            {
+                amount = GetMaxHitPoints(target) - GetCurrentHitPoints(target);
+            }
+
+            Service.Skill.GiveSkillXP(activator, SkillType.FirstAid, 3 * amount);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), target);
             TakeMedicalSupplies(activator);

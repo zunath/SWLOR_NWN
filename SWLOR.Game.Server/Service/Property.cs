@@ -1883,6 +1883,8 @@ namespace SWLOR.Game.Server.Service
                 Dialog.StartConversation(player, player, nameof(PlaceCityHallDialog));
                 return;
             }
+            
+            if (structureType == StructureType.Invalid) return;
 
             // Must be in a player property.
             if (string.IsNullOrWhiteSpace(propertyId))
@@ -1938,7 +1940,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            // Structure can't be placed within this type of property
+            // Structure can't be placed within this type of property.
             if (!structureDetail.RestrictedPropertyTypes.HasFlag(property.PropertyType))
             {
                 FloatingTextStringOnCreature($"This {fixtureName} cannot be placed within this type of property.", player, false);

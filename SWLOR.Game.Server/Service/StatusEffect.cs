@@ -49,41 +49,41 @@ namespace SWLOR.Game.Server.Service
         /// it will be extended to the length specified.
         /// </summary>
         /// <param name="source">The source of the status effect.</param>
-        /// <param name="creature">The creature receiving the status effect.</param>
+        /// <param name="target">The creature receiving the status effect.</param>
         /// <param name="statusEffectType">The type of status effect to give.</param>
         /// <param name="length">The amount of time the status effect should last. Set to 0.0f to make it permanent.</param>
-        public static void Apply(uint source, uint creature, StatusEffectType statusEffectType, float length)
+        public static void Apply(uint source, uint target, StatusEffectType statusEffectType, float length)
         {
-            if(!_creaturesWithStatusEffects.ContainsKey(creature))
-                _creaturesWithStatusEffects[creature] = new Dictionary<StatusEffectType, StatusEffectGroup>();
+            if (!_creaturesWithStatusEffects.ContainsKey(target))
+                _creaturesWithStatusEffects[target] = new Dictionary<StatusEffectType, StatusEffectGroup>();
 
-            if(!_creaturesWithStatusEffects[creature].ContainsKey(statusEffectType))
-                _creaturesWithStatusEffects[creature][statusEffectType] = new StatusEffectGroup();
+            if (!_creaturesWithStatusEffects[target].ContainsKey(statusEffectType))
+                _creaturesWithStatusEffects[target][statusEffectType] = new StatusEffectGroup();
 
             var expiration = length == 0.0f ? DateTime.MaxValue : DateTime.UtcNow.AddSeconds(length);
 
             // If the existing status effect will expire later than this, exit early.
-            if (_creaturesWithStatusEffects[creature].ContainsKey(statusEffectType))
+            if (_creaturesWithStatusEffects[target].ContainsKey(statusEffectType))
             {
-                if (_creaturesWithStatusEffects[creature][statusEffectType].Expiration > expiration)
+                if (_creaturesWithStatusEffects[target][statusEffectType].Expiration > expiration)
                     return;
             }
 
             // Set the group details.
-            _creaturesWithStatusEffects[creature][statusEffectType].Source = source;
-            _creaturesWithStatusEffects[creature][statusEffectType].Expiration = expiration;
+            _creaturesWithStatusEffects[target][statusEffectType].Source = source;
+            _creaturesWithStatusEffects[target][statusEffectType].Expiration = expiration;
 
             // Run the Grant Action, if applicable.
             var statusEffectDetail = _statusEffects[statusEffectType];
-            statusEffectDetail.AppliedAction?.Invoke(source, creature, length);
+            statusEffectDetail.AppliedAction?.Invoke(source, target, length);
 
             // Add the status effect icon if there is one.
             if (statusEffectDetail.EffectIconId > 0)
             {
-                ObjectPlugin.AddIconEffect(creature, statusEffectDetail.EffectIconId);
+                ObjectPlugin.AddIconEffect(target, statusEffectDetail.EffectIconId);
             }
 
-            Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} receives the effect of {statusEffectDetail.Name}.");
+            Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of {statusEffectDetail.Name}.");
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var (creature, statusEffects) in _creaturesWithStatusEffects)
             {
                 // Creature is dead or invalid. Remove its status effects.
-                bool removeAllEffects = !GetIsObjectValid(creature) || GetIsDead(creature);
+                var removeAllEffects = !GetIsObjectValid(creature) || GetIsDead(creature);
 
                 // Iterate over each status effect, cleaning them up if they've expired or executing their tick if applicable.
                 foreach (var (statusEffect, group) in statusEffects)
@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="statusEffectType">The type of status effect to remove.</param>
         public static void Remove(uint creature, StatusEffectType statusEffectType)
         {
-            if (!HasStatusEffect(creature, statusEffectType,  true)) return;
+            if (!HasStatusEffect(creature, statusEffectType, true)) return;
             _creaturesWithStatusEffects[creature].Remove(statusEffectType);
 
             var statusEffectDetail = _statusEffects[statusEffectType];
@@ -203,7 +203,8 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The source of a status effect, or OBJECT_INVALID if it cannot be determined.</returns>
         public static uint GetSource(uint creature, StatusEffectType statusEffectType)
         {
-            if (!HasStatusEffect(creature, statusEffectType)) return OBJECT_INVALID;
+            if (!HasStatusEffect(creature, statusEffectType)) 
+                return OBJECT_INVALID;
             return _creaturesWithStatusEffects[creature][statusEffectType].Source;
         }
 

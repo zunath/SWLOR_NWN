@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     if (!Ability.GetAbilityResisted(source, target))
                     {
                         DoDamageAndVFX(VisualEffect.Vfx_Beam_Drain, 1, 1, target, source);
-                    }                   
+                    }
 
                     Enmity.ModifyEnmityOnAll(source, 1);
                     CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3);

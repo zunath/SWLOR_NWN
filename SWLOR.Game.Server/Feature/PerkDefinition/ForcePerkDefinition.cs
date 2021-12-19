@@ -327,7 +327,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DrainLife()
         {
-            _builder.Create(PerkCategoryType.ForceDark, PerkType.DrainLife)
+            _builder.Create(PerkCategoryType.ForceDark, PerkType.ForceDrain)
                 .Name("Drain Life")
 
                 .AddPerkLevel()

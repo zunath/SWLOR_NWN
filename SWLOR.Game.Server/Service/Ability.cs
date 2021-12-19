@@ -243,12 +243,13 @@ namespace SWLOR.Game.Server.Service
         /// If there is already a concentration ability active, it will be replaced with this one.
         /// </summary>
         /// <param name="creature">The creature who will perform the concentration.</param>
+        /// <param name="target">The target of the concentration effect.</param>
         /// <param name="feat">The type of ability to activate.</param>
         /// <param name="statusEffectType">The concentration status effect to apply.</param>
-        public static void StartConcentrationAbility(uint creature, FeatType feat, StatusEffectType statusEffectType)
+        public static void StartConcentrationAbility(uint creature, uint target, FeatType feat, StatusEffectType statusEffectType)
         {
             _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(feat, statusEffectType);
-            StatusEffect.Apply(creature, creature, statusEffectType, 0.0f);
+            StatusEffect.Apply(creature, target, statusEffectType, 0.0f);
 
             Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} begins concentrating...");
         }

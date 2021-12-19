@@ -169,7 +169,7 @@
         ForceHeal = 162,
         ForceBurst = 163,
         ForceBody = 164,
-        DrainLife = 165,
+        ForceDrain = 165,
         ForceLightning = 166,
         ForceMind = 167,
         Traumatize = 168,
@@ -180,7 +180,7 @@
         Cover = 173,
         ShieldExpertise = 174,
         Ironclad = 175,
-        ForceDrain = 176,
+        // 176 is free
         MuscleMemoryFabrication = 177,
         VenerationFabrication = 178,
         WasteNotFabrication = 179,

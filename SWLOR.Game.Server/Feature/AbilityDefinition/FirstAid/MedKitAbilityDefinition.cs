@@ -51,13 +51,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
             var amount = baseAmount + willpowerMod * 10 + Random.D10(1);
 
-            // limit xp to amount *actually* healed.
-            if (amount > (GetMaxHitPoints(target) - GetCurrentHitPoints(target)))
-            {
-                amount = GetMaxHitPoints(target) - GetCurrentHitPoints(target);
-            }
+            // Scale XP to the thing we just fought.
+            // Retrieve the level of our recent enemy from the CombatPoint service, and use the Skill service 
+            // delta function to get base XP based on relative level. 
+            int enemyLevel = CombatPoint.GetRecentEnemyLevel(activator);
+            var playerId = GetObjectUUID(activator);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var firstAidLevel = dbPlayer.Skills[SkillType.FirstAid].Rank;
+            int nXP = enemyLevel != -1 ? Service.Skill.GetDeltaXP(enemyLevel - firstAidLevel) : 0;
 
-            Service.Skill.GiveSkillXP(activator, SkillType.FirstAid, 3 * amount);
+            Service.Skill.GiveSkillXP(activator, SkillType.FirstAid, nXP);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), target);
             TakeMedicalSupplies(activator);

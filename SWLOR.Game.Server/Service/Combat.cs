@@ -74,5 +74,28 @@ namespace SWLOR.Game.Server.Service
 
             return (int)Random.NextFloat(minDamage, maxDamage);
         }
+
+        /// <summary>
+        /// Retrieves the level of an NPC. This is determined by an item property located on the NPC's skin.
+        /// If no skin is equipped or the item property does not exist, the NPC's level will be returned as zero.
+        /// </summary>
+        /// <returns>The level of the NPC, or zero if not found.</returns>
+        public static int GetNPCLevel(uint npc)
+        {
+            var skin = GetItemInSlot(InventorySlot.CreatureArmor, npc);
+            if (!GetIsObjectValid(skin))
+                return 0;
+
+            for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.NPCLevel)
+                {
+                    return GetItemPropertyCostTableValue(ip);
+                }
+            }
+
+            return 0;
+        }
+
     }
 }

@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             // Grenada Belt
             _builder.Create(RecipeType.GrenadaBelt, SkillType.Smithery)
                 .Category(RecipeCategoryType.Belt)
-                .Resref("gr_belt")
+                .Resref("gre_belt")
                 .Level(39)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 4)

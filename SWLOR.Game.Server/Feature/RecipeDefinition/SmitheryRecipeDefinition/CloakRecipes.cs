@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             // Grenada Cloak
             _builder.Create(RecipeType.GrenadaCloak, SkillType.Smithery)
                 .Category(RecipeCategoryType.Cloak)
-                .Resref("gr_cloak")
+                .Resref("gre_cloak")
                 .Level(38)
                 .Quantity(1)
                 .RequirementPerk(PerkType.AccessoryBlueprints, 4)

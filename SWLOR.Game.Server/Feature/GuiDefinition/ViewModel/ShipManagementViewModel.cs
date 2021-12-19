@@ -472,6 +472,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .Select(s => s.PropertyId)
                 .ToList();
 
+            if (propertyIds.Count <= 0) 
+                return new List<PlayerShip>();
+
             var shipQuery = new DBQuery<PlayerShip>()
                 .AddFieldSearch(nameof(PlayerShip.PropertyId), propertyIds);
 
@@ -538,6 +541,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             IsMyShipsToggled = true;
             IsOtherShipsToggled = false;
+            ToggleRegisterButtons();
 
             WatchOnClient(model => model.ShipName);
         }
@@ -618,6 +622,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 IsRefitEnabled = false;
                 IsBoardShipEnabled = false;
+                IsPermissionsEnabled = false;
                 IsNameEnabled = false;
                 ShipLocation = string.Empty;
                 IsRepairEnabled = false;

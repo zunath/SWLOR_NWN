@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 100
+    "value": 2
   },
   "Cursed": {
     "type": "byte",
@@ -42,7 +42,7 @@
     "id": 13362,
     "type": "cexolocstring",
     "value": {
-      "0": "Medical Supplies"
+      "0": "Medical Supplies x50"
     }
   },
   "ModelPart1": {

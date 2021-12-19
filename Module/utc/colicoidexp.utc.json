@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 4.0
+    "value": 2.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 14
+    "value": 16
   },
   "Conversation": {
     "type": "resref",
@@ -46,11 +46,11 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -2
+    "value": -4
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 40
+    "value": 45
   },
   "DecayTime": {
     "type": "dword",
@@ -62,9 +62,7 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": "The Colicoids were a species of sentient, insectoid carnivores native to the planet Colla IV. "
-    }
+    "value": {}
   },
   "Dex": {
     "type": "byte",
@@ -136,7 +134,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 40
+    "value": 45
   },
   "Int": {
     "type": "byte",
@@ -170,11 +168,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 60
+    "value": 75
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 2
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -506,7 +504,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 16
+    "value": 22
   },
   "Subrace": {
     "type": "cexostring",

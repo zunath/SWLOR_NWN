@@ -473,7 +473,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 10
+    "value": 12
   },
   "Subrace": {
     "type": "cexostring",
@@ -544,6 +544,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 8
+    "value": 10
   }
 }

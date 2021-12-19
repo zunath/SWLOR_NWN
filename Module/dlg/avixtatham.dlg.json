@@ -259,7 +259,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Aha! [He stops what he was doing and turns to give you his full attention] Good! I was beginning to wonder if she'd ever get off her arse and send me the help I requested! Seems it's not just the reception droid having issues, all my miners are down! If you could get down into the mine there, and bring me back four pieces of Veldite ore, I'd be most grateful!"
+            "0": "Aha! [He stops what he was doing and turns to give you his full attention] Good! I was beginning to wonder if she'd ever get off her arse and send me the help I requested! Seems it's not just the reception droid having issues, all my miners are down! If you could get down into the mine there, and bring me back ten pieces of Veldrite ore, I'd be most grateful!"
           }
         }
       },
@@ -738,7 +738,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Aha, you're back! Did you get me the four pieces of Veldite ore, like I asked?"
+            "0": "Aha, you're back! Did you get me the ten pieces of Veldite ore, like I asked?"
           }
         }
       },

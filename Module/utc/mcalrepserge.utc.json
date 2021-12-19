@@ -184,13 +184,6 @@
           "type": "resref",
           "value": "shipcaptainblkm"
         }
-      },
-      {
-        "__struct_id": 16,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "blaster_b"
-        }
       }
     ]
   },

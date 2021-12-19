@@ -18281,17 +18281,6 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Blaster Pistol"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "blaster_b"
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
                             "value": "Basic Pistol"
                           },
                           "RESREF": {

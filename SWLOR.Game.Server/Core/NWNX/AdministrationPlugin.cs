@@ -134,21 +134,21 @@ namespace SWLOR.Game.Server.Core.NWNX
         }
 
         // Get an AdministrationOption value
-        public static int GetPlayOption(AdministrationOption option)
+        public static bool GetPlayOption(AdministrationOption option)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetPlayOption");
             Internal.NativeFunctions.StackPushInteger((int)option);
             Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            return Internal.NativeFunctions.nwnxPopInt() == 1;
         }
 
         // Set an AdministrationOption value
-        public static void SetPlayOption(AdministrationOption option, int value)
+        public static void SetPlayOption(AdministrationOption option, bool value)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetPlayOption");
-            Internal.NativeFunctions.StackPushInteger((int)option);
-            Internal.NativeFunctions.StackPushInteger(value);
-            Internal.NativeFunctions.nwnxCallFunction();
+            // NativeFunction calls don't work for this method and cause a crash. Use the core methods instead.
+            NWNXCore.NWNX_PushArgumentInt(value ? 1 : 0);
+            NWNXCore.NWNX_PushArgumentInt((int)option);
+            NWNXCore.NWNX_CallFunction(PLUGIN_NAME, "SetPlayOption");
         }
 
         // Delete the temporary user resource data (TURD) of a playerName + characterName

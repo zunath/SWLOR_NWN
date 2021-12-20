@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                             var defense = Stat.GetDefense(target, CombatDamageType.Physical) +
                                           Stat.GetDefense(target, CombatDamageType.Fire);
                             var vitality = GetAbilityModifier(AbilityType.Vitality, coneTarget);
-                            var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, false);
+                            var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, 0);
 
                             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Hit_Fire), coneTarget);
                             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), coneTarget);

@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             var might = GetAbilityModifier(AbilityType.Might, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = Combat.CalculateDamage(dmg, might, defense, vitality, false);
+            var damage = Combat.CalculateDamage(dmg, might, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
 
             Enmity.ModifyEnmityOnAll(activator, 1);

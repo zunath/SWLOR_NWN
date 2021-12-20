@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Superior Weapon Focus")
 
                 .AddPerkLevel()
-                .Description("Two-Handed weapons gain +1 bonus to all attack rolls.")
+                .Description("Two-Handed weapons gain +5% bonus to all attack rolls.")
                 .Price(5)
                 .RequirementSkill(SkillType.TwoHanded, 35)
                 .RequirementCharacterType(CharacterType.Standard)

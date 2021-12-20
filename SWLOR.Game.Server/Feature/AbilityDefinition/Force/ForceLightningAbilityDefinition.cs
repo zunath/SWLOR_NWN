@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var targetWillpower = GetAbilityModifier(AbilityType.Willpower, target);
-            var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, false);
+            var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, 0);
 
             var elecBeam = EffectBeam(VisualEffect.Vfx_Beam_Silent_Lightning, activator, BodyNode.Hand);
             

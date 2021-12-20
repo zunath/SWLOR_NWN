@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             var defense = Stat.GetDefense(target, CombatDamageType.Physical) +
                           Stat.GetDefense(target, CombatDamageType.Electrical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, false);
+            var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), target);
             if (inflict) StatusEffect.Apply(activator, target, StatusEffectType.Shock, duration);
 

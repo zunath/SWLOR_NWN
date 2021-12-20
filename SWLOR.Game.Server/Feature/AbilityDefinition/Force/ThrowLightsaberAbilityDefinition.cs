@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 var defense = Stat.GetDefense(target, CombatDamageType.Physical);
                 var targetWillpower = GetAbilityModifier(AbilityType.Willpower, target);
-                var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, false);
+                var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, 0);
                 ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), target);
             });
             
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     {
                         var defense = Stat.GetDefense(nearbyCopy, CombatDamageType.Physical);
                         var targetWillpower = GetAbilityModifier(AbilityType.Willpower, nearbyCopy);
-                        var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, false);
+                        var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, 0);
                         ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), nearbyCopy);
                     });
 

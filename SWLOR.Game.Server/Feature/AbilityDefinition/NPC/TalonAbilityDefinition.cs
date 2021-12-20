@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     var dmg = 1.0f;
                     var defense = Stat.GetDefense(target, CombatDamageType.Physical);
                     var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-                    var damage = Combat.CalculateDamage(dmg, might, defense, vitality, false);
+                    var damage = Combat.CalculateDamage(dmg, might, defense, vitality, 0);
 
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
                     ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Com_Blood_Spark_Medium), target);

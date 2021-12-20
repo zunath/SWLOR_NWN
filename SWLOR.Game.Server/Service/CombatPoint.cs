@@ -95,34 +95,6 @@ namespace SWLOR.Game.Server.Service
                     return levelDifferencePenalty;
                 }
 
-                // Calculates the number of armor points based on what the player currently has equipped.
-                static int CalculateArmorPoints(uint player)
-                {
-                    var armorPoints = 0;
-
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Head, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Chest, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Boots, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Arms, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Cloak, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.LeftRing, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.RightRing, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Neck, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Belt, player))) armorPoints++;
-
-                    return armorPoints;
-                }
-
-                // Applies an individual armor skill's XP portion.
-                static int CalculateAdjustedXP(int highestRank, int baseXP, SkillType skillType, float totalPoints, int points, Dictionary<SkillType, PlayerSkill> playerSkills)
-                {
-                    var percentage = points / totalPoints;
-                    var skillRank = playerSkills[skillType].Rank;
-                    var rangePenalty = CalculateRankRangePenalty(highestRank, skillRank);
-                    var adjustedXP = baseXP * percentage * rangePenalty;
-                    return (int)adjustedXP;
-                }
-
                 var combatPoints = _creatureCombatPointTracker.ContainsKey(npc) ? _creatureCombatPointTracker[npc] : null;
                 if (combatPoints == null) return;
 
@@ -168,14 +140,12 @@ namespace SWLOR.Game.Server.Service
                     }
 
                     // Armor XP is calculated the same way but is separate from other skills used during combat.
-                    var armorPoints = CalculateArmorPoints(player);
-                    if (armorPoints <= 0) return;
                     var armorRank = dbPlayer.Skills[SkillType.Armor].Rank;
 
                     delta = npcLevel - armorRank;
                     baseXP = Skill.GetDeltaXP(delta);
-                    var xp = CalculateAdjustedXP(armorRank, baseXP, SkillType.Armor, totalPoints, armorPoints, dbPlayer.Skills);
-                    Skill.GiveSkillXP(player, SkillType.Armor, xp);
+                    var xp = baseXP * CalculateRankRangePenalty(highestRank, armorRank);
+                    Skill.GiveSkillXP(player, SkillType.Armor, (int) xp);
                 }
 
             }

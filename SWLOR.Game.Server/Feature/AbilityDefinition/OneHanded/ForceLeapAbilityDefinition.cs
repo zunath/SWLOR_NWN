@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = Combat.CalculateDamage(dmg, willpower, defense, vitality, false);
+            var damage = Combat.CalculateDamage(dmg, willpower, defense, vitality, 0);
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandBaseItemType = GetBaseItemType(weapon);
 

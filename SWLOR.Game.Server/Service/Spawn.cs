@@ -318,12 +318,14 @@ namespace SWLOR.Game.Server.Service
             uint creature = OBJECT_SELF;
             var spawnId = GetLocalString(creature, "SPAWN_ID");
             if (string.IsNullOrWhiteSpace(spawnId)) return;
+            if (GetLocalInt(creature, "RESPAWN_QUEUED") == 1) return;
 
             var spawnGuid = new Guid(spawnId);
             var detail = _spawns[spawnGuid];
             var respawnTime = DateTime.UtcNow.AddMinutes(detail.RespawnDelayMinutes);
 
             CreateQueuedSpawn(spawnGuid, respawnTime);
+            SetLocalInt(creature, "RESPAWN_QUEUED", 1);
         }
 
         /// <summary>

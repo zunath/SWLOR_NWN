@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Threading.Tasks;
-using Discord;
-using Discord.Webhook;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -65,26 +62,26 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 
                     if (authorization == AuthorizationLevel.DM)
                     {
-                        SendMessageToPC(user, Service.ChatCommand.HelpTextDM);
+                        SendMessageToPC(user, ChatCommand.HelpTextDM);
                     }
                     else if (authorization == AuthorizationLevel.Admin)
                     {
-                        SendMessageToPC(user, Service.ChatCommand.HelpTextAdmin);
+                        SendMessageToPC(user, ChatCommand.HelpTextAdmin);
                     }
                     else
                     {
-                        SendMessageToPC(user, Service.ChatCommand.HelpTextPlayer);
+                        SendMessageToPC(user, ChatCommand.HelpTextPlayer);
                     }
                 });
         }
         private static void ListEmotesCommand(ChatCommandBuilder builder)
         {
-            builder.Create("listemotes")
+            builder.Create("emotes")
                 .Description("Displays all emotes available to you.")
                 .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
-                    SendMessageToPC(user, Service.ChatCommand.HelpTextEmote);
+                    SendMessageToPC(user, ChatCommand.HelpTextEmote);
                 });
         }
         private static void StuckCommand(ChatCommandBuilder builder)

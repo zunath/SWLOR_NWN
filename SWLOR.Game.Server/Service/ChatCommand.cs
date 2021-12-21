@@ -143,6 +143,7 @@ namespace SWLOR.Game.Server.Service
                 }
                 else
                 {
+                    Console.WriteLine($"Sender: {GetName(sender)}");
                     command.DoAction?.Invoke(sender, target, targetLocation, argsArr);
                 }
             }

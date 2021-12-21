@@ -87,13 +87,13 @@ namespace SWLOR.Game.Server.Service.ChatCommandService
             return this;
         }
         /// <summary>
-        /// Sets the emote flag of the active chat command.
+        /// Indicates the chat command is an emote and should be categorized under that instead of
+        /// the general purpose chat commands.
         /// </summary>
-        /// <param name="emoteFlag">The flag to set.</param>
         /// <returns>A configured ChatCommandBuilder.</returns>
-        public ChatCommandBuilder IsEmote(bool emoteFlag)
+        public ChatCommandBuilder IsEmote()
         {
-            _currentDetail.IsEmote = emoteFlag;
+            _currentDetail.IsEmote = true;
 
             return this;
         }

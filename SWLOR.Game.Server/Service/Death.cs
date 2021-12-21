@@ -9,6 +9,15 @@ namespace SWLOR.Game.Server.Service
     public class Death
     {
         /// <summary>
+        /// When a player starts dying, instantly kill them.
+        /// </summary>
+        [NWNEventHandler("mod_dying")]
+        public static void OnPlayerDying()
+        {
+            ApplyEffectToObject(DurationType.Instant, EffectDeath(), GetLastPlayerDying());
+        }
+
+        /// <summary>
         /// Handles resetting a player's standard faction reputations and displaying the respawn pop-up menu.
         /// </summary>
         [NWNEventHandler("mod_death")]

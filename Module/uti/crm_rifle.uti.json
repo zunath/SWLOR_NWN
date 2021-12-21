@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 6
+    "value": 7
   },
   "Charges": {
     "type": "byte",
@@ -51,7 +51,7 @@
   },
   "ModelPart2": {
     "type": "byte",
-    "value": 43
+    "value": 11
   },
   "ModelPart3": {
     "type": "byte",

@@ -417,10 +417,7 @@ namespace SWLOR.Game.Server.Service
             var self = OBJECT_SELF;
             if (!_creatureAllies.ContainsKey(self)) return;
 
-            var allies = _creatureAllies[self];
-
-            //foreach (var ally in allies)
-            for(var index = allies.Count-1; index >= 0; index--)
+            for(var index = _creatureAllies.Count-1; index >= 0; index--)
             {
                 var ally = _creatureAllies.ElementAt(index).Key;
                 if (_creatureAllies.ContainsKey(ally))

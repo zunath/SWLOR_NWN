@@ -207,19 +207,8 @@ namespace SWLOR.Game.Server.Native
                  offhand.m_nBaseItem != (uint) BaseItem.SmallShield && offhand.m_nBaseItem != (uint) BaseItem.TowerShield))
             {
                 string log = "Applying dual wield penalty.  Offhand weapon: " + (offhand == null ? weapon.GetFirstName().GetSimple() : offhand.GetFirstName().GetSimple() + " -");
-                if (isOffhandAttack && attacker.m_pStats.HasFeat((ushort)FeatType.Ambidexterity) == 0)
-                {
-                    // Offhand penalty - if we aren't ambidextrous. 
-                    modifiers -= 20;
-                    log += "- Offhand attack, not ambidextrous -";
-                }
-
-                if (attacker.m_pStats.HasFeat((ushort)FeatType.TwoWeaponFighting) == 0)
-                {
-                    // Two weapon fighting without the feat is at -10.
-                    modifiers -= 10;
-                    log += "- No TWF feat -";
-                }
+                // Note - we have retired Two Weapon Fighting and Ambidexterity as feats.  We have costed them
+                // in to the proficiency perks rather than granting them separately. 
 
                 if (!bDoubleWeapon && Item.GetWeaponSize((BaseItem)offhand.m_nBaseItem) >= attacker.m_nCreatureSize)
                 {

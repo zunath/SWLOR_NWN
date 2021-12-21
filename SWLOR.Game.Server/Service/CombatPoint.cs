@@ -81,20 +81,6 @@ namespace SWLOR.Game.Server.Service
             {
                 var npc = OBJECT_SELF;
 
-                // Calculates a rank range penalty. If there's a level difference greater than 10, a penalty is applied.
-                static float CalculateRankRangePenalty(int highestSkillRank, int skillRank)
-                {
-                    int levelDifference = highestSkillRank - skillRank;
-                    float levelDifferencePenalty = 1.0f;
-                    if (levelDifference > 10)
-                    {
-                        levelDifferencePenalty = 1.0f - 0.05f * (levelDifference - 10);
-                        if (levelDifferencePenalty < 0.20f) levelDifferencePenalty = 0.20f;
-                    }
-
-                    return levelDifferencePenalty;
-                }
-
                 var combatPoints = _creatureCombatPointTracker.ContainsKey(npc) ? _creatureCombatPointTracker[npc] : null;
                 if (combatPoints == null) return;
 
@@ -133,8 +119,7 @@ namespace SWLOR.Game.Server.Service
                     foreach (var (skillType, cp) in cpList)
                     {
                         var percentage = cp / totalPoints;
-                        var skillRangePenalty = CalculateRankRangePenalty(highestRank, dbPlayer.Skills[skillType].Rank);
-                        var adjustedXP = baseXP * percentage * skillRangePenalty;
+                        var adjustedXP = baseXP * percentage;
 
                         Skill.GiveSkillXP(player, skillType, (int)adjustedXP);
                     }
@@ -144,8 +129,7 @@ namespace SWLOR.Game.Server.Service
 
                     delta = npcLevel - armorRank;
                     baseXP = Skill.GetDeltaXP(delta);
-                    var xp = baseXP * CalculateRankRangePenalty(highestRank, armorRank);
-                    Skill.GiveSkillXP(player, SkillType.Armor, (int) xp);
+                    Skill.GiveSkillXP(player, SkillType.Armor, (int) baseXP);
                 }
 
             }

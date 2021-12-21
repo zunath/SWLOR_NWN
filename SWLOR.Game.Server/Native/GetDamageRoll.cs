@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
@@ -39,7 +40,7 @@ namespace SWLOR.Game.Server.Native
 
             // On a critical hit, this method appears to be invoked multiple times, with an invalid target the second and
             // subsequent times.  Bail out early.
-            if (targetObject == null) return 0;
+            if (targetObject == null || targetObject.m_idSelf == NWScript.OBJECT_INVALID) return 0;
 
             uint attackType = (uint) AttackType.Melee;
             // Developer note - the native functions to retrieve a combat round don't work at this point.

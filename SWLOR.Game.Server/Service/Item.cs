@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Service
     public static class Item
     {
         private static readonly Dictionary<string, ItemDetail> _items = new Dictionary<string, ItemDetail>();
-        private static readonly Dictionary<int, string[]> _2dacache = new Dictionary<int, string[]>();
+        private static readonly Dictionary<int, int[]> _2dacache = new Dictionary<int, int[]>();
 
         /// <summary>
         /// When the module loads, all item details are loaded into the cache.
@@ -48,10 +48,14 @@ namespace SWLOR.Game.Server.Service
             // end up pointing to the same array object (and get overwritten).
             foreach (var baseItem in Enum.GetValues(typeof(BaseItem)).Cast<int>())
             {
-                string[] values = new string[3];
-                values[0] = Get2DAString("baseitems", "CritThreat", baseItem);
-                values[1] = Get2DAString("baseitems", "CritHitMult", baseItem);
-                values[2] = Get2DAString("baseitems", "WeaponSize", baseItem);
+                int[] values = new int[3];
+                string threat = Get2DAString("baseitems", "CritThreat", baseItem);
+                string mult = Get2DAString("baseitems", "CritHitMult", baseItem);
+                string size = Get2DAString("baseitems", "WeaponSize", baseItem);
+
+                values[0] = string.IsNullOrEmpty(threat) ? 0 : Int32.Parse(threat);
+                values[1] = string.IsNullOrEmpty(mult) ? 0 : Int32.Parse(mult);
+                values[2] = string.IsNullOrEmpty(size) ? 0 : Int32.Parse(size);
                 _2dacache[baseItem] = values;
             }
 
@@ -720,26 +724,26 @@ namespace SWLOR.Game.Server.Service
         // The values below are taken from the 2das, and cached on startup in CacheData() above.
         public static int GetCriticalThreatRange(BaseItem item)
         {
-            string range = _2dacache[(int)item][0];
+            int range = _2dacache[(int)item][0];
             Log.Write(LogGroup.Attack, "Threat range for item type " + item + "(" + (int)item + ") is " + range);
             
-            return string.IsNullOrEmpty(range) ? 0 : Int32.Parse(range);
+            return range;
         }
 
         public static int GetCriticalModifier(BaseItem item)
         {
-            string mod = _2dacache[(int)item][1];
+            int mod = _2dacache[(int)item][1];
             Log.Write(LogGroup.Attack, "Crit multiplier for item type " + item + " is " + mod);
 
-            return string.IsNullOrEmpty(mod) ? 0 : Int32.Parse(mod);
+            return mod;
         }
 
         public static int GetWeaponSize(BaseItem item)
         {
-            String size = _2dacache[(int)item][2];
+            int size = _2dacache[(int)item][2];
             Log.Write(LogGroup.Attack, "Size of item type " + item + " is " + size);
 
-            return string.IsNullOrEmpty(size) ? 0 : Int32.Parse(size);
+            return size;
         }
     }
 }

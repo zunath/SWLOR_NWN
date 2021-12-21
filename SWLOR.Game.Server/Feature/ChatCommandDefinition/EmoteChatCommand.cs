@@ -157,290 +157,284 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .AnimationAction(Animation.FireForgetVictory3)
                 .IsEmote();
 
-
-
-            // Note: The following emotes have been disabled because some or all of them don't play properly.
-            // When used, they also break all subsequent emotes.
-            // Once these have been fixed, we can re-enable them.
-
-            //builder.Create("think")
-            //    .Description("Plays a think animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.ThinkingMan)
-            //    .IsEmote();
-            //builder.Create("jumpfoward")
-            //    .Description("Plays a jump animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.JumpForward)
-            //    .IsEmote();
-            //builder.Create("followme")
-            //    .Description("Plays a follow-me animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.FollowMe)
-            //    .IsEmote();
-            //builder.Create("hangbyhands")
-            //    .Description("Plays a hanging by hands animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.HangByhands)
-            //    .IsEmote();
-            //builder.Create("dig")
-            //    .Description("Plays a dig animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.Dig);
-            //builder.Create("layonside")
-            //    .Description("Plays a lay on side animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.LayOnSide)
-            //    .IsEmote();
-            //builder.Create("kneel")
-            //    .Description("Plays a kneel animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.Kneel)
-            //    .IsEmote();
-            //builder.Create("laybackhandsonstomach")
-            //    .Description("Plays a laying animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.LayBackHandsOnStomach)
-            //    .IsEmote();
-            //builder.Create("layonbackupright")
-            //    .Description("Plays a lay on back partially upright animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.LayOnBackUpright)
-            //    .IsEmote();
-            //builder.Create("praystanding")
-            //    .Description("Plays a praying animation standing up.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.PrayStanding)
-            //    .IsEmote();
-            //builder.Create("ypose")
-            //    .Description("Like a T pose, but a Y.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.YPose)
-            //    .IsEmote();
-            //builder.Create("disagree")
-            //    .Description("Like a T pose, but a Y.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.Disagree)
-            //    .IsEmote();
-            //builder.Create("pushup")
-            //    .Description("Play a push up animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.PushUp)
-            //    .IsEmote();
-            //builder.Create("laybackwithhandsbehindhead")
-            //    .Description("Play a play animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.LayBackHandsBehindHead)
-            //    .IsEmote();
-            //builder.Create("laybackwithhandsbehindheadfeetup")
-            //    .Description("Play a lay animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.LayBackWithHandsBehindHeadFeetUp)
-            //    .IsEmote();
-            //builder.Create("jumpingjacks")
-            //    .Description("Play a jumping jack animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationAction(Animation.JumpingJacks)
-            //    .IsEmote();
-            //builder.Create("squat")
-            //    .Description("Play a squat animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.Squat)
-            //    .IsEmote();
-            //builder.Create("clap")
-            //    .Description("Play a clap animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.Clap)
-            //    .IsEmote();
-            //builder.Create("salute")
-            //    .Description("Play a salute animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.Salute)
-            //    .IsEmote();
-            //builder.Create("faceplam")
-            //    .Description("Play a facepalm..")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.Facepalm)
-            //    .IsEmote();
-            //builder.Create("handonhip")
-            //    .Description("Play a hand on hip animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.HandOnHip)
-            //    .IsEmote();
-            //builder.Create("leanbackonwallfootup")
-            //    .Description("Play a lean back on wall, foot up animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.LeanBackOnWallFootUp)
-            //    .IsEmote();
-            //builder.Create("prisoner")
-            //    .Description("Play a Prisoner, kneeling hands behind back animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.Prisoner)
-            //    .IsEmote();
-            //builder.Create("flex")
-            //    .Description("Play a flex animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.Flex)
-            //    .IsEmote();
-            //builder.Create("dejectedkneel")
-            //    .Description("Kneel dejectedly.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.DejectedKneel)
-            //    .IsEmote();
-            //builder.Create("jedihandsonback")
-            //    .Description("Place hands behind back like a Jedi.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.JediHandsBehindBack)
-            //    .IsEmote();
-            //builder.Create("laydownfaceforward")
-            //    .Description("Lay down, face forward.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.LayDownFaceForward)
-            //    .IsEmote();
-            //builder.Create("shrug")
-            //    .Description("Shrug")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.Shrug)
-            //    .IsEmote();
-            //builder.Create("usecomputer")
-            //    .Description("Play a Use Computer animation.")
-            //    .Permissions(AuthorizationLevel.All)
-            //    .AnimationLoopingAction(Animation.UseComputer)
-            //    .IsEmote();
-            //builder.Create("kneeup")
-            //   .Description("Play a knee up animation.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.KneeUp)
-            //   .IsEmote();
-            //builder.Create("holdheadlow")
-            //   .Description("Play a hold head low animation.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.HoldHeadLow)
-            //   .IsEmote();
-            //builder.Create("layheadonside")
-            //   .Description("Lay to the side.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.LayToTheSide)
-            //   .IsEmote();
-            //builder.Create("sitspread")
-            //   .Description("Sit, legs spread.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.SitLegsSpread)
-            //   .IsEmote();
-            //builder.Create("sitcrossed")
-            //   .Description("Sit, legs crossed.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.SitLegsCrossed)
-            //   .IsEmote();
-            //builder.Create("layback")
-            //   .Description("Lay partially back, hands on stomach.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.LayPartiallyBackHandsOnStomach)
-            //   .IsEmote();
-            //builder.Create("cheerloud")
-            //   .Description("Cheer loudly.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.CheerLoudly)
-            //   .IsEmote();
-            //builder.Create("shieldwall")
-            //   .Description("Take a shield stance.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.ShieldWall)
-            //   .IsEmote();
-            //builder.Create("dancehandsup")
-            //   .Description("Dance with your hands held high.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.DanceHandsUp)
-            //   .IsEmote();
-            //builder.Create("shakirashakira")
-            //   .Description("Hips don't lie.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.ShakiraShakira)
-            //   .IsEmote();
-            //builder.Create("smoke")
-            //   .Description("Smoke it up.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.Smoke)
-            //   .IsEmote();
-            //builder.Create("drink")
-            //   .Description("Drink it up.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.Drink)
-            //   .IsEmote();
-            //builder.Create("kiss")
-            //   .Description("Play a male/female kiss dependent on gender.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.MaleFemaleKiss)
-            //   .IsEmote();
-            //builder.Create("hug")
-            //   .Description("Play a male/female hug dependent on gender.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.MaleFemaleHug)
-            //   .IsEmote();
-            //builder.Create("waltz")
-            //   .Description("Play a male/female waltz dependent on gender.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.MaleFemaleWaltz)
-            //   .IsEmote();
-            //builder.Create("push")
-            //   .Description("Play a push animation.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.Push)
-            //   .IsEmote();
-            //builder.Create("paraderest")
-            //   .Description("Play a parade rest animation.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.ParadeRest)
-            //   .IsEmote();
-            //builder.Create("bootdance")
-            //   .Description("Play a boot dance animation.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.BootDance)
-            //   .IsEmote();
-            //builder.Create("playflute")
-            //   .Description("Play a flute animation.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.PlayFlute)
-            //   .IsEmote();
-            //builder.Create("playguitar")
-            //   .Description("Play a guitar animation.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.PlayGuitar)
-            //   .IsEmote();
-            //builder.Create("pointpistol")
-            //   .Description("Point your pistol.")
-            //   .Permissions(AuthorizationLevel.All)
-            //   .AnimationLoopingAction(Animation.PointPistol)
-            //   .IsEmote();
-            //builder.Create("doublelsstance")
-            //  .Description("Hold your lightsaber behind you.")
-            //  .Permissions(AuthorizationLevel.All)
-            //  .AnimationLoopingAction(Animation.DoubleLSStance)
-            //  .IsEmote();
-            //builder.Create("classicjedistance")
-            //  .Description("Get in the classic Jedi stance.")
-            //  .Permissions(AuthorizationLevel.All)
-            //  .AnimationLoopingAction(Animation.ClassicJediStance)
-            //  .IsEmote();
-            //builder.Create("onehandedstance")
-            //  .Description("One handed melee stance.")
-            //  .Permissions(AuthorizationLevel.All)
-            //  .AnimationLoopingAction(Animation.OneHandedStance)
-            //  .IsEmote();
-            //builder.Create("seethe")
-            //  .Description("Seethe like Maul.")
-            //  .Permissions(AuthorizationLevel.All)
-            //  .AnimationLoopingAction(Animation.Seethe)
-            //  .IsEmote();
-            //builder.Create("dualwieldingstance")
-            //  .Description("Take a combat stance with two weapons.")
-            //  .Permissions(AuthorizationLevel.All)
-            //  .AnimationLoopingAction(Animation.DualWieldingStance)
-            //  .IsEmote();
-            //builder.Create("dualwieldingstance2")
-            //  .Description("Take a combat stance with two weapons.")
-            //  .Permissions(AuthorizationLevel.All)
-            //  .AnimationLoopingAction(Animation.DualWieldingStance2);
+            builder.Create("think")
+                .Description("Plays a think animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.ThinkingMan)
+                .IsEmote();
+            builder.Create("jumpforward")
+                .Description("Plays a jump animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.JumpForward)
+                .IsEmote();
+            builder.Create("followme")
+                .Description("Plays a follow-me animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.FollowMe)
+                .IsEmote();
+            builder.Create("hangbyhands")
+                .Description("Plays a hanging by hands animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.HangByhands)
+                .IsEmote();
+            builder.Create("dig")
+                .Description("Plays a dig animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.Dig);
+            builder.Create("layonside")
+                .Description("Plays a lay on side animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.LayOnSide)
+                .IsEmote();
+            builder.Create("kneel")
+                .Description("Plays a kneel animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.Kneel)
+                .IsEmote();
+            builder.Create("layback")
+                .Description("Plays a laying animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.LayBackHandsOnStomach)
+                .IsEmote();
+            builder.Create("laysitup")
+                .Description("Plays a lay on back partially upright animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.LayOnBackUpright)
+                .IsEmote();
+            builder.Create("praystanding")
+                .Description("Plays a praying animation standing up.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.PrayStanding)
+                .IsEmote();
+            builder.Create("ypose")
+                .Description("Hold arms up in a Y shape.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.YPose)
+                .IsEmote();
+            builder.Create("disagree")
+                .Description("Plays a disagree animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.Disagree)
+                .IsEmote();
+            builder.Create("pushup")
+                .Description("Play a push up animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.PushUp)
+                .IsEmote();
+            builder.Create("lounge")
+                .Description("Play a lounge animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.LayBackHandsBehindHead)
+                .IsEmote();
+            builder.Create("situp")
+                .Description("Play a sit-up animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.LayBackWithHandsBehindHeadFeetUp)
+                .IsEmote();
+            builder.Create("jumpingjacks")
+                .Description("Play a jumping jack animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationAction(Animation.JumpingJacks)
+                .IsEmote();
+            builder.Create("squat")
+                .Description("Play a squat animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.Squat)
+                .IsEmote();
+            builder.Create("clap")
+                .Description("Play a clap animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.Clap)
+                .IsEmote();
+            builder.Create("salute")
+                .Description("Play a salute animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.Salute)
+                .IsEmote();
+            builder.Create("facepalm")
+                .Description("Play a facepalm animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.Facepalm)
+                .IsEmote();
+            builder.Create("handonhip")
+                .Description("Play a hand on hip animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.HandOnHip)
+                .IsEmote();
+            builder.Create("wallfoot")
+                .Description("Play a lean back on wall, foot up animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.LeanBackOnWallFootUp)
+                .IsEmote();
+            builder.Create("prisoner")
+                .Description("Play a prisoner with hands behind back animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.Prisoner)
+                .IsEmote();
+            builder.Create("flex")
+                .Description("Play a flex animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.Flex)
+                .IsEmote();
+            builder.Create("dejectedkneel")
+                .Description("Kneel dejectedly.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.DejectedKneel)
+                .IsEmote();
+            builder.Create("jedihandsonback")
+                .Description("Place hands behind back like a Jedi.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.JediHandsBehindBack)
+                .IsEmote();
+            builder.Create("laydownfaceforward")
+                .Description("Lay down, face forward.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.LayDownFaceForward)
+                .IsEmote();
+            builder.Create("shrug")
+                .Description("Shrug")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.Shrug)
+                .IsEmote();
+            builder.Create("usecomputer")
+                .Description("Play a Use Computer animation.")
+                .Permissions(AuthorizationLevel.All)
+                .AnimationLoopingAction(Animation.UseComputer)
+                .IsEmote();
+            builder.Create("kneeup")
+               .Description("Play a knee up animation.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.KneeUp)
+               .IsEmote();
+            builder.Create("fetal")
+               .Description("Play a fetal position animation.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.HoldHeadLow)
+               .IsEmote();
+            builder.Create("layheadonside")
+               .Description("Lay to the side.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.LayToTheSide)
+               .IsEmote();
+            builder.Create("sitspread")
+               .Description("Sit, legs spread.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.SitLegsSpread)
+               .IsEmote();
+            builder.Create("sitcrossed")
+               .Description("Sit, legs crossed.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.SitLegsCrossed)
+               .IsEmote();
+            builder.Create("layback")
+               .Description("Lay partially back, hands on stomach.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.LayPartiallyBackHandsOnStomach)
+               .IsEmote();
+            builder.Create("cheerloud")
+               .Description("Cheer loudly.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.CheerLoudly)
+               .IsEmote();
+            builder.Create("shieldwall")
+               .Description("Take a shield stance.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.ShieldWall)
+               .IsEmote();
+            builder.Create("dancehandsup")
+               .Description("Dance with your hands held high.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.DanceHandsUp)
+               .IsEmote();
+            builder.Create("shakirashakira")
+               .Description("Hips don't lie.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.ShakiraShakira)
+               .IsEmote();
+            builder.Create("smoke")
+               .Description("Smoke it up.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.Smoke)
+               .IsEmote();
+            builder.Create("drink")
+               .Description("Drink it up.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.Drink)
+               .IsEmote();
+            builder.Create("kiss")
+               .Description("Play a male/female kiss dependent on gender.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.MaleFemaleKiss)
+               .IsEmote();
+            builder.Create("hug")
+               .Description("Play a male/female hug dependent on gender.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.MaleFemaleHug)
+               .IsEmote();
+            builder.Create("waltz")
+               .Description("Play a male/female waltz dependent on gender.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.MaleFemaleWaltz)
+               .IsEmote();
+            builder.Create("push")
+               .Description("Play a push animation.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.Push)
+               .IsEmote();
+            builder.Create("paraderest")
+               .Description("Play a parade rest animation.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.ParadeRest)
+               .IsEmote();
+            builder.Create("bootdance")
+               .Description("Play a boot dance animation.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.BootDance)
+               .IsEmote();
+            builder.Create("playflute")
+               .Description("Play a flute animation.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.PlayFlute)
+               .IsEmote();
+            builder.Create("playguitar")
+               .Description("Play a guitar animation.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.PlayGuitar)
+               .IsEmote();
+            builder.Create("pointpistol")
+               .Description("Point your pistol.")
+               .Permissions(AuthorizationLevel.All)
+               .AnimationLoopingAction(Animation.PointPistol)
+               .IsEmote();
+            builder.Create("doublelsstance")
+              .Description("Hold your lightsaber behind you.")
+              .Permissions(AuthorizationLevel.All)
+              .AnimationLoopingAction(Animation.DoubleLSStance)
+              .IsEmote();
+            builder.Create("classicjedistance")
+              .Description("Get in the classic Jedi stance.")
+              .Permissions(AuthorizationLevel.All)
+              .AnimationLoopingAction(Animation.ClassicJediStance)
+              .IsEmote();
+            builder.Create("onehandedstance")
+              .Description("One handed melee stance.")
+              .Permissions(AuthorizationLevel.All)
+              .AnimationLoopingAction(Animation.OneHandedStance)
+              .IsEmote();
+            builder.Create("seethe")
+              .Description("Seethe like Maul.")
+              .Permissions(AuthorizationLevel.All)
+              .AnimationLoopingAction(Animation.Seethe)
+              .IsEmote();
+            builder.Create("dualwieldingstance")
+              .Description("Take a combat stance with two weapons.")
+              .Permissions(AuthorizationLevel.All)
+              .AnimationLoopingAction(Animation.DualWieldingStance)
+              .IsEmote();
+            builder.Create("dualwieldingstance2")
+              .Description("Take a combat stance with two weapons.")
+              .Permissions(AuthorizationLevel.All)
+              .AnimationLoopingAction(Animation.DualWieldingStance2);
 
             return builder.Build();
         }

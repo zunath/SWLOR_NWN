@@ -113,6 +113,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2.0f)
                 .RequirementFP(2)
                 .IsCastedAbility()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -125,6 +126,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2.0f)
                 .RequirementFP(4)
                 .IsCastedAbility()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -137,6 +139,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2.0f)
                 .RequirementFP(6)
                 .IsCastedAbility()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

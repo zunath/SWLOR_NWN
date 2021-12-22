@@ -41,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.MindTrick, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(3)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .HasCustomValidation(Validation)
                 .IsConcentrationAbility(StatusEffectType.MindTrick1)
                 .DisplaysVisualEffectWhenActivating();
@@ -53,6 +54,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.MindTrick, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementFP(5)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .HasCustomValidation(Validation)
                 .IsConcentrationAbility(StatusEffectType.MindTrick2)
                 .DisplaysVisualEffectWhenActivating();

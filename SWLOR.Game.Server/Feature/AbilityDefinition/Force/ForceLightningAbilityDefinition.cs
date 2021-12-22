@@ -74,6 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceLightning, 60f)
                 .RequirementFP(4)
                 .IsCastedAbility()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
 
@@ -84,6 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceLightning, 60f)
                 .RequirementFP(5)
                 .IsCastedAbility()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
 
@@ -94,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceLightning, 60f)
                 .RequirementFP(6)
                 .IsCastedAbility()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
 
@@ -104,6 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceLightning, 60f)
                 .RequirementFP(7)
                 .IsCastedAbility()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
     }

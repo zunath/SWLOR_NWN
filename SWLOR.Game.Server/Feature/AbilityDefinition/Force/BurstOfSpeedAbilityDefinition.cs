@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2.0f)
                 .RequirementFP(2)
                 .IsConcentrationAbility(StatusEffectType.BurstOfSpeed1)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
         private static void BurstOfSpeed2(AbilityBuilder builder)
@@ -41,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2.0f)
                 .RequirementFP(3)
                 .IsConcentrationAbility(StatusEffectType.BurstOfSpeed2)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
         private static void BurstOfSpeed3(AbilityBuilder builder)
@@ -51,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2.0f)
                 .RequirementFP(4)
                 .IsConcentrationAbility(StatusEffectType.BurstOfSpeed3)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
         private static void BurstOfSpeed4(AbilityBuilder builder)
@@ -61,6 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2.0f)
                 .RequirementFP(5)
                 .IsConcentrationAbility(StatusEffectType.BurstOfSpeed4)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
         private static void BurstOfSpeed5(AbilityBuilder builder)
@@ -71,6 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2.0f)
                 .RequirementFP(6)
                 .IsConcentrationAbility(StatusEffectType.BurstOfSpeed5)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
     }

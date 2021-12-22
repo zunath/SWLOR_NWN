@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2.0f)
                 .RequirementFP(4)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech1)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
         private static void ComprehendSpeech2(AbilityBuilder builder)
@@ -40,6 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2.0f)
                 .RequirementFP(6)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech2)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
         private static void ComprehendSpeech3(AbilityBuilder builder)
@@ -50,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2.0f)
                 .RequirementFP(8)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech3)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
         private static void ComprehendSpeech4(AbilityBuilder builder)
@@ -60,6 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2.0f)
                 .RequirementFP(10)
                 .IsConcentrationAbility(StatusEffectType.ComprehendSpeech4)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
     }

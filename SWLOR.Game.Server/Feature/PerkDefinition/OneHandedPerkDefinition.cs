@@ -103,23 +103,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Dual Wield")
 
                 .AddPerkLevel()
-                .Description("Enables the use of two one-handed weapons at the same time at -30%/-50% to hit.")
-                .Price(4)
-                .RequirementSkill(SkillType.OneHanded, 25)
-                .GrantsFeat(FeatType.DualWield)
-
-                .AddPerkLevel()
-                .Description("Grants Two-weapon Fighting feat which reduces attack penalty from -30/-50 to -20/-40 when fighting with two weapons.")
-                .Price(5)
-                .RequirementSkill(SkillType.OneHanded, 35)
-                .GrantsFeat(FeatType.TwoWeaponFighting)
-
-                .AddPerkLevel()
-                .Description("Grants Ambidexterity feat which reduces the attack penalty of your off-hand weapon by 20%.")
-                .Price(6)
-                .RequirementSkill(SkillType.OneHanded, 45)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.Ambidexterity);
+                .Description("Enables the use of two one-handed weapons at the same time at -20%/-20% to hit.")
+                .Price(10)
+                .RequirementSkill(SkillType.OneHanded, 15)
+                .GrantsFeat(FeatType.DualWield);
         }
 
         private void WeaponFocusVibroblades(PerkBuilder builder)

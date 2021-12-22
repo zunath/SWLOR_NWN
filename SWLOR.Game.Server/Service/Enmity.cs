@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -144,7 +145,11 @@ namespace SWLOR.Game.Server.Service
             // In the event that this enemy does not have a target, immediately start attacking this creature.
             if (GetAttackTarget(enemy) == OBJECT_INVALID)
             {
-                AssignCommand(enemy, () => ActionAttack(creature));
+                AssignCommand(enemy, () =>
+                {
+                    ClearAllActions();
+                    ActionAttack(creature);
+                });
             }
         }
 

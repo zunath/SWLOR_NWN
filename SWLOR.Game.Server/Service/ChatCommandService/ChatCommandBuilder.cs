@@ -139,11 +139,13 @@ namespace SWLOR.Game.Server.Service.ChatCommandService
 
         /// <summary>
         /// If specified, this command requires a target to run.
+        /// The objectTypes argument determines the type of objects that can be selected.
         /// </summary>
         /// <returns>A configured ChatCommandBuilder.</returns>
-        public ChatCommandBuilder RequiresTarget()
+        public ChatCommandBuilder RequiresTarget(ObjectType objectTypes = ObjectType.All)
         {
             _currentDetail.RequiresTarget = true;
+            _currentDetail.ValidTargetTypes = objectTypes;
 
             return this;
         }

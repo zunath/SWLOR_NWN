@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
-using SWLOR.Game.Server.Core.NWNX.Enum;
-using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -79,23 +76,16 @@ namespace SWLOR.Game.Server.Service
                     return;
                 }
                 
-                SetLocalString(sender, "CHAT_COMMAND", command);
-                SetLocalString(sender, "CHAT_COMMAND_ARGS", args);
-                SendMessageToPC(sender, "Please use your 'Chat Command Targeter' feat to select the target of this chat command.");
-
-                if (!GetHasFeat(FeatType.ChatCommandTargeter, sender) || GetIsDM(sender) || GetIsDMPossessed(sender))
+                SendMessageToPC(sender, "Please select a target for this chat command.");
+                
+                Targeting.EnterTargetingMode(sender, chatCommand.ValidTargetTypes, target =>
                 {
-                    CreaturePlugin.AddFeatByLevel(sender, FeatType.ChatCommandTargeter, 1);
+                    var location = GetIsObjectValid(target)
+                        ? GetLocation(target)
+                        : Location(GetArea(sender), GetTargetingModeSelectedPosition(), 0.0f);
+                    ProcessChatCommand(command, sender, target, location, args);
+                });
 
-                    if (GetIsDM(sender) || GetIsDMPossessed(sender))
-                    {
-                        var qbs = PlayerPlugin.GetQuickBarSlot(sender, 11);
-                        if (qbs.ObjectType == QuickBarSlotType.Empty)
-                        {
-                            PlayerPlugin.SetQuickBarSlot(sender, 11, PlayerQuickBarSlot.UseFeat(FeatType.ChatCommandTargeter));
-                        }
-                    }
-                }
             }
 
         }
@@ -210,39 +200,6 @@ namespace SWLOR.Game.Server.Service
                     HelpTextAdmin += ColorToken.Green("/" + text) + ColorToken.White(": " + definition.Description) + "\n";
                 }
             }
-        }
-
-
-        /// <summary>
-        /// When a player uses the "Open Rest Menu" feat, open the rest menu dialog conversation.
-        /// </summary>
-        [NWNEventHandler("feat_use_bef")]
-        public static void UseOpenRestMenuFeat()
-        {
-            var player = OBJECT_SELF;
-            var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
-            if (feat != FeatType.ChatCommandTargeter) return;
-
-            var target = StringToObject(EventsPlugin.GetEventData("TARGET_OBJECT_ID"));
-            var area = StringToObject(EventsPlugin.GetEventData("AREA_OBJECT_ID"));
-            var targetX = (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_X"));
-            var targetY = (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Y"));
-            var targetZ = (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Z"));
-
-            var targetLocation = Location(area, new Vector3(targetX, targetY, targetZ), 0.0f);
-            var command = GetLocalString(player, "CHAT_COMMAND");
-            var args = GetLocalString(player, "CHAT_COMMAND_ARGS");
-
-            if (string.IsNullOrWhiteSpace(command))
-            {
-                SendMessageToPC(player, "Please enter a chat command and then use this feat. Type /help to learn more about the available chat commands.");
-                return;
-            }
-
-            ProcessChatCommand(command, player, target, targetLocation, args);
-
-            DeleteLocalString(player, "CHAT_COMMAND");
-            DeleteLocalString(player, "CHAT_COMMAND_ARGS");
         }
     }
 }

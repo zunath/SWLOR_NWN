@@ -579,34 +579,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
         public Action OnDecreaseAppearanceScale() => () =>
         {
-            float scale = GetObjectVisualTransform(Player, ObjectVisualTransform.Scale);
-            float increment = 0.01f;
-            float minimumScale = 0.85f;
+            var scale = GetObjectVisualTransform(Player, ObjectVisualTransform.Scale);
+            const float Increment = 0.01f;
+            const float MinimumScale = 0.85f;
             
-            if (scale - increment < minimumScale)
+            if (scale - Increment < MinimumScale)
             {
-                scale = minimumScale;
                 SendMessageToPC(Player, "You cannot decrease your height any further.");
             }
             else
             {
-                SetObjectVisualTransform(Player, ObjectVisualTransform.Scale, scale - increment);
+                SetObjectVisualTransform(Player, ObjectVisualTransform.Scale, scale - Increment);
             }
         };
         public Action OnIncreaseAppearanceScale() => () =>
         {
-            float scale = GetObjectVisualTransform(Player, ObjectVisualTransform.Scale);
-            float increment = 0.01f;
-            float maximumScale = 1.15f;
+            var scale = GetObjectVisualTransform(Player, ObjectVisualTransform.Scale);
+            const float Increment = 0.01f;
+            const float MaximumScale = 1.15f;
 
-            if (scale + increment > maximumScale)
+            if (scale + Increment > MaximumScale)
             {
-                scale = maximumScale;
                 SendMessageToPC(Player, "You cannot increase your height any further.");
             }
             else
             {
-                SetObjectVisualTransform(Player, ObjectVisualTransform.Scale, scale + increment);
+                SetObjectVisualTransform(Player, ObjectVisualTransform.Scale, scale + Increment);
             }
         };
 
@@ -618,6 +616,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.AppearanceScale = GetObjectVisualTransform(Player, ObjectVisualTransform.Scale);
 
             DB.Set(dbPlayer);
+
+            SendMessageToPC(Player, "Height saved successfully.");
         };
 
         public Action OnSelectColorCategory() => () =>
@@ -959,5 +959,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.Outfits);
         };
 
+        public Action OnCloseWindow() => () =>
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            SetObjectVisualTransform(Player, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
+        };
     }
 }

@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         return;
                     }
 
-                    var hpAmount = 1 + GetAbilityModifier(AbilityType.Vitality, target) / 2;
+                    var hpAmount = 1 + GetAbilityModifier(AbilityType.Vitality, target);
                     var stmAmount = 1 + GetAbilityModifier(AbilityType.Perception, target) / 2;
                     var fpAmount = 1 + GetAbilityModifier(AbilityType.Willpower, target) / 2;
 

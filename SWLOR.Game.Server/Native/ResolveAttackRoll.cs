@@ -55,11 +55,16 @@ namespace SWLOR.Game.Server.Native
 
             CNWSCreature attacker = CNWSCreature.FromPointer(thisPtr);
             CNWSCreatureStats attackerStats = attacker.m_pStats;
+
+            // Support various types of attacks.
+            // - Regular combat round attacks
+            // - Touch attacks and other scripted attacks from feats.
             CNWSCombatRound pCombatRound = attacker.m_pcCombatRound;
 
             Log.Write(LogGroup.Attack, "Attacker: " + attacker.GetFirstName().GetSimple(0) + ", defender " + targetObject.GetFirstName().GetSimple(0));
 
             CNWSCombatAttackData pAttackData = pCombatRound.GetAttack(pCombatRound.m_nCurrentAttack);
+            bool isOffhandAttack = (int)pAttackData.m_nWeaponAttackType == 2;
 
             if (targetObject.m_nObjectType != (int)ObjectType.Creature)
             {
@@ -117,7 +122,7 @@ namespace SWLOR.Game.Server.Native
             // We now have our attack type defined.  Pull the relevant attributes, defaulting to melee.
             int attackAttribute = attackerStats.m_nStrengthModifier;
             int defendAttribute = defenderStats.m_nStrengthModifier;
-
+            
             switch (attackType)
             {
                 case (uint)AttackType.Ranged:
@@ -128,6 +133,26 @@ namespace SWLOR.Game.Server.Native
                     attackAttribute = attackerStats.m_nWisdomModifier;
                     defendAttribute = defenderStats.m_nWisdomModifier;
                     break;
+            }
+
+            // Weapon Finesse - set which weapons are allowed here.
+            bool bFinessable = weapon == null;
+            if (!bFinessable)
+            {
+                bFinessable =   Item.FinesseVibrobladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
+                                Item.LightsaberBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) || 
+                                Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
+                                Item.TwinBladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem);
+            }
+
+            if (attacker.m_pStats.HasFeat((ushort)FeatType.WeaponFinesse) == 1 &&
+                attackerStats.m_nDexterityBase > attackerStats.m_nStrengthBase &&
+                attackType == (uint) AttackType.Melee && 
+                bFinessable)
+            {
+                Log.Write(LogGroup.Attack, "Finesse attack");
+                attackAttribute = attackerStats.m_nDexterityModifier;
+                defendAttribute = defenderStats.m_nDexterityModifier;
             }
 
             // Check for negative modifiers.  A modifier of -2 is represented as 254.
@@ -172,6 +197,31 @@ namespace SWLOR.Game.Server.Native
                 defendAttribute = 0;
             }
 
+            // Dual wield penalty.
+            CNWSItem offhand = attacker.m_pInventory.GetItemInSlot((uint) InventorySlot.LeftHand);
+            bool bDoubleWeapon = Item.TwinBladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
+                Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem);
+
+            if (bDoubleWeapon ||
+                (offhand != null && offhand.m_nBaseItem != (uint) BaseItem.LargeShield && 
+                 offhand.m_nBaseItem != (uint) BaseItem.SmallShield && offhand.m_nBaseItem != (uint) BaseItem.TowerShield))
+            {
+                string log = "Applying dual wield penalty.  Offhand weapon: " + (offhand == null ? weapon.GetFirstName().GetSimple() : offhand.GetFirstName().GetSimple() + " -");
+                // Note - we have retired Two Weapon Fighting and Ambidexterity as feats.  We have costed them
+                // in to the proficiency perks rather than granting them separately. 
+
+                if (!bDoubleWeapon && Item.GetWeaponSize((BaseItem)offhand.m_nBaseItem) >= attacker.m_nCreatureSize)
+                {
+                    // Unless the offhand weapon size is smaller than the creature size (i.e. Small vs Medium), apply additional penalty. 
+                    modifiers -= 10;
+                    log += "- offhand weapon is unwieldy -";
+                }
+
+                // Apply the base two weapon fighting penalty. 
+                modifiers -= 10;
+                Log.Write(LogGroup.Attack, log);
+            }
+
             // Defender not targeting the attacker.
             // Dev note: the GetItem method always creates a new instance of CNWActionNode so there should be no NPEs.
             // Note: this always returns object invalid for NPCs (2130706432) as their actions aren't represented the same way.
@@ -198,6 +248,7 @@ namespace SWLOR.Game.Server.Native
 
             // Weapon focus feats.
             modifiers += 5 * HasWeaponFocus(attacker, weapon);
+            modifiers += 5 * HasSuperiorWeaponFocus(attacker, weapon);
 
             // Range bonuses and penalties.
             if (attackType == (uint)AttackType.Ranged || attackType == (uint)AttackType.Spirit)
@@ -265,18 +316,34 @@ namespace SWLOR.Game.Server.Native
             pAttackData.m_nToHitMod = (byte) (bonus / 4);
             int result = roll - 50 + bonus;
 
+            int criticalRange = 40;
+            if (weapon != null)
+            {
+                int threatRange = Item.GetCriticalThreatRange((BaseItem)weapon.m_nBaseItem);
+                if (threatRange == 3)
+                {
+                    criticalRange = 20;
+                }
+                else if (threatRange == 2)
+                {
+                    criticalRange = 30;
+                }
+            }
+
+            if (HasImprovedCritical(attacker, weapon) == 1) criticalRange -= 10;
+
             if (result < 0)
             { 
                 // Miss
                 pAttackData.m_nAttackResult = 4;
                 pAttackData.m_nMissedBy = (byte) Math.Abs(result); // Dunno if this is needed by anything, but filling it out in case.
             }
-            else if (result >= 30)
+            else if (result >= criticalRange)
             {
                 // Critical Hit - populate variables for feedback
-                // Putting result - 30 here isn't great, as it will show (result - 30) + (original modifiers).  But good enough for now.
+                // Putting result - crit range here isn't great, as it will show (result - XX) + (original modifiers).  But good enough for now.
                 pAttackData.m_bCriticalThreat = 1;
-                pAttackData.m_nThreatRoll = (byte)(result - 30);
+                pAttackData.m_nThreatRoll = (byte)(result - criticalRange);
                 
                 if (defender.m_pStats.GetEffectImmunity((byte)ImmunityType.CriticalHit, attacker) == 1)
                 {
@@ -413,6 +480,132 @@ namespace SWLOR.Game.Server.Native
             }
 
             Log.Write(LogGroup.Attack, "No weapon focus feat found.");
+            return 0;
+        }
+
+
+        private static int HasImprovedCritical(CNWSCreature attacker, CNWSItem weapon)
+        {
+            if (weapon == null)
+            {
+                return attacker.m_pStats.HasFeat((ushort)FeatType.WeaponFocus_UnarmedStrike);
+            }
+
+            var baseItemType = (BaseItem)weapon.m_nBaseItem;
+
+            // Unarmed strike (glove)
+            if (baseItemType == BaseItem.Gloves &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.ImprovedCritical_UnarmedStrike) == 1)
+            {
+                return 1;
+            }
+
+            // Creature weapons
+            if (Item.CreatureBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.ImprovedCritical_Creature) == 1)
+            {
+                return 1;
+            }
+
+            // Vibroblades
+            if (Item.VibrobladeBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.ImprovedCriticalVibroblades) == 1)
+            {
+                return 1;
+            }
+
+            // Finesse Vibroblades
+            if (Item.FinesseVibrobladeBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.ImprovedCriticalFinesseVibroblades) == 1)
+            {
+                return 1;
+            }
+
+            // Lightsabers
+            if (Item.LightsaberBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.ImprovedCriticalLightsabers) == 1)
+            {
+                return 1;
+            }
+
+            // Heavy Vibroblades
+            if (Item.HeavyVibrobladeBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.ImprovedCriticalHeavyVibroblades) == 1)
+            {
+                return 1;
+            }
+
+            // Polearms
+            if (Item.PolearmBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.ImprovedCriticalPolearms) == 1)
+            {
+                return 1;
+            }
+
+            // Twin Blades
+            if (Item.TwinBladeBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.ImprovedCriticalTwinBlades) == 1)
+            {
+                return 1;
+            }
+
+            // Saberstaffs
+            if (Item.SaberstaffBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.ImprovedCriticalSaberstaffs) == 1)
+            {
+                return 1;
+            }
+
+            // Katars
+            if (Item.KatarBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.ImprovedCriticalKatars) == 1)
+            {
+                return 1;
+            }
+
+            // Staves
+            if (Item.StaffBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.ImprovedCritical_Staff) == 1)
+            {
+                return 1;
+            }
+
+            // Pistols
+            if (Item.PistolBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.ImprovedCriticalPistol) == 1)
+            {
+                return 1;
+            }
+
+            // Throwing Weapons
+            if (Item.ThrowingWeaponBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.ImprovedCriticalThrowingWeapons) == 1)
+            {
+                return 1;
+            }
+
+            // Rifles
+            if (Item.RifleBaseItemTypes.Contains(baseItemType) &&
+                attacker.m_pStats.HasFeat((ushort)FeatType.ImprovedCriticalRifles) == 1)
+            {
+                return 1;
+            }
+
+            Log.Write(LogGroup.Attack, "No improved critical feat found.");
+            return 0;
+        }
+
+        private static int HasSuperiorWeaponFocus(CNWSCreature attacker, CNWSItem weapon)
+        {
+            if (weapon == null) return 0;
+            if (attacker.m_pStats.HasFeat((ushort)FeatType.SuperiorWeaponFocus) == 0) return 0;
+
+            var baseItemType = (BaseItem)weapon.m_nBaseItem;
+
+            if (Item.StaffBaseItemTypes.Contains(baseItemType)) return 1;
+            if (Item.PolearmBaseItemTypes.Contains(baseItemType)) return 1;
+            if (Item.HeavyVibrobladeBaseItemTypes.Contains(baseItemType)) return 1;
+
             return 0;
         }
     }

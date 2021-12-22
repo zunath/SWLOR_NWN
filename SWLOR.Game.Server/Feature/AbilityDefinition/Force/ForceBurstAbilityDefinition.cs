@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Force);
             var targetWillpower = GetAbilityModifier(AbilityType.Willpower, target);
-            var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, false);
+            var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, 0);
             var delay = GetDistanceBetweenLocations(GetLocation(activator), targetLocation) / 18.0f + 0.35f;
 
             AssignCommand(activator, () =>

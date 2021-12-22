@@ -81,48 +81,6 @@ namespace SWLOR.Game.Server.Service
             {
                 var npc = OBJECT_SELF;
 
-                // Calculates a rank range penalty. If there's a level difference greater than 10, a penalty is applied.
-                static float CalculateRankRangePenalty(int highestSkillRank, int skillRank)
-                {
-                    int levelDifference = highestSkillRank - skillRank;
-                    float levelDifferencePenalty = 1.0f;
-                    if (levelDifference > 10)
-                    {
-                        levelDifferencePenalty = 1.0f - 0.05f * (levelDifference - 10);
-                        if (levelDifferencePenalty < 0.20f) levelDifferencePenalty = 0.20f;
-                    }
-
-                    return levelDifferencePenalty;
-                }
-
-                // Calculates the number of armor points based on what the player currently has equipped.
-                static int CalculateArmorPoints(uint player)
-                {
-                    var armorPoints = 0;
-
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Head, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Chest, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Boots, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Arms, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Cloak, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.LeftRing, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.RightRing, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Neck, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Belt, player))) armorPoints++;
-
-                    return armorPoints;
-                }
-
-                // Applies an individual armor skill's XP portion.
-                static int CalculateAdjustedXP(int highestRank, int baseXP, SkillType skillType, float totalPoints, int points, Dictionary<SkillType, PlayerSkill> playerSkills)
-                {
-                    var percentage = points / totalPoints;
-                    var skillRank = playerSkills[skillType].Rank;
-                    var rangePenalty = CalculateRankRangePenalty(highestRank, skillRank);
-                    var adjustedXP = baseXP * percentage * rangePenalty;
-                    return (int)adjustedXP;
-                }
-
                 var combatPoints = _creatureCombatPointTracker.ContainsKey(npc) ? _creatureCombatPointTracker[npc] : null;
                 if (combatPoints == null) return;
 
@@ -161,21 +119,17 @@ namespace SWLOR.Game.Server.Service
                     foreach (var (skillType, cp) in cpList)
                     {
                         var percentage = cp / totalPoints;
-                        var skillRangePenalty = CalculateRankRangePenalty(highestRank, dbPlayer.Skills[skillType].Rank);
-                        var adjustedXP = baseXP * percentage * skillRangePenalty;
+                        var adjustedXP = baseXP * percentage;
 
                         Skill.GiveSkillXP(player, skillType, (int)adjustedXP);
                     }
 
                     // Armor XP is calculated the same way but is separate from other skills used during combat.
-                    var armorPoints = CalculateArmorPoints(player);
-                    if (armorPoints <= 0) return;
                     var armorRank = dbPlayer.Skills[SkillType.Armor].Rank;
 
                     delta = npcLevel - armorRank;
                     baseXP = Skill.GetDeltaXP(delta);
-                    var xp = CalculateAdjustedXP(armorRank, baseXP, SkillType.Armor, totalPoints, armorPoints, dbPlayer.Skills);
-                    Skill.GiveSkillXP(player, SkillType.Armor, xp);
+                    Skill.GiveSkillXP(player, SkillType.Armor, (int) baseXP);
                 }
 
             }

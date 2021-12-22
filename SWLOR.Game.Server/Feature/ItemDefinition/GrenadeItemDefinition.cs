@@ -30,10 +30,10 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             ConcussionGrenade(builder);
             FlashbangGrenade(builder);
             IonGrenade(builder);
-            BactaGrenade(builder);
+            KoltoGrenade(builder);
             AdhesiveGrenade(builder);
             SmokeGrenade(builder);
-            BactaBombGrenade(builder);
+            KoltoBombGrenade(builder);
             IncendiaryGrenade(builder);
             GasGrenade(builder);
 
@@ -308,7 +308,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 });
         }
 
-        private void BactaGrenade(ItemBuilder builder)
+        private void KoltoGrenade(ItemBuilder builder)
         {
             CreateGrenade(builder,
                 "grenade_bacta",
@@ -363,7 +363,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 });
         }
 
-        private void BactaBombGrenade(ItemBuilder builder)
+        private void KoltoBombGrenade(ItemBuilder builder)
         {
             CreateGrenade(builder,
                 "grenade_bactabomb",

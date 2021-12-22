@@ -173,7 +173,7 @@
         ForceLightning = 166,
         ForceMind = 167,
         Traumatize = 168,
-        BactaRecovery = 169,
+        KoltoRecovery = 169,
         StasisField = 170,
         CombatEnhancement = 171,
         Provoke = 172,

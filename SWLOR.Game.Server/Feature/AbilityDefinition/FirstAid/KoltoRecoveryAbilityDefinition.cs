@@ -11,13 +11,13 @@ using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
-    public class BactaRecoveryAbilityDefinition: FirstAidBaseAbilityDefinition
+    public class KoltoRecoveryAbilityDefinition: FirstAidBaseAbilityDefinition
     {
         public override Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
-            BactaRecovery1();
-            BactaRecovery2();
-            BactaRecovery3();
+            KoltoRecovery1();
+            KoltoRecovery2();
+            KoltoRecovery3();
 
             return Builder.Build();
         }
@@ -49,11 +49,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             TakeMedicalSupplies(activator);
         }
 
-        private void BactaRecovery1()
+        private void KoltoRecovery1()
         {
-            Builder.Create(FeatType.BactaRecovery1, PerkType.BactaRecovery)
-                .Name("Bacta Recovery I")
-                .HasRecastDelay(RecastGroup.BactaRecovery, 30f)
+            Builder.Create(FeatType.KoltoRecovery1, PerkType.KoltoRecovery)
+                .Name("Kolto Recovery I")
+                .HasRecastDelay(RecastGroup.KoltoRecovery, 30f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(5)
                 .UsesAnimation(Animation.LoopingGetMid)
@@ -65,11 +65,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     Impact(activator, 15);
                 });
         }
-        private void BactaRecovery2()
+        private void KoltoRecovery2()
         {
-            Builder.Create(FeatType.BactaRecovery2, PerkType.BactaRecovery)
-                .Name("Bacta Recovery II")
-                .HasRecastDelay(RecastGroup.BactaRecovery, 30f)
+            Builder.Create(FeatType.KoltoRecovery2, PerkType.KoltoRecovery)
+                .Name("Kolto Recovery II")
+                .HasRecastDelay(RecastGroup.KoltoRecovery, 30f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(6)
                 .UsesAnimation(Animation.LoopingGetMid)
@@ -81,11 +81,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                     Impact(activator, 60);
                 });
         }
-        private void BactaRecovery3()
+        private void KoltoRecovery3()
         {
-            Builder.Create(FeatType.BactaRecovery3, PerkType.BactaRecovery)
-                .Name("Bacta Recovery III")
-                .HasRecastDelay(RecastGroup.BactaRecovery, 30f)
+            Builder.Create(FeatType.KoltoRecovery3, PerkType.KoltoRecovery)
+                .Name("Kolto Recovery III")
+                .HasRecastDelay(RecastGroup.KoltoRecovery, 30f)
                 .HasActivationDelay(2f)
                 .RequirementStamina(7)
                 .UsesAnimation(Animation.LoopingGetMid)

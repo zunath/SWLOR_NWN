@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -31,6 +32,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     SetLocalFloat(target, "REST_POSITION_X", position.X);
                     SetLocalFloat(target, "REST_POSITION_Y", position.Y);
                     SetLocalFloat(target, "REST_POSITION_Z", position.Z);
+
+                    Activity.SetBusy(target, ActivityStatusType.Resting);
                 })
                 .TickAction((source, target) =>
                 {
@@ -64,6 +67,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     DeleteLocalFloat(target, "REST_POSITION_X");
                     DeleteLocalFloat(target, "REST_POSITION_Y");
                     DeleteLocalFloat(target, "REST_POSITION_Z");
+
+                    Activity.ClearBusy(target);
                 });
         }
     }

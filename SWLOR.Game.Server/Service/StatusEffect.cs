@@ -106,10 +106,11 @@ namespace SWLOR.Game.Server.Service
                 // Iterate over each status effect, cleaning them up if they've expired or executing their tick if applicable.
                 foreach (var (statusEffect, group) in statusEffects)
                 {
+                    var activeConcentration = Ability.GetActiveConcentration(group.Source);
+
                     // Concentration check - If caster is no longer channeling this feat, remove the status effect.
                     if (group.ConcentrationFeatType != FeatType.Invalid)
                     {
-                        var activeConcentration = Ability.GetActiveConcentration(group.Source);
                         if (activeConcentration.Feat != group.ConcentrationFeatType)
                         {
                             Remove(creature, statusEffect);
@@ -121,6 +122,16 @@ namespace SWLOR.Game.Server.Service
                     if (removeAllEffects || now > group.Expiration)
                     {
                         Remove(creature, statusEffect);
+
+                        // Concentration - End the ability if this status effect was tied to a concentration ability
+                        // and the creature was the target.
+                        if (group.ConcentrationFeatType != FeatType.Invalid &&
+                            activeConcentration.Feat == group.ConcentrationFeatType &&
+                            activeConcentration.Target == creature)
+                        {
+                            Ability.EndConcentrationAbility(group.Source);
+                        }
+
                     }
                     // Otherwise do a Tick.
                     else

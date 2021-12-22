@@ -11,9 +11,9 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Ability
     {
-        private static readonly Dictionary<FeatType, AbilityDetail> _abilities = new Dictionary<FeatType, AbilityDetail>();
+        private static readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
 
-        private static readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new Dictionary<uint, ActiveConcentrationAbility>();
+        private static readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new();
 
         /// <summary>
         /// When the module caches, abilities will be cached and events will be scheduled.
@@ -248,7 +248,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="statusEffectType">The concentration status effect to apply.</param>
         public static void StartConcentrationAbility(uint creature, uint target, FeatType feat, StatusEffectType statusEffectType)
         {
-            _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(feat, statusEffectType);
+            _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(target, feat, statusEffectType);
             StatusEffect.Apply(creature, target, statusEffectType, 0.0f, feat);
 
             Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} begins concentrating...");
@@ -267,7 +267,7 @@ namespace SWLOR.Game.Server.Service
                 return _activeConcentrationAbilities[creature];
             }
 
-            return new ActiveConcentrationAbility(FeatType.Invalid, StatusEffectType.Invalid);
+            return new ActiveConcentrationAbility(OBJECT_INVALID, FeatType.Invalid, StatusEffectType.Invalid);
         }
         
         /// <summary>

@@ -34,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     SetLocalFloat(target, "REST_POSITION_Z", position.Z);
 
                     Activity.SetBusy(target, ActivityStatusType.Resting);
+                    Ability.EndConcentrationAbility(target);
                 })
                 .TickAction((source, target) =>
                 {

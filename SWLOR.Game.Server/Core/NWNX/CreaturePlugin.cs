@@ -432,7 +432,7 @@ namespace SWLOR.Game.Server.Core.NWNX
         }
 
         // Set the base ranks in a skill for creature
-        public static void SetSkillRank(uint creature, Skill skill, int rank)
+        public static void SetSkillRank(uint creature, NWNSkillType skill, int rank)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSkillRank");
             Internal.NativeFunctions.nwnxPushInt(rank);
@@ -713,7 +713,7 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Get total effect bonus
         public static int GetTotalEffectBonus(uint creature, BonusType bonusType = BonusType.Attack,
             uint target = NWScript.NWScript.OBJECT_INVALID, bool isElemental = false,
-            bool isForceMax = false, int saveType = -1, int saveSpecificType = -1, Skill skill = Skill.Invalid,
+            bool isForceMax = false, int saveType = -1, int saveSpecificType = -1, NWNSkillType skill = NWNSkillType.Invalid,
             int abilityScore = -1, bool isOffhand = false)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetTotalEffectBonus");

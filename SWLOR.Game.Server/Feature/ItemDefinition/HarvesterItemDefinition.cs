@@ -2,10 +2,12 @@
 using System.Linq;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Random = SWLOR.Game.Server.Service.Random;
 
@@ -13,9 +15,9 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 {
     public class HarvesterItemDefinition: IItemListDefinition
     {
-        private readonly ItemBuilder _builder = new ItemBuilder();
+        private readonly ItemBuilder _builder = new();
 
-        private readonly Dictionary<string, string> _resourceMapping = new Dictionary<string, string>
+        private readonly Dictionary<string, string> _resourceMapping = new()
         {
             {"veldite_vein", "raw_veldite"},
             {"scordspar_vein", "raw_scordspar"},
@@ -103,6 +105,18 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     }
 
                     ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Summon_Monster_3), GetLocation(target));
+
+                    if (GetIsPC(user) && !GetIsDM(user))
+                    {
+                        var playerId = GetObjectUUID(user);
+                        var dbPlayer = DB.Get<Player>(playerId);
+                        var dbSkill = dbPlayer.Skills[SkillType.Gathering];
+                        var veinLevel = 10 * (requiredLevel - 1) + 5;
+                        var delta = dbSkill.Rank - veinLevel;
+                        var deltaXP = Skill.GetDeltaXP(delta);
+
+                        Skill.GiveSkillXP(user, SkillType.Gathering, deltaXP);
+                    }
                 });
         }
     }

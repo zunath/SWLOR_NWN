@@ -539,7 +539,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - nSkill: the skill being used
         ///   - nDifficulty: Difficulty class of skill
         /// </summary>
-        public static bool GetIsSkillSuccessful(uint oTarget, Skill nSkill, int nDifficulty)
+        public static bool GetIsSkillSuccessful(uint oTarget, NWNSkillType nSkill, int nDifficulty)
         {
             Internal.NativeFunctions.StackPushInteger(nDifficulty);
             Internal.NativeFunctions.StackPushInteger((int)nSkill);

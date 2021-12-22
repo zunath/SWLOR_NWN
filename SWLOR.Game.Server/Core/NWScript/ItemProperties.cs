@@ -472,7 +472,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   skill to be decreased(SKILL_*) and the amount of the penalty.  The penalty
         ///   must be a POSITIVE integer between 1 and 10 (ie. 1 = -1).
         /// </summary>
-        public static ItemProperty ItemPropertyDecreaseSkill(Skill nSkill, int nPenalty)
+        public static ItemProperty ItemPropertyDecreaseSkill(NWNSkillType nSkill, int nPenalty)
         {
             Internal.NativeFunctions.StackPushInteger(nPenalty);
             Internal.NativeFunctions.StackPushInteger((int)nSkill);
@@ -736,7 +736,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   will get a bonus(SKILL_*) and the amount of the bonus.  The bonus amount must
         ///   be an integer between 1 and 50.
         /// </summary>
-        public static ItemProperty ItemPropertySkillBonus(Skill nSkill, int nBonus)
+        public static ItemProperty ItemPropertySkillBonus(NWNSkillType nSkill, int nBonus)
         {
             Internal.NativeFunctions.StackPushInteger(nBonus);
             Internal.NativeFunctions.StackPushInteger((int)nSkill);

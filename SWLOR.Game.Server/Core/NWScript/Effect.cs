@@ -1131,7 +1131,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - nValue
         ///   * Returns an effect of type EFFECT_TYPE_INVALIDEFFECT if nSkill is invalid.
         /// </summary>
-        public static Effect EffectSkillIncrease(Skill nSkill, int nValue)
+        public static Effect EffectSkillIncrease(NWNSkillType nSkill, int nValue)
         {
             Internal.NativeFunctions.StackPushInteger(nValue);
             Internal.NativeFunctions.StackPushInteger((int)nSkill);

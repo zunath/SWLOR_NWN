@@ -1,6 +1,6 @@
 namespace SWLOR.Game.Server.Core.NWScript.Enum
 {
-    public enum Skill
+    public enum NWNSkillType
     {
         Invalid = -1,
         AnimalEmpathy = 0,

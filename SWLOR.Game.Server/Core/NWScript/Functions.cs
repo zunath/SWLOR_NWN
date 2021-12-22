@@ -1749,7 +1749,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - nSkill: SKILL_*
         ///   - oCreature
         /// </summary>
-        public static bool GetHasSkill(Skill nSkill, uint oCreature = OBJECT_INVALID)
+        public static bool GetHasSkill(NWNSkillType nSkill, uint oCreature = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oCreature);
             Internal.NativeFunctions.StackPushInteger((int)nSkill);
@@ -1777,7 +1777,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   - nSubSkill: SUBSKILL_*
         ///   - oItemUsed: Item to use in conjunction with the skill
         /// </summary>
-        public static void ActionUseSkill(Skill nSkill, uint oTarget, SubSkill nSubSkill = SubSkill.None,
+        public static void ActionUseSkill(NWNSkillType nSkill, uint oTarget, SubSkill nSubSkill = SubSkill.None,
             uint oItemUsed = OBJECT_INVALID)
         {
             Internal.NativeFunctions.StackPushObject(oItemUsed);
@@ -1937,7 +1937,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   Create a Skill Talent.
         ///   - nSkill: SKILL_*
         /// </summary>
-        public static Talent TalentSkill(Skill nSkill)
+        public static Talent TalentSkill(NWNSkillType nSkill)
         {
             Internal.NativeFunctions.StackPushInteger((int)nSkill);
             Internal.NativeFunctions.CallBuiltIn(303);
@@ -2060,7 +2060,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   * Returns -1 if oTarget doesn't have nSkill.
         ///   * Returns 0 if nSkill is untrained.
         /// </summary>
-        public static int GetSkillRank(Skill nSkill, uint oTarget = OBJECT_INVALID, bool nBaseSkillRank = false)
+        public static int GetSkillRank(NWNSkillType nSkill, uint oTarget = OBJECT_INVALID, bool nBaseSkillRank = false)
         {
             Internal.NativeFunctions.StackPushInteger(nBaseSkillRank ? 1 : 0);
             Internal.NativeFunctions.StackPushObject(oTarget);

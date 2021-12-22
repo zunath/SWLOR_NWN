@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using Player = SWLOR.Game.Server.Entity.Player;
-using Skill = SWLOR.Game.Server.Core.NWScript.Enum.Skill;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Race = SWLOR.Game.Server.Service.Race;
 
@@ -109,7 +108,7 @@ namespace SWLOR.Game.Server.Feature
         {
             for (var iCurSkill = 1; iCurSkill <= 27; iCurSkill++)
             {
-                var skill = (Skill) (iCurSkill - 1);
+                var skill = (NWNSkillType) (iCurSkill - 1);
                 CreaturePlugin.SetSkillRank(player, skill, 0);
             }
         }

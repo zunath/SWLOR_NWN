@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             return Internal.NativeFunctions.nwnxPopInt();
         }
 
-        public static SkillFeat GetSkillFeatForSkillByIndex(FeatType feat, Skill skill)
+        public static SkillFeat GetSkillFeatForSkillByIndex(FeatType feat, NWNSkillType skill)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSkillFeatForSkillByIndex");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             };
         }
 
-        public static SkillFeat GetSkillFeat(FeatType feat, Skill skill)
+        public static SkillFeat GetSkillFeat(FeatType feat, NWNSkillType skill)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSkillFeat");
             Internal.NativeFunctions.nwnxPushInt((int)feat);
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Core.NWNX
         }
 
 
-        public static int GetAreaModifier(uint area, Skill skill)
+        public static int GetAreaModifier(uint area, NWNSkillType skill)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAreaModifier");
             Internal.NativeFunctions.nwnxPushInt((int)skill);
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Core.NWNX
             return Internal.NativeFunctions.nwnxPopInt();
         }
 
-        public static void SetAreaModifier(uint area, Skill skill, int modifier)
+        public static void SetAreaModifier(uint area, NWNSkillType skill, int modifier)
         {
             Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAreaModifier");
             Internal.NativeFunctions.nwnxPushInt(modifier);

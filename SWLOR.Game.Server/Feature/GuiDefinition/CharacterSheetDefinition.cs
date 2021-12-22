@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.CharacterSheet)
                 .SetInitialGeometry(0, 0, 565f, 320f)
                 .SetTitle("Character Sheet")
+                .SetIsCollapsible(true)
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>

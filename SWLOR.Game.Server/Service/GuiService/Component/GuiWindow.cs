@@ -24,9 +24,9 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         private string IsResizableBindName { get; set; }
         private bool IsResizableBound => !string.IsNullOrWhiteSpace(IsResizableBindName);
         
-        private bool IsCollapsed { get; set; }
-        private string IsCollapsedBindName { get; set; }
-        private bool IsCollapsedBound => !string.IsNullOrWhiteSpace(IsCollapsedBindName);
+        private bool IsCollapsible { get; set; }
+        private string IsCollapsibleBindName { get; set; }
+        private bool IsCollapsibleBound => !string.IsNullOrWhiteSpace(IsCollapsibleBindName);
         
         private bool IsClosable { get; set; }
         private string IsClosableBindName { get; set; }
@@ -112,10 +112,10 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         /// <summary>
         /// Sets a static value for whether the window may be collapsed by the user.
         /// </summary>
-        /// <param name="isCollapsed">true if the window can be collapsed, false otherwise</param>
-        public GuiWindow<T> SetIsCollapsed(bool isCollapsed)
+        /// <param name="isCollapsible">true if the window can be collapsed, false otherwise</param>
+        public GuiWindow<T> SetIsCollapsible(bool isCollapsible)
         {
-            IsCollapsed = isCollapsed;
+            IsCollapsible = isCollapsible;
             return this;
         }
 
@@ -126,7 +126,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         /// <param name="expression">Expression to target the property.</param>
         public GuiWindow<T> BindIsCollapsed<TProperty>(Expression<Func<T, TProperty>> expression)
         {
-            IsCollapsedBindName = GuiHelper<T>.GetPropertyName(expression);
+            IsCollapsibleBindName = GuiHelper<T>.GetPropertyName(expression);
             return this;
         }
 
@@ -268,7 +268,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             Title = "New Window";
             Geometry = new GuiRectangle(0f, 0f, 400f, 400f);
             IsResizable = true;
-            IsCollapsed = false;
+            IsCollapsible = false;
             IsClosable = true;
             IsTransparent = false;
             ShowBorder = true;
@@ -295,12 +295,12 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
             var title = IsTitleBound ? Nui.Bind(TitleBindName) : Title == null ? JsonBool(false) : JsonString(Title);
             var geometry = Nui.Bind(GeometryBindName);
             var isResizable = IsResizableBound ? Nui.Bind(IsResizableBindName) : JsonBool(IsResizable);
-            var isCollapsed = IsCollapsedBound ? Nui.Bind(IsCollapsedBindName) : JsonBool(IsCollapsed);
+            var isCollapsible = IsCollapsibleBound ? Nui.Bind(IsCollapsibleBindName) : (IsCollapsible ? JsonNull() : JsonBool(false));
             var isClosable = IsClosableBound ? Nui.Bind(IsClosableBindName) : JsonBool(IsClosable);
             var isTransparent = IsTransparentBound ? Nui.Bind(IsTransparentBindName) : JsonBool(IsTransparent);
             var showBorder = IsShowBorderBound ? Nui.Bind(ShowBorderBindName) : JsonBool(ShowBorder);
 
-            return Nui.Window(root, title, geometry, isResizable, isCollapsed, isClosable, isTransparent, showBorder);
+            return Nui.Window(root, title, geometry, isResizable, isCollapsible, isClosable, isTransparent, showBorder);
         }
     }
 }

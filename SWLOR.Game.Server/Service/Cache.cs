@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Service
         private static Dictionary<int, int> PortraitIdsByInternalId { get; } = new();
         private static Dictionary<int, int> PortraitInternalIdsByPortraitId { get; } = new();
         private static Dictionary<int, string> PortraitResrefByInternalId { get; } = new();
+        private static Dictionary<string, int> PortraitInternalIdsByPortraitResref { get; } = new();
 
         [NWNEventHandler("mod_content_chg")]
         public static void CacheItemNamesByResref()
@@ -157,6 +158,7 @@ namespace SWLOR.Game.Server.Service
                     PortraitIdsByInternalId[internalId] = row;
                     PortraitInternalIdsByPortraitId[row] = internalId;
                     PortraitResrefByInternalId[internalId] = "po_" + baseResref;
+                    PortraitInternalIdsByPortraitResref["po_" + baseResref] = internalId;
                     internalId++;
                 }
             }
@@ -192,6 +194,14 @@ namespace SWLOR.Game.Server.Service
         public static string GetPortraitResrefByInternalId(int portraitInternalId)
         {
             return PortraitResrefByInternalId[portraitInternalId];
+        }
+
+        public static int GetPortraitInternalIdByResref(string resref)
+        {
+            if (!PortraitInternalIdsByPortraitResref.ContainsKey(resref))
+                return -1;
+
+            return PortraitInternalIdsByPortraitResref[resref];
         }
     }
 }

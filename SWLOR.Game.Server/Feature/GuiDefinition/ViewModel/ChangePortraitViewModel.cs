@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -15,13 +13,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public int ActivePortraitInternalId
+        private int _activePortraitInternalId;
+
+        public string ActivePortraitInternalId
         {
-            get => Get<int>();
+            get => Get<string>();
             set
             {
-                Set(value);
-                ActivePortrait = Cache.GetPortraitResrefByInternalId(value) + "l";
+                if (int.TryParse(value, out var parsed))
+                {
+                    _activePortraitInternalId = parsed;
+
+                    if (parsed > Cache.PortraitCount)
+                        parsed = Cache.PortraitCount;
+                    else if (parsed < 1)
+                        parsed = 1;
+
+                    Set(parsed.ToString());
+                    ActivePortrait = Cache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
+                }
+                else
+                {
+                    Set(_activePortraitInternalId.ToString());
+                    ActivePortrait = Cache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
+                }
             }
         }
 
@@ -31,43 +46,53 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string MaxPortraitsText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         private void LoadCurrentPortrait()
         {
-            var portraitId = GetPortraitId(Player);
-            if (portraitId == PORTRAIT_INVALID)
-            {
-                portraitId = Cache.GetPortraitInternalId(1);
-            }
+            var resref = GetPortraitResRef(Player);
+            var internalId = Cache.GetPortraitInternalIdByResref(resref);
+            var portraitId = internalId == -1
+                ? Cache.GetPortraitInternalId(1)
+                : Cache.GetPortraitByInternalId(internalId);
 
-            ActivePortraitInternalId = Cache.GetPortraitInternalId(portraitId);
+            ActivePortraitInternalId = Cache.GetPortraitInternalId(portraitId).ToString();
+            ActivePortrait = Cache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
         }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             MaximumPortraits = Cache.PortraitCount;
+            MaxPortraitsText = $"/ {MaximumPortraits}";
+            
             LoadCurrentPortrait();
-
             WatchOnClient(model => model.ActivePortraitInternalId);
         }
 
         public Action OnPreviousClick() => () =>
         {
-            var newId = ActivePortraitInternalId - 1;
+            var newId = _activePortraitInternalId - 1;
 
             if (newId < 1)
                 newId = Cache.PortraitCount;
 
-            ActivePortraitInternalId = newId;
+            ActivePortraitInternalId = newId.ToString();
+            ActivePortrait = Cache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
         };
 
         public Action OnNextClick() => () =>
         {
-            var newId = ActivePortraitInternalId + 1;
+            var newId = _activePortraitInternalId + 1;
 
             if (newId > Cache.PortraitCount)
                 newId = 1;
 
-            ActivePortraitInternalId = newId;
+            ActivePortraitInternalId = newId.ToString();
+            ActivePortrait = Cache.GetPortraitResrefByInternalId(_activePortraitInternalId) + "l";
         };
 
         public Action OnRevertClick() => () =>
@@ -77,7 +102,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSaveClick() => () =>
         {
-            var portraitId = Cache.GetPortraitByInternalId(ActivePortraitInternalId);
+            var portraitId = Cache.GetPortraitByInternalId(_activePortraitInternalId);
             SetPortraitId(Player, portraitId);
         };
 

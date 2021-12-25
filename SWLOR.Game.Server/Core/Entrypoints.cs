@@ -236,6 +236,9 @@ namespace SWLOR.Game.Server.Core
             {
                 for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
                 {
+                    if (!GetIsPC(player) || GetIsDM(player))
+                        continue;
+
                     var oldObjectSelf = Internal.OBJECT_SELF;
                     Internal.OBJECT_SELF = player;
                     RunScripts("interval_pc_1s");

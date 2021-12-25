@@ -14,6 +14,8 @@ namespace SWLOR.Game.Server.Feature
         public static void DisableWindows()
         {
             var player = GetEnteringObject();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
 
             // Spell Book - Completely unused
             SetGuiPanelDisabled(player, GuiPanel.SpellBook, true);

@@ -299,6 +299,9 @@ namespace SWLOR.Game.Server.Service
             GuiPayloadBase payload = null,
             uint tetherObject = OBJECT_INVALID)
         {
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
             var playerId = GetObjectUUID(player);
             var template = _windowTemplates[type];
             var playerWindow = _playerWindows[playerId][type];

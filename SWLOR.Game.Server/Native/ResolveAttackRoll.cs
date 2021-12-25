@@ -54,18 +54,18 @@ namespace SWLOR.Game.Server.Native
             if (targetObject == null)
                 return;
 
-            CNWSCreature attacker = CNWSCreature.FromPointer(thisPtr);
-            CNWSCreatureStats attackerStats = attacker.m_pStats;
+            var attacker = CNWSCreature.FromPointer(thisPtr);
+            var attackerStats = attacker.m_pStats;
 
             // Support various types of attacks.
             // - Regular combat round attacks
             // - Touch attacks and other scripted attacks from feats.
-            CNWSCombatRound pCombatRound = attacker.m_pcCombatRound;
+            var pCombatRound = attacker.m_pcCombatRound;
 
             Log.Write(LogGroup.Attack, "Attacker: " + attacker.GetFirstName().GetSimple(0) + ", defender " + targetObject.GetFirstName().GetSimple(0));
 
-            CNWSCombatAttackData pAttackData = pCombatRound.GetAttack(pCombatRound.m_nCurrentAttack);
-            bool isOffhandAttack = (int)pAttackData.m_nWeaponAttackType == 2;
+            var pAttackData = pCombatRound.GetAttack(pCombatRound.m_nCurrentAttack);
+            var isOffhandAttack = (int)pAttackData.m_nWeaponAttackType == 2;
 
             if (targetObject.m_nObjectType != (int)ObjectType.Creature)
             {
@@ -77,8 +77,8 @@ namespace SWLOR.Game.Server.Native
 
             // If we get to this point, we are fighting a creature.  Pull the target's stats.
             //CNWSCreatureStats defenderStats = CNWSCreatureStats.FromPointer(pTarget);
-            CNWSCreature defender = CNWSCreature.FromPointer(pTarget);
-            CNWSCreatureStats defenderStats = defender.m_pStats;
+            var defender = CNWSCreature.FromPointer(pTarget);
+            var defenderStats = defender.m_pStats;
 
             // Determine the type of attack.
             // - Check for an override variable on the creature.  If set, remove it and use that value.  This is 
@@ -118,7 +118,7 @@ namespace SWLOR.Game.Server.Native
                 }
             }
 
-            Log.Write(LogGroup.Attack, "Selected attack type " + attackType.ToString() + ", weapon " + (weapon == null ? "none":weapon.GetFirstName().GetSimple(0)) );
+            Log.Write(LogGroup.Attack, "Selected attack type " + attackType + ", weapon " + (weapon == null ? "none":weapon.GetFirstName().GetSimple(0)) );
 
             // We now have our attack type defined.  Pull the relevant attributes, defaulting to melee.
             int attackAttribute = attackerStats.m_nStrengthModifier;
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Native
             }
 
             // Weapon Finesse - set which weapons are allowed here.
-            bool bFinessable = weapon == null;
+            var bFinessable = weapon == null;
             if (!bFinessable)
             {
                 bFinessable =   Item.FinesseVibrobladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
@@ -160,19 +160,19 @@ namespace SWLOR.Game.Server.Native
             if (attackAttribute > 128) attackAttribute -= 256;
             if (defendAttribute > 128) defendAttribute -= 256;
 
-            Log.Write(LogGroup.Attack, "Attacker attribute modifier: " + attackAttribute.ToString() +", defender attribute modifier: " + defendAttribute.ToString());
+            Log.Write(LogGroup.Attack, "Attacker attribute modifier: " + attackAttribute +", defender attribute modifier: " + defendAttribute);
 
             //---------------------------------------------------------------------------------------------
             //---------------------------------------------------------------------------------------------
             //---------------------------------------------------------------------------------------------
             // Modifiers - put in modifiers here based on the type of attack (and type of weapon etc.).
-            int modifiers = 0;
+            var modifiers = 0;
 
             // Weapon AB or EB.
             if (weapon != null)
             {
                 // Retrieve item properties and cost table values. 
-                foreach (CNWItemProperty ip in weapon.m_lstPassiveProperties)
+                foreach (var ip in weapon.m_lstPassiveProperties)
                 {
                     if (ip.m_nPropertyName == (ushort)ItemPropertyType.AttackBonus ||
                         ip.m_nPropertyName == (ushort)ItemPropertyType.EnhancementBonus)
@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Native
             if (defenderEvasion > 0)
             {
                 modifiers -= 5 * defenderEvasion;
-                Log.Write(LogGroup.Attack, "Defender has evasion bonus: " + defenderEvasion.ToString()); 
+                Log.Write(LogGroup.Attack, "Defender has evasion bonus: " + defenderEvasion); 
             }
 
             // Defender stunned
@@ -199,15 +199,15 @@ namespace SWLOR.Game.Server.Native
             }
 
             // Dual wield penalty.
-            CNWSItem offhand = attacker.m_pInventory.GetItemInSlot((uint) InventorySlot.LeftHand);
-            bool bDoubleWeapon = Item.TwinBladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
-                Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem);
+            var offhand = attacker.m_pInventory.GetItemInSlot((uint) InventorySlot.LeftHand);
+            var bDoubleWeapon = Item.TwinBladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
+                                Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem);
 
             if (bDoubleWeapon ||
                 (offhand != null && offhand.m_nBaseItem != (uint) BaseItem.LargeShield && 
                  offhand.m_nBaseItem != (uint) BaseItem.SmallShield && offhand.m_nBaseItem != (uint) BaseItem.TowerShield))
             {
-                string log = "Applying dual wield penalty.  Offhand weapon: " + (offhand == null ? weapon.GetFirstName().GetSimple() : offhand.GetFirstName().GetSimple() + " -");
+                var log = "Applying dual wield penalty.  Offhand weapon: " + (offhand == null ? weapon.GetFirstName().GetSimple() : offhand.GetFirstName().GetSimple() + " -");
                 // Note - we have retired Two Weapon Fighting and Ambidexterity as feats.  We have costed them
                 // in to the proficiency perks rather than granting them separately. 
 
@@ -226,7 +226,7 @@ namespace SWLOR.Game.Server.Native
             // Defender not targeting the attacker.
             // Dev note: the GetItem method always creates a new instance of CNWActionNode so there should be no NPEs.
             // Note: this always returns object invalid for NPCs (2130706432) as their actions aren't represented the same way.
-            uint oidTarget = defender.m_pActionQueue.GetItem(0).oidTarget;
+            var oidTarget = defender.m_pActionQueue.GetItem(0).oidTarget;
             
             if (oidTarget == NWScript.OBJECT_INVALID)
             {
@@ -236,14 +236,14 @@ namespace SWLOR.Game.Server.Native
             // If this is an NPC attacking, Store the attack on the NPC. 
             if (attacker.m_pActionQueue.GetItem(0).oidTarget == 2130706432)
             {
-                Log.Write(LogGroup.Attack, "NPC attacking - storing target "+ defender.m_idSelf.ToString());
+                Log.Write(LogGroup.Attack, "NPC attacking - storing target "+ defender.m_idSelf);
                 attacker.m_ScriptVars.SetInt(new CExoString("I_LAST_ATTACKED"), (int)defender.m_idSelf);
             }
 
             // oidTarget will be 0 for a newly spawned NPC who hasn't been attacked yet.  Don't let them get taken by surprise in round 1. 
             if (oidTarget != 0 && oidTarget != attacker.m_idSelf)
             {
-                Log.Write(LogGroup.Attack, "Defender current target ("+oidTarget.ToString() +") is not attacker ("+attacker.m_idSelf.ToString()+"). Assign circumstance bonus");
+                Log.Write(LogGroup.Attack, "Defender current target ("+oidTarget +") is not attacker ("+attacker.m_idSelf+"). Assign circumstance bonus");
                 modifiers += 5;
             }
 
@@ -254,13 +254,13 @@ namespace SWLOR.Game.Server.Native
             // Range bonuses and penalties.
             if (attackType == (uint)AttackType.Ranged || attackType == (uint)AttackType.Spirit)
             {
-                Vector attackerPos = attacker.m_vPosition;
-                Vector defenderPos = defender.m_vPosition;
+                var attackerPos = attacker.m_vPosition;
+                var defenderPos = defender.m_vPosition;
 
                 // Note - calculating distance solely via X/Y co-ordinates.  NWN doesn't have a true Z.
-                double range = Math.Pow(Math.Pow((attackerPos.x - defenderPos.x), 2) + Math.Pow((attackerPos.y - defenderPos.y),2), 0.5);
+                var range = Math.Pow(Math.Pow((attackerPos.x - defenderPos.x), 2) + Math.Pow((attackerPos.y - defenderPos.y),2), 0.5);
                      
-                Log.Write(LogGroup.Attack, "Ranged attack at range " + range.ToString());
+                Log.Write(LogGroup.Attack, "Ranged attack at range " + range);
                 if (range < 5.0f)
                 {
                     // Force powers or point blank shot feat make close range an advantage.
@@ -291,8 +291,8 @@ namespace SWLOR.Game.Server.Native
             // Attacking from behind.  Does not apply to Force attacks.
             // Vectors are X=-1 to +1, Y=-1 to +1, Z=0.  
             // If the absolute difference between the two vectors is less than 0.5, treat as a backstab.
-            Vector attFacing = attacker.m_vOrientation;
-            Vector defFacing = defender.m_vOrientation;
+            var attFacing = attacker.m_vOrientation;
+            var defFacing = defender.m_vOrientation;
 
             if (attackType != (uint)AttackType.Spirit && 
                 (Math.Abs(attFacing.x - defFacing.x) + Math.Abs(attFacing.y-defFacing.y) < 0.5))
@@ -306,21 +306,21 @@ namespace SWLOR.Game.Server.Native
             //---------------------------------------------------------------------------------------------
             //---------------------------------------------------------------------------------------------
             //---------------------------------------------------------------------------------------------
-            int roll = Service.Random.Next(1, 100);
-            int bonus = 10 * attackAttribute - 10 * defendAttribute + modifiers;
+            var roll = Service.Random.Next(1, 100);
+            var bonus = 10 * attackAttribute - 10 * defendAttribute + modifiers;
             // Update the hit roll and modifier to give player feedback.  
             // Hit roll is 1-100
             // Modifier is the delta between the attacker & target attributes, updated for any modifiers.
             // NWN can only display numbers up to 32.  So divide by 4 so that the numbers make sense.
-            Log.Write(LogGroup.Attack, "Roll: " + roll.ToString() + ", bonus: " + bonus.ToString());
+            Log.Write(LogGroup.Attack, "Roll: " + roll + ", bonus: " + bonus);
             pAttackData.m_nToHitRoll = (byte) (roll / 4);
             pAttackData.m_nToHitMod = (byte) (bonus / 4);
-            int result = roll - 50 + bonus;
+            var result = roll - 50 + bonus;
 
-            int criticalRange = 40;
+            var criticalRange = 40;
             if (weapon != null)
             {
-                int threatRange = Item.GetCriticalThreatRange((BaseItem)weapon.m_nBaseItem);
+                var threatRange = Item.GetCriticalThreatRange((BaseItem)weapon.m_nBaseItem);
                 if (threatRange == 3)
                 {
                     criticalRange = 20;
@@ -349,7 +349,7 @@ namespace SWLOR.Game.Server.Native
                 if (defender.m_pStats.GetEffectImmunity((byte)ImmunityType.CriticalHit, attacker) == 1)
                 {
                     // Immune!
-                    CNWCCMessageData pData = new CNWCCMessageData();
+                    var pData = new CNWCCMessageData();
                     pData.SetObjectID(0, attacker.m_idSelf);
                     pData.SetInteger(0, 126); //Critical Hit Immunity Feedback
                     pAttackData.m_alstPendingFeedback.Add(pData);

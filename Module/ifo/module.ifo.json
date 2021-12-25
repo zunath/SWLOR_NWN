@@ -1329,6 +1329,13 @@
           "type": "resref",
           "value": "starport"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "yavin"
+        }
       }
     ]
   },

@@ -4,6 +4,7 @@ using System.Linq;
 using Serilog;
 using Serilog.Core;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.LogService;
 
@@ -13,25 +14,17 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<LogGroup, LogGroupAttribute> _logGroups = new();
         private static readonly Dictionary<LogGroup, Logger> _loggers = new();
-        private static ServerEnvironment _environment = ServerEnvironment.Development;
 
         /// <summary>
-        /// When the module caches, load all log group details.
+        /// Registers all loggers. This should be called in the EntryPoints class.
         /// </summary>
-        [NWNEventHandler("mod_cache")]
-        public static void CacheData()
+        public static void Register()
         {
             var logGroupTypes = Enum.GetValues(typeof(LogGroup)).Cast<LogGroup>();
             foreach (var logGroupType in logGroupTypes)
             {
                 var detail = logGroupType.GetAttribute<LogGroup, LogGroupAttribute>();
                 _logGroups[logGroupType] = detail;
-            }
-
-            var environment = Environment.GetEnvironmentVariable("SWLOR_ENVIRONMENT");
-            if (!string.IsNullOrWhiteSpace(environment) && (environment == "prod" || environment == "production"))
-            {
-                _environment = ServerEnvironment.Production;
             }
 
             LoadLoggers();
@@ -81,11 +74,12 @@ namespace SWLOR.Game.Server.Service
         /// <param name="printToConsole">If true, the details will be printed to the console.</param>
         public static void Write(LogGroup group, string details, bool printToConsole = false)
         {
+            var settings = ApplicationSettings.Get();
             var logDetail = _logGroups[group];
 
             // If the log group isn't configured for this environment, skip it.
-            if (logDetail.Environment != ServerEnvironment.All &&
-                logDetail.Environment != _environment)
+            if (logDetail.Environment != ServerEnvironmentType.All &&
+                logDetail.Environment != settings.ServerEnvironment)
             {
                 return;
             }

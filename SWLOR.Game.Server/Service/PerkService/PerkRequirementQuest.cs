@@ -3,11 +3,11 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {
-    public class PerkQuestRequirement : IPerkRequirement
+    public class PerkRequirementQuest : IPerkRequirement
     {
         private readonly string _questId;
 
-        public PerkQuestRequirement(string questId)
+        public PerkRequirementQuest(string questId)
         {
             _questId = questId;
         }

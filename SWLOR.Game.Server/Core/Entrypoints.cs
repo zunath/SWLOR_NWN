@@ -89,6 +89,10 @@ namespace SWLOR.Game.Server.Core
         {
             using (new Profiler(nameof(OnStart)))
             {
+                Console.WriteLine("Registering loggers...");
+                Log.Register();
+                Console.WriteLine("Loggers registered successfully.");
+
                 Console.WriteLine("Registering scripts...");
                 LoadHandlersFromAssembly();
                 Console.WriteLine("Scripts registered successfully.");

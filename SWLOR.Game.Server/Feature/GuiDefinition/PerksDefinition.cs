@@ -82,6 +82,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindOnClicked(model => model.OnSelectPerk());
                             });
                         })
+                            .SetScrollbars(NuiScrollbars.Both)
                             .BindRowCount(model => model.PerkButtonTexts);
 
                         row.AddColumn(col2 =>
@@ -115,6 +116,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                             .SetVerticalAlign(NuiVerticalAlign.Top);
                                     });
                                 })
+                                    .SetScrollbars(NuiScrollbars.Both)
                                     .BindRowCount(model => model.SelectedRequirements)
                                     .BindIsVisible(model => model.IsPerkSelected);
                             });

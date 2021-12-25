@@ -1,14 +1,13 @@
 ﻿using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Enumeration;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {
-    public class PerkUnlockRequirement: IPerkRequirement
+    public class PerkRequirementUnlock: IPerkRequirement
     {
         private readonly PerkType _perkType;
 
-        public PerkUnlockRequirement(PerkType perkType)
+        public PerkRequirementUnlock(PerkType perkType)
         {
             _perkType = perkType;
         }

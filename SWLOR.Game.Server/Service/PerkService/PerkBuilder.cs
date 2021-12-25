@@ -116,7 +116,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         /// <returns>A perk builder with the configured options</returns>
         public PerkBuilder RequirementSkill(SkillType skill, int requiredRank)
         {
-            var requirement = new PerkSkillRequirement(skill, requiredRank);
+            var requirement = new PerkRequirementSkill(skill, requiredRank);
             _activeLevel.Requirements.Add(requirement);
 
             return this;
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         /// <returns>A perk builder with the configured options.</returns>
         public PerkBuilder RequirementQuest(string questId)
         {
-            var requirement = new PerkQuestRequirement(questId);
+            var requirement = new PerkRequirementQuest(questId);
             _activeLevel.Requirements.Add(requirement);
 
             return this;
@@ -142,7 +142,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         /// <returns></returns>
         public PerkBuilder RequirementCharacterType(CharacterType characterType)
         {
-            var requirement = new PerkCharacterTypeRequirement(characterType);
+            var requirement = new PerkRequirementCharacterType(characterType);
             _activeLevel.Requirements.Add(requirement);
 
             return this;
@@ -154,7 +154,20 @@ namespace SWLOR.Game.Server.Service.PerkService
         /// <returns>A perk builder with the configured options.</returns>
         public PerkBuilder RequirementUnlocked()
         {
-            var requirement = new PerkUnlockRequirement(_activePerk.Type);
+            var requirement = new PerkRequirementUnlock(_activePerk.Type);
+            _activeLevel.Requirements.Add(requirement);
+
+            return this;
+        }
+
+        /// <summary>
+        /// Adds a requirement that the player cannot have a specific other perk.
+        /// </summary>
+        /// <param name="cannotHavePerkType">The type of perk the player cannot have.</param>
+        /// <returns>A perk builder with the configured options.</returns>
+        public PerkBuilder RequirementCannotHavePerk(PerkType cannotHavePerkType)
+        {
+            var requirement = new PerkRequirementCannotHavePerk(cannotHavePerkType);
             _activeLevel.Requirements.Add(requirement);
 
             return this;

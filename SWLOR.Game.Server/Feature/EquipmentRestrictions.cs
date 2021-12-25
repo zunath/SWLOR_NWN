@@ -51,7 +51,9 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            SendMessageToPC(creature, ColorToken.Red(canUseItem));
+            if(!string.IsNullOrWhiteSpace(canUseItem))
+                SendMessageToPC(creature, ColorToken.Red(canUseItem));
+
             EventsPlugin.SkipEvent();
         }
 

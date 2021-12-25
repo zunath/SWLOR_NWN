@@ -4,11 +4,11 @@ using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {
-    public class PerkCharacterTypeRequirement: IPerkRequirement
+    public class PerkRequirementCharacterType: IPerkRequirement
     {
         private readonly CharacterType _requiredCharacterType;
 
-        public PerkCharacterTypeRequirement(CharacterType type)
+        public PerkRequirementCharacterType(CharacterType type)
         {
             _requiredCharacterType = type;
         }

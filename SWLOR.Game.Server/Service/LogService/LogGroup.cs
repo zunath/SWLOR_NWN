@@ -1,41 +1,42 @@
 ﻿using System;
+using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.LogService
 {
     public enum LogGroup
     {
-        [LogGroup("Attack", ServerEnvironment.Development)]
+        [LogGroup("Attack", ServerEnvironmentType.Development)]
         Attack,
-        [LogGroup("Connection", ServerEnvironment.All)]
+        [LogGroup("Connection", ServerEnvironmentType.All)]
         Connection,
-        [LogGroup("Erroor", ServerEnvironment.All)]
+        [LogGroup("Erroor", ServerEnvironmentType.All)]
         Error,
-        [LogGroup("Chat", ServerEnvironment.All)]
+        [LogGroup("Chat", ServerEnvironmentType.All)]
         Chat,
-        [LogGroup("DM", ServerEnvironment.All)]
+        [LogGroup("DM", ServerEnvironmentType.All)]
         DM,
-        [LogGroup("DMAuthorization", ServerEnvironment.All)]
+        [LogGroup("DMAuthorization", ServerEnvironmentType.All)]
         DMAuthorization,
-        [LogGroup("Death", ServerEnvironment.All)]
+        [LogGroup("Death", ServerEnvironmentType.All)]
         Death,
-        [LogGroup("Server", ServerEnvironment.All)]
+        [LogGroup("Server", ServerEnvironmentType.All)]
         Server,
-        [LogGroup("PerkRefund", ServerEnvironment.All)]
+        [LogGroup("PerkRefund", ServerEnvironmentType.All)]
         PerkRefund,
-        [LogGroup("Property", ServerEnvironment.All)]
+        [LogGroup("Property", ServerEnvironmentType.All)]
         Property,
-        [LogGroup("PlayerMarket", ServerEnvironment.All)]
+        [LogGroup("PlayerMarket", ServerEnvironmentType.All)]
         PlayerMarket,
-        [LogGroup("Space", ServerEnvironment.All)]
+        [LogGroup("Space", ServerEnvironmentType.All)]
         Space
     }
 
     public class LogGroupAttribute : Attribute
     {
         public string LoggerName { get; set; }
-        public ServerEnvironment Environment { get; set; }
+        public ServerEnvironmentType Environment { get; set; }
 
-        public LogGroupAttribute(string loggerName, ServerEnvironment environment)
+        public LogGroupAttribute(string loggerName, ServerEnvironmentType environment)
         {
             LoggerName = loggerName;
             Environment = environment;

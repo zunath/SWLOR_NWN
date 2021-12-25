@@ -8,18 +8,16 @@ namespace SWLOR.Game.Server.Service.PerkService
     /// <summary>
     /// Adds a minimum skill level as a requirement to purchase or activate a perk.
     /// </summary>
-    public class PerkSkillRequirement : IPerkRequirement
+    public class PerkRequirementSkill : IPerkRequirement
     {
         private readonly SkillType _type;
         private readonly int _requiredRank;
 
-        public PerkSkillRequirement(SkillType type, int requiredRank)
+        public PerkRequirementSkill(SkillType type, int requiredRank)
         {
             _type = type;
             _requiredRank = requiredRank;
         }
-
-        public bool UsedToCalculateEffectiveLevel => true;
 
         public string CheckRequirements(uint player)
         {
@@ -28,7 +26,8 @@ namespace SWLOR.Game.Server.Service.PerkService
             var skill = dbPlayer.Skills[_type];
             var rank = skill.Rank;
 
-            if (rank >= _requiredRank) return string.Empty;
+            if (rank >= _requiredRank) 
+                return string.Empty;
 
             return $"Your skill rank is too low. (Your rank is {rank} versus required rank {_requiredRank})";
         }

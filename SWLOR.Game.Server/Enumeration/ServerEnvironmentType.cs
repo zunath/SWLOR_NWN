@@ -1,6 +1,6 @@
-﻿namespace SWLOR.Game.Server.Service.LogService
+﻿namespace SWLOR.Game.Server.Enumeration
 {
-    public enum ServerEnvironment
+    public enum ServerEnvironmentType
     {
         Invalid = 0,
         Development = 1,

@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class ForcePerkDefinition : IPerkListDefinition
     {
-        private readonly PerkBuilder _builder = new PerkBuilder();
+        private readonly PerkBuilder _builder = new();
 
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
@@ -241,6 +241,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceDrain)
                 .GrantsFeat(FeatType.ForceHeal1)
 
                 .AddPerkLevel()
@@ -248,6 +249,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceDrain)
                 .GrantsFeat(FeatType.ForceHeal2)
 
                 .AddPerkLevel()
@@ -255,6 +257,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceDrain)
                 .GrantsFeat(FeatType.ForceHeal3)
 
                 .AddPerkLevel()
@@ -262,6 +265,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceDrain)
                 .GrantsFeat(FeatType.ForceHeal4)
 
                 .AddPerkLevel()
@@ -269,6 +273,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceDrain)
                 .GrantsFeat(FeatType.ForceHeal5);
         }
 
@@ -282,6 +287,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceLightning)
                 .GrantsFeat(FeatType.ForceBurst1)
 
                 .AddPerkLevel()
@@ -289,6 +295,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceLightning)
                 .GrantsFeat(FeatType.ForceBurst2)
 
                 .AddPerkLevel()
@@ -296,6 +303,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(6)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceLightning)
                 .GrantsFeat(FeatType.ForceBurst3)
 
                 .AddPerkLevel()
@@ -303,6 +311,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(7)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceLightning)
                 .GrantsFeat(FeatType.ForceBurst4);
         }
         private void ForceMind()
@@ -315,6 +324,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceBody)
                 .GrantsFeat(FeatType.ForceMind1)
 
                 .AddPerkLevel()
@@ -322,6 +332,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(6)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceBody)
                 .GrantsFeat(FeatType.ForceMind2);
         }
 
@@ -335,6 +346,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceHeal)
                 .GrantsFeat(FeatType.ForceDrain1)
 
                 .AddPerkLevel()
@@ -342,6 +354,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceHeal)
                 .GrantsFeat(FeatType.ForceDrain2)
 
                 .AddPerkLevel()
@@ -349,6 +362,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceHeal)
                 .GrantsFeat(FeatType.ForceDrain3)
 
                 .AddPerkLevel()
@@ -356,6 +370,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceHeal)
                 .GrantsFeat(FeatType.ForceDrain4)
 
                 .AddPerkLevel()
@@ -363,6 +378,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceHeal)
                 .GrantsFeat(FeatType.ForceDrain5);
         }
 
@@ -376,6 +392,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceBurst)
                 .GrantsFeat(FeatType.ForceLightning1)
 
                 .AddPerkLevel()
@@ -383,6 +400,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(5)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceBurst)
                 .GrantsFeat(FeatType.ForceLightning2)
 
                 .AddPerkLevel()
@@ -390,6 +408,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(6)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceBurst)
                 .GrantsFeat(FeatType.ForceLightning3)
 
                 .AddPerkLevel()
@@ -397,6 +416,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(7)
                 .RequirementSkill(SkillType.Force, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceBurst)
                 .GrantsFeat(FeatType.ForceLightning4);
         }
 
@@ -410,6 +430,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceMind)
                 .GrantsFeat(FeatType.ForceBody1)
 
                 .AddPerkLevel()
@@ -417,6 +438,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(6)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
+                .RequirementCannotHavePerk(PerkType.ForceMind)
                 .GrantsFeat(FeatType.ForceBody2);
         }
     }

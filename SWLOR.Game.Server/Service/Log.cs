@@ -1,31 +1,64 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Serilog;
 using Serilog.Core;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Service
 {
-    public enum LogGroup
-    {
-        Attack,
-        Connection,
-        Error,
-        Chat,
-        DM,
-        DMAuthorization,
-        Death,
-        Server,
-        PerkRefund,
-        Property,
-        PlayerMarket,
-        AI,
-        Space
-    }
-
     public static class Log
     {
-        private static readonly Dictionary<LogGroup, Logger> _loggers = new Dictionary<LogGroup, Logger>();
+        private static readonly Dictionary<LogGroup, LogGroupAttribute> _logGroups = new();
+        private static readonly Dictionary<LogGroup, Logger> _loggers = new();
+        private static ServerEnvironment _environment = ServerEnvironment.Development;
+
+        /// <summary>
+        /// When the module caches, load all log group details.
+        /// </summary>
+        [NWNEventHandler("mod_cache")]
+        public static void CacheData()
+        {
+            var logGroupTypes = Enum.GetValues(typeof(LogGroup)).Cast<LogGroup>();
+            foreach (var logGroupType in logGroupTypes)
+            {
+                var detail = logGroupType.GetAttribute<LogGroup, LogGroupAttribute>();
+                _logGroups[logGroupType] = detail;
+            }
+
+            var environment = Environment.GetEnvironmentVariable("SWLOR_ENVIRONMENT");
+            if (!string.IsNullOrWhiteSpace(environment) && (environment == "prod" || environment == "production"))
+            {
+                _environment = ServerEnvironment.Production;
+            }
+
+            LoadLoggers();
+        }
+
+        /// <summary>
+        /// When the module loads, initialize all possible loggers.
+        /// </summary>
+        private static void LoadLoggers()
+        {
+            var settings = ApplicationSettings.Get();
+
+            foreach (var (type, detail) in _logGroups)
+            {
+                var path = settings.LogDirectory + detail.LoggerName + "/" + detail.LoggerName + "_.log";
+                var logger = new LoggerConfiguration()
+                    .WriteTo.Async(a => a.File(path, rollingInterval: RollingInterval.Day));
+
+                // Errors should also be print to the console.
+                if (type == LogGroup.Error)
+                {
+                    logger.WriteTo.Console();
+                }
+
+                _loggers[type] = logger.CreateLogger();
+            }
+        }
 
         /// <summary>
         /// Audits are written asynchronously so it's important to flush everything to disk when the server stops.
@@ -48,21 +81,13 @@ namespace SWLOR.Game.Server.Service
         /// <param name="printToConsole">If true, the details will be printed to the console.</param>
         public static void Write(LogGroup group, string details, bool printToConsole = false)
         {
-            if (!_loggers.ContainsKey(group))
+            var logDetail = _logGroups[group];
+
+            // If the log group isn't configured for this environment, skip it.
+            if (logDetail.Environment != ServerEnvironment.All &&
+                logDetail.Environment != _environment)
             {
-                var settings = ApplicationSettings.Get();
-
-                var path = settings.LogDirectory + group + "/" + group + "_.log";
-                var logger = new LoggerConfiguration()
-                    .WriteTo.Async(a => a.File(path, rollingInterval: RollingInterval.Day));
-
-                // Errors should also be print to the console.
-                if (group == LogGroup.Error)
-                {
-                    logger.WriteTo.Console();
-                }
-
-                _loggers[group] = logger.CreateLogger();
+                return;
             }
 
             // Errors already print to console by default but if any other log groups have the printToConsole flag,

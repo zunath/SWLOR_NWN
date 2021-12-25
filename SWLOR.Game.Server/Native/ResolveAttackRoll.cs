@@ -65,6 +65,16 @@ namespace SWLOR.Game.Server.Native
             Log.Write(LogGroup.Attack, "Attacker: " + attacker.GetFirstName().GetSimple(0) + ", defender " + targetObject.GetFirstName().GetSimple(0));
 
             var pAttackData = pCombatRound.GetAttack(pCombatRound.m_nCurrentAttack);
+
+            // Attacks of opportunity - If player is busy with another action, cancel the attack.
+            if (pAttackData.m_nAttackType == 65002 &&
+                attacker.m_ScriptVars.GetInt(new CExoString("IS_BUSY")) == 1)
+            {
+                pAttackData.m_nAttackResult = 4; // Automatic miss while busy.
+                pAttackData.m_nMissedBy = 1;
+                return;
+            }
+
             var isOffhandAttack = (int)pAttackData.m_nWeaponAttackType == 2;
 
             if (targetObject.m_nObjectType != (int)ObjectType.Creature)

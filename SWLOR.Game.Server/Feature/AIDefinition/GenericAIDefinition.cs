@@ -451,7 +451,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             // Bite
             if (CheckIfCanUseFeat(self, target, FeatType.Bite))
             {
-                return (FeatType.Roar, target);
+                return (FeatType.Bite, target);
             }
 
             // Iron Shell

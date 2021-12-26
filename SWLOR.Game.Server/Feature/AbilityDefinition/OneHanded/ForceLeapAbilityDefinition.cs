@@ -32,13 +32,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             var rightHandBaseItemType = GetBaseItemType(weapon);
             var leftHandBaseItemType = GetBaseItemType(offHand);
             
-            if (rightHandBaseItemType == BaseItem.Lightsaber
-                && (leftHandBaseItemType == BaseItem.SmallShield ||
-                    leftHandBaseItemType == BaseItem.LargeShield ||
-                    leftHandBaseItemType == BaseItem.TowerShield ||
-                    leftHandBaseItemType == BaseItem.Invalid))
+            if (rightHandBaseItemType != BaseItem.Lightsaber
+                || (leftHandBaseItemType != BaseItem.SmallShield &&
+                    leftHandBaseItemType != BaseItem.LargeShield &&
+                    leftHandBaseItemType != BaseItem.TowerShield &&
+                    leftHandBaseItemType != BaseItem.Invalid &&
+                    leftHandBaseItemType != BaseItem.Lightsaber))
             {
-                return "This is a one-handed ability.";
+                return "This is a lightsaber ability.";
             }
 
             if (GetDistanceBetween(activator, target) < 8)

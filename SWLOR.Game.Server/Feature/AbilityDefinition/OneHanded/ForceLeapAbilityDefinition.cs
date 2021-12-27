@@ -2,14 +2,12 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
@@ -29,15 +27,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var offHand = GetItemInSlot(InventorySlot.LeftHand, activator);
-            var rightHandBaseItemType = GetBaseItemType(weapon);
-            var leftHandBaseItemType = GetBaseItemType(offHand);
-            
-            if (rightHandBaseItemType != BaseItem.Lightsaber
-                || (leftHandBaseItemType != BaseItem.SmallShield &&
-                    leftHandBaseItemType != BaseItem.LargeShield &&
-                    leftHandBaseItemType != BaseItem.TowerShield &&
-                    leftHandBaseItemType != BaseItem.Invalid &&
-                    leftHandBaseItemType != BaseItem.Lightsaber))
+            var rightHandType = GetBaseItemType(weapon);
+            var leftHandType = GetBaseItemType(offHand);
+
+            if (!Item.LightsaberBaseItemTypes.Contains(rightHandType) &&
+                !Item.LightsaberBaseItemTypes.Contains(leftHandType))
             {
                 return "This is a lightsaber ability.";
             }

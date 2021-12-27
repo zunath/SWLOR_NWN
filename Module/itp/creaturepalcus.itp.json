@@ -6048,63 +6048,6 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 9.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Eco Terrorist"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ecoterr_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 9.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Eco Terrorist"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ecoterr_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 10.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Eco Terrorist"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ecoterr_ldr"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
                       "value": 13.0
                     },
                     "FACTION": {
@@ -6219,101 +6162,6 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 4.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mandalorian Ranger"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "man_ranger_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 4.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mandalorian Ranger"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "man_ranger_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 5.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mandalorian War Hero"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "man_leader"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 4.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mandalorian Warrior"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "man_warrior_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 4.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Mandalorian Warrior"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "man_warrior_2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
                       "value": 2.0
                     },
                     "FACTION": {
@@ -6327,44 +6175,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "naah"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Outlaw"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "looter_1"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 3.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Outlaw"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "looter_2"
                     }
                   },
                   {
@@ -6745,63 +6555,6 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "utilitydroid7"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 7.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Vellen Flesheater"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "v_flesheater"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 7.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Vellen Flesheater"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "v_flesheater2"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 8.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Vellen Fleshleader"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "v_fleshleader"
                     }
                   }
                 ]
@@ -10195,6 +9948,63 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 9.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eco Terrorist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ecoterr_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 9.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eco Terrorist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ecoterr_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 10.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Eco Terrorist"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ecoterr_ldr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 8.0
                     },
                     "FACTION": {
@@ -10417,6 +10227,139 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Ranger"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_ranger_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Ranger"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_ranger_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 5.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian War Hero"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_leader"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Warrior"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_warrior_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 4.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Warrior"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "man_warrior_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Outlaw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "looter_1"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 3.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Outlaw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "looter_2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 6.0
                     },
                     "FACTION": {
@@ -10525,6 +10468,63 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "vall_nashtah"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vellen Flesheater"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_flesheater"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 7.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vellen Flesheater"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_flesheater2"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 8.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Hostile"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Vellen Fleshleader"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "v_fleshleader"
                     }
                   },
                   {

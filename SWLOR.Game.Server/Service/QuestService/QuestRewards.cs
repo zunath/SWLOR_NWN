@@ -1,5 +1,6 @@
 ﻿
 using System;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.FactionService;
@@ -44,7 +45,11 @@ namespace SWLOR.Game.Server.Service.QuestService
 
         public void GiveReward(uint player)
         {
-            GiveGoldToCreature(player, Amount);
+            // 5% credit bonus per social modifier.
+            var social = GetAbilityModifier(AbilityType.Social, player) * 0.05f;
+
+            var amount = Amount + (int)(Amount * social);
+            GiveGoldToCreature(player, amount);
         }
     }
 

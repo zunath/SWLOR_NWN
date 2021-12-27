@@ -211,7 +211,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// <returns>An ability builder with the configured options</returns>
         public AbilityBuilder RequirementFP(int requiredFP)
         {
-            var requirement = new PerkFPRequirement(requiredFP);
+            var requirement = new AbilityRequirementFP(requiredFP);
             _activeAbility.Requirements.Add(requirement);
 
             return this;
@@ -224,7 +224,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// <returns>An ability builder with the configured options</returns>
         public AbilityBuilder RequirementStamina(int requiredSTM)
         {
-            var requirement = new AbilityStaminaRequirement(requiredSTM);
+            var requirement = new AbilityRequirementStamina(requiredSTM);
             _activeAbility.Requirements.Add(requirement);
 
             return this;

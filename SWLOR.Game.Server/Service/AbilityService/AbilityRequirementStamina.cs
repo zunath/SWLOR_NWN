@@ -7,13 +7,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
     /// <summary>
     /// Adds a stamina requirement to activate a perk.
     /// </summary>
-    public class AbilityStaminaRequirement : IAbilityActivationRequirement
+    public class AbilityRequirementStamina : IAbilityActivationRequirement
     {
-        private readonly int _requiredSTM;
+        public int RequiredSTM { get; }
 
-        public AbilityStaminaRequirement(int requiredSTM)
+        public AbilityRequirementStamina(int requiredSTM)
         {
-            _requiredSTM = requiredSTM;
+            RequiredSTM = requiredSTM;
         }
 
         public string CheckRequirements(uint player)
@@ -23,15 +23,15 @@ namespace SWLOR.Game.Server.Service.AbilityService
 
             var stamina = Stat.GetCurrentStamina(player);
 
-            if (stamina >= _requiredSTM) return string.Empty;
-            return $"Not enough stamina. (Required: {_requiredSTM})";
+            if (stamina >= RequiredSTM) return string.Empty;
+            return $"Not enough stamina. (Required: {RequiredSTM})";
         }
 
         public void AfterActivationAction(uint player)
         {
             if (GetIsDM(player)) return;
 
-            Stat.ReduceStamina(player, _requiredSTM);
+            Stat.ReduceStamina(player, RequiredSTM);
         }
     }
 }

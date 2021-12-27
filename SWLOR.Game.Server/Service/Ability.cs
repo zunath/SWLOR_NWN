@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module caches, abilities will be cached and events will be scheduled.
         /// </summary>
         [NWNEventHandler("mod_cache")]
-        public static void OnModuleLoad()
+        public static void CacheData()
         {
             CacheAbilities();
         }

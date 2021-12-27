@@ -8,13 +8,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
     /// <summary>
     /// Adds an FP requirement to activate a perk.
     /// </summary>
-    public class PerkFPRequirement : IAbilityActivationRequirement
+    public class AbilityRequirementFP : IAbilityActivationRequirement
     {
-        private readonly int _requiredFP;
+        public int RequiredFP { get; }
 
-        public PerkFPRequirement(int requiredFP)
+        public AbilityRequirementFP(int requiredFP)
         {
-            _requiredFP = requiredFP;
+            RequiredFP = requiredFP;
         }
 
         public string CheckRequirements(uint player)
@@ -24,8 +24,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
 
             var fp = Stat.GetCurrentFP(player);
 
-            if (fp >= _requiredFP) return string.Empty;
-            return $"Not enough FP. (Required: {_requiredFP})";
+            if (fp >= RequiredFP) return string.Empty;
+            return $"Not enough FP. (Required: {RequiredFP})";
         }
 
         public void AfterActivationAction(uint player)
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             // Force Attunement reduces FP costs to zero.
             if (StatusEffect.HasStatusEffect(player, StatusEffectType.ForceAttunement)) return;
 
-            Stat.ReduceFP(player, _requiredFP);
+            Stat.ReduceFP(player, RequiredFP);
         }
     }
 }

@@ -61,12 +61,6 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            AssignCommand(player, () =>
-            {
-                ClearAllActions();
-                ActionPlayAnimation(Animation.LoopingSitCross, 1f, 9999f);
-            });
-
             StatusEffect.Apply(player, player, StatusEffectType.Rest, 0f);
         }
 

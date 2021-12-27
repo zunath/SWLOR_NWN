@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -19,6 +19,16 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             return builder.Build();
         }
 
+        /// <summary>
+        /// When a player is damaged, remove the rest effect
+        /// </summary>
+        [NWNEventHandler("pc_damaged")]
+        public static void RemoveRestOnDamage()
+        {
+            var player = OBJECT_SELF;
+            StatusEffect.Remove(player, StatusEffectType.Rest);
+        }
+
         private void Rest(StatusEffectBuilder builder)
         {
             builder.Create(StatusEffectType.Rest)
@@ -26,6 +36,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(8) // 8 = Fatigue
                 .GrantAction((source, target, length) =>
                 {
+                    AssignCommand(target, () =>
+                    {
+                        ClearAllActions();
+                        ActionPlayAnimation(Animation.LoopingSitCross, 1f, 9999f);
+                    });
+
                     // Store position the player is at when the rest effect is granted.
                     var position = GetPosition(target);
 

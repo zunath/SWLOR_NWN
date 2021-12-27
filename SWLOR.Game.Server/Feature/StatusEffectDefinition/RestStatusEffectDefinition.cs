@@ -38,7 +38,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 {
                     AssignCommand(target, () =>
                     {
-                        ClearAllActions();
                         ActionPlayAnimation(Animation.LoopingSitCross, 1f, 9999f);
                     });
 

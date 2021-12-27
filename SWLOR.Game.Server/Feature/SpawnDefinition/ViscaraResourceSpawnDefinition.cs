@@ -6,24 +6,59 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
     public class ViscaraResourceSpawnDefinition: ISpawnListDefinition
     {
+        readonly SpawnTableBuilder _builder = new SpawnTableBuilder();
         public Dictionary<string, SpawnTable> BuildSpawnTables()
         {
-            var builder = new SpawnTableBuilder();
-            CoxxionBase(builder);
-            WildlandsResources(builder);
+            Cavern();
+            CoxxionBase();
+            DeepMountainsResources();
+            MandalorianFacilityResources();
+            MountainValleyResources();
+            WildlandsResources();
+            WildwoodsResources();
 
-            return builder.Build();
+            return _builder.Build();
         }
 
-        private void CoxxionBase(SpawnTableBuilder builder)
+        private void Cavern()
         {
-            builder.Create("COXXION_BASE_SCAVENGE")
+            _builder.Create("RESOURCES_VISCARA_CAVERN")
+                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+        }
+
+        private void CoxxionBase()
+        {
+            _builder.Create("COXXION_BASE_SCAVENGE")
                 .AddSpawn(ObjectType.Placeable, "v_cox_scav");
         }
 
-        private void WildlandsResources(SpawnTableBuilder builder)
+        private void DeepMountainsResources()
         {
-            builder.Create("RESOURCES_VISCARA_WILDLANDS")
+            _builder.Create("RESOURCES_VISCARA_DEEPMOUNTAINS")
+                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+        }
+
+        private void MandalorianFacilityResources()
+        {
+            _builder.Create("RESOURCES_VISCARA_MANDALORIANFACILITY")
+                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+        }
+
+        private void MountainValleyResources()
+        {
+            _builder.Create("RESOURCES_VISCARA_MOUNTAINVALLEY")
+                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+        }
+
+        private void WildlandsResources()
+        {
+            _builder.Create("RESOURCES_VISCARA_WILDLANDS")
+                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+        }
+
+        private void WildwoodsResources()
+        {
+            _builder.Create("RESOURCES_VISCARA_WILDWOODS")
                 .AddSpawn(ObjectType.Placeable, "veldite_vein");
         }
     }

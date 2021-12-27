@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Area;
 using SWLOR.Game.Server.Entity;
@@ -11,6 +12,7 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Walkmesh
     {
+        private static readonly Dictionary<uint, List<uint>> _noSpawnZoneTriggers = new();
         private static Dictionary<string, List<Vector3>> _walkmeshesByArea = new();
         private const int AreaBakeStep = 5;
         private static bool _bakingRan;
@@ -21,6 +23,8 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("mod_content_chg")]
         public static void LoadWalkmeshes()
         {
+            StoreNoSpawnZoneTriggers();
+
             for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
                 BakeArea(area);
@@ -32,6 +36,29 @@ namespace SWLOR.Game.Server.Service
 
             _bakingRan = true;
             Console.WriteLine($"Baked {_walkmeshesByArea.Count} areas.");
+        }
+
+        /// <summary>
+        /// When the module loads, find all of the "no spawn zone" triggers that have been hand placed by a builder.
+        /// These indicate that walkmesh locations within the trigger are not valid and will be excluded from the list.
+        /// </summary>
+        private static void StoreNoSpawnZoneTriggers()
+        {
+            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
+            {
+                for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
+                {
+                    var resref = GetResRef(obj);
+
+                    if (resref != "anti_spawn_trigg")
+                        continue;
+
+                    if (!_noSpawnZoneTriggers.ContainsKey(area))
+                        _noSpawnZoneTriggers[area] = new List<uint>();
+
+                    _noSpawnZoneTriggers[area].Add(obj);
+                }
+            }
         }
 
         /// <summary>
@@ -69,7 +96,8 @@ namespace SWLOR.Game.Server.Service
             {
                 for (var y = 0; y < arraySizeY; y++)
                 {
-                    var checkLocation = Location(area, Vector3(x * AreaBakeStep, y * AreaBakeStep), 0.0f);
+                    var checkPosition = Vector3(x * AreaBakeStep, y * AreaBakeStep);
+                    var checkLocation = Location(area, checkPosition, 0.0f);
                     var material = GetSurfaceMaterial(checkLocation);
                     var isWalkable = Convert.ToInt32(Get2DAString("surfacemat", "Walk", material)) == 1;
 
@@ -79,6 +107,19 @@ namespace SWLOR.Game.Server.Service
                     if (GetIsObjectValid(nearest) && distance <= MinDistance)
                     {
                         isWalkable = false;
+                    }
+
+                    // Location is not walkable if it's contained within any "no spawn zone" triggers.
+                    if (_noSpawnZoneTriggers.ContainsKey(area))
+                    {
+                        foreach (var trigger in _noSpawnZoneTriggers[area])
+                        {
+                            if (ObjectPlugin.GetPositionIsInTrigger(trigger, checkPosition))
+                            {
+                                isWalkable = false;
+                                break;
+                            }
+                        }
                     }
 
                     if (isWalkable)

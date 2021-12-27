@@ -72,6 +72,8 @@ namespace SWLOR.Game.Server.Native
             {
                 pAttackData.m_nAttackResult = 4; // Automatic miss while busy.
                 pAttackData.m_nMissedBy = 1;
+                pAttackData.m_nToHitRoll = 1;
+                pAttackData.m_nToHitMod = 0;
                 return;
             }
 

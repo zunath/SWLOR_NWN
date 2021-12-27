@@ -28,13 +28,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (Item.FinesseVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon))
-                && (GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == BaseItem.SmallShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == BaseItem.LargeShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == BaseItem.TowerShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == BaseItem.Invalid))
+            if (!Item.FinesseVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon))
+                || (GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) != BaseItem.SmallShield &&
+                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) != BaseItem.LargeShield &&
+                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) != BaseItem.TowerShield &&
+                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) != BaseItem.Invalid &&
+                    !Item.FinesseVibrobladeBaseItemTypes.Contains(GetBaseItemType(GetItemInSlot(InventorySlot.LeftHand)))))
             {
-                return "This is a one-handed ability.";
+                return "This is a finesse vibroblade ability.";
             }
             else
                 return string.Empty;

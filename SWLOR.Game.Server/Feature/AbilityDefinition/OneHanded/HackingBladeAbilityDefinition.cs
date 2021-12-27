@@ -29,13 +29,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
 
-            if (Item.VibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon))
-                && (GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == BaseItem.SmallShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == BaseItem.LargeShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == BaseItem.TowerShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == BaseItem.Invalid))
+            if (!Item.VibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon))
+                || (GetBaseItemType(GetItemInSlot(InventorySlot.LeftHand)) != BaseItem.SmallShield &&
+                    GetBaseItemType(GetItemInSlot(InventorySlot.LeftHand)) != BaseItem.LargeShield &&
+                    GetBaseItemType(GetItemInSlot(InventorySlot.LeftHand)) != BaseItem.TowerShield &&
+                    GetBaseItemType(GetItemInSlot(InventorySlot.LeftHand)) != BaseItem.Invalid &&
+                    !Item.VibrobladeBaseItemTypes.Contains(GetBaseItemType(GetItemInSlot(InventorySlot.LeftHand)))))
             {
-                return "This is a one-handed ability.";
+                return "This is a Vibroblade ability (finesse vibroblades are not heavy enough).";
             }
             else
                 return string.Empty;

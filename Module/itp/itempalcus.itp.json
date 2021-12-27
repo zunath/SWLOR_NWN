@@ -12236,7 +12236,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Medical Supplies x50"
+                      "value": "Medical Supplies"
                     },
                     "RESREF": {
                       "type": "resref",
@@ -12258,7 +12258,7 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Stim Pack x50"
+                      "value": "Stim Pack"
                     },
                     "RESREF": {
                       "type": "resref",

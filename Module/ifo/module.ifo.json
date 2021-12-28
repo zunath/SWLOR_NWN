@@ -361,20 +361,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "foszfacility"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "foszrobotis"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "moncalacifacilit"
         }
       },
@@ -1335,6 +1321,13 @@
         "Area_Name": {
           "type": "resref",
           "value": "yavin"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_swamp_base"
         }
       }
     ]

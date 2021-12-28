@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             MountainValleyResources();
             WildlandsResources();
             WildwoodsResources();
+            SwamplandResources();
 
             return _builder.Build();
         }
@@ -59,6 +60,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void WildwoodsResources()
         {
             _builder.Create("RESOURCES_VISCARA_WILDWOODS")
+                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+        }
+
+        private void SwamplandResources()
+        {
+            _builder.Create("RESOURCES_VISCARA_SWAMPLANDS")
                 .AddSpawn(ObjectType.Placeable, "veldite_vein");
         }
     }

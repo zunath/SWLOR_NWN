@@ -13251,6 +13251,41 @@
       }
     ]
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "RESOURCE_SPAWN_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "RESOURCES_HUTLAR_VALLEY"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "CREATURE_SPAWN_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "HUTLAR_QION_VALLEY"
+        }
+      }
+    ]
+  },
   "WaypointList": {
     "type": "list",
     "value": [
@@ -13363,7 +13398,7 @@
         },
         "YOrientation": {
           "type": "float",
-          "value": 1.0
+          "value": -1.0
         },
         "YPosition": {
           "type": "float",

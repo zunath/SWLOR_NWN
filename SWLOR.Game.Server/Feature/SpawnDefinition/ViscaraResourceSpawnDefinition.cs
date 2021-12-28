@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
     public class ViscaraResourceSpawnDefinition: ISpawnListDefinition
     {
-        readonly SpawnTableBuilder _builder = new SpawnTableBuilder();
+        private readonly SpawnTableBuilder _builder = new();
         public Dictionary<string, SpawnTable> BuildSpawnTables()
         {
             Cavern();

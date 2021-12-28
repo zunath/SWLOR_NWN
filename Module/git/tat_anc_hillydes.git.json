@@ -5147,6 +5147,209 @@
           "type": "float",
           "value": 0.0
         }
+      },
+      {
+        "__struct_id": 1,
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Cursor": {
+          "type": "byte",
+          "value": 0
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "Geometry": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 0.0
+              },
+              "PointY": {
+                "type": "float",
+                "value": 0.0
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.02500000037252903
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 0.5151519775390625
+              },
+              "PointY": {
+                "type": "float",
+                "value": -17.92378997802734
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.805042028427124
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 18.75827407836914
+              },
+              "PointY": {
+                "type": "float",
+                "value": -20.10667419433594
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.0250005591660738
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 17.66457748413086
+              },
+              "PointY": {
+                "type": "float",
+                "value": -0.8191757202148438
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.02500005997717381
+              }
+            }
+          ]
+        },
+        "HighlightHeight": {
+          "type": "float",
+          "value": 0.0
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LinkedToFlags": {
+          "type": "byte",
+          "value": 0
+        },
+        "LoadScreenID": {
+          "type": "word",
+          "value": 0
+        },
+        "LocalizedName": {
+          "id": 14759,
+          "type": "cexolocstring",
+          "value": {
+            "0": "No Spawn Zone"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "ScriptHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnEnter": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnExit": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptUserDefine": {
+          "type": "resref",
+          "value": ""
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "anti_spawn_trigg"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "anti_spawn_trigg"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "int",
+          "value": 0
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 45.61870956420898
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 93.81622314453125
+        },
+        "ZOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
       }
     ]
   },
@@ -5157,60 +5360,30 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "AUTO_SPAWN_RESOURCES"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "RESOURCE_MAX_QUALITY"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 10
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "RESOURCE_QUALITY"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 8
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
           "value": "RESOURCE_SPAWN_TABLE_ID"
         },
         "Type": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Value": {
-          "type": "int",
-          "value": 47
+          "type": "cexostring",
+          "value": "TATOOINE_RESOURCE_GENERAL"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "CREATURE_SPAWN_TABLE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_RAIDER"
         }
       }
     ]
@@ -5393,1266 +5566,6 @@
         "ZPosition": {
           "type": "float",
           "value": 9.999996185302734
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 149.4803771972656
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 90.5743408203125
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.003926217555999756
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 120.6120300292969
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 121.994255065918
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 4.938671112060547
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 88.01042175292969
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 13.90022468566895
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 2.379819869995117
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 131.9286193847656
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 8.861025810241699
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 4.011117935180664
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 13.64417266845703
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 51.87363052368164
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.3246250152587891
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 32.36878204345703
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 25.15910530090332
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -5.7220458984375e-006
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 36.97688674926758
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 77.79552459716797
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.8138599395751953
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 20.5406551361084
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 80.53972625732422
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 4.999994277954102
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 40.8009033203125
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 54.44654083251953
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 4.899702072143555
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 62.76720428466797
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 60.71448135375977
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -5.7220458984375e-006
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 76.88164520263672
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 92.12837219238281
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 3.131654739379883
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 38.86004257202148
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 106.6407470703125
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 2.890748977661133
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 54.87778854370117
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 109.1512298583984
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 4.999994277954102
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 4.202434539794922
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 105.2459335327148
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 2.777730941772461
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 17.86858749389648
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 153.9552001953125
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 10.39679336547852
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 42.47455596923828
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 150.4641876220703
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 4.999994277954102
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 73.31880950927734
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 153.6009521484375
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.8275279998779297
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 101.1010894775391
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 148.0082550048828
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 8.993246078491211
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 146.3177490234375
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 137.9824676513672
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 9.135984420776367
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Tatooine - Tusken Raider"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "TATOOINE_TUSKEN_RAIDER"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "tat_tuskspwn"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 134.7734527587891
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 126.7059020996094
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 2.955894470214844
         }
       },
       {

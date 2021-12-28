@@ -937,6 +937,209 @@
           "type": "float",
           "value": 0.0
         }
+      },
+      {
+        "__struct_id": 1,
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Cursor": {
+          "type": "byte",
+          "value": 0
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 1
+        },
+        "Geometry": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": -0.4513435363769531
+              },
+              "PointY": {
+                "type": "float",
+                "value": -8.962516784667969
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.02550997771322727
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 65.57479095458984
+              },
+              "PointY": {
+                "type": "float",
+                "value": -9.413894653320313
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.02499952353537083
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 65.38124847412109
+              },
+              "PointY": {
+                "type": "float",
+                "value": 0.2579193115234375
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.02550973929464817
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 0.0
+              },
+              "PointY": {
+                "type": "float",
+                "value": 0.0
+              },
+              "PointZ": {
+                "type": "float",
+                "value": 0.02550997771322727
+              }
+            }
+          ]
+        },
+        "HighlightHeight": {
+          "type": "float",
+          "value": 0.0
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LinkedToFlags": {
+          "type": "byte",
+          "value": 0
+        },
+        "LoadScreenID": {
+          "type": "word",
+          "value": 0
+        },
+        "LocalizedName": {
+          "id": 14759,
+          "type": "cexolocstring",
+          "value": {
+            "0": "No Spawn Zone"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "ScriptHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnEnter": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnExit": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptUserDefine": {
+          "type": "resref",
+          "value": ""
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "anti_spawn_trigg"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "anti_spawn_trigg"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "int",
+          "value": 0
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 43.51096343994141
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 49.22334289550781
+        },
+        "ZOrientation": {
+          "type": "float",
+          "value": 0.0
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": 0.0
+        }
       }
     ]
   },
@@ -947,60 +1150,15 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "AUTO_SPAWN_RESOURCES"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "RESOURCE_MAX_QUALITY"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 10
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "RESOURCE_QUALITY"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 8
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
           "value": "RESOURCE_SPAWN_TABLE_ID"
         },
         "Type": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Value": {
-          "type": "int",
-          "value": 47
+          "type": "cexostring",
+          "value": "TATOOINE_RESOURCE_GENERAL"
         }
       }
     ]

@@ -1,6 +1,8 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.KeyItemService;
+using SWLOR.Game.Server.Service.LogService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
@@ -43,6 +45,24 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var area = OBJECT_SELF;
+            var mapKeyItemId = GetLocalInt(area, "MAP_KEY_ITEM_ID");
+
+            // If the area has a map associated and the player has this key item,
+            // exit early. There's no reason to load their progression - the map explores it for them automatically.
+            if (mapKeyItemId > 0)
+            {
+                try
+                {
+                    var keyItemType = (KeyItemType)mapKeyItemId;
+                    if (KeyItem.HasKeyItem(player, keyItemType))
+                        return;
+                }
+                catch
+                {
+                    Log.Write(LogGroup.Error, $"MAP_KEY_ITEM_ID '{mapKeyItemId}' is misconfigured on area '{GetName(area)}'.");
+                }
+            }
+            
             var areaResref = GetResRef(area);
 
             // Did we already load this area's progression since the last restart?

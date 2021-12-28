@@ -1,6 +1,7 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.KeyItemService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
@@ -10,8 +11,8 @@ namespace SWLOR.Game.Server.Feature
         private const string AreaMiniMapVariable = "MINI_MAP_DISABLED";
 
         /// <summary>
-        /// If a player enters an area with a disabled mini-map,
-        /// disable it.
+        /// If a player enters an area with a disabled mini-map and they do not have the map key item, disable the window.
+        /// If a player enters an area with the associated map key item, fully explore it for them.
         /// </summary>
         [NWNEventHandler("area_enter")]
         public static void DisableMiniMap()
@@ -21,9 +22,23 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var isMiniMapDisabled = GetLocalInt(area, AreaMiniMapVariable);
-            if (isMiniMapDisabled != 1) return;
+            if (isMiniMapDisabled == 1)
+            {
+                SetGuiPanelDisabled(player, GuiPanel.Minimap, true);
+            }
 
-            SetGuiPanelDisabled(player, GuiPanel.Minimap, true);
+            var keyItemId = GetLocalInt(area, "MAP_KEY_ITEM_ID");
+            if (keyItemId > 0)
+            {
+                var keyItemType = (KeyItemType)keyItemId;
+                var hasKeyItem = KeyItem.HasKeyItem(player, keyItemType);
+
+                if (hasKeyItem)
+                {
+                    SetGuiPanelDisabled(player, GuiPanel.Minimap, false);
+                    ExploreAreaForPlayer(area, player);
+                }
+            }
         }
 
         /// <summary>

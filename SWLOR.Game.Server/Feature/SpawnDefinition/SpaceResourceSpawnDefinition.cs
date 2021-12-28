@@ -20,33 +20,50 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void ViscaraOrbit()
         {
             _builder.Create("SPACE_RESOURCES_VISCARA_ORBIT", "Space Resources - Viscara Orbit")
-                .AddSpawn(ObjectType.Placeable, "")
-                .WithFrequency(10)
-                .RandomlyWalks();
+                .AddSpawn(ObjectType.Placeable, "spc_asteroid_til")
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_currian")
+                .WithFrequency(5);
         }
 
         private void MonCalaOrbit()
         {
             _builder.Create("SPACE_RESOURCES_MONCALA_ORBIT", "Space Resources - Mon Cala Orbit")
-                .AddSpawn(ObjectType.Placeable, "")
-                .WithFrequency(10)
-                .RandomlyWalks();
+                .AddSpawn(ObjectType.Placeable, "spc_asteroid_til")
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_currian")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_idailia")
+                .WithFrequency(5);
         }
 
         private void HutlarOrbit()
         {
             _builder.Create("SPACE_RESOURCES_HUTLAR_ORBIT", "Space Resources - Hutlar Orbit")
-                .AddSpawn(ObjectType.Placeable, "")
-                .WithFrequency(10)
-                .RandomlyWalks();
+                .AddSpawn(ObjectType.Placeable, "asteroid_currian")
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_idailia")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_bariniu")
+                .WithFrequency(5);
         }
 
         private void TatooineOrbit()
         {
             _builder.Create("SPACE_RESOURCES_TATOOINE_ORBIT", "Space Resources - Tatooine Orbit")
-                .AddSpawn(ObjectType.Placeable, "")
-                .WithFrequency(10)
-                .RandomlyWalks();
+                .AddSpawn(ObjectType.Placeable, "asteroid_idailia")
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_bariniu")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "asteroid_gostian")
+                .WithFrequency(5);
         }
     }
 }

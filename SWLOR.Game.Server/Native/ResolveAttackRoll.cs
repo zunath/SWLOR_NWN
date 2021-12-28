@@ -200,8 +200,10 @@ namespace SWLOR.Game.Server.Native
 
             // Dual wield penalty.
             var offhand = attacker.m_pInventory.GetItemInSlot((uint) InventorySlot.LeftHand);
-            var bDoubleWeapon = Item.TwinBladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
-                                Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem);
+            var bDoubleWeapon = 
+                weapon != null && 
+                (Item.TwinBladeBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem) ||
+                 Item.SaberstaffBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem));
 
             if (bDoubleWeapon ||
                 (offhand != null && offhand.m_nBaseItem != (uint) BaseItem.LargeShield && 

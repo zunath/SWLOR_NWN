@@ -1215,7 +1215,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -4017,7 +4017,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -5081,7 +5081,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -6145,7 +6145,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -8947,7 +8947,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -10011,7 +10011,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -11362,7 +11362,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -12713,7 +12713,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -13777,7 +13777,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -15128,7 +15128,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -16192,7 +16192,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -17543,7 +17543,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -19072,7 +19072,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -20423,7 +20423,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 240
+          "value": 235
         },
         "NaturalAC": {
           "type": "byte",
@@ -23481,7 +23481,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -24832,7 +24832,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -26183,7 +26183,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -27247,7 +27247,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -28311,7 +28311,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -29584,7 +29584,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -30648,7 +30648,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -32177,7 +32177,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 235
+          "value": 240
         },
         "NaturalAC": {
           "type": "byte",
@@ -38642,7 +38642,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 2115
+          "value": 2110
         },
         "NaturalAC": {
           "type": "byte",

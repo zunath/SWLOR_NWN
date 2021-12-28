@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Randon - City"
+      "0": "[Prefab] Randon - City"
     }
   },
   "NoRest": {
@@ -16931,7 +16931,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 8
+    "value": 9
   },
   "Width": {
     "type": "int",

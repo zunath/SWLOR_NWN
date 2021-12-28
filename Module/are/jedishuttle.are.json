@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Ship - Nova Shuttle"
+      "0": "[Prefab] Ship - Nova Shuttle"
     }
   },
   "NoRest": {
@@ -2741,7 +2741,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 7
+    "value": 8
   },
   "Width": {
     "type": "int",

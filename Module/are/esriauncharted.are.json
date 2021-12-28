@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Esria - Uncharted Island"
+      "0": "[Prefab] Esria - Uncharted Island"
     }
   },
   "NoRest": {
@@ -116,7 +116,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "area004"
+    "value": "esriauncharted"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -33873,7 +33873,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 2
+    "value": 3
   },
   "Width": {
     "type": "int",

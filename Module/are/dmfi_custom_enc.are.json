@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "DMFI Custom Encounter Region"
+      "0": "*DMFI Custom Encounter Region"
     }
   },
   "NoRest": {
@@ -1709,7 +1709,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 24
+    "value": 25
   },
   "Width": {
     "type": "int",

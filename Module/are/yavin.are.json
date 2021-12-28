@@ -87,6 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
+      "0": "[Prefab] Yavin",
       "8": "Yavin"
     }
   },
@@ -116,7 +117,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "area008"
+    "value": "yavin"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -14781,7 +14782,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 13
+    "value": 14
   },
   "Width": {
     "type": "int",

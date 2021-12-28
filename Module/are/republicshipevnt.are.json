@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Republic Cruiser - The Sovereign - Lower Decks"
+      "0": "[Prefab] Republic Cruiser - The Sovereign - Lower Decks"
     }
   },
   "NoRest": {
@@ -6353,7 +6353,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 3
+    "value": 4
   },
   "Width": {
     "type": "int",

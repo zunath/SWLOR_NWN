@@ -2037,6 +2037,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Jedi Temple Guard Robes"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "jeditempleguardr"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Katar's Armour"
                     },
                     "RESREF": {
@@ -17466,6 +17477,17 @@
               "LIST": {
                 "type": "list",
                 "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] Jedi Temple Guard Saberstaff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "templeguardstaff"
+                    }
+                  },
                   {
                     "__struct_id": 0,
                     "NAME": {

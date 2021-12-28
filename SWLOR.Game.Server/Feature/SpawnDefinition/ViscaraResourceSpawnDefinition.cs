@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             WildlandsResources();
             WildwoodsResources();
             SwamplandResources();
+            VelesSewersResources();
 
             return _builder.Build();
         }
@@ -67,6 +68,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             _builder.Create("RESOURCES_VISCARA_SWAMPLANDS")
                 .AddSpawn(ObjectType.Placeable, "veldite_vein");
+        }
+
+        private void VelesSewersResources()
+        {
+            _builder.Create("RESOURCES_VISCARA_VELESSEWERS")
+                .AddSpawn(ObjectType.Placeable, "cz220_junk");
         }
     }
 }

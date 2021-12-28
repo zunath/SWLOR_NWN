@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             DeepMountainRaivors();
             CrystalSpiders();
             Swamplands();
+            VelesSewers();
 
             return _builder.Build();
         }
@@ -98,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             _builder.Create("VISCARA_VALLEY_CAIRNMOGS", "Valley Cairnmogs")
                 .AddSpawn(ObjectType.Creature, "vall_nashtah")
-                .WithFrequency(20)
+                .WithFrequency(50)
                 .RandomlyWalks()
 
                 .AddSpawn(ObjectType.Creature, "valley_cairnmog")
@@ -106,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .RandomlyWalks()
 
                 .AddSpawn(ObjectType.Creature, "valley_cairnmog2")
-                .WithFrequency(50)
+                .WithFrequency(10)
                 .RandomlyWalks();
         }
 
@@ -162,6 +163,18 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Creature, "v_flesheater2")
                 .WithFrequency(20)
+                .RandomlyWalks();
+        }
+
+        private void VelesSewers()
+        {
+            _builder.Create("VISCARA_VELES_SEWERS", "Veles Sewers")
+                .AddSpawn(ObjectType.Creature, "looter_1")
+                .WithFrequency(30)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "looter_2")
+                .WithFrequency(30)
                 .RandomlyWalks();
         }
 

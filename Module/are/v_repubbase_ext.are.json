@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Viscara - Republic Base Exterior"
+      "0": "Viscara - Republic Base - Exterior"
     }
   },
   "NoRest": {
@@ -11169,7 +11169,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 5
+    "value": 7
   },
   "Width": {
     "type": "int",

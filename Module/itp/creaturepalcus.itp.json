@@ -4417,6 +4417,44 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
+                      "value": 16.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Temple Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "templeguard_f"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 16.0
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Jedi Temple Guard"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "templeguard_m"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
                       "value": 15.0
                     },
                     "FACTION": {

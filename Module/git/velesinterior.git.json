@@ -10279,6 +10279,862 @@
           "type": "float",
           "value": -4.76837158203125e-007
         }
+      },
+      {
+        "__struct_id": 4,
+        "Appearance_Head": {
+          "type": "byte",
+          "value": 35
+        },
+        "Appearance_Type": {
+          "type": "word",
+          "value": 10000
+        },
+        "ArmorPart_RFoot": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_Belt": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_LBicep": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LFArm": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LFoot": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LHand": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LShin": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_LShoul": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_LThigh": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_Neck": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_Pelvis": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RBicep": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RFArm": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RHand": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RShin": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_RShoul": {
+          "type": "byte",
+          "value": 0
+        },
+        "BodyPart_RThigh": {
+          "type": "byte",
+          "value": 1
+        },
+        "BodyPart_Torso": {
+          "type": "byte",
+          "value": 1
+        },
+        "Cha": {
+          "type": "byte",
+          "value": 9
+        },
+        "ChallengeRating": {
+          "type": "float",
+          "value": 0.125
+        },
+        "ClassList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 2,
+              "Class": {
+                "type": "int",
+                "value": 4
+              },
+              "ClassLevel": {
+                "type": "short",
+                "value": 1
+              }
+            }
+          ]
+        },
+        "Color_Hair": {
+          "type": "byte",
+          "value": 135
+        },
+        "Color_Skin": {
+          "type": "byte",
+          "value": 129
+        },
+        "Color_Tattoo1": {
+          "type": "byte",
+          "value": 23
+        },
+        "Color_Tattoo2": {
+          "type": "byte",
+          "value": 23
+        },
+        "Con": {
+          "type": "byte",
+          "value": 16
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CRAdjust": {
+          "type": "int",
+          "value": -3
+        },
+        "CurrentHitPoints": {
+          "type": "short",
+          "value": 50
+        },
+        "DecayTime": {
+          "type": "dword",
+          "value": 5000
+        },
+        "Deity": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "Dex": {
+          "type": "byte",
+          "value": 13
+        },
+        "Disarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "Equip_ItemList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 2,
+              "AddCost": {
+                "type": "dword",
+                "value": 0
+              },
+              "ArmorPart_Belt": {
+                "type": "byte",
+                "value": 9
+              },
+              "ArmorPart_LBicep": {
+                "type": "byte",
+                "value": 109
+              },
+              "ArmorPart_LFArm": {
+                "type": "byte",
+                "value": 107
+              },
+              "ArmorPart_LFoot": {
+                "type": "byte",
+                "value": 247
+              },
+              "ArmorPart_LHand": {
+                "type": "byte",
+                "value": 3
+              },
+              "ArmorPart_LShin": {
+                "type": "byte",
+                "value": 153
+              },
+              "ArmorPart_LShoul": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_LThigh": {
+                "type": "byte",
+                "value": 105
+              },
+              "ArmorPart_Neck": {
+                "type": "byte",
+                "value": 1
+              },
+              "ArmorPart_Pelvis": {
+                "type": "byte",
+                "value": 237
+              },
+              "ArmorPart_RBicep": {
+                "type": "byte",
+                "value": 109
+              },
+              "ArmorPart_RFArm": {
+                "type": "byte",
+                "value": 107
+              },
+              "ArmorPart_RFoot": {
+                "type": "byte",
+                "value": 247
+              },
+              "ArmorPart_RHand": {
+                "type": "byte",
+                "value": 3
+              },
+              "ArmorPart_Robe": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_RShin": {
+                "type": "byte",
+                "value": 153
+              },
+              "ArmorPart_RShoul": {
+                "type": "byte",
+                "value": 0
+              },
+              "ArmorPart_RThigh": {
+                "type": "byte",
+                "value": 105
+              },
+              "ArmorPart_Torso": {
+                "type": "byte",
+                "value": 189
+              },
+              "BaseItem": {
+                "type": "int",
+                "value": 16
+              },
+              "Charges": {
+                "type": "byte",
+                "value": 0
+              },
+              "Cloth1Color": {
+                "type": "byte",
+                "value": 107
+              },
+              "Cloth2Color": {
+                "type": "byte",
+                "value": 107
+              },
+              "Cost": {
+                "type": "dword",
+                "value": 1
+              },
+              "Cursed": {
+                "type": "byte",
+                "value": 0
+              },
+              "DescIdentified": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "This appears to be the uniform of a Czerka Corporation employee."
+                }
+              },
+              "Description": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": ""
+                }
+              },
+              "Identified": {
+                "type": "byte",
+                "value": 1
+              },
+              "Leather1Color": {
+                "type": "byte",
+                "value": 111
+              },
+              "Leather2Color": {
+                "type": "byte",
+                "value": 127
+              },
+              "LocalizedName": {
+                "type": "cexolocstring",
+                "value": {
+                  "0": "Czerka Uniform"
+                }
+              },
+              "Metal1Color": {
+                "type": "byte",
+                "value": 92
+              },
+              "Metal2Color": {
+                "type": "byte",
+                "value": 92
+              },
+              "Plot": {
+                "type": "byte",
+                "value": 0
+              },
+              "PropertiesList": {
+                "type": "list",
+                "value": []
+              },
+              "StackSize": {
+                "type": "word",
+                "value": 1
+              },
+              "Stolen": {
+                "type": "byte",
+                "value": 0
+              },
+              "Tag": {
+                "type": "cexostring",
+                "value": "CzerkaUniform"
+              },
+              "TemplateResRef": {
+                "type": "resref",
+                "value": "czerkauniform002"
+              },
+              "XOrientation": {
+                "type": "float",
+                "value": 6.43195995125091e-043
+              },
+              "XPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "YOrientation": {
+                "type": "float",
+                "value": 1.0
+              },
+              "YPosition": {
+                "type": "float",
+                "value": -1.0
+              },
+              "ZPosition": {
+                "type": "float",
+                "value": -1.0
+              }
+            }
+          ]
+        },
+        "FactionID": {
+          "type": "word",
+          "value": 2
+        },
+        "FeatList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 3
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 4
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 10
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 1089
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 28
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 258
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 32
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 106
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 45
+              }
+            },
+            {
+              "__struct_id": 1,
+              "Feat": {
+                "type": "word",
+                "value": 46
+              }
+            }
+          ]
+        },
+        "FirstName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Bank Teller"
+          }
+        },
+        "fortbonus": {
+          "type": "short",
+          "value": 0
+        },
+        "Gender": {
+          "type": "byte",
+          "value": 0
+        },
+        "GoodEvil": {
+          "type": "byte",
+          "value": 50
+        },
+        "HitPoints": {
+          "type": "short",
+          "value": 50
+        },
+        "Int": {
+          "type": "byte",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "IsImmortal": {
+          "type": "byte",
+          "value": 1
+        },
+        "IsPC": {
+          "type": "byte",
+          "value": 0
+        },
+        "LastName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "LawfulChaotic": {
+          "type": "byte",
+          "value": 50
+        },
+        "Lootable": {
+          "type": "byte",
+          "value": 0
+        },
+        "MaxHitPoints": {
+          "type": "short",
+          "value": 53
+        },
+        "NaturalAC": {
+          "type": "byte",
+          "value": 0
+        },
+        "NoPermDeath": {
+          "type": "byte",
+          "value": 0
+        },
+        "PerceptionRange": {
+          "type": "byte",
+          "value": 11
+        },
+        "Phenotype": {
+          "type": "int",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 0
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 376
+        },
+        "Race": {
+          "type": "byte",
+          "value": 6
+        },
+        "refbonus": {
+          "type": "short",
+          "value": 0
+        },
+        "ScriptAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDialogue": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptEndRound": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnBlocked": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptOnNotice": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptRested": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptSpawn": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptSpellAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "ScriptUserDefine": {
+          "type": "resref",
+          "value": ""
+        },
+        "SkillList": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            },
+            {
+              "__struct_id": 0,
+              "Rank": {
+                "type": "byte",
+                "value": 0
+              }
+            }
+          ]
+        },
+        "SoundSetFile": {
+          "type": "word",
+          "value": 905
+        },
+        "SpecAbilityList": {
+          "type": "list",
+          "value": []
+        },
+        "StartingPackage": {
+          "type": "byte",
+          "value": 4
+        },
+        "Str": {
+          "type": "byte",
+          "value": 16
+        },
+        "Subrace": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "BankTeller"
+        },
+        "Tail_New": {
+          "type": "dword",
+          "value": 0
+        },
+        "TemplateList": {
+          "type": "list",
+          "value": []
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "bankemployee"
+        },
+        "WalkRate": {
+          "type": "int",
+          "value": 7
+        },
+        "willbonus": {
+          "type": "short",
+          "value": 0
+        },
+        "Wings_New": {
+          "type": "dword",
+          "value": 0
+        },
+        "Wis": {
+          "type": "byte",
+          "value": 10
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.02454144880175591
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 53.81595993041992
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.99969881772995
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 20.79630279541016
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -5.7220458984375e-006
+        }
       }
     ]
   },
@@ -163267,435 +164123,6 @@
         "LocalizedName": {
           "type": "cexolocstring",
           "value": {
-            "0": "Creature Spawn (Edit Variables)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "creature_spawn"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "creature_spawn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 120.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            }
-          ]
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 96.516845703125
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 94.79746246337891
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -5.7220458984375e-006
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Creature Spawn (Edit Variables)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "creature_spawn"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "creature_spawn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 120.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            }
-          ]
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 93.34263610839844
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 102.0167236328125
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -5.7220458984375e-006
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Bank Teller Spawn"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "banker_spawn"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "creature_spawn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "bankemployee"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 120.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            }
-          ]
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 54.01604461669922
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": -1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 21.22533226013184
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -5.7220458984375e-006
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
             "0": "Czerka Receptionist"
           }
         },
@@ -163814,164 +164241,6 @@
         "ZPosition": {
           "type": "float",
           "value": -5.7220458984375e-006
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Creature Spawn (Edit Variables)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "creature_spawn"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "creature_spawn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "plan_imp_man"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 120.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_BEHAVIOUR"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "StandardBehaviour"
-              }
-            }
-          ]
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 2.661545840965118e-005
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 19.95000076293945
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": -1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 123.2200012207031
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
         }
       },
       {
@@ -164602,954 +164871,6 @@
         "__struct_id": 5,
         "Appearance": {
           "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Creature Spawn (Edit Variables)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "creature_spawn"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "creature_spawn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_NPC_GROUP_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            }
-          ]
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 38.16239166259766
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 48.52630615234375
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 1.192092895507813e-007
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Creature Spawn (Edit Variables)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "creature_spawn"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "creature_spawn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_NPC_GROUP_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            }
-          ]
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 41.5987434387207
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 51.16046142578125
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -5.7220458984375e-006
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Creature Spawn (Edit Variables)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "creature_spawn"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "creature_spawn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_NPC_GROUP_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            }
-          ]
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 32.56231689453125
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 50.12972640991211
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -1.639127731323242e-007
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Creature Spawn (Edit Variables)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "creature_spawn"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "creature_spawn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_NPC_GROUP_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            }
-          ]
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 16.62648010253906
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 41.85855102539063
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 3.576278686523438e-007
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Creature Spawn (Edit Variables)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "creature_spawn"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "creature_spawn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_NPC_GROUP_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            }
-          ]
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 38.41388702392578
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 54.11929321289063
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.0
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Creature Spawn (Edit Variables)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "creature_spawn"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "creature_spawn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": ""
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_NPC_GROUP_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            }
-          ]
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 40.80892181396484
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 45.71240234375
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -9.5367431640625e-007
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
           "value": 1
         },
         "Description": {
@@ -165676,164 +164997,6 @@
         "__struct_id": 5,
         "Appearance": {
           "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Armorsmith Guildmaster Spawn"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "creature_spawn"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "creature_spawn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "arm_guildmaster"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_NPC_GROUP_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            }
-          ]
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 79.54663848876953
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 61.37371444702148
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -5.7220458984375e-006
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
           "value": 1
         },
         "Description": {
@@ -165887,164 +165050,6 @@
         "YPosition": {
           "type": "float",
           "value": 61.43938446044922
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -5.7220458984375e-006
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Creature Spawn (Edit Variables)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "creature_spawn"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "creature_spawn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "eng_guildmaster"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_NPC_GROUP_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            }
-          ]
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 87.44051361083984
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 42.17269134521484
         },
         "ZPosition": {
           "type": "float",
@@ -166118,164 +165123,6 @@
         "__struct_id": 5,
         "Appearance": {
           "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Creature Spawn (Edit Variables)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "creature_spawn"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "creature_spawn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "wpn_guildmaster"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_NPC_GROUP_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            }
-          ]
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.3598949909210205
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 81.47920227050781
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 0.9329928159713745
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 42.91619873046875
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 7.748603820800781e-006
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
           "value": 1
         },
         "Description": {
@@ -166333,164 +165180,6 @@
         "ZPosition": {
           "type": "float",
           "value": 1.9073486328125e-006
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Creature Spawn (Edit Variables)"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "creature_spawn"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "creature_spawn"
-        },
-        "VarTable": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TYPE"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_TABLE_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESREF"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "hunter_guildmast"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_RESPAWN_SECONDS"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 2
-              },
-              "Value": {
-                "type": "float",
-                "value": 500.0
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "IS_SPAWN"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 1
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SPAWN_NPC_GROUP_ID"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 1
-              },
-              "Value": {
-                "type": "int",
-                "value": 0
-              }
-            }
-          ]
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -0.449619472026825
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 99.71372222900391
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": -0.8932201862335205
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 106.124267578125
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -1.788139343261719e-007
         }
       },
       {

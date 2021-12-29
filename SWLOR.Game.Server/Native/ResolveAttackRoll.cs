@@ -3,12 +3,16 @@ using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
 using AttackType = SWLOR.Game.Server.Enumeration.AttackType;
 using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 using FeatType = SWLOR.Game.Server.Core.NWScript.Enum.FeatType;
+using ImmunityType = NWN.Native.API.ImmunityType;
+using InventorySlot = NWN.Native.API.InventorySlot;
 using ItemPropertyType = SWLOR.Game.Server.Core.NWScript.Enum.Item.ItemPropertyType;
+using ObjectType = NWN.Native.API.ObjectType;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -84,7 +88,7 @@ namespace SWLOR.Game.Server.Native
             // - Check for an override variable on the creature.  If set, remove it and use that value.  This is 
             //   to allow abilities to specify the type of attack roll they make. 
             // - If no override, check the weapon used to make the attack (main or offhand).
-            // - Check the weapon for an override variable.  If it exists, use it (but don't remove it). 
+            // - Check the weapon for an override property.  If it exists, use it (but don't remove it). 
             // - Else, pick Melee (Might) for melee weapons and Ranged (Perception) for ranged weapons.
             // - Spirit (Willpower) attacks can only be selected by variable.
             var attackType = (uint)AttackType.Melee; // Default to melee.
@@ -97,27 +101,8 @@ namespace SWLOR.Game.Server.Native
                 attackType = (uint) attackOverride;
                 attacker.m_ScriptVars.DestroyInt(new CExoString("ATTACK_TYPE_OVERRIDE"));
             }
-            else
-            {
-                // Get a reference to the weapon being used.
-                weapon = pCombatRound.GetCurrentAttackWeapon();
 
-                // If no weapon, use default attack type (Might).  Otherwise, look further.
-                if (weapon != null)
-                {
-                    attackOverride = weapon.m_ScriptVars.GetInt(new CExoString("ATTACK_TYPE_OVERRIDE"));
-
-                    if (attackOverride != 0 & attackOverride < 4)
-                    {
-                        attackType = (uint)attackOverride;
-                    }
-                    else if (pAttackData.m_bRangedAttack == 1 && attacker.GetRangeWeaponEquipped() == 1)
-                    {
-                        attackType = (uint) AttackType.Ranged;
-                    }
-                }
-            }
-
+            weapon = pCombatRound.GetCurrentAttackWeapon();
             Log.Write(LogGroup.Attack, "Selected attack type " + attackType + ", weapon " + (weapon == null ? "none":weapon.GetFirstName().GetSimple(0)) );
 
             // We now have our attack type defined.  Pull the relevant attributes, defaulting to melee.
@@ -154,6 +139,43 @@ namespace SWLOR.Game.Server.Native
                 Log.Write(LogGroup.Attack, "Finesse attack");
                 attackAttribute = attackerStats.m_nDexterityModifier;
                 defendAttribute = defenderStats.m_nDexterityModifier;
+            }
+
+            // Check for an override on the weapon itself.
+            // If no weapon, use default attack type (Might).  Otherwise, look further.
+            if (weapon != null)
+            {
+                // Iterate over properties and look for a Primary Stat property.
+                for (var index = 0; index < weapon.m_lstPassiveProperties.Count; index++)
+                {
+                    var ip = weapon.GetPassiveProperty(index);
+                    if (ip != null && ip.m_nPropertyName == (ushort)ItemPropertyType.PrimaryStat)
+                    {
+                        switch (ip.m_nSubType)
+                        {
+                            case (ushort) AbilityType.Might:
+                                attackAttribute = attackerStats.m_nStrengthModifier;
+                                defendAttribute = defenderStats.m_nStrengthModifier;
+                                break;
+                            case (ushort)AbilityType.Perception:
+                                attackAttribute = attackerStats.m_nDexterityModifier;
+                                defendAttribute = defenderStats.m_nDexterityModifier;
+                                break;
+                            case (ushort)AbilityType.Willpower:
+                                attackAttribute = attackerStats.m_nWisdomModifier;
+                                defendAttribute = defenderStats.m_nWisdomModifier;
+                                break;
+                            case (ushort)AbilityType.Vitality:
+                                attackAttribute = attackerStats.m_nConstitutionModifier;
+                                defendAttribute = defenderStats.m_nConstitutionModifier;
+                                break;
+                            case (ushort)AbilityType.Social: // Well it could happen, I suppose.
+                                attackAttribute = attackerStats.m_nCharismaModifier;
+                                defendAttribute = defenderStats.m_nCharismaModifier;
+                                break;
+                        }
+                    }
+                }
             }
 
             // Check for negative modifiers.  A modifier of -2 is represented as 254.

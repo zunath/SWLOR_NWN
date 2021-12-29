@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 11.0
+    "value": 10.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 18
+    "value": 30
   },
   "Conversation": {
     "type": "resref",
@@ -63,12 +63,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Giant slugs roam this landscape.  Their usual mode of attack is to try to engulf nearby creatures in heavy layers of slime until they lose the will to keep fighting."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 32
+    "value": 10
   },
   "Disarmable": {
     "type": "byte",
@@ -104,35 +104,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 656
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 41
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 42
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 103
+          "value": 291
         }
       },
       {
@@ -205,11 +177,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 190
+    "value": 244
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 9
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -586,7 +558,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 20
+    "value": 18
   },
   "Subrace": {
     "type": "cexostring",
@@ -657,6 +629,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 24
+    "value": 20
   }
 }

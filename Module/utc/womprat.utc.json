@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 40
+    "value": 26
   },
   "Disarmable": {
     "type": "byte",
@@ -88,7 +88,7 @@
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "nw_it_creitem005"
+          "value": "womprat_skin"
         }
       }
     ]
@@ -167,7 +167,7 @@
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 1
+    "value": 2
   },
   "NoPermDeath": {
     "type": "byte",
@@ -468,7 +468,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 35
+    "value": 20
   },
   "Subrace": {
     "type": "cexostring",
@@ -539,6 +539,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 18
   }
 }

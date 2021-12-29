@@ -65,11 +65,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 6
+          "value": 35
         },
         "CostValue": {
           "type": "word",
-          "value": 4
+          "value": 90
         },
         "Param1": {
           "type": "byte",
@@ -81,11 +81,42 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 22
+          "value": 94
         },
         "Subtype": {
           "type": "word",
-          "value": 14
+          "value": 2
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 35
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 90
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 1
         }
       },
       {
@@ -127,11 +158,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 5
+          "value": 43
         },
         "CostValue": {
           "type": "word",
-          "value": 70
+          "value": 45
         },
         "Param1": {
           "type": "byte",
@@ -143,11 +174,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 20
+          "value": 99
         },
         "Subtype": {
           "type": "word",
-          "value": 5
+          "value": 0
         }
       },
       {
@@ -158,11 +189,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 4
+          "value": 41
         },
         "CostValue": {
           "type": "word",
-          "value": 13
+          "value": 50
         },
         "Param1": {
           "type": "byte",
@@ -174,7 +205,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 74
+          "value": 98
         },
         "Subtype": {
           "type": "word",

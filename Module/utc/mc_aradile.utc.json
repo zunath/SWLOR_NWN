@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 9.0
+    "value": 7.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 20
+    "value": 26
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 220
+    "value": 150
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 20
+    "value": 10
   },
   "Disarmable": {
     "type": "byte",
@@ -81,7 +81,14 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "nw_it_crewps016"
+          "value": "aradile_bite"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "aradile_skin"
         }
       }
     ]
@@ -93,6 +100,13 @@
   "FeatList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1745
+        }
+      },
       {
         "__struct_id": 1,
         "Feat": {
@@ -122,7 +136,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 220
+    "value": 150
   },
   "Int": {
     "type": "byte",
@@ -156,7 +170,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 250
+    "value": 198
   },
   "NaturalAC": {
     "type": "byte",
@@ -461,7 +475,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 30
+    "value": 24
   },
   "Subrace": {
     "type": "cexostring",
@@ -532,6 +546,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 16
   }
 }

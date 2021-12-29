@@ -10,11 +10,11 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 40
+    "value": 8
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 5.0
+    "value": 4.0
   },
   "ClassList": {
     "type": "list",
@@ -83,6 +83,13 @@
           "type": "resref",
           "value": "gimp_bite"
         }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "ww_gimp_hide"
+        }
       }
     ]
   },
@@ -140,7 +147,7 @@
   },
   "Int": {
     "type": "byte",
-    "value": 40
+    "value": 18
   },
   "Interruptable": {
     "type": "byte",
@@ -577,6 +584,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 40
+    "value": 18
   }
 }

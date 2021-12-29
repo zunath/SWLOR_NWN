@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 12.0
+    "value": 9.0
   },
   "ClassList": {
     "type": "list",
@@ -78,6 +78,13 @@
     "type": "list",
     "value": [
       {
+        "__struct_id": 65536,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "hu_qutig_bite"
+        }
+      },
+      {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
@@ -97,14 +104,14 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 41
+          "value": 1745
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 103
+          "value": 291
         }
       },
       {
@@ -181,7 +188,7 @@
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 16
+    "value": 1
   },
   "NoPermDeath": {
     "type": "byte",
@@ -558,7 +565,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 60
+    "value": 22
   },
   "Subrace": {
     "type": "cexostring",
@@ -629,6 +636,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 20
+    "value": 14
   }
 }

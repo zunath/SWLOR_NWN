@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 3.0
+    "value": 2.0
   },
   "ClassList": {
     "type": "list",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 12
+    "value": 11
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 44
+    "value": 36
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 20
+    "value": 17
   },
   "Disarmable": {
     "type": "byte",
@@ -180,7 +180,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "rifle_npc"
+          "value": "b_rifle"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "ww_outlaw_skin"
         }
       }
     ]
@@ -291,7 +298,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 44
+    "value": 36
   },
   "Int": {
     "type": "byte",
@@ -325,7 +332,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 48
+    "value": 40
   },
   "NaturalAC": {
     "type": "byte",

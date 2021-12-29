@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 101
+    "value": 1850
   },
   "BodyBag": {
     "type": "byte",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 12
+    "value": 16
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 204
+    "value": 198
   },
   "DecayTime": {
     "type": "dword",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 16
+    "value": 10
   },
   "Disarmable": {
     "type": "byte",
@@ -82,6 +82,13 @@
         "EquippedRes": {
           "type": "resref",
           "value": "vellen_claw"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "flesheater_skin"
         }
       }
     ]
@@ -129,11 +136,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 204
+    "value": 198
   },
   "Int": {
     "type": "byte",
-    "value": 8
+    "value": 9
   },
   "Interruptable": {
     "type": "byte",
@@ -163,7 +170,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 212
+    "value": 222
   },
   "NaturalAC": {
     "type": "byte",
@@ -191,7 +198,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 188
+    "value": 3350
   },
   "Race": {
     "type": "byte",
@@ -514,7 +521,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 30
+    "value": 18
   },
   "Subrace": {
     "type": "cexostring",
@@ -585,6 +592,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 3
+    "value": 18
   }
 }

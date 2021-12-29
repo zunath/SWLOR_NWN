@@ -86,7 +86,7 @@
   },
   "Cha": {
     "type": "byte",
-    "value": 20
+    "value": 16
   },
   "ChallengeRating": {
     "type": "float",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 26
+    "value": 20
   },
   "Conversation": {
     "type": "resref",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 32
+    "value": 22
   },
   "Disarmable": {
     "type": "byte",
@@ -174,6 +174,20 @@
         "EquippedRes": {
           "type": "resref",
           "value": "npc_ecot_3"
+        }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "del_rifle"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "ecoter_hide"
         }
       }
     ]
@@ -217,6 +231,20 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1347
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1348
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 332
         }
       },
@@ -231,34 +259,6 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 543
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 563
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 553
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 573
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
           "value": 26
         }
       },
@@ -266,7 +266,28 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 345
+          "value": 1341
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1336
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1337
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1338
         }
       },
       {
@@ -339,11 +360,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 136
+    "value": 106
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -715,6 +736,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 20
+    "value": 18
   }
 }

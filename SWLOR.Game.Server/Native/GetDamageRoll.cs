@@ -141,7 +141,11 @@ namespace SWLOR.Game.Server.Native
 
             if (attackType == (uint) AttackType.Ranged)
             {
-                attackAttribute = weapon == null ? 0 : (int)(dmg / 4);
+                // Throwing weapons should add Strength.  Other ranged types are based on weapon base damage rating. 
+                if (weapon != null && !Item.ThrowingWeaponBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+                {
+                    attackAttribute = weapon == null ? 0 : (int)(dmg / 3);
+                }
             }
             else if (attackType == (uint) AttackType.Spirit)
             {

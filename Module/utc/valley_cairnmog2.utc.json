@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 12
+    "value": 18
   },
   "Conversation": {
     "type": "resref",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 16
+    "value": 12
   },
   "Disarmable": {
     "type": "byte",
@@ -88,7 +88,7 @@
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "v_cairnmog_prop"
+          "value": "v_cairnmoga_prop"
         }
       }
     ]
@@ -100,6 +100,13 @@
   "FeatList": {
     "type": "list",
     "value": [
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1745
+        }
+      },
       {
         "__struct_id": 1,
         "Feat": {
@@ -170,7 +177,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 185
+    "value": 200
   },
   "NaturalAC": {
     "type": "byte",
@@ -506,7 +513,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 24
+    "value": 18
   },
   "Subrace": {
     "type": "cexostring",
@@ -577,6 +584,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 9
+    "value": 10
   }
 }

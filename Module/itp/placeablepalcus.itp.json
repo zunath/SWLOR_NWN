@@ -67583,11 +67583,33 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Ancient Tree"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ancient_tree"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Apartment Terminal"
                     },
                     "RESREF": {
                       "type": "resref",
                       "value": "apartment_term"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Aracia Tree"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aracia_tree"
                     }
                   },
                   {
@@ -68001,6 +68023,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hyphae Tree"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hyphae_tree"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Idailia Asteroid"
                     },
                     "RESREF": {
@@ -68127,6 +68160,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "mkt_mon_term"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Oak Tree"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "oak_tree"
                     }
                   },
                   {

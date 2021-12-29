@@ -17314,7 +17314,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "AUTO_EXPLORED"
+          "value": "MAP_KEY_ITEM_ID"
         },
         "Type": {
           "type": "dword",
@@ -17322,7 +17322,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 1
+          "value": 23
         }
       }
     ]

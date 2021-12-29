@@ -105,17 +105,17 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         [KeyItem(KeyItemCategoryType.Maps, "Viscara - Wildlands Map", true, "Map of the Wildlands.")]
         WildlandsMap = 47,
         [KeyItem(KeyItemCategoryType.Maps, "Viscara - Mandalorian Facility Map", true, "Map of the Mandalorian Facility.")]
-        MandalorianFacilityMap = 47,
+        MandalorianFacilityMap = 48,
         [KeyItem(KeyItemCategoryType.Maps, "Viscara - Mountain Valley Map", true, "Map of the Mountain Valley.")]
-        MountainValleyMap = 48,
+        MountainValleyMap = 49,
         [KeyItem(KeyItemCategoryType.Maps, "Viscara - Republic Base Map", true, "Map of the Viscara Republic Base.")]
-        ViscaraRepublicBaseMap = 49,
+        ViscaraRepublicBaseMap = 50,
         [KeyItem(KeyItemCategoryType.Maps, "Viscara - Sith Lake Outpost Map", true, "Map of the Viscara Sith Lake Outpost.")]
-        SithLakeOutpostMap = 50,
+        SithLakeOutpostMap = 51,
         [KeyItem(KeyItemCategoryType.Maps, "Viscara - Sewers Map", true, "Map of the Viscara Sewers.")]
-        ViscaraSewersMap = 51,
+        ViscaraSewersMap = 52,
         [KeyItem(KeyItemCategoryType.Maps, "Viscara - Wildwoods Map", true, "Map of the Wildwoods.")]
-        WildwoodsMap = 52,
+        WildwoodsMap = 53,
     }
 
     public class KeyItemAttribute : Attribute

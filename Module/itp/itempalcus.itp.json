@@ -12552,6 +12552,363 @@
                 "type": "byte",
                 "value": 26
               },
+              "LIST": {
+                "type": "list",
+                "value": [
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "CZ-220 - Maintenance Level Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_22"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "CZ-220 - Offices & Labs Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_023"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar - Outpost Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_024"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar - Qion Tundra Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_025"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar - Qion Valley Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_026"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Hutlar Orbit Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_031"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala - Coral Isles Facility Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_027"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala - Coral Isles Inner Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_028"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala - Coral Isles Outer Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_029"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala - The 'Elite' Hotel Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_030"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mon Cala Orbit Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_032"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine - Anchorhead Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_035"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine - Desert Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_036"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine - Mos Esper Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_037"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine - Tusken Raider Camp Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_038"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Tatooine Orbit Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_033"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Cavern Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_039"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Coxxion Base Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_041"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Deep Mountains Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_042"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Deepwoods Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_043"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Druzer Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_044"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Jedi Temple Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_046"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Mandalorian Facility Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_048"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Mountain Valley Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_049"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Republic Base Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_050"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Sewers Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_052"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Sith Lake Outpost Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_051"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Swamplands Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_045"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Veles Colony Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_040"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Wildlands Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_047"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara - Wildwoods Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_053"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Viscara Orbit Map"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "map_034"
+                    }
+                  }
+                ]
+              },
               "STRREF": {
                 "type": "dword",
                 "value": 6754

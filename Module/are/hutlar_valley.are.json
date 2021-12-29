@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Hutlar - Valley"
+      "0": "Hutlar - Qion Valley"
     }
   },
   "NoRest": {
@@ -44193,7 +44193,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 8
+    "value": 10
   },
   "Width": {
     "type": "int",

@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 8.0
+    "value": 9.0
   },
   "ClassList": {
     "type": "list",
@@ -87,7 +87,15 @@
   },
   "Equip_ItemList": {
     "type": "list",
-    "value": []
+    "value": [
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "fleshleader_ls"
+        }
+      }
+    ]
   },
   "FactionID": {
     "type": "word",
@@ -121,7 +129,35 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 23
+          "value": 1165
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1160
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1161
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1171
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1172
         }
       },
       {
@@ -552,7 +588,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 30
+    "value": 24
   },
   "Subrace": {
     "type": "cexostring",
@@ -638,6 +674,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 3
+    "value": 20
   }
 }

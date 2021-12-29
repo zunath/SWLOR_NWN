@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 13
+    "value": 14
   },
   "Conversation": {
     "type": "resref",
@@ -66,7 +66,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 10
+    "value": 14
   },
   "Disarmable": {
     "type": "byte",
@@ -80,6 +80,13 @@
         "EquippedRes": {
           "type": "resref",
           "value": "raptorbite"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "v_raptor_skin"
         }
       }
     ]
@@ -95,6 +102,13 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1745
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 196
         }
       },
@@ -103,13 +117,6 @@
         "Feat": {
           "type": "word",
           "value": 332
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 347
         }
       },
       {
@@ -189,7 +196,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 310
+    "value": 320
   },
   "NaturalAC": {
     "type": "byte",
@@ -494,7 +501,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 50
+    "value": 24
   },
   "Subrace": {
     "type": "cexostring",
@@ -530,6 +537,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 11
+    "value": 14
   }
 }

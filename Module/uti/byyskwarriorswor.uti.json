@@ -73,11 +73,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 2
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 10
+          "value": 16
         },
         "Param1": {
           "type": "byte",
@@ -89,11 +89,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 56
+          "value": 93
         },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 1
         }
       },
       {

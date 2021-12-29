@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 18
+    "value": 17
   },
   "Conversation": {
     "type": "resref",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 22
+    "value": 21
   },
   "Disarmable": {
     "type": "byte",
@@ -187,7 +187,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "npc_man_rifle"
+          "value": "tit_rifle"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "mando_rgr_skin"
         }
       }
     ]
@@ -224,6 +231,13 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1347
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 10
         }
       },
@@ -246,6 +260,20 @@
         "Feat": {
           "type": "word",
           "value": 258
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1336
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1337
         }
       },
       {

@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 4.0
+    "value": 5.0
   },
   "ClassList": {
     "type": "list",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 24
+    "value": 19
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 100
+    "value": 120
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 18
+    "value": 15
   },
   "Disarmable": {
     "type": "byte",
@@ -181,6 +181,20 @@
         "EquippedRes": {
           "type": "resref",
           "value": "man_armor_npc"
+        }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "tit_longsword"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "mando_war_skin"
         }
       }
     ]
@@ -245,7 +259,28 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1137
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 32
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1126
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1127
         }
       },
       {
@@ -291,7 +326,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 100
+    "value": 120
   },
   "Int": {
     "type": "byte",
@@ -325,7 +360,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 107
+    "value": 125
   },
   "NaturalAC": {
     "type": "byte",
@@ -646,7 +681,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 22
+    "value": 20
   },
   "Subrace": {
     "type": "cexostring",

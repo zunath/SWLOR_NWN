@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 24
+    "value": 19
   },
   "Conversation": {
     "type": "resref",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 20
+    "value": 17
   },
   "Disarmable": {
     "type": "byte",
@@ -181,6 +181,20 @@
         "EquippedRes": {
           "type": "resref",
           "value": "man_armor_npc"
+        }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "tit_longsword"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "mando_war_skin"
         }
       }
     ]
@@ -224,6 +238,13 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1134
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 1089
         }
       },
@@ -246,6 +267,20 @@
         "Feat": {
           "type": "word",
           "value": 32
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1126
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1127
         }
       },
       {
@@ -325,7 +360,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 135
+    "value": 125
   },
   "NaturalAC": {
     "type": "byte",
@@ -646,7 +681,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 22
+    "value": 18
   },
   "Subrace": {
     "type": "cexostring",

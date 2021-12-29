@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 16.0
+    "value": 12.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 11
+    "value": 20
   },
   "Conversation": {
     "type": "resref",
@@ -82,6 +82,13 @@
         "EquippedRes": {
           "type": "resref",
           "value": "sandbeetlebite"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "sandbtl_skin"
         }
       }
     ]
@@ -226,11 +233,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 520
+    "value": 595
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 25
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -238,7 +245,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 10
+    "value": 154
   },
   "PerceptionRange": {
     "type": "byte",
@@ -547,7 +554,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 70
+    "value": 30
   },
   "Subrace": {
     "type": "cexostring",

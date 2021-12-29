@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 16
+    "value": 18
   },
   "Disarmable": {
     "type": "byte",
@@ -174,7 +174,7 @@
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 3
+    "value": 1
   },
   "NoPermDeath": {
     "type": "byte",
@@ -491,7 +491,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 20
+    "value": 14
   },
   "Subrace": {
     "type": "cexostring",

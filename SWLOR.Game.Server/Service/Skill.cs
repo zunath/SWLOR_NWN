@@ -141,11 +141,11 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            Apply(10, 6);
-            Apply(20, 6);
-            Apply(30, 6);
-            Apply(40, 6);
-            Apply(50, 6);
+            Apply(10, 8);
+            Apply(20, 8);
+            Apply(30, 8);
+            Apply(40, 8);
+            Apply(50, 8);
         }
 
         /// <summary>

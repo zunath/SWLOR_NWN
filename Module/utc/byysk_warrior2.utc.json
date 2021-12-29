@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 11.0
+    "value": 10.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 22
+    "value": 20
   },
   "Conversation": {
     "type": "resref",
@@ -63,12 +63,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Fiercely territorial, the Byysk tribal peoples tend to keep to themselves... but react poorly to intruders."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 20
+    "value": 26
   },
   "Disarmable": {
     "type": "byte",
@@ -78,17 +78,17 @@
     "type": "list",
     "value": [
       {
-        "__struct_id": 16384,
+        "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "nw_it_crewpsp015"
+          "value": "proto_pistol"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "mc_amphihy_hide"
+          "value": "hu_byysk_hide"
         }
       }
     ]
@@ -111,21 +111,70 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 72
+          "value": 1296
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 954
+          "value": 1297
         }
       },
       {
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 73
+          "value": 1284
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1290
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1285
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1286
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1287
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1288
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1293
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1294
         }
       },
       {
@@ -139,7 +188,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 103
+          "value": 1282
         }
       },
       {
@@ -212,11 +261,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 176
+    "value": 167
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 10
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -593,7 +642,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 30
+    "value": 16
   },
   "Subrace": {
     "type": "cexostring",
@@ -664,6 +713,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 11
+    "value": 18
   }
 }

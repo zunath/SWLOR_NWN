@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 12
+    "value": 13
   },
   "Conversation": {
     "type": "resref",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 20
+    "value": 17
   },
   "Disarmable": {
     "type": "byte",
@@ -180,7 +180,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "rifle_npc"
+          "value": "b_pistol"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "ww_outlaw_skin"
         }
       }
     ]
@@ -325,7 +332,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 47
+    "value": 51
   },
   "NaturalAC": {
     "type": "byte",

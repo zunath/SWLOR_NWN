@@ -13,6 +13,7 @@ using BaseItem = SWLOR.Game.Server.Core.NWScript.Enum.Item.BaseItem;
 using EquipmentSlot = NWN.Native.API.EquipmentSlot;
 using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
 using ObjectType = NWN.Native.API.ObjectType;
+using RacialType = SWLOR.Game.Server.Core.NWScript.Enum.RacialType;
 using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Native
@@ -108,6 +109,7 @@ namespace SWLOR.Game.Server.Native
             var dmg = 0f;
             var damage = 0;
             var specializationDMGBonus = 0f;
+            var damageType = -1;
 
             // Calculate attacker's base DMG
             if (attacker != null)
@@ -122,7 +124,7 @@ namespace SWLOR.Game.Server.Native
 
                 if (weapon != null)
                 {
-                    // Iterate over properties and take the highest DMG rating.
+                    // Iterate over properties and take the highest DMG rating.  Also save the damage type.
                     for (var index = 0; index < weapon.m_lstPassiveProperties.Count; index++)
                     {
                         var ip = weapon.GetPassiveProperty(index);
@@ -131,6 +133,7 @@ namespace SWLOR.Game.Server.Native
                             if (ip.m_nCostTableValue > dmg)
                             {
                                 dmg = Combat.GetDMGValueFromItemPropertyCostTableValue(ip.m_nCostTableValue);
+                                damageType = ip.m_nSubType;
                             }
                         }
                     }
@@ -141,7 +144,11 @@ namespace SWLOR.Game.Server.Native
 
             if (attackType == (uint) AttackType.Ranged)
             {
-                attackAttribute = weapon == null ? 0 : (int)(dmg / 4);
+                // Throwing weapons should add Strength.  Other ranged types are based on weapon base damage rating. 
+                if (weapon != null && !Item.ThrowingWeaponBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
+                {
+                    attackAttribute = weapon == null ? 0 : (int)(dmg / 3);
+                }
             }
             else if (attackType == (uint) AttackType.Spirit)
             {
@@ -151,7 +158,7 @@ namespace SWLOR.Game.Server.Native
             // Attributes are stored as a byte (uint) - values over 128 are meant to be negative.
             if (attackAttribute > 128) attackAttribute -= 256;
 
-            Log.Write(LogGroup.Attack, "DAMAGE: attacker attribute modifier: " + attackAttribute.ToString());
+            Log.Write(LogGroup.Attack, "DAMAGE: attacker attribute modifier: " + attackAttribute.ToString() + ", damage type " + damageType);
 
             // Add in the specialization damage bonus now.  We don't want to count this for the ranged weapon
             // attack attribute, so it can't happen earlier.
@@ -205,11 +212,24 @@ namespace SWLOR.Game.Server.Native
                 var target = CNWSCreature.FromPointer(pTarget);
                 var damagePower = attackerStats.m_pBaseCreature.CalculateDamagePower(target, bOffHand);
                 float vitality = target.m_pStats.m_nConstitutionModifier;
-                var defense = Stat.GetDefenseNative(target, attackType == (uint) AttackType.Spirit ? CombatDamageType.Force : CombatDamageType.Physical);
+                
+                // 0 is invalid.  Old items (not updated with the new stat) may return this value. 
+                if (damageType == -1 || damageType == 0)
+                {
+                    damageType = (int)(attackType == (uint)AttackType.Spirit ? CombatDamageType.Force : CombatDamageType.Physical);
+                }
 
-                Log.Write(LogGroup.Attack, "DAMAGE: attacker damage attribute: " + dmg.ToString() + " defender defense attribute: " + defense.ToString());
+                var defense = Stat.GetDefenseNative(target, (CombatDamageType) damageType);
+
+                Log.Write(LogGroup.Attack, "DAMAGE: attacker damage attribute: " + dmg.ToString() + " defender defense attribute: " + defense.ToString() + ", defender racial type " + target.m_nPrePolymorphRacialType);
                 damage = Combat.CalculateDamage(dmg, attackAttribute, defense, vitality, critical) ;
                                 
+                // Apply droid bonus for electrical damage.
+                if (target.m_pStats.m_nRace == (ushort) RacialType.Robot && damageType == (ushort)CombatDamageType.Electrical)
+                {
+                    damage *= 2;
+                }
+
                 // Apply NWN mechanics to damage reduction
                 damage = target.DoDamageImmunity(attacker, damage, damageFlags, 0, 1);
                 damage = target.DoDamageResistance(attacker, damage, damageFlags, 0, 1, 1);

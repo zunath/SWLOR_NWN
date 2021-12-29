@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 16
+    "value": 22
   },
   "Conversation": {
     "type": "resref",
@@ -155,12 +155,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "This man has been chosen out of a large clan of rogue Mandalorians to lead them as their own de-facto Mandalore.. He is well armed, confident, and incredible lethal with his blade."
+      "0": "This man has been chosen out of a large clan of rogue Mandalorians to lead them as their own de-facto Mandalore.. He is well armed, confident, and incredibly lethal with his twin blades."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 12
+    "value": 13
   },
   "Disarmable": {
     "type": "byte",
@@ -181,6 +181,20 @@
         "EquippedRes": {
           "type": "resref",
           "value": "man_larmor_npc"
+        }
+      },
+      {
+        "__struct_id": 16,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "tit_twinblade"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "mando_hero_skin"
         }
       }
     ]
@@ -217,7 +231,21 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1222
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 10
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1219
         }
       },
       {
@@ -252,7 +280,35 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 106
+          "value": 1216
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1211
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1212
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1208
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 44
         }
       },
       {
@@ -267,6 +323,13 @@
         "Feat": {
           "type": "word",
           "value": 46
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1209
         }
       }
     ]
@@ -325,11 +388,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 300
+    "value": 303
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 7
+    "value": 1
   },
   "NoPermDeath": {
     "type": "byte",
@@ -706,7 +769,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 30
+    "value": 22
   },
   "Subrace": {
     "type": "cexostring",
@@ -792,6 +855,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 12
   }
 }

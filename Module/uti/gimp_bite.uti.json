@@ -36,7 +36,7 @@
   },
   "Identified": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "LocalizedName": {
     "type": "cexolocstring",
@@ -67,11 +67,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 19
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 5
+          "value": 3
         },
         "Param1": {
           "type": "byte",
@@ -83,11 +83,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 77
+          "value": 93
         },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 1
         }
       }
     ]

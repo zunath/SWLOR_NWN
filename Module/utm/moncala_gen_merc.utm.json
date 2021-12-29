@@ -1834,7 +1834,7 @@
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 15
+                "value": 14
               }
             },
             {
@@ -1849,11 +1849,11 @@
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 0
+                "value": 2
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 20
+                "value": 16
               }
             },
             {
@@ -1868,11 +1868,11 @@
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 2
+                "value": 3
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 17
+                "value": 16
               }
             },
             {
@@ -1887,7 +1887,7 @@
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 1
+                "value": 0
               },
               "Repos_Posy": {
                 "type": "word",
@@ -2401,6 +2401,44 @@
               "Repos_PosX": {
                 "type": "word",
                 "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 8,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "map_030"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 2
+              }
+            },
+            {
+              "__struct_id": 9,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "map_032"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 6
               },
               "Repos_Posy": {
                 "type": "word",

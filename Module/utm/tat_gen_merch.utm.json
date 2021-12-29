@@ -3487,7 +3487,7 @@
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 45
+                "value": 44
               }
             },
             {
@@ -3506,7 +3506,7 @@
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 45
+                "value": 44
               }
             },
             {
@@ -3525,7 +3525,7 @@
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 45
+                "value": 44
               }
             },
             {
@@ -3544,7 +3544,7 @@
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 45
+                "value": 44
               }
             },
             {
@@ -3563,7 +3563,7 @@
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 45
+                "value": 44
               }
             }
           ]
@@ -4343,6 +4343,63 @@
               "Repos_Posy": {
                 "type": "word",
                 "value": 2
+              }
+            },
+            {
+              "__struct_id": 10,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "map_035"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 2
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 3
+              }
+            },
+            {
+              "__struct_id": 11,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "map_033"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 3
+              }
+            },
+            {
+              "__struct_id": 12,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "map_037"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 6
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 3
               }
             }
           ]

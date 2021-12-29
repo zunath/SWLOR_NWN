@@ -88,6 +88,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 foreach (var objective in state.GetObjectives())
                 {
                     sb.Append(objective.GetCurrentStateText(Player, questDetail.QuestId));
+                    sb.Append("\n");
                 }
             }
 

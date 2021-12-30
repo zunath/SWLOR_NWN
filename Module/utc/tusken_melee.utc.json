@@ -801,11 +801,11 @@
         },
         "Type": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Value": {
-          "type": "int",
-          "value": 106
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_RAIDER,40,2"
         }
       },
       {
@@ -821,6 +821,21 @@
         "Value": {
           "type": "int",
           "value": 27
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_ID_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "TATOOINE_TUSKEN_RAIDER_RARES,5,1"
         }
       }
     ]

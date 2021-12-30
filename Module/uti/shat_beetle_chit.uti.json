@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 50
+    "value": 40
   },
   "BaseItem": {
     "type": "int",
-    "value": 24
+    "value": 29
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 50
+    "value": 40
   },
   "Cursed": {
     "type": "byte",
@@ -41,12 +41,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sandswimmer Leg"
+      "0": "Shattered Beetle Chitin"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 97
+    "value": 86
   },
   "PaletteID": {
     "type": "byte",
@@ -71,7 +71,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 6
+          "value": 2
         },
         "Param1": {
           "type": "byte",
@@ -87,7 +87,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 10
+          "value": 1
         }
       },
       {
@@ -133,7 +133,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 40
+          "value": 50
         },
         "Param1": {
           "type": "byte",
@@ -164,10 +164,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SandswimmerLeg"
+    "value": "shat_beetle_chit"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "sandswimmerleg"
+    "value": "shat_beetle_chit"
   }
 }

@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 50
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 24
+    "value": 310
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 50
+    "value": 4
   },
   "Cursed": {
     "type": "byte",
@@ -41,16 +41,24 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sandswimmer Leg"
+      "0": "Raider Katar"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 97
+    "value": 43
+  },
+  "ModelPart2": {
+    "type": "byte",
+    "value": 41
+  },
+  "ModelPart3": {
+    "type": "byte",
+    "value": 41
   },
   "PaletteID": {
     "type": "byte",
-    "value": 64
+    "value": 37
   },
   "Plot": {
     "type": "byte",
@@ -67,11 +75,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 45
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 6
+          "value": 16
         },
         "Param1": {
           "type": "byte",
@@ -83,11 +91,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 101
+          "value": 93
         },
         "Subtype": {
           "type": "word",
-          "value": 10
+          "value": 1
         }
       },
       {
@@ -98,11 +106,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 45
+          "value": 33
         },
         "CostValue": {
           "type": "word",
-          "value": 35
+          "value": 4
         },
         "Param1": {
           "type": "byte",
@@ -114,42 +122,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 104
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
           "value": 100
         },
-        "CostTable": {
-          "type": "byte",
-          "value": 44
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 40
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 95
-        },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 56
         }
       }
     ]
@@ -164,10 +141,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SandswimmerLeg"
+    "value": "raider_katar"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "sandswimmerleg"
+    "value": "raider_katar"
   }
 }

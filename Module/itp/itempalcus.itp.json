@@ -8382,6 +8382,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Beetle Chitin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "beetle_chitin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Blue Coonlank"
                     },
                     "RESREF": {
@@ -11566,6 +11577,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shaft"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Shattered Beetle Chitin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "shat_beetle_chit"
                     }
                   },
                   {
@@ -18114,6 +18136,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Raider Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "raider_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Ro Solus's Knife"
                           },
                           "RESREF": {
@@ -18344,6 +18377,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "proto_greatsword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Raider Great Sword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "raider_gswd"
                           }
                         },
                         {
@@ -18597,6 +18641,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Raider Longsword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "raider_longsword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Ryyk Blade"
                           },
                           "RESREF": {
@@ -18783,6 +18838,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "proto_katar"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Raider Katar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "raider_katar"
                           }
                         },
                         {
@@ -19274,6 +19340,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Raider Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "raider_staff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Raider Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "raider_twinblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Saberstaff"
                     },
                     "RESREF": {
@@ -19614,6 +19702,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "proto_spear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Raider Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "raider_spear"
                     }
                   },
                   {
@@ -20074,6 +20173,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Raider Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "raider_pistol"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Republic Standard Issue Blaster Pistol"
                           },
                           "RESREF": {
@@ -20271,6 +20381,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "proto_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Raider Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "raider_rifle"
                           }
                         },
                         {
@@ -20954,6 +21075,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "proto_shuriken"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Raider Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "raider_shuriken"
                     }
                   },
                   {

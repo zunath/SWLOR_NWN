@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 50
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 24
+    "value": 1
   },
   "Charges": {
     "type": "byte",
@@ -14,11 +14,11 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": ""
+    "value": "1"
   },
   "Cost": {
     "type": "dword",
-    "value": 50
+    "value": 30
   },
   "Cursed": {
     "type": "byte",
@@ -39,18 +39,27 @@
     "value": 1
   },
   "LocalizedName": {
+    "id": 166,
     "type": "cexolocstring",
     "value": {
-      "0": "Sandswimmer Leg"
+      "0": "Raider Longsword"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 97
+    "value": 91
+  },
+  "ModelPart2": {
+    "type": "byte",
+    "value": 51
+  },
+  "ModelPart3": {
+    "type": "byte",
+    "value": 15
   },
   "PaletteID": {
     "type": "byte",
-    "value": 64
+    "value": 36
   },
   "Plot": {
     "type": "byte",
@@ -67,89 +76,58 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 45
+          "value": 34
         },
         "CostValue": {
+          "type": "word",
+          "value": 16
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 93
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 33
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 4
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 100
+        },
+        "Subtype": {
           "type": "word",
           "value": 6
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 101
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 10
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 45
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 35
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 104
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 44
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 40
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 95
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
         }
       }
     ]
@@ -164,10 +142,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "SandswimmerLeg"
+    "value": "raider_longsword"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "sandswimmerleg"
+    "value": "raider_longsword"
   }
 }

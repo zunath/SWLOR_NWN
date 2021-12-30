@@ -10068,25 +10068,6 @@
                     "__struct_id": 0,
                     "CR": {
                       "type": "float",
-                      "value": 4.0
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Hostile"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
-                      "value": "Tusken costaud"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "ext_tusken_co002"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
                       "value": 14.0
                     },
                     "FACTION": {

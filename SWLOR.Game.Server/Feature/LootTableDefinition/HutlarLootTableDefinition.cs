@@ -59,6 +59,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("agent_cap", 5)
                 .AddItem("agent_gloves", 5)
                 .AddItem("agent_boots", 5)
+
+                .AddGold(40, 10)
                 ;
 
 

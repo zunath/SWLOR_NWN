@@ -840,6 +840,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Flesheater Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "flesh_tunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Forza Tunic"
                     },
                     "RESREF": {
@@ -862,6 +873,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Guardian Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mando_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Justina's Armor"
                     },
                     "RESREF": {
@@ -878,6 +900,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "man_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Outlaw Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "outlaw_tunic"
                     }
                   },
                   {
@@ -1263,6 +1296,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Flesheater Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "flesh_cap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Forza Cap"
                     },
                     "RESREF": {
@@ -1279,6 +1323,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "gr_cap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Guardian Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mando_helmet"
                     }
                   },
                   {
@@ -1345,6 +1400,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "pil_nulaahood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Outlaw Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "outlaw_cap"
                     }
                   },
                   {
@@ -3372,6 +3438,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "ec_shield"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Mandalorian Shield"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mando_shield"
                           }
                         },
                         {
@@ -6881,6 +6958,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Flesheater Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "flesh_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Forza Belt"
                           },
                           "RESREF": {
@@ -6897,6 +6985,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "gre_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Mandalorian Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mando_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Outlaw Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "outlaw_belt"
                           }
                         },
                         {
@@ -7062,6 +7172,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Flesheater Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "flesh_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Forza Boots"
                           },
                           "RESREF": {
@@ -7078,6 +7199,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "gr_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Guardian Leggings"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mando_leggings"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Outlaw Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "outlaw_boots"
                           }
                         },
                         {
@@ -7232,6 +7375,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Guardian Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mando_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Quark Bracer"
                           },
                           "RESREF": {
@@ -7325,6 +7479,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Flesheater Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "flesh_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Forza Cloak"
                           },
                           "RESREF": {
@@ -7363,6 +7528,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "jeweled_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Mandalorian Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mando_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Outlaw Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "outlaw_cloak"
                           }
                         },
                         {
@@ -7506,11 +7693,11 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Fist"
+                            "value": "Flesheater Gloves"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "fist"
+                            "value": "flesh_gloves"
                           }
                         },
                         {
@@ -7533,6 +7720,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "gr_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Outlaw Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "outlaw_gloves"
                           }
                         },
                         {
@@ -9261,6 +9459,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "japor_wood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Kath Hound Claw"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "k_hound_claw"
                     }
                   },
                   {
@@ -12087,6 +12296,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Flesheater Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "flesh_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Forza Necklace"
                           },
                           "RESREF": {
@@ -12103,6 +12323,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "gr_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Mandalorian Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mando_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Outlaw Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "outlaw_necklace"
                           }
                         },
                         {
@@ -12301,6 +12543,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Flesheater Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "flesh_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Forza Ring"
                           },
                           "RESREF": {
@@ -12317,6 +12570,28 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "gr_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Mandalorian Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mando_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Outlaw Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "outlaw_ring"
                           }
                         },
                         {
@@ -17305,6 +17580,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Mandalorian Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mando_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Ophidian Knife"
                           },
                           "RESREF": {
@@ -17502,6 +17788,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "wook_bigryyk"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Mandalorian Great Blade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mando_gswd"
                           }
                         },
                         {
@@ -17722,6 +18019,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Mandalorian Blade"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mando_blade"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Ophidian Longsword"
                           },
                           "RESREF": {
@@ -17886,6 +18194,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "pil_joleesaber"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Mandalorian Katar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mando_katar"
                           }
                         },
                         {
@@ -18278,6 +18597,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Mandalorian Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mando_staff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mando_twinblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Nulaa's Saber"
                     },
                     "RESREF": {
@@ -18618,6 +18959,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "del_spear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mando_spear"
                     }
                   },
                   {
@@ -19034,6 +19386,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Mandalorian Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mando_pistol"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "NPC Blaster Pistol"
                           },
                           "RESREF": {
@@ -19209,6 +19572,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "del_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Mandalorian Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "mando_rifle"
                           }
                         },
                         {
@@ -19859,6 +20233,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "grenade_ion005"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Mandalorian Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "mando_shuriken"
                     }
                   },
                   {

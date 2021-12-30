@@ -657,6 +657,21 @@
           "type": "int",
           "value": 12
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_VELLEN_FLESHLEADER_RARES,5,1"
+        }
       }
     ]
   },

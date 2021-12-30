@@ -556,7 +556,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "CZ220_LOOT_COLICOID,20,1"
+          "value": "CZ220_LOOT_COLICOID_RARES,20,1"
         }
       },
       {
@@ -572,6 +572,21 @@
         "Value": {
           "type": "int",
           "value": 3
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "CZ220_CREDITS,80,2"
         }
       }
     ]

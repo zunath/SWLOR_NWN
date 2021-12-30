@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 36
+    "value": 21
   },
   "Charges": {
     "type": "byte",
@@ -22,10 +22,10 @@
   },
   "Cursed": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "DescIdentified": {
-    "id": 90507,
+    "id": 56605,
     "type": "cexolocstring",
     "value": {
       "0": ""
@@ -42,23 +42,23 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 90506,
+    "id": 56604,
     "type": "cexolocstring",
     "value": {
-      "0": "Fist"
+      "0": "Flesheater Belt"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 1
+    "value": 59
   },
   "PaletteID": {
     "type": "byte",
-    "value": 19
+    "value": 16
   },
   "Plot": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "PropertiesList": {
     "type": "list",
@@ -71,11 +71,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 10
+          "value": 35
         },
         "CostValue": {
           "type": "word",
-          "value": 5
+          "value": 1
         },
         "Param1": {
           "type": "byte",
@@ -87,11 +87,73 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 11
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 2
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 38
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 1
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 91
         },
         "Subtype": {
           "type": "word",
           "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 33
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 1
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 100
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 103
         }
       }
     ]
@@ -106,10 +168,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "fist"
+    "value": "flesh_belt"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "fist"
+    "value": "flesh_belt"
   }
 }

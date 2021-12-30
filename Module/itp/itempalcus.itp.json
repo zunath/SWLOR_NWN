@@ -884,6 +884,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hunter Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hunter_tunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Justina's Armor"
                     },
                     "RESREF": {
@@ -933,6 +944,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "reg_tunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Seeker Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seeker_tunic"
                     }
                   },
                   {
@@ -1351,6 +1373,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Hunter Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "hunter_cap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Justina's Helm"
                     },
                     "RESREF": {
@@ -1477,6 +1510,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "republictrooperh"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Seeker Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "seeker_cap"
                     }
                   },
                   {
@@ -3449,6 +3493,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "mando_shield"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Poacher Shield"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "poach_shield"
                           }
                         },
                         {
@@ -6991,6 +7046,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Hunter Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "hunter_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Mandalorian Belt"
                           },
                           "RESREF": {
@@ -7029,6 +7095,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "reg_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Seeker Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "seeker_belt"
                           }
                         },
                         {
@@ -7216,6 +7293,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Hunter Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "hunter_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Outlaw Boots"
                           },
                           "RESREF": {
@@ -7243,6 +7331,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "reg_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Seeker Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "seeker_boots"
                           }
                         },
                         {
@@ -7523,6 +7622,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Hunter Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "hunter_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Jeweled Cloak"
                           },
                           "RESREF": {
@@ -7572,6 +7682,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "reg_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Seeker Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "seeker_cloak"
                           }
                         },
                         {
@@ -7726,6 +7847,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Hunter Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "hunter_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Outlaw Gloves"
                           },
                           "RESREF": {
@@ -7742,6 +7874,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "reg_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Seeker Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "seeker_gloves"
                           }
                         },
                         {
@@ -7919,6 +8062,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "aracia_wood"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Aradile Meat"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aradile_meat"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Aradile Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "aradile_skin2"
                     }
                   },
                   {
@@ -11731,6 +11896,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Viper Bile"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "viper_bile"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Viscara Berry Fruit"
                     },
                     "RESREF": {
@@ -12329,6 +12505,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Hunter Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "hunter_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Mandalorian Necklace"
                           },
                           "RESREF": {
@@ -12378,6 +12565,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "solusdisguise001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Seeker Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "seeker_necklace"
                           }
                         },
                         {
@@ -12576,6 +12774,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Hunter Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "hunter_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Mandalorian Ring"
                           },
                           "RESREF": {
@@ -12636,6 +12845,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "solus_ring_001"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Seeker Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "seeker_ring"
                           }
                         },
                         {
@@ -17602,6 +17822,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Poacher Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "poach_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Proto Knife"
                           },
                           "RESREF": {
@@ -17810,6 +18041,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "oph_greatsword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Poacher Great Sword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "poach_gswd"
                           }
                         },
                         {
@@ -18035,6 +18277,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "oph_longsword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Poacher Longsword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "poach_longsword"
                           }
                         },
                         {
@@ -18652,6 +18905,28 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Poacher Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "poach_staff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poacher Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "poach_twinblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Proto Staff"
                     },
                     "RESREF": {
@@ -18981,6 +19256,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "oph_spear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poacher Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "poach_spear"
                     }
                   },
                   {
@@ -19419,6 +19705,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Poacher Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "poach_pistol"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Proto Pistol"
                           },
                           "RESREF": {
@@ -19594,6 +19891,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "oph_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Poacher Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "poach_rifle"
                           }
                         },
                         {

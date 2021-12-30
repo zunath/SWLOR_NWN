@@ -19,19 +19,22 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void JunkPiles(SpawnTableBuilder builder)
         {
             builder.Create("CZ220_JUNKPILES")
-                .AddSpawn(ObjectType.Placeable, "cz220_junk");
+                .AddSpawn(ObjectType.Placeable, "cz220_junk")
+                .WithFrequency(50);
         }
 
         private void Caches(SpawnTableBuilder builder)
         {
             builder.Create("CZ220_CACHES")
-                .AddSpawn(ObjectType.Placeable, "cz220_cache");
+                .AddSpawn(ObjectType.Placeable, "cz220_cache")
+                .WithFrequency(50);
         }
 
         private void OreVeins(SpawnTableBuilder builder)
         {
             builder.Create("CZ220_VELDITE")
-                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+                .AddSpawn(ObjectType.Placeable, "veldite_vein")
+                .WithFrequency(50);
         }
 
     }

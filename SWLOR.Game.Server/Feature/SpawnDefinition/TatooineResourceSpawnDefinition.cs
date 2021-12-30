@@ -19,13 +19,19 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void AridHillyDesert()
         {
             _builder.Create("TATOOINE_RESOURCE_ARID_HILLY_DESERT")
-                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+                .AddSpawn(ObjectType.Placeable, "plagionite_vein")
+                .WithFrequency(40)
+                .AddSpawn(ObjectType.Placeable, "keromber_vein")
+                .WithFrequency(10);
         }
 
         private void TatooineResources()
         {
             _builder.Create("TATOOINE_RESOURCE_GENERAL")
-                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+                .AddSpawn(ObjectType.Placeable, "plagionite_vein")
+                .WithFrequency(40)
+                .AddSpawn(ObjectType.Placeable, "keromber_vein")
+                .WithFrequency(10);
         }
     }
 }

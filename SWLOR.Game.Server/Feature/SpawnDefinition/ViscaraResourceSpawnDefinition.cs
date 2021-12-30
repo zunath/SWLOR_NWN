@@ -25,7 +25,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void Cavern()
         {
             _builder.Create("RESOURCES_VISCARA_CAVERN")
-                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+                .AddSpawn(ObjectType.Placeable, "veldite_vein")
+                .WithFrequency(60)
+
+                .AddSpawn(ObjectType.Placeable, "scordspar_vein")
+                .WithFrequency(20);
         }
 
         private void CoxxionBase()
@@ -37,7 +41,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void DeepMountainsResources()
         {
             _builder.Create("RESOURCES_VISCARA_DEEPMOUNTAINS")
-                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+                .AddSpawn(ObjectType.Placeable, "veldite_vein")
+                .WithFrequency(60)
+
+                .AddSpawn(ObjectType.Placeable, "scordspar_vein")
+                .WithFrequency(10);
         }
 
         private void MandalorianFacilityResources()
@@ -49,25 +57,44 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void MountainValleyResources()
         {
             _builder.Create("RESOURCES_VISCARA_MOUNTAINVALLEY")
-                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+                .AddSpawn(ObjectType.Placeable, "veldite_vein")
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "tree")
+                .WithFrequency(5);
         }
 
         private void WildlandsResources()
         {
             _builder.Create("RESOURCES_VISCARA_WILDLANDS")
-                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+                .AddSpawn(ObjectType.Placeable, "veldite_vein")
+                .WithFrequency(20)
+
+                .AddSpawn(ObjectType.Placeable, "tree")
+                .WithFrequency(50);
         }
 
         private void WildwoodsResources()
         {
             _builder.Create("RESOURCES_VISCARA_WILDWOODS")
-                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+                .AddSpawn(ObjectType.Placeable, "veldite_vein")
+                .WithFrequency(10)
+
+                .AddSpawn(ObjectType.Placeable, "tree")
+                .WithFrequency(70);
         }
 
         private void SwamplandResources()
         {
             _builder.Create("RESOURCES_VISCARA_SWAMPLANDS")
-                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+                .AddSpawn(ObjectType.Placeable, "veldite_vein")
+                .WithFrequency(20)
+
+                .AddSpawn(ObjectType.Placeable, "tree")
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "oak_tree")
+                .WithFrequency(20);
         }
 
         private void VelesSewersResources()

@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 {
     public class MonCalaResourceSpawnDefinition: ISpawnListDefinition
     {
-        private readonly SpawnTableBuilder _builder = new SpawnTableBuilder();
+        private readonly SpawnTableBuilder _builder = new();
 
         public Dictionary<string, SpawnTable> BuildSpawnTables()
         {
@@ -19,13 +19,29 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void CoralIslesInner()
         {
             _builder.Create("RESOURCES_MONCALA_CORALISLEINNER")
-                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+                .AddSpawn(ObjectType.Placeable, "veldite_vein")
+                .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "scordspar_vein")
+                .WithFrequency(20)
+
+                .AddSpawn(ObjectType.Placeable, "tree")
+                .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "oak_tree")
+                .WithFrequency(70);
         }
 
         private void CoralIslesOuter()
         {
             _builder.Create("RESOURCES_MONCALA_CORALISLEOUTER")
-                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+                .AddSpawn(ObjectType.Placeable, "veldite_vein")
+                .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "scordspar_vein")
+                .WithFrequency(20)
+
+                .AddSpawn(ObjectType.Placeable, "tree")
+                .WithFrequency(10)
+                .AddSpawn(ObjectType.Placeable, "oak_tree")
+                .WithFrequency(70);
         }
     }
 }

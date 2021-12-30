@@ -18,12 +18,28 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void QionTundra()
         {
             _builder.Create("RESOURCES_HUTLAR_QIONTUNDRA")
-                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+                .AddSpawn(ObjectType.Placeable, "scordspar_vein")
+                .WithFrequency(40)
+                .AddSpawn(ObjectType.Placeable, "plagionite_vein")
+                .WithFrequency(10)
+
+                .AddSpawn(ObjectType.Placeable, "ancient_tree")
+                .WithFrequency(20)
+                .AddSpawn(ObjectType.Placeable, "oak_tree")
+                .WithFrequency(5);
         }
         private void Valley()
         {
             _builder.Create("RESOURCES_HUTLAR_VALLEY")
-                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+                .AddSpawn(ObjectType.Placeable, "scordspar_vein")
+                .WithFrequency(20)
+                .AddSpawn(ObjectType.Placeable, "plagionite_vein")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "ancient_tree")
+                .WithFrequency(40)
+                .AddSpawn(ObjectType.Placeable, "oak_tree")
+                .WithFrequency(10);
         }
     }
 }

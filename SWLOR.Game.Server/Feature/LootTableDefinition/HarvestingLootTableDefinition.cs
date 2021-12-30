@@ -32,15 +32,23 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         private void Trees()
         {
             _builder.Create("HARVESTING_TREE")
-                .AddItem("wood", 50);
+                .AddItem("wood", 50)
+                .AddItem("fine_wood", 5);
             _builder.Create("HARVESTING_OAK_TREE")
-                .AddItem("fine_wood", 50);
+                .AddItem("fine_wood", 50)
+                .AddItem("wood", 10);
             _builder.Create("HARVESTING_ANCIENT_TREE")
-                .AddItem("ancient_wood", 50);
+                .AddItem("ancient_wood", 50)
+                .AddItem("fine_wood", 20)
+                .AddItem("wood", 2);
             _builder.Create("HARVESTING_ARACIA_TREE")
-                .AddItem("aracia_wood", 50);
+                .AddItem("aracia_wood", 50)
+                .AddItem("ancient_wood", 20)
+                .AddItem("fine_wood", 2);
             _builder.Create("HARVESTING_HYPHAE_TREE")
-                .AddItem("hyphae_wood", 50);
+                .AddItem("hyphae_wood", 50)
+                .AddItem("aracia_wood", 20)
+                .AddItem("ancient_wood", 2);
         }
     }
 }

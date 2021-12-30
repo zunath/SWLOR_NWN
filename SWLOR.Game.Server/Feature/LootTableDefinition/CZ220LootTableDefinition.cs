@@ -9,13 +9,22 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
         public Dictionary<string, LootTable> BuildLootTables()
         {
+            Credits();
             JunkPile();
             SuppliesCache();
             Mynock();
             Droid();
+            DroidRares();
             ColicoidExperiment();
+            ColicoidExperimentRares();
 
             return _builder.Build();
+        }
+
+        private void Credits()
+        {
+            _builder.Create("CZ220_CREDITS")
+                .AddGold(10, 10);
         }
 
         private void JunkPile()
@@ -29,7 +38,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
         {
             _builder.Create("CZ220_LOOT_SUPPLIES_CACHE")
                 .AddItem("scrap_metal", 10)
-                .AddItem("fiberp_destroyed", 50)
+                .AddItem("elec_ruined", 5)
+                .AddItem("lth_ruined", 5)
+                .AddItem("fiberp_ruined", 50)
                 .AddItem("wood", 50)
                 .AddGold(10, 15);
         }
@@ -39,24 +50,46 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("CZ220_LOOT_MYNOCK")
                 .AddItem("mynock_meat", 50)
                 .AddItem("mynock_tooth", 20)
-                .AddItem("mynock_wing", 30);
+                .AddItem("mynock_wing", 30)
+                .AddItem("lth_ruined", 5);
         }
 
         private void Droid()
         {
             _builder.Create("CZ220_LOOT_DROID")
-                .AddItem("elec_destroyed", 50)
+                .AddItem("elec_ruined", 50)
                 .AddItem("scrap_metal", 10)
                 .AddGold(10, 20);
+        }
+
+        private void DroidRares()
+        {
+            _builder.Create("CZ220_LOOT_DROID_RARES")
+                .AddItem("map_22", 50, 1, true);
         }
 
         private void ColicoidExperiment()
         {
             _builder.Create("CZ220_LOOT_COLICOID")
-                .AddItem("bag_dirty", 1, 1, true)
-                .AddGold(40, 20);
+                .AddItem("colicoid_cap_b", 1, 20)
+                .AddItem("colicoid_cap_g", 1, 20)
+                .AddItem("colicoid_cap_y", 1, 3)
+                .AddItem("colicoid_cap_r", 1, 20)
+
+                .AddItem("colicoid_leg_a", 1, 20)
+                .AddItem("colicoid_leg_c", 1, 20)
+                .AddItem("colicoid_leg_w", 1, 20)
+                .AddItem("colicoid_leg_e", 1, 20)
+                .AddItem("colicoid_leg_f", 1, 20)
+                ;
         }
 
+        private void ColicoidExperimentRares()
+        {
+            _builder.Create("CZ220_LOOT_COLICOID_RARES")
+                .AddItem("bag_dirty", 1, 1, true)
+                .AddItem("map_22", 3, 1, true);
+        }
 
     }
 }

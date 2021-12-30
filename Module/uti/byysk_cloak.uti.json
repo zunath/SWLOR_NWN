@@ -6,11 +6,19 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 56
+    "value": 80
   },
   "Charges": {
     "type": "byte",
     "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 88
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 93
   },
   "Comment": {
     "type": "cexostring",
@@ -18,14 +26,14 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 50
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
-    "id": 100926,
+    "id": 66560,
     "type": "cexolocstring",
     "value": {
       "0": ""
@@ -33,28 +41,42 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Identified": {
     "type": "byte",
     "value": 1
   },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 92
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 88
+  },
   "LocalizedName": {
-    "id": 90461,
+    "id": 66559,
     "type": "cexolocstring",
     "value": {
-      "0": "Byysk Shield"
+      "0": "Byysk Cloak"
     }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 88
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 93
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 48
+    "value": 99
   },
   "PaletteID": {
     "type": "byte",
-    "value": 11
+    "value": 18
   },
   "Plot": {
     "type": "byte",
@@ -184,7 +206,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 110
+          "value": 102
         }
       }
     ]
@@ -199,10 +221,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "byysk_shield"
+    "value": "byysk_cloak"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "byysk_shield"
+    "value": "byysk_cloak"
   }
 }

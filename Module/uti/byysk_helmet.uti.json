@@ -6,11 +6,19 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 56
+    "value": 17
   },
   "Charges": {
     "type": "byte",
     "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 52
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 92
   },
   "Comment": {
     "type": "cexostring",
@@ -18,18 +26,15 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 50
+    "value": 3
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
-    "id": 100926,
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
@@ -41,20 +46,36 @@
     "type": "byte",
     "value": 1
   },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 171
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 118
+  },
   "LocalizedName": {
-    "id": 90461,
+    "id": 90531,
     "type": "cexolocstring",
     "value": {
-      "0": "Byysk Shield"
+      "0": "Byysk Helmet"
     }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 135
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 139
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 48
+    "value": 120
   },
   "PaletteID": {
     "type": "byte",
-    "value": 11
+    "value": 9
   },
   "Plot": {
     "type": "byte",
@@ -75,7 +96,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 4
+          "value": 6
         },
         "Param1": {
           "type": "byte",
@@ -106,7 +127,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 6
+          "value": 11
         },
         "Param1": {
           "type": "byte",
@@ -184,7 +205,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 110
+          "value": 107
         }
       }
     ]
@@ -199,10 +220,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "byysk_shield"
+    "value": "byysk_helmet"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "byysk_shield"
+    "value": "byysk_helmet"
   }
 }

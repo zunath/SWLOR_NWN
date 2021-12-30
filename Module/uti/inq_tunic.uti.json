@@ -4,28 +4,111 @@
     "type": "dword",
     "value": 0
   },
+  "ArmorPart_Belt": {
+    "type": "byte",
+    "value": 7
+  },
+  "ArmorPart_LBicep": {
+    "type": "byte",
+    "value": 17
+  },
+  "ArmorPart_LFArm": {
+    "type": "byte",
+    "value": 154
+  },
+  "ArmorPart_LFoot": {
+    "type": "byte",
+    "value": 205
+  },
+  "ArmorPart_LHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_LShin": {
+    "type": "byte",
+    "value": 16
+  },
+  "ArmorPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_LThigh": {
+    "type": "byte",
+    "value": 17
+  },
+  "ArmorPart_Neck": {
+    "type": "byte",
+    "value": 2
+  },
+  "ArmorPart_Pelvis": {
+    "type": "byte",
+    "value": 10
+  },
+  "ArmorPart_RBicep": {
+    "type": "byte",
+    "value": 17
+  },
+  "ArmorPart_RFArm": {
+    "type": "byte",
+    "value": 154
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 205
+  },
+  "ArmorPart_RHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_Robe": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_RShin": {
+    "type": "byte",
+    "value": 16
+  },
+  "ArmorPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_RThigh": {
+    "type": "byte",
+    "value": 17
+  },
+  "ArmorPart_Torso": {
+    "type": "byte",
+    "value": 53
+  },
   "BaseItem": {
     "type": "int",
-    "value": 56
+    "value": 16
   },
   "Charges": {
     "type": "byte",
     "value": 0
   },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 41
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 42
+  },
   "Comment": {
     "type": "cexostring",
-    "value": ""
+    "value": "1"
   },
   "Cost": {
     "type": "dword",
-    "value": 50
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
-    "id": 100926,
     "type": "cexolocstring",
     "value": {
       "0": ""
@@ -41,20 +124,32 @@
     "type": "byte",
     "value": 1
   },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 57
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 57
+  },
   "LocalizedName": {
-    "id": 90461,
+    "id": 12843,
     "type": "cexolocstring",
     "value": {
-      "0": "Byysk Shield"
+      "0": "Inquisitor Tunic"
     }
   },
-  "ModelPart1": {
+  "Metal1Color": {
     "type": "byte",
-    "value": 48
+    "value": 12
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 1
   },
   "PaletteID": {
     "type": "byte",
-    "value": 11
+    "value": 8
   },
   "Plot": {
     "type": "byte",
@@ -75,7 +170,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 4
+          "value": 19
         },
         "Param1": {
           "type": "byte",
@@ -106,7 +201,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 6
+          "value": 7
         },
         "Param1": {
           "type": "byte",
@@ -133,11 +228,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 37
+          "value": 38
         },
         "CostValue": {
           "type": "word",
-          "value": 5
+          "value": 6
         },
         "Param1": {
           "type": "byte",
@@ -149,7 +244,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 90
+          "value": 91
         },
         "Subtype": {
           "type": "word",
@@ -184,7 +279,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 110
+          "value": 111
         }
       }
     ]
@@ -199,10 +294,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "byysk_shield"
+    "value": "inq_tunic"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "byysk_shield"
+    "value": "inq_tunic"
   }
 }

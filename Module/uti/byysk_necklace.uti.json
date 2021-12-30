@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 56
+    "value": 19
   },
   "Charges": {
     "type": "byte",
@@ -18,14 +18,14 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 50
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
-    "id": 100926,
+    "id": 56640,
     "type": "cexolocstring",
     "value": {
       "0": ""
@@ -42,19 +42,19 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 90461,
+    "id": 56643,
     "type": "cexolocstring",
     "value": {
-      "0": "Byysk Shield"
+      "0": "Byysk Necklace"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 48
+    "value": 44
   },
   "PaletteID": {
     "type": "byte",
-    "value": 11
+    "value": 21
   },
   "Plot": {
     "type": "byte",
@@ -184,7 +184,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 110
+          "value": 105
         }
       }
     ]
@@ -199,10 +199,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "byysk_shield"
+    "value": "byysk_necklace"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "byysk_shield"
+    "value": "byysk_necklace"
   }
 }

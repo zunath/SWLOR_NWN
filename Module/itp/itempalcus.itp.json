@@ -796,6 +796,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Agent Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "agent_tunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Argos Armor"
                     },
                     "RESREF": {
@@ -812,6 +823,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "bm_armor"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "byysk_armor"
                     }
                   },
                   {
@@ -889,6 +911,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "hunter_tunic"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Inquisitor Tunic"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "inq_tunic"
                     }
                   },
                   {
@@ -1164,6 +1197,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Agent Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "agent_cap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Alch's Hood"
                     },
                     "RESREF": {
@@ -1224,6 +1268,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "bm_helmet"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Helmet"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "byysk_helmet"
                     }
                   },
                   {
@@ -1378,6 +1433,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "hunter_cap"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Inquisitor Cap"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "inq_cap"
                     }
                   },
                   {
@@ -3477,6 +3543,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Byysk Shield"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_shield"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Eclipse Shield"
                           },
                           "RESREF": {
@@ -3540,22 +3617,6 @@
                     "ID": {
                       "type": "byte",
                       "value": 10
-                    },
-                    "LIST": {
-                      "type": "list",
-                      "value": [
-                        {
-                          "__struct_id": 0,
-                          "NAME": {
-                            "type": "cexostring",
-                            "value": "Byysk Shield"
-                          },
-                          "RESREF": {
-                            "type": "resref",
-                            "value": "byysk_shield"
-                          }
-                        }
-                      ]
                     },
                     "STRREF": {
                       "type": "dword",
@@ -6969,6 +7030,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Agent Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "agent_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Argos Belt"
                           },
                           "RESREF": {
@@ -6985,6 +7057,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "bm_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Byysk Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_belt"
                           }
                         },
                         {
@@ -7051,6 +7134,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "hunter_belt"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Inquisitor Belt"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "inq_belt"
                           }
                         },
                         {
@@ -7205,6 +7299,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Agent Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "agent_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Argos Leggings"
                           },
                           "RESREF": {
@@ -7221,6 +7326,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "bm_leggings"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Byysk Leggings"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_leggings"
                           }
                         },
                         {
@@ -7298,6 +7414,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "hunter_boots"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Inquisitor Boots"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "inq_boots"
                           }
                         },
                         {
@@ -7463,6 +7590,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Byysk Bracer"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_bracer"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Eclipse Bracer"
                           },
                           "RESREF": {
@@ -7523,6 +7661,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Agent Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "agent_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Argos Cloak"
                           },
                           "RESREF": {
@@ -7550,6 +7699,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "bm_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Byysk Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_cloak"
                           }
                         },
                         {
@@ -7627,6 +7787,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "hunter_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Inquisitor Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "inq_cloak"
                           }
                         },
                         {
@@ -7803,6 +7974,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Agent Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "agent_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Combat Gloves"
                           },
                           "RESREF": {
@@ -7852,6 +8034,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "hunter_gloves"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Inquisitor Gloves"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "inq_gloves"
                           }
                         },
                         {
@@ -12428,6 +12621,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Agent Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "agent_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Argos Necklace"
                           },
                           "RESREF": {
@@ -12444,6 +12648,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "bm_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Byysk Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_necklace"
                           }
                         },
                         {
@@ -12510,6 +12725,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "hunter_necklace"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Inquisitor Necklace"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "inq_necklace"
                           }
                         },
                         {
@@ -12675,6 +12901,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Agent Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "agent_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Argos Ring"
                           },
                           "RESREF": {
@@ -12713,6 +12950,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "byysk_def_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Byysk Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_ring"
                           }
                         },
                         {
@@ -12779,6 +13027,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "hunter_ring"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Inquisitor Ring"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "inq_ring"
                           }
                         },
                         {
@@ -17756,6 +18015,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Byysk Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Carbide Knife"
                           },
                           "RESREF": {
@@ -17970,6 +18240,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Byysk Great Sword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_gswd"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Carbide Great Sword"
                           },
                           "RESREF": {
@@ -18167,6 +18448,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "b_longsword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Byysk Longsword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_longsword"
                           }
                         },
                         {
@@ -18392,6 +18684,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "b_katar"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Byysk Katar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_katar"
                           }
                         },
                         {
@@ -18745,6 +19048,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "saberstaff_y_004"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "byysk_staff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Byysk Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "byysk_twinblade"
                     }
                   },
                   {
@@ -19185,6 +19510,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Byysk Spear"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "byysk_spear"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Carbide Spear"
                     },
                     "RESREF": {
@@ -19573,6 +19909,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Byysk Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_pistol"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Carbide Pistol"
                           },
                           "RESREF": {
@@ -19825,6 +20172,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "b_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Byysk Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "byysk_rifle"
                           }
                         },
                         {
@@ -20239,6 +20597,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Byysk Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "byysk_shuriken"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Carbide Shuriken"
                     },
                     "RESREF": {
@@ -20563,6 +20932,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "oph_shuriken"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Poacher Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "poach_shuriken"
                     }
                   },
                   {

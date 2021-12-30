@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 56
+    "value": 52
   },
   "Charges": {
     "type": "byte",
@@ -14,18 +14,18 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": ""
+    "value": "1"
   },
   "Cost": {
     "type": "dword",
-    "value": 50
+    "value": 1
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
-    "id": 100926,
+    "id": 48931,
     "type": "cexolocstring",
     "value": {
       "0": ""
@@ -42,19 +42,19 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 90461,
+    "id": 48930,
     "type": "cexolocstring",
     "value": {
-      "0": "Byysk Shield"
+      "0": "Inquisitor Ring"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 48
+    "value": 40
   },
   "PaletteID": {
     "type": "byte",
-    "value": 11
+    "value": 22
   },
   "Plot": {
     "type": "byte",
@@ -75,7 +75,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 4
+          "value": 6
         },
         "Param1": {
           "type": "byte",
@@ -106,7 +106,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 6
+          "value": 5
         },
         "Param1": {
           "type": "byte",
@@ -133,11 +133,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 37
+          "value": 38
         },
         "CostValue": {
           "type": "word",
-          "value": 5
+          "value": 3
         },
         "Param1": {
           "type": "byte",
@@ -149,7 +149,7 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 90
+          "value": 91
         },
         "Subtype": {
           "type": "word",
@@ -184,7 +184,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 110
+          "value": 104
         }
       }
     ]
@@ -199,10 +199,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "byysk_shield"
+    "value": "inq_ring"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "byysk_shield"
+    "value": "inq_ring"
   }
 }

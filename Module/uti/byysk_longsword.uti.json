@@ -6,7 +6,7 @@
   },
   "BaseItem": {
     "type": "int",
-    "value": 56
+    "value": 1
   },
   "Charges": {
     "type": "byte",
@@ -14,22 +14,19 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": ""
+    "value": "1"
   },
   "Cost": {
     "type": "dword",
-    "value": 50
+    "value": 30
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
-    "id": 100926,
     "type": "cexolocstring",
-    "value": {
-      "0": ""
-    }
+    "value": {}
   },
   "Description": {
     "type": "cexolocstring",
@@ -42,19 +39,27 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 90461,
+    "id": 166,
     "type": "cexolocstring",
     "value": {
-      "0": "Byysk Shield"
+      "0": "Byysk Longsword"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 48
+    "value": 232
+  },
+  "ModelPart2": {
+    "type": "byte",
+    "value": 101
+  },
+  "ModelPart3": {
+    "type": "byte",
+    "value": 55
   },
   "PaletteID": {
     "type": "byte",
-    "value": 11
+    "value": 36
   },
   "Plot": {
     "type": "byte",
@@ -71,11 +76,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 35
+          "value": 34
         },
         "CostValue": {
           "type": "word",
-          "value": 4
+          "value": 13
         },
         "Param1": {
           "type": "byte",
@@ -87,73 +92,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 94
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 2
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 35
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 6
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 94
+          "value": 93
         },
         "Subtype": {
           "type": "word",
           "value": 1
-        }
-      },
-      {
-        "__struct_id": 0,
-        "ChanceAppear": {
-          "type": "byte",
-          "value": 100
-        },
-        "CostTable": {
-          "type": "byte",
-          "value": 37
-        },
-        "CostValue": {
-          "type": "word",
-          "value": 5
-        },
-        "Param1": {
-          "type": "byte",
-          "value": 255
-        },
-        "Param1Value": {
-          "type": "byte",
-          "value": 0
-        },
-        "PropertyName": {
-          "type": "word",
-          "value": 90
-        },
-        "Subtype": {
-          "type": "word",
-          "value": 0
         }
       },
       {
@@ -184,7 +127,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 110
+          "value": 6
         }
       }
     ]
@@ -199,10 +142,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "byysk_shield"
+    "value": "byysk_longsword"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "byysk_shield"
+    "value": "byysk_longsword"
   }
 }

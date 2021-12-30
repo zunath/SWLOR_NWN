@@ -63,6 +63,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("poach_pistol", 5)
                 .AddItem("poach_twinblade", 5)
                 .AddItem("poach_rifle", 5)
+                .AddItem("poach_shuriken", 5)
                 .AddGold(40, 20);
 
             _builder.Create("MONCALA_ECOTERRORIST_RARES")

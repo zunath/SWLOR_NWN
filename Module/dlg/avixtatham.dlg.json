@@ -1416,7 +1416,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "[He inspects the metal] Not the highest quality refining job I've seen but it'll do for now. Here, pick one of these mods the R&D department constructed. It's the least I can do for you, considering you've saved my job."
+            "0": "[He inspects the metal] Not the highest quality refining job I've seen but it'll do for now. Here's some credits for your time. It's the least I can do for you, considering you've saved my job."
           }
         }
       },
@@ -1473,7 +1473,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 660
+    "value": 652
   },
   "PreventZoomIn": {
     "type": "byte",
@@ -2720,7 +2720,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Yeah, no problem. Let's see those mods. [Select reward]"
+            "0": "Yeah, no problem. [Take Reward]"
           }
         }
       }

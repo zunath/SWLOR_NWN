@@ -18048,6 +18048,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Captain Knife"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cap_knife"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Carbide Knife"
                           },
                           "RESREF": {
@@ -18284,6 +18295,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Captain Great Sword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cap_gswd"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Carbide Great Sword"
                           },
                           "RESREF": {
@@ -18503,6 +18525,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "byysk_longsword"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Captain Longsword"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cap_longsword"
                           }
                         },
                         {
@@ -18750,6 +18783,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "byysk_katar"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Captain Katar"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cap_katar"
                           }
                         },
                         {
@@ -19136,6 +19180,28 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "byysk_twinblade"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Captain Staff"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_staff"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Captain Twin Blade"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_twinblade"
                     }
                   },
                   {
@@ -20019,6 +20085,17 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
+                            "value": "Captain Pistol"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cap_pistol"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
                             "value": "Carbide Pistol"
                           },
                           "RESREF": {
@@ -20293,6 +20370,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "byysk_rifle"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "Captain Rifle"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "cap_rifle"
                           }
                         },
                         {
@@ -20723,6 +20811,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "byysk_shuriken"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Captain Shuriken"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "cap_shuriken"
                     }
                   },
                   {

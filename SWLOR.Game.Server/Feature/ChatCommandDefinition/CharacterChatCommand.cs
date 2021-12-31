@@ -80,7 +80,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             ToggleEmoteStyle(builder);
             ChangeItemName(builder);
             ChangeItemDescription(builder);
-            ChangePlayerDescription(builder);
             ConcentrationAbility(builder);
             
             return builder.Build();
@@ -90,12 +89,17 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             builder.Create("language")
                 .Description("Switches the active language. Use /language help for more information.")
-                .Permissions(AuthorizationLevel.Player)
+                .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
                 {
                     if (args.Length < 1)
                     {
                         return ColorToken.Red("Please enter /language help for more information on how to use this command.");
+                    }
+
+                    if (GetIsDM(user) || GetIsDMPossessed(user))
+                    {
+                        return "DM characters cannot use this chat command.";
                     }
 
                     return string.Empty;
@@ -158,7 +162,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             builder.Create("delete")
                 .Description("Permanently deletes your character.")
-                .Permissions(AuthorizationLevel.Player)
+                .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
                 {
                     if (!GetIsPC(user) || GetIsDM(user))
@@ -170,6 +174,11 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     if (cdKey != enteredCDKey)
                     {
                         return "Invalid CD key entered. Please enter the command as follows: \"/delete <CD Key>\". You can retrieve your CD key with the /CDKey chat command.";
+                    }
+
+                    if (GetIsDM(user) || GetIsDMPossessed(user))
+                    {
+                        return "DM characters cannot use this chat command.";
                     }
 
                     return string.Empty;
@@ -200,12 +209,15 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                     else
                     {
-                        var playerID = GetObjectUUID(user);
-                        var entity = DB.Get<Player>(playerID);
+                        var playerId = GetObjectUUID(user);
+                        var entity = DB.Get<Player>(playerId);
                         entity.IsDeleted = true;
                         DB.Set(entity);
 
+                        var playerName = GetPCPlayerName(user);
+                        var characterName = GetName(user);
                         AdministrationPlugin.DeletePlayerCharacter(user, true, "Your character has been deleted.");
+                        AdministrationPlugin.DeleteTURD(playerName, characterName);
                     }
                 });
         }
@@ -239,7 +251,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             builder.Create("changeitemname", "itemname")
                 .Description("Changes the name of an item in your inventory. Example: /changeitemname New Name")
-                .Permissions(AuthorizationLevel.Player, AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Permissions(AuthorizationLevel.All)
                 .RequiresTarget()
                 .Action((user, target, location, args) =>
                 {
@@ -267,7 +279,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             builder.Create("changeitemdescription", "itemdesc")
                 .Description("Changes the description of an item in your inventory. Example: /changeitemdescription New Name")
-                .Permissions(AuthorizationLevel.Player, AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Permissions(AuthorizationLevel.All)
                 .RequiresTarget()
                 .Action((user, target, location, args) =>
                 {
@@ -291,30 +303,11 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
-        private static void ChangePlayerDescription(ChatCommandBuilder builder)
-        {
-            builder.Create("changeplayerdescription", "mydesc")
-                .Description("Changes your character's description. Example: /changedescription My new description.")
-                .Permissions(AuthorizationLevel.Player, AuthorizationLevel.DM, AuthorizationLevel.Admin)
-                .Action((user, target, location, args) =>
-                {
-                    var sb = new StringBuilder();
-                    
-                    foreach (var arg in args)
-                    {
-                        sb.Append(' ').Append(arg);
-                    }
-
-                    SetDescription(user, sb.ToString());
-                    SendMessageToPC(user, "New description set!");
-                });
-        }
-
         private static void ConcentrationAbility(ChatCommandBuilder builder)
         {
             builder.Create("concentration", "conc")
                 .Description("Tells you what concentration ability you have active. Follow with 'end' (no quotes) to turn your concentration ability off. Example: /concentration end")
-                .Permissions(AuthorizationLevel.Player, AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
                     var doEnd = args.Length > 0 && args[0].ToLower() == "end";

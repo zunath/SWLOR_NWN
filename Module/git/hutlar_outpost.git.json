@@ -12966,7 +12966,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.159175077286449e-019
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -13620,7 +13620,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.394261703956364e-038
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -14274,7 +14274,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.76451502627781e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -16849,7 +16849,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.76451502627781e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -17355,7 +17355,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.394261703956364e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -17861,7 +17861,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.159175077286449e-019
                     },
                     "XPosition": {
                       "type": "float",
@@ -18620,7 +18620,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.092053150474398e-019
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -19285,7 +19285,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 9.304621803116785e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -19749,7 +19749,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.129973665773722e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -20816,7 +20816,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.802596928649634e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -21450,7 +21450,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -21682,7 +21682,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 9.201556301065695e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -21914,7 +21914,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.577721810442024e-030
                     },
                     "XPosition": {
                       "type": "float",
@@ -22146,7 +22146,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.033975888950801e-025
                     },
                     "XPosition": {
                       "type": "float",
@@ -24208,7 +24208,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.802596928649634e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -25349,7 +25349,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 4.354254718196504e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -25813,7 +25813,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.96161088849269e-041
+                      "value": 9.037998127681135e-010
                     },
                     "XPosition": {
                       "type": "float",
@@ -26067,7 +26067,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 8.407790785948902e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -26290,7 +26290,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.005002850822973e-038
+                      "value": 8.407790785948902e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -27023,7 +27023,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 5.090568397574444e-039
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -29843,7 +29843,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.092053150474398e-019
                     },
                     "XPosition": {
                       "type": "float",
@@ -30638,6 +30638,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 34
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 93
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -30659,37 +30690,6 @@
                           "Subtype": {
                             "type": "word",
                             "value": 12
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 34
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 1
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 93
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         }
                       ]
@@ -30811,6 +30811,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 34
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 6
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 93
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -30832,37 +30863,6 @@
                           "Subtype": {
                             "type": "word",
                             "value": 12
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 34
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 6
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 93
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         }
                       ]
@@ -30984,6 +30984,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 34
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 11
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 93
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -31005,37 +31036,6 @@
                           "Subtype": {
                             "type": "word",
                             "value": 12
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 34
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 11
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 93
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         }
                       ]
@@ -31157,6 +31157,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 34
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 14
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 93
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -31178,37 +31209,6 @@
                           "Subtype": {
                             "type": "word",
                             "value": 12
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 34
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 14
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 93
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         }
                       ]
@@ -31330,6 +31330,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 34
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 21
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 93
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -31351,37 +31382,6 @@
                           "Subtype": {
                             "type": "word",
                             "value": 12
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 34
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 21
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 93
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         }
                       ]
@@ -31525,7 +31525,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -31700,7 +31700,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -31875,7 +31875,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -32050,7 +32050,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -32225,7 +32225,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -32400,7 +32400,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -32575,7 +32575,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -32750,7 +32750,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -32925,7 +32925,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -33100,7 +33100,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -33275,7 +33275,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -33450,7 +33450,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -33624,7 +33624,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -33798,7 +33798,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -33972,7 +33972,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -34146,7 +34146,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -34320,7 +34320,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -34494,7 +34494,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -34667,7 +34667,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -34840,7 +34840,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -35013,7 +35013,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -35186,7 +35186,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -35359,7 +35359,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -35532,7 +35532,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -35705,7 +35705,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -35878,7 +35878,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -36051,7 +36051,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -36224,7 +36224,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -36397,7 +36397,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -36570,7 +36570,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -36723,6 +36723,37 @@
                           },
                           "CostTable": {
                             "type": "byte",
+                            "value": 34
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 24
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 93
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
                             "value": 33
                           },
                           "CostValue": {
@@ -36744,37 +36775,6 @@
                           "Subtype": {
                             "type": "word",
                             "value": 12
-                          }
-                        },
-                        {
-                          "__struct_id": 0,
-                          "ChanceAppear": {
-                            "type": "byte",
-                            "value": 100
-                          },
-                          "CostTable": {
-                            "type": "byte",
-                            "value": 34
-                          },
-                          "CostValue": {
-                            "type": "word",
-                            "value": 24
-                          },
-                          "Param1": {
-                            "type": "byte",
-                            "value": 255
-                          },
-                          "Param1Value": {
-                            "type": "byte",
-                            "value": 0
-                          },
-                          "PropertyName": {
-                            "type": "word",
-                            "value": 93
-                          },
-                          "Subtype": {
-                            "type": "word",
-                            "value": 0
                           }
                         }
                       ]
@@ -36916,7 +36916,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -37089,7 +37089,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -37262,7 +37262,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -37437,7 +37437,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -37612,7 +37612,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -37787,7 +37787,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -37960,7 +37960,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -38164,7 +38164,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -38368,7 +38368,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -38572,7 +38572,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -38776,7 +38776,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -38980,7 +38980,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -39186,7 +39186,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -39392,7 +39392,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -39598,7 +39598,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -39804,7 +39804,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -40010,7 +40010,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -40216,7 +40216,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -40412,7 +40412,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -40458,7 +40458,7 @@
                     },
                     "StackSize": {
                       "type": "word",
-                      "value": 50
+                      "value": 1
                     },
                     "Stolen": {
                       "type": "byte",
@@ -40577,7 +40577,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -40742,7 +40742,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -40872,7 +40872,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 51
+                      "value": 43
                     },
                     "Plot": {
                       "type": "byte",
@@ -40909,7 +40909,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -41076,7 +41076,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -41243,7 +41243,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -42182,7 +42182,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.802596928649634e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -45940,7 +45940,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.802596928649634e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -46801,7 +46801,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.242077542919707e-043
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -47080,7 +47080,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.388022601176344e-018
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -47237,7 +47237,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 5.331913584288211e-018
                     },
                     "XPosition": {
                       "type": "float",
@@ -47394,7 +47394,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.746320846587364e-018
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -47602,7 +47602,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.746320846587364e-018
                     },
                     "XPosition": {
                       "type": "float",
@@ -47708,7 +47708,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 5.331913584288211e-018
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -47814,7 +47814,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.388022601176344e-018
                     },
                     "XPosition": {
                       "type": "float",
@@ -48124,7 +48124,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.242077542919707e-043
                     },
                     "XPosition": {
                       "type": "float",

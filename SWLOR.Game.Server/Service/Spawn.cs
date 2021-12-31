@@ -450,7 +450,7 @@ namespace SWLOR.Game.Server.Service
 
                     // Remove area from the various cache collections.
                     _queuedSpawnsByArea.Remove(area);
-                    _activeSpawnsByArea.Remove(area);
+                    _activeSpawnsByArea[area].Clear();
                     _queuedAreaDespawns.Remove(area);
                 }
             }

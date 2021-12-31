@@ -285,13 +285,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private string BuildSelectedPerkDetailText(PerkDetail detail, PerkLevel currentUpgrade, PerkLevel nextUpgrade)
         {
+            var categoryDetail = Perk.GetPerkCategoryDetails(detail.Category);
             var selectedDetails = detail.Name + "\n\n";
 
             // Perk Description
             if (detail.Description != null)
             {
-                selectedDetails += "Description: \n" + detail.Description + "\n\n";
+                selectedDetails += "Description: \n" + detail.Description + "\n";
             }
+
+            selectedDetails += $"[{categoryDetail.Name}]\n\n";
 
             if (currentUpgrade != null)
             {

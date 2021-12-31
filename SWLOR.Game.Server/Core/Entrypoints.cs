@@ -246,8 +246,19 @@ namespace SWLOR.Game.Server.Core
 
                     var oldObjectSelf = Internal.OBJECT_SELF;
                     Internal.OBJECT_SELF = player;
-                    RunScripts("interval_pc_1s");
-                    Internal.OBJECT_SELF = oldObjectSelf;
+
+                    try
+                    {
+                        RunScripts("interval_pc_1s");
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Write(LogGroup.Error, ex.ToMessageAndCompleteStacktrace());
+                    }
+                    finally
+                    {
+                        Internal.OBJECT_SELF = oldObjectSelf;
+                    }
                 }
             }
         }

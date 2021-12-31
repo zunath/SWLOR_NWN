@@ -104,6 +104,13 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         // Use EffectDeath to ensure that we trigger death processing.
                         SetPlotFlag(target, false);
                         ApplyEffectToObject(DurationType.Instant, EffectDeath(), target);
+
+                        var prop = GetLocalObject(target, "RESOURCE_PROP_OBJ");
+                        if (GetIsObjectValid(prop))
+                        {
+                            SetPlotFlag(prop, false);
+                            ApplyEffectToObject(DurationType.Instant, EffectDeath(), prop);
+                        }
                     }
                     else
                     {

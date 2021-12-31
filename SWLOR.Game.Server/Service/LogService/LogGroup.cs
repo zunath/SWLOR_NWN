@@ -9,7 +9,7 @@ namespace SWLOR.Game.Server.Service.LogService
         Attack,
         [LogGroup("Connection", ServerEnvironmentType.All)]
         Connection,
-        [LogGroup("Erroor", ServerEnvironmentType.All)]
+        [LogGroup("Error", ServerEnvironmentType.All)]
         Error,
         [LogGroup("Chat", ServerEnvironmentType.All)]
         Chat,

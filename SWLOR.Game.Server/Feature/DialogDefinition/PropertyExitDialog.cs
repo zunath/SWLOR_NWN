@@ -44,7 +44,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             // The existence of a current position means this is a starship currently in space.
             // Players should only have the "Emergency Exit" option.
-            if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
+            if (property != null &&
+                property.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
             {
                 page.Header += "\nYou may perform an emergency exit to return to the last dock at which this ship landed. If you are the last person on board, the ship will be towed back, damaging the ship's shields and hull.";
 
@@ -57,7 +58,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 });
             }
             // The existence of a "Last Docked" position means this is a starship currently docked at a starport.
-            else if (property.Positions.ContainsKey(PropertyLocationType.DockPosition))
+            else if (property != null && 
+                     property.Positions.ContainsKey(PropertyLocationType.DockPosition))
             {
                 page.AddResponse("Exit", () =>
                 {

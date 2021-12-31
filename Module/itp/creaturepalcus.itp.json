@@ -3674,25 +3674,6 @@
                     },
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Crystal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "crystal_refugee"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "CR": {
-                      "type": "float",
-                      "value": 0.5
-                    },
-                    "FACTION": {
-                      "type": "cexostring",
-                      "value": "Commoner"
-                    },
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Cyylani"
                     },
                     "RESREF": {
@@ -4420,6 +4401,25 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "kieun_xorxca"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "CR": {
+                      "type": "float",
+                      "value": 0.5
+                    },
+                    "FACTION": {
+                      "type": "cexostring",
+                      "value": "Commoner"
+                    },
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Krystalle"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "crystal_refugee"
                     }
                   },
                   {

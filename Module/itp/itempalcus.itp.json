@@ -8800,17 +8800,6 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
-                      "value": "Crystal's Finest Red Crystal"
-                    },
-                    "RESREF": {
-                      "type": "resref",
-                      "value": "p_crystal_red_qs"
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "NAME": {
-                      "type": "cexostring",
                       "value": "Currian Ore"
                     },
                     "RESREF": {
@@ -9905,6 +9894,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "kinrath_silk"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "Krystalle's Finest Red Crystal"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "p_crystal_red_qs"
                     }
                   },
                   {

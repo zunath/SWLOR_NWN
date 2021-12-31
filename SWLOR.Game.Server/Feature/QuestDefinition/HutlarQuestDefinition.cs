@@ -8,18 +8,18 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 {
     public class HutlarQuestDefinition: IQuestListDefinition
     {
+        private readonly QuestBuilder builder = new QuestBuilder();
         public Dictionary<string, QuestDetail> BuildQuests()
         {
-            var builder = new QuestBuilder();
-            BeatTheByysk(builder);
-            CullTheTundraThreat(builder);
-            HutlarPowerInvestigation(builder);
-            StupendiousSlugBile(builder);
+            BeatTheByysk();
+            CullTheTundraThreat();
+            HutlarPowerInvestigation();
+            StupendousSlugBile();
 
             return builder.Build();
         }
 
-        private static void BeatTheByysk(QuestBuilder builder)
+        private void BeatTheByysk()
         {
             builder.Create("beat_byysk", "Beat the Byysk")
 
@@ -30,10 +30,11 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Return to Rorrska Buvvien in the Hutlar Outpost and report your progress.")
 
-                .AddGoldReward(800);
+                .AddGoldReward(800)
+                .AddXPReward(800);
         }
 
-        private static void CullTheTundraThreat(QuestBuilder builder)
+        private void CullTheTundraThreat()
         {
             builder.Create("tundra_tiger_threat", "Cull the Tundra Tiger Threat")
 
@@ -45,10 +46,10 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("Return to Kieun Xorxca in the Hutlar Outpost and report your progress.")
 
                 .AddGoldReward(550)
-                .AddItemReward("qion_enh_device", 1);
+                .AddXPReward(800);
         }
 
-        private static void HutlarPowerInvestigation(QuestBuilder builder)
+        private void HutlarPowerInvestigation()
         {
             builder.Create("hut_power_invest", "Hutlar Power Investigation")
                 .PrerequisiteQuest("beat_byysk")
@@ -88,8 +89,8 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("Return to Guylan Verruchi in the Hutlar Outpost and let him know you've replaced the actuator.")
 
                 .AddGoldReward(1200)
-                .AddItemReward("xp_tome_4", 1)
-                
+                .AddXPReward(1300)
+
                 .OnAcceptAction((player, sourceObject) =>
                 {
                     // Southeast 
@@ -129,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 });
         }
 
-        private static void StupendiousSlugBile(QuestBuilder builder)
+        private void StupendousSlugBile()
         {
             builder.Create("stup_slug_bile", "Stupendious Slug Bile")
 

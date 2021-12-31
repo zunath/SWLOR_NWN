@@ -13,9 +13,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetArea(uint oTarget)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(24);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(oTarget);
+            VM.Call(24);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -30,8 +30,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetEnteringObject()
         {
-            Internal.NativeFunctions.CallBuiltIn(25);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(25);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -42,8 +42,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetExitingObject()
         {
-            Internal.NativeFunctions.CallBuiltIn(26);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(26);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -52,9 +52,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 GetPosition(uint oTarget)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(27);
-            return Internal.NativeFunctions.StackPopVector();
+            VM.StackPush(oTarget);
+            VM.Call(27);
+            return VM.StackPopVector();
         }
 
         /// <summary>
@@ -62,8 +62,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBackgroundPlay(uint oArea)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(425);
+            VM.StackPush(oArea);
+            VM.Call(425);
         }
 
         /// <summary>
@@ -71,8 +71,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBackgroundStop(uint oArea)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(426);
+            VM.StackPush(oArea);
+            VM.Call(426);
         }
 
         /// <summary>
@@ -82,9 +82,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBackgroundSetDelay(uint oArea, int nDelay)
         {
-            Internal.NativeFunctions.StackPushInteger(nDelay);
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(427);
+            VM.StackPush(nDelay);
+            VM.StackPush(oArea);
+            VM.Call(427);
         }
 
         /// <summary>
@@ -94,9 +94,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBackgroundChangeDay(uint oArea, int nTrack)
         {
-            Internal.NativeFunctions.StackPushInteger(nTrack);
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(428);
+            VM.StackPush(nTrack);
+            VM.StackPush(oArea);
+            VM.Call(428);
         }
 
         /// <summary>
@@ -106,9 +106,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBackgroundChangeNight(uint oArea, int nTrack)
         {
-            Internal.NativeFunctions.StackPushInteger(nTrack);
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(429);
+            VM.StackPush(nTrack);
+            VM.StackPush(oArea);
+            VM.Call(429);
         }
 
         /// <summary>
@@ -116,8 +116,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBattlePlay(uint oArea)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(430);
+            VM.StackPush(oArea);
+            VM.Call(430);
         }
 
         /// <summary>
@@ -125,8 +125,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBattleStop(uint oArea)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(431);
+            VM.StackPush(oArea);
+            VM.Call(431);
         }
 
         /// <summary>
@@ -136,9 +136,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void MusicBattleChange(uint oArea, int nTrack)
         {
-            Internal.NativeFunctions.StackPushInteger(nTrack);
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(432);
+            VM.StackPush(nTrack);
+            VM.StackPush(oArea);
+            VM.Call(432);
         }
 
         /// <summary>
@@ -146,8 +146,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AmbientSoundPlay(uint oArea)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(433);
+            VM.StackPush(oArea);
+            VM.Call(433);
         }
 
         /// <summary>
@@ -155,8 +155,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AmbientSoundStop(uint oArea)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(434);
+            VM.StackPush(oArea);
+            VM.Call(434);
         }
 
         /// <summary>
@@ -166,9 +166,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AmbientSoundChangeDay(uint oArea, int nTrack)
         {
-            Internal.NativeFunctions.StackPushInteger(nTrack);
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(435);
+            VM.StackPush(nTrack);
+            VM.StackPush(oArea);
+            VM.Call(435);
         }
 
         /// <summary>
@@ -178,9 +178,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AmbientSoundChangeNight(uint oArea, int nTrack)
         {
-            Internal.NativeFunctions.StackPushInteger(nTrack);
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(436);
+            VM.StackPush(nTrack);
+            VM.StackPush(oArea);
+            VM.Call(436);
         }
 
         /// <summary>
@@ -190,8 +190,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RecomputeStaticLighting(uint oArea)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(516);
+            VM.StackPush(oArea);
+            VM.Call(516);
         }
 
         /// <summary>
@@ -199,9 +199,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int MusicBackgroundGetDayTrack(uint oArea)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(558);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oArea);
+            VM.Call(558);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -209,9 +209,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int MusicBackgroundGetNightTrack(uint oArea)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(559);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oArea);
+            VM.Call(559);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -221,9 +221,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AmbientSoundSetDayVolume(uint oArea, int nVolume)
         {
-            Internal.NativeFunctions.StackPushInteger(nVolume);
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(567);
+            VM.StackPush(nVolume);
+            VM.StackPush(oArea);
+            VM.Call(567);
         }
 
         /// <summary>
@@ -233,9 +233,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AmbientSoundSetNightVolume(uint oArea, int nVolume)
         {
-            Internal.NativeFunctions.StackPushInteger(nVolume);
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(568);
+            VM.StackPush(nVolume);
+            VM.StackPush(oArea);
+            VM.Call(568);
         }
 
         /// <summary>
@@ -243,9 +243,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int MusicBackgroundGetBattleTrack(uint oArea)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(569);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oArea);
+            VM.Call(569);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -253,9 +253,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsAreaInterior(uint oArea = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(716);
-            return Convert.ToBoolean(Internal.NativeFunctions.StackPopInteger());
+            VM.StackPush(oArea);
+            VM.Call(716);
+            return Convert.ToBoolean(VM.StackPopInt());
         }
 
         /// <summary>
@@ -265,9 +265,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Weather GetWeather(uint oArea)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(724);
-            return (Weather)Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oArea);
+            VM.Call(724);
+            return (Weather)VM.StackPopInt();
         }
 
         /// <summary>
@@ -276,9 +276,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Natural GetIsAreaNatural(uint oArea)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(725);
-            return (Natural)Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oArea);
+            VM.Call(725);
+            return (Natural)VM.StackPopInt();
         }
 
         /// <summary>
@@ -287,9 +287,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsAreaAboveGround(uint oArea)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(726);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oArea);
+            VM.Call(726);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -300,9 +300,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetSkyBox(Skybox nSkyBox, uint oArea = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.StackPushInteger((int)nSkyBox);
-            Internal.NativeFunctions.CallBuiltIn(777);
+            VM.StackPush(oArea);
+            VM.StackPush((int)nSkyBox);
+            VM.Call(777);
         }
 
         /// <summary>
@@ -320,10 +320,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetFogColor(FogType nFogType, FogColor nFogColor, uint oArea = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.StackPushInteger((int)nFogColor);
-            Internal.NativeFunctions.StackPushInteger((int)nFogType);
-            Internal.NativeFunctions.CallBuiltIn(780);
+            VM.StackPush(oArea);
+            VM.StackPush((int)nFogColor);
+            VM.StackPush((int)nFogType);
+            VM.Call(780);
         }
 
         /// <summary>
@@ -335,9 +335,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Skybox GetSkyBox(uint oArea = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(782);
-            return (Skybox)Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oArea);
+            VM.Call(782);
+            return (Skybox)VM.StackPopInt();
         }
 
         /// <summary>
@@ -349,10 +349,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static FogColor GetFogColor(FogType nFogType, uint oArea = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.StackPushInteger((int)nFogType);
-            Internal.NativeFunctions.CallBuiltIn(783);
-            return (FogColor)Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oArea);
+            VM.StackPush((int)nFogType);
+            VM.Call(783);
+            return (FogColor)VM.StackPopInt();
         }
 
         /// <summary>
@@ -364,10 +364,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetFogAmount(FogType nFogType, int nFogAmount, uint oArea = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.StackPushInteger(nFogAmount);
-            Internal.NativeFunctions.StackPushInteger((int)nFogType);
-            Internal.NativeFunctions.CallBuiltIn(784);
+            VM.StackPush(oArea);
+            VM.StackPush(nFogAmount);
+            VM.StackPush((int)nFogType);
+            VM.Call(784);
         }
 
         /// <summary>
@@ -379,10 +379,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFogAmount(FogType nFogType, uint oArea = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.StackPushInteger((int)nFogType);
-            Internal.NativeFunctions.CallBuiltIn(785);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oArea);
+            VM.StackPush((int)nFogType);
+            VM.Call(785);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -409,9 +409,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetTilesetResRef(uint oArea)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(814);
-            return Internal.NativeFunctions.StackPopStringUTF8();
+            VM.StackPush(oArea);
+            VM.Call(814);
+            return NWNCore.NativeFunctions.StackPopStringUTF8();
         }
 
         /// <summary>
@@ -426,10 +426,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetAreaSize(Dimension nAreaDimension, uint oArea = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.StackPushInteger((int)nAreaDimension);
-            Internal.NativeFunctions.CallBuiltIn(829);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oArea);
+            VM.StackPush((int)nAreaDimension);
+            VM.Call(829);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -447,9 +447,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int DestroyArea(uint oArea)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(859);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oArea);
+            VM.Call(859);
+            return VM.StackPopInt();
         }
 
 
@@ -475,11 +475,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint CreateArea(string sSourceResRef, string sNewTag = "", string sNewName = "")
         {
-            Internal.NativeFunctions.StackPushString(sNewName);
-            Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
-            Internal.NativeFunctions.StackPushStringUTF8(sSourceResRef);
-            Internal.NativeFunctions.CallBuiltIn(858);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(sNewName);
+            VM.StackPush(sNewTag);
+            VM.StackPush(sSourceResRef);
+            VM.Call(858);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -503,9 +503,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint CopyArea(uint oArea)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(860);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(oArea);
+            VM.Call(860);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -513,8 +513,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFirstArea()
         {
-            Internal.NativeFunctions.CallBuiltIn(861);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(861);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -523,8 +523,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetNextArea()
         {
-            Internal.NativeFunctions.CallBuiltIn(862);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(862);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -534,9 +534,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFirstObjectInArea(uint oArea = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(93);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(oArea);
+            VM.Call(93);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -546,9 +546,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetNextObjectInArea(uint oArea = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(94);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(oArea);
+            VM.Call(94);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -556,9 +556,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Location GetLocation(uint oObject)
         {
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(213);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Location);
+            VM.StackPush(oObject);
+            VM.Call(213);
+            return VM.StackPopStruct((int)EngineStructure.Location);
         }
 
         /// <summary>
@@ -567,8 +567,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionJumpToLocation(Location lLocation)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lLocation);
-            Internal.NativeFunctions.CallBuiltIn(214);
+            VM.StackPush((int)EngineStructure.Location, lLocation);
+            VM.Call(214);
         }
 
         /// <summary>
@@ -576,11 +576,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Location Location(uint oArea, Vector3 vPosition, float fOrientation)
         {
-            Internal.NativeFunctions.StackPushFloat(fOrientation);
-            Internal.NativeFunctions.StackPushVector(vPosition);
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(215);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Location);
+            VM.StackPush(fOrientation);
+            VM.StackPush(vPosition);
+            VM.StackPush(oArea);
+            VM.Call(215);
+            return VM.StackPopStruct((int)EngineStructure.Location);
         }
 
         /// <summary>
@@ -589,11 +589,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void ApplyEffectAtLocation(DurationType nDurationType, Effect eEffect, Location lLocation,
             float fDuration = 0.0f)
         {
-            Internal.NativeFunctions.StackPushFloat(fDuration);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lLocation);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.StackPushInteger((int)nDurationType);
-            Internal.NativeFunctions.CallBuiltIn(216);
+            VM.StackPush(fDuration);
+            VM.StackPush((int)EngineStructure.Location, lLocation);
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.StackPush((int)nDurationType);
+            VM.Call(216);
         }
 
         /// <summary>
@@ -604,10 +604,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ExploreAreaForPlayer(uint oArea, uint oPlayer, bool bExplored = true)
         {
-            Internal.NativeFunctions.StackPushInteger(bExplored ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(403);
+            VM.StackPush(bExplored ? 1 : 0);
+            VM.StackPush(oPlayer);
+            VM.StackPush(oArea);
+            VM.Call(403);
         }
 
         /// <summary>
@@ -626,9 +626,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTransitionTarget(uint oTransition, uint oTarget)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.StackPushObject(oTransition);
-            Internal.NativeFunctions.CallBuiltIn(863);
+            VM.StackPush(oTarget);
+            VM.StackPush(oTransition);
+            VM.Call(863);
         }
 
         /// <summary>
@@ -643,9 +643,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetWeather(uint oTarget, WeatherType nWeather)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nWeather);
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(507);
+            VM.StackPush((int)nWeather);
+            VM.StackPush(oTarget);
+            VM.Call(507);
         }
 
         /// <summary>
@@ -660,13 +660,13 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int SetTileExplored(uint creature, uint area, int x, int y, bool newState)
         {
-            Internal.NativeFunctions.StackPushInteger(newState ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger(y);
-            Internal.NativeFunctions.StackPushInteger(x);
-            Internal.NativeFunctions.StackPushObject(area);
-            Internal.NativeFunctions.StackPushObject(creature);
-            Internal.NativeFunctions.CallBuiltIn(866);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(newState ? 1 : 0);
+            VM.StackPush(y);
+            VM.StackPush(x);
+            VM.StackPush(area);
+            VM.StackPush(creature);
+            VM.Call(866);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -682,12 +682,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTileExplored(uint creature, uint area, int x, int y)
         {
-            Internal.NativeFunctions.StackPushInteger(y);
-            Internal.NativeFunctions.StackPushInteger(x);
-            Internal.NativeFunctions.StackPushObject(area);
-            Internal.NativeFunctions.StackPushObject(creature);
-            Internal.NativeFunctions.CallBuiltIn(867);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(y);
+            VM.StackPush(x);
+            VM.StackPush(area);
+            VM.StackPush(creature);
+            VM.Call(867);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -702,10 +702,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int SetCreatureExploresMinimap(uint creature, bool newState)
         {
-            Internal.NativeFunctions.StackPushInteger(newState ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(creature);
-            Internal.NativeFunctions.CallBuiltIn(868);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(newState ? 1 : 0);
+            VM.StackPush(creature);
+            VM.Call(868);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -714,9 +714,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetCreatureExploresMinimap(uint creature)
         {
-            Internal.NativeFunctions.StackPushObject(creature);
-            Internal.NativeFunctions.CallBuiltIn(869);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(creature);
+            VM.Call(869);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -726,9 +726,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetSurfaceMaterial(Location at)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, at);
-            Internal.NativeFunctions.CallBuiltIn(870);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.Location, at);
+            VM.Call(870);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -737,9 +737,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetGroundHeight(Location at)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, at);
-            Internal.NativeFunctions.CallBuiltIn(871);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush((int)EngineStructure.Location, at);
+            VM.Call(871);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -749,10 +749,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsInSubArea(uint oCreature, uint oSubArea = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oSubArea);
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(768);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oSubArea);
+            VM.StackPush(oCreature);
+            VM.Call(768);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -764,10 +764,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTileMainLightColor(Location lTileLocation, int nMainLight1Color, int nMainLight2Color)
         {
-            Internal.NativeFunctions.StackPushInteger(nMainLight2Color);
-            Internal.NativeFunctions.StackPushInteger(nMainLight1Color);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTileLocation);
-            Internal.NativeFunctions.CallBuiltIn(514);
+            VM.StackPush(nMainLight2Color);
+            VM.StackPush(nMainLight1Color);
+            VM.StackPush((int)EngineStructure.Location, lTileLocation);
+            VM.Call(514);
         }
 
         /// <summary>
@@ -780,10 +780,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetTileSourceLightColor(Location lTileLocation, int nSourceLight1Color,
             int nSourceLight2Color)
         {
-            Internal.NativeFunctions.StackPushInteger(nSourceLight2Color);
-            Internal.NativeFunctions.StackPushInteger(nSourceLight1Color);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTileLocation);
-            Internal.NativeFunctions.CallBuiltIn(515);
+            VM.StackPush(nSourceLight2Color);
+            VM.StackPush(nSourceLight1Color);
+            VM.StackPush((int)EngineStructure.Location, lTileLocation);
+            VM.Call(515);
         }
 
         /// <summary>
@@ -793,9 +793,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTileMainLight1Color(Location lTile)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTile);
-            Internal.NativeFunctions.CallBuiltIn(517);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.Location, lTile);
+            VM.Call(517);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -806,9 +806,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTileMainLight2Color(Location lTile)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTile);
-            Internal.NativeFunctions.CallBuiltIn(518);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.Location, lTile);
+            VM.Call(518);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -819,9 +819,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTileSourceLight1Color(Location lTile)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTile);
-            Internal.NativeFunctions.CallBuiltIn(519);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.Location, lTile);
+            VM.Call(519);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -832,9 +832,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTileSourceLight2Color(Location lTile)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTile);
-            Internal.NativeFunctions.CallBuiltIn(520);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.Location, lTile);
+            VM.Call(520);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -844,9 +844,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetMapPinEnabled(uint oMapPin, bool bEnabled = true)
         {
-            Internal.NativeFunctions.StackPushInteger(bEnabled ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oMapPin);
-            Internal.NativeFunctions.CallBuiltIn(386);
+            VM.StackPush(bEnabled ? 1 : 0);
+            VM.StackPush(oMapPin);
+            VM.Call(386);
         }
 
         /// <summary>
@@ -854,9 +854,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetAreaFromLocation(Location lLocation)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lLocation);
-            Internal.NativeFunctions.CallBuiltIn(224);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush((int)EngineStructure.Location, lLocation);
+            VM.Call(224);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -864,9 +864,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 GetPositionFromLocation(Location lLocation)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lLocation);
-            Internal.NativeFunctions.CallBuiltIn(223);
-            return Internal.NativeFunctions.StackPopVector();
+            VM.StackPush((int)EngineStructure.Location, lLocation);
+            VM.Call(223);
+            return VM.StackPopVector();
         }
 
         /// <summary>
@@ -884,9 +884,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetAreaTransitionBMP(AreaTransition nPredefinedAreaTransition,
             string sCustomAreaTransitionBMP = "")
         {
-            Internal.NativeFunctions.StackPushStringUTF8(sCustomAreaTransitionBMP);
-            Internal.NativeFunctions.StackPushInteger((int)nPredefinedAreaTransition);
-            Internal.NativeFunctions.CallBuiltIn(203);
+            VM.StackPush(sCustomAreaTransitionBMP);
+            VM.StackPush((int)nPredefinedAreaTransition);
+            VM.Call(203);
         }
 
 
@@ -899,12 +899,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetAreaWind(uint oArea, Vector3 vDirection, float fMagnitude, float fYaw, float fPitch)
         {
-            Internal.NativeFunctions.StackPushFloat(fPitch);
-            Internal.NativeFunctions.StackPushFloat(fYaw);
-            Internal.NativeFunctions.StackPushFloat(fMagnitude);
-            Internal.NativeFunctions.StackPushVector(vDirection);
-            Internal.NativeFunctions.StackPushObject(oArea);
-            Internal.NativeFunctions.CallBuiltIn(919);
+            VM.StackPush(fPitch);
+            VM.StackPush(fYaw);
+            VM.StackPush(fMagnitude);
+            VM.StackPush(vDirection);
+            VM.StackPush(oArea);
+            VM.Call(919);
         }
 
     }

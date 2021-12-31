@@ -13,9 +13,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsInCutsceneMode(uint oCreature = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(781);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oCreature);
+            VM.Call(781);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -24,9 +24,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCameraHeight(uint oPlayer, float fHeight = 0.0f)
         {
-            Internal.NativeFunctions.StackPushFloat(fHeight);
-            Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(776);
+            VM.StackPush(fHeight);
+            VM.StackPush(oPlayer);
+            VM.Call(776);
         }
 
         /// <summary>
@@ -36,9 +36,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DayToNight(uint oPlayer, float fTransitionTime = 0.0f)
         {
-            Internal.NativeFunctions.StackPushFloat(fTransitionTime);
-            Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(750);
+            VM.StackPush(fTransitionTime);
+            VM.StackPush(oPlayer);
+            VM.Call(750);
         }
 
         /// <summary>
@@ -48,9 +48,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void NightToDay(uint oPlayer, float fTransitionTime = 0.0f)
         {
-            Internal.NativeFunctions.StackPushFloat(fTransitionTime);
-            Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(751);
+            VM.StackPush(fTransitionTime);
+            VM.StackPush(oPlayer);
+            VM.Call(751);
         }
 
         /// <summary>
@@ -60,9 +60,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetCutsceneCameraMoveRate(uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(742);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(oCreature);
+            VM.Call(742);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -72,9 +72,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCutsceneCameraMoveRate(uint oCreature, float fRate)
         {
-            Internal.NativeFunctions.StackPushFloat(fRate);
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(743);
+            VM.StackPush(fRate);
+            VM.StackPush(oCreature);
+            VM.Call(743);
         }
 
         /// <summary>
@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionExamine(uint oExamine)
         {
-            Internal.NativeFunctions.StackPushObject(oExamine);
-            Internal.NativeFunctions.CallBuiltIn(738);
+            VM.StackPush(oExamine);
+            VM.Call(738);
         }
 
         /// <summary>
@@ -92,8 +92,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetPCItemLastEquipped()
         {
-            Internal.NativeFunctions.CallBuiltIn(727);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(727);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -101,8 +101,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetPCItemLastEquippedBy()
         {
-            Internal.NativeFunctions.CallBuiltIn(728);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(728);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -110,8 +110,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetPCItemLastUnequipped()
         {
-            Internal.NativeFunctions.CallBuiltIn(729);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(729);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -119,8 +119,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetPCItemLastUnequippedBy()
         {
-            Internal.NativeFunctions.CallBuiltIn(730);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(730);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -128,9 +128,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SendMessageToPCByStrRef(uint oPlayer, int nStrRef)
         {
-            Internal.NativeFunctions.StackPushInteger(nStrRef);
-            Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(717);
+            VM.StackPush(nStrRef);
+            VM.StackPush(oPlayer);
+            VM.Call(717);
         }
 
         /// <summary>
@@ -142,9 +142,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void OpenInventory(uint oCreature, uint oPlayer)
         {
-            Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(701);
+            VM.StackPush(oPlayer);
+            VM.StackPush(oCreature);
+            VM.Call(701);
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void StoreCameraFacing()
         {
-            Internal.NativeFunctions.CallBuiltIn(702);
+            VM.Call(702);
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RestoreCameraFacing()
         {
-            Internal.NativeFunctions.CallBuiltIn(703);
+            VM.Call(703);
         }
 
         /// <summary>
@@ -172,9 +172,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void FadeFromBlack(uint oCreature, float fSpeed = FadeSpeed.Medium)
         {
-            Internal.NativeFunctions.StackPushFloat(fSpeed);
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(695);
+            VM.StackPush(fSpeed);
+            VM.StackPush(oCreature);
+            VM.Call(695);
         }
 
         /// <summary>
@@ -183,9 +183,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void FadeToBlack(uint oCreature, float fSpeed = FadeSpeed.Medium)
         {
-            Internal.NativeFunctions.StackPushFloat(fSpeed);
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(696);
+            VM.StackPush(fSpeed);
+            VM.StackPush(oCreature);
+            VM.Call(696);
         }
 
         /// <summary>
@@ -194,8 +194,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void StopFade(uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(697);
+            VM.StackPush(oCreature);
+            VM.Call(697);
         }
 
         /// <summary>
@@ -205,8 +205,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void BlackScreen(uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(698);
+            VM.StackPush(oCreature);
+            VM.Call(698);
         }
 
         /// <summary>
@@ -222,10 +222,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCutsceneMode(uint oCreature, bool nInCutscene = true, bool nLeftClickingEnabled = false)
         {
-            Internal.NativeFunctions.StackPushInteger(nLeftClickingEnabled ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger(nInCutscene ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(692);
+            VM.StackPush(nLeftClickingEnabled ? 1 : 0);
+            VM.StackPush(nInCutscene ? 1 : 0);
+            VM.StackPush(oCreature);
+            VM.Call(692);
         }
 
         /// <summary>
@@ -233,8 +233,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastPCToCancelCutscene()
         {
-            Internal.NativeFunctions.CallBuiltIn(693);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(693);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -243,9 +243,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void BootPC(uint oPlayer, string sReason = "")
         {
-            Internal.NativeFunctions.StackPushString(sReason);
-            Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(565);
+            VM.StackPush(sReason);
+            VM.StackPush(oPlayer);
+            VM.Call(565);
         }
 
         /// <summary>
@@ -264,12 +264,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void PopUpDeathGUIPanel(uint oPC, bool bRespawnButtonEnabled = true,
             bool bWaitForHelpButtonEnabled = true, int nHelpStringReference = 0, string sHelpString = "")
         {
-            Internal.NativeFunctions.StackPushString(sHelpString);
-            Internal.NativeFunctions.StackPushInteger(nHelpStringReference);
-            Internal.NativeFunctions.StackPushInteger(bWaitForHelpButtonEnabled ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger(bRespawnButtonEnabled ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oPC);
-            Internal.NativeFunctions.CallBuiltIn(554);
+            VM.StackPush(sHelpString);
+            VM.StackPush(nHelpStringReference);
+            VM.StackPush(bWaitForHelpButtonEnabled ? 1 : 0);
+            VM.StackPush(bRespawnButtonEnabled ? 1 : 0);
+            VM.StackPush(oPC);
+            VM.Call(554);
         }
 
         /// <summary>
@@ -278,8 +278,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFirstPC()
         {
-            Internal.NativeFunctions.CallBuiltIn(548);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(548);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -288,8 +288,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetNextPC()
         {
-            Internal.NativeFunctions.CallBuiltIn(549);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(549);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -297,8 +297,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetPCLevellingUp()
         {
-            Internal.NativeFunctions.CallBuiltIn(542);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(542);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -310,9 +310,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCameraMode(uint oPlayer, int nCameraMode)
         {
-            Internal.NativeFunctions.StackPushInteger(nCameraMode);
-            Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(504);
+            VM.StackPush(nCameraMode);
+            VM.StackPush(oPlayer);
+            VM.Call(504);
         }
 
         /// <summary>
@@ -320,8 +320,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastPlayerDying()
         {
-            Internal.NativeFunctions.CallBuiltIn(410);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(410);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -333,9 +333,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void PopUpGUIPanel(uint oPC, GuiPanel nGUIPanel)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nGUIPanel);
-            Internal.NativeFunctions.StackPushObject(oPC);
-            Internal.NativeFunctions.CallBuiltIn(388);
+            VM.StackPush((int)nGUIPanel);
+            VM.StackPush(oPC);
+            VM.Call(388);
         }
 
 
@@ -345,9 +345,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetPlayerBuildVersionMajor(uint oPlayer)
         {
-            Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(904);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oPlayer);
+            VM.Call(904);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -356,9 +356,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetPlayerBuildVersionMinor(uint oPlayer)
         {
-            Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(905);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oPlayer);
+            VM.Call(905);
+            return VM.StackPopInt();
         }
 
 
@@ -369,9 +369,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetIsPlayerDM(uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(918);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oCreature);
+            VM.Call(918);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -380,8 +380,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static uint GetLastGuiEventPlayer()
         {
-            Internal.NativeFunctions.CallBuiltIn(960);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(960);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -390,8 +390,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static GuiEventType GetLastGuiEventType()
         {
-            Internal.NativeFunctions.CallBuiltIn(961);
-            return (GuiEventType)Internal.NativeFunctions.StackPopInteger();
+            VM.Call(961);
+            return (GuiEventType)VM.StackPopInt();
         }
 
         /// <summary>
@@ -408,8 +408,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static int GetLastGuiEventInteger()
         {
-            Internal.NativeFunctions.CallBuiltIn(962);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.Call(962);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -423,8 +423,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static uint GetLastGuiEventObject()
         {
-            Internal.NativeFunctions.CallBuiltIn(963);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(963);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -440,10 +440,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <param name="bDisabled"></param>
         public static void SetGuiPanelDisabled(uint oPlayer, GuiPanel nGuiPanel, bool bDisabled)
         {
-            Internal.NativeFunctions.StackPushInteger(bDisabled ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger((int)nGuiPanel);
-            Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(964);
+            VM.StackPush(bDisabled ? 1 : 0);
+            VM.StackPush((int)nGuiPanel);
+            VM.StackPush(oPlayer);
+            VM.Call(964);
         }
 
         /// <summary>
@@ -452,8 +452,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static int GetLastTileActionId()
         {
-            Internal.NativeFunctions.CallBuiltIn(965);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.Call(965);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -462,8 +462,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static Vector3 GetLastTileActionPosition()
         {
-            Internal.NativeFunctions.CallBuiltIn(966);
-            return Internal.NativeFunctions.StackPopVector();
+            VM.Call(966);
+            return VM.StackPopVector();
         }
 
         /// <summary>
@@ -472,8 +472,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static uint GetLastPlayerToDoTileAction()
         {
-            Internal.NativeFunctions.CallBuiltIn(967);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(967);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -487,11 +487,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetPlayerDeviceProperty(uint oPlayer, string sProperty)
         {
-            Internal.NativeFunctions.StackPushString(sProperty);
-            Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(1004);
+            VM.StackPush(sProperty);
+            VM.StackPush(oPlayer);
+            VM.Call(1004);
 
-            return Internal.NativeFunctions.StackPopInteger();
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -499,10 +499,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static PlayerLanguageType GetPlayerLanguage(uint oPlayer)
         {
-            Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(1005);
+            VM.StackPush(oPlayer);
+            VM.Call(1005);
 
-            return (PlayerLanguageType)Internal.NativeFunctions.StackPopInteger();
+            return (PlayerLanguageType)VM.StackPopInt();
         }
 
         /// <summary>
@@ -510,10 +510,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static PlayerDevicePlatformType GetPlayerDevicePlatform(uint oPlayer)
         {
-            Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(1006);
+            VM.StackPush(oPlayer);
+            VM.Call(1006);
 
-            return (PlayerDevicePlatformType)Internal.NativeFunctions.StackPopInteger();
+            return (PlayerDevicePlatformType)VM.StackPopInt();
         }
 
     }

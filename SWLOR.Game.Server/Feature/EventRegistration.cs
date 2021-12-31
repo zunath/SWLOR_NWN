@@ -48,7 +48,13 @@ namespace SWLOR.Game.Server.Feature
 
             // Fire off the mod_cache event which is used for caching data, before mod_load runs.
             ExecuteScript("mod_cache", GetModule());
+        }
 
+        [NWNEventHandler("mod_load")]
+        public static void StartScheduledEvents()
+        {
+            RunOneSecondPCIntervalEvent();
+            //Scheduler.ScheduleRepeating(RunOneSecondPCIntervalEvent, TimeSpan.FromSeconds(1));
         }
 
         [NWNEventHandler("mod_heartbeat")]
@@ -56,7 +62,7 @@ namespace SWLOR.Game.Server.Feature
         {
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
-                ExecuteScript("interval_pc_6s", player);
+                //ExecuteScript("interval_pc_6s", player);
             }
         }
 
@@ -555,6 +561,25 @@ namespace SWLOR.Game.Server.Feature
         {
             var firstObject = GetFirstObjectInArea(GetFirstArea());
             CreaturePlugin.SetCriticalRangeModifier(firstObject, 0, 0, true);
+        }
+
+
+        /// <summary>
+        /// Fires an event on every player every second.
+        /// We do it this way so we don't run into a situation
+        /// where we iterate over the player list more than once per second
+        /// </summary>
+        private static void RunOneSecondPCIntervalEvent()
+        {
+            DelayCommand(1f, RunOneSecondPCIntervalEvent);
+
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (!GetIsPC(player) || GetIsDM(player))
+                    continue;
+
+                ExecuteScript("interval_pc_1s", player);
+            }
         }
     }
 }

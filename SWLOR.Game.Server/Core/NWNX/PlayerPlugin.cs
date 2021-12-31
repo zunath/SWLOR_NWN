@@ -3,6 +3,7 @@ using System.Numerics;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Core.NWNX
 {
@@ -14,10 +15,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         // If used on a placeable in a different area than the player, the portait will not be shown.
         public static void ForcePlaceableExamineWindow(uint player, uint placeable)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ForcePlaceableExamineWindow");
-            Internal.NativeFunctions.nwnxPushObject(placeable);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ForcePlaceableExamineWindow");
+            NWNCore.NativeFunctions.nwnxPushObject(placeable);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Force opens the target object's inventory for the player.
@@ -30,10 +31,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         // - Walking will close the placeable automatically.
         public static void ForcePlaceableInventoryWindow(uint player, uint placeable)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ForcePlaceableInventoryWindow");
-            Internal.NativeFunctions.nwnxPushObject(placeable);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ForcePlaceableInventoryWindow");
+            NWNCore.NativeFunctions.nwnxPushObject(placeable);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Starts displaying a timing bar.
@@ -41,34 +42,34 @@ namespace SWLOR.Game.Server.Core.NWNX
         public static void StartGuiTimingBar(uint player, float seconds, string script = "",
             TimingBarType type = TimingBarType.Custom)
         {
-            if (NWScript.NWScript.GetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ACTIVE") == 1) return;
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "StartGuiTimingBar");
-            Internal.NativeFunctions.nwnxPushInt((int)type);
-            Internal.NativeFunctions.nwnxPushFloat(seconds);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            if (GetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ACTIVE") == 1) return;
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "StartGuiTimingBar");
+            NWNCore.NativeFunctions.nwnxPushInt((int)type);
+            NWNCore.NativeFunctions.nwnxPushFloat(seconds);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
-            var id = NWScript.NWScript.GetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ID") + 1;
-            NWScript.NWScript.SetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ACTIVE", id);
-            NWScript.NWScript.SetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ID", id);
+            var id = GetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ID") + 1;
+            SetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ACTIVE", id);
+            SetLocalInt(player, "NWNX_PLAYER_GUI_TIMING_ID", id);
 
-            NWScript.NWScript.DelayCommand(seconds, () => StopGuiTimingBar(player, script, id));
+            DelayCommand(seconds, () => StopGuiTimingBar(player, script, id));
         }
 
         // Stops displaying a timing bar.
         // Runs a script if specified.
         public static void StopGuiTimingBar(uint creature, string script, int id)
         {
-            var activeId = NWScript.NWScript.GetLocalInt(creature, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
+            var activeId = GetLocalInt(creature, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
             // Either the timing event was never started, or it already finished.
             if (activeId == 0) return;
             // If id != -1, we ended up here through DelayCommand. Make sure it's for the right ID
             if (id != -1 && id != activeId) return;
-            NWScript.NWScript.DeleteLocalInt(creature, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "StopGuiTimingBar");
-            Internal.NativeFunctions.nwnxPushObject(creature);
-            Internal.NativeFunctions.nwnxCallFunction();
-            if (!string.IsNullOrWhiteSpace(script)) NWScript.NWScript.ExecuteScript(script, creature);
+            DeleteLocalInt(creature, "NWNX_PLAYER_GUI_TIMING_ACTIVE");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "StopGuiTimingBar");
+            NWNCore.NativeFunctions.nwnxPushObject(creature);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            if (!string.IsNullOrWhiteSpace(script)) ExecuteScript(script, creature);
         }
 
         // Stops displaying a timing bar.
@@ -82,136 +83,136 @@ namespace SWLOR.Game.Server.Core.NWNX
         // If true, clicking on the ground or using WASD will trigger walking instead of running.
         public static void SetAlwaysWalk(uint player, bool walk)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAlwaysWalk");
-            Internal.NativeFunctions.nwnxPushInt(walk ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAlwaysWalk");
+            NWNCore.NativeFunctions.nwnxPushInt(walk ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Gets the player's quickbar slot info
         public static QuickBarSlot GetQuickBarSlot(uint player, int slot)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetQuickBarSlot");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetQuickBarSlot");
             var qbs = new QuickBarSlot();
-            Internal.NativeFunctions.nwnxPushInt(slot);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
-            qbs.Associate = Internal.NativeFunctions.nwnxPopObject();
-            qbs.AssociateType = Internal.NativeFunctions.nwnxPopInt();
-            qbs.DomainLevel = Internal.NativeFunctions.nwnxPopInt();
-            qbs.MetaType = Internal.NativeFunctions.nwnxPopInt();
-            qbs.INTParam1 = Internal.NativeFunctions.nwnxPopInt();
-            qbs.ToolTip = Internal.NativeFunctions.nwnxPopString();
-            qbs.CommandLine = Internal.NativeFunctions.nwnxPopString();
-            qbs.CommandLabel = Internal.NativeFunctions.nwnxPopString();
-            qbs.Resref = Internal.NativeFunctions.nwnxPopString();
-            qbs.MultiClass = Internal.NativeFunctions.nwnxPopInt();
-            qbs.ObjectType = (QuickBarSlotType)Internal.NativeFunctions.nwnxPopInt();
-            qbs.SecondaryItem = Internal.NativeFunctions.nwnxPopObject();
-            qbs.Item = Internal.NativeFunctions.nwnxPopObject();
+            NWNCore.NativeFunctions.nwnxPushInt(slot);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            qbs.Associate = NWNCore.NativeFunctions.nwnxPopObject();
+            qbs.AssociateType = NWNCore.NativeFunctions.nwnxPopInt();
+            qbs.DomainLevel = NWNCore.NativeFunctions.nwnxPopInt();
+            qbs.MetaType = NWNCore.NativeFunctions.nwnxPopInt();
+            qbs.INTParam1 = NWNCore.NativeFunctions.nwnxPopInt();
+            qbs.ToolTip = NWNCore.NativeFunctions.nwnxPopString();
+            qbs.CommandLine = NWNCore.NativeFunctions.nwnxPopString();
+            qbs.CommandLabel = NWNCore.NativeFunctions.nwnxPopString();
+            qbs.Resref = NWNCore.NativeFunctions.nwnxPopString();
+            qbs.MultiClass = NWNCore.NativeFunctions.nwnxPopInt();
+            qbs.ObjectType = (QuickBarSlotType)NWNCore.NativeFunctions.nwnxPopInt();
+            qbs.SecondaryItem = NWNCore.NativeFunctions.nwnxPopObject();
+            qbs.Item = NWNCore.NativeFunctions.nwnxPopObject();
             return qbs;
         }
 
         // Sets a player's quickbar slot
         public static void SetQuickBarSlot(uint player, int slot, QuickBarSlot qbs)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetQuickBarSlot");
-            Internal.NativeFunctions.nwnxPushObject(qbs.Item ?? Internal.OBJECT_INVALID);
-            Internal.NativeFunctions.nwnxPushObject(qbs.SecondaryItem ?? Internal.OBJECT_INVALID);
-            Internal.NativeFunctions.nwnxPushInt((int)qbs.ObjectType);
-            Internal.NativeFunctions.nwnxPushInt(qbs.MultiClass);
-            Internal.NativeFunctions.nwnxPushString(qbs.Resref!);
-            Internal.NativeFunctions.nwnxPushString(qbs.CommandLabel!);
-            Internal.NativeFunctions.nwnxPushString(qbs.CommandLine!);
-            Internal.NativeFunctions.nwnxPushString(qbs.ToolTip!);
-            Internal.NativeFunctions.nwnxPushInt(qbs.INTParam1);
-            Internal.NativeFunctions.nwnxPushInt(qbs.MetaType);
-            Internal.NativeFunctions.nwnxPushInt(qbs.DomainLevel);
-            Internal.NativeFunctions.nwnxPushInt(qbs.AssociateType);
-            Internal.NativeFunctions.nwnxPushObject(qbs.Associate ?? Internal.OBJECT_INVALID);
-            Internal.NativeFunctions.nwnxPushInt(slot);
-            Internal.NativeFunctions.nwnxPushObject(player!);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetQuickBarSlot");
+            NWNCore.NativeFunctions.nwnxPushObject(qbs.Item ?? OBJECT_INVALID);
+            NWNCore.NativeFunctions.nwnxPushObject(qbs.SecondaryItem ?? OBJECT_INVALID);
+            NWNCore.NativeFunctions.nwnxPushInt((int)qbs.ObjectType);
+            NWNCore.NativeFunctions.nwnxPushInt(qbs.MultiClass);
+            NWNCore.NativeFunctions.nwnxPushString(qbs.Resref!);
+            NWNCore.NativeFunctions.nwnxPushString(qbs.CommandLabel!);
+            NWNCore.NativeFunctions.nwnxPushString(qbs.CommandLine!);
+            NWNCore.NativeFunctions.nwnxPushString(qbs.ToolTip!);
+            NWNCore.NativeFunctions.nwnxPushInt(qbs.INTParam1);
+            NWNCore.NativeFunctions.nwnxPushInt(qbs.MetaType);
+            NWNCore.NativeFunctions.nwnxPushInt(qbs.DomainLevel);
+            NWNCore.NativeFunctions.nwnxPushInt(qbs.AssociateType);
+            NWNCore.NativeFunctions.nwnxPushObject(qbs.Associate ?? OBJECT_INVALID);
+            NWNCore.NativeFunctions.nwnxPushInt(slot);
+            NWNCore.NativeFunctions.nwnxPushObject(player!);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
 
         // Get the name of the .bic file associated with the player's character.
         public static string GetBicFileName(uint player)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetBicFileName");
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopString();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetBicFileName");
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopString();
         }
 
         // Plays the VFX at the target position in current area for the given player only
         public static void ShowVisualEffect(uint player, int effectId, Vector3 position)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ShowVisualEffect");
-            Internal.NativeFunctions.nwnxPushFloat(position.X);
-            Internal.NativeFunctions.nwnxPushFloat(position.Y);
-            Internal.NativeFunctions.nwnxPushFloat(position.Z);
-            Internal.NativeFunctions.nwnxPushInt(effectId);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ShowVisualEffect");
+            NWNCore.NativeFunctions.nwnxPushFloat(position.X);
+            NWNCore.NativeFunctions.nwnxPushFloat(position.Y);
+            NWNCore.NativeFunctions.nwnxPushFloat(position.Z);
+            NWNCore.NativeFunctions.nwnxPushInt(effectId);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Changes the nighttime music track for the given player only
         public static void MusicBackgroundChangeTimeToggle(uint player, int track, bool night)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ChangeBackgroundMusic");
-            Internal.NativeFunctions.nwnxPushInt(track);
-            Internal.NativeFunctions.nwnxPushInt(night ? 1 : 0); // bool day = false
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ChangeBackgroundMusic");
+            NWNCore.NativeFunctions.nwnxPushInt(track);
+            NWNCore.NativeFunctions.nwnxPushInt(night ? 1 : 0); // bool day = false
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Toggle the background music for the given player only
         public static void MusicBackgroundToggle(uint player, bool on)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PlayBackgroundMusic");
-            Internal.NativeFunctions.nwnxPushInt(on ? 1 : 0); // bool play = false
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PlayBackgroundMusic");
+            NWNCore.NativeFunctions.nwnxPushInt(on ? 1 : 0); // bool play = false
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Changes the battle music track for the given player only
         public static void MusicBattleChange(uint player, int track)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ChangeBattleMusic");
-            Internal.NativeFunctions.nwnxPushInt(track);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ChangeBattleMusic");
+            NWNCore.NativeFunctions.nwnxPushInt(track);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Toggle the background music for the given player only
         public static void MusicBattleToggle(uint player, bool on)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PlayBattleMusic");
-            Internal.NativeFunctions.nwnxPushInt(on ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PlayBattleMusic");
+            NWNCore.NativeFunctions.nwnxPushInt(on ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Play a sound at the location of target for the given player only
         // If target is OBJECT_INVALID the sound will play at the location of the player
         public static void PlaySound(uint player, string sound, uint target)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PlaySound");
-            Internal.NativeFunctions.nwnxPushObject(target);
-            Internal.NativeFunctions.nwnxPushString(sound);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PlaySound");
+            NWNCore.NativeFunctions.nwnxPushObject(target);
+            NWNCore.NativeFunctions.nwnxPushString(sound);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Toggle a placeable's usable flag for the given player only
         public static void SetPlaceableUseable(uint player, uint placeable, bool usable)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetPlaceableUsable");
-            Internal.NativeFunctions.nwnxPushInt(usable ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushObject(placeable);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetPlaceableUsable");
+            NWNCore.NativeFunctions.nwnxPushInt(usable ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushObject(placeable);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Override player's rest duration
@@ -220,21 +221,21 @@ namespace SWLOR.Game.Server.Core.NWNX
         // -1 clears the override
         public static void SetRestDuration(uint player, int duration)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetRestDuration");
-            Internal.NativeFunctions.nwnxPushInt(duration);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetRestDuration");
+            NWNCore.NativeFunctions.nwnxPushInt(duration);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Apply visualeffect to target that only player can see
         // Note: Only works with instant effects: VFX_COM_*, VFX_FNF_*, VFX_IMP_*
         public static void ApplyInstantVisualEffectToObject(uint player, uint target, VisualEffect visualEffect)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ApplyInstantVisualEffectToObject");
-            Internal.NativeFunctions.nwnxPushInt((int)visualEffect);
-            Internal.NativeFunctions.nwnxPushObject(target);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ApplyInstantVisualEffectToObject");
+            NWNCore.NativeFunctions.nwnxPushInt((int)visualEffect);
+            NWNCore.NativeFunctions.nwnxPushObject(target);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Refreshes the players character sheet
@@ -242,9 +243,9 @@ namespace SWLOR.Game.Server.Core.NWNX
         // through nwnx and forcing a UI refresh, 0.5s seemed to be fine
         public static void UpdateCharacterSheet(uint player)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "UpdateCharacterSheet");
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "UpdateCharacterSheet");
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Allows player to open target's inventory
@@ -252,31 +253,31 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Note: only works if player and target are in the same area
         public static void OpenInventory(uint player, uint target, bool open = true)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "OpenInventory");
-            Internal.NativeFunctions.nwnxPushInt(open ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushObject(target);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "OpenInventory");
+            NWNCore.NativeFunctions.nwnxPushInt(open ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushObject(target);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Get player's area exploration state
         public static string GetAreaExplorationState(uint player, uint area)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAreaExplorationState");
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopString();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAreaExplorationState");
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopString();
         }
 
         // Set player's area exploration state (str is an encoded string obtained with NWNX_Player_GetAreaExplorationState)
         public static void SetAreaExplorationState(uint player, uint area, string encodedString)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAreaExplorationState");
-            Internal.NativeFunctions.nwnxPushString(encodedString);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAreaExplorationState");
+            NWNCore.NativeFunctions.nwnxPushString(encodedString);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Override oPlayer's rest animation to nAnimation
@@ -286,10 +287,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         //       -1 to clear the override
         public static void SetRestAnimation(uint player, int animation)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetRestAnimation");
-            Internal.NativeFunctions.nwnxPushInt(animation);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetRestAnimation");
+            NWNCore.NativeFunctions.nwnxPushInt(animation);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Override a visual transform on the given object that only oPlayer will see.
@@ -299,12 +300,12 @@ namespace SWLOR.Game.Server.Core.NWNX
         public static void SetObjectVisualTransformOverride(uint player, uint target, int transform,
             float valueToApply)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetObjectVisualTransformOverride");
-            Internal.NativeFunctions.nwnxPushFloat(valueToApply);
-            Internal.NativeFunctions.nwnxPushInt(transform);
-            Internal.NativeFunctions.nwnxPushObject(target);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetObjectVisualTransformOverride");
+            NWNCore.NativeFunctions.nwnxPushFloat(valueToApply);
+            NWNCore.NativeFunctions.nwnxPushInt(transform);
+            NWNCore.NativeFunctions.nwnxPushObject(target);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Apply a looping visualeffect to target that only player can see
@@ -316,33 +317,33 @@ namespace SWLOR.Game.Server.Core.NWNX
         //       or when they come back in view range.
         public static void ApplyLoopingVisualEffectToObject(uint player, uint target, VisualEffect visualEffect)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ApplyLoopingVisualEffectToObject");
-            Internal.NativeFunctions.nwnxPushInt((int)visualEffect);
-            Internal.NativeFunctions.nwnxPushObject(target);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ApplyLoopingVisualEffectToObject");
+            NWNCore.NativeFunctions.nwnxPushInt((int)visualEffect);
+            NWNCore.NativeFunctions.nwnxPushObject(target);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Override the name of placeable for player only
         // "" to clear the override
         public static void SetPlaceableNameOverride(uint player, uint placeable, string name)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetPlaceableNameOverride");
-            Internal.NativeFunctions.nwnxPushString(name);
-            Internal.NativeFunctions.nwnxPushObject(placeable);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetPlaceableNameOverride");
+            NWNCore.NativeFunctions.nwnxPushString(name);
+            NWNCore.NativeFunctions.nwnxPushObject(placeable);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Gets whether a quest has been completed by a player
         // Returns -1 if they don't have the journal entry
         public static int GetQuestCompleted(uint player, string questName)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetQuestCompleted");
-            Internal.NativeFunctions.nwnxPushString(questName);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetQuestCompleted");
+            NWNCore.NativeFunctions.nwnxPushString(questName);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         // This will require storing the PC's cd key or community name (depending on how you store in your vault)
@@ -353,22 +354,22 @@ namespace SWLOR.Game.Server.Core.NWNX
         public static void SetPersistentLocation(string cdKeyOrCommunityName, string bicFileName, uint wayPoint,
             bool firstConnect = true)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetPersistentLocation");
-            Internal.NativeFunctions.nwnxPushInt(firstConnect ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushObject(wayPoint);
-            Internal.NativeFunctions.nwnxPushString(bicFileName);
-            Internal.NativeFunctions.nwnxPushString(cdKeyOrCommunityName);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetPersistentLocation");
+            NWNCore.NativeFunctions.nwnxPushInt(firstConnect ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushObject(wayPoint);
+            NWNCore.NativeFunctions.nwnxPushString(bicFileName);
+            NWNCore.NativeFunctions.nwnxPushString(cdKeyOrCommunityName);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Force an item name to be updated.
         // This is a workaround for bug that occurs when updating item names in open containers.
         public static void UpdateItemName(uint player, uint item)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "UpdateItemName");
-            Internal.NativeFunctions.nwnxPushObject(item);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "UpdateItemName");
+            NWNCore.NativeFunctions.nwnxPushObject(item);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Possesses a creature by temporarily making them a familiar
@@ -383,42 +384,42 @@ namespace SWLOR.Game.Server.Core.NWNX
         public static bool PossessCreature(uint possessor, uint possessed, bool mindImmune = true,
             bool createDefaultQB = false)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PossessCreature");
-            Internal.NativeFunctions.nwnxPushInt(createDefaultQB ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushInt(mindImmune ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushObject(possessed);
-            Internal.NativeFunctions.nwnxPushObject(possessor);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Convert.ToBoolean(Internal.NativeFunctions.nwnxPopInt());
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PossessCreature");
+            NWNCore.NativeFunctions.nwnxPushInt(createDefaultQB ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushInt(mindImmune ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushObject(possessed);
+            NWNCore.NativeFunctions.nwnxPushObject(possessor);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return Convert.ToBoolean(NWNCore.NativeFunctions.nwnxPopInt());
         }
 
         // Returns the platform ID of the given player (NWNX_PLAYER_PLATFORM_*)
         public static int GetPlatformId(uint player)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetPlatformId");
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetPlatformId");
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         // Returns the game language of the given player (uses NWNX_DIALOG_LANGUAGE_*)
         public static int GetLanguage(uint player)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetLanguage");
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetLanguage");
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         // Override sOldResName with sNewResName of nResType for oPlayer.
         public static void SetResManOverride(uint player, int resType, string resName, string newResName)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetResManOverride");
-            Internal.NativeFunctions.nwnxPushString(newResName);
-            Internal.NativeFunctions.nwnxPushString(resName);
-            Internal.NativeFunctions.nwnxPushInt(resType);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetResManOverride");
+            NWNCore.NativeFunctions.nwnxPushString(newResName);
+            NWNCore.NativeFunctions.nwnxPushString(resName);
+            NWNCore.NativeFunctions.nwnxPushInt(resType);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // @brief Toggle oPlayer's PlayerDM status.
@@ -427,11 +428,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         // @param bIsDM TRUE to toggle dm mode on, FALSE for off.
         public static void ToggleDM(uint oPlayer, bool bIsDM)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ToggleDM");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ToggleDM");
 
-            Internal.NativeFunctions.nwnxPushInt(bIsDM ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushObject(oPlayer);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxPushInt(bIsDM ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushObject(oPlayer);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
 
@@ -441,13 +442,13 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param nCursor The cursor, one of MOUSECURSOR_*. -1 to clear the override.
         public static void SetObjectMouseCursorOverride(uint oPlayer, uint oObject, MouseCursor nCursor)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetObjectMouseCursorOverride");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetObjectMouseCursorOverride");
 
-            Internal.NativeFunctions.nwnxPushInt((int)nCursor);
-            Internal.NativeFunctions.nwnxPushObject(oObject);
-            Internal.NativeFunctions.nwnxPushObject(oPlayer);
+            NWNCore.NativeFunctions.nwnxPushInt((int)nCursor);
+            NWNCore.NativeFunctions.nwnxPushObject(oObject);
+            NWNCore.NativeFunctions.nwnxPushObject(oPlayer);
 
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         /// @brief Override the hilite color of oObject for oPlayer only
@@ -456,13 +457,13 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param nColor The color in 0xRRGGBB format, -1 to clear the override.
         public static void SetObjectHiliteColorOverride(uint oPlayer, uint oObject, int nColor)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetObjectHiliteColorOverride");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetObjectHiliteColorOverride");
 
-            Internal.NativeFunctions.nwnxPushInt(nColor);
-            Internal.NativeFunctions.nwnxPushObject(oObject);
-            Internal.NativeFunctions.nwnxPushObject(oPlayer);
+            NWNCore.NativeFunctions.nwnxPushInt(nColor);
+            NWNCore.NativeFunctions.nwnxPushObject(oObject);
+            NWNCore.NativeFunctions.nwnxPushObject(oPlayer);
 
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         /// @brief Remove effects with sEffectTag from oPlayer's TURD
@@ -471,10 +472,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param sEffectTag The effect tag.
         public static void RemoveEffectFromTURD(uint oPlayer, string sEffectTag)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveEffectFromTURD");
-            Internal.NativeFunctions.nwnxPushString(sEffectTag);
-            Internal.NativeFunctions.nwnxPushObject(oPlayer);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveEffectFromTURD");
+            NWNCore.NativeFunctions.nwnxPushString(sEffectTag);
+            NWNCore.NativeFunctions.nwnxPushObject(oPlayer);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         /// @brief Set the location oPlayer will spawn when logging in to the server.
@@ -483,38 +484,38 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param locSpawn The location.
         public static void SetSpawnLocation(uint oPlayer, Location locSpawn)
         {
-            var vPosition = NWScript.NWScript.GetPositionFromLocation(locSpawn);
+            var vPosition = GetPositionFromLocation(locSpawn);
 
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSpawnLocation");
-            Internal.NativeFunctions.nwnxPushFloat(NWScript.NWScript.GetFacingFromLocation(locSpawn));
-            Internal.NativeFunctions.nwnxPushFloat(vPosition.Z);
-            Internal.NativeFunctions.nwnxPushFloat(vPosition.Y);
-            Internal.NativeFunctions.nwnxPushFloat(vPosition.X);
-            Internal.NativeFunctions.nwnxPushObject(NWScript.NWScript.GetAreaFromLocation(locSpawn));
-            Internal.NativeFunctions.nwnxPushObject(oPlayer);
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSpawnLocation");
+            NWNCore.NativeFunctions.nwnxPushFloat(GetFacingFromLocation(locSpawn));
+            NWNCore.NativeFunctions.nwnxPushFloat(vPosition.Z);
+            NWNCore.NativeFunctions.nwnxPushFloat(vPosition.Y);
+            NWNCore.NativeFunctions.nwnxPushFloat(vPosition.X);
+            NWNCore.NativeFunctions.nwnxPushObject(GetAreaFromLocation(locSpawn));
+            NWNCore.NativeFunctions.nwnxPushObject(oPlayer);
 
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         public static void SetCustomToken(uint oPlayer, int nCustomTokenNumber, string sTokenValue)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCustomToken");
-            Internal.NativeFunctions.nwnxPushString(sTokenValue);
-            Internal.NativeFunctions.nwnxPushInt(nCustomTokenNumber);
-            Internal.NativeFunctions.nwnxPushObject(oPlayer);
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCustomToken");
+            NWNCore.NativeFunctions.nwnxPushString(sTokenValue);
+            NWNCore.NativeFunctions.nwnxPushInt(nCustomTokenNumber);
+            NWNCore.NativeFunctions.nwnxPushObject(oPlayer);
 
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         public static void SetCreatureNameOverride(uint oPlayer, uint oCreature, string sName)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCreatureNameOverride");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCreatureNameOverride");
 
-            Internal.NativeFunctions.nwnxPushString(sName);
-            Internal.NativeFunctions.nwnxPushObject(oCreature);
-            Internal.NativeFunctions.nwnxPushObject(oPlayer);
+            NWNCore.NativeFunctions.nwnxPushString(sName);
+            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
+            NWNCore.NativeFunctions.nwnxPushObject(oPlayer);
 
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         /// @brief Display floaty text above oCreature for oPlayer only.
@@ -524,13 +525,13 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param sText The text to display.
         public static void FloatingTextStringOnCreature(uint oPlayer, uint oCreature, string sText)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCreatureNameOverride");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCreatureNameOverride");
 
-            Internal.NativeFunctions.nwnxPushString(sText);
-            Internal.NativeFunctions.nwnxPushObject(oCreature);
-            Internal.NativeFunctions.nwnxPushObject(oPlayer);
+            NWNCore.NativeFunctions.nwnxPushString(sText);
+            NWNCore.NativeFunctions.nwnxPushObject(oCreature);
+            NWNCore.NativeFunctions.nwnxPushObject(oPlayer);
 
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
         /// @brief Give a custom journal entry to oPlayer.
         /// @warning Custom entries are wiped on client enter - they must be reapplied.
@@ -542,21 +543,21 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// will only increase if you add new entries with unique tags
         public static int AddCustomJournalEntry(uint player, JournalEntry journalEntry, bool isSilentUpdate = false)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddCustomJournalEntry");
-            Internal.NativeFunctions.nwnxPushInt(isSilentUpdate ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushInt(journalEntry.TimeOfDay);
-            Internal.NativeFunctions.nwnxPushInt(journalEntry.CalendarDay);
-            Internal.NativeFunctions.nwnxPushInt(journalEntry.Updated);
-            Internal.NativeFunctions.nwnxPushInt(journalEntry.IsQuestDisplayed ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushInt(journalEntry.IsQuestCompleted ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushInt(journalEntry.Priority);
-            Internal.NativeFunctions.nwnxPushInt(journalEntry.State);
-            Internal.NativeFunctions.nwnxPushString(journalEntry.Tag);
-            Internal.NativeFunctions.nwnxPushString(journalEntry.Text);
-            Internal.NativeFunctions.nwnxPushString(journalEntry.Name);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddCustomJournalEntry");
+            NWNCore.NativeFunctions.nwnxPushInt(isSilentUpdate ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushInt(journalEntry.TimeOfDay);
+            NWNCore.NativeFunctions.nwnxPushInt(journalEntry.CalendarDay);
+            NWNCore.NativeFunctions.nwnxPushInt(journalEntry.Updated);
+            NWNCore.NativeFunctions.nwnxPushInt(journalEntry.IsQuestDisplayed ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushInt(journalEntry.IsQuestCompleted ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushInt(journalEntry.Priority);
+            NWNCore.NativeFunctions.nwnxPushInt(journalEntry.State);
+            NWNCore.NativeFunctions.nwnxPushString(journalEntry.Tag);
+            NWNCore.NativeFunctions.nwnxPushString(journalEntry.Text);
+            NWNCore.NativeFunctions.nwnxPushString(journalEntry.Name);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
 
@@ -569,46 +570,46 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// that is the active one that the player currently sees.
         public static JournalEntry GetJournalEntry(uint player, string questTag)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetJournalEntry");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetJournalEntry");
             var entry = new JournalEntry();
 
-            Internal.NativeFunctions.nwnxPushString(questTag);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxPushString(questTag);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
-            entry.Updated = Internal.NativeFunctions.nwnxPopInt();
+            entry.Updated = NWNCore.NativeFunctions.nwnxPopInt();
             if(entry.Updated == -1) // -1 set as an indicator to say that the entry was not found
             {
                 return entry;
             }
 
-            entry.IsQuestDisplayed = Internal.NativeFunctions.nwnxPopInt() == 1;
-            entry.IsQuestCompleted = Internal.NativeFunctions.nwnxPopInt() == 1;
-            entry.Priority = Internal.NativeFunctions.nwnxPopInt();
-            entry.State = Internal.NativeFunctions.nwnxPopInt();
-            entry.TimeOfDay = Internal.NativeFunctions.nwnxPopInt();
-            entry.CalendarDay = Internal.NativeFunctions.nwnxPopInt();
-            entry.Name = Internal.NativeFunctions.nwnxPopString();
-            entry.Text = Internal.NativeFunctions.nwnxPopString();
+            entry.IsQuestDisplayed = NWNCore.NativeFunctions.nwnxPopInt() == 1;
+            entry.IsQuestCompleted = NWNCore.NativeFunctions.nwnxPopInt() == 1;
+            entry.Priority = NWNCore.NativeFunctions.nwnxPopInt();
+            entry.State = NWNCore.NativeFunctions.nwnxPopInt();
+            entry.TimeOfDay = NWNCore.NativeFunctions.nwnxPopInt();
+            entry.CalendarDay = NWNCore.NativeFunctions.nwnxPopInt();
+            entry.Name = NWNCore.NativeFunctions.nwnxPopString();
+            entry.Text = NWNCore.NativeFunctions.nwnxPopString();
             entry.Tag = questTag;
             return entry;
         }
 
         public static void CloseStore(uint oPlayer)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "CloseStore");
-            Internal.NativeFunctions.nwnxPushObject(oPlayer);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "CloseStore");
+            NWNCore.NativeFunctions.nwnxPushObject(oPlayer);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         public static void SetTlkOverride(uint oPlayer, int nStrRef, string sOverride, bool bRestoreGlobal = true)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetTlkOverride");
-            Internal.NativeFunctions.nwnxPushInt(bRestoreGlobal ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushString(sOverride);
-            Internal.NativeFunctions.nwnxPushInt(nStrRef);
-            Internal.NativeFunctions.nwnxPushObject(oPlayer);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetTlkOverride");
+            NWNCore.NativeFunctions.nwnxPushInt(bRestoreGlobal ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushString(sOverride);
+            NWNCore.NativeFunctions.nwnxPushInt(nStrRef);
+            NWNCore.NativeFunctions.nwnxPushObject(oPlayer);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
     }
 }

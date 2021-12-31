@@ -10,9 +10,9 @@ namespace SWLOR.Game.Server.Core
         private static double Time { get; set; }
         private static double DeltaTime { get; set; }
 
-        private static readonly Stopwatch stopwatch = new Stopwatch();
-        private static readonly List<ScheduledItem> scheduledItems = new List<ScheduledItem>(1024);
-        private static readonly IComparer<ScheduledItem> comparer = new ScheduledItem.SortedByExecutionTime();
+        private static readonly Stopwatch _stopwatch = new Stopwatch();
+        private static readonly List<ScheduledItem> _scheduledItems = new List<ScheduledItem>(1024);
+        private static readonly IComparer<ScheduledItem> _comparer = new ScheduledItem.SortedByExecutionTime();
 
         public static IDisposable Schedule(Action task, TimeSpan delay)
         {
@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Core
             }
 
             var item = new ScheduledItem(task, Time + delay.TotalSeconds);
-            scheduledItems.InsertOrdered(item, comparer);
+            _scheduledItems.InsertOrdered(item, _comparer);
             return item;
         }
 
@@ -44,13 +44,13 @@ namespace SWLOR.Game.Server.Core
             }
 
             var item = new ScheduledItem(task, Time + delay.TotalSeconds + schedule.TotalSeconds, schedule.TotalSeconds);
-            scheduledItems.InsertOrdered(item, comparer);
+            _scheduledItems.InsertOrdered(item, _comparer);
             return item;
         }
 
         internal static void Unschedule(ScheduledItem scheduledItem)
         {
-            scheduledItems.Remove(scheduledItem);
+            _scheduledItems.Remove(scheduledItem);
         }
 
         public static void Process()
@@ -60,17 +60,17 @@ namespace SWLOR.Game.Server.Core
         }
         private static void ProcessTime()
         {
-            DeltaTime = stopwatch.Elapsed.TotalSeconds;
+            DeltaTime = _stopwatch.Elapsed.TotalSeconds;
             Time += DeltaTime;
-            stopwatch.Restart();
+            _stopwatch.Restart();
         }
 
         private static void ProcessScheduledItems()
         {
             int i;
-            for (i = 0; i < scheduledItems.Count; i++)
+            for (i = 0; i < _scheduledItems.Count; i++)
             {
-                var item = scheduledItems[i];
+                var item = _scheduledItems[i];
                 if (Time < item.ExecutionTime)
                 {
                     break;
@@ -83,14 +83,14 @@ namespace SWLOR.Game.Server.Core
                 }
 
                 item.Reschedule(Time + item.Schedule);
-                scheduledItems.RemoveAt(i);
-                scheduledItems.InsertOrdered(item, comparer);
+                _scheduledItems.RemoveAt(i);
+                _scheduledItems.InsertOrdered(item, _comparer);
                 i--;
             }
 
             if (i > 0)
             {
-                scheduledItems.RemoveRange(0, i);
+                _scheduledItems.RemoveRange(0, i);
             }
         }
     }

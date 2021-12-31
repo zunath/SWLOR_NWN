@@ -8,9 +8,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetStringLength(string sString)
         {
-            Internal.NativeFunctions.StackPushString(sString);
-            Internal.NativeFunctions.CallBuiltIn(59);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(sString);
+            VM.Call(59);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -19,9 +19,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetStringUpperCase(string sString)
         {
-            Internal.NativeFunctions.StackPushString(sString);
-            Internal.NativeFunctions.CallBuiltIn(60);
-            return Internal.NativeFunctions.StackPopString();
+            VM.StackPush(sString);
+            VM.Call(60);
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -30,9 +30,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetStringLowerCase(string sString)
         {
-            Internal.NativeFunctions.StackPushString(sString);
-            Internal.NativeFunctions.CallBuiltIn(61);
-            return Internal.NativeFunctions.StackPopString();
+            VM.StackPush(sString);
+            VM.Call(61);
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -41,10 +41,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetStringRight(string sString, int nCount)
         {
-            Internal.NativeFunctions.StackPushInteger(nCount);
-            Internal.NativeFunctions.StackPushString(sString);
-            Internal.NativeFunctions.CallBuiltIn(62);
-            return Internal.NativeFunctions.StackPopString();
+            VM.StackPush(nCount);
+            VM.StackPush(sString);
+            VM.Call(62);
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -53,10 +53,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetStringLeft(string sString, int nCount)
         {
-            Internal.NativeFunctions.StackPushInteger(nCount);
-            Internal.NativeFunctions.StackPushString(sString);
-            Internal.NativeFunctions.CallBuiltIn(63);
-            return Internal.NativeFunctions.StackPopString();
+            VM.StackPush(nCount);
+            VM.StackPush(sString);
+            VM.Call(63);
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -65,11 +65,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string InsertString(string sDestination, string sString, int nPosition)
         {
-            Internal.NativeFunctions.StackPushInteger(nPosition);
-            Internal.NativeFunctions.StackPushString(sString);
-            Internal.NativeFunctions.StackPushString(sDestination);
-            Internal.NativeFunctions.CallBuiltIn(64);
-            return Internal.NativeFunctions.StackPopString();
+            VM.StackPush(nPosition);
+            VM.StackPush(sString);
+            VM.StackPush(sDestination);
+            VM.Call(64);
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -78,11 +78,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetSubString(string sString, int nStart, int nCount)
         {
-            Internal.NativeFunctions.StackPushInteger(nCount);
-            Internal.NativeFunctions.StackPushInteger(nStart);
-            Internal.NativeFunctions.StackPushString(sString);
-            Internal.NativeFunctions.CallBuiltIn(65);
-            return Internal.NativeFunctions.StackPopString();
+            VM.StackPush(nCount);
+            VM.StackPush(nStart);
+            VM.StackPush(sString);
+            VM.Call(65);
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -92,11 +92,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int FindSubString(string sString, string sSubString, int nStart = 0)
         {
-            Internal.NativeFunctions.StackPushInteger(nStart);
-            Internal.NativeFunctions.StackPushString(sSubString);
-            Internal.NativeFunctions.StackPushString(sString);
-            Internal.NativeFunctions.CallBuiltIn(66);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(nStart);
+            VM.StackPush(sSubString);
+            VM.StackPush(sString);
+            VM.Call(66);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -104,10 +104,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int TestStringAgainstPattern(string sPattern, string sStringToTest)
         {
-            Internal.NativeFunctions.StackPushString(sStringToTest);
-            Internal.NativeFunctions.StackPushString(sPattern);
-            Internal.NativeFunctions.CallBuiltIn(177);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(sStringToTest);
+            VM.StackPush(sPattern);
+            VM.Call(177);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -117,9 +117,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetMatchedSubstring(int nString)
         {
-            Internal.NativeFunctions.StackPushInteger(nString);
-            Internal.NativeFunctions.CallBuiltIn(178);
-            return Internal.NativeFunctions.StackPopString();
+            VM.StackPush(nString);
+            VM.Call(178);
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -128,8 +128,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetMatchedSubstringsCount()
         {
-            Internal.NativeFunctions.CallBuiltIn(179);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.Call(179);
+            return VM.StackPopInt();
         }
     }
 }

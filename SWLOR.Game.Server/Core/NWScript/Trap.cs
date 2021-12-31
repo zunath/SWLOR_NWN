@@ -18,10 +18,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCalendar(int nYear, int nMonth, int nDay)
         {
-            Internal.NativeFunctions.StackPushInteger(nDay);
-            Internal.NativeFunctions.StackPushInteger(nMonth);
-            Internal.NativeFunctions.StackPushInteger(nYear);
-            Internal.NativeFunctions.CallBuiltIn(11);
+            VM.StackPush(nDay);
+            VM.StackPush(nMonth);
+            VM.StackPush(nYear);
+            VM.Call(11);
         }
 
         /// <summary>
@@ -42,11 +42,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTime(int nHour, int nMinute, int nSecond, int nMillisecond)
         {
-            Internal.NativeFunctions.StackPushInteger(nMillisecond);
-            Internal.NativeFunctions.StackPushInteger(nSecond);
-            Internal.NativeFunctions.StackPushInteger(nMinute);
-            Internal.NativeFunctions.StackPushInteger(nHour);
-            Internal.NativeFunctions.CallBuiltIn(12);
+            VM.StackPush(nMillisecond);
+            VM.StackPush(nSecond);
+            VM.StackPush(nMinute);
+            VM.StackPush(nHour);
+            VM.Call(12);
         }
 
         /// <summary>
@@ -54,8 +54,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetCalendarYear()
         {
-            Internal.NativeFunctions.CallBuiltIn(13);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.Call(13);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetCalendarMonth()
         {
-            Internal.NativeFunctions.CallBuiltIn(14);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.Call(14);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -72,8 +72,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetCalendarDay()
         {
-            Internal.NativeFunctions.CallBuiltIn(15);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.Call(15);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -81,8 +81,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTimeHour()
         {
-            Internal.NativeFunctions.CallBuiltIn(16);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.Call(16);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -90,8 +90,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTimeMinute()
         {
-            Internal.NativeFunctions.CallBuiltIn(17);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.Call(17);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -99,8 +99,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTimeSecond()
         {
-            Internal.NativeFunctions.CallBuiltIn(18);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.Call(18);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -108,8 +108,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTimeMillisecond()
         {
-            Internal.NativeFunctions.CallBuiltIn(19);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.Call(19);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -120,11 +120,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int SetTrapDetectedBy(uint oTrap, uint oDetector, bool bDetected = true)
         {
-            Internal.NativeFunctions.StackPushInteger(bDetected ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oDetector);
-            Internal.NativeFunctions.StackPushObject(oTrap);
-            Internal.NativeFunctions.CallBuiltIn(550);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(bDetected ? 1 : 0);
+            VM.StackPush(oDetector);
+            VM.StackPush(oTrap);
+            VM.Call(550);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -133,9 +133,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetIsTrapped(uint oObject)
         {
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(551);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oObject);
+            VM.Call(551);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -144,9 +144,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetTrapDisarmable(uint oTrapObject)
         {
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(527);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oTrapObject);
+            VM.Call(527);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -155,9 +155,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetTrapDetectable(uint oTrapObject)
         {
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(528);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oTrapObject);
+            VM.Call(528);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -167,10 +167,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetTrapDetectedBy(uint oTrapObject, uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(529);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oCreature);
+            VM.StackPush(oTrapObject);
+            VM.Call(529);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -179,9 +179,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetTrapFlagged(uint oTrapObject)
         {
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(530);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oTrapObject);
+            VM.Call(530);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -190,9 +190,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTrapBaseType(uint oTrapObject)
         {
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(531);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oTrapObject);
+            VM.Call(531);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -202,9 +202,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetTrapOneShot(uint oTrapObject)
         {
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(532);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oTrapObject);
+            VM.Call(532);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -214,9 +214,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetTrapCreator(uint oTrapObject)
         {
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(533);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(oTrapObject);
+            VM.Call(533);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -225,9 +225,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetTrapKeyTag(uint oTrapObject)
         {
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(534);
-            return Internal.NativeFunctions.StackPopStringUTF8();
+            VM.StackPush(oTrapObject);
+            VM.Call(534);
+            return NWNCore.NativeFunctions.StackPopStringUTF8();
         }
 
         /// <summary>
@@ -236,9 +236,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTrapDisarmDC(uint oTrapObject)
         {
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(535);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oTrapObject);
+            VM.Call(535);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -247,9 +247,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetTrapDetectDC(uint oTrapObject)
         {
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(536);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oTrapObject);
+            VM.Call(536);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -262,10 +262,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetNearestTrapToObject(uint oTarget = OBJECT_INVALID, bool nTrapDetected = true)
         {
-            Internal.NativeFunctions.StackPushInteger(nTrapDetected ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(488);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(nTrapDetected ? 1 : 0);
+            VM.StackPush(oTarget);
+            VM.Call(488);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -274,9 +274,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastTrapDetected(uint oTarget = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(486);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(oTarget);
+            VM.Call(486);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -285,9 +285,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetTrapActive(uint oTrapObject)
         {
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(821);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oTrapObject);
+            VM.Call(821);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -302,9 +302,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTrapActive(uint oTrapObject, bool nActive = true)
         {
-            Internal.NativeFunctions.StackPushInteger(nActive ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(822);
+            VM.StackPush(nActive ? 1 : 0);
+            VM.StackPush(oTrapObject);
+            VM.Call(822);
         }
 
         /// <summary>
@@ -313,9 +313,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetTrapRecoverable(uint oTrapObject)
         {
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(815);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oTrapObject);
+            VM.Call(815);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -324,9 +324,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTrapRecoverable(uint oTrapObject, bool nRecoverable = true)
         {
-            Internal.NativeFunctions.StackPushInteger(nRecoverable ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(816);
+            VM.StackPush(nRecoverable ? 1 : 0);
+            VM.StackPush(oTrapObject);
+            VM.Call(816);
         }
 
         /// <summary>
@@ -336,9 +336,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTrapDisarmable(uint oTrapObject, bool nDisarmable = true)
         {
-            Internal.NativeFunctions.StackPushInteger(nDisarmable ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(803);
+            VM.StackPush(nDisarmable ? 1 : 0);
+            VM.StackPush(oTrapObject);
+            VM.Call(803);
         }
 
         /// <summary>
@@ -350,9 +350,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTrapDetectable(uint oTrapObject, bool nDetectable = true)
         {
-            Internal.NativeFunctions.StackPushInteger(nDetectable ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(804);
+            VM.StackPush(nDetectable ? 1 : 0);
+            VM.StackPush(oTrapObject);
+            VM.Call(804);
         }
 
         /// <summary>
@@ -363,9 +363,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTrapOneShot(uint oTrapObject, bool nOneShot = true)
         {
-            Internal.NativeFunctions.StackPushInteger(nOneShot ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(805);
+            VM.StackPush(nOneShot ? 1 : 0);
+            VM.StackPush(oTrapObject);
+            VM.Call(805);
         }
 
         /// <summary>
@@ -374,9 +374,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTrapKeyTag(uint oTrapObject, string sKeyTag)
         {
-            Internal.NativeFunctions.StackPushStringUTF8(sKeyTag);
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(806);
+            VM.StackPush(sKeyTag);
+            VM.StackPush(oTrapObject);
+            VM.Call(806);
         }
 
         /// <summary>
@@ -386,9 +386,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTrapDisarmDC(uint oTrapObject, int nDisarmDC)
         {
-            Internal.NativeFunctions.StackPushInteger(nDisarmDC);
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(807);
+            VM.StackPush(nDisarmDC);
+            VM.StackPush(oTrapObject);
+            VM.Call(807);
         }
 
         /// <summary>
@@ -398,9 +398,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTrapDetectDC(uint oTrapObject, int nDetectDC)
         {
-            Internal.NativeFunctions.StackPushInteger(nDetectDC);
-            Internal.NativeFunctions.StackPushObject(oTrapObject);
-            Internal.NativeFunctions.CallBuiltIn(808);
+            VM.StackPush(nDetectDC);
+            VM.StackPush(oTrapObject);
+            VM.Call(808);
         }
 
         /// <summary>
@@ -422,15 +422,15 @@ namespace SWLOR.Game.Server.Core.NWScript
             string sTag = "", Faction nFaction = Faction.Hostile, string sOnDisarmScript = "",
             string sOnTrapTriggeredScript = "")
         {
-            Internal.NativeFunctions.StackPushStringUTF8(sOnTrapTriggeredScript);
-            Internal.NativeFunctions.StackPushStringUTF8(sOnDisarmScript);
-            Internal.NativeFunctions.StackPushInteger((int)nFaction);
-            Internal.NativeFunctions.StackPushStringUTF8(sTag);
-            Internal.NativeFunctions.StackPushFloat(fSize);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lLocation);
-            Internal.NativeFunctions.StackPushInteger((int)nTrapType);
-            Internal.NativeFunctions.CallBuiltIn(809);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(sOnTrapTriggeredScript);
+            VM.StackPush(sOnDisarmScript);
+            VM.StackPush((int)nFaction);
+            VM.StackPush(sTag);
+            VM.StackPush(fSize);
+            VM.StackPush((int)EngineStructure.Location, lLocation);
+            VM.StackPush((int)nTrapType);
+            VM.Call(809);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -452,12 +452,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void CreateTrapOnObject(int nTrapType, uint oObject, Faction nFaction = Faction.Hostile,
             string sOnDisarmScript = "", string sOnTrapTriggeredScript = "")
         {
-            Internal.NativeFunctions.StackPushStringUTF8(sOnTrapTriggeredScript);
-            Internal.NativeFunctions.StackPushStringUTF8(sOnDisarmScript);
-            Internal.NativeFunctions.StackPushInteger((int)nFaction);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.StackPushInteger(nTrapType);
-            Internal.NativeFunctions.CallBuiltIn(810);
+            VM.StackPush(sOnTrapTriggeredScript);
+            VM.StackPush(sOnDisarmScript);
+            VM.StackPush((int)nFaction);
+            VM.StackPush(oObject);
+            VM.StackPush(nTrapType);
+            VM.Call(810);
         }
 
         /// <summary>
@@ -466,8 +466,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTrapDisabled(uint oTrap)
         {
-            Internal.NativeFunctions.StackPushObject(oTrap);
-            Internal.NativeFunctions.CallBuiltIn(555);
+            VM.StackPush(oTrap);
+            VM.Call(555);
         }
     }
 }

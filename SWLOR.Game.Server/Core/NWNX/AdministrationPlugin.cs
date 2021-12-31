@@ -154,11 +154,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Delete the temporary user resource data (TURD) of a playerName + characterName
         public static bool DeleteTURD(string playerName, string characterName)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "DeleteTURD");
-            Internal.NativeFunctions.StackPushString(characterName);
-            Internal.NativeFunctions.StackPushString(playerName);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Convert.ToBoolean(Internal.NativeFunctions.nwnxPopInt());
+            NWNXCore.NWNX_PushArgumentString(characterName);
+            NWNXCore.NWNX_PushArgumentString(playerName);
+            NWNXCore.NWNX_CallFunction(PLUGIN_NAME, "DeleteTURD");
+            return NWNXCore.NWNX_GetReturnValueInt() == 1;
         }
 
         // Get an admin_debug "Administration Debug Type" value.

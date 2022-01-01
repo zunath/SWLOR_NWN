@@ -111,17 +111,6 @@ namespace SWLOR.Game.Server.Core.NWScript
         }
 
         /// <summary>
-        ///   Make oTarget run sScript and then return execution to the calling script.
-        ///   If sScript does not specify a compiled script, nothing happens.
-        /// </summary>
-        public static void ExecuteScript(string sScript, uint oTarget)
-        {
-            VM.StackPush(oTarget);
-            VM.StackPush(sScript);
-            VM.Call(8);
-        }
-
-        /// <summary>
         ///   Clear all the actions of the caller.
         ///   * No return value, but if an error occurs, the log file will contain
         ///   "ClearAllActions failed.".

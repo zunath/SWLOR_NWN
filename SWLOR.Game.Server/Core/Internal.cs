@@ -35,12 +35,15 @@ namespace SWLOR.Game.Server.Core
         public static event Action OnScriptContextBegin;
         public static event Action OnScriptContextEnd;
 
+        private static ICoreEventHandler _coreGameManager;
+
         public static int Bootstrap(IntPtr nativeHandlesPtr, int nativeHandlesLength)
         {
             var retVal = NWNCore.Init(nativeHandlesPtr, nativeHandlesLength, out CoreGameManager coreGameManager);
             coreGameManager.OnSignal += OnSignal;
             coreGameManager.OnServerLoop += OnServerLoop;
             coreGameManager.OnRunScript += OnRunScript;
+            _coreGameManager = coreGameManager;
 
             Console.WriteLine("Registering loggers...");
             Log.Register();
@@ -51,6 +54,16 @@ namespace SWLOR.Game.Server.Core
             Console.WriteLine("Scripts registered successfully.");
 
             return retVal;
+        }
+
+        /// <summary>
+        /// Directly executes a script. This bypasses the NWScript round-trip.
+        /// </summary>
+        /// <param name="scriptName">Name of the script.</param>
+        /// <param name="objectSelf">The object to execute the script upon.</param>
+        public static void DirectRunScript(string scriptName, uint objectSelf)
+        {
+            _coreGameManager.OnRunScript(scriptName, objectSelf);
         }
 
         private static void OnRunScript(string scriptName, uint objectSelf, out int scriptHandlerResult)

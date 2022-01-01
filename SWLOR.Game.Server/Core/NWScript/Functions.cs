@@ -8,7 +8,17 @@ namespace SWLOR.Game.Server.Core.NWScript
 {
     public partial class NWScript
     {
-        public static uint OBJECT_SELF => NWNCore.FunctionHandler.ObjectSelf;
+        public static uint OBJECT_SELF
+        {
+            get
+            {
+                return NWNCore.FunctionHandler.ObjectSelf;
+            }
+            set
+            {
+                NWNCore.FunctionHandler.ObjectSelf = value;
+            }
+        }
 
         /// <summary>
         ///   Assign aActionToAssign to oActionSubject.

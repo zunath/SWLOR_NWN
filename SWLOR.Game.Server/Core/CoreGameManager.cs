@@ -33,7 +33,11 @@ namespace SWLOR.Game.Server.Core
         private uint _objectSelf = ObjectInvalid;
 
         // Interface Implementations
-        uint ICoreFunctionHandler.ObjectSelf => _objectSelf;
+        uint ICoreFunctionHandler.ObjectSelf
+        {
+            get => _objectSelf;
+            set => _objectSelf = value;
+        }
 
         void ICoreEventHandler.OnMainLoop(ulong frame)
             => OnServerLoop?.Invoke(frame);

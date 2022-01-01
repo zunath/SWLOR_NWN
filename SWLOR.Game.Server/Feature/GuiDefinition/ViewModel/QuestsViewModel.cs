@@ -58,6 +58,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var questId = _questIds[SelectedQuestIndex];
                 var playerId = GetObjectUUID(Player);
                 var dbPlayer = DB.Get<Player>(playerId);
+
+
                 var dbPlayerQuest = dbPlayer.Quests[questId];
                 var questDetail = Quest.GetQuestById(questId);
 
@@ -167,6 +169,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 Quest.AbandonQuest(Player, questId);
 
+                _questIds.RemoveAt(SelectedQuestIndex);
                 QuestNames.RemoveAt(SelectedQuestIndex);
                 QuestToggles.RemoveAt(SelectedQuestIndex);
                 ActiveQuestName = "[Select a Quest]";

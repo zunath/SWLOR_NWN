@@ -214,9 +214,9 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             if (propertyName != nameof(Geometry))
             {
-                GetType().GetProperty(nameof(PropertyDetail.SkipNotify))?.SetValue(this, true);
+                _propertyValues[propertyName].SkipNotify = true;
                 GetType().GetProperty(propertyName)?.SetValue(this, value);
-                GetType().GetProperty(nameof(PropertyDetail.SkipNotify))?.SetValue(this, false);
+                _propertyValues[propertyName].SkipNotify = false;
             }
 
             // Update Modal geometry if this VM has it active.
@@ -240,8 +240,8 @@ namespace SWLOR.Game.Server.Service.GuiService
             var value = _propertyValues[propertyName].Value;
             var json = _converter.ToJson(value);
 
-            NuiSetBindWatch(Player, WindowToken, propertyName, true);
             NuiSetBind(Player, WindowToken, propertyName, json);
+            NuiSetBindWatch(Player, WindowToken, propertyName, true);
         }
         
         /// <summary>

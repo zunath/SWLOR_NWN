@@ -193,7 +193,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var skills = new GuiBindingList<GuiComboEntry>();
             skills.Add(new GuiComboEntry("<All Skills>", 0));
-            foreach (var (type, detail) in Skill.GetAllSkillsByCategory(SkillCategoryType.Crafting))
+            foreach (var (type, detail) in Skill.GetActiveCraftingSkills())
             {
                 skills.Add(new GuiComboEntry(detail.Name, (int)type));
             }

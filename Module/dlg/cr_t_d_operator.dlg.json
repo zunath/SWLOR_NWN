@@ -364,55 +364,6 @@
         },
         "RepliesList": {
           "type": "list",
-          "value": []
-        },
-        "Script": {
-          "type": "resref",
-          "value": ""
-        },
-        "Sound": {
-          "type": "resref",
-          "value": ""
-        },
-        "Speaker": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Text": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Thank you for your help, <FirstName>. I hope my work receipt will prove useful to you."
-          }
-        }
-      },
-      {
-        "__struct_id": 5,
-        "ActionParams": {
-          "type": "list",
-          "value": []
-        },
-        "Animation": {
-          "type": "dword",
-          "value": 0
-        },
-        "AnimLoop": {
-          "type": "byte",
-          "value": 1
-        },
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "Delay": {
-          "type": "dword",
-          "value": 4294967295
-        },
-        "Quest": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "RepliesList": {
-          "type": "list",
           "value": [
             {
               "__struct_id": 0,
@@ -474,7 +425,7 @@
         }
       },
       {
-        "__struct_id": 6,
+        "__struct_id": 5,
         "ActionParams": {
           "type": "list",
           "value": []
@@ -543,7 +494,7 @@
         }
       },
       {
-        "__struct_id": 7,
+        "__struct_id": 6,
         "ActionParams": {
           "type": "list",
           "value": []
@@ -631,7 +582,7 @@
         }
       },
       {
-        "__struct_id": 8,
+        "__struct_id": 7,
         "ActionParams": {
           "type": "list",
           "value": []
@@ -700,7 +651,7 @@
         }
       },
       {
-        "__struct_id": 9,
+        "__struct_id": 8,
         "ActionParams": {
           "type": "list",
           "value": []
@@ -788,7 +739,7 @@
         }
       },
       {
-        "__struct_id": 10,
+        "__struct_id": 9,
         "ActionParams": {
           "type": "list",
           "value": []
@@ -857,7 +808,7 @@
         }
       },
       {
-        "__struct_id": 11,
+        "__struct_id": 10,
         "ActionParams": {
           "type": "list",
           "value": []
@@ -926,7 +877,7 @@
         }
       },
       {
-        "__struct_id": 12,
+        "__struct_id": 11,
         "ActionParams": {
           "type": "list",
           "value": []
@@ -995,7 +946,7 @@
         }
       },
       {
-        "__struct_id": 13,
+        "__struct_id": 12,
         "ActionParams": {
           "type": "list",
           "value": []
@@ -1060,6 +1011,55 @@
           "type": "cexolocstring",
           "value": {
             "0": "Understood. [The droid takes a moment to inspect the Bedroll.] Excellent. This passes quality standards, and I am pleased to dispense to you one work receipt. Please take this to Selan Flembek as proof of completion. Have a nice day."
+          }
+        }
+      },
+      {
+        "__struct_id": 13,
+        "ActionParams": {
+          "type": "list",
+          "value": []
+        },
+        "Animation": {
+          "type": "dword",
+          "value": 0
+        },
+        "AnimLoop": {
+          "type": "byte",
+          "value": 1
+        },
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Delay": {
+          "type": "dword",
+          "value": 4294967295
+        },
+        "Quest": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "RepliesList": {
+          "type": "list",
+          "value": []
+        },
+        "Script": {
+          "type": "resref",
+          "value": ""
+        },
+        "Sound": {
+          "type": "resref",
+          "value": ""
+        },
+        "Speaker": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "Text": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Thank you for your help, <FirstName>. I hope my work receipt will prove useful to you."
           }
         }
       }
@@ -1438,7 +1438,7 @@
               },
               "Index": {
                 "type": "dword",
-                "value": 6
+                "value": 5
               },
               "IsChild": {
                 "type": "byte",
@@ -1605,7 +1605,7 @@
               },
               "Index": {
                 "type": "dword",
-                "value": 8
+                "value": 7
               },
               "IsChild": {
                 "type": "byte",
@@ -1772,7 +1772,7 @@
               },
               "Index": {
                 "type": "dword",
-                "value": 10
+                "value": 9
               },
               "IsChild": {
                 "type": "byte",
@@ -2091,11 +2091,11 @@
               "__struct_id": 0,
               "Key": {
                 "type": "cexostring",
-                "value": "condition-on-quest-state"
+                "value": "condition-all-key-items"
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_fabrication 2"
+                "value": "4"
               }
             }
           ]
@@ -2122,7 +2122,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_scavenging 2"
+                "value": "cz220_fabrication 2"
               }
             }
           ]
@@ -2149,7 +2149,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "cz220_smithery 2"
+                "value": "cz220_scavenging 2"
               }
             }
           ]
@@ -2172,6 +2172,33 @@
               "__struct_id": 0,
               "Key": {
                 "type": "cexostring",
+                "value": "condition-on-quest-state"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "cz220_smithery 2"
+              }
+            }
+          ]
+        },
+        "Index": {
+          "type": "dword",
+          "value": 10
+        }
+      },
+      {
+        "__struct_id": 4,
+        "Active": {
+          "type": "resref",
+          "value": "appears"
+        },
+        "ConditionParams": {
+          "type": "list",
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
                 "value": "condition-has-quest"
               },
               "Value": {
@@ -2183,11 +2210,11 @@
         },
         "Index": {
           "type": "dword",
-          "value": 9
+          "value": 8
         }
       },
       {
-        "__struct_id": 4,
+        "__struct_id": 5,
         "Active": {
           "type": "resref",
           "value": "appears"
@@ -2210,11 +2237,11 @@
         },
         "Index": {
           "type": "dword",
-          "value": 7
+          "value": 6
         }
       },
       {
-        "__struct_id": 5,
+        "__struct_id": 6,
         "Active": {
           "type": "resref",
           "value": "appears"
@@ -2231,33 +2258,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "cz220_smithery"
-              }
-            }
-          ]
-        },
-        "Index": {
-          "type": "dword",
-          "value": 5
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Active": {
-          "type": "resref",
-          "value": "appears"
-        },
-        "ConditionParams": {
-          "type": "list",
-          "value": [
-            {
-              "__struct_id": 0,
-              "Key": {
-                "type": "cexostring",
-                "value": "condition-all-key-items"
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "4"
               }
             }
           ]

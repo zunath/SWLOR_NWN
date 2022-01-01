@@ -178,6 +178,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedSkillId = (int)_craftingFilter;
             SelectedCategoryId = 0;
             _currentRecipeIndex = -1;
+
             LoadSkills();
             LoadCategories();
             Search();
@@ -283,6 +284,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RecipeNames = recipeNames;
             RecipeColors = recipeColors;
             RecipeToggles = recipeToggles;
+
+            LoadRecipeDetail();
         }
 
         private void UpdatePagination(int totalRecordCount)
@@ -310,6 +313,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SelectedPageIndex = pages - 1;
 
             _skipPaginationSearch = false;
+
+            _currentRecipeIndex = -1;
+            LoadRecipeDetail();
         }
         public Action OnClickClearSearch() => () =>
         {
@@ -327,6 +333,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (newPage < 0)
                 newPage = 0;
 
+            _currentRecipeIndex = -1;
             SelectedPageIndex = newPage;
             Search();
             _skipPaginationSearch = false;
@@ -339,6 +346,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (newPage > PageNumbers.Count - 1)
                 newPage = PageNumbers.Count - 1;
 
+            _currentRecipeIndex = -1;
             SelectedPageIndex = newPage;
             Search();
             _skipPaginationSearch = false;
@@ -369,27 +377,40 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadRecipeDetail()
         {
-            var selectedRecipe = _recipeTypes[_currentRecipeIndex];
-            var detail = Craft.GetRecipe(selectedRecipe);
-            var itemName = Cache.GetItemNameByResref(detail.Resref);
-            var enhancementSlotType = "N/A";
+            if (_currentRecipeIndex > -1)
+            {
+                var selectedRecipe = _recipeTypes[_currentRecipeIndex];
+                var detail = Craft.GetRecipe(selectedRecipe);
+                var itemName = Cache.GetItemNameByResref(detail.Resref);
+                var enhancementSlotType = "N/A";
 
-            if (detail.EnhancementType == RecipeEnhancementType.Weapon)
-                enhancementSlotType = "Weapon";
-            else if (detail.EnhancementType == RecipeEnhancementType.Armor)
-                enhancementSlotType = "Armor";
-            else if (detail.EnhancementType == RecipeEnhancementType.Furniture)
-                enhancementSlotType = "Furniture";
+                if (detail.EnhancementType == RecipeEnhancementType.Weapon)
+                    enhancementSlotType = "Weapon";
+                else if (detail.EnhancementType == RecipeEnhancementType.Armor)
+                    enhancementSlotType = "Armor";
+                else if (detail.EnhancementType == RecipeEnhancementType.Furniture)
+                    enhancementSlotType = "Furniture";
 
-            RecipeName = $"Recipe: {detail.Quantity}x {itemName}";
-            RecipeLevel = $"Level: {detail.Level}";
-            RecipeEnhancementSlots = $"Enhancement Slots: {detail.EnhancementSlots}x {enhancementSlotType}";
-            var (recipeDetails, recipeDetailColors) = Craft.BuildRecipeDetail(Player, selectedRecipe);
+                RecipeName = $"Recipe: {detail.Quantity}x {itemName}";
+                RecipeLevel = $"Level: {detail.Level}";
+                RecipeEnhancementSlots = $"Enhancement Slots: {detail.EnhancementSlots}x {enhancementSlotType}";
+                var (recipeDetails, recipeDetailColors) = Craft.BuildRecipeDetail(Player, selectedRecipe);
 
-            RecipeDetails = recipeDetails;
-            RecipeDetailColors = recipeDetailColors;
-            CanCraftRecipe = Craft.CanPlayerCraftRecipe(Player, selectedRecipe);
+                RecipeDetails = recipeDetails;
+                RecipeDetailColors = recipeDetailColors;
+                CanCraftRecipe = Craft.CanPlayerCraftRecipe(Player, selectedRecipe);
+            }
+            else
+            {
+                RecipeName = string.Empty;
+                RecipeLevel = string.Empty;
+                RecipeEnhancementSlots = string.Empty;
+                SearchText = string.Empty;
+                RecipeDetails = new GuiBindingList<string>();
+                RecipeDetailColors = new GuiBindingList<GuiColor>();
+                _currentRecipeIndex = -1;
+                CanCraftRecipe = false;
+            }
         }
-
     }
 }

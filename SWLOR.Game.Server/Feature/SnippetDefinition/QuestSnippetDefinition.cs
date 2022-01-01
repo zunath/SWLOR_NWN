@@ -75,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     var playerId = GetObjectUUID(player);
                     var dbPlayer = DB.Get<Player>(playerId);
 
-                    return dbPlayer.Quests.ContainsKey(questId);
+                    return dbPlayer.Quests.ContainsKey(questId) && dbPlayer.Quests[questId].DateLastCompleted == null;
                 });
         }
 

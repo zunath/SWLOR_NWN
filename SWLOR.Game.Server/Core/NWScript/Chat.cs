@@ -12,8 +12,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetPCChatSpeaker()
         {
-            Internal.NativeFunctions.CallBuiltIn(838);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(838);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -21,8 +21,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SendMessageToAllDMs(string szMessage)
         {
-            Internal.NativeFunctions.StackPushString(szMessage);
-            Internal.NativeFunctions.CallBuiltIn(563);
+            VM.StackPush(szMessage);
+            VM.Call(563);
         }
 
         /// <summary>
@@ -33,8 +33,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetPCChatMessage()
         {
-            Internal.NativeFunctions.CallBuiltIn(839);
-            return Internal.NativeFunctions.StackPopString();
+            VM.Call(839);
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -52,8 +52,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static TalkVolume GetPCChatVolume()
         {
-            Internal.NativeFunctions.CallBuiltIn(840);
-            return (TalkVolume)Internal.NativeFunctions.StackPopInteger();
+            VM.Call(840);
+            return (TalkVolume)VM.StackPopInt();
         }
 
         /// <summary>
@@ -66,8 +66,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPCChatMessage(string sNewChatMessage = "")
         {
-            Internal.NativeFunctions.StackPushString(sNewChatMessage);
-            Internal.NativeFunctions.CallBuiltIn(841);
+            VM.StackPush(sNewChatMessage);
+            VM.Call(841);
         }
 
         /// <summary>
@@ -83,8 +83,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPCChatVolume(TalkVolume nTalkVolume = TalkVolume.Talk)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nTalkVolume);
-            Internal.NativeFunctions.CallBuiltIn(842);
+            VM.StackPush((int)nTalkVolume);
+            VM.Call(842);
         }
     }
 }

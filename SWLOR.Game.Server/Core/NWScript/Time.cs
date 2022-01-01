@@ -7,8 +7,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsDay()
         {
-            Internal.NativeFunctions.CallBuiltIn(405);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.Call(405);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -16,8 +16,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsNight()
         {
-            Internal.NativeFunctions.CallBuiltIn(406);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.Call(406);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -25,8 +25,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsDawn()
         {
-            Internal.NativeFunctions.CallBuiltIn(407);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.Call(407);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -34,8 +34,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsDusk()
         {
-            Internal.NativeFunctions.CallBuiltIn(408);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.Call(408);
+            return VM.StackPopInt() != 0;
         }
 
 
@@ -45,9 +45,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float RoundsToSeconds(int nRounds)
         {
-            Internal.NativeFunctions.StackPushInteger(nRounds);
-            Internal.NativeFunctions.CallBuiltIn(121);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(nRounds);
+            VM.Call(121);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -56,9 +56,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float HoursToSeconds(int nHours)
         {
-            Internal.NativeFunctions.StackPushInteger(nHours);
-            Internal.NativeFunctions.CallBuiltIn(122);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(nHours);
+            VM.Call(122);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -67,9 +67,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float TurnsToSeconds(int nTurns)
         {
-            Internal.NativeFunctions.StackPushInteger(nTurns);
-            Internal.NativeFunctions.CallBuiltIn(123);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(nTurns);
+            VM.Call(123);
+            return VM.StackPopFloat();
         }
     }
 }

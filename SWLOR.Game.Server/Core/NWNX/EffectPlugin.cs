@@ -12,56 +12,56 @@ namespace SWLOR.Game.Server.Core.NWNX
 
             var newEffect = new EffectUnpacked();
 
-            newEffect.sItemProp = Internal.NativeFunctions.nwnxPopString();
-            newEffect.Tag = Internal.NativeFunctions.nwnxPopString();
+            newEffect.sItemProp = NWNCore.NativeFunctions.nwnxPopString();
+            newEffect.Tag = NWNCore.NativeFunctions.nwnxPopString();
 
             newEffect.vParam1 = new Vector3
             {
-                Z = Internal.NativeFunctions.nwnxPopFloat(),
-                Y = Internal.NativeFunctions.nwnxPopFloat(),
-                X = Internal.NativeFunctions.nwnxPopFloat(),
+                Z = NWNCore.NativeFunctions.nwnxPopFloat(),
+                Y = NWNCore.NativeFunctions.nwnxPopFloat(),
+                X = NWNCore.NativeFunctions.nwnxPopFloat(),
             };
             newEffect.vParam0 = new Vector3
             {
-                Z = Internal.NativeFunctions.nwnxPopFloat(),
-                Y = Internal.NativeFunctions.nwnxPopFloat(),
-                X = Internal.NativeFunctions.nwnxPopFloat(),
+                Z = NWNCore.NativeFunctions.nwnxPopFloat(),
+                Y = NWNCore.NativeFunctions.nwnxPopFloat(),
+                X = NWNCore.NativeFunctions.nwnxPopFloat(),
             };
 
-            newEffect.oParam3 = Internal.NativeFunctions.nwnxPopObject();
-            newEffect.oParam2 = Internal.NativeFunctions.nwnxPopObject();
-            newEffect.oParam1 = Internal.NativeFunctions.nwnxPopObject();
-            newEffect.oParam0 = Internal.NativeFunctions.nwnxPopObject();
+            newEffect.oParam3 = NWNCore.NativeFunctions.nwnxPopObject();
+            newEffect.oParam2 = NWNCore.NativeFunctions.nwnxPopObject();
+            newEffect.oParam1 = NWNCore.NativeFunctions.nwnxPopObject();
+            newEffect.oParam0 = NWNCore.NativeFunctions.nwnxPopObject();
 
-            newEffect.sParam5 = Internal.NativeFunctions.nwnxPopString();
-            newEffect.sParam4 = Internal.NativeFunctions.nwnxPopString();
-            newEffect.sParam3 = Internal.NativeFunctions.nwnxPopString();
-            newEffect.sParam2 = Internal.NativeFunctions.nwnxPopString();
-            newEffect.sParam1 = Internal.NativeFunctions.nwnxPopString();
-            newEffect.sParam0 = Internal.NativeFunctions.nwnxPopString();
+            newEffect.sParam5 = NWNCore.NativeFunctions.nwnxPopString();
+            newEffect.sParam4 = NWNCore.NativeFunctions.nwnxPopString();
+            newEffect.sParam3 = NWNCore.NativeFunctions.nwnxPopString();
+            newEffect.sParam2 = NWNCore.NativeFunctions.nwnxPopString();
+            newEffect.sParam1 = NWNCore.NativeFunctions.nwnxPopString();
+            newEffect.sParam0 = NWNCore.NativeFunctions.nwnxPopString();
 
-            newEffect.fParam3 = Internal.NativeFunctions.nwnxPopFloat();
-            newEffect.fParam2 = Internal.NativeFunctions.nwnxPopFloat();
-            newEffect.fParam1 = Internal.NativeFunctions.nwnxPopFloat();
-            newEffect.fParam0 = Internal.NativeFunctions.nwnxPopFloat();
+            newEffect.fParam3 = NWNCore.NativeFunctions.nwnxPopFloat();
+            newEffect.fParam2 = NWNCore.NativeFunctions.nwnxPopFloat();
+            newEffect.fParam1 = NWNCore.NativeFunctions.nwnxPopFloat();
+            newEffect.fParam0 = NWNCore.NativeFunctions.nwnxPopFloat();
 
-            newEffect.nParam7 = Internal.NativeFunctions.nwnxPopInt();
-            newEffect.nParam6 = Internal.NativeFunctions.nwnxPopInt();
-            newEffect.nParam5 = Internal.NativeFunctions.nwnxPopInt();
-            newEffect.nParam4 = Internal.NativeFunctions.nwnxPopInt();
-            newEffect.nParam3 = Internal.NativeFunctions.nwnxPopInt();
-            newEffect.nParam2 = Internal.NativeFunctions.nwnxPopInt();
-            newEffect.nParam1 = Internal.NativeFunctions.nwnxPopInt();
-            newEffect.nParam0 = Internal.NativeFunctions.nwnxPopInt();
+            newEffect.nParam7 = NWNCore.NativeFunctions.nwnxPopInt();
+            newEffect.nParam6 = NWNCore.NativeFunctions.nwnxPopInt();
+            newEffect.nParam5 = NWNCore.NativeFunctions.nwnxPopInt();
+            newEffect.nParam4 = NWNCore.NativeFunctions.nwnxPopInt();
+            newEffect.nParam3 = NWNCore.NativeFunctions.nwnxPopInt();
+            newEffect.nParam2 = NWNCore.NativeFunctions.nwnxPopInt();
+            newEffect.nParam1 = NWNCore.NativeFunctions.nwnxPopInt();
+            newEffect.nParam0 = NWNCore.NativeFunctions.nwnxPopInt();
 
-            newEffect.NumIntegers = Internal.NativeFunctions.nwnxPopInt();
+            newEffect.NumIntegers = NWNCore.NativeFunctions.nwnxPopInt();
 
             if (bLink)
             {
-                newEffect.LinkRightValid = Internal.NativeFunctions.nwnxPopInt() == 1;
-                newEffect.LinkRight = new Core.Effect(Internal.NativeFunctions.nwnxPopEffect());
-                newEffect.LinkLeftValid = Internal.NativeFunctions.nwnxPopInt() == 1;
-                newEffect.LinkLeft = new Core.Effect(Internal.NativeFunctions.nwnxPopEffect());
+                newEffect.LinkRightValid = NWNCore.NativeFunctions.nwnxPopInt() == 1;
+                newEffect.LinkRight = new Core.Effect(NWNCore.NativeFunctions.nwnxPopEffect());
+                newEffect.LinkLeftValid = NWNCore.NativeFunctions.nwnxPopInt() == 1;
+                newEffect.LinkLeft = new Core.Effect(NWNCore.NativeFunctions.nwnxPopEffect());
             }
             else
             {
@@ -69,19 +69,19 @@ namespace SWLOR.Game.Server.Core.NWNX
                 newEffect.LinkLeftValid = false;
             }
 
-            newEffect.CasterLevel = Internal.NativeFunctions.nwnxPopInt();
-            newEffect.ShowIcon = Internal.NativeFunctions.nwnxPopInt();
-            newEffect.Expose = Internal.NativeFunctions.nwnxPopInt();
-            newEffect.SpellId = Internal.NativeFunctions.nwnxPopInt();
-            newEffect.Creator = Internal.NativeFunctions.nwnxPopObject();
+            newEffect.CasterLevel = NWNCore.NativeFunctions.nwnxPopInt();
+            newEffect.ShowIcon = NWNCore.NativeFunctions.nwnxPopInt();
+            newEffect.Expose = NWNCore.NativeFunctions.nwnxPopInt();
+            newEffect.SpellId = NWNCore.NativeFunctions.nwnxPopInt();
+            newEffect.Creator = NWNCore.NativeFunctions.nwnxPopObject();
 
-            newEffect.ExpiryTimeOfDay = Internal.NativeFunctions.nwnxPopInt();
-            newEffect.ExpiryCalendarDay = Internal.NativeFunctions.nwnxPopInt();
-            newEffect.Duration = Internal.NativeFunctions.nwnxPopFloat();
+            newEffect.ExpiryTimeOfDay = NWNCore.NativeFunctions.nwnxPopInt();
+            newEffect.ExpiryCalendarDay = NWNCore.NativeFunctions.nwnxPopInt();
+            newEffect.Duration = NWNCore.NativeFunctions.nwnxPopFloat();
 
-            newEffect.SubType = Internal.NativeFunctions.nwnxPopInt();
-            newEffect.Type = Internal.NativeFunctions.nwnxPopInt();
-            newEffect.EffectId = Internal.NativeFunctions.nwnxPopInt();
+            newEffect.SubType = NWNCore.NativeFunctions.nwnxPopInt();
+            newEffect.Type = NWNCore.NativeFunctions.nwnxPopInt();
+            newEffect.EffectId = NWNCore.NativeFunctions.nwnxPopInt();
 
             return newEffect;
         }
@@ -89,71 +89,71 @@ namespace SWLOR.Game.Server.Core.NWNX
         private static void ResolvePack(EffectUnpacked e, bool bReplace = false)
         {
             if (!bReplace)
-                Internal.NativeFunctions.nwnxPushInt(e.Type);
+                NWNCore.NativeFunctions.nwnxPushInt(e.Type);
 
-            Internal.NativeFunctions.nwnxPushInt(e.SubType);
+            NWNCore.NativeFunctions.nwnxPushInt(e.SubType);
 
-            Internal.NativeFunctions.nwnxPushFloat(e.Duration);
-            Internal.NativeFunctions.nwnxPushInt(e.ExpiryCalendarDay);
-            Internal.NativeFunctions.nwnxPushInt(e.ExpiryTimeOfDay);
+            NWNCore.NativeFunctions.nwnxPushFloat(e.Duration);
+            NWNCore.NativeFunctions.nwnxPushInt(e.ExpiryCalendarDay);
+            NWNCore.NativeFunctions.nwnxPushInt(e.ExpiryTimeOfDay);
 
-            Internal.NativeFunctions.nwnxPushObject(e.Creator);
-            Internal.NativeFunctions.nwnxPushInt(e.SpellId);
-            Internal.NativeFunctions.nwnxPushInt(e.Expose);
-            Internal.NativeFunctions.nwnxPushInt(e.ShowIcon);
-            Internal.NativeFunctions.nwnxPushInt(e.CasterLevel);
+            NWNCore.NativeFunctions.nwnxPushObject(e.Creator);
+            NWNCore.NativeFunctions.nwnxPushInt(e.SpellId);
+            NWNCore.NativeFunctions.nwnxPushInt(e.Expose);
+            NWNCore.NativeFunctions.nwnxPushInt(e.ShowIcon);
+            NWNCore.NativeFunctions.nwnxPushInt(e.CasterLevel);
 
             if (!bReplace)
             {
-                Internal.NativeFunctions.nwnxPushEffect(e.LinkLeft);
-                Internal.NativeFunctions.nwnxPushInt(e.LinkLeftValid ? 1 : 0);
-                Internal.NativeFunctions.nwnxPushEffect(e.LinkRight);
-                Internal.NativeFunctions.nwnxPushInt(e.LinkRightValid ? 1 : 0);
+                NWNCore.NativeFunctions.nwnxPushEffect(e.LinkLeft);
+                NWNCore.NativeFunctions.nwnxPushInt(e.LinkLeftValid ? 1 : 0);
+                NWNCore.NativeFunctions.nwnxPushEffect(e.LinkRight);
+                NWNCore.NativeFunctions.nwnxPushInt(e.LinkRightValid ? 1 : 0);
             }
 
-            Internal.NativeFunctions.nwnxPushInt(e.NumIntegers);
-            Internal.NativeFunctions.nwnxPushInt(e.nParam0);
-            Internal.NativeFunctions.nwnxPushInt(e.nParam1);
-            Internal.NativeFunctions.nwnxPushInt(e.nParam2);
-            Internal.NativeFunctions.nwnxPushInt(e.nParam3);
-            Internal.NativeFunctions.nwnxPushInt(e.nParam4);
-            Internal.NativeFunctions.nwnxPushInt(e.nParam5);
-            Internal.NativeFunctions.nwnxPushInt(e.nParam6);
-            Internal.NativeFunctions.nwnxPushInt(e.nParam7);
-            Internal.NativeFunctions.nwnxPushFloat(e.fParam0);
-            Internal.NativeFunctions.nwnxPushFloat(e.fParam1);
-            Internal.NativeFunctions.nwnxPushFloat(e.fParam2);
-            Internal.NativeFunctions.nwnxPushFloat(e.fParam3);
-            Internal.NativeFunctions.nwnxPushString(e.sParam0);
-            Internal.NativeFunctions.nwnxPushString(e.sParam1);
-            Internal.NativeFunctions.nwnxPushString(e.sParam2);
-            Internal.NativeFunctions.nwnxPushString(e.sParam3);
-            Internal.NativeFunctions.nwnxPushString(e.sParam4);
-            Internal.NativeFunctions.nwnxPushString(e.sParam5);
-            Internal.NativeFunctions.nwnxPushObject(e.oParam0);
-            Internal.NativeFunctions.nwnxPushObject(e.oParam1);
-            Internal.NativeFunctions.nwnxPushObject(e.oParam2);
-            Internal.NativeFunctions.nwnxPushObject(e.oParam3);
+            NWNCore.NativeFunctions.nwnxPushInt(e.NumIntegers);
+            NWNCore.NativeFunctions.nwnxPushInt(e.nParam0);
+            NWNCore.NativeFunctions.nwnxPushInt(e.nParam1);
+            NWNCore.NativeFunctions.nwnxPushInt(e.nParam2);
+            NWNCore.NativeFunctions.nwnxPushInt(e.nParam3);
+            NWNCore.NativeFunctions.nwnxPushInt(e.nParam4);
+            NWNCore.NativeFunctions.nwnxPushInt(e.nParam5);
+            NWNCore.NativeFunctions.nwnxPushInt(e.nParam6);
+            NWNCore.NativeFunctions.nwnxPushInt(e.nParam7);
+            NWNCore.NativeFunctions.nwnxPushFloat(e.fParam0);
+            NWNCore.NativeFunctions.nwnxPushFloat(e.fParam1);
+            NWNCore.NativeFunctions.nwnxPushFloat(e.fParam2);
+            NWNCore.NativeFunctions.nwnxPushFloat(e.fParam3);
+            NWNCore.NativeFunctions.nwnxPushString(e.sParam0);
+            NWNCore.NativeFunctions.nwnxPushString(e.sParam1);
+            NWNCore.NativeFunctions.nwnxPushString(e.sParam2);
+            NWNCore.NativeFunctions.nwnxPushString(e.sParam3);
+            NWNCore.NativeFunctions.nwnxPushString(e.sParam4);
+            NWNCore.NativeFunctions.nwnxPushString(e.sParam5);
+            NWNCore.NativeFunctions.nwnxPushObject(e.oParam0);
+            NWNCore.NativeFunctions.nwnxPushObject(e.oParam1);
+            NWNCore.NativeFunctions.nwnxPushObject(e.oParam2);
+            NWNCore.NativeFunctions.nwnxPushObject(e.oParam3);
 
-            Internal.NativeFunctions.nwnxPushFloat(e.vParam0.X);
-            Internal.NativeFunctions.nwnxPushFloat(e.vParam0.Y);
-            Internal.NativeFunctions.nwnxPushFloat(e.vParam0.Z);
+            NWNCore.NativeFunctions.nwnxPushFloat(e.vParam0.X);
+            NWNCore.NativeFunctions.nwnxPushFloat(e.vParam0.Y);
+            NWNCore.NativeFunctions.nwnxPushFloat(e.vParam0.Z);
 
-            Internal.NativeFunctions.nwnxPushFloat(e.vParam1.X);
-            Internal.NativeFunctions.nwnxPushFloat(e.vParam1.Y);
-            Internal.NativeFunctions.nwnxPushFloat(e.vParam1.Z);
+            NWNCore.NativeFunctions.nwnxPushFloat(e.vParam1.X);
+            NWNCore.NativeFunctions.nwnxPushFloat(e.vParam1.Y);
+            NWNCore.NativeFunctions.nwnxPushFloat(e.vParam1.Z);
 
-            Internal.NativeFunctions.nwnxPushString(e.Tag);
+            NWNCore.NativeFunctions.nwnxPushString(e.Tag);
 
-            Internal.NativeFunctions.nwnxPushString(e.sItemProp);
+            NWNCore.NativeFunctions.nwnxPushString(e.sItemProp);
         }
 
         // Convert native effect type to unpacked structure
         public static EffectUnpacked UnpackEffect(Core.Effect effect)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "UnpackEffect");
-            Internal.NativeFunctions.nwnxPushEffect(effect.Handle);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "UnpackEffect");
+            NWNCore.NativeFunctions.nwnxPushEffect(effect.Handle);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
             return ResolveUnpack();
         }
@@ -161,10 +161,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Convert unpacked effect structure to native type
         public static Core.Effect PackEffect(EffectUnpacked effect)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PackEffect");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "PackEffect");
             ResolvePack(effect);
 
-            return new Core.Effect(Internal.NativeFunctions.nwnxPopEffect());
+            return new Core.Effect(NWNCore.NativeFunctions.nwnxPopEffect());
         }
 
         // Set a script with optional data that runs when an effect expires
@@ -172,30 +172,30 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Note: OBJECT_SELF in the script is the object the effect is applied to
         public static Core.Effect SetEffectExpiredScript(Core.Effect effect, string script, string data = "")
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetEffectExpiredScript");
-            Internal.NativeFunctions.nwnxPushString(data);
-            Internal.NativeFunctions.nwnxPushString(script);
-            Internal.NativeFunctions.nwnxPushEffect(effect.Handle);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return new Core.Effect(Internal.NativeFunctions.nwnxPopEffect());
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetEffectExpiredScript");
+            NWNCore.NativeFunctions.nwnxPushString(data);
+            NWNCore.NativeFunctions.nwnxPushString(script);
+            NWNCore.NativeFunctions.nwnxPushEffect(effect.Handle);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return new Core.Effect(NWNCore.NativeFunctions.nwnxPopEffect());
         }
 
         // Get the data set with NWNX_Effect_SetEffectExpiredScript()
         // THIS SHOULD ONLY BE CALLED FROM WITHIN A SCRIPT THAT WAS EXECUTED BY SetEffectExpiredScript()    
         public static string GetEffectExpiredData()
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetEffectExpiredData");
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopString();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetEffectExpiredData");
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopString();
         }
 
         // Get the effect creator of NWNX_Effect_SetEffectExpiredScript()
         // THIS SHOULD ONLY BE CALLED FROM WITHIN A SCRIPT THAT WAS EXECUTED BY NWNX_Effect_SetEffectExpiredScript()
         public static uint GetEffectExpiredCreator()
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetEffectExpiredCreator");
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopObject();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetEffectExpiredCreator");
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopObject();
         }
 
 
@@ -205,13 +205,13 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return Number of internal effects updated.
         public static int ReplaceEffect(uint obj, Core.Effect eOld, Core.Effect eNew)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ReplaceEffect");
-            Internal.NativeFunctions.nwnxPushEffect(eNew);
-            Internal.NativeFunctions.nwnxPushEffect(eOld);
-            Internal.NativeFunctions.nwnxPushObject(obj);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ReplaceEffect");
+            NWNCore.NativeFunctions.nwnxPushEffect(eNew);
+            NWNCore.NativeFunctions.nwnxPushEffect(eOld);
+            NWNCore.NativeFunctions.nwnxPushObject(obj);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
-            return Internal.NativeFunctions.nwnxPopInt();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         /// @brief Gets the true effect count
@@ -219,11 +219,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return the number of effects (item properties and other non-exposed effects included)
         public static int GetTrueEffectCount(uint oObject)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetTrueEffectCount");
-            Internal.NativeFunctions.nwnxPushObject(oObject);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetTrueEffectCount");
+            NWNCore.NativeFunctions.nwnxPushObject(oObject);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
-            return Internal.NativeFunctions.nwnxPopInt();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         /// @brief Gets a specific effect on an object. This can grab effects normally hidden from developers, such as item properties.
@@ -232,10 +232,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return A constructed NWNX_EffectUnpacked.
         public static EffectUnpacked GetTrueEffect(uint oObject, int nIndex)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetTrueEffectCount");
-            Internal.NativeFunctions.nwnxPushInt(nIndex);
-            Internal.NativeFunctions.nwnxPushObject(oObject);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetTrueEffectCount");
+            NWNCore.NativeFunctions.nwnxPushInt(nIndex);
+            NWNCore.NativeFunctions.nwnxPushObject(oObject);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
             return ResolveUnpack(false);
         }
@@ -247,12 +247,12 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// Cannot replace an effect with a different type or ID.
         public static void ReplaceEffectByIndex(uint oObject, int nIndex, EffectUnpacked e)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ReplaceEffectByIndex");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ReplaceEffectByIndex");
 
             ResolvePack(e, true);
-            Internal.NativeFunctions.nwnxPushInt(nIndex);
-            Internal.NativeFunctions.nwnxPushObject(oObject);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxPushInt(nIndex);
+            NWNCore.NativeFunctions.nwnxPushObject(oObject);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         /// Removes effect by ID
@@ -261,12 +261,12 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// FALSE/0 on failure TRUE/1 on success.
         public static int RemoveEffectById(uint oObject, string sID)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveEffectById");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveEffectById");
 
-            Internal.NativeFunctions.nwnxPushString(sID);
-            Internal.NativeFunctions.nwnxPushObject(oObject);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxPushString(sID);
+            NWNCore.NativeFunctions.nwnxPushObject(oObject);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         /// Applies an effect, bypassing any processing done by ApplyEffectToObject
@@ -274,11 +274,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// oObject The object to apply it to.
         public static void Apply(Effect eEffect, uint oObject)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "Apply");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "Apply");
 
-            Internal.NativeFunctions.nwnxPushObject(oObject);
-            Internal.NativeFunctions.nwnxPushEffect(eEffect);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxPushObject(oObject);
+            NWNCore.NativeFunctions.nwnxPushEffect(eEffect);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
     }
 }

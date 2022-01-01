@@ -10,8 +10,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetMaxHenchmen(int nNumHenchmen)
         {
-            Internal.NativeFunctions.StackPushInteger(nNumHenchmen);
-            Internal.NativeFunctions.CallBuiltIn(746);
+            VM.StackPush(nNumHenchmen);
+            VM.Call(746);
         }
 
         /// <summary>
@@ -19,8 +19,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetMaxHenchmen()
         {
-            Internal.NativeFunctions.CallBuiltIn(747);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.Call(747);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -29,9 +29,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetAssociateType(uint oAssociate)
         {
-            Internal.NativeFunctions.StackPushObject(oAssociate);
-            Internal.NativeFunctions.CallBuiltIn(748);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oAssociate);
+            VM.Call(748);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -51,12 +51,12 @@ namespace SWLOR.Game.Server.Core.NWScript
             bool bReadyAllSpells = false, 
             Package nPackage = Package.Invalid)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nPackage);
-            Internal.NativeFunctions.StackPushInteger(bReadyAllSpells ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger((int)nClass);
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(704);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)nPackage);
+            VM.StackPush(bReadyAllSpells ? 1 : 0);
+            VM.StackPush((int)nClass);
+            VM.StackPush(oCreature);
+            VM.Call(704);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -65,9 +65,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RemoveSummonedAssociate(uint oMaster, uint oAssociate = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oAssociate);
-            Internal.NativeFunctions.StackPushObject(oMaster);
-            Internal.NativeFunctions.CallBuiltIn(503);
+            VM.StackPush(oAssociate);
+            VM.StackPush(oMaster);
+            VM.Call(503);
         }
 
         /// <summary>
@@ -77,9 +77,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFamiliarCreatureType(uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(497);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oCreature);
+            VM.Call(497);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -90,9 +90,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetAnimalCompanionCreatureType(uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(498);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oCreature);
+            VM.Call(498);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -102,9 +102,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetFamiliarName(uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(499);
-            return Internal.NativeFunctions.StackPopString();
+            VM.StackPush(oCreature);
+            VM.Call(499);
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -114,9 +114,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetAnimalCompanionName(uint oTarget)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(500);
-            return Internal.NativeFunctions.StackPopString();
+            VM.StackPush(oTarget);
+            VM.Call(500);
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -128,11 +128,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetAssociate(AssociateType nAssociateType, uint oMaster = OBJECT_INVALID, int nTh = 1)
         {
-            Internal.NativeFunctions.StackPushInteger(nTh);
-            Internal.NativeFunctions.StackPushObject(oMaster);
-            Internal.NativeFunctions.StackPushInteger((int)nAssociateType);
-            Internal.NativeFunctions.CallBuiltIn(364);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(nTh);
+            VM.StackPush(oMaster);
+            VM.StackPush((int)nAssociateType);
+            VM.Call(364);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -141,9 +141,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void AddHenchman(uint oMaster, uint oHenchman = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oHenchman);
-            Internal.NativeFunctions.StackPushObject(oMaster);
-            Internal.NativeFunctions.CallBuiltIn(365);
+            VM.StackPush(oHenchman);
+            VM.StackPush(oMaster);
+            VM.Call(365);
         }
 
         /// <summary>
@@ -151,9 +151,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RemoveHenchman(uint oMaster, uint oHenchman = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oHenchman);
-            Internal.NativeFunctions.StackPushObject(oMaster);
-            Internal.NativeFunctions.CallBuiltIn(366);
+            VM.StackPush(oHenchman);
+            VM.StackPush(oMaster);
+            VM.Call(366);
         }
 
         /// <summary>
@@ -163,10 +163,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetHenchman(uint oMaster = OBJECT_INVALID, int nNth = 1)
         {
-            Internal.NativeFunctions.StackPushInteger(nNth);
-            Internal.NativeFunctions.StackPushObject(oMaster);
-            Internal.NativeFunctions.CallBuiltIn(354);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(nNth);
+            VM.StackPush(oMaster);
+            VM.Call(354);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -174,8 +174,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SummonAnimalCompanion(uint oMaster = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oMaster);
-            Internal.NativeFunctions.CallBuiltIn(334);
+            VM.StackPush(oMaster);
+            VM.Call(334);
         }
 
         /// <summary>
@@ -183,8 +183,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SummonFamiliar(uint oMaster = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oMaster);
-            Internal.NativeFunctions.CallBuiltIn(335);
+            VM.StackPush(oMaster);
+            VM.Call(335);
         }
 
         /// <summary>
@@ -192,9 +192,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetLastAssociateCommand(uint oAssociate = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oAssociate);
-            Internal.NativeFunctions.CallBuiltIn(321);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oAssociate);
+            VM.Call(321);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -202,9 +202,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetMaster(uint oAssociate = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oAssociate);
-            Internal.NativeFunctions.CallBuiltIn(319);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(oAssociate);
+            VM.Call(319);
+            return VM.StackPopObject();
         }
     }
 }

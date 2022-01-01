@@ -15,30 +15,30 @@ namespace SWLOR.Game.Server.Core.NWNX
             uint iParam2 = 0xDEADBEEF, 
             uint iParam3 = 0xDEADBEEF)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetRacialModifier");
-            Internal.NativeFunctions.nwnxPushInt((int)iParam3);
-            Internal.NativeFunctions.nwnxPushInt((int)iParam2);
-            Internal.NativeFunctions.nwnxPushInt((int)iParam1);
-            Internal.NativeFunctions.nwnxPushInt((int)modifier);
-            Internal.NativeFunctions.nwnxPushInt((int)race);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetRacialModifier");
+            NWNCore.NativeFunctions.nwnxPushInt((int)iParam3);
+            NWNCore.NativeFunctions.nwnxPushInt((int)iParam2);
+            NWNCore.NativeFunctions.nwnxPushInt((int)iParam1);
+            NWNCore.NativeFunctions.nwnxPushInt((int)modifier);
+            NWNCore.NativeFunctions.nwnxPushInt((int)race);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Gets the parent race for a race.
         public static int GetParentRace(RacialType race)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetParentRace");
-            Internal.NativeFunctions.nwnxPushInt((int)race);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetParentRace");
+            NWNCore.NativeFunctions.nwnxPushInt((int)race);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         public static void SetFavoredEnemyFeat(RacialType iRace, FeatType iFeat)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetFavoredEnemyFeat");
-            Internal.NativeFunctions.nwnxPushInt((int)iFeat);
-            Internal.NativeFunctions.nwnxPushInt((int)iRace);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetFavoredEnemyFeat");
+            NWNCore.NativeFunctions.nwnxPushInt((int)iFeat);
+            NWNCore.NativeFunctions.nwnxPushInt((int)iRace);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
     }
 }

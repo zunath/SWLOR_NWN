@@ -13,9 +13,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetScriptParam(string sParamName)
         {
-            Internal.NativeFunctions.StackPushString(sParamName);
-            Internal.NativeFunctions.CallBuiltIn(906);
-            return Internal.NativeFunctions.StackPopString();
+            VM.StackPush(sParamName);
+            VM.Call(906);
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -24,9 +24,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetScriptParam(string sParamName, string sParamValue)
         {
-            Internal.NativeFunctions.StackPushString(sParamValue);
-            Internal.NativeFunctions.StackPushString(sParamName);
-            Internal.NativeFunctions.CallBuiltIn(907);
+            VM.StackPush(sParamValue);
+            VM.StackPush(sParamName);
+            VM.Call(907);
         }
 
         /// <summary>
@@ -40,9 +40,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static EventScript GetCurrentlyRunningEvent(bool bInheritParent = true)
         {
-            Internal.NativeFunctions.StackPushInteger(bInheritParent ? 1 : 0);
-            Internal.NativeFunctions.CallBuiltIn(938);
-            return (EventScript)Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(bInheritParent ? 1 : 0);
+            VM.Call(938);
+            return (EventScript)VM.StackPopInt();
         }
 
     }

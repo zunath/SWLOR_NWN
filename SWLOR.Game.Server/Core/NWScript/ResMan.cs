@@ -12,11 +12,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string ResManGetAliasFor(string sResRef, ResType nResType)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nResType);
-            Internal.NativeFunctions.StackPushString(sResRef);
-            Internal.NativeFunctions.CallBuiltIn(1008);
+            VM.StackPush((int)nResType);
+            VM.StackPush(sResRef);
+            VM.Call(1008);
 
-            return Internal.NativeFunctions.StackPopString();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -28,14 +28,14 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string ResManFindPrefix(string sPrefix, ResType nResType, int nNth = 1, bool bSearchBaseData = false, string sOnlyKeyTable = "")
         {
-            Internal.NativeFunctions.StackPushString(sOnlyKeyTable);
-            Internal.NativeFunctions.StackPushInteger(bSearchBaseData ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger(nNth);
-            Internal.NativeFunctions.StackPushInteger((int)nResType);
-            Internal.NativeFunctions.StackPushString(sPrefix);
-            Internal.NativeFunctions.CallBuiltIn(1009);
+            VM.StackPush(sOnlyKeyTable);
+            VM.StackPush(bSearchBaseData ? 1 : 0);
+            VM.StackPush(nNth);
+            VM.StackPush((int)nResType);
+            VM.StackPush(sPrefix);
+            VM.Call(1009);
 
-            return Internal.NativeFunctions.StackPopString();
+            return VM.StackPopString();
         }
 
     }

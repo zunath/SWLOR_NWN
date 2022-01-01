@@ -10,9 +10,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float fabs(float fValue)
         {
-            Internal.NativeFunctions.StackPushFloat(fValue);
-            Internal.NativeFunctions.CallBuiltIn(67);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(fValue);
+            VM.Call(67);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -20,9 +20,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float cos(float fValue)
         {
-            Internal.NativeFunctions.StackPushFloat(fValue);
-            Internal.NativeFunctions.CallBuiltIn(68);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(fValue);
+            VM.Call(68);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -30,9 +30,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float sin(float fValue)
         {
-            Internal.NativeFunctions.StackPushFloat(fValue);
-            Internal.NativeFunctions.CallBuiltIn(69);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(fValue);
+            VM.Call(69);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -40,9 +40,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float tan(float fValue)
         {
-            Internal.NativeFunctions.StackPushFloat(fValue);
-            Internal.NativeFunctions.CallBuiltIn(70);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(fValue);
+            VM.Call(70);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -51,9 +51,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float acos(float fValue)
         {
-            Internal.NativeFunctions.StackPushFloat(fValue);
-            Internal.NativeFunctions.CallBuiltIn(71);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(fValue);
+            VM.Call(71);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -62,9 +62,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float asin(float fValue)
         {
-            Internal.NativeFunctions.StackPushFloat(fValue);
-            Internal.NativeFunctions.CallBuiltIn(72);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(fValue);
+            VM.Call(72);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -72,9 +72,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float atan(float fValue)
         {
-            Internal.NativeFunctions.StackPushFloat(fValue);
-            Internal.NativeFunctions.CallBuiltIn(73);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(fValue);
+            VM.Call(73);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -83,9 +83,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float log(float fValue)
         {
-            Internal.NativeFunctions.StackPushFloat(fValue);
-            Internal.NativeFunctions.CallBuiltIn(74);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(fValue);
+            VM.Call(74);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -94,10 +94,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float pow(float fValue, float fExponent)
         {
-            Internal.NativeFunctions.StackPushFloat(fExponent);
-            Internal.NativeFunctions.StackPushFloat(fValue);
-            Internal.NativeFunctions.CallBuiltIn(75);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(fExponent);
+            VM.StackPush(fValue);
+            VM.Call(75);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -106,9 +106,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float sqrt(float fValue)
         {
-            Internal.NativeFunctions.StackPushFloat(fValue);
-            Internal.NativeFunctions.CallBuiltIn(76);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(fValue);
+            VM.Call(76);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -117,9 +117,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int abs(int nValue)
         {
-            Internal.NativeFunctions.StackPushInteger(nValue);
-            Internal.NativeFunctions.CallBuiltIn(77);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(nValue);
+            VM.Call(77);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -127,9 +127,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 VectorNormalize(Vector3 vVector)
         {
-            Internal.NativeFunctions.StackPushVector(vVector);
-            Internal.NativeFunctions.CallBuiltIn(137);
-            return Internal.NativeFunctions.StackPopVector();
+            VM.StackPush(vVector);
+            VM.Call(137);
+            return VM.StackPopVector();
         }
 
         /// <summary>
@@ -139,9 +139,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float VectorMagnitude(Vector3 vVector)
         {
-            Internal.NativeFunctions.StackPushVector(vVector);
-            Internal.NativeFunctions.CallBuiltIn(104);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(vVector);
+            VM.Call(104);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -149,9 +149,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float FeetToMeters(float fFeet)
         {
-            Internal.NativeFunctions.StackPushFloat(fFeet);
-            Internal.NativeFunctions.CallBuiltIn(218);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(fFeet);
+            VM.Call(218);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -159,9 +159,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float YardsToMeters(float fYards)
         {
-            Internal.NativeFunctions.StackPushFloat(fYards);
-            Internal.NativeFunctions.CallBuiltIn(219);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(fYards);
+            VM.Call(219);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -170,9 +170,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetDistanceToObject(uint oObject)
         {
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(41);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(oObject);
+            VM.Call(41);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -183,10 +183,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool LineOfSightObject(uint oSource, uint oTarget)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.StackPushObject(oSource);
-            Internal.NativeFunctions.CallBuiltIn(752);
-            return Internal.NativeFunctions.StackPopInteger() == 1;
+            VM.StackPush(oTarget);
+            VM.StackPush(oSource);
+            VM.Call(752);
+            return VM.StackPopInt() == 1;
         }
 
         /// <summary>
@@ -199,10 +199,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool LineOfSightVector(Vector3 vSource, Vector3 vTarget)
         {
-            Internal.NativeFunctions.StackPushVector(vTarget);
-            Internal.NativeFunctions.StackPushVector(vSource);
-            Internal.NativeFunctions.CallBuiltIn(753);
-            return Internal.NativeFunctions.StackPopInteger() == 1;
+            VM.StackPush(vTarget);
+            VM.StackPush(vSource);
+            VM.Call(753);
+            return VM.StackPopInt() == 1;
         }
 
         /// <summary>
@@ -210,9 +210,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 AngleToVector(float fAngle)
         {
-            Internal.NativeFunctions.StackPushFloat(fAngle);
-            Internal.NativeFunctions.CallBuiltIn(144);
-            return Internal.NativeFunctions.StackPopVector();
+            VM.StackPush(fAngle);
+            VM.Call(144);
+            return VM.StackPopVector();
         }
 
         /// <summary>
@@ -220,9 +220,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float VectorToAngle(Vector3 vVector)
         {
-            Internal.NativeFunctions.StackPushVector(vVector);
-            Internal.NativeFunctions.CallBuiltIn(145);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(vVector);
+            VM.Call(145);
+            return VM.StackPopFloat();
         }
     }
 }

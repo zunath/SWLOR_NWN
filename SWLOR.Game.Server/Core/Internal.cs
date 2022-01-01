@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using SWLOR.Game.Server.Core.Async;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
@@ -109,7 +110,10 @@ namespace SWLOR.Game.Server.Core
                 {
                     foreach (var action in _conditionalScripts[script])
                     {
+                        ProfilerPlugin.PushPerfScope(script, "RunScript", "Script");
                         var actionResult = action.Action.Invoke();
+                        ProfilerPlugin.PopPerfScope();
+
                         if (result) 
                             result = actionResult;
                     }
@@ -125,7 +129,9 @@ namespace SWLOR.Game.Server.Core
                     {
                         try
                         {
+                            ProfilerPlugin.PushPerfScope(script, "RunScript", "Script");
                             action.Action();
+                            ProfilerPlugin.PopPerfScope();
                         }
                         catch (Exception ex)
                         {

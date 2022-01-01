@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             public Type Type { get; set; }
             public bool HasEventBeenHooked { get; set; }
             public bool IsGuiList { get; set; }
+            public bool SkipNotify { get; set; }
         }
 
         private static readonly GuiPropertyConverter _converter = new GuiPropertyConverter();
@@ -120,7 +121,8 @@ namespace SWLOR.Game.Server.Service.GuiService
                 _propertyValues[propertyName].IsGuiList = true;
             }
 
-            OnPropertyChanged(propertyName);
+            if(!_propertyValues[propertyName].SkipNotify)
+                OnPropertyChanged(propertyName);
         }
 
         private void OnListChanged(object sender, ListChangedEventArgs e)
@@ -210,12 +212,18 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             _propertyValues[propertyName].Value = value;
 
-            if(propertyName != nameof(Geometry))
+            if (propertyName != nameof(Geometry))
+            {
+                GetType().GetProperty(nameof(PropertyDetail.SkipNotify))?.SetValue(this, true);
                 GetType().GetProperty(propertyName)?.SetValue(this, value);
+                GetType().GetProperty(nameof(PropertyDetail.SkipNotify))?.SetValue(this, false);
+            }
 
             // Update Modal geometry if this VM has it active.
             if (propertyName == nameof(Geometry))
+            {
                 Gui.GetPlayerModal(Player, WindowType).ViewModel.Geometry = Geometry;
+            }
         }
 
         /// <summary>

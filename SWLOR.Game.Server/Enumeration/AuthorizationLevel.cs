@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Enumeration
         None = 0,
         Player = 1,
         DM = 2,
-        Admin = 3,
+        Admin = 4,
 
         All = Player | DM | Admin
     }

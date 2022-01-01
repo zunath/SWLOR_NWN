@@ -12,15 +12,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             _builder.CreateWindow(GuiWindowType.BugReport)
                 .SetIsResizable(true)
-                .SetInitialGeometry(0, 0, 476.57895f, 530.2632f)
+                .SetInitialGeometry(0, 0, 500f, 550f)
                 .SetTitle("Submit Bug Report")
 
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>
                     {
-                        //row.AddSpacer();
-
                         row.AddLabel()
                             .SetText("Please enter as much information as possible regarding the encountered bug.")
                             .SetIsVisible(true)
@@ -41,15 +39,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(row =>
                     {
+                        row.AddSpacer();
                         row.AddButton()
                             .BindOnClicked(model => model.OnClickSubmit())
+                            .SetHeight(35f)
                             .SetText("Submit Bug Report")
                             .SetIsEnabled(true);
 
                         row.AddButton()
                             .BindOnClicked(model => model.OnClickCancel())
+                            .SetHeight(35f)
                             .SetText("Cancel")
                             .SetIsEnabled(true);
+
+                        row.AddSpacer();
                     });
 
                 });

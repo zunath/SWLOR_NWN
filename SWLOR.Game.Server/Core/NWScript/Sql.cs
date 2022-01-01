@@ -18,8 +18,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlDestroyDatabase(uint oObject)
         {
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(921);
+            VM.StackPush(oObject);
+            VM.Call(921);
         }
 
         /// <summary>
@@ -28,9 +28,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string SqlGetError(IntPtr sqlQuery)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.SQLQuery, sqlQuery);
-            Internal.NativeFunctions.CallBuiltIn(922);
-            return Internal.NativeFunctions.StackPopString();
+            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
+            VM.Call(922);
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -47,10 +47,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static IntPtr SqlPrepareQueryCampaign(string sDatabase, string sQuery)
         {
-            Internal.NativeFunctions.StackPushString(sQuery);
-            Internal.NativeFunctions.StackPushString(sDatabase);
-            Internal.NativeFunctions.CallBuiltIn(923);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.SQLQuery);
+            VM.StackPush(sQuery);
+            VM.StackPush(sDatabase);
+            VM.Call(923);
+            return VM.StackPopStruct((int)EngineStructure.SQLQuery);
         }
 
         /// <summary>
@@ -73,10 +73,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static IntPtr SqlPrepareQueryObject(uint oObject, string sQuery)
         {
-            Internal.NativeFunctions.StackPushString(sQuery);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(924);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.SQLQuery);
+            VM.StackPush(sQuery);
+            VM.StackPush(oObject);
+            VM.Call(924);
+            return VM.StackPopStruct((int)EngineStructure.SQLQuery);
         }
 
         /// <summary>
@@ -88,10 +88,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlBindInt(IntPtr sqlQuery, string sParam, int nValue)
         {
-            Internal.NativeFunctions.StackPushInteger(nValue);
-            Internal.NativeFunctions.StackPushString(sParam);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.SQLQuery, sqlQuery);
-            Internal.NativeFunctions.CallBuiltIn(925);
+            VM.StackPush(nValue);
+            VM.StackPush(sParam);
+            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
+            VM.Call(925);
         }
 
         /// <summary>
@@ -99,10 +99,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlBindFloat(IntPtr sqlQuery, string sParam, float fFloat)
         {
-            Internal.NativeFunctions.StackPushFloat(fFloat);
-            Internal.NativeFunctions.StackPushString(sParam);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.SQLQuery, sqlQuery);
-            Internal.NativeFunctions.CallBuiltIn(926);
+            VM.StackPush(fFloat);
+            VM.StackPush(sParam);
+            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
+            VM.Call(926);
         }
 
         /// <summary>
@@ -110,10 +110,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlBindString(IntPtr sqlQuery, string sParam, string sString)
         {
-            Internal.NativeFunctions.StackPushString(sString);
-            Internal.NativeFunctions.StackPushString(sParam);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.SQLQuery, sqlQuery);
-            Internal.NativeFunctions.CallBuiltIn(927);
+            VM.StackPush(sString);
+            VM.StackPush(sParam);
+            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
+            VM.Call(927);
         }
 
         /// <summary>
@@ -121,10 +121,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlBindVector(IntPtr sqlQuery, string sParam, Vector3 vVector)
         {
-            Internal.NativeFunctions.StackPushVector(vVector);
-            Internal.NativeFunctions.StackPushString(sParam);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.SQLQuery, sqlQuery);
-            Internal.NativeFunctions.CallBuiltIn(928);
+            VM.StackPush(vVector);
+            VM.StackPush(sParam);
+            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
+            VM.Call(928);
         }
 
         /// <summary>
@@ -136,11 +136,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlBindObject(IntPtr sqlQuery, string sParam, uint oObject, bool bSaveObjectState = false)
         {
-            Internal.NativeFunctions.StackPushInteger(bSaveObjectState ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.StackPushString(sParam);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.SQLQuery, sqlQuery);
-            Internal.NativeFunctions.CallBuiltIn(929);
+            VM.StackPush(bSaveObjectState ? 1 : 0);
+            VM.StackPush(oObject);
+            VM.StackPush(sParam);
+            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
+            VM.Call(929);
         }
 
         /// <summary>
@@ -155,9 +155,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int SqlStep(IntPtr sqlQuery)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.SQLQuery, sqlQuery);
-            Internal.NativeFunctions.CallBuiltIn(930);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
+            VM.Call(930);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -168,10 +168,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int SqlGetInt(IntPtr sqlQuery, int nIndex)
         {
-            Internal.NativeFunctions.StackPushInteger(nIndex);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.SQLQuery, sqlQuery);
-            Internal.NativeFunctions.CallBuiltIn(931);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(nIndex);
+            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
+            VM.Call(931);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -182,10 +182,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float SqlGetFloat(IntPtr sqlQuery, int nIndex)
         {
-            Internal.NativeFunctions.StackPushInteger(nIndex);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.SQLQuery, sqlQuery);
-            Internal.NativeFunctions.CallBuiltIn(932);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(nIndex);
+            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
+            VM.Call(932);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -196,10 +196,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string SqlGetString(IntPtr sqlQuery, int nIndex)
         {
-            Internal.NativeFunctions.StackPushInteger(nIndex);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.SQLQuery, sqlQuery);
-            Internal.NativeFunctions.CallBuiltIn(933);
-            return Internal.NativeFunctions.StackPopString();
+            VM.StackPush(nIndex);
+            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
+            VM.Call(933);
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -210,10 +210,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 SqlGetVector(IntPtr sqlQuery, int nIndex)
         {
-            Internal.NativeFunctions.StackPushInteger(nIndex);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.SQLQuery, sqlQuery);
-            Internal.NativeFunctions.CallBuiltIn(934);
-            return Internal.NativeFunctions.StackPopVector();
+            VM.StackPush(nIndex);
+            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
+            VM.Call(934);
+            return VM.StackPopVector();
         }
 
         /// <summary>
@@ -228,13 +228,13 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint SqlGetObject(IntPtr sqlQuery, int nIndex, IntPtr lSpawnAt, uint oInventory = OBJECT_INVALID, bool bLoadObjectState = false)
         {
-            Internal.NativeFunctions.StackPushInteger(bLoadObjectState ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oInventory);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lSpawnAt);
-            Internal.NativeFunctions.StackPushInteger(nIndex);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.SQLQuery, sqlQuery);
-            Internal.NativeFunctions.CallBuiltIn(935);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(bLoadObjectState ? 1 : 0);
+            VM.StackPush(oInventory);
+            VM.StackPush((int)EngineStructure.Location, lSpawnAt);
+            VM.StackPush(nIndex);
+            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
+            VM.Call(935);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -247,10 +247,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SqlBindJson(SQLQuery sqlQuery, string sParam, Json jValue)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jValue);
-            Internal.NativeFunctions.StackPushString(sParam);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.SQLQuery, sqlQuery);
-            Internal.NativeFunctions.CallBuiltIn(1000);
+            VM.StackPush((int)EngineStructure.Json, jValue);
+            VM.StackPush(sParam);
+            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
+            VM.Call(1000);
         }
 
         /// <summary>
@@ -261,11 +261,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json SqlGetJson(SQLQuery sqlQuery, int nIndex)
         {
-            Internal.NativeFunctions.StackPushInteger(nIndex);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.SQLQuery, sqlQuery);
-            Internal.NativeFunctions.CallBuiltIn(1001);
+            VM.StackPush(nIndex);
+            VM.StackPush((int)EngineStructure.SQLQuery, sqlQuery);
+            VM.Call(1001);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
     }

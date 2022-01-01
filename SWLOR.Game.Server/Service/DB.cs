@@ -7,6 +7,7 @@ using NRediSearch;
 using NReJSON;
 using StackExchange.Redis;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service.DBService;
 
@@ -47,7 +48,7 @@ namespace SWLOR.Game.Server.Service
             LoadEntities();
 
             // Runs at the end of every main loop. Clears out all data retrieved during this cycle.
-            Entrypoints.OnScriptContextEnd += () =>
+            Internal.OnScriptContextEnd += () =>
             {
                 _cachedEntities.Clear();
             };
@@ -198,20 +199,12 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                RedisValue data;
-
-                using (new Profiler("RedisGet"))
-                {
-                    data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{id}").ToString();
-                }
-
+                RedisValue data = _multiplexer.GetDatabase().JsonGet($"{keyPrefix}:{id}").ToString();
+                
                 if (string.IsNullOrWhiteSpace(data))
                     return default;
 
-                using (new Profiler("Deserialization"))
-                {
-                    return JsonConvert.DeserializeObject<T>(data);
-                }
+                return JsonConvert.DeserializeObject<T>(data);
             }
         }
 

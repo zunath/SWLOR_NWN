@@ -9,116 +9,116 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         public static int GetSkillFeatCountForSkill(FeatType feat)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSkillFeatCountForSkill");
-            Internal.NativeFunctions.nwnxPushInt((int)feat);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSkillFeatCountForSkill");
+            NWNCore.NativeFunctions.nwnxPushInt((int)feat);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         public static SkillFeat GetSkillFeatForSkillByIndex(FeatType feat, NWNSkillType skill)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSkillFeatForSkillByIndex");
-            Internal.NativeFunctions.nwnxPushInt((int)feat);
-            Internal.NativeFunctions.nwnxPushInt((int)skill);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSkillFeatForSkillByIndex");
+            NWNCore.NativeFunctions.nwnxPushInt((int)feat);
+            NWNCore.NativeFunctions.nwnxPushInt((int)skill);
+            NWNCore.NativeFunctions.nwnxCallFunction();
             return new SkillFeat
             {
                 skill = (int)skill,
-                feat = Internal.NativeFunctions.nwnxPopInt(),
-                modifier = Internal.NativeFunctions.nwnxPopInt(),
-                focusFeat = Internal.NativeFunctions.nwnxPopInt(),
-                classes = Internal.NativeFunctions.nwnxPopString(),
-                classLevelMod = Internal.NativeFunctions.nwnxPopFloat(),
-                areaFlagsRequired = Internal.NativeFunctions.nwnxPopInt(),
-                areaFlagsForbidden = Internal.NativeFunctions.nwnxPopInt(),
-                dayOrNight = Internal.NativeFunctions.nwnxPopInt(),
-                bypassArmorCheckPenalty = Internal.NativeFunctions.nwnxPopInt(),
-                keyAbilityMask = Internal.NativeFunctions.nwnxPopInt()
+                feat = NWNCore.NativeFunctions.nwnxPopInt(),
+                modifier = NWNCore.NativeFunctions.nwnxPopInt(),
+                focusFeat = NWNCore.NativeFunctions.nwnxPopInt(),
+                classes = NWNCore.NativeFunctions.nwnxPopString(),
+                classLevelMod = NWNCore.NativeFunctions.nwnxPopFloat(),
+                areaFlagsRequired = NWNCore.NativeFunctions.nwnxPopInt(),
+                areaFlagsForbidden = NWNCore.NativeFunctions.nwnxPopInt(),
+                dayOrNight = NWNCore.NativeFunctions.nwnxPopInt(),
+                bypassArmorCheckPenalty = NWNCore.NativeFunctions.nwnxPopInt(),
+                keyAbilityMask = NWNCore.NativeFunctions.nwnxPopInt()
             };
         }
 
         public static SkillFeat GetSkillFeat(FeatType feat, NWNSkillType skill)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSkillFeat");
-            Internal.NativeFunctions.nwnxPushInt((int)feat);
-            Internal.NativeFunctions.nwnxPushInt((int)skill);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSkillFeat");
+            NWNCore.NativeFunctions.nwnxPushInt((int)feat);
+            NWNCore.NativeFunctions.nwnxPushInt((int)skill);
+            NWNCore.NativeFunctions.nwnxCallFunction();
             return new SkillFeat
             {
                 skill = (int)skill,
                 feat = (int)feat,
-                modifier = Internal.NativeFunctions.nwnxPopInt(),
-                focusFeat = Internal.NativeFunctions.nwnxPopInt(),
-                classes = Internal.NativeFunctions.nwnxPopString(),
-                classLevelMod = Internal.NativeFunctions.nwnxPopFloat(),
-                areaFlagsRequired = Internal.NativeFunctions.nwnxPopInt(),
-                areaFlagsForbidden = Internal.NativeFunctions.nwnxPopInt(),
-                dayOrNight = Internal.NativeFunctions.nwnxPopInt(),
-                bypassArmorCheckPenalty = Internal.NativeFunctions.nwnxPopInt(),
-                keyAbilityMask = Internal.NativeFunctions.nwnxPopInt()
+                modifier = NWNCore.NativeFunctions.nwnxPopInt(),
+                focusFeat = NWNCore.NativeFunctions.nwnxPopInt(),
+                classes = NWNCore.NativeFunctions.nwnxPopString(),
+                classLevelMod = NWNCore.NativeFunctions.nwnxPopFloat(),
+                areaFlagsRequired = NWNCore.NativeFunctions.nwnxPopInt(),
+                areaFlagsForbidden = NWNCore.NativeFunctions.nwnxPopInt(),
+                dayOrNight = NWNCore.NativeFunctions.nwnxPopInt(),
+                bypassArmorCheckPenalty = NWNCore.NativeFunctions.nwnxPopInt(),
+                keyAbilityMask = NWNCore.NativeFunctions.nwnxPopInt()
             };
         }
 
         public static void SetSkillFeat(SkillFeat skillFeat, bool createIfNonExistent = false)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSkillFeat");
-            Internal.NativeFunctions.nwnxPushInt(createIfNonExistent ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushInt(skillFeat.keyAbilityMask);
-            Internal.NativeFunctions.nwnxPushInt(skillFeat.bypassArmorCheckPenalty);
-            Internal.NativeFunctions.nwnxPushInt(skillFeat.dayOrNight);
-            Internal.NativeFunctions.nwnxPushInt(skillFeat.areaFlagsForbidden);
-            Internal.NativeFunctions.nwnxPushInt(skillFeat.areaFlagsRequired);
-            Internal.NativeFunctions.nwnxPushFloat(skillFeat.classLevelMod);
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSkillFeat");
+            NWNCore.NativeFunctions.nwnxPushInt(createIfNonExistent ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushInt(skillFeat.keyAbilityMask);
+            NWNCore.NativeFunctions.nwnxPushInt(skillFeat.bypassArmorCheckPenalty);
+            NWNCore.NativeFunctions.nwnxPushInt(skillFeat.dayOrNight);
+            NWNCore.NativeFunctions.nwnxPushInt(skillFeat.areaFlagsForbidden);
+            NWNCore.NativeFunctions.nwnxPushInt(skillFeat.areaFlagsRequired);
+            NWNCore.NativeFunctions.nwnxPushFloat(skillFeat.classLevelMod);
             // We only need to send the string from the point of the first set bit
-            Internal.NativeFunctions.nwnxPushString(
+            NWNCore.NativeFunctions.nwnxPushString(
                 skillFeat.classes!.Substring(skillFeat.classes!.Length - skillFeat.classes!.IndexOf("1"),
                     skillFeat.classes.Length));
-            Internal.NativeFunctions.nwnxPushInt(skillFeat.focusFeat);
-            Internal.NativeFunctions.nwnxPushInt(skillFeat.modifier);
-            Internal.NativeFunctions.nwnxPushInt(skillFeat.feat);
-            Internal.NativeFunctions.nwnxPushInt(skillFeat.skill);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxPushInt(skillFeat.focusFeat);
+            NWNCore.NativeFunctions.nwnxPushInt(skillFeat.modifier);
+            NWNCore.NativeFunctions.nwnxPushInt(skillFeat.feat);
+            NWNCore.NativeFunctions.nwnxPushInt(skillFeat.skill);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         public static void SetSkillFeatFocusModifier(int modifier, bool epicFocus = false)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSkillFeatFocusModifier");
-            Internal.NativeFunctions.nwnxPushInt(epicFocus ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushInt(modifier);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSkillFeatFocusModifier");
+            NWNCore.NativeFunctions.nwnxPushInt(epicFocus ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushInt(modifier);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         public static int GetBlindnessPenalty()
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetBlindnessPenalty");
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetBlindnessPenalty");
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         public static void SetBlindnessPenalty(int modifier)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetBlindnessPenalty");
-            Internal.NativeFunctions.nwnxPushInt(modifier);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetBlindnessPenalty");
+            NWNCore.NativeFunctions.nwnxPushInt(modifier);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
 
         public static int GetAreaModifier(uint area, NWNSkillType skill)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAreaModifier");
-            Internal.NativeFunctions.nwnxPushInt((int)skill);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAreaModifier");
+            NWNCore.NativeFunctions.nwnxPushInt((int)skill);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         public static void SetAreaModifier(uint area, NWNSkillType skill, int modifier)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAreaModifier");
-            Internal.NativeFunctions.nwnxPushInt(modifier);
-            Internal.NativeFunctions.nwnxPushInt((int)skill);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAreaModifier");
+            NWNCore.NativeFunctions.nwnxPushInt(modifier);
+            NWNCore.NativeFunctions.nwnxPushInt((int)skill);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
     }
 }

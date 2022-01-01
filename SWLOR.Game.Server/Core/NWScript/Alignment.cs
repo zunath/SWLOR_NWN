@@ -32,11 +32,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void AdjustAlignment(uint oSubject, Alignment nAlignment, int nShift,
             bool bAllPartyMembers = true)
         {
-            Internal.NativeFunctions.StackPushInteger(bAllPartyMembers ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger(nShift);
-            Internal.NativeFunctions.StackPushInteger((int)nAlignment);
-            Internal.NativeFunctions.StackPushObject(oSubject);
-            Internal.NativeFunctions.CallBuiltIn(201);
+            VM.StackPush(bAllPartyMembers ? 1 : 0);
+            VM.StackPush(nShift);
+            VM.StackPush((int)nAlignment);
+            VM.StackPush(oSubject);
+            VM.Call(201);
         }
 
         /// <summary>
@@ -47,9 +47,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetLawChaosValue(uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(124);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oCreature);
+            VM.Call(124);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -60,9 +60,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetGoodEvilValue(uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(125);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oCreature);
+            VM.Call(125);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -71,9 +71,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Alignment GetAlignmentLawChaos(uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(126);
-            return (Alignment)Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oCreature);
+            VM.Call(126);
+            return (Alignment)VM.StackPopInt();
         }
 
         /// <summary>
@@ -82,9 +82,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Alignment GetAlignmentGoodEvil(uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(127);
-            return (Alignment)Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oCreature);
+            VM.Call(127);
+            return (Alignment)VM.StackPopInt();
         }
 
         /// <summary>
@@ -92,9 +92,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ClearPersonalReputation(uint oTarget, uint oSource = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oSource);
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(389);
+            VM.StackPush(oSource);
+            VM.StackPush(oTarget);
+            VM.Call(389);
         }
 
         /// <summary>
@@ -115,11 +115,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetIsTemporaryFriend(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
-            Internal.NativeFunctions.StackPushFloat(fDurationInSeconds);
-            Internal.NativeFunctions.StackPushInteger(bDecays ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oSource);
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(390);
+            VM.StackPush(fDurationInSeconds);
+            VM.StackPush(bDecays ? 1 : 0);
+            VM.StackPush(oSource);
+            VM.StackPush(oTarget);
+            VM.Call(390);
         }
 
         /// <summary>
@@ -137,11 +137,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetIsTemporaryEnemy(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
-            Internal.NativeFunctions.StackPushFloat(fDurationInSeconds);
-            Internal.NativeFunctions.StackPushInteger(bDecays ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oSource);
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(391);
+            VM.StackPush(fDurationInSeconds);
+            VM.StackPush(bDecays ? 1 : 0);
+            VM.StackPush(oSource);
+            VM.StackPush(oTarget);
+            VM.Call(391);
         }
 
         /// <summary>
@@ -160,11 +160,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetIsTemporaryNeutral(uint oTarget, uint oSource = OBJECT_INVALID, bool bDecays = false,
             float fDurationInSeconds = 180.0f)
         {
-            Internal.NativeFunctions.StackPushFloat(fDurationInSeconds);
-            Internal.NativeFunctions.StackPushInteger(bDecays ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oSource);
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(392);
+            VM.StackPush(fDurationInSeconds);
+            VM.StackPush(bDecays ? 1 : 0);
+            VM.StackPush(oSource);
+            VM.StackPush(oTarget);
+            VM.Call(392);
         }
     }
 }

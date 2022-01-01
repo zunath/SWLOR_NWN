@@ -11,9 +11,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DestroyObject(uint oDestroy, float fDelay = 0.0f)
         {
-            Internal.NativeFunctions.StackPushFloat(fDelay);
-            Internal.NativeFunctions.StackPushObject(oDestroy);
-            Internal.NativeFunctions.CallBuiltIn(241);
+            VM.StackPush(fDelay);
+            VM.StackPush(oDestroy);
+            VM.Call(241);
 
             ExecuteScript("object_destroyed", oDestroy);
         }

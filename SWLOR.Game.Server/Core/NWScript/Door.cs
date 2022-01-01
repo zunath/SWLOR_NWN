@@ -9,9 +9,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsOpen(uint oObject)
         {
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(443);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oObject);
+            VM.Call(443);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -20,8 +20,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionUnlockObject(uint oTarget)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(483);
+            VM.StackPush(oTarget);
+            VM.Call(483);
         }
 
         /// <summary>
@@ -30,8 +30,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionLockObject(uint oTarget)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(484);
+            VM.StackPush(oTarget);
+            VM.Call(484);
         }
 
 
@@ -40,8 +40,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionOpenDoor(uint oDoor)
         {
-            Internal.NativeFunctions.StackPushObject(oDoor);
-            Internal.NativeFunctions.CallBuiltIn(43);
+            VM.StackPush(oDoor);
+            VM.Call(43);
         }
 
         /// <summary>
@@ -49,8 +49,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionCloseDoor(uint oDoor)
         {
-            Internal.NativeFunctions.StackPushObject(oDoor);
-            Internal.NativeFunctions.CallBuiltIn(44);
+            VM.StackPush(oDoor);
+            VM.Call(44);
         }
 
         /// <summary>
@@ -59,8 +59,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetBlockingDoor()
         {
-            Internal.NativeFunctions.CallBuiltIn(336);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(336);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -70,10 +70,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsDoorActionPossible(uint oTargetDoor, DoorAction nDoorAction)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nDoorAction);
-            Internal.NativeFunctions.StackPushObject(oTargetDoor);
-            Internal.NativeFunctions.CallBuiltIn(337);
-            return Internal.NativeFunctions.StackPopInteger() == 1;
+            VM.StackPush((int)nDoorAction);
+            VM.StackPush(oTargetDoor);
+            VM.Call(337);
+            return VM.StackPopInt() == 1;
         }
 
         /// <summary>
@@ -81,9 +81,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DoDoorAction(uint oTargetDoor, DoorAction nDoorAction)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nDoorAction);
-            Internal.NativeFunctions.StackPushObject(oTargetDoor);
-            Internal.NativeFunctions.CallBuiltIn(338);
+            VM.StackPush((int)nDoorAction);
+            VM.StackPush(oTargetDoor);
+            VM.Call(338);
         }
     }
 }

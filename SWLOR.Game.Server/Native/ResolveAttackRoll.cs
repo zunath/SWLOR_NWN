@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Native
         {
             delegate* unmanaged<void*, void*, void> pHook = &OnResolveAttackRoll;
 
-            var hookPtr = Internal.NativeFunctions.RequestHook(new IntPtr(FunctionsLinux._ZN12CNWSCreature17ResolveAttackRollEP10CNWSObject), (IntPtr)pHook, -1000000);
+            var hookPtr = VM.RequestHook(new IntPtr(FunctionsLinux._ZN12CNWSCreature17ResolveAttackRollEP10CNWSObject), (IntPtr)pHook, -1000000);
             _callOriginal = Marshal.GetDelegateForFunctionPointer<ResolveAttackRollHook>(hookPtr);
         }
 

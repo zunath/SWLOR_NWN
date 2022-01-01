@@ -8,9 +8,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetStoreGold(uint oidStore)
         {
-            Internal.NativeFunctions.StackPushObject(oidStore);
-            Internal.NativeFunctions.CallBuiltIn(759);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oidStore);
+            VM.Call(759);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -18,9 +18,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetStoreGold(uint oidStore, int nGold)
         {
-            Internal.NativeFunctions.StackPushInteger(nGold);
-            Internal.NativeFunctions.StackPushObject(oidStore);
-            Internal.NativeFunctions.CallBuiltIn(760);
+            VM.StackPush(nGold);
+            VM.StackPush(oidStore);
+            VM.Call(760);
         }
 
         /// <summary>
@@ -29,9 +29,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetStoreMaxBuyPrice(uint oidStore)
         {
-            Internal.NativeFunctions.StackPushObject(oidStore);
-            Internal.NativeFunctions.CallBuiltIn(761);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oidStore);
+            VM.Call(761);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -39,9 +39,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetStoreMaxBuyPrice(uint oidStore, int nMaxBuy)
         {
-            Internal.NativeFunctions.StackPushInteger(nMaxBuy);
-            Internal.NativeFunctions.StackPushObject(oidStore);
-            Internal.NativeFunctions.CallBuiltIn(762);
+            VM.StackPush(nMaxBuy);
+            VM.StackPush(oidStore);
+            VM.Call(762);
         }
 
         /// <summary>
@@ -51,9 +51,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetStoreIdentifyCost(uint oidStore)
         {
-            Internal.NativeFunctions.StackPushObject(oidStore);
-            Internal.NativeFunctions.CallBuiltIn(763);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oidStore);
+            VM.Call(763);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -62,9 +62,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetStoreIdentifyCost(uint oidStore, int nCost)
         {
-            Internal.NativeFunctions.StackPushInteger(nCost);
-            Internal.NativeFunctions.StackPushObject(oidStore);
-            Internal.NativeFunctions.CallBuiltIn(764);
+            VM.StackPush(nCost);
+            VM.StackPush(oidStore);
+            VM.Call(764);
         }
 
         /// <summary>
@@ -74,11 +74,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void OpenStore(uint oStore, uint oPC, int nBonusMarkUp = 0, int nBonusMarkDown = 0)
         {
-            Internal.NativeFunctions.StackPushInteger(nBonusMarkDown);
-            Internal.NativeFunctions.StackPushInteger(nBonusMarkUp);
-            Internal.NativeFunctions.StackPushObject(oPC);
-            Internal.NativeFunctions.StackPushObject(oStore);
-            Internal.NativeFunctions.CallBuiltIn(378);
+            VM.StackPush(nBonusMarkDown);
+            VM.StackPush(nBonusMarkUp);
+            VM.StackPush(oPC);
+            VM.StackPush(oStore);
+            VM.Call(378);
         }
     }
 }

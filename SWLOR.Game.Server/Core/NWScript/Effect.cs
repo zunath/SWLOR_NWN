@@ -17,9 +17,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetEffectTag(Effect eEffect)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.CallBuiltIn(849);
-            return Internal.NativeFunctions.StackPopStringUTF8();
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.Call(849);
+            return NWNCore.NativeFunctions.StackPopStringUTF8();
         }
 
         /// <summary>
@@ -28,10 +28,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect TagEffect(Effect eEffect, string sNewTag)
         {
-            Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.CallBuiltIn(850);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(sNewTag);
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.Call(850);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -41,9 +41,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectCasterLevel(Effect eEffect)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.CallBuiltIn(851);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.Call(851);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -52,9 +52,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectDuration(Effect eEffect)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.CallBuiltIn(852);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.Call(852);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -63,9 +63,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectDurationRemaining(Effect eEffect)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.CallBuiltIn(853);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.Call(853);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -74,8 +74,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectCutsceneImmobilize()
         {
-            Internal.NativeFunctions.CallBuiltIn(767);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(767);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -85,8 +85,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectCutsceneGhost()
         {
-            Internal.NativeFunctions.CallBuiltIn(757);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(757);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -94,9 +94,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetItemCursedFlag(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(744);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oItem);
+            VM.Call(744);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -104,9 +104,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetItemCursedFlag(uint oItem, bool nCursed)
         {
-            Internal.NativeFunctions.StackPushInteger(nCursed ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(745);
+            VM.StackPush(nCursed ? 1 : 0);
+            VM.StackPush(oItem);
+            VM.Call(745);
         }
 
         /// <summary>
@@ -115,9 +115,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetItemPossessor(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(29);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(oItem);
+            VM.Call(29);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -126,10 +126,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetItemPossessedBy(uint oCreature, string sItemTag)
         {
-            Internal.NativeFunctions.StackPushStringUTF8(sItemTag);
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(30);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(sItemTag);
+            VM.StackPush(oCreature);
+            VM.Call(30);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -145,12 +145,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static uint CreateItemOnObject(string sResRef, uint oTarget = OBJECT_INVALID, int nStackSize = 1,
             string sNewTag = "")
         {
-            Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
-            Internal.NativeFunctions.StackPushInteger(nStackSize);
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.StackPushStringUTF8(sResRef);
-            Internal.NativeFunctions.CallBuiltIn(31);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(sNewTag);
+            VM.StackPush(nStackSize);
+            VM.StackPush(oTarget);
+            VM.StackPush(sResRef);
+            VM.Call(31);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -170,9 +170,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionEquipItem(uint oItem, InventorySlot nInventorySlot)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nInventorySlot);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(32);
+            VM.StackPush((int)nInventorySlot);
+            VM.StackPush(oItem);
+            VM.Call(32);
         }
 
         /// <summary>
@@ -180,8 +180,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionUnequipItem(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(33);
+            VM.StackPush(oItem);
+            VM.Call(33);
         }
 
         /// <summary>
@@ -191,8 +191,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionPickUpItem(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(34);
+            VM.StackPush(oItem);
+            VM.Call(34);
         }
 
         /// <summary>
@@ -202,8 +202,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionPutDownItem(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(35);
+            VM.StackPush(oItem);
+            VM.Call(35);
         }
 
         /// <summary>
@@ -213,9 +213,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionGiveItem(uint oItem, uint oGiveTo)
         {
-            Internal.NativeFunctions.StackPushObject(oGiveTo);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(135);
+            VM.StackPush(oGiveTo);
+            VM.StackPush(oItem);
+            VM.Call(135);
         }
 
         /// <summary>
@@ -225,9 +225,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionTakeItem(uint oItem, uint oTakeFrom)
         {
-            Internal.NativeFunctions.StackPushObject(oTakeFrom);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(136);
+            VM.StackPush(oTakeFrom);
+            VM.StackPush(oItem);
+            VM.Call(136);
         }
 
         /// <summary>
@@ -238,10 +238,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDeath(bool nSpectacularDeath = false, bool nDisplayFeedback = true)
         {
-            Internal.NativeFunctions.StackPushInteger(nDisplayFeedback ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger(nSpectacularDeath ? 1 : 0);
-            Internal.NativeFunctions.CallBuiltIn(133);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nDisplayFeedback ? 1 : 0);
+            VM.StackPush(nSpectacularDeath ? 1 : 0);
+            VM.Call(133);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -252,8 +252,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectKnockdown()
         {
-            Internal.NativeFunctions.CallBuiltIn(134);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(134);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -268,14 +268,14 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectCurse(int nStrMod = 1, int nDexMod = 1, int nConMod = 1, int nIntMod = 1,
             int nWisMod = 1, int nChaMod = 1)
         {
-            Internal.NativeFunctions.StackPushInteger(nChaMod);
-            Internal.NativeFunctions.StackPushInteger(nWisMod);
-            Internal.NativeFunctions.StackPushInteger(nIntMod);
-            Internal.NativeFunctions.StackPushInteger(nConMod);
-            Internal.NativeFunctions.StackPushInteger(nDexMod);
-            Internal.NativeFunctions.StackPushInteger(nStrMod);
-            Internal.NativeFunctions.CallBuiltIn(138);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nChaMod);
+            VM.StackPush(nWisMod);
+            VM.StackPush(nIntMod);
+            VM.StackPush(nConMod);
+            VM.StackPush(nDexMod);
+            VM.StackPush(nStrMod);
+            VM.Call(138);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -285,8 +285,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectEntangle()
         {
-            Internal.NativeFunctions.CallBuiltIn(130);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(130);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -302,11 +302,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectSavingThrowIncrease(int nSave, int nValue,
             SavingThrowType nSaveType = SavingThrowType.All)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nSaveType);
-            Internal.NativeFunctions.StackPushInteger(nValue);
-            Internal.NativeFunctions.StackPushInteger(nSave);
-            Internal.NativeFunctions.CallBuiltIn(117);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nSaveType);
+            VM.StackPush(nValue);
+            VM.StackPush(nSave);
+            VM.Call(117);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -316,10 +316,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectAttackIncrease(int nBonus, AttackBonus nModifierType = AttackBonus.Misc)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nModifierType);
-            Internal.NativeFunctions.StackPushInteger(nBonus);
-            Internal.NativeFunctions.CallBuiltIn(118);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nModifierType);
+            VM.StackPush(nBonus);
+            VM.Call(118);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -331,11 +331,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageReduction(int nAmount, DamagePower nDamagePower, int nLimit = 0)
         {
-            Internal.NativeFunctions.StackPushInteger(nLimit);
-            Internal.NativeFunctions.StackPushInteger((int)nDamagePower);
-            Internal.NativeFunctions.StackPushInteger(nAmount);
-            Internal.NativeFunctions.CallBuiltIn(119);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nLimit);
+            VM.StackPush((int)nDamagePower);
+            VM.StackPush(nAmount);
+            VM.Call(119);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -347,10 +347,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageIncrease(int nBonus, DamageType nDamageType = DamageType.Force)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nDamageType);
-            Internal.NativeFunctions.StackPushInteger(nBonus);
-            Internal.NativeFunctions.CallBuiltIn(120);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nDamageType);
+            VM.StackPush(nBonus);
+            VM.Call(120);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -360,9 +360,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect MagicalEffect(Effect eEffect)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.CallBuiltIn(112);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.Call(112);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -372,9 +372,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect SupernaturalEffect(Effect eEffect)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.CallBuiltIn(113);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.Call(113);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -384,9 +384,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect ExtraordinaryEffect(Effect eEffect)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.CallBuiltIn(114);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.Call(114);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -400,11 +400,11 @@ namespace SWLOR.Game.Server.Core.NWScript
             ArmorClassModiferType nModifyType = ArmorClassModiferType.Dodge,
             AC nDamageType = AC.VsDamageTypeAll)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nDamageType);
-            Internal.NativeFunctions.StackPushInteger((int)nModifyType);
-            Internal.NativeFunctions.StackPushInteger(nValue);
-            Internal.NativeFunctions.CallBuiltIn(115);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nDamageType);
+            VM.StackPush((int)nModifyType);
+            VM.StackPush(nValue);
+            VM.Call(115);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -412,9 +412,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect GetFirstEffect(uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(85);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(oCreature);
+            VM.Call(85);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -422,9 +422,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect GetNextEffect(uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(86);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(oCreature);
+            VM.Call(86);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -433,9 +433,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RemoveEffect(uint oCreature, Effect eEffect)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(87);
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.StackPush(oCreature);
+            VM.Call(87);
         }
 
         /// <summary>
@@ -444,9 +444,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsEffectValid(Effect eEffect)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.CallBuiltIn(88);
-            return Internal.NativeFunctions.StackPopInteger() == 1;
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.Call(88);
+            return VM.StackPopInt() == 1;
         }
 
         /// <summary>
@@ -455,9 +455,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectDurationType(Effect eEffect)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.CallBuiltIn(89);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.Call(89);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -466,9 +466,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectSubType(Effect eEffect)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.CallBuiltIn(90);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.Call(90);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -477,9 +477,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetEffectCreator(Effect eEffect)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.CallBuiltIn(91);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.Call(91);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -488,9 +488,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectHeal(int nDamageToHeal)
         {
-            Internal.NativeFunctions.StackPushInteger(nDamageToHeal);
-            Internal.NativeFunctions.CallBuiltIn(78);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nDamageToHeal);
+            VM.Call(78);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -503,11 +503,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectDamage(int nDamageAmount, DamageType nDamageType = DamageType.Force,
             DamagePower nDamagePower = DamagePower.Normal)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nDamagePower);
-            Internal.NativeFunctions.StackPushInteger((int)nDamageType);
-            Internal.NativeFunctions.StackPushInteger(nDamageAmount);
-            Internal.NativeFunctions.CallBuiltIn(79);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nDamagePower);
+            VM.StackPush((int)nDamageType);
+            VM.StackPush(nDamageAmount);
+            VM.Call(79);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -516,10 +516,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectAbilityIncrease(AbilityType nAbilityToIncrease, int nModifyBy)
         {
-            Internal.NativeFunctions.StackPushInteger(nModifyBy);
-            Internal.NativeFunctions.StackPushInteger((int)nAbilityToIncrease);
-            Internal.NativeFunctions.CallBuiltIn(80);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nModifyBy);
+            VM.StackPush((int)nAbilityToIncrease);
+            VM.Call(80);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -531,11 +531,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageResistance(DamageType nDamageType, int nAmount, int nLimit = 0)
         {
-            Internal.NativeFunctions.StackPushInteger(nLimit);
-            Internal.NativeFunctions.StackPushInteger(nAmount);
-            Internal.NativeFunctions.StackPushInteger((int)nDamageType);
-            Internal.NativeFunctions.CallBuiltIn(81);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nLimit);
+            VM.StackPush(nAmount);
+            VM.StackPush((int)nDamageType);
+            VM.Call(81);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -543,8 +543,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectResurrection()
         {
-            Internal.NativeFunctions.CallBuiltIn(82);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(82);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -561,12 +561,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectSummonCreature(string sCreatureResref, VisualEffect nVisualEffectId = VisualEffect.Vfx_Com_Sparks_Parry,
             float fDelaySeconds = 0.0f, bool nUseAppearAnimation = false)
         {
-            Internal.NativeFunctions.StackPushInteger(nUseAppearAnimation ? 1 : 0);
-            Internal.NativeFunctions.StackPushFloat(fDelaySeconds);
-            Internal.NativeFunctions.StackPushInteger((int)nVisualEffectId);
-            Internal.NativeFunctions.StackPushStringUTF8(sCreatureResref);
-            Internal.NativeFunctions.CallBuiltIn(83);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nUseAppearAnimation ? 1 : 0);
+            VM.StackPush(fDelaySeconds);
+            VM.StackPush((int)nVisualEffectId);
+            VM.StackPush(sCreatureResref);
+            VM.Call(83);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -575,8 +575,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectEthereal()
         {
-            Internal.NativeFunctions.CallBuiltIn(711);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(711);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -587,10 +587,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectSpellFailure(int nPercent = 100,
             SpellSchool nSpellSchool = SpellSchool.General)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nSpellSchool);
-            Internal.NativeFunctions.StackPushInteger(nPercent);
-            Internal.NativeFunctions.CallBuiltIn(690);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nSpellSchool);
+            VM.StackPush(nPercent);
+            VM.Call(690);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -599,8 +599,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectCutsceneDominated()
         {
-            Internal.NativeFunctions.CallBuiltIn(604);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(604);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -609,8 +609,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectPetrify()
         {
-            Internal.NativeFunctions.CallBuiltIn(583);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(583);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -619,8 +619,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectCutsceneParalyze()
         {
-            Internal.NativeFunctions.CallBuiltIn(585);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(585);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -630,9 +630,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTurnResistanceDecrease(int nHitDice)
         {
-            Internal.NativeFunctions.StackPushInteger(nHitDice);
-            Internal.NativeFunctions.CallBuiltIn(552);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nHitDice);
+            VM.Call(552);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -642,9 +642,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTurnResistanceIncrease(int nHitDice)
         {
-            Internal.NativeFunctions.StackPushInteger(nHitDice);
-            Internal.NativeFunctions.CallBuiltIn(553);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nHitDice);
+            VM.Call(553);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -661,13 +661,13 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectSwarm(int nLooping, string sCreatureTemplate1, string sCreatureTemplate2 = "",
             string sCreatureTemplate3 = "", string sCreatureTemplate4 = "")
         {
-            Internal.NativeFunctions.StackPushStringUTF8(sCreatureTemplate4);
-            Internal.NativeFunctions.StackPushStringUTF8(sCreatureTemplate3);
-            Internal.NativeFunctions.StackPushStringUTF8(sCreatureTemplate2);
-            Internal.NativeFunctions.StackPushStringUTF8(sCreatureTemplate1);
-            Internal.NativeFunctions.StackPushInteger(nLooping);
-            Internal.NativeFunctions.CallBuiltIn(510);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(sCreatureTemplate4);
+            VM.StackPush(sCreatureTemplate3);
+            VM.StackPush(sCreatureTemplate2);
+            VM.StackPush(sCreatureTemplate1);
+            VM.StackPush(nLooping);
+            VM.Call(510);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -679,10 +679,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDisappearAppear(Location lLocation, int nAnimation = 1)
         {
-            Internal.NativeFunctions.StackPushInteger(nAnimation);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lLocation);
-            Internal.NativeFunctions.CallBuiltIn(480);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nAnimation);
+            VM.StackPush((int)EngineStructure.Location, lLocation);
+            VM.Call(480);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -693,9 +693,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDisappear(int nAnimation = 1)
         {
-            Internal.NativeFunctions.StackPushInteger(nAnimation);
-            Internal.NativeFunctions.CallBuiltIn(481);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nAnimation);
+            VM.Call(481);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -705,9 +705,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectAppear(int nAnimation = 1)
         {
-            Internal.NativeFunctions.StackPushInteger(nAnimation);
-            Internal.NativeFunctions.CallBuiltIn(482);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nAnimation);
+            VM.Call(482);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -717,9 +717,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectModifyAttacks(int nAttacks)
         {
-            Internal.NativeFunctions.StackPushInteger(nAttacks);
-            Internal.NativeFunctions.CallBuiltIn(485);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nAttacks);
+            VM.Call(485);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -733,11 +733,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageShield(int nDamageAmount, DamageBonus nRandomAmount, DamageType nDamageType)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nDamageType);
-            Internal.NativeFunctions.StackPushInteger((int)nRandomAmount);
-            Internal.NativeFunctions.StackPushInteger(nDamageAmount);
-            Internal.NativeFunctions.CallBuiltIn(487);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nDamageType);
+            VM.StackPush((int)nRandomAmount);
+            VM.StackPush(nDamageAmount);
+            VM.Call(487);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -751,10 +751,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectMissChance(int nPercentage, MissChanceType nMissChanceType = MissChanceType.Normal)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nMissChanceType);
-            Internal.NativeFunctions.StackPushInteger(nPercentage);
-            Internal.NativeFunctions.CallBuiltIn(477);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nMissChanceType);
+            VM.StackPush(nPercentage);
+            VM.Call(477);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -771,11 +771,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectSpellLevelAbsorption(int nMaxSpellLevelAbsorbed, int nTotalSpellLevelsAbsorbed = 0,
             SpellSchool nSpellSchool = SpellSchool.General)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nSpellSchool);
-            Internal.NativeFunctions.StackPushInteger(nTotalSpellLevelsAbsorbed);
-            Internal.NativeFunctions.StackPushInteger(nMaxSpellLevelAbsorbed);
-            Internal.NativeFunctions.CallBuiltIn(472);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nSpellSchool);
+            VM.StackPush(nTotalSpellLevelsAbsorbed);
+            VM.StackPush(nMaxSpellLevelAbsorbed);
+            VM.Call(472);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -786,9 +786,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDispelMagicBest(int nCasterLevel = USE_CREATURE_LEVEL)
         {
-            Internal.NativeFunctions.StackPushInteger(nCasterLevel);
-            Internal.NativeFunctions.CallBuiltIn(473);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nCasterLevel);
+            VM.Call(473);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -799,9 +799,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectInvisibility(InvisibilityType nInvisibilityType)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nInvisibilityType);
-            Internal.NativeFunctions.CallBuiltIn(457);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nInvisibilityType);
+            VM.Call(457);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -815,10 +815,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectConcealment(int nPercentage, MissChanceType nMissType = MissChanceType.Normal)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nMissType);
-            Internal.NativeFunctions.StackPushInteger(nPercentage);
-            Internal.NativeFunctions.CallBuiltIn(458);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nMissType);
+            VM.StackPush(nPercentage);
+            VM.Call(458);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -826,8 +826,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDarkness()
         {
-            Internal.NativeFunctions.CallBuiltIn(459);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(459);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -838,9 +838,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDispelMagicAll(int nCasterLevel = USE_CREATURE_LEVEL)
         {
-            Internal.NativeFunctions.StackPushInteger(nCasterLevel);
-            Internal.NativeFunctions.CallBuiltIn(460);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nCasterLevel);
+            VM.Call(460);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -848,8 +848,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectUltravision()
         {
-            Internal.NativeFunctions.CallBuiltIn(461);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(461);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -859,10 +859,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectNegativeLevel(int nNumLevels, bool bHPBonus = false)
         {
-            Internal.NativeFunctions.StackPushInteger(bHPBonus ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger(nNumLevels);
-            Internal.NativeFunctions.CallBuiltIn(462);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(bHPBonus ? 1 : 0);
+            VM.StackPush(nNumLevels);
+            VM.Call(462);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -870,10 +870,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectPolymorph(int nPolymorphSelection, bool nLocked = false)
         {
-            Internal.NativeFunctions.StackPushInteger(nLocked ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger(nPolymorphSelection);
-            Internal.NativeFunctions.CallBuiltIn(463);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nLocked ? 1 : 0);
+            VM.StackPush(nPolymorphSelection);
+            VM.Call(463);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -883,9 +883,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSanctuary(int nDifficultyClass)
         {
-            Internal.NativeFunctions.StackPushInteger(nDifficultyClass);
-            Internal.NativeFunctions.CallBuiltIn(464);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nDifficultyClass);
+            VM.Call(464);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -893,8 +893,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTrueSeeing()
         {
-            Internal.NativeFunctions.CallBuiltIn(465);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(465);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -902,8 +902,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSeeInvisible()
         {
-            Internal.NativeFunctions.CallBuiltIn(466);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(466);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -911,8 +911,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTimeStop()
         {
-            Internal.NativeFunctions.CallBuiltIn(467);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(467);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -920,8 +920,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectBlindness()
         {
-            Internal.NativeFunctions.CallBuiltIn(468);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(468);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -931,10 +931,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectAbilityDecrease(AbilityType nAbility, int nModifyBy)
         {
-            Internal.NativeFunctions.StackPushInteger(nModifyBy);
-            Internal.NativeFunctions.StackPushInteger((int)nAbility);
-            Internal.NativeFunctions.CallBuiltIn(446);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nModifyBy);
+            VM.StackPush((int)nAbility);
+            VM.Call(446);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -944,10 +944,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectAttackDecrease(int nPenalty, AttackBonus nModifierType = AttackBonus.Misc)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nModifierType);
-            Internal.NativeFunctions.StackPushInteger(nPenalty);
-            Internal.NativeFunctions.CallBuiltIn(447);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nModifierType);
+            VM.StackPush(nPenalty);
+            VM.Call(447);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -957,10 +957,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageDecrease(int nPenalty, DamageType nDamageType = DamageType.Force)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nDamageType);
-            Internal.NativeFunctions.StackPushInteger(nPenalty);
-            Internal.NativeFunctions.CallBuiltIn(448);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nDamageType);
+            VM.StackPush(nPenalty);
+            VM.Call(448);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -970,10 +970,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageImmunityDecrease(int nDamageType, int nPercentImmunity)
         {
-            Internal.NativeFunctions.StackPushInteger(nPercentImmunity);
-            Internal.NativeFunctions.StackPushInteger(nDamageType);
-            Internal.NativeFunctions.CallBuiltIn(449);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nPercentImmunity);
+            VM.StackPush(nDamageType);
+            VM.Call(449);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -987,11 +987,11 @@ namespace SWLOR.Game.Server.Core.NWScript
             ArmorClassModiferType nModifyType = ArmorClassModiferType.Dodge,
             AC nDamageType = AC.VsDamageTypeAll)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nDamageType);
-            Internal.NativeFunctions.StackPushInteger((int)nModifyType);
-            Internal.NativeFunctions.StackPushInteger(nValue);
-            Internal.NativeFunctions.CallBuiltIn(450);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nDamageType);
+            VM.StackPush((int)nModifyType);
+            VM.StackPush(nValue);
+            VM.Call(450);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1004,9 +1004,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectMovementSpeedDecrease(int nPercentChange)
         {
-            Internal.NativeFunctions.StackPushInteger(nPercentChange);
-            Internal.NativeFunctions.CallBuiltIn(451);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nPercentChange);
+            VM.Call(451);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1022,11 +1022,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectSavingThrowDecrease(int nSave, int nValue,
             SavingThrowType nSaveType = SavingThrowType.All)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nSaveType);
-            Internal.NativeFunctions.StackPushInteger(nValue);
-            Internal.NativeFunctions.StackPushInteger(nSave);
-            Internal.NativeFunctions.CallBuiltIn(452);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nSaveType);
+            VM.StackPush(nValue);
+            VM.StackPush(nSave);
+            VM.Call(452);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1035,10 +1035,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSkillDecrease(int nSkill, int nValue)
         {
-            Internal.NativeFunctions.StackPushInteger(nValue);
-            Internal.NativeFunctions.StackPushInteger(nSkill);
-            Internal.NativeFunctions.CallBuiltIn(453);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nValue);
+            VM.StackPush(nSkill);
+            VM.Call(453);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1046,9 +1046,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSpellResistanceDecrease(int nValue)
         {
-            Internal.NativeFunctions.StackPushInteger(nValue);
-            Internal.NativeFunctions.CallBuiltIn(454);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nValue);
+            VM.Call(454);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1056,11 +1056,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Event EventActivateItem(uint oItem, Location lTarget, uint oTarget = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lTarget);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(424);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Event);
+            VM.StackPush(oTarget);
+            VM.StackPush((int)EngineStructure.Location, lTarget);
+            VM.StackPush(oItem);
+            VM.Call(424);
+            return VM.StackPopStruct((int)EngineStructure.Event);
         }
 
         /// <summary>
@@ -1070,9 +1070,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectHitPointChangeWhenDying(float fHitPointChangePerRound)
         {
-            Internal.NativeFunctions.StackPushFloat(fHitPointChangePerRound);
-            Internal.NativeFunctions.CallBuiltIn(387);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(fHitPointChangePerRound);
+            VM.Call(387);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1081,8 +1081,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTurned()
         {
-            Internal.NativeFunctions.CallBuiltIn(379);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(379);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1095,11 +1095,11 @@ namespace SWLOR.Game.Server.Core.NWScript
             Alignment nLawChaos = Alignment.All,
             Alignment nGoodEvil = Alignment.All)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nGoodEvil);
-            Internal.NativeFunctions.StackPushInteger((int)nLawChaos);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.CallBuiltIn(355);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nGoodEvil);
+            VM.StackPush((int)nLawChaos);
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.Call(355);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1109,10 +1109,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect VersusRacialTypeEffect(Effect eEffect, RacialType nRacialType)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nRacialType);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.CallBuiltIn(356);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nRacialType);
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.Call(356);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1120,9 +1120,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect VersusTrapEffect(Effect eEffect)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.CallBuiltIn(357);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.Call(357);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1133,10 +1133,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSkillIncrease(NWNSkillType nSkill, int nValue)
         {
-            Internal.NativeFunctions.StackPushInteger(nValue);
-            Internal.NativeFunctions.StackPushInteger((int)nSkill);
-            Internal.NativeFunctions.CallBuiltIn(351);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nValue);
+            VM.StackPush((int)nSkill);
+            VM.Call(351);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1146,9 +1146,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectTemporaryHitpoints(int nHitPoints)
         {
-            Internal.NativeFunctions.StackPushInteger(nHitPoints);
-            Internal.NativeFunctions.CallBuiltIn(314);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nHitPoints);
+            VM.Call(314);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1164,8 +1164,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Event EventConversation()
         {
-            Internal.NativeFunctions.CallBuiltIn(295);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Event);
+            VM.Call(295);
+            return VM.StackPopStruct((int)EngineStructure.Event);
         }
 
         /// <summary>
@@ -1175,10 +1175,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDamageImmunityIncrease(DamageType nDamageType, int nPercentImmunity)
         {
-            Internal.NativeFunctions.StackPushInteger(nPercentImmunity);
-            Internal.NativeFunctions.StackPushInteger((int)nDamageType);
-            Internal.NativeFunctions.CallBuiltIn(275);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nPercentImmunity);
+            VM.StackPush((int)nDamageType);
+            VM.Call(275);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1187,9 +1187,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectImmunity(ImmunityType nImmunityType)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nImmunityType);
-            Internal.NativeFunctions.CallBuiltIn(273);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nImmunityType);
+            VM.Call(273);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1197,8 +1197,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectHaste()
         {
-            Internal.NativeFunctions.CallBuiltIn(270);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(270);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1206,8 +1206,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSlow()
         {
-            Internal.NativeFunctions.CallBuiltIn(271);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(271);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1216,9 +1216,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectPoison(Poison nPoisonType)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nPoisonType);
-            Internal.NativeFunctions.CallBuiltIn(250);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nPoisonType);
+            VM.Call(250);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1227,9 +1227,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDisease(Disease nDiseaseType)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nDiseaseType);
-            Internal.NativeFunctions.CallBuiltIn(251);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nDiseaseType);
+            VM.Call(251);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1237,8 +1237,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSilence()
         {
-            Internal.NativeFunctions.CallBuiltIn(252);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(252);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1247,9 +1247,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSpellResistanceIncrease(int nValue)
         {
-            Internal.NativeFunctions.StackPushInteger(nValue);
-            Internal.NativeFunctions.CallBuiltIn(212);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nValue);
+            VM.Call(212);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1264,12 +1264,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectBeam(VisualEffect nBeamVisualEffect, uint oEffector, BodyNode nBodyPart, bool bMissEffect = false)
         {
-            Internal.NativeFunctions.StackPushInteger(bMissEffect ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger((int)nBodyPart);
-            Internal.NativeFunctions.StackPushObject(oEffector);
-            Internal.NativeFunctions.StackPushInteger((int)nBeamVisualEffect);
-            Internal.NativeFunctions.CallBuiltIn(207);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(bMissEffect ? 1 : 0);
+            VM.StackPush((int)nBodyPart);
+            VM.StackPush(oEffector);
+            VM.StackPush((int)nBeamVisualEffect);
+            VM.Call(207);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1285,10 +1285,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectLinkEffects(Effect eChildEffect, Effect eParentEffect)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eParentEffect);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eChildEffect);
-            Internal.NativeFunctions.CallBuiltIn(199);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)EngineStructure.Effect, eParentEffect);
+            VM.StackPush((int)EngineStructure.Effect, eChildEffect);
+            VM.Call(199);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1299,15 +1299,15 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectVisualEffect(VisualEffect visualEffectID, bool nMissEffect = false, float fScale = 1.0f, Vector3 vTranslate = new Vector3(), Vector3 vRotate = new Vector3())
         {
-            Internal.NativeFunctions.StackPushVector(vRotate);
-            Internal.NativeFunctions.StackPushVector(vTranslate);
-            Internal.NativeFunctions.StackPushFloat(fScale);
-            Internal.NativeFunctions.StackPushInteger(nMissEffect ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger((int)visualEffectID);
+            VM.StackPush(vRotate);
+            VM.StackPush(vTranslate);
+            VM.StackPush(fScale);
+            VM.StackPush(nMissEffect ? 1 : 0);
+            VM.StackPush((int)visualEffectID);
 
-            Internal.NativeFunctions.CallBuiltIn(180);
+            VM.Call(180);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1316,11 +1316,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void ApplyEffectToObject(DurationType nDurationType, Effect eEffect, uint oTarget,
             float fDuration = 0.0f)
         {
-            Internal.NativeFunctions.StackPushFloat(fDuration);
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.StackPushInteger((int)nDurationType);
-            Internal.NativeFunctions.CallBuiltIn(220);
+            VM.StackPush(fDuration);
+            VM.StackPush(oTarget);
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.StackPush((int)nDurationType);
+            VM.Call(220);
         }
 
         /// <summary>
@@ -1329,9 +1329,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static EffectTypeScript GetEffectType(Effect eEffect)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect);
-            Internal.NativeFunctions.CallBuiltIn(170);
-            return (EffectTypeScript)Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.Effect, eEffect);
+            VM.Call(170);
+            return (EffectTypeScript)VM.StackPopInt();
         }
 
         /// <summary>
@@ -1341,12 +1341,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static Effect EffectAreaOfEffect(AreaOfEffect nAreaEffect, string sOnEnterScript = "",
             string sHeartbeatScript = "", string sOnExitScript = "")
         {
-            Internal.NativeFunctions.StackPushStringUTF8(sOnExitScript);
-            Internal.NativeFunctions.StackPushStringUTF8(sHeartbeatScript);
-            Internal.NativeFunctions.StackPushStringUTF8(sOnEnterScript);
-            Internal.NativeFunctions.StackPushInteger((int)nAreaEffect);
-            Internal.NativeFunctions.CallBuiltIn(171);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(sOnExitScript);
+            VM.StackPush(sHeartbeatScript);
+            VM.StackPush(sOnEnterScript);
+            VM.StackPush((int)nAreaEffect);
+            VM.Call(171);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1356,10 +1356,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectRegenerate(int nAmount, float fIntervalSeconds)
         {
-            Internal.NativeFunctions.StackPushFloat(fIntervalSeconds);
-            Internal.NativeFunctions.StackPushInteger(nAmount);
-            Internal.NativeFunctions.CallBuiltIn(164);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(fIntervalSeconds);
+            VM.StackPush(nAmount);
+            VM.Call(164);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1372,9 +1372,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectMovementSpeedIncrease(int nPercentChange)
         {
-            Internal.NativeFunctions.StackPushInteger(nPercentChange);
-            Internal.NativeFunctions.CallBuiltIn(165);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(nPercentChange);
+            VM.Call(165);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1382,8 +1382,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectCharmed()
         {
-            Internal.NativeFunctions.CallBuiltIn(156);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(156);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1391,8 +1391,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectConfused()
         {
-            Internal.NativeFunctions.CallBuiltIn(157);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(157);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1400,8 +1400,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectFrightened()
         {
-            Internal.NativeFunctions.CallBuiltIn(158);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(158);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1409,8 +1409,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDominated()
         {
-            Internal.NativeFunctions.CallBuiltIn(159);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(159);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1418,8 +1418,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDazed()
         {
-            Internal.NativeFunctions.CallBuiltIn(160);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(160);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1427,8 +1427,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectStunned()
         {
-            Internal.NativeFunctions.CallBuiltIn(161);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(161);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1436,8 +1436,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSleep()
         {
-            Internal.NativeFunctions.CallBuiltIn(154);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(154);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1445,8 +1445,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectParalyze()
         {
-            Internal.NativeFunctions.CallBuiltIn(148);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(148);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1460,9 +1460,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectSpellImmunity(Spell nImmunityToSpell = Spell.AllSpells)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nImmunityToSpell);
-            Internal.NativeFunctions.CallBuiltIn(149);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush((int)nImmunityToSpell);
+            VM.Call(149);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1470,8 +1470,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Effect EffectDeaf()
         {
-            Internal.NativeFunctions.CallBuiltIn(150);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(150);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
 
@@ -1483,10 +1483,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetEffectInteger(Effect eEffect, int nIndex)
         {
-            Internal.NativeFunctions.StackPushInteger(nIndex);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int) EngineStructure.Effect, eEffect.Handle);
-            Internal.NativeFunctions.CallBuiltIn(939);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(nIndex);
+            VM.StackPush((int) EngineStructure.Effect, eEffect.Handle);
+            VM.Call(939);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -1497,10 +1497,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetEffectFloat(Effect eEffect, int nIndex)
         {
-            Internal.NativeFunctions.StackPushInteger(nIndex);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect.Handle);
-            Internal.NativeFunctions.CallBuiltIn(940);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(nIndex);
+            VM.StackPush((int)EngineStructure.Effect, eEffect.Handle);
+            VM.Call(940);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -1511,10 +1511,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetEffectString(Effect eEffect, int nIndex)
         {
-            Internal.NativeFunctions.StackPushInteger(nIndex);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect.Handle);
-            Internal.NativeFunctions.CallBuiltIn(941);
-            return Internal.NativeFunctions.StackPopString();
+            VM.StackPush(nIndex);
+            VM.StackPush((int)EngineStructure.Effect, eEffect.Handle);
+            VM.Call(941);
+            return VM.StackPopString();
         }
         
         /// <summary>
@@ -1525,10 +1525,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetEffectObject(Effect eEffect, int nIndex)
         {
-            Internal.NativeFunctions.StackPushInteger(nIndex);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect.Handle);
-            Internal.NativeFunctions.CallBuiltIn(942);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(nIndex);
+            VM.StackPush((int)EngineStructure.Effect, eEffect.Handle);
+            VM.Call(942);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -1539,10 +1539,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Vector3 GetEffectVector(Effect eEffect, int nIndex)
         {
-            Internal.NativeFunctions.StackPushInteger(nIndex);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Effect, eEffect.Handle);
-            Internal.NativeFunctions.CallBuiltIn(943);
-            return Internal.NativeFunctions.StackPopVector();
+            VM.StackPush(nIndex);
+            VM.StackPush((int)EngineStructure.Effect, eEffect.Handle);
+            VM.Call(943);
+            return VM.StackPopVector();
         }
 
         /// <summary>
@@ -1558,13 +1558,13 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static Effect EffectRunScript(string sOnAppliedScript = "", string sOnRemovedScript = "", string sOnIntervalScript = "", float fInterval = 0.0f, string sData = "")
         {
-            Internal.NativeFunctions.StackPushString(sData);
-            Internal.NativeFunctions.StackPushFloat(fInterval);
-            Internal.NativeFunctions.StackPushString(sOnIntervalScript);
-            Internal.NativeFunctions.StackPushString(sOnRemovedScript);
-            Internal.NativeFunctions.StackPushString(sOnAppliedScript);
-            Internal.NativeFunctions.CallBuiltIn(955);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.StackPush(sData);
+            VM.StackPush(fInterval);
+            VM.StackPush(sOnIntervalScript);
+            VM.StackPush(sOnRemovedScript);
+            VM.StackPush(sOnAppliedScript);
+            VM.Call(955);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1574,8 +1574,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns>The effect that last triggered an EffectRunScript() script.</returns>
         public static Effect GetLastRunScriptEffect()
         {
-            Internal.NativeFunctions.CallBuiltIn(956);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(956);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1585,8 +1585,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static int GetLastRunScriptEffectScriptType()
         {
-            Internal.NativeFunctions.CallBuiltIn(957);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.Call(957);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -1596,8 +1596,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static Effect HideEffectIcon(Effect eEffect)
         {
-            Internal.NativeFunctions.CallBuiltIn(958);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(958);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
 
         /// <summary>
@@ -1610,8 +1610,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// <returns></returns>
         public static Effect EffectIcon(Effect eEffect)
         {
-            Internal.NativeFunctions.CallBuiltIn(959);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Effect);
+            VM.Call(959);
+            return VM.StackPopStruct((int)EngineStructure.Effect);
         }
     }
 }

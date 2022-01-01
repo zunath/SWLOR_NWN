@@ -9,57 +9,57 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         public static int GetCurrentNodeType()
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCurrentNodeType");
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCurrentNodeType");
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         public static int GetCurrentScriptType()
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCurrentScriptType");
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCurrentScriptType");
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         public static int GetCurrentNodeID()
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCurrentNodeID");
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCurrentNodeID");
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         public static int GetCurrentNodeIndex()
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCurrentNodeIndex");
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCurrentNodeIndex");
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         public static string GetCurrentNodeText(DialogLanguages language = DialogLanguages.English,
             Gender gender = Gender.Male)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCurrentNodeText");
-            Internal.NativeFunctions.nwnxPushInt((int)gender);
-            Internal.NativeFunctions.nwnxPushInt((int)language);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopString();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCurrentNodeText");
+            NWNCore.NativeFunctions.nwnxPushInt((int)gender);
+            NWNCore.NativeFunctions.nwnxPushInt((int)language);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopString();
         }
 
         public static void SetCurrentNodeText(string text, DialogLanguages language = DialogLanguages.English,
             Gender gender = Gender.Male)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCurrentNodeText");
-            Internal.NativeFunctions.nwnxPushInt((int)gender);
-            Internal.NativeFunctions.nwnxPushInt((int)language);
-            Internal.NativeFunctions.nwnxPushString(text);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetCurrentNodeText");
+            NWNCore.NativeFunctions.nwnxPushInt((int)gender);
+            NWNCore.NativeFunctions.nwnxPushInt((int)language);
+            NWNCore.NativeFunctions.nwnxPushString(text);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         public static void End(uint player)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "End");
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "End");
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
     }
 }

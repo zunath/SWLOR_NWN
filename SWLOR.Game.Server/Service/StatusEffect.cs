@@ -150,6 +150,27 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// When a player dies, remove any status effects which are present.
+        /// </summary>
+        [NWNEventHandler("mod_death")]
+        public static void OnPlayerDeath()
+        {
+            var player = GetLastPlayerDied();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            if (!_creaturesWithStatusEffects.ContainsKey(player))
+                return;
+
+            var statusEffects = _creaturesWithStatusEffects[player].Select(s => s.Key);
+
+            foreach (var effect in statusEffects)
+            {
+                Remove(player, effect);
+            }
+        }
+
+        /// <summary>
         /// Removes a status effect from a creature.
         /// </summary>
         /// <param name="creature">The creature to remove the status effect from.</param>

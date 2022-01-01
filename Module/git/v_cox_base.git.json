@@ -1997,21 +1997,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "PERMANENT_VFX_ID"
               },
               "Type": {
@@ -2027,21 +2012,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_2"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CONVERSATION"
               },
               "Type": {
@@ -2050,7 +2020,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "CoxxionTerminal"
+                "value": "CoxxionTerminalDialog"
               }
             },
             {
@@ -2302,21 +2272,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "PERMANENT_VFX_ID"
               },
               "Type": {
@@ -2332,21 +2287,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_2"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CONVERSATION"
               },
               "Type": {
@@ -2355,7 +2295,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "CoxxionTerminal"
+                "value": "CoxxionTerminalDialog"
               }
             },
             {
@@ -2607,21 +2547,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "PERMANENT_VFX_ID"
               },
               "Type": {
@@ -2637,21 +2562,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_2"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CONVERSATION"
               },
               "Type": {
@@ -2660,7 +2570,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "CoxxionTerminal"
+                "value": "CoxxionTerminalDialog"
               }
             },
             {
@@ -2912,21 +2822,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "PERMANENT_VFX_ID"
               },
               "Type": {
@@ -2942,21 +2837,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_2"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CONVERSATION"
               },
               "Type": {
@@ -2965,7 +2845,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "CoxxionTerminal"
+                "value": "CoxxionTerminalDialog"
               }
             },
             {
@@ -3217,21 +3097,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "PERMANENT_VFX_ID"
               },
               "Type": {
@@ -3247,21 +3112,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_2"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CONVERSATION"
               },
               "Type": {
@@ -3270,7 +3120,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "CoxxionTerminal"
+                "value": "CoxxionTerminalDialog"
               }
             },
             {
@@ -3522,21 +3372,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "PERMANENT_VFX_ID"
               },
               "Type": {
@@ -3552,21 +3387,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_2"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CONVERSATION"
               },
               "Type": {
@@ -3575,7 +3395,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "CoxxionTerminal"
+                "value": "CoxxionTerminalDialog"
               }
             },
             {
@@ -3827,21 +3647,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "PERMANENT_VFX_ID"
               },
               "Type": {
@@ -3857,21 +3662,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_2"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CONVERSATION"
               },
               "Type": {
@@ -3880,7 +3670,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "CoxxionTerminal"
+                "value": "CoxxionTerminalDialog"
               }
             },
             {
@@ -4132,21 +3922,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.PermanentVisualEffect"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "PERMANENT_VFX_ID"
               },
               "Type": {
@@ -4162,21 +3937,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_2"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CONVERSATION"
               },
               "Type": {
@@ -4185,7 +3945,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "CoxxionTerminal"
+                "value": "CoxxionTerminalDialog"
               }
             },
             {

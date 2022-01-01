@@ -224,9 +224,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void Search()
         {
-            var sw = new Stopwatch();
-            sw.Start();
-
             Dictionary<RecipeType, RecipeDetail> recipes;
 
             // Skill and Category selected
@@ -286,8 +283,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RecipeNames = recipeNames;
             RecipeColors = recipeColors;
             RecipeToggles = recipeToggles;
-            sw.Stop();
-            Console.WriteLine($"RecipesViewModel Search(): {sw.ElapsedMilliseconds}ms");
         }
 
         private void UpdatePagination(int totalRecordCount)

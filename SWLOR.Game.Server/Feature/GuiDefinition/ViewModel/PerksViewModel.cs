@@ -213,9 +213,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
 
             _filteredPerks.Clear();
-
-            var sw = new Stopwatch();
-            sw.Start();
             
             var perkButtonColors = new GuiBindingList<GuiColor>();
             var perkButtonTexts = new GuiBindingList<string>();
@@ -278,9 +275,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PerkButtonTexts = perkButtonTexts;
             PerkDetailSelected = perkDetailSelected;
             PageNumbers = pageNumbers;
-
-            sw.Stop();
-            Console.WriteLine($"LoadPerks: {sw.ElapsedMilliseconds}ms");
         }
 
         private string BuildSelectedPerkDetailText(PerkDetail detail, PerkLevel currentUpgrade, PerkLevel nextUpgrade)

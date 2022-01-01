@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature
         {
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
-                //ExecuteScript("interval_pc_6s", player);
+                ExecuteScript("interval_pc_6s", player);
             }
         }
 

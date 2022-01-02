@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("mod_exit")]
         public static void AuditClientDisconnection()
         {
-            var player = GetEnteringObject();
+            var player = GetExitingObject();
             var ipAddress = GetPCIPAddress(player);
             var cdKey = GetPCPublicCDKey(player);
             var account = GetPCPlayerName(player);

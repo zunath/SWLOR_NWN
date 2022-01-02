@@ -212,6 +212,9 @@ namespace SWLOR.Game.Server.Native
                 var target = CNWSCreature.FromPointer(pTarget);
                 var damagePower = attackerStats.m_pBaseCreature.CalculateDamagePower(target, bOffHand);
                 float vitality = target.m_pStats.m_nConstitutionModifier;
+
+                // Numbers over 128 are negative.
+                if (vitality > 128) vitality -= 256;
                 
                 // 0 is invalid.  Old items (not updated with the new stat) may return this value. 
                 if (damageType == -1 || damageType == 0)

@@ -125,7 +125,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         var dbPlayer = DB.Get<Player>(playerId);
                         var dbSkill = dbPlayer.Skills[SkillType.Gathering];
                         var veinLevel = 10 * (requiredLevel - 1) + 5;
-                        var delta = dbSkill.Rank - veinLevel;
+                        var delta = veinLevel - dbSkill.Rank;
                         var deltaXP = Skill.GetDeltaXP(delta);
 
                         Skill.GiveSkillXP(user, SkillType.Gathering, deltaXP);

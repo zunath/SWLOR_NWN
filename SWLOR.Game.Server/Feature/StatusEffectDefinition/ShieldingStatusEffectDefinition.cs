@@ -19,19 +19,19 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _builder.Create(StatusEffectType.Shielding1)
                 .Name("Shielding I")
-                .EffectIcon(35);
+                .EffectIcon(33);
 
             _builder.Create(StatusEffectType.Shielding2)
                 .Name("Shielding II")
-                .EffectIcon(35);
+                .EffectIcon(33);
 
             _builder.Create(StatusEffectType.Shielding3)
                 .Name("Shielding III")
-                .EffectIcon(35);
+                .EffectIcon(33);
 
             _builder.Create(StatusEffectType.Shielding4)
                 .Name("Shielding IV")
-                .EffectIcon(35);
+                .EffectIcon(33);
         }
     }
 }

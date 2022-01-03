@@ -90,6 +90,13 @@
           "type": "resref",
           "value": "kinrath_bite"
         }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "ww_kin_skin"
+        }
       }
     ]
   },

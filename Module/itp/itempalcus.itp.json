@@ -4539,6 +4539,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "Wildwoods Kinrath Skin"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "ww_kin_skin"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "Wildwoods Outlaw Skin"
                     },
                     "RESREF": {
@@ -4733,7 +4744,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Bank"
+                "value": "Bank - Style 1"
               },
               "RESREF": {
                 "type": "resref",
@@ -5085,7 +5096,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Cantina"
+                "value": "Cantina - Style 1"
               },
               "RESREF": {
                 "type": "resref",
@@ -5283,7 +5294,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "City Hall"
+                "value": "City Hall - Style 1"
               },
               "RESREF": {
                 "type": "resref",
@@ -5723,17 +5734,6 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "House"
-              },
-              "RESREF": {
-                "type": "resref",
-                "value": "structure_5005"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "NAME": {
-                "type": "cexostring",
                 "value": "Illithid Chair"
               },
               "RESREF": {
@@ -5877,6 +5877,50 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Large House - Style 1"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5013"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Large House - Style 2"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5014"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Large House - Style 3"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5015"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Large House - Style 4"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5016"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Locker, Metal Trapezoid"
               },
               "RESREF": {
@@ -5899,11 +5943,55 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Medical Center"
+                "value": "Medical Center - Style 1"
               },
               "RESREF": {
                 "type": "resref",
                 "value": "structure_5002"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Medium House - Style 1"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5009"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Medium House - Style 2"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5010"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Medium House - Style 3"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5011"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Medium House - Style 4"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5012"
               }
             },
             {
@@ -6361,6 +6449,50 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
+                "value": "Small House - Style 1"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5005"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Small House - Style 2"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5006"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Small House - Style 3"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5007"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
+                "value": "Small House - Style 4"
+              },
+              "RESREF": {
+                "type": "resref",
+                "value": "structure_5008"
+              }
+            },
+            {
+              "__struct_id": 0,
+              "NAME": {
+                "type": "cexostring",
                 "value": "Space Suit (Tan)"
               },
               "RESREF": {
@@ -6416,7 +6548,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Starport"
+                "value": "Starport - Style 1"
               },
               "RESREF": {
                 "type": "resref",

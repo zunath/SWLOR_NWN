@@ -68,6 +68,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                     break;
             }
 
+            CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
+
             var perception = GetAbilityModifier(AbilityType.Perception, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical) +
                           Stat.GetDefense(target, CombatDamageType.Electrical);
@@ -75,8 +77,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), target);
             if (inflict) StatusEffect.Apply(activator, target, StatusEffectType.Shock, duration);
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
         }
 
         private static void ElectricFist1(AbilityBuilder builder)
@@ -87,6 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
+                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -98,6 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
+                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -109,6 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
+                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

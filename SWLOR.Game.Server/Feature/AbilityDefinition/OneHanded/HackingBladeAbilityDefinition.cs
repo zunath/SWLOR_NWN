@@ -66,14 +66,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     break;
             }
 
+            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+
             var might = GetAbilityModifier(AbilityType.Might, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
             var damage = Combat.CalculateDamage(dmg, might, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
             if (inflictBleed) StatusEffect.Apply(activator, target, StatusEffectType.Bleed, 60f);
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
         }
 
         private static void HackingBlade1(AbilityBuilder builder)
@@ -84,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
+                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -95,6 +96,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
+                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -106,6 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
+                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

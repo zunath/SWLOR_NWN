@@ -68,9 +68,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 var defense = Stat.GetDefense(target, CombatDamageType.Physical);
                 var vitality = GetAbilityModifier(AbilityType.Vitality, creature);
                 var damage = Combat.CalculateDamage(dmg, might, defense, vitality, 0);
+                CombatPoint.AddCombatPoint(activator, creature, SkillType.MartialArts, 2);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Bludgeoning), target);
 
-                CombatPoint.AddCombatPoint(activator, creature, SkillType.MartialArts, 2);
                 creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true, ObjectType.Creature);
                 count++;
             }
@@ -84,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -96,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -108,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(8)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

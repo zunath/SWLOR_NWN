@@ -60,13 +60,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     break;
             }
 
+            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+            Enmity.ModifyEnmity(activator, target, 25);
+
             var might = GetAbilityModifier(AbilityType.Might, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
             var damage = Combat.CalculateDamage(dmg, might, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
-            Enmity.ModifyEnmity(activator, target, 25);
         }
 
         private static void HardSlash1(AbilityBuilder builder)
@@ -77,6 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -89,6 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -101,6 +104,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(8)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

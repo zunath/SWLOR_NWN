@@ -13,6 +13,7 @@ using ImmunityType = NWN.Native.API.ImmunityType;
 using InventorySlot = NWN.Native.API.InventorySlot;
 using ItemPropertyType = SWLOR.Game.Server.Core.NWScript.Enum.Item.ItemPropertyType;
 using ObjectType = NWN.Native.API.ObjectType;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -212,6 +213,25 @@ namespace SWLOR.Game.Server.Native
             {
                 modifiers -= 5 * defenderEvasion;
                 Log.Write(LogGroup.Attack, "Defender has evasion bonus: " + defenderEvasion); 
+            }
+
+            // Defender Evasion (AC) bonuses and penalties from effects.
+            Effect effect = GetFirstEffect(defender.m_idSelf);
+            while (GetIsEffectValid(effect))
+            {
+                if (GetEffectType(effect) == EffectTypeScript.ACIncrease)
+                {
+                    Log.Write(LogGroup.Attack, "Defender has AC increase: " + GetEffectInteger(effect, 1));
+                    // The magnitude is Effect Integer 1, see https://nwnlexicon.com/index.php?title=EffectACIncrease
+                    modifiers -= 5 * GetEffectInteger(effect, 1); 
+                }
+                else if (GetEffectType(effect) == EffectTypeScript.ACDecrease)
+                {
+                    Log.Write(LogGroup.Attack, "Defender has AC decrease: " + GetEffectInteger(effect, 1));
+                    modifiers += 5 * GetEffectInteger(effect, 1);
+                }
+
+                effect = GetNextEffect(defender.m_idSelf);
             }
 
             // Defender stunned

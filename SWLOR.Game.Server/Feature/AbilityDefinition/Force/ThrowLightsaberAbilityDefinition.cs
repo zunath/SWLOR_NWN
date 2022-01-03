@@ -73,13 +73,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             // apply to target
             DelayCommand(delay, () =>
             {
+                CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
                 var defense = Stat.GetDefense(target, CombatDamageType.Physical);
                 var targetWillpower = GetAbilityModifier(AbilityType.Willpower, target);
                 var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, 0);
                 ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), target);
             });
-            
-            
+                        
             // apply to next nearest creature in the spellcylinder
             var nearby = GetFirstObjectInShape(Shape.SpellCylinder, Range, GetLocation(target), true, ObjectType.Creature, GetPosition(activator));
             while (GetIsObjectValid(nearby) && count < level)
@@ -90,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     var nearbyCopy = nearby;
                     DelayCommand(delay, () =>
                     {
+                        CombatPoint.AddCombatPoint(activator, nearby, SkillType.Force, 3);
                         var defense = Stat.GetDefense(nearbyCopy, CombatDamageType.Physical);
                         var targetWillpower = GetAbilityModifier(AbilityType.Willpower, nearbyCopy);
                         var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, 0);
@@ -102,7 +103,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             }
 
             Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
 
         private static void ThrowLightsaber1(AbilityBuilder builder)
@@ -111,8 +111,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Throw Lightsaber I")
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(2)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
@@ -124,8 +126,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Throw Lightsaber II")
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(4)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
@@ -137,8 +141,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Throw Lightsaber III")
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(6)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)

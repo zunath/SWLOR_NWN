@@ -65,13 +65,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             {
                 if (GetDistanceBetween(target, creature) <= 3f)
                 {
+                    CombatPoint.AddCombatPoint(activator, creature, SkillType.Ranged, 3);
+
                     var might = GetAbilityModifier(AbilityType.Might, activator);
                     var defense = Stat.GetDefense(target, CombatDamageType.Physical);
                     var vitality = GetAbilityModifier(AbilityType.Vitality, target);
                     var damage = Combat.CalculateDamage(dmg, might, defense, vitality, 0);
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), creature);
-
-                    CombatPoint.AddCombatPoint(activator, creature, SkillType.Ranged, 3);
 
                     count++;
                 }
@@ -85,9 +85,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .Name("Explosive Toss I")
                 .HasRecastDelay(RecastGroup.ExplosiveToss, 30f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
+                .UsesAnimation(Animation.ThrowGrenade)
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -97,9 +100,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .Name("Explosive Toss II")
                 .HasRecastDelay(RecastGroup.ExplosiveToss, 30f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
+                .UsesAnimation(Animation.ThrowGrenade)
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -109,9 +115,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .Name("Explosive Toss III")
                 .HasRecastDelay(RecastGroup.ExplosiveToss, 30f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
+                .UsesAnimation(Animation.ThrowGrenade)
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

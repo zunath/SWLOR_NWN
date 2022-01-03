@@ -60,6 +60,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                     break;
             }
 
+            CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
+
             // First attack
             var perception = GetAbilityModifier(AbilityType.Perception, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
@@ -70,8 +72,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             // Second attack
             damage = Combat.CalculateDamage(dmg, perception, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
         }
 
         private static void DoubleShot1(AbilityBuilder builder)
@@ -80,8 +80,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .Name("Double Shot I")
                 .HasRecastDelay(RecastGroup.DoubleShot, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(30.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>
@@ -96,8 +98,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .Name("Double Shot II")
                 .HasRecastDelay(RecastGroup.DoubleShot, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(30.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>
@@ -112,8 +116,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .Name("Double Shot III")
                 .HasRecastDelay(RecastGroup.DoubleShot, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(30.0f)
                 .RequirementStamina(8)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>

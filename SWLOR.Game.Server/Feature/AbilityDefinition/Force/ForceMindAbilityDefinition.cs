@@ -48,7 +48,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Odd), target);
             
             Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);       
         }
 
         private static void ForceMind1(AbilityBuilder builder)

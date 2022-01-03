@@ -74,6 +74,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 ActionPlayAnimation(Animation.ForceLeap, 2.0f, 1.0f);
             });
 
+            Enmity.ModifyEnmityOnAll(activator, 1);
+            CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+
             var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
@@ -98,9 +101,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     ActionJumpToObject(target);
                 });
             });
-
-            Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
 
         private static void ForceLeap1(AbilityBuilder builder)
@@ -110,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -121,6 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -132,6 +134,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

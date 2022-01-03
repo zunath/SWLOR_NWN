@@ -96,14 +96,22 @@ namespace SWLOR.Game.Server.Native
             CNWSItem weapon = null;
 
             var attackOverride = attacker.m_ScriptVars.GetInt(new CExoString("ATTACK_TYPE_OVERRIDE"));
+            weapon = pCombatRound.GetCurrentAttackWeapon();
 
             if (attackOverride != 0 & attackOverride < 4)
             {
                 attackType = (uint) attackOverride;
                 attacker.m_ScriptVars.DestroyInt(new CExoString("ATTACK_TYPE_OVERRIDE"));
             }
+            else
+            {
+                // Check whether this is a ranged weapon. 
+                if (weapon != null && pAttackData.m_bRangedAttack == 1 && attacker.GetRangeWeaponEquipped() == 1)
+                {
+                    attackType = (uint)AttackType.Ranged;
+                }
+            }
 
-            weapon = pCombatRound.GetCurrentAttackWeapon();
             Log.Write(LogGroup.Attack, "Selected attack type " + attackType + ", weapon " + (weapon == null ? "none":weapon.GetFirstName().GetSimple(0)) );
 
             // We now have our attack type defined.  Pull the relevant attributes, defaulting to melee.

@@ -253,14 +253,17 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to receiving the point.</param>
         /// <param name="skill">The skill to associate with the point.</param>
         /// <param name="amount">The number of points to add.</param>
-        public static void AddCombatPointToAllTagged(uint player, SkillType skill, int amount = 1)
+        /// <returns>True if at least one creature is tagged, false otherwise.</returns>
+        public static bool AddCombatPointToAllTagged(uint player, SkillType skill, int amount = 1)
         {
-            if (!_playerToCreatureTracker.ContainsKey(player)) return;
+            if (!_playerToCreatureTracker.ContainsKey(player)) return false;
 
             foreach (var creature in _playerToCreatureTracker[player])
             {
                 AddCombatPoint(player, creature, skill, amount);
             }
+
+            return true;
         }
 
         /// <summary>

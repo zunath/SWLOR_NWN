@@ -40,10 +40,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Mind Trick I")
                 .HasRecastDelay(RecastGroup.MindTrick, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(3)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasCustomValidation(Validation)
                 .IsConcentrationAbility(StatusEffectType.MindTrick1)
+                .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -53,10 +55,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Mind Trick II")
                 .HasRecastDelay(RecastGroup.MindTrick, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(5)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasCustomValidation(Validation)
                 .IsConcentrationAbility(StatusEffectType.MindTrick2)
+                .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating();
         }
     }

@@ -218,6 +218,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
+        /// Updates the max range of this ability (default is 2.0, i.e. melee range).
+        /// </summary>
+        /// <param name="maxRange">The maximum range of the ability.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder HasMaxRange(float maxRange)
+        {
+            _activeAbility.MaxRange = maxRange;
+            return this;
+        }
+
+        /// <summary>
         /// Adds a stamina requirement to use the ability at this level.
         /// </summary>
         /// <param name="requiredSTM">The amount of STM needed to use this ability at this level.</param>
@@ -237,6 +248,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder UnaffectedByHeavyArmor()
         {
             _activeAbility.IgnoreHeavyArmorPenalty = true;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Indicates this ability is a hostile ability and should not target friendlies.
+        /// </summary>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder IsHostileAbility()
+        {
+            _activeAbility.IsHostileAbility = true;
 
             return this;
         }

@@ -59,7 +59,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             else ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, 6.0f);
 
             Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+
+            if (!CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3))
+            {
+                CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+            }
         }
 
         private static void ForcePush1(AbilityBuilder builder)
@@ -70,6 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2.0f)
                 .RequirementFP(1)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
@@ -82,8 +87,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Push II")
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(2)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
@@ -96,8 +103,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Push III")
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(3)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
@@ -110,8 +119,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Push IV")
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasActivationDelay(4.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(4)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasImpactAction(ImpactAction);

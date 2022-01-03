@@ -80,8 +80,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .Name("Double Shot I")
                 .HasRecastDelay(RecastGroup.DoubleShot, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(30.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>
@@ -96,8 +98,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .Name("Double Shot II")
                 .HasRecastDelay(RecastGroup.DoubleShot, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(30.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>
@@ -112,8 +116,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .Name("Double Shot III")
                 .HasRecastDelay(RecastGroup.DoubleShot, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(30.0f)
                 .RequirementStamina(8)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction((activator, target, level, targetLocation) =>

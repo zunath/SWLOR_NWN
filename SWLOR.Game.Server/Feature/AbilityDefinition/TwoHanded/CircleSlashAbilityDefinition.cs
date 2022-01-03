@@ -68,13 +68,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 var vitality = GetAbilityModifier(AbilityType.Vitality, target);
                 var damage = Combat.CalculateDamage(dmg, willpower, defense, vitality, 0);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
+                CombatPoint.AddCombatPoint(activator, creature, SkillType.TwoHanded, 3);
 
                 creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true);
                 count++;
             }            
 
             Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.TwoHanded, 3);
         }
 
         private static void CircleSlash1(AbilityBuilder builder)
@@ -85,6 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -97,6 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -109,6 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

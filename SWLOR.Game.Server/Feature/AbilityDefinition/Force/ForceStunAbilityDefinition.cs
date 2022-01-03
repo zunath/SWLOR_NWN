@@ -27,9 +27,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Stun I")
                 .HasRecastDelay(RecastGroup.ForceStun, 60f * 5f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(4)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .IsConcentrationAbility(StatusEffectType.ForceStun1)
+                .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating(); 
         }
 
@@ -39,9 +41,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Stun II")
                 .HasRecastDelay(RecastGroup.ForceStun, 60f * 5f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(6)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .IsConcentrationAbility(StatusEffectType.ForceStun2)
+                .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -51,9 +55,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Stun III")
                 .HasRecastDelay(RecastGroup.ForceStun, 60f * 5f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(8)
                 .UsesAnimation(Animation.LoopingConjure1)
                 .IsConcentrationAbility(StatusEffectType.ForceStun3)
+                .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating();
         }
     }

@@ -68,7 +68,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             });
 
             Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+
+            if (!CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3))
+            {
+                CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+            }
         }
 
         private static void ForceBurst1(AbilityBuilder builder)
@@ -76,8 +80,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst1, PerkType.ForceBurst)
                 .Name("Force Burst I")
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
+                .HasMaxRange(30.0f)
                 .RequirementFP(4)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
@@ -88,8 +94,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst2, PerkType.ForceBurst)
                 .Name("Force Burst II")
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
+                .HasMaxRange(30.0f)
                 .RequirementFP(5)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
@@ -100,8 +108,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst3, PerkType.ForceBurst)
                 .Name("Force Burst III")
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
+                .HasMaxRange(30.0f)
                 .RequirementFP(6)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);

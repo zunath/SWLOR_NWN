@@ -74,8 +74,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .Name("Quick Draw I")
                 .HasRecastDelay(RecastGroup.QuickDraw, 30f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(30.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -86,8 +88,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .Name("Quick Draw II")
                 .HasRecastDelay(RecastGroup.QuickDraw, 30f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(30.0f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -98,8 +102,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .Name("Quick Draw III")
                 .HasRecastDelay(RecastGroup.QuickDraw, 30f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(30.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

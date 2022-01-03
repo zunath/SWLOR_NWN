@@ -102,7 +102,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             }
 
             Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+
+            if (!CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3))
+            {
+                CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+            }
         }
 
         private static void ThrowLightsaber1(AbilityBuilder builder)
@@ -111,8 +115,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Throw Lightsaber I")
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(2)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
@@ -124,8 +130,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Throw Lightsaber II")
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(4)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
@@ -137,8 +145,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Throw Lightsaber III")
                 .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(6)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)

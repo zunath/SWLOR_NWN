@@ -29,6 +29,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public StatusEffectType ConcentrationStatusEffectType { get; set; }
         public bool CanBeUsedInSpace { get; set; }
         public bool IgnoreHeavyArmorPenalty { get; set; }
+        public float MaxRange { get; set; }
+        public bool IsHostileAbility { get; set; }
 
         public AbilityDetail()
         {
@@ -36,6 +38,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
             AnimationType = Animation.Invalid;
             Requirements = new List<IAbilityActivationRequirement>();
             ConcentrationStatusEffectType = StatusEffectType.Invalid;
+            MaxRange = 2.0f;
+            IsHostileAbility = false;
         }
     }
 }

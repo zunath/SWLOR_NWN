@@ -84,9 +84,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .Name("Piercing Toss I")
                 .HasRecastDelay(RecastGroup.PiercingToss, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
+                .UsesAnimation(Animation.ThrowGrenade)
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -96,9 +99,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .Name("Piercing Toss II")
                 .HasRecastDelay(RecastGroup.PiercingToss, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
+                .UsesAnimation(Animation.ThrowGrenade)
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -108,9 +114,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .Name("Piercing Toss III")
                 .HasRecastDelay(RecastGroup.PiercingToss, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementStamina(8)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
+                .UsesAnimation(Animation.ThrowGrenade)
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

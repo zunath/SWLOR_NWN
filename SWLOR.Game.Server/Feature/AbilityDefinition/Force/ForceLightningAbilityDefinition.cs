@@ -64,7 +64,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             
             Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+            if (!CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3))
+            {
+                CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+            }
         }
 
         private static void ForceLightning1(AbilityBuilder builder)
@@ -74,6 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.ForceLightning, 60f)
                 .RequirementFP(4)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
@@ -83,8 +87,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceLightning2, PerkType.ForceLightning)
                 .Name("Force Lightning II")
                 .HasRecastDelay(RecastGroup.ForceLightning, 60f)
+                .HasMaxRange(30.0f)
                 .RequirementFP(5)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
@@ -94,8 +100,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceLightning3, PerkType.ForceLightning)
                 .Name("Force Lightning III")
                 .HasRecastDelay(RecastGroup.ForceLightning, 60f)
+                .HasMaxRange(30.0f)
                 .RequirementFP(6)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
@@ -105,8 +113,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceLightning4, PerkType.ForceLightning)
                 .Name("Force Lightning IV")
                 .HasRecastDelay(RecastGroup.ForceLightning, 60f)
+                .HasMaxRange(30.0f)
                 .RequirementFP(7)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }

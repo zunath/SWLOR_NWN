@@ -63,12 +63,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
             var creature = GetFirstObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true);
             while (GetIsObjectValid(creature) && count < 3)
             {
+                CombatPoint.AddCombatPoint(activator, creature, SkillType.TwoHanded, 3);
                 var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
                 var defense = Stat.GetDefense(target, CombatDamageType.Physical);
                 var vitality = GetAbilityModifier(AbilityType.Vitality, target);
                 var damage = Combat.CalculateDamage(dmg, willpower, defense, vitality, 0);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-                CombatPoint.AddCombatPoint(activator, creature, SkillType.TwoHanded, 3);
 
                 creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true);
                 count++;

@@ -59,14 +59,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     break;
             }
 
+            Enmity.ModifyEnmityOnAll(activator, 1);
+            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+
             var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
             var damage = Combat.CalculateDamage(dmg, willpower, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Sonic), target);
-
-            Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
         }
 
         private static void DoubleStrike1(AbilityBuilder builder)

@@ -65,13 +65,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
             {
                 if (GetDistanceBetween(target, creature) <= 3f)
                 {
+                    CombatPoint.AddCombatPoint(activator, creature, SkillType.Ranged, 3);
+
                     var might = GetAbilityModifier(AbilityType.Might, activator);
                     var defense = Stat.GetDefense(target, CombatDamageType.Physical);
                     var vitality = GetAbilityModifier(AbilityType.Vitality, target);
                     var damage = Combat.CalculateDamage(dmg, might, defense, vitality, 0);
                     ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), creature);
-
-                    CombatPoint.AddCombatPoint(activator, creature, SkillType.Ranged, 3);
 
                     count++;
                 }

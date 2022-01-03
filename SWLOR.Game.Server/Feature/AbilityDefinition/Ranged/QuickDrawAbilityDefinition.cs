@@ -59,13 +59,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 default:
                     break;
             }
+
+            CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
+
             var perception = GetAbilityModifier(AbilityType.Perception, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
             var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
         }
 
         private static void QuickDraw1(AbilityBuilder builder)

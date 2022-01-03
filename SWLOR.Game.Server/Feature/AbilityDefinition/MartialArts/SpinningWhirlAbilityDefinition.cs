@@ -68,9 +68,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 var defense = Stat.GetDefense(target, CombatDamageType.Physical);
                 var vitality = GetAbilityModifier(AbilityType.Vitality, creature);
                 var damage = Combat.CalculateDamage(dmg, might, defense, vitality, 0);
+                CombatPoint.AddCombatPoint(activator, creature, SkillType.MartialArts, 2);
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Bludgeoning), target);
 
-                CombatPoint.AddCombatPoint(activator, creature, SkillType.MartialArts, 2);
                 creature = GetNextObjectInShape(Shape.Sphere, RadiusSize.Small, GetLocation(activator), true, ObjectType.Creature);
                 count++;
             }

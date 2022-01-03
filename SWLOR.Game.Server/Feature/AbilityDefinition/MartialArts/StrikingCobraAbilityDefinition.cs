@@ -68,14 +68,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                     break;
             }
 
+            CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
+
             var perception = GetAbilityModifier(AbilityType.Perception, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
             var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Bludgeoning), target);
             if (inflict) StatusEffect.Apply(activator, target, StatusEffectType.Poison, duration);
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
         }
 
         private static void StrikingCobra1(AbilityBuilder builder)

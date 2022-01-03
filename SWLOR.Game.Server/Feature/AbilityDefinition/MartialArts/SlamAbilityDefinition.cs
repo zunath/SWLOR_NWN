@@ -67,6 +67,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                     break;
             }
 
+            Enmity.ModifyEnmityOnAll(activator, 1);
+            CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
 
             var might = GetAbilityModifier(AbilityType.Might, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
@@ -74,9 +76,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             var damage = Combat.CalculateDamage(dmg, might, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Bludgeoning), target);
             if (inflict) ApplyEffectToObject(DurationType.Temporary, EffectBlindness(), target, duration);
-
-            Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
         }
 
         private static void Slam1(AbilityBuilder builder)

@@ -47,6 +47,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     break;
             }
 
+            Enmity.ModifyEnmityOnAll(activator, 1);
+            if (!CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3))
+            {
+                CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+            }
+
             var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var targetWillpower = GetAbilityModifier(AbilityType.Willpower, target);
@@ -61,13 +67,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 ApplyEffectToObject(DurationType.Instant, EffectDamage(damage), target);
                 ApplyEffectToObject(DurationType.Temporary, elecBeam, target, 4.0f);
             });
-
-            
-            Enmity.ModifyEnmityOnAll(activator, 1);
-            if (!CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3))
-            {
-                CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
-            }
         }
 
         private static void ForceLightning1(AbilityBuilder builder)

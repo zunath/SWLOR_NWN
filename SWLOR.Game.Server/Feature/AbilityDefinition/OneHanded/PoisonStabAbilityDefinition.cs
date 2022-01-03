@@ -66,6 +66,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     break;
             }
 
+            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+
             var perception = GetAbilityModifier(AbilityType.Perception, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
@@ -73,8 +75,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
             var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
             if (inflictPoison) StatusEffect.Apply(activator, target, StatusEffectType.Poison, 60f);
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
         }
 
         private static void PoisonStab1(AbilityBuilder builder)

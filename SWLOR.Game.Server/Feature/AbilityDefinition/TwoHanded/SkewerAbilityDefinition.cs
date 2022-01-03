@@ -63,6 +63,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     break;
             }
 
+            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+
             var perception = GetAbilityModifier(AbilityType.Might, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
@@ -74,8 +76,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 SendMessageToPC(activator, ColorToken.Gray(GetName(target)) + "'s  concentration has been broken.");
                 SendMessageToPC(target, ColorToken.Gray(GetName(activator)) + " broke your concentration.");
             }
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
         }
 
         private static void Skewer1(AbilityBuilder builder)

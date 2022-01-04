@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Gives the player an ability point which can be distributed to the attribute of their choice
-        /// from the rest menu. Must be at the 10/20/30/40/50 rank threshold.
+        /// from the character menu. Earned at 0.1 points per skill rank.  
         /// </summary>
         /// <param name="player">The player to receive the AP.</param>
         /// <param name="rank">The rank attained.</param>
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Service
         private static void ApplyAbilityPoint(uint player, int rank, Player dbPlayer)
         {
             // Total AP have been earned (300SP = 30AP)
-            if (dbPlayer.TotalAPAcquired >= SkillCap / 10) return;
+            if (dbPlayer.TotalAPAcquired >= SkillCap) return;
 
             void Apply(int expectedRank, int apLevelMax)
             {
@@ -134,17 +134,66 @@ namespace SWLOR.Game.Server.Service
                     dbPlayer.AbilityPointsByLevel[expectedRank] < apLevelMax)
                 {
                     dbPlayer.TotalAPAcquired++;
-                    dbPlayer.UnallocatedAP++;
                     dbPlayer.AbilityPointsByLevel[expectedRank]++;
 
-                    SendMessageToPC(player, ColorToken.Green("You acquired 1 ability point!"));
+                    if (dbPlayer.TotalAPAcquired % 10 == 0)
+                    {
+                        dbPlayer.UnallocatedAP++;
+
+                        SendMessageToPC(player, ColorToken.Green("You acquired 1 ability point!"));
+                    }
                 }
             }
 
+            Apply(1, 8);
+            Apply(2, 8);
+            Apply(3, 8);
+            Apply(4, 8);
+            Apply(5, 8);
+            Apply(6, 8);
+            Apply(7, 8);
+            Apply(8, 8);
+            Apply(9, 8);
             Apply(10, 8);
+            Apply(11, 8);
+            Apply(12, 8);
+            Apply(13, 8);
+            Apply(14, 8);
+            Apply(15, 8);
+            Apply(16, 8);
+            Apply(17, 8);
+            Apply(18, 8);
+            Apply(19, 8);
             Apply(20, 8);
+            Apply(21, 8);
+            Apply(22, 8);
+            Apply(23, 8);
+            Apply(24, 8);
+            Apply(25, 8);
+            Apply(26, 8);
+            Apply(27, 8);
+            Apply(28, 8);
+            Apply(29, 8);
             Apply(30, 8);
+            Apply(31, 8);
+            Apply(32, 8);
+            Apply(33, 8);
+            Apply(34, 8);
+            Apply(35, 8);
+            Apply(36, 8);
+            Apply(37, 8);
+            Apply(38, 8);
+            Apply(39, 8);
             Apply(40, 8);
+            Apply(41, 8);
+            Apply(42, 8);
+            Apply(43, 8);
+            Apply(44, 8);
+            Apply(45, 8);
+            Apply(46, 8);
+            Apply(47, 8);
+            Apply(48, 8);
+            Apply(49, 8);
             Apply(50, 8);
         }
 

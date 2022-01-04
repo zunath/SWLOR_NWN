@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature
             AssignCommand(user, () => ActionPlayAnimation(Animation.LoopingGetLow, 1.0f, 2.0f));
 
             var lootTable = Loot.GetLootTableByName(lootTableName);
-            var dc = 6;
+            var dc = 6 - GetAbilityModifier(AbilityType.Perception, user);
             var xp = 0;
             for (var attempt = 1; attempt <= attempts; attempt++)
             {

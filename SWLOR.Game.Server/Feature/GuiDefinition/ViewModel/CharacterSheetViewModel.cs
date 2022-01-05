@@ -338,7 +338,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CharacterType = dbPlayer.CharacterType == Enumeration.CharacterType.Standard ? "Standard" : "Force Sensitive";
             Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(Player))), GetGender(Player));
             SP = $"{dbPlayer.TotalSPAcquired} / {Skill.SkillCap} ({dbPlayer.UnallocatedSP})";
-            AP = $"{dbPlayer.TotalAPAcquired} / 30 ({dbPlayer.UnallocatedAP})";
+            AP = $"{dbPlayer.TotalAPAcquired / 10} / 30 ({dbPlayer.UnallocatedAP})";
             Control = dbPlayer.Control;
             Craftsmanship = dbPlayer.Craftsmanship;
 

@@ -66,9 +66,9 @@ namespace SWLOR.Game.Server.Feature
             {
                 var roll = Random.D20(1);
 
-                if (roll >= dc)
+                if (roll + GetAbilityModifier(AbilityType.Perception, user) >= dc)
                 {
-                    FloatingTextStringOnCreature(ColorToken.SkillCheck($"Search *success*: ({roll} vs. DC: {dc})"), user, false);
+                    FloatingTextStringOnCreature(ColorToken.SkillCheck($"Search *success*: ({roll} + {GetAbilityModifier(AbilityType.Perception, user)} vs. DC: {dc})"), user, false);
 
                     var item = lootTable.GetRandomItem();
                     var quantity = Random.Next(item.MaxQuantity) + 1;
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature
                 }
                 else
                 {
-                    FloatingTextStringOnCreature(ColorToken.SkillCheck($"Search *failure*: ({roll} vs DC: {dc})"), user, false);
+                    FloatingTextStringOnCreature(ColorToken.SkillCheck($"Search *failure*: ({roll} + {GetAbilityModifier(AbilityType.Perception, user)} vs DC: {dc})"), user, false);
                     xp = 50;
                 }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
@@ -15,6 +16,8 @@ using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
 using ObjectType = NWN.Native.API.ObjectType;
 using RacialType = SWLOR.Game.Server.Core.NWScript.Enum.RacialType;
 using Random = SWLOR.Game.Server.Service.Random;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using DamageType = SWLOR.Game.Server.Core.NWScript.Enum.DamageType;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -106,10 +109,16 @@ namespace SWLOR.Game.Server.Native
                                            targetObject.GetFirstName().GetSimple() + ", Attack type: " + attackType + ", weapon " + 
                                         (weapon == null ? "None" : weapon.GetFirstName().GetSimple()));
 
-            var dmg = 0f;
-            var damage = 0;
+            // Initialise damage array to read properties from equipped weapon.
+            Dictionary<CombatDamageType, float> dmgValues = new Dictionary<CombatDamageType, float>();
+            dmgValues[CombatDamageType.Physical] = 0;
+            dmgValues[CombatDamageType.Force] = 0;
+            dmgValues[CombatDamageType.Fire] = 0;
+            dmgValues[CombatDamageType.Electrical] = 0;
+            dmgValues[CombatDamageType.Poison] = 0;
+            dmgValues[CombatDamageType.Ice] = 0;
+            var physicalDamage = 0;
             var specializationDMGBonus = 0f;
-            var damageType = -1;
 
             // Calculate attacker's base DMG
             if (attacker != null)
@@ -124,17 +133,22 @@ namespace SWLOR.Game.Server.Native
 
                 if (weapon != null)
                 {
-                    // Iterate over properties and take the highest DMG rating.  Also save the damage type.
+                    // Weapons may have multiple DMG properties, especially if enhanced.  The DMG types may not all be the
+                    // same. Add all DMG properties of the same type together.
                     for (var index = 0; index < weapon.m_lstPassiveProperties.Count; index++)
                     {
+
                         var ip = weapon.GetPassiveProperty(index);
                         if (ip != null && ip.m_nPropertyName == (ushort)ItemPropertyType.DMG)
                         {
-                            if (ip.m_nCostTableValue > dmg)
-                            {
-                                dmg = Combat.GetDMGValueFromItemPropertyCostTableValue(ip.m_nCostTableValue);
-                                damageType = ip.m_nSubType;
-                            }
+                            // Catch old-style DMG properties here, and correct the damage type by hand.
+                            var damageType = ip.m_nSubType;
+                            if (damageType > 6 || damageType < 1) damageType = 1;
+
+                            // Add the value of this property to the array.
+                            var dmg = dmgValues[(CombatDamageType)damageType];
+                            dmg += Combat.GetDMGValueFromItemPropertyCostTableValue(ip.m_nCostTableValue);
+                            dmgValues[(CombatDamageType)damageType] = dmg;
                         }
                     }
                 }
@@ -147,7 +161,7 @@ namespace SWLOR.Game.Server.Native
                 // Throwing weapons should add Strength.  Other ranged types are based on weapon base damage rating. 
                 if (weapon != null && !Item.ThrowingWeaponBaseItemTypes.Contains((BaseItem)weapon.m_nBaseItem))
                 {
-                    attackAttribute = weapon == null ? 0 : (int)(dmg / 3);
+                    attackAttribute = weapon == null ? 0 : (int)(dmgValues[CombatDamageType.Physical] / 3);
                 }
             }
             else if (attackType == (uint) AttackType.Spirit)
@@ -158,27 +172,32 @@ namespace SWLOR.Game.Server.Native
             // Attributes are stored as a byte (uint) - values over 128 are meant to be negative.
             if (attackAttribute > 128) attackAttribute -= 256;
 
-            Log.Write(LogGroup.Attack, "DAMAGE: attacker attribute modifier: " + attackAttribute.ToString() + ", damage type " + damageType);
+            var log = "DAMAGE: attacker attribute modifier: " + attackAttribute.ToString() + ", weapon damage ratings ";
+            foreach(var damageType in dmgValues.Keys)
+            {
+                log += damageType.ToString() + ": " + dmgValues[damageType] + ";";
+            }
+            Log.Write(LogGroup.Attack, log);
 
             // Add in the specialization damage bonus now.  We don't want to count this for the ranged weapon
             // attack attribute, so it can't happen earlier.
-            dmg += specializationDMGBonus;
+            dmgValues[CombatDamageType.Physical] += specializationDMGBonus;
 
             // Safety check - DMG minimum is 0.5
-            if (dmg < 0.5f)
+            if (dmgValues[CombatDamageType.Physical] < 0.5f)
             {
-                dmg = 0.5f;
+                dmgValues[CombatDamageType.Physical] = 0.5f;
             }
 
             // Combat Mode - Power Attack (+1.0 DMG)
             if (attacker?.m_nCombatMode == 2) // 2 = Power Attack
             {
-                dmg += 1.0f;
+                dmgValues[CombatDamageType.Physical] += 1.0f;
             }
             // Combat Mode - Improved Power Attack (+2.5 DMG)
             else if (attacker?.m_nCombatMode == 3) // 3 = Improved Power Attack
             {
-                dmg += 2.5f;
+                dmgValues[CombatDamageType.Physical] += 2.5f;
             }
 
             // 2-handed weapons and Doublehand perk
@@ -203,67 +222,109 @@ namespace SWLOR.Game.Server.Native
                 critMultiplier = weapon != null ? Item.GetCriticalModifier((BaseItem)weapon.m_nBaseItem) : 1;
                 if (HasImprovedMultiplier(attacker, weapon)) critMultiplier += 1;
             }
+
             int critical = bCritical == 1 ? critMultiplier : 0;
+            var damage = 0;
 
-
-            // Calculate total defense on the target.
-            if (targetObject.m_nObjectType == (int)ObjectType.Creature)
+            foreach (var damageType in dmgValues.Keys)
             {
-                var target = CNWSCreature.FromPointer(pTarget);
-                var damagePower = attackerStats.m_pBaseCreature.CalculateDamagePower(target, bOffHand);
-                float vitality = target.m_pStats.m_nConstitutionModifier;
-
-                // Numbers over 128 are negative.
-                if (vitality > 128) vitality -= 256;
-                
-                // 0 is invalid.  Old items (not updated with the new stat) may return this value. 
-                if (damageType == -1 || damageType == 0)
+                // Calculate total defense on the target.
+                if (targetObject.m_nObjectType == (int)ObjectType.Creature)
                 {
-                    damageType = (int)(attackType == (uint)AttackType.Spirit ? CombatDamageType.Force : CombatDamageType.Physical);
+                    var target = CNWSCreature.FromPointer(pTarget);
+                    var damagePower = attackerStats.m_pBaseCreature.CalculateDamagePower(target, bOffHand);
+                    float vitality = target.m_pStats.m_nConstitutionModifier;
+
+                    // Numbers over 128 are negative.
+                    if (vitality > 128) vitality -= 256;
+
+                    var defense = Stat.GetDefenseNative(target, damageType);
+
+                    Log.Write(LogGroup.Attack, "DAMAGE: attacker damage attribute: " + dmgValues[damageType].ToString() + " defender defense attribute: " + defense.ToString() + ", defender racial type " + target.m_nPrePolymorphRacialType);
+                    damage = Combat.CalculateDamage(dmgValues[damageType], attackAttribute, defense, vitality, critical);
+
+                    // Apply droid bonus for electrical damage.
+                    if (target.m_pStats.m_nRace == (ushort)RacialType.Robot && damageType == CombatDamageType.Electrical)
+                    {
+                        damage *= 2;
+                    }
+
+                    // Apply NWN mechanics to damage reduction - physical only
+                    if (damageType == CombatDamageType.Physical)
+                    {
+                        damage = target.DoDamageImmunity(attacker, damage, damageFlags, 0, 1);
+                        damage = target.DoDamageResistance(attacker, damage, damageFlags, 0, 1, 1);
+                        damage = target.DoDamageReduction(attacker, damage, damagePower, 0, 1);
+                    }
+                }
+                else if (targetObject.m_nObjectType == (int)ObjectType.Placeable)
+                {
+                    // Placeables use their hardness attribute as their defense score and vitality. 
+                    CNWSPlaceable plc = CNWSPlaceable.FromPointer(pTarget);
+                    int hardness = plc.m_nHardness;
+                    damage = Combat.CalculateDamage(dmgValues[damageType], attackAttribute, hardness, hardness, critical);
+                }
+                else
+                {
+                    // We're attacking something that is neither a creature not a placeable.  Just use the base dmg value.
+                    damage = (int)dmgValues[damageType];
                 }
 
-                var defense = Stat.GetDefenseNative(target, (CombatDamageType) damageType);
-
-                Log.Write(LogGroup.Attack, "DAMAGE: attacker damage attribute: " + dmg.ToString() + " defender defense attribute: " + defense.ToString() + ", defender racial type " + target.m_nPrePolymorphRacialType);
-                damage = Combat.CalculateDamage(dmg, attackAttribute, defense, vitality, critical) ;
-                                
-                // Apply droid bonus for electrical damage.
-                if (target.m_pStats.m_nRace == (ushort) RacialType.Robot && damageType == (ushort)CombatDamageType.Electrical)
+                // Plot target - zero damage
+                if (targetObject.m_bPlotObject == 1)
                 {
-                    damage *= 2;
+                    damage = 0;
                 }
 
-                // Apply NWN mechanics to damage reduction
-                damage = target.DoDamageImmunity(attacker, damage, damageFlags, 0, 1);
-                damage = target.DoDamageResistance(attacker, damage, damageFlags, 0, 1, 1);
-                damage = target.DoDamageReduction(attacker, damage, damagePower, 0, 1);
-            }
-            else if (targetObject.m_nObjectType == (int)ObjectType.Placeable)
-            {
-                // Placeables use their hardness attribute as their defense score and vitality. 
-                CNWSPlaceable plc = CNWSPlaceable.FromPointer(pTarget);
-                int hardness = plc.m_nHardness;
-                damage = Combat.CalculateDamage(dmg, attackAttribute, hardness, hardness, critical);
-            }
-            else
-            {
-                // We're attacking something that is neither a creature not a placeable.  Just use the base dmg value.
-                damage = (int) dmg;
+                // Final sanity check.
+                if (damage < 0)
+                {
+                    damage = 0;
+                }
+
+                // Return physical damage to the engine to present as normal.  Apply elemental damage as
+                // separate effects.
+                // TODO: feedback messages.  Applying effects from here does not give user feedback.
+                if (damageType == CombatDamageType.Physical)
+                {
+                    physicalDamage = damage;
+                }
+                else if (damageType == CombatDamageType.Force && damage > 0)
+                {
+                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Divine), targetObject.m_idSelf);
+                    DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Force", damage, 255,255,255);
+                }
+                else if (damageType == CombatDamageType.Fire && damage > 0)
+                {
+                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), targetObject.m_idSelf);
+                    DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Fire", damage, 255,0,0);
+                }
+                else if (damageType == CombatDamageType.Poison && damage > 0)
+                {
+                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Acid), targetObject.m_idSelf);
+                    DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Poison", damage, 0,255,0);
+                }
+                else if (damageType == CombatDamageType.Electrical && damage > 0)
+                {
+                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), targetObject.m_idSelf);
+                    DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Electrical", damage, 0,0,255);
+                }
+                else if (damageType == CombatDamageType.Ice && damage > 0)
+                {
+                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Cold), targetObject.m_idSelf);
+                    DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Ice", damage, 0,255,255);
+                }
+
             }
 
-            // Plot target - zero damage
-            if (targetObject.m_bPlotObject == 1)
-            {
-                damage = 0;
-            }
+            return physicalDamage;
+        }
 
-            // Final sanity check.
-            if (damage < 0)
-            {
-                damage = 0;
-            }
-
-            return damage;
+        private static void DoFeedback(uint attacker, uint defender, string damageType, int damage, byte r, byte g, byte b)
+        {
+            var message = ColorToken.Combat(GetName(attacker) + " damages " + GetName(defender) + ": " + damage + " (") + ColorToken.TokenStart(r,g,b) + damage + " " + damageType + ColorToken.TokenEnd() + ColorToken.Combat(")");
+            if (GetIsPC(attacker)) SendMessageToPC(attacker, message);
+            if (GetIsPC(defender)) SendMessageToPC(defender, message);
         }
 
         private static float CalculateSpecializationDMG(CNWSCreature attacker, CNWSItem weapon)

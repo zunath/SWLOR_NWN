@@ -25,33 +25,6 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, HashSet<uint>> _playerToCreatureTracker = new Dictionary<uint, HashSet<uint>>();
 
         /// <summary>
-        /// Adds a combat point to a given NPC creature for a given player and skill type.
-        /// </summary>
-        [NWNEventHandler("item_on_hit")]
-        public static void OnHitCastSpell()
-        {
-            var player = OBJECT_SELF;
-            if (!GetIsPC(player) || GetIsDM(player) || !GetIsObjectValid(player)) return;
-
-            var item = GetSpellCastItem();
-            var baseItemType = GetBaseItemType(item);
-            var target = GetSpellTargetObject();
-            if (GetIsPC(target) || GetIsDM(target)) return;
-
-            var skill = Skill.GetSkillTypeByBaseItem(baseItemType);
-            if (skill == SkillType.Invalid) return;
-
-            AddCombatPoint(player, target, skill);
-
-            // Lightsabers and Saberstaffs automatically grant combat points toward Force.
-            if (baseItemType == BaseItem.Lightsaber ||
-                baseItemType == BaseItem.Saberstaff)
-            {
-                AddCombatPoint(player, target, SkillType.Force);
-            }
-        }
-
-        /// <summary>
         /// When a creature dies, skill XP is given to all players who contributed during battle.
         /// Then, those combat points are cleared out.
         /// </summary>
@@ -134,6 +107,7 @@ namespace SWLOR.Game.Server.Service
 
             }
 
+            SendMessageToPC(GetFirstPC(), "I am dying: " + GetName(OBJECT_SELF));
             DistributeSkillXP();
             CleanUpCombatPoints();
         }

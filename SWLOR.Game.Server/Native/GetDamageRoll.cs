@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Native
             dmgValues[CombatDamageType.Electrical] = 0;
             dmgValues[CombatDamageType.Poison] = 0;
             dmgValues[CombatDamageType.Ice] = 0;
-            var physicalDamage = 0;
+            var totalDamage = 0;
             var specializationDMGBonus = 0f;
 
             // Calculate attacker's base DMG
@@ -184,12 +184,6 @@ namespace SWLOR.Game.Server.Native
             // Add in the specialization damage bonus now.  We don't want to count this for the ranged weapon
             // attack attribute, so it can't happen earlier.
             dmgValues[CombatDamageType.Physical] += specializationDMGBonus;
-
-            // Safety check - DMG minimum is 0.5
-            if (dmgValues[CombatDamageType.Physical] < 0.5f)
-            {
-                dmgValues[CombatDamageType.Physical] = 0.5f;
-            }
 
             // Combat Mode - Power Attack (+1.0 DMG)
             if (attacker?.m_nCombatMode == 2) // 2 = Power Attack
@@ -310,55 +304,11 @@ namespace SWLOR.Game.Server.Native
                 {
                     damage = 0;
                 }
-                // Return physical damage to the engine to present as normal.  Apply elemental damage as
-                // separate effects.
-                if (damageType == CombatDamageType.Physical)
-                {
-                    physicalDamage = damage;
-                    if (physicalDamage == 0) physicalDamage = 1;
-                }
-                else
-                {
-                    // Assign elemental damage.  We want to do so on a delay because otherwise the damage (and possible target death)
-                    // show up in the combat log before the attack roll (!).  Unfortunately, DelayCommand and AssignCommand->DelayCommand
-                    // don't work here. TODO: find out how to assign/delay commands in native. 
-                    // Alternately, we could find out how to access the damage in a structure like NWNX_Damage and just enter the 
-                    // damage types there directly. 
-                    ProcessElementalDamage(damageType, damage, attacker, targetObject);
-                }
+                // Combine all damage into a single number, since applying damage effects in this method has side effects.
+                totalDamage += damage;
             }
 
-            return physicalDamage;
-        }
-
-        private static void ProcessElementalDamage(CombatDamageType damageType, int damage, CNWSCreature attacker, CNWSObject targetObject)
-        {
-            if (damageType == CombatDamageType.Force && damage > 0)
-            {
-                DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Force", damage, 255, 255, 255);
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Divine), targetObject.m_idSelf);
-            }
-            else if (damageType == CombatDamageType.Fire && damage > 0)
-            {
-                DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Fire", damage, 255, 0, 0);
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), targetObject.m_idSelf);
-            }
-            else if (damageType == CombatDamageType.Poison && damage > 0)
-            {
-                DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Poison", damage, 0, 255, 0);
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Acid), targetObject.m_idSelf);
-            }
-            else if (damageType == CombatDamageType.Electrical && damage > 0)
-            {
-                DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Electrical", damage, 0, 0, 255);
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), targetObject.m_idSelf);
-            }
-            else if (damageType == CombatDamageType.Ice && damage > 0)
-            {
-                DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Ice", damage, 0, 255, 255);
-                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Cold), targetObject.m_idSelf);
-            }
-
+            return totalDamage;
         }
 
         private static void DoFeedback(uint attacker, uint defender, string damageType, int damage, byte r, byte g, byte b)

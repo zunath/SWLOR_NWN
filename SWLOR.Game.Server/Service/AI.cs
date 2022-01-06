@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
+using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
 using SWLOR.Game.Server.Feature.AIDefinition;
 using SWLOR.Game.Server.Service.AIService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -111,6 +112,7 @@ namespace SWLOR.Game.Server.Service
         {
             LoadCreatureStats();
             LoadAggroEffect();
+            DoVFX();
             ExecuteScript("cdef_c2_default9", OBJECT_SELF);
         }
 
@@ -324,6 +326,22 @@ namespace SWLOR.Game.Server.Service
             var effect = SupernaturalEffect(EffectAreaOfEffect(AreaOfEffect.CustomAoe, "crea_aggro_enter", "crea_aggro_hb", "crea_aggro_exit"));
             effect = TagEffect(effect, "AGGRO_AOE");
             ApplyEffectToObject(DurationType.Permanent, effect, OBJECT_SELF);
+        }
+
+        private static void DoVFX()
+        {
+            // Allow builders to put permanent effects on creatures - e.g. to make them statues, or make them glow.
+            // Index of standard VFX effects here: https://nwnlexicon.com/index.php?title=Vfx_dur
+            int VFX = GetLocalInt(OBJECT_SELF, "VFX");
+            if (VFX > 0) ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect((VisualEffect)VFX), OBJECT_SELF);
+
+            // Cutscene paralysis - for statues.
+            int paralyze = GetLocalInt(OBJECT_SELF, "PARALYZE");
+            if (paralyze > 0) ApplyEffectToObject(DurationType.Permanent, SupernaturalEffect(EffectCutsceneParalyze()), OBJECT_SELF);
+
+            // Daze - for creatures that should not be able to attack.
+            int daze = GetLocalInt(OBJECT_SELF, "DAZE");
+            if (daze > 0) ApplyEffectToObject(DurationType.Permanent, SupernaturalEffect(EffectDazed()), OBJECT_SELF);
         }
 
         /// <summary>

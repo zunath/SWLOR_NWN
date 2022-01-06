@@ -185,8 +185,8 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.Name = GetName(player);
             dbPlayer.BAB = 1;
             Stat.AdjustPlayerMaxHP(dbPlayer, player, 70);
-            Stat.AdjustPlayerMaxFP(dbPlayer, 10);
-            Stat.AdjustPlayerMaxSTM(dbPlayer, 10);
+            Stat.AdjustPlayerMaxFP(dbPlayer, 10, player);
+            Stat.AdjustPlayerMaxSTM(dbPlayer, 10, player);
             CreaturePlugin.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);
             dbPlayer.FP = Stat.GetMaxFP(player, dbPlayer);

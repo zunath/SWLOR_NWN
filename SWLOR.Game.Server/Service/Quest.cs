@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.QuestService;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -262,7 +263,11 @@ namespace SWLOR.Game.Server.Service
             var possibleQuests = GetQuestsAssociatedWithNPCGroup(npcGroupType);
             if (possibleQuests.Count <= 0) return;
 
-            var killer = GetLastKiller();
+            // We can't use GetLastKiller() as various abilities deal damage that isn't sourced from
+            // the PC.  So get the nearest PC instead.
+            // Ideally we'd use the Combat Point database but that is cleaned up in another method called
+            // by this same handler, so we can't rely on it existing.
+            var killer = GetNearestCreature(CreatureType.PlayerCharacter, 1, creature);
 
             // Iterate over every player in the killer's party.
             // Every player who needs this NPCGroupType for a quest will have their objective advanced.

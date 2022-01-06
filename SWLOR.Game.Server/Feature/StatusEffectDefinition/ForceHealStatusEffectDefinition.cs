@@ -28,10 +28,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.ForceHeal1)
                 .Name("Force Heal I")
-                .EffectIcon(25) // 25 = Haste
+                .EffectIcon(2) // 2 = Regenerate
                 .TickAction((source, target) =>
                 {
-                    var amount = 2; // GetAbilityModifier(AbilityType.Wisdom, activator);
+                    var amount = 15; // GetAbilityModifier(AbilityType.Wisdom, activator);
 
                     ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
                         ? EffectDamage(amount)
@@ -47,10 +47,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.ForceHeal2)
                 .Name("Force Heal I")
-                .EffectIcon(25) // 25 = Haste
+                .EffectIcon(2) // 2 = Regenerate
                 .TickAction((source, target) =>
                 {
-                    var amount = 4; // GetAbilityModifier(AbilityType.Wisdom, activator);
+                    var amount = 20; // GetAbilityModifier(AbilityType.Wisdom, activator);
 
                     ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
                         ? EffectDamage(amount)
@@ -66,10 +66,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.ForceHeal3)
                 .Name("Force Heal I")
-                .EffectIcon(25) // 25 = Haste
+                .EffectIcon(2) // 2 = Regenerate
                 .TickAction((source, target) =>
                 {
-                    var amount = 6; // GetAbilityModifier(AbilityType.Wisdom, activator);
+                    var amount = 25; // GetAbilityModifier(AbilityType.Wisdom, activator);
 
                     ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
                         ? EffectDamage(amount)
@@ -85,10 +85,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.ForceHeal4)
                 .Name("Force Heal I")
-                .EffectIcon(25) // 25 = Haste
+                .EffectIcon(2) // 2 = Regenerate
                 .TickAction((source, target) =>
                 {
-                    var amount = 8; // GetAbilityModifier(AbilityType.Wisdom, activator);
+                    var amount = 30; // GetAbilityModifier(AbilityType.Wisdom, activator);
 
                     ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
                         ? EffectDamage(amount)
@@ -104,10 +104,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.ForceHeal5)
                 .Name("Force Heal I")
-                .EffectIcon(25) // 25 = Haste
+                .EffectIcon(2) // 2 = Regenerate
                 .TickAction((source, target) =>
                 {
-                    var amount = 10; // GetAbilityModifier(AbilityType.Wisdom, activator);
+                    var amount = 35; // GetAbilityModifier(AbilityType.Wisdom, activator);
 
                     ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
                         ? EffectDamage(amount)

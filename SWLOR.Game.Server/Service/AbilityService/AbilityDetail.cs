@@ -38,7 +38,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             AnimationType = Animation.Invalid;
             Requirements = new List<IAbilityActivationRequirement>();
             ConcentrationStatusEffectType = StatusEffectType.Invalid;
-            MaxRange = 3.0f;
+            MaxRange = 5.0f;
             IsHostileAbility = false;
         }
     }

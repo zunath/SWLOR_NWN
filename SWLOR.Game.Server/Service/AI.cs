@@ -21,9 +21,11 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_heartbeat")]
         public static void CreatureHeartbeat()
         {
+            ExecuteScript("crea_hb_bef", OBJECT_SELF);
             RestoreCreatureStats();
             ProcessRandomWalkFlag();
             ExecuteScript("cdef_c2_default1", OBJECT_SELF);
+            ExecuteScript("crea_hb_aft", OBJECT_SELF);
         }
 
         /// <summary>
@@ -32,9 +34,11 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_perception")]
         public static void CreaturePerception()
         {
+            ExecuteScript("crea_perc_bef", OBJECT_SELF);
             // This is a stripped-down version of the default NWN perception event.
             // We handle most of our perception logic with the aggro aura effect.
             ProcessCreatureAllies();
+            ExecuteScript("crea_perc_aft", OBJECT_SELF);
         }
 
         /// <summary>
@@ -45,8 +49,10 @@ namespace SWLOR.Game.Server.Service
         {
             if (!Activity.IsBusy(OBJECT_SELF))
             {
+                ExecuteScript("crea_rndend_bef", OBJECT_SELF);
                 ProcessPerkAI();
                 ExecuteScript("cdef_c2_default3", OBJECT_SELF);
+                ExecuteScript("crea_rndend_aft", OBJECT_SELF);
             }
         }
 
@@ -56,6 +62,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_convo")]
         public static void CreatureConversation()
         {
+            ExecuteScript("crea_convo_bef", OBJECT_SELF);
             ExecuteScript("cdef_c2_default4", OBJECT_SELF);
 
             var conversation = GetLocalString(OBJECT_SELF, "CONVERSATION");
@@ -64,6 +71,7 @@ namespace SWLOR.Game.Server.Service
                 var talker = GetLastSpeaker();
                 Dialog.StartConversation(talker, OBJECT_SELF, conversation);
             }
+            ExecuteScript("crea_convo_aft", OBJECT_SELF);
         }
 
         /// <summary>
@@ -72,7 +80,9 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_attacked")]
         public static void CreaturePhysicalAttacked()
         {
+            ExecuteScript("crea_attack_bef", OBJECT_SELF);
             ExecuteScript("cdef_c2_default5", OBJECT_SELF);
+            ExecuteScript("crea_attack_aft", OBJECT_SELF);
         }
 
         /// <summary>
@@ -81,7 +91,9 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_damaged")]
         public static void CreatureDamaged()
         {
+            ExecuteScript("crea_damaged_bef", OBJECT_SELF);
             ExecuteScript("cdef_c2_default6", OBJECT_SELF);
+            ExecuteScript("crea_damaged_aft", OBJECT_SELF);
         }
 
         /// <summary>
@@ -90,8 +102,10 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_death")]
         public static void CreatureDeath()
         {
+            ExecuteScript("crea_death_bef", OBJECT_SELF);
             RemoveFromAlliesCache();
             ExecuteScript("cdef_c2_default7", OBJECT_SELF);
+            ExecuteScript("crea_death_aft", OBJECT_SELF);
         }
 
         /// <summary>
@@ -100,7 +114,9 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_disturb")]
         public static void CreatureDisturbed()
         {
+            ExecuteScript("crea_disturb_bef", OBJECT_SELF);
             ExecuteScript("cdef_c2_default8", OBJECT_SELF);
+            ExecuteScript("crea_disturb_aft", OBJECT_SELF);
         }
 
         /// <summary>
@@ -109,9 +125,11 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_spawn")]
         public static void CreatureSpawn()
         {
+            ExecuteScript("crea_spawn_bef", OBJECT_SELF);
             LoadCreatureStats();
             LoadAggroEffect();
             ExecuteScript("cdef_c2_default9", OBJECT_SELF);
+            ExecuteScript("crea_spawn_aft", OBJECT_SELF);
         }
 
         /// <summary>
@@ -120,7 +138,9 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_rested")]
         public static void CreatureRested()
         {
+            ExecuteScript("crea_rested_bef", OBJECT_SELF);
             ExecuteScript("cdef_c2_defaulta", OBJECT_SELF);
+            ExecuteScript("crea_rested_aft", OBJECT_SELF);
         }
 
         /// <summary>
@@ -129,7 +149,9 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_spellcastat")]
         public static void CreatureSpellCastAt()
         {
+            ExecuteScript("crea_splcast_bef", OBJECT_SELF);
             ExecuteScript("cdef_c2_defaultb", OBJECT_SELF);
+            ExecuteScript("crea_splcast_aft", OBJECT_SELF);
         }
 
         /// <summary>
@@ -138,7 +160,9 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_userdef")]
         public static void CreatureUserDefined()
         {
+            ExecuteScript("crea_userdef_bef", OBJECT_SELF);
             ExecuteScript("cdef_c2_defaultd", OBJECT_SELF);
+            ExecuteScript("crea_userdef_aft", OBJECT_SELF);
         }
 
         /// <summary>
@@ -147,7 +171,9 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("crea_blocked")]
         public static void CreatureBlocked()
         {
+            ExecuteScript("crea_block_bef", OBJECT_SELF);
             ExecuteScript("cdef_c2_defaulte", OBJECT_SELF);
+            ExecuteScript("crea_block_aft", OBJECT_SELF);
         }
 
         /// <summary>

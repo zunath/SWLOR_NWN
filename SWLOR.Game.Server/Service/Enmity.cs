@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When an enemy is damaged, increase enmity toward that creature by the amount of damage dealt.
         /// </summary>
-        [NWNEventHandler("crea_damaged")]
+        [NWNEventHandler("crea_damaged_bef")]
         public static void CreatureDamaged()
         {
             var enemy = OBJECT_SELF;
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature attacks an enemy, increase enmity by 1.
         /// </summary>
-        [NWNEventHandler("crea_attacked")]
+        [NWNEventHandler("crea_attack_bef")]
         public static void CreatureAttacked()
         {
             var enemy = OBJECT_SELF;
@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature dies, remove all enmity tables it is associated with.
         /// </summary>
-        [NWNEventHandler("crea_death")]
+        [NWNEventHandler("crea_death_aft")]
         public static void CreatureDeath()
         {
             var enemy = OBJECT_SELF;

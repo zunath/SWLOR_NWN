@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Service
         /// When a creature dies, skill XP is given to all players who contributed during battle.
         /// Then, those combat points are cleared out.
         /// </summary>
-        [NWNEventHandler("crea_death")]
+        [NWNEventHandler("crea_death_aft")]
         public static void OnCreatureDeath()
         {
             // Clears the combat point cache information for an NPC and all player associated.

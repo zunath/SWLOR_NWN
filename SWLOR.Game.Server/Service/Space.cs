@@ -1109,7 +1109,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature spawns, track it in the cache.
         /// </summary>
-        [NWNEventHandler("crea_spawn")]
+        [NWNEventHandler("crea_spawn_bef")]
         public static void CreatureSpawn()
         {
             var creature = OBJECT_SELF;
@@ -1187,7 +1187,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature dies, remove it from the cache.
         /// </summary>
-        [NWNEventHandler("crea_death")]
+        [NWNEventHandler("crea_death_aft")]
         public static void CreatureDeath()
         {
             var creature = OBJECT_SELF;

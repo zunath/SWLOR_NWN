@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
         /// Play a matching animation that lasts the duration of the stun.
         /// Set pheno to normal, tailtype to none and movement rate back to normal after.
         /// </summary>
-        [NWNEventHandler("crea_damaged")]
+        [NWNEventHandler("crea_damaged_bef")]
         public static void AttackedDismount()
         {
             var player = OBJECT_SELF; ;

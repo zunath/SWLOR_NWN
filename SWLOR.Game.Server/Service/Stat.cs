@@ -548,7 +548,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature spawns, load its relevant defense information based on their equipment.
         /// </summary>
-        [NWNEventHandler("crea_spawn")]
+        [NWNEventHandler("crea_spawn_bef")]
         public static void LoadNPCDefense()
         {
             var creature = OBJECT_SELF;
@@ -577,7 +577,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        [NWNEventHandler("crea_death")]
+        [NWNEventHandler("crea_death_aft")]
         public static void ClearNPCDefense()
         {
             if (_npcDefenses.ContainsKey(OBJECT_SELF))

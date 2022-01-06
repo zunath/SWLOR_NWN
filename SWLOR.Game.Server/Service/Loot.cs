@@ -51,7 +51,7 @@ namespace SWLOR.Game.Server.Service
         /// When a creature spawns, items which can be stolen are spawned and marked as undroppable.
         /// These items are only available with the Thief ability "Steal" and related perks.
         /// </summary>
-        [NWNEventHandler("crea_spawn")]
+        [NWNEventHandler("crea_spawn_bef")]
         public static void SpawnStealLoot()
         {
             var creature = OBJECT_SELF;
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature dies, loot tables are spawned based on local variables.
         /// </summary>
-        [NWNEventHandler("crea_death")]
+        [NWNEventHandler("crea_death_bef")]
         public static void SpawnLoot()
         {
             var creature = OBJECT_SELF;
@@ -247,7 +247,7 @@ namespace SWLOR.Game.Server.Service
         /// Handles creating a corpse placeable on a creature's death, copying its inventory to the placeable,
         /// and changing the name of the placeable to match the creature.
         /// </summary>
-        [NWNEventHandler("crea_death")]
+        [NWNEventHandler("crea_death_bef")]
         public static void ProcessCorpse()
         {
             var self = OBJECT_SELF;

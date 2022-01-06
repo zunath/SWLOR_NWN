@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature
         /// <summary>
         /// Handles the Kill Enemy line of achievements.
         /// </summary>
-        [NWNEventHandler("crea_death")]
+        [NWNEventHandler("crea_death_bef")]
         public static void KillEnemy()
         {
             var killer = GetLastKiller();

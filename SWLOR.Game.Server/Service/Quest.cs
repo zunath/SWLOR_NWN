@@ -264,10 +264,12 @@ namespace SWLOR.Game.Server.Service
             if (possibleQuests.Count <= 0) return;
 
             // We can't use GetLastKiller() as various abilities deal damage that isn't sourced from
-            // the PC.  So get the nearest PC instead.
-            // Ideally we'd use the Combat Point database but that is cleaned up in another method called
-            // by this same handler, so we can't rely on it existing.
-            var killer = GetNearestCreature(CreatureType.PlayerCharacter, 1, creature);
+            // the PC.  So use the enmity service to pull the highest enmity PC (i.e. the one that 
+            // did the most attacks).  If we can't find one for some reason, pull the nearest PC.
+            // Note: this event needs to be called before the Enmity tables are cleared up after
+            // creature death. 
+            var killer = Enmity.GetHighestEnmityTarget(creature);
+            if (killer == OBJECT_INVALID) killer = GetNearestCreature(CreatureType.PlayerCharacter, 1, creature);
 
             // Iterate over every player in the killer's party.
             // Every player who needs this NPCGroupType for a quest will have their objective advanced.

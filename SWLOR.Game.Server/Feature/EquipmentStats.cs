@@ -125,11 +125,11 @@ namespace SWLOR.Game.Server.Feature
 
             if (isAdding)
             {
-                Stat.AdjustPlayerMaxFP(dbPlayer, amount);
+                Stat.AdjustPlayerMaxFP(dbPlayer, amount, player);
             }
             else
             {
-                Stat.AdjustPlayerMaxFP(dbPlayer, -amount);
+                Stat.AdjustPlayerMaxFP(dbPlayer, -amount, player);
             }
 
             DB.Set(dbPlayer);
@@ -150,11 +150,11 @@ namespace SWLOR.Game.Server.Feature
 
             if (isAdding)
             {
-                Stat.AdjustPlayerMaxSTM(dbPlayer, amount);
+                Stat.AdjustPlayerMaxSTM(dbPlayer, amount, player);
             }
             else
             {
-                Stat.AdjustPlayerMaxSTM(dbPlayer, -amount);
+                Stat.AdjustPlayerMaxSTM(dbPlayer, -amount, player);
             }
 
             DB.Set(dbPlayer);

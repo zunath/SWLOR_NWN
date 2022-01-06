@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Knockdown a medium or smaller target. If resisted, target is slowed for 6 seconds.")
                 .Price(3)
-                .RequirementSkill(SkillType.Force, 10)
+                .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForcePush2)
 
@@ -109,21 +109,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Throw Lightsaber")
 
                 .AddPerkLevel()
-                .Description("Throw your equipped lightsaber up to 15m for 5.0 DMG. Can hit up to 1 targets along the path thrown.")
+                .Description("Throw your equipped lightsaber or one-handed vibroblade up to 15m for 2.0 DMG. Can hit up to 1 targets along the path thrown.")
                 .Price(3)
-                .RequirementSkill(SkillType.Force, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowLightsaber1)
 
                 .AddPerkLevel()
-                .Description("Throw your equipped lightsaber up to 15m for 7.5 DMG. Can hit up to 2 targets along the path thrown.")
+                .Description("Throw your equipped lightsaber or one-handed vibroblade up to 15m for 6.0 DMG. Can hit up to 2 targets along the path thrown.")
                 .Price(3)
-                .RequirementSkill(SkillType.Force, 25)
+                .RequirementSkill(SkillType.Force, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowLightsaber2)
 
                 .AddPerkLevel()
-                .Description("Throw your equipped lightsaber up to 15m for 9.0 DMG. Can hit up to 3 targets along the path thrown.")
+                .Description("Throw your equipped lightsaber or one-handed vibroblade up to 15m for 9.0 DMG. Can hit up to 3 targets along the path thrown.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -237,7 +236,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Force Heal")
 
                 .AddPerkLevel()
-                .Description("Heals a single target for 2 HP every six seconds.")
+                .Description("Heals a single target for 10 HP every six seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -245,7 +244,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceHeal1)
 
                 .AddPerkLevel()
-                .Description("Heals a single target for 4 HP every six seconds.")
+                .Description("Heals a single target for 15 HP every six seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -253,7 +252,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceHeal2)
 
                 .AddPerkLevel()
-                .Description("Heals a single target for 6 HP every six seconds.")
+                .Description("Heals a single target for 20 HP every six seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -261,7 +260,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceHeal3)
 
                 .AddPerkLevel()
-                .Description("Heals a single target for 8 HP every six seconds.")
+                .Description("Heals a single target for 25 HP every six seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -269,7 +268,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceHeal4)
 
                 .AddPerkLevel()
-                .Description("Heals a single target for 10 HP every six seconds.")
+                .Description("Heals a single target for 30 HP every six seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -342,7 +341,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Drain Life")
 
                 .AddPerkLevel()
-                .Description("Steals 1 HP from a target every six seconds.")
+                .Description("Steals 10 HP from a target every six seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -350,7 +349,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceDrain1)
 
                 .AddPerkLevel()
-                .Description("Steals 2 HP from a target every six seconds.")
+                .Description("Steals 15 HP from a target every six seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Force, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -358,7 +357,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceDrain2)
 
                 .AddPerkLevel()
-                .Description("Steals 3 HP from a target every six seconds.")
+                .Description("Steals 20 HP from a target every six seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -366,7 +365,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceDrain3)
 
                 .AddPerkLevel()
-                .Description("Steals 4 HP from a target every six seconds.")
+                .Description("Steals 25 HP from a target every six seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -374,7 +373,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ForceDrain4)
 
                 .AddPerkLevel()
-                .Description("Steals 5 HP from a target every six seconds.")
+                .Description("Steals 30 HP from a target every six seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

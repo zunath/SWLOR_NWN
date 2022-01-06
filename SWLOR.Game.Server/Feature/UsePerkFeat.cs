@@ -239,6 +239,15 @@ namespace SWLOR.Game.Server.Feature
                     Ability.StartConcentrationAbility(activator, target, feat, ability.ConcentrationStatusEffectType);
                 }
 
+                // If this is an attack... make the NPC react.
+                if (ability.IsHostileAbility)
+                {
+                    if (!GetIsInCombat(target))
+                    {
+                        AssignCommand(target, () => { ClearAllActions(); ActionAttack(activator); });
+                    }
+                }
+
                 Activity.ClearBusy(activator);
             }
 

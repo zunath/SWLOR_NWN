@@ -18,6 +18,8 @@ using RacialType = SWLOR.Game.Server.Core.NWScript.Enum.RacialType;
 using Random = SWLOR.Game.Server.Service.Random;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using DamageType = SWLOR.Game.Server.Core.NWScript.Enum.DamageType;
+using Skill = SWLOR.Game.Server.Service.Skill;
+using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -117,7 +119,7 @@ namespace SWLOR.Game.Server.Native
             dmgValues[CombatDamageType.Electrical] = 0;
             dmgValues[CombatDamageType.Poison] = 0;
             dmgValues[CombatDamageType.Ice] = 0;
-            var physicalDamage = 0;
+            var totalDamage = 0;
             var specializationDMGBonus = 0f;
 
             // Calculate attacker's base DMG
@@ -183,12 +185,6 @@ namespace SWLOR.Game.Server.Native
             // attack attribute, so it can't happen earlier.
             dmgValues[CombatDamageType.Physical] += specializationDMGBonus;
 
-            // Safety check - DMG minimum is 0.5
-            if (dmgValues[CombatDamageType.Physical] < 0.5f)
-            {
-                dmgValues[CombatDamageType.Physical] = 0.5f;
-            }
-
             // Combat Mode - Power Attack (+1.0 DMG)
             if (attacker?.m_nCombatMode == 2) // 2 = Power Attack
             {
@@ -223,24 +219,51 @@ namespace SWLOR.Game.Server.Native
                 if (HasImprovedMultiplier(attacker, weapon)) critMultiplier += 1;
             }
 
+            // Register hit. Do this here in case the target is killed by bonus damage, preventing on hit effects from 
+            // working. This also makes the on hit event unnecessary. 
+            if (!GetIsPC(targetObject.m_idSelf) && !GetIsDM(targetObject.m_idSelf))
+            {
+                BaseItem weaponType;
+                if (weapon == null)
+                {
+                    weaponType = BaseItem.Gloves;
+                }
+                else
+                {
+                    weaponType = (BaseItem)weapon.m_nBaseItem;
+                }
+                var skill = Skill.GetSkillTypeByBaseItem(weaponType);
+                if (skill != SkillType.Invalid)
+                {
+                    CombatPoint.AddCombatPoint(attacker.m_idSelf, targetObject.m_idSelf, skill);
+
+                    // Lightsabers and Saberstaffs automatically grant combat points toward Force.
+                    if (weaponType == BaseItem.Lightsaber ||
+                        weaponType == BaseItem.Saberstaff)
+                    {
+                        CombatPoint.AddCombatPoint(attacker.m_idSelf, targetObject.m_idSelf, SkillType.Force);
+                    }
+                }
+
+            }
+
             int critical = bCritical == 1 ? critMultiplier : 0;
             var damage = 0;
+            var target = CNWSCreature.FromPointer(pTarget);
+            float vitality = target.m_pStats.m_nConstitutionModifier;
+            var damagePower = attackerStats.m_pBaseCreature.CalculateDamagePower(target, bOffHand);
+
+            // Numbers over 128 are negative.
+            if (vitality > 128) vitality -= 256;
 
             foreach (var damageType in dmgValues.Keys)
             {
                 // Calculate total defense on the target.
                 if (targetObject.m_nObjectType == (int)ObjectType.Creature)
                 {
-                    var target = CNWSCreature.FromPointer(pTarget);
-                    var damagePower = attackerStats.m_pBaseCreature.CalculateDamagePower(target, bOffHand);
-                    float vitality = target.m_pStats.m_nConstitutionModifier;
-
-                    // Numbers over 128 are negative.
-                    if (vitality > 128) vitality -= 256;
-
                     var defense = Stat.GetDefenseNative(target, damageType);
 
-                    Log.Write(LogGroup.Attack, "DAMAGE: attacker damage attribute: " + dmgValues[damageType].ToString() + " defender defense attribute: " + defense.ToString() + ", defender racial type " + target.m_nPrePolymorphRacialType);
+                    Log.Write(LogGroup.Attack, "DAMAGE: attacker damage attribute: " + dmgValues[damageType].ToString() + " defender defense attribute: " + defense.ToString() + ", defender racial type " + target.m_pStats.m_nRace);
                     damage = Combat.CalculateDamage(dmgValues[damageType], attackAttribute, defense, vitality, critical);
 
                     // Apply droid bonus for electrical damage.
@@ -281,50 +304,17 @@ namespace SWLOR.Game.Server.Native
                 {
                     damage = 0;
                 }
-
-                // Return physical damage to the engine to present as normal.  Apply elemental damage as
-                // separate effects.
-                // TODO: feedback messages.  Applying effects from here does not give user feedback.
-                if (damageType == CombatDamageType.Physical)
-                {
-                    physicalDamage = damage;
-                }
-                else if (damageType == CombatDamageType.Force && damage > 0)
-                {
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Divine), targetObject.m_idSelf);
-                    DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Force", damage, 255,255,255);
-                }
-                else if (damageType == CombatDamageType.Fire && damage > 0)
-                {
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), targetObject.m_idSelf);
-                    DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Fire", damage, 255,0,0);
-                }
-                else if (damageType == CombatDamageType.Poison && damage > 0)
-                {
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Acid), targetObject.m_idSelf);
-                    DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Poison", damage, 0,255,0);
-                }
-                else if (damageType == CombatDamageType.Electrical && damage > 0)
-                {
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), targetObject.m_idSelf);
-                    DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Electrical", damage, 0,0,255);
-                }
-                else if (damageType == CombatDamageType.Ice && damage > 0)
-                {
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Cold), targetObject.m_idSelf);
-                    DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Ice", damage, 0,255,255);
-                }
-
+                // Combine all damage into a single number, since applying damage effects in this method has side effects.
+                totalDamage += damage;
             }
 
-            return physicalDamage;
+            return totalDamage;
         }
 
         private static void DoFeedback(uint attacker, uint defender, string damageType, int damage, byte r, byte g, byte b)
         {
-            var message = ColorToken.Combat(GetName(attacker) + " damages " + GetName(defender) + ": " + damage + " (") + ColorToken.TokenStart(r,g,b) + damage + " " + damageType + ColorToken.TokenEnd() + ColorToken.Combat(")");
-            if (GetIsPC(attacker)) SendMessageToPC(attacker, message);
-            if (GetIsPC(defender)) SendMessageToPC(defender, message);
+            if (GetIsPC(attacker)) SendMessageToPC(attacker, ColorToken.GetNamePCColor(attacker) + ColorToken.Combat(" damages " + GetName(defender) + ": " + damage + " (") + ColorToken.TokenStart(r, g, b) + damage + " " + damageType + ColorToken.TokenEnd() + ColorToken.Combat(")"));
+            if (GetIsPC(defender)) SendMessageToPC(defender, ColorToken.GetNameNPCColor(attacker) + ColorToken.Combat(" damages " + GetName(defender) + ": " + damage + " (") + ColorToken.TokenStart(r, g, b) + damage + " " + damageType + ColorToken.TokenEnd() + ColorToken.Combat(")"));
         }
 
         private static float CalculateSpecializationDMG(CNWSCreature attacker, CNWSItem weapon)

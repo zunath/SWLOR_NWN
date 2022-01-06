@@ -253,7 +253,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When an NPC is killed, any objectives for quests a player currently has active will be updated.
         /// </summary>
-        [NWNEventHandler("crea_death")]
+        [NWNEventHandler("crea_death_bef")]
         public static void ProgressKillTargetObjectives()
         {
             var creature = OBJECT_SELF;

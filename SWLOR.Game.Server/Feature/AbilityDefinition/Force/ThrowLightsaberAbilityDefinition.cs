@@ -32,9 +32,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var distance = GetDistanceBetween(activator, target);
 
+            var validWeapon = GetIsObjectValid(weapon) &&
+                                 (Item.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
+                                  Item.VibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
+                                  Item.FinesseVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)));
+
             if (distance > 15)
                 return "You must be within 15 meters of your target.";
-            if (!GetIsObjectValid(weapon) || !Item.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!validWeapon)
                 return "You cannot force throw your currently held object.";
             else return string.Empty;
         }
@@ -60,10 +65,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             switch (level)
             {
                 case 1:
-                    dmg = 5.0f;
+                    dmg = 2.0f;
                     break;
                 case 2:
-                    dmg = 7.5f;
+                    dmg = 6.0f;
                     break;
                 case 3:
                     dmg = 9.0f;
@@ -109,7 +114,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowLightsaber1, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber I")
-                .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
                 .HasActivationDelay(2.0f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(2)
@@ -124,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowLightsaber2, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber II")
-                .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
                 .HasActivationDelay(2.0f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(4)
@@ -139,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowLightsaber3, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber III")
-                .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
                 .HasActivationDelay(2.0f)
                 .HasMaxRange(15.0f)
                 .RequirementFP(6)

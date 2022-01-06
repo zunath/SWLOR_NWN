@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(2) // 2 = Regenerate
                 .TickAction((source, target) =>
                 {
-                    var amount = 15; // GetAbilityModifier(AbilityType.Wisdom, activator);
+                    var amount = 10; // GetAbilityModifier(AbilityType.Wisdom, activator);
 
                     ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
                         ? EffectDamage(amount)
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(2) // 2 = Regenerate
                 .TickAction((source, target) =>
                 {
-                    var amount = 20; // GetAbilityModifier(AbilityType.Wisdom, activator);
+                    var amount = 15; // GetAbilityModifier(AbilityType.Wisdom, activator);
 
                     ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
                         ? EffectDamage(amount)
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(2) // 2 = Regenerate
                 .TickAction((source, target) =>
                 {
-                    var amount = 25; // GetAbilityModifier(AbilityType.Wisdom, activator);
+                    var amount = 20; // GetAbilityModifier(AbilityType.Wisdom, activator);
 
                     ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
                         ? EffectDamage(amount)
@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(2) // 2 = Regenerate
                 .TickAction((source, target) =>
                 {
-                    var amount = 30; // GetAbilityModifier(AbilityType.Wisdom, activator);
+                    var amount = 25; // GetAbilityModifier(AbilityType.Wisdom, activator);
 
                     ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
                         ? EffectDamage(amount)
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 .EffectIcon(2) // 2 = Regenerate
                 .TickAction((source, target) =>
                 {
-                    var amount = 35; // GetAbilityModifier(AbilityType.Wisdom, activator);
+                    var amount = 30; // GetAbilityModifier(AbilityType.Wisdom, activator);
 
                     ApplyEffectToObject(DurationType.Instant, GetRacialType(target) == RacialType.Undead
                         ? EffectDamage(amount)

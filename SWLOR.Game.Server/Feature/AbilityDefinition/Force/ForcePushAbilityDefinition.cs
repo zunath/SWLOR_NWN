@@ -72,6 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Push I")
                 .HasRecastDelay(RecastGroup.ForcePush, 30f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(1)
                 .IsCastedAbility()
                 .IsHostileAbility()

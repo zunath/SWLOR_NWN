@@ -107,7 +107,6 @@ namespace SWLOR.Game.Server.Service
 
             }
 
-            SendMessageToPC(GetFirstPC(), "I am dying: " + GetName(OBJECT_SELF));
             DistributeSkillXP();
             CleanUpCombatPoints();
         }

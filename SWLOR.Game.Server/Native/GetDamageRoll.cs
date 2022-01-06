@@ -317,42 +317,54 @@ namespace SWLOR.Game.Server.Native
                     physicalDamage = damage;
                     if (physicalDamage == 0) physicalDamage = 1;
                 }
-                else if (damageType == CombatDamageType.Force && damage > 0)
+                else
                 {
-                    DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Force", damage, 255, 255, 255);
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Divine), targetObject.m_idSelf);
+                    // Assign elemental damage.  We want to do so on a delay because otherwise the damage (and possible target death)
+                    // show up in the combat log before the attack roll (!).  Unfortunately, DelayCommand and AssignCommand->DelayCommand
+                    // don't work here. TODO: find out how to assign/delay commands in native. 
+                    // Alternately, we could find out how to access the damage in a structure like NWNX_Damage and just enter the 
+                    // damage types there directly. 
+                    ProcessElementalDamage(damageType, damage, attacker, targetObject);
                 }
-                else if (damageType == CombatDamageType.Fire && damage > 0)
-                {
-                    DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Fire", damage, 255, 0, 0);
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), targetObject.m_idSelf);
-                }
-                else if (damageType == CombatDamageType.Poison && damage > 0)
-                {
-                    DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Poison", damage, 0, 255, 0);
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Acid), targetObject.m_idSelf);
-                }
-                else if (damageType == CombatDamageType.Electrical && damage > 0)
-                {
-                    DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Electrical", damage, 0, 0, 255);
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), targetObject.m_idSelf);
-                }
-                else if (damageType == CombatDamageType.Ice && damage > 0)
-                {
-                    DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Ice", damage, 0, 255, 255);
-                    ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Cold), targetObject.m_idSelf);
-                }
-
             }
 
             return physicalDamage;
         }
 
+        private static void ProcessElementalDamage(CombatDamageType damageType, int damage, CNWSCreature attacker, CNWSObject targetObject)
+        {
+            if (damageType == CombatDamageType.Force && damage > 0)
+            {
+                DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Force", damage, 255, 255, 255);
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Divine), targetObject.m_idSelf);
+            }
+            else if (damageType == CombatDamageType.Fire && damage > 0)
+            {
+                DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Fire", damage, 255, 0, 0);
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Fire), targetObject.m_idSelf);
+            }
+            else if (damageType == CombatDamageType.Poison && damage > 0)
+            {
+                DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Poison", damage, 0, 255, 0);
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Acid), targetObject.m_idSelf);
+            }
+            else if (damageType == CombatDamageType.Electrical && damage > 0)
+            {
+                DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Electrical", damage, 0, 0, 255);
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), targetObject.m_idSelf);
+            }
+            else if (damageType == CombatDamageType.Ice && damage > 0)
+            {
+                DoFeedback(attacker.m_idSelf, targetObject.m_idSelf, "Ice", damage, 0, 255, 255);
+                ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Cold), targetObject.m_idSelf);
+            }
+
+        }
+
         private static void DoFeedback(uint attacker, uint defender, string damageType, int damage, byte r, byte g, byte b)
         {
-            var message = ColorToken.Combat(GetName(attacker) + " damages " + GetName(defender) + ": " + damage + " (") + ColorToken.TokenStart(r,g,b) + damage + " " + damageType + ColorToken.TokenEnd() + ColorToken.Combat(")");
-            if (GetIsPC(attacker)) SendMessageToPC(attacker, message);
-            if (GetIsPC(defender)) SendMessageToPC(defender, message);
+            if (GetIsPC(attacker)) SendMessageToPC(attacker, ColorToken.GetNamePCColor(attacker) + ColorToken.Combat(" damages " + GetName(defender) + ": " + damage + " (") + ColorToken.TokenStart(r, g, b) + damage + " " + damageType + ColorToken.TokenEnd() + ColorToken.Combat(")"));
+            if (GetIsPC(defender)) SendMessageToPC(defender, ColorToken.GetNameNPCColor(attacker) + ColorToken.Combat(" damages " + GetName(defender) + ": " + damage + " (") + ColorToken.TokenStart(r, g, b) + damage + " " + damageType + ColorToken.TokenEnd() + ColorToken.Combat(")"));
         }
 
         private static float CalculateSpecializationDMG(CNWSCreature attacker, CNWSItem weapon)

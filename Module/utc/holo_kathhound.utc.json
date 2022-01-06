@@ -497,7 +497,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "VFX"
+          "value": "PERMANENT_VFX_ID"
         },
         "Type": {
           "type": "dword",

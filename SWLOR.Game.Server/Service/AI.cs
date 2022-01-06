@@ -332,7 +332,7 @@ namespace SWLOR.Game.Server.Service
         {
             // Allow builders to put permanent effects on creatures - e.g. to make them statues, or make them glow.
             // Index of standard VFX effects here: https://nwnlexicon.com/index.php?title=Vfx_dur
-            int VFX = GetLocalInt(OBJECT_SELF, "VFX");
+            int VFX = GetLocalInt(OBJECT_SELF, "PERMANENT_VFX_ID");
             if (VFX > 0) ApplyEffectToObject(DurationType.Permanent, EffectVisualEffect((VisualEffect)VFX), OBJECT_SELF);
 
             // Cutscene paralysis - for statues.

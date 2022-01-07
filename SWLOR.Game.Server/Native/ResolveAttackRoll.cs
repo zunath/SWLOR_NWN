@@ -13,7 +13,6 @@ using ImmunityType = NWN.Native.API.ImmunityType;
 using InventorySlot = NWN.Native.API.InventorySlot;
 using ItemPropertyType = SWLOR.Game.Server.Core.NWScript.Enum.Item.ItemPropertyType;
 using ObjectType = NWN.Native.API.ObjectType;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -224,22 +223,20 @@ namespace SWLOR.Game.Server.Native
             }
 
             // Defender Evasion (AC) bonuses and penalties from effects.
-            Effect effect = GetFirstEffect(defender.m_idSelf);
-            while (GetIsEffectValid(effect))
+            foreach (CGameEffect effect in defender.m_appliedEffects)
             {
-                if (GetEffectType(effect) == EffectTypeScript.ACIncrease)
+                if (effect.m_nType == (ushort) EffectTrueType.ACIncrease)
                 {
-                    Log.Write(LogGroup.Attack, "Defender has AC increase: " + GetEffectInteger(effect, 1));
+                    Log.Write(LogGroup.Attack, "Defender has AC increase: " + effect.GetInteger(1));
                     // The magnitude is Effect Integer 1, see https://nwnlexicon.com/index.php?title=EffectACIncrease
-                    modifiers -= 5 * GetEffectInteger(effect, 1); 
-                }
-                else if (GetEffectType(effect) == EffectTypeScript.ACDecrease)
-                {
-                    Log.Write(LogGroup.Attack, "Defender has AC decrease: " + GetEffectInteger(effect, 1));
-                    modifiers += 5 * GetEffectInteger(effect, 1);
-                }
+                    modifiers -= 5 * effect.GetInteger(1);
 
-                effect = GetNextEffect(defender.m_idSelf);
+                }
+                else if (effect.m_nType == (ushort)EffectTrueType.ACDecrease)
+                {
+                    Log.Write(LogGroup.Attack, "Defender has AC decrease: " + effect.GetInteger(1));
+                    modifiers -= 5 * effect.GetInteger(1);
+                }
             }
 
             // Defender stunned

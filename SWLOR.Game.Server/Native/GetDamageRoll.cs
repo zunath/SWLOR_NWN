@@ -16,8 +16,6 @@ using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
 using ObjectType = NWN.Native.API.ObjectType;
 using RacialType = SWLOR.Game.Server.Core.NWScript.Enum.RacialType;
 using Random = SWLOR.Game.Server.Service.Random;
-using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using DamageType = SWLOR.Game.Server.Core.NWScript.Enum.DamageType;
 using Skill = SWLOR.Game.Server.Service.Skill;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -107,8 +105,8 @@ namespace SWLOR.Game.Server.Native
             }
 
             // We have now resolved what sort of attack we are doing.
-            Log.Write(LogGroup.Attack, "DAMAGE: Attacker: " + attacker.GetFirstName().GetSimple() + ", Defender " + 
-                                           targetObject.GetFirstName().GetSimple() + ", Attack type: " + attackType + ", weapon " + 
+            Log.Write(LogGroup.Attack, "DAMAGE: Attacker: " + attacker.GetFirstName().GetSimple() + ", PC?: " + attacker.m_bPlayerCharacter +
+                ", Defender " + targetObject.GetFirstName().GetSimple() + ", object type " + targetObject.m_nObjectType + ", Attack type: " + attackType + ", weapon " + 
                                         (weapon == null ? "None" : weapon.GetFirstName().GetSimple()));
 
             // Initialise damage array to read properties from equipped weapon.
@@ -219,34 +217,6 @@ namespace SWLOR.Game.Server.Native
                 if (HasImprovedMultiplier(attacker, weapon)) critMultiplier += 1;
             }
 
-            // Register hit. Do this here in case the target is killed by bonus damage, preventing on hit effects from 
-            // working. This also makes the on hit event unnecessary. 
-            if (!GetIsPC(targetObject.m_idSelf) && !GetIsDM(targetObject.m_idSelf))
-            {
-                BaseItem weaponType;
-                if (weapon == null)
-                {
-                    weaponType = BaseItem.Gloves;
-                }
-                else
-                {
-                    weaponType = (BaseItem)weapon.m_nBaseItem;
-                }
-                var skill = Skill.GetSkillTypeByBaseItem(weaponType);
-                if (skill != SkillType.Invalid)
-                {
-                    CombatPoint.AddCombatPoint(attacker.m_idSelf, targetObject.m_idSelf, skill);
-
-                    // Lightsabers and Saberstaffs automatically grant combat points toward Force.
-                    if (weaponType == BaseItem.Lightsaber ||
-                        weaponType == BaseItem.Saberstaff)
-                    {
-                        CombatPoint.AddCombatPoint(attacker.m_idSelf, targetObject.m_idSelf, SkillType.Force);
-                    }
-                }
-
-            }
-
             int critical = bCritical == 1 ? critMultiplier : 0;
             var damage = 0;
             var target = CNWSCreature.FromPointer(pTarget);
@@ -309,12 +279,6 @@ namespace SWLOR.Game.Server.Native
             }
 
             return totalDamage;
-        }
-
-        private static void DoFeedback(uint attacker, uint defender, string damageType, int damage, byte r, byte g, byte b)
-        {
-            if (GetIsPC(attacker)) SendMessageToPC(attacker, ColorToken.GetNamePCColor(attacker) + ColorToken.Combat(" damages " + GetName(defender) + ": " + damage + " (") + ColorToken.TokenStart(r, g, b) + damage + " " + damageType + ColorToken.TokenEnd() + ColorToken.Combat(")"));
-            if (GetIsPC(defender)) SendMessageToPC(defender, ColorToken.GetNameNPCColor(attacker) + ColorToken.Combat(" damages " + GetName(defender) + ": " + damage + " (") + ColorToken.TokenStart(r, g, b) + damage + " " + damageType + ColorToken.TokenEnd() + ColorToken.Combat(")"));
         }
 
         private static float CalculateSpecializationDMG(CNWSCreature attacker, CNWSItem weapon)

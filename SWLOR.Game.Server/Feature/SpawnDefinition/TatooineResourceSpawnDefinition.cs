@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             AridHillyDesert();
             TatooineResources();
+            TuskenCamp();
 
             return _builder.Build();
         }
@@ -52,6 +53,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_4")
                 .WithFrequency(10);
+        }
+        
+        private void TuskenCamp()
+        {
+            _builder.Create("TATTOOINE_TUSKEN_CAMP")
+                .AddSpawn(ObjectType.Placeable, "t_tusk_cmp");
         }
     }
 }

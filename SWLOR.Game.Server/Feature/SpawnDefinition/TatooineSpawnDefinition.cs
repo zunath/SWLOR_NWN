@@ -60,6 +60,10 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("TATOOINE_TUSKEN_RAIDER", "Tusken Raiders")
                 .AddSpawn(ObjectType.Creature, "ext_tusken_tr003")
                 .WithFrequency(50)
+                .RandomlyWalks()
+
+                .AddSpawn(ObjectType.Creature, "tusken_melee")
+                .WithFrequency(50)
                 .RandomlyWalks();
         }
 

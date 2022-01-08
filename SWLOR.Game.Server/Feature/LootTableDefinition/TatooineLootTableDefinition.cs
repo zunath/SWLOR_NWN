@@ -13,7 +13,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             Sandswimmer();
             SandBeetle();
             SandDemon();
+            SandWorm();
             TuskenRaider();
+            TuskenCrate();
 
             return _builder.Build();
         }
@@ -52,6 +54,16 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("sanddemonhide", 1);
         }
 
+        private void SandWorm()
+        {
+            _builder.Create("TATOOINE_SAND_WORM")
+                .AddItem("fiberp_high", 20)
+                .AddItem("lth_high", 20)
+                .AddItem("sandwormtooth", 5, 1, true)
+                .AddItem("emerald", 1, 1, true)
+                .AddItem("ruby", 2, 1, true);
+        }
+
         private void TuskenRaider()
         {
             _builder.Create("TATOOINE_TUSKEN_RAIDER")
@@ -74,6 +86,16 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("TATOOINE_TUSKEN_RAIDER_RARES")
                 .AddItem("map_038", 20, 1, true)
                 .AddItem("map_036", 1, 1, true);
+        }
+
+        private void TuskenCrate()
+        {
+            _builder.Create("TATOOINE_TUSKEN_CRATE")
+                .AddItem("elec_imperfect", 20)
+                .AddItem("fiberp_imperfect", 15)
+                .AddItem("ruby", 2, 1, true)
+                .AddGold(100,30);
+
         }
     }
 }

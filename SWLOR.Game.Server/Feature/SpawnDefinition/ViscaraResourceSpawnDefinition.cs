@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         private void MandalorianFacilityResources()
         {
             _builder.Create("RESOURCES_VISCARA_MANDALORIANFACILITY")
-                .AddSpawn(ObjectType.Placeable, "veldite_vein");
+                .AddSpawn(ObjectType.Placeable, "mando_crate");
         }
 
         private void MountainValleyResources()

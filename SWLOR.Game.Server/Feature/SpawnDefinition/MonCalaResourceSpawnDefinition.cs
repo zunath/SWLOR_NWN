@@ -27,7 +27,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "tree")
                 .WithFrequency(10)
                 .AddSpawn(ObjectType.Placeable, "oak_tree")
-                .WithFrequency(70);
+                .WithFrequency(70)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_1")
+                .WithFrequency(20)
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_2")
+                .WithFrequency(40);
         }
 
         private void CoralIslesOuter()
@@ -41,7 +46,12 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "tree")
                 .WithFrequency(10)
                 .AddSpawn(ObjectType.Placeable, "oak_tree")
-                .WithFrequency(70);
+                .WithFrequency(70)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_1")
+                .WithFrequency(20)
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_2")
+                .WithFrequency(40);
         }
     }
 }

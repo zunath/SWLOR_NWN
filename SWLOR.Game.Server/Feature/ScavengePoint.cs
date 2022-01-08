@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 SendMessageToPC(user, $"You aren't skilled enough to scavenge through this. (Required level: {requiredLevel})");
                 AssignCommand(user, () => ActionInteractObject(placeable));
+                SetLocalBool(placeable, "DO_NOT_DESTROY", true);
                 return;
             }
 
@@ -131,6 +132,13 @@ namespace SWLOR.Game.Server.Feature
             var user = GetLastClosedBy();
 
             if (!GetIsPC(user) || GetIsDM(user)) return;
+
+            // In case the user is not skilled enough to scavenge this resource, we don't want to destroy it. 
+            if (GetLocalBool(placeable, "DO_NOT_DESTROY"))
+            {
+                DeleteLocalBool(placeable, "DO_NOT_DESTROY");
+                return;
+            }
 
             var firstItem = GetFirstItemInInventory(placeable);
             if (!GetIsObjectValid(firstItem))

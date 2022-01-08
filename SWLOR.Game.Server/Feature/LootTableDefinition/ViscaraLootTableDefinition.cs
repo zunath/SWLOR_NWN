@@ -24,6 +24,9 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             Nashtah();
             CrystalSpider();
 
+            MandalorianCrate();
+            CoxxianCrate();
+
             return _builder.Build();
         }
 
@@ -101,6 +104,19 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("m_plexiplate", 4, 1, true);
         }
 
+        private void MandalorianCrate()
+        {
+            _builder.Create("VISCARA_MANDALORIAN_CRATE")
+                .AddItem("elec_ruined", 20)
+                .AddItem("fiberp_ruined", 20)
+                .AddItem("man_tags", 5)
+                .AddItem("med_supplies", 3, 3)
+                .AddItem("stim_pack", 3, 3)
+                .AddItem("jade", 1, 1, true)
+                .AddItem("m_plexiplate", 1, 1, true)
+                .AddGold(30, 10);
+
+        }
         private void Outlaw()
         {
             _builder.Create("VISCARA_OUTLAW")
@@ -189,6 +205,21 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("map_041", 20, 1, true)
                 .AddItem("map_045", 5, 1, true)
                 .AddItem("babonsch", 5, 1, true);
+        }
+
+        private void CoxxianCrate()
+        {
+            _builder.Create("VISCARA_COXXIAN_CRATE")
+                .AddItem("cox_metal", 5)
+                .AddItem("ref_veldite", 20)
+                .AddItem("fiberp_ruined", 15)
+                .AddItem("lth_ruined", 15)
+                .AddItem("elec_flawed", 5)
+                .AddItem("coonlank_blue", 1, 1, true)
+                .AddItem("coonlank_green", 1, 1, true)
+                .AddItem("coonlank_red", 1, 1, true)
+                .AddItem("coonlank_yellow", 1, 1, true)
+                .AddGold(30, 20);
         }
 
         private void Raivor()

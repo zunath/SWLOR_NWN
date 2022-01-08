@@ -6,7 +6,7 @@
   },
   "Appearance": {
     "type": "dword",
-    "value": 6547
+    "value": 82
   },
   "AutoRemoveKey": {
     "type": "byte",
@@ -87,7 +87,7 @@
     "id": 16813378,
     "type": "cexolocstring",
     "value": {
-      "0": "Coxxion Supplies Crate"
+      "0": "Fiberplast Shrub"
     }
   },
   "OnClick": {
@@ -160,11 +160,11 @@
   },
   "Plot": {
     "type": "byte",
-    "value": 0
+    "value": 1
   },
   "PortraitId": {
     "type": "word",
-    "value": 0
+    "value": 440
   },
   "Ref": {
     "type": "byte",
@@ -176,11 +176,11 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "v_cox_scav"
+    "value": "fiberp_bush_1"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "v_cox_scav"
+    "value": "fiberp_bush_1"
   },
   "TrapDetectable": {
     "type": "byte",
@@ -221,21 +221,6 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "SCAVENGE_POINT_LOOT_TABLE_NAME"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "VISCARA_COXXIAN_CRATE"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
           "value": "SCAVENGE_POINT_LEVEL"
         },
         "Type": {
@@ -244,7 +229,22 @@
         },
         "Value": {
           "type": "int",
-          "value": 2
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "SCAVENGE_POINT_LOOT_TABLE_NAME"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "SCAVENGING_BUSH_1"
         }
       }
     ]

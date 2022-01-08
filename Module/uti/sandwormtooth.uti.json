@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 40
+    "value": 250
   },
   "BaseItem": {
     "type": "int",
-    "value": 518
+    "value": 24
   },
   "Charges": {
     "type": "byte",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 40
+    "value": 250
   },
   "Cursed": {
     "type": "byte",
@@ -26,11 +26,15 @@
   },
   "DescIdentified": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "The tooth of a mighty Sand Worm.  Guaranteed to make any weapon sharper... even a blaster."
+    }
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Identified": {
     "type": "byte",
@@ -39,12 +43,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Red Coonlank"
+      "0": "Sand Worm Tooth"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 161
+    "value": 2
   },
   "PaletteID": {
     "type": "byte",
@@ -69,7 +73,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 5
+          "value": 45
         },
         "Param1": {
           "type": "byte",
@@ -100,7 +104,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 10
+          "value": 60
         },
         "Param1": {
           "type": "byte",
@@ -147,7 +151,7 @@
         },
         "Subtype": {
           "type": "word",
-          "value": 14
+          "value": 26
         }
       }
     ]
@@ -162,10 +166,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "coonlank_red"
+    "value": "SandWormTooth"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "coonlank_red"
+    "value": "sandwormtooth"
   }
 }

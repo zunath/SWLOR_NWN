@@ -631,7 +631,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "We would need at least 5 Basic Finesse Vibroblades D."
+            "0": "Spears and blaster pistols would be best.  Simple things that untrained refugees can use.  Two spears and three blaster pistols would be a great help."
           }
         }
       },
@@ -719,7 +719,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Have you acquired the vibroblades?"
+            "0": "Have you acquired the weapons?"
           }
         }
       },
@@ -845,7 +845,7 @@
   },
   "NumWords": {
     "type": "dword",
-    "value": 442
+    "value": 457
   },
   "PreventZoomIn": {
     "type": "byte",

@@ -1993,7 +1993,7 @@
               "__struct_id": 0,
               "Key": {
                 "type": "cexostring",
-                "value": "condition-quest-state"
+                "value": "condition-on-quest-state"
               },
               "Value": {
                 "type": "cexostring",

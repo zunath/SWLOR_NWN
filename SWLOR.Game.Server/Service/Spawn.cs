@@ -145,6 +145,13 @@ namespace SWLOR.Game.Server.Service
                     // Hand-placed creature information is stored and the actual NPC is destroyed so it can be spawned by the system.
                     if (type == ObjectType.Creature)
                     {
+                        // Some plot creatures use the Object Visibility service.  This relies on object references so we 
+                        // should not spawn new instances of those creatures.  Just leave them as they are.
+                        if (!String.IsNullOrEmpty(GetLocalString(obj, "VISIBILITY_OBJECT_ID")))
+                        {
+                            continue;
+                        }
+
                         _spawns.Add(id, new SpawnDetail
                         {
                             SerializedObject = ObjectPlugin.Serialize(obj),

@@ -45,7 +45,13 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(60)
 
                 .AddSpawn(ObjectType.Placeable, "scordspar_vein")
-                .WithFrequency(10);
+                .WithFrequency(10)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_1")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_2")
+                .WithFrequency(1);
         }
 
         private void MandalorianFacilityResources()
@@ -61,7 +67,10 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(50)
 
                 .AddSpawn(ObjectType.Placeable, "tree")
-                .WithFrequency(5);
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_1")
+                .WithFrequency(10);
         }
 
         private void WildlandsResources()
@@ -71,7 +80,10 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(20)
 
                 .AddSpawn(ObjectType.Placeable, "tree")
-                .WithFrequency(50);
+                .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_1")
+                .WithFrequency(30);
         }
 
         private void WildwoodsResources()
@@ -81,7 +93,10 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(10)
 
                 .AddSpawn(ObjectType.Placeable, "tree")
-                .WithFrequency(70);
+                .WithFrequency(70)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_1")
+                .WithFrequency(30);
         }
 
         private void SwamplandResources()
@@ -94,7 +109,13 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .WithFrequency(50)
 
                 .AddSpawn(ObjectType.Placeable, "oak_tree")
-                .WithFrequency(20);
+                .WithFrequency(20)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_1")
+                .WithFrequency(30)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_2")
+                .WithFrequency(10);
         }
 
         private void VelesSewersResources()

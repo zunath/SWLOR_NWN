@@ -26,6 +26,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "ancient_tree")
                 .WithFrequency(20)
                 .AddSpawn(ObjectType.Placeable, "oak_tree")
+                .WithFrequency(5)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_2")
+                .WithFrequency(20)
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_3")
                 .WithFrequency(5);
         }
         private void Valley()
@@ -39,6 +44,11 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "ancient_tree")
                 .WithFrequency(40)
                 .AddSpawn(ObjectType.Placeable, "oak_tree")
+                .WithFrequency(10)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_2")
+                .WithFrequency(40)
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_3")
                 .WithFrequency(10);
         }
     }

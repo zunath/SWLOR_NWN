@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
+using SWLOR.Game.Server.Service.GuiService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
@@ -29,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     // If we want to limit items that can be renamed, do so here.
 
                     SetLocalObject(user, "ITEM_BEING_RENAMED", target);
-                    Dialog.StartConversation(user, user, nameof(RenameItemDialog));
+                    Gui.TogglePlayerWindow(user, GuiWindowType.RenameItem);
                 });
 
             return builder.Build();

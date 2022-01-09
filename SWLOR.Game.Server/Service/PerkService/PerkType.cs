@@ -180,10 +180,11 @@
         Cover = 173,
         ShieldExpertise = 174,
         Ironclad = 175,
-        // 176 is free
+        Mobility = 176,
         MuscleMemoryFabrication = 177,
         VenerationFabrication = 178,
         WasteNotFabrication = 179,
+        Dash = 180,
 
         TreasureHunter = 1002,
         CreditFinder = 1003,

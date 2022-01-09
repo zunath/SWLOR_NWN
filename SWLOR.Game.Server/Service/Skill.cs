@@ -35,6 +35,10 @@ namespace SWLOR.Game.Server.Service
             var requiredXP = GetRequiredXP(pcSkill.Rank);
             var receivedRankUp = false;
 
+            // Bonus for positive Social modifier.
+            var social = GetAbilityModifier(AbilityType.Social, player);
+            if (social > 0) xp += (int) (xp * social * 0.05);
+
             var debtRemoved = 0;
             if (dbPlayer.XPDebt > 0)
             {

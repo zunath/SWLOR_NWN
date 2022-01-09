@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 
@@ -8,21 +7,65 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class GatheringPerkDefinition : IPerkListDefinition
     {
+        private readonly PerkBuilder _builder = new();
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
-            var builder = new PerkBuilder();
-            Harvesting(builder);
-            Refining(builder);
-            RefineryManagement(builder);
-            Scavenging(builder);
-            HardLook(builder);
+            TreasureHunter();
+            Creditfinder();
+            Harvesting();
+            Refining();
+            RefineryManagement();
+            Scavenging();
+            HardLook();
 
-            return builder.Build();
+            return _builder.Build();
         }
 
-        private void Harvesting(PerkBuilder builder)
+        private void TreasureHunter()
         {
-            builder.Create(PerkCategoryType.Gathering, PerkType.Harvesting)
+            _builder.Create(PerkCategoryType.Gathering, PerkType.TreasureHunter)
+                .Name("Treasure Hunter")
+
+                .AddPerkLevel()
+                .Description("Increases the chance to find rare items by 10.")
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 15)
+
+                .AddPerkLevel()
+                .Description("Increases the chance to find rare items by 20.")
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 30)
+
+                .AddPerkLevel()
+                .Description("Increases the chance to find rare items by 30.")
+                .Price(4)
+                .RequirementSkill(SkillType.Gathering, 45);
+        }
+
+        private void Creditfinder()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.CreditFinder)
+                .Name("Creditfinder")
+
+                .AddPerkLevel()
+                .Description("Increases the amount of credits found by 20%.")
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 15)
+
+                .AddPerkLevel()
+                .Description("Increases the amount of credits found by 40%.")
+                .Price(3)
+                .RequirementSkill(SkillType.Gathering, 40)
+
+                .AddPerkLevel()
+                .Description("Increases the amount of credits found by 60%.")
+                .Price(4)
+                .RequirementSkill(SkillType.Gathering, 50);
+        }
+
+        private void Harvesting()
+        {
+            _builder.Create(PerkCategoryType.Gathering, PerkType.Harvesting)
                 .Name("Harvesting")
 
                 .AddPerkLevel()
@@ -55,9 +98,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Harvesting5);
         }
 
-        private void Refining(PerkBuilder builder)
+        private void Refining()
         {
-            builder.Create(PerkCategoryType.Gathering, PerkType.Refining)
+            _builder.Create(PerkCategoryType.Gathering, PerkType.Refining)
                 .Name("Refining")
 
                 .AddPerkLevel()
@@ -90,9 +133,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Refining5);
         }
 
-        private void RefineryManagement(PerkBuilder builder)
+        private void RefineryManagement()
         {
-            builder.Create(PerkCategoryType.Gathering, PerkType.RefineryManagement)
+            _builder.Create(PerkCategoryType.Gathering, PerkType.RefineryManagement)
                 .Name("Refinery Management")
 
                 .AddPerkLevel()
@@ -131,9 +174,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RefineryManagement6);
         }
 
-        private void Scavenging(PerkBuilder builder)
+        private void Scavenging()
         {
-            builder.Create(PerkCategoryType.Gathering, PerkType.Scavenging)
+            _builder.Create(PerkCategoryType.Gathering, PerkType.Scavenging)
                 .Name("Scavenging")
 
                 .AddPerkLevel()
@@ -166,9 +209,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Scavenging5);
         }
 
-        private void HardLook(PerkBuilder builder)
+        private void HardLook()
         {
-            builder.Create(PerkCategoryType.Gathering, PerkType.HardLook)
+            _builder.Create(PerkCategoryType.Gathering, PerkType.HardLook)
                 .Name("Hard Look")
 
                 .AddPerkLevel()

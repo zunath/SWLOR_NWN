@@ -185,9 +185,9 @@
         VenerationFabrication = 178,
         WasteNotFabrication = 179,
         Dash = 180,
+        TreasureHunter = 181,
+        CreditFinder = 182,
 
-        TreasureHunter = 1002,
-        CreditFinder = 1003,
         GuildRelations = 1004,
 
     }

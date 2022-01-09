@@ -219,18 +219,19 @@ namespace SWLOR.Game.Server.Native
 
             int critical = bCritical == 1 ? critMultiplier : 0;
             var damage = 0;
-            var target = CNWSCreature.FromPointer(pTarget);
-            float vitality = target.m_pStats.m_nConstitutionModifier;
-            var damagePower = attackerStats.m_pBaseCreature.CalculateDamagePower(target, bOffHand);
-
-            // Numbers over 128 are negative.
-            if (vitality > 128) vitality -= 256;
 
             foreach (var damageType in dmgValues.Keys)
             {
                 // Calculate total defense on the target.
                 if (targetObject.m_nObjectType == (int)ObjectType.Creature)
                 {
+                    var target = CNWSCreature.FromPointer(pTarget);
+                    float vitality = target.m_pStats.m_nConstitutionModifier;
+                    var damagePower = attackerStats.m_pBaseCreature.CalculateDamagePower(target, bOffHand);
+
+                    // Numbers over 128 are negative.
+                    if (vitality > 128) vitality -= 256;
+
                     var defense = Stat.GetDefenseNative(target, damageType);
 
                     Log.Write(LogGroup.Attack, "DAMAGE: attacker damage attribute: " + dmgValues[damageType].ToString() + " defender defense attribute: " + defense.ToString() + ", defender racial type " + target.m_pStats.m_nRace);
@@ -252,9 +253,16 @@ namespace SWLOR.Game.Server.Native
                 }
                 else if (targetObject.m_nObjectType == (int)ObjectType.Placeable)
                 {
-                    // Placeables use their hardness attribute as their defense score and vitality. 
+                    // Placeables and doors use their hardness attribute as their defense score and vitality. 
                     CNWSPlaceable plc = CNWSPlaceable.FromPointer(pTarget);
                     int hardness = plc.m_nHardness;
+                    damage = Combat.CalculateDamage(dmgValues[damageType], attackAttribute, hardness, hardness, critical);
+                }
+                else if (targetObject.m_nObjectType == (int)ObjectType.Door)
+                {
+                    // Placeables and doors use their hardness attribute as their defense score and vitality. 
+                    CNWSDoor door = CNWSDoor.FromPointer(pTarget);
+                    int hardness = door.m_nHardness;
                     damage = Combat.CalculateDamage(dmgValues[damageType], attackAttribute, hardness, hardness, critical);
                 }
                 else

@@ -352,7 +352,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             _builder.Create("caxx_repair_2", "Stuff Keeps Breaking!")
 
                 .AddState()
-                .SetStateJournalText("Farah Oersted needs you to collect the following items: Finesse Vibroblade Repair Kit I, Heavy Vibroblade Repair Kit I, and Polearm Repair Kit I. Gather them and give them to her for your reward.")
+                .SetStateJournalText("Farah Oersted needs you to collect the following items: Flawed Leather, Flawed Electronics, and Agate. Gather them and give them to her for your reward.")
                 .AddCollectItemObjective("lth_flawed", 2)
                 .AddCollectItemObjective("elec_flawed", 2)
                 .AddCollectItemObjective("agate", 1)
@@ -396,7 +396,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
         private void VanquishTheVellenRaiders()
         {
             _builder.Create("vanquish_vellen", "Vanquish the Vellen Raiders")
-                .PrerequisiteQuest("")
+                .PrerequisiteQuest("help_talyron_family")
 
                 .AddState()
                 .AddKillObjective(NPCGroupType.Viscara_VellenFleshleader, 1)

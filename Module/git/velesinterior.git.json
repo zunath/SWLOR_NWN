@@ -89691,7 +89691,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -89764,21 +89764,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CONVERSATION"
               },
               "Type": {
@@ -89787,7 +89772,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "CloningTerminal"
+                "value": "MedicalRegistrationDialog"
               }
             }
           ]
@@ -89953,7 +89938,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "generic_convo"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -90026,21 +90011,6 @@
               "__struct_id": 0,
               "Name": {
                 "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
                 "value": "CONVERSATION"
               },
               "Type": {
@@ -90049,7 +90019,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "CloningTerminal"
+                "value": "MedicalRegistrationDialog"
               }
             }
           ]

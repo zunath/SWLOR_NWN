@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 2.0
+    "value": 1.0
   },
   "ClassList": {
     "type": "list",
@@ -188,7 +188,7 @@
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 6
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",

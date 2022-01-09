@@ -71,6 +71,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.AddResponse($"Open {terminalColor} doors", () =>
             {
+                SetLocalInt(area, "DOOR_STATUS", terminalColorId);
+
                 foreach (var door in _areaDoors)
                 {
                     if (GetLocalInt(door, "DOOR_COLOR") == terminalColorId)
@@ -85,8 +87,12 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     }
                 }
 
-                
+                foreach (var areaPlayer in Area.GetPlayersInArea(area))
+                {
+                    FloatingTextStringOnCreature($"{terminalColor} doors are now unlocked.", areaPlayer, false);
+                }
 
+                EndConversation();
             });
         }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.PropertyService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -9,7 +10,9 @@ namespace SWLOR.Game.Server.Service
     public class Area
     {
         private static Dictionary<string, uint> AreasByResref { get; } = new();
+        private static Dictionary<uint, List<uint>> PlayersByArea { get; } = new();
 
+        [NWNEventHandler("mod_cache")]
         public static void CacheData()
         {
             CacheAreasByResref();
@@ -56,6 +59,56 @@ namespace SWLOR.Game.Server.Service
                 return OBJECT_INVALID;
 
             return AreasByResref[resref];
+        }
+
+        /// <summary>
+        /// Retrieves all of the players currently in the specified area.
+        /// If no players are in the area, an empty list will returned.
+        /// </summary>
+        /// <param name="area">The area to search by.</param>
+        /// <returns>A list of player objects</returns>
+        public static List<uint> GetPlayersInArea(uint area)
+        {
+            if (!PlayersByArea.ContainsKey(area))
+                return new List<uint>();
+
+            return PlayersByArea[area].ToList();
+        }
+
+        /// <summary>
+        /// When a player or DM enters an area, add them to the cache.
+        /// </summary>
+        [NWNEventHandler("area_enter")]
+        public static void EnterArea()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player))
+                return;
+
+            var area = OBJECT_SELF;
+            if (!PlayersByArea.ContainsKey(area))
+                PlayersByArea[area] = new List<uint>();
+
+            if(!PlayersByArea[area].Contains(player))
+                PlayersByArea[area].Add(player);
+        }
+
+        /// <summary>
+        /// When a player or DM leaves an area, remove them from the cache.
+        /// </summary>
+        [NWNEventHandler("area_exit")]
+        public static void ExitArea()
+        {
+            var player = GetExitingObject();
+            if (!GetIsPC(player))
+                return;
+
+            var area = OBJECT_SELF;
+            if (!PlayersByArea.ContainsKey(area))
+                PlayersByArea[area] = new List<uint>();
+
+            if (PlayersByArea[area].Contains(player))
+                PlayersByArea[area].Remove(player);
         }
 
     }

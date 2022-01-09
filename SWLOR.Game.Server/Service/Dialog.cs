@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.LogService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
@@ -70,9 +72,22 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("dialog_start")]
         public static void Start()
         {
-            var player = GetLastUsedBy();
-            if (!GetIsObjectValid(player)) player = (GetPCSpeaker());
+            var eventScript = GetCurrentlyRunningEvent();
+            var player = OBJECT_INVALID;
 
+            switch (eventScript)
+            {
+                case EventScript.Placeable_OnUsed:
+                    player = GetLastUsedBy();
+                    break;
+                case EventScript.Creature_OnDialogue:
+                    player = GetPCSpeaker();
+                    break;
+                case EventScript.Door_OnFailToOpen:
+                    player = GetClickingObject();
+                    break;
+            }
+            
             var conversation = GetLocalString(OBJECT_SELF, "CONVERSATION");
 
             if (!string.IsNullOrWhiteSpace(conversation))
@@ -93,7 +108,6 @@ namespace SWLOR.Game.Server.Service
             {
                 ActionStartConversation(player, "", true, false);
             }
-
         }
 
         [NWNEventHandler("dialog_action_0")]
@@ -497,6 +511,12 @@ namespace SWLOR.Game.Server.Service
         /// <param name="class">The name of the conversation class.</param>
         public static void StartConversation(uint player, uint talkTo, string @class)
         {
+            if (!GetIsPC(player) || !GetIsObjectValid(player))
+            {
+                Log.Write(LogGroup.Error, $"Conversation '{@class}' could not be started because player '{GetName(player)}' is not a valid target.");
+                return;
+            }
+
             var playerId = GetObjectUUID(player);
             LoadConversation(player, talkTo, @class, -1);
             var dialog = PlayerDialogs[playerId];

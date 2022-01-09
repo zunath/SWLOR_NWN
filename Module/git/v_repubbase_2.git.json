@@ -20963,7 +20963,7 @@
         },
         "OnFailToOpen": {
           "type": "resref",
-          "value": "script_1"
+          "value": "dialog_start"
         },
         "OnHeartbeat": {
           "type": "resref",
@@ -21075,7 +21075,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "LockedDoor"
+                "value": "LockedDoorDialog"
               }
             },
             {
@@ -21262,7 +21262,7 @@
         },
         "OnFailToOpen": {
           "type": "resref",
-          "value": "script_1"
+          "value": "dialog_start"
         },
         "OnHeartbeat": {
           "type": "resref",
@@ -21374,7 +21374,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "LockedDoor"
+                "value": "LockedDoorDialog"
               }
             },
             {
@@ -21561,7 +21561,7 @@
         },
         "OnFailToOpen": {
           "type": "resref",
-          "value": "script_1"
+          "value": "dialog_start"
         },
         "OnHeartbeat": {
           "type": "resref",
@@ -21673,7 +21673,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "LockedDoor"
+                "value": "LockedDoorDialog"
               }
             },
             {

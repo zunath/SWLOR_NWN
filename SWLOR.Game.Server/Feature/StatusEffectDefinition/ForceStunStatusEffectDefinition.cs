@@ -44,7 +44,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.ForceStun1);
                         ApplyEffectToObject(DurationType.Permanent, effect, target);
                     }
-                    CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
+
+                    if (!CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3))
+                    {
+                        CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
+                    }
                 })
                 .RemoveAction((target) =>
                 {
@@ -87,7 +91,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         }
                         targetCreature = GetNextObjectInShape(Shape.Sphere, radiusSize, GetLocation(target), true);
                     }
-                    CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
+
+                    if (!CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3))
+                    {
+                        CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
+                    }
                 })
                 .RemoveAction((target) =>
                 {
@@ -129,7 +137,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         }
                         targetCreature = GetNextObjectInShape(Shape.Sphere, radiusSize, GetLocation(target), true);
                     }
-                    CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
+
+                    if (!CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3))
+                    {
+                        CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
+                    }
                 })
                 .RemoveAction((target) =>
                 {

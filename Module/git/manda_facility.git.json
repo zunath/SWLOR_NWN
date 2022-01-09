@@ -1040,7 +1040,7 @@
         },
         "OnFailToOpen": {
           "type": "resref",
-          "value": "script_1"
+          "value": "dialog_start"
         },
         "OnHeartbeat": {
           "type": "resref",
@@ -1153,21 +1153,6 @@
               "Value": {
                 "type": "cexostring",
                 "value": "There are three key card slots on this door."
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.GenericConversation"
               }
             },
             {
@@ -1406,7 +1391,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "get_key_item"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -1503,21 +1488,6 @@
               "Value": {
                 "type": "int",
                 "value": 8
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.ObtainKeyItem"
               }
             }
           ]
@@ -1683,7 +1653,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "get_key_item"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -1780,21 +1750,6 @@
               "Value": {
                 "type": "int",
                 "value": 9
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.ObtainKeyItem"
               }
             }
           ]
@@ -1960,7 +1915,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "script_1"
+          "value": "get_key_item"
         },
         "OnUserDefined": {
           "type": "resref",
@@ -2057,21 +2012,6 @@
               "Value": {
                 "type": "int",
                 "value": 10
-              }
-            },
-            {
-              "__struct_id": 0,
-              "Name": {
-                "type": "cexostring",
-                "value": "SCRIPT_1"
-              },
-              "Type": {
-                "type": "dword",
-                "value": 3
-              },
-              "Value": {
-                "type": "cexostring",
-                "value": "Placeable.ObtainKeyItem"
               }
             }
           ]
@@ -84441,7 +84381,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 47
+          "value": 48
         }
       }
     ]

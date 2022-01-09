@@ -267,7 +267,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var apartment = GetApartment();
                 var permissions = GetPermissions();
                 var layout = Property.GetLayoutByType(apartment.Layout);
-                var furnitureCount = apartment.ChildPropertyIds[PropertyChildType.Structure].Count;
+                var furnitureCount = 
+                    apartment.ChildPropertyIds.ContainsKey(PropertyChildType.Structure)
+                    ? apartment.ChildPropertyIds[PropertyChildType.Structure].Count
+                    : 0;
                 var leaseDate = apartment.Dates[PropertyDateType.Lease];
                 var now = DateTime.UtcNow;
 

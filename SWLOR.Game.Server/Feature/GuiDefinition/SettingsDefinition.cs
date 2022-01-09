@@ -92,11 +92,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         row.AddButton()
                             .SetText("Save")
+                            .SetHeight(32f)
                             .BindOnClicked(model => model.OnSave());
 
                         row.AddButton()
                             .SetText("Cancel")
-                            .BindOnClicked(model => model.OnSave());
+                            .SetHeight(32f)
+                            .BindOnClicked(model => model.OnCancel());
 
                         row.AddSpacer();
                     });

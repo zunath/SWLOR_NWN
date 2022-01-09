@@ -68,6 +68,7 @@ namespace SWLOR.Game.Server.Feature
                     BaseItem.TwoBladedSword,
                     BaseItem.WarHammer,
                     BaseItem.Whip,
+                    BaseItem.Katar,
                     BaseItem.Lightsaber,
                     BaseItem.Saberstaff
         };

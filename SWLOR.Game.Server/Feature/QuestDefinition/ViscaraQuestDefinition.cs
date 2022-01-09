@@ -114,6 +114,11 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .OnAcceptAction((player, sourceObject) =>
                 {
                     ObjectVisibility.AdjustVisibilityByObjectId(player, "A61BB617B2D34E2F863C6301A4A04143", VisibilityType.Visible);
+                })
+                
+                .OnCompleteAction((player, sourceObject) =>
+                {
+                    ObjectVisibility.AdjustVisibilityByObjectId(player, "A61BB617B2D34E2F863C6301A4A04143", VisibilityType.Hidden);
                 });
         }
 

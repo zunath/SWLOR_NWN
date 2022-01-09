@@ -31,7 +31,7 @@
         Election = 26,
         RentApartment = 27,
         ManageApartment = 28,
-
+        RenameItem = 29,
         PermissionManagement = 30,
         ManageStructures = 31,
         PropertyItemStorage = 32,

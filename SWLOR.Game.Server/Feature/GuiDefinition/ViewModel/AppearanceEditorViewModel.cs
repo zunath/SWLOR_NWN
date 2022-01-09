@@ -909,6 +909,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadPart()
         {
+            if (SelectedPartIndex <= -1)
+                return;
+
             if (IsAppearanceSelected)
             {
                 LoadBodyPart();

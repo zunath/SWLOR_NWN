@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.SkillService;
+using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {
@@ -235,6 +237,27 @@ namespace SWLOR.Game.Server.Service.PerkService
         /// <returns>A list of built perks.</returns>
         public Dictionary<PerkType, PerkDetail> Build()
         {
+            // Determine the icon to display within the perk menus.
+            // The first feat's icon will be used if found.
+            // If not found, it will fall back to the 'default_perk' icon instead.
+            foreach (var (_, detail) in _perks)
+            {
+                detail.IconResref = "default_perk";
+                foreach (var (_, perkLevel) in detail.PerkLevels)
+                {
+                    var feat = perkLevel.GrantedFeats.FirstOrDefault();
+                    if (feat == default)
+                        continue;
+
+                    var resref = Get2DAString("feat", "ICON", (int)feat);
+                    if (!string.IsNullOrWhiteSpace(resref))
+                    {
+                        detail.IconResref = resref;
+                        break;
+                    }
+                }
+            }
+
             return _perks;
         }
     }

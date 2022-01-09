@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         public string Name { get; set; }
         public string Description { get; set; }
         public bool IsActive { get; set; }
+        public string IconResref { get; set; }
 
         public PerkRefundRequirementAction RefundRequirement { get; set; }
         public Dictionary<int, PerkLevel> PerkLevels { get; set; }

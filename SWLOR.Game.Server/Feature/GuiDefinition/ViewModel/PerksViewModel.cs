@@ -106,6 +106,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<string> PerkButtonIcons
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> PerkButtonTexts
         {
             get => Get<GuiBindingList<string>>();
@@ -163,6 +169,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public PerksViewModel()
         {
             _filteredPerks = new List<PerkType>();
+            PerkButtonIcons = new GuiBindingList<string>();
             PerkButtonColors = new GuiBindingList<GuiColor>();
             PerkButtonTexts = new GuiBindingList<string>();
             PerkDetailSelected = new GuiBindingList<bool>();
@@ -215,6 +222,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _filteredPerks.Clear();
             
             var perkButtonColors = new GuiBindingList<GuiColor>();
+            var perkButtonIcons = new GuiBindingList<string>();
             var perkButtonTexts = new GuiBindingList<string>();
             var perkDetailSelected = new GuiBindingList<bool>();
             var pageNumbers = new GuiBindingList<GuiComboEntry>();
@@ -266,12 +274,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 _filteredPerks.Add(type);
+                perkButtonIcons.Add(detail.IconResref);
                 perkButtonTexts.Add($"{detail.Name} ({playerRank} / {detail.PerkLevels.Count})");
                 perkDetailSelected.Add(false);
                 perkButtonColors.Add(meetsRequirements ? _green : _red);
             }
 
             PerkButtonColors = perkButtonColors;
+            PerkButtonIcons = perkButtonIcons;
             PerkButtonTexts = perkButtonTexts;
             PerkDetailSelected = perkDetailSelected;
             PageNumbers = pageNumbers;

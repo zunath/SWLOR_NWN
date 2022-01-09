@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private void BurstOfSpeed2(StatusEffectBuilder builder)
         {
             builder.Create(StatusEffectType.BurstOfSpeed2)
-                .Name("Burst of Speed I")
+                .Name("Burst of Speed II")
                 .GrantAction((source, target, length) =>
                 {
                     var effect = EffectMovementSpeedIncrease(30);
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private void BurstOfSpeed3(StatusEffectBuilder builder)
         {
             builder.Create(StatusEffectType.BurstOfSpeed3)
-                .Name("Burst of Speed I")
+                .Name("Burst of Speed III")
                 .GrantAction((source, target, length) =>
                 {
                     var effect = EffectMovementSpeedIncrease(40);
@@ -77,7 +77,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private void BurstOfSpeed4(StatusEffectBuilder builder)
         {
             builder.Create(StatusEffectType.BurstOfSpeed4)
-                .Name("Burst of Speed I")
+                .Name("Burst of Speed IV")
                 .GrantAction((source, target, length) =>
                 {
                     var effect = EffectMovementSpeedIncrease(50);
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private void BurstOfSpeed5(StatusEffectBuilder builder)
         {
             builder.Create(StatusEffectType.BurstOfSpeed5)
-                .Name("Burst of Speed I")
+                .Name("Burst of Speed V")
                 .GrantAction((source, target, length) =>
                 {
                     var effect = EffectMovementSpeedIncrease(60);

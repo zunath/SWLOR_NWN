@@ -73,6 +73,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     var stmAmount = 1 + GetAbilityModifier(AbilityType.Perception, target) / 2;
                     var fpAmount = 1 + GetAbilityModifier(AbilityType.Willpower, target) / 2;
 
+                    // Guard against negative ability modifiers - always give at least 1 HP/FP/STM recovery per tick.
+                    if (hpAmount < 1)
+                        hpAmount = 1;
+                    if (stmAmount < 1)
+                        stmAmount = 1;
+                    if (fpAmount < 1)
+                        fpAmount = 1;
+
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(hpAmount), target);
                     Stat.RestoreStamina(target, stmAmount);
                     Stat.RestoreFP(target, fpAmount);

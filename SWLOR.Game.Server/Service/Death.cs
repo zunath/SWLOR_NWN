@@ -141,7 +141,7 @@ namespace SWLOR.Game.Server.Service
         {
             var playerId = GetObjectUUID(player);
             var entity = DB.Get<Player>(playerId);
-            var area = Cache.GetAreaByResref(entity.RespawnAreaResref);
+            var area = Area.GetAreaByResref(entity.RespawnAreaResref);
             var position = Vector3(
                 entity.RespawnLocationX,
                 entity.RespawnLocationY,

@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Feature.PropertyLayoutDefinition
                     var dbProperty = DB.Get<WorldProperty>(propertyId);
                     var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
                     var dbCity = DB.Get<WorldProperty>(dbBuilding.ParentPropertyId);
-                    var cityArea = Cache.GetAreaByResref(dbCity.ParentPropertyId);
+                    var cityArea = Area.GetAreaByResref(dbCity.ParentPropertyId);
                     var planet = Planet.GetPlanetType(cityArea);
 
                     if (planet == PlanetType.Invalid)

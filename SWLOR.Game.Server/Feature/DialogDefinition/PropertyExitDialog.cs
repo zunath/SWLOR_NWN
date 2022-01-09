@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var returningArea = string.IsNullOrWhiteSpace(propertyLocation.AreaResref)
                 ? Property.GetRegisteredInstance(propertyLocation.InstancePropertyId).Area
-                : Cache.GetAreaByResref(propertyLocation.AreaResref);
+                : Area.GetAreaByResref(propertyLocation.AreaResref);
             
             var location = Location(
                 returningArea,

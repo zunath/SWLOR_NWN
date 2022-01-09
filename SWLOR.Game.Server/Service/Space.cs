@@ -474,7 +474,7 @@ namespace SWLOR.Game.Server.Service
                 ? dbProperty.Positions[PropertyLocationType.CurrentPosition]
                 : dbProperty.Positions[PropertyLocationType.SpacePosition];
 
-            var spaceArea = Cache.GetAreaByResref(propertyLocation.AreaResref);
+            var spaceArea = Area.GetAreaByResref(propertyLocation.AreaResref);
             var spacePosition = Vector3(propertyLocation.X, propertyLocation.Y, propertyLocation.Z);
             var location = Location(spaceArea, spacePosition, propertyLocation.Orientation);
 

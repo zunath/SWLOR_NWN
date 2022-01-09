@@ -298,7 +298,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>X, Y, and Z coordinates of the entrance location</returns>
         private static Vector4 GetEntrancePosition(string areaResref)
         {
-            var area = Cache.GetAreaByResref(areaResref);
+            var area = Area.GetAreaByResref(areaResref);
             
             for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
             {
@@ -1042,7 +1042,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     var parent = DB.Get<WorldProperty>(property.ParentPropertyId);
                     var areaResref = parent.ParentPropertyId;
-                    var area = Cache.GetAreaByResref(areaResref);
+                    var area = Area.GetAreaByResref(areaResref);
 
                     SpawnIntoWorld(property, area);
                 }
@@ -1050,7 +1050,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var property in areaProperties)
             {
-                var area = Cache.GetAreaByResref(property.ParentPropertyId);
+                var area = Area.GetAreaByResref(property.ParentPropertyId);
                 SpawnIntoWorld(property, area);
             }
         }

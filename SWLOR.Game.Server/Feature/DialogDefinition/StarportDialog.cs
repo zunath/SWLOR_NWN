@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     var dbProperty = DB.Get<WorldProperty>(propertyId);
                     var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
                     var dbCity = DB.Get<WorldProperty>(dbBuilding.ParentPropertyId);
-                    var cityArea = Cache.GetAreaByResref(dbCity.ParentPropertyId);
+                    var cityArea = Area.GetAreaByResref(dbCity.ParentPropertyId);
 
                     planetType = Planet.GetPlanetType(cityArea);
                 }

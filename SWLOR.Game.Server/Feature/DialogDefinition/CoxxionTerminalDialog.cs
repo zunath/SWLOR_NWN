@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         [NWNEventHandler("mod_load")]
         public static void LoadDoors()
         {
-            var area = Cache.GetAreaByResref("v_cox_base");
+            var area = Area.GetAreaByResref("v_cox_base");
             if (!GetIsObjectValid(area)) return;
 
             for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
@@ -84,6 +84,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         SetLocked(door, true);
                     }
                 }
+
+                
+
             });
         }
 

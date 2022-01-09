@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature
             int pinsAdded = 0;
             foreach (var (areaResref, mapPin) in mapPinTuple)
             {
-                var area = Cache.GetAreaByResref(areaResref);
+                var area = Area.GetAreaByResref(areaResref);
                 SetMapPin(player, mapPin.Note, mapPin.X, mapPin.Y, area);
 
                 // Increment the count and update the ID.

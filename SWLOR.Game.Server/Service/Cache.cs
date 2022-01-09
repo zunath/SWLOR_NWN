@@ -17,7 +17,6 @@ namespace SWLOR.Game.Server.Service
     public static class Cache
     {
         private static bool _cachedThisRun;
-        private static Dictionary<string, uint> AreasByResref { get; } = new();
         private static Dictionary<string, string> ItemNamesByResref { get; set; } = new();
         private static Dictionary<int, int> PortraitIdsByInternalId { get; } = new();
         private static Dictionary<int, int> PortraitInternalIdsByPortraitId { get; } = new();
@@ -48,32 +47,14 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("mod_cache")]
         public static void CacheData()
         {
-            CacheAreasByResref();
-            LoadAreaCache();
+            LoadItemCache();
             CachePortraitsById();
 
-            Console.WriteLine($"Loaded {AreasByResref.Count} areas by resref.");
             Console.WriteLine($"Loaded {ItemNamesByResref.Count} item names by resref.");
             Console.WriteLine($"Loaded {PortraitIdsByInternalId.Count} portraits by Id.");
         }
 
-        /// <summary>
-        /// Remove instance templates from the area cache on module load.
-        /// This ensures player locations are not updated in places they shouldn't be.
-        /// </summary>
-        [NWNEventHandler("mod_load")]
-        public static void RemoveInstancesFromCache()
-        {
-            var propertyLayouts = Property.GetAllLayoutsByPropertyType(PropertyType.Apartment);
-            foreach (var type in propertyLayouts)
-            {
-                var layout = Property.GetLayoutByType(type);
-                if (AreasByResref.ContainsKey(layout.AreaInstanceResref))
-                    AreasByResref.Remove(layout.AreaInstanceResref);
-            }
-        }
-
-        private static void LoadAreaCache()
+        private static void LoadItemCache()
         {
             // No need to load from the DB, it's already in memory.
             if (_cachedThisRun)
@@ -81,31 +62,6 @@ namespace SWLOR.Game.Server.Service
 
             var dbModuleCache = DB.Get<ModuleCache>("SWLOR");
             ItemNamesByResref = dbModuleCache.ItemNamesByResref;
-        }
-
-        /// <summary>
-        /// Caches all areas by their resref.
-        /// </summary>
-        private static void CacheAreasByResref()
-        {
-            for (var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
-            {
-                var resref = GetResRef(area);
-                AreasByResref[resref] = area;
-            }
-        }
-
-        /// <summary>
-        /// Retrieves an area by its resref. If the area does not exist, OBJECT_INVALID will be returned.
-        /// </summary>
-        /// <param name="resref">The resref to use for the search.</param>
-        /// <returns>The area ID or OBJECT_INVALID if area does not exist.</returns>
-        public static uint GetAreaByResref(string resref)
-        {
-            if (!AreasByResref.ContainsKey(resref))
-                return OBJECT_INVALID;
-
-            return AreasByResref[resref];
         }
 
         /// <summary>

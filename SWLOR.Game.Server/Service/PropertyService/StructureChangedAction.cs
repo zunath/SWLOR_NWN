@@ -179,7 +179,7 @@ namespace SWLOR.Game.Server.Service.PropertyService
                 // The dock point needs to be unregistered from the space service so it no longer displays in the list
                 // of docking points.
                 var dbCity = DB.Get<WorldProperty>(property.ParentPropertyId);
-                var cityArea = Cache.GetAreaByResref(dbCity.ParentPropertyId);
+                var cityArea = Area.GetAreaByResref(dbCity.ParentPropertyId);
                 var instance = Property.GetRegisteredInstance(interiorId);
                 var dockPoint = GetLandingWaypoint(instance.Area);
 

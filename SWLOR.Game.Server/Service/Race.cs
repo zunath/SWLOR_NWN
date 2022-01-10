@@ -187,6 +187,15 @@ namespace SWLOR.Game.Server.Service
                 RightHandId = 44,
                 LeftHandId = 44
             };
+            _defaultRaceAppearancesMale[RacialType.KelDor] = new RacialAppearance
+            {
+                SkinColorId = 2,
+                HairColorId = 22,
+                AppearanceType = AppearanceType.Human,
+                HeadId = 223,
+                RightHandId = 45,
+                LeftHandId = 45
+            };
 
             // Female appearances
             _defaultRaceAppearancesFemale[RacialType.Human] = new RacialAppearance();

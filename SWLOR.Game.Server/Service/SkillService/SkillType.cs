@@ -238,6 +238,13 @@ namespace SWLOR.Game.Server.Service.SkillService
             "Ability to speak the Togruti language.",
             false)]
         Togruti = 29,
+        [Skill(SkillCategoryType.Languages,
+            "KelDor",
+            20,
+            true,
+            "Ability to speak the Kel Dor language.",
+            false)]
+            KelDor = 30,
     }
 
     public class SkillAttribute : Attribute

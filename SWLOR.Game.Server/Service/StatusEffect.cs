@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly Dictionary<StatusEffectType, StatusEffectDetail> _statusEffects = new();
         private static readonly Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>> _creaturesWithStatusEffects = new();
+        private static readonly Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>> _loggedOutPlayersWithEffects = new();
 
         /// <summary>
         /// When the module loads, cache all status effects.
@@ -88,6 +89,42 @@ namespace SWLOR.Game.Server.Service
             }
 
             Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of {statusEffectDetail.Name}.");
+        }
+
+        /// <summary>
+        /// When a player enters the server, if any of their status effects in limbo, re-add them to the
+        /// dictionary for processing.
+        /// </summary>
+        [NWNEventHandler("mod_enter")]
+        public static void PlayerEnter()
+        {
+            var player = GetEnteringObject();
+
+            if (!_loggedOutPlayersWithEffects.ContainsKey(player))
+                return;
+
+            var effects = _loggedOutPlayersWithEffects[player].ToDictionary(x => x.Key, y => y.Value);
+            _creaturesWithStatusEffects[player] = effects;
+
+            _loggedOutPlayersWithEffects.Remove(player);
+        }
+
+        /// <summary>
+        /// When a player leaves the server, move their status effects to a different dictionary
+        /// so they aren't processed unnecessarily.  
+        /// </summary>
+        [NWNEventHandler("mod_exit")]
+        public static void PlayerExit()
+        {
+            var player = GetExitingObject();
+
+            if (!_creaturesWithStatusEffects.ContainsKey(player))
+                return;
+
+            var effects = _creaturesWithStatusEffects[player].ToDictionary(x => x.Key, y => y.Value);
+            _loggedOutPlayersWithEffects[player] = effects;
+
+            _creaturesWithStatusEffects.Remove(player);
         }
 
         /// <summary>
@@ -183,7 +220,7 @@ namespace SWLOR.Game.Server.Service
             var statusEffectDetail = _statusEffects[statusEffectType];
             statusEffectDetail.RemoveAction?.Invoke(creature);
 
-            if (statusEffectDetail.EffectIconId > 0)
+            if (statusEffectDetail.EffectIconId > 0 && GetIsObjectValid(creature))
             {
                 ObjectPlugin.RemoveIconEffect(creature, statusEffectDetail.EffectIconId);
             }

@@ -28,7 +28,9 @@ namespace SWLOR.Game.Server.Service.LogService
         [LogGroup("PlayerMarket", ServerEnvironmentType.All)]
         PlayerMarket,
         [LogGroup("Space", ServerEnvironmentType.All)]
-        Space
+        Space,
+        [LogGroup("StoreCleanup", ServerEnvironmentType.All)]
+        StoreCleanup
     }
 
     public class LogGroupAttribute : Attribute

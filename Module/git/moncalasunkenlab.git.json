@@ -934,7 +934,7 @@
               },
               "Value": {
                 "type": "cexostring",
-                "value": "LockedDoor"
+                "value": "LockedDoorDialog"
               }
             },
             {

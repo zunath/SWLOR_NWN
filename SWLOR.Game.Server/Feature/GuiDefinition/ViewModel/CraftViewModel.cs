@@ -937,7 +937,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 if (Random.D100(1) <= propertyTransferChance)
                 {
-                    BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.KeepExisting, false, false);
+                    BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
                     SendMessageToPC(Player, ColorToken.Green("Enhancement applied successfully."));
                 }
                 else
@@ -949,7 +949,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 if (Random.D100(1) <= propertyTransferChance)
                 {
-                    BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.KeepExisting, false, false);
+                    BiowareXP2.IPSafeAddItemProperty(item, ip, 0.0f, AddItemPropertyPolicy.IgnoreExisting, false, false);
                     SendMessageToPC(Player, ColorToken.Green("Enhancement applied successfully."));
                 }
                 else

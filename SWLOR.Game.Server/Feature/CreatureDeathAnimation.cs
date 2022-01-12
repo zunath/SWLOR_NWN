@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class CreatureDeathAnimation
     {
-        [NWNEventHandler("crea_death")]
+        [NWNEventHandler("crea_death_aft")]
         public static void OnDeath()
         {
             var creature = OBJECT_SELF;

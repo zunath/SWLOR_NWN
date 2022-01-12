@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Leviathan, Revan's Flagship, Bridge"
+      "0": "[Prefab] Leviathan, Revan's Flagship, Bridge"
     }
   },
   "NoRest": {
@@ -1193,7 +1193,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 7
+    "value": 8
   },
   "Width": {
     "type": "int",

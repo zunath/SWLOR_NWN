@@ -14,9 +14,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetTag(uint oObject, string sNewTag)
         {
-            Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(848);
+            VM.StackPush(sNewTag);
+            VM.StackPush(oObject);
+            VM.Call(848);
         }
 
         /// <summary>
@@ -27,8 +27,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetPlaceableLastClickedBy()
         {
-            Internal.NativeFunctions.CallBuiltIn(826);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(826);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -42,9 +42,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetName(uint oObject, string sNewName = "")
         {
-            Internal.NativeFunctions.StackPushString(sNewName);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(830);
+            VM.StackPush(sNewName);
+            VM.StackPush(oObject);
+            VM.Call(830);
         }
 
         /// <summary>
@@ -59,9 +59,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetPortraitId(uint oTarget = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(831);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oTarget);
+            VM.Call(831);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -75,9 +75,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPortraitId(uint oTarget, int nPortraitId)
         {
-            Internal.NativeFunctions.StackPushInteger(nPortraitId);
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(832);
+            VM.StackPush(nPortraitId);
+            VM.StackPush(oTarget);
+            VM.Call(832);
         }
 
         /// <summary>
@@ -88,9 +88,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetPortraitResRef(uint oTarget = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(833);
-            return Internal.NativeFunctions.StackPopStringUTF8();
+            VM.StackPush(oTarget);
+            VM.Call(833);
+            return NWNCore.NativeFunctions.StackPopStringUTF8();
         }
 
         /// <summary>
@@ -104,9 +104,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPortraitResRef(uint oTarget, string sPortraitResRef)
         {
-            Internal.NativeFunctions.StackPushStringUTF8(sPortraitResRef);
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(834);
+            VM.StackPush(sPortraitResRef);
+            VM.StackPush(oTarget);
+            VM.Call(834);
         }
 
         /// <summary>
@@ -115,9 +115,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetUseableFlag(uint oPlaceable, bool nUseable)
         {
-            Internal.NativeFunctions.StackPushInteger(nUseable ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oPlaceable);
-            Internal.NativeFunctions.CallBuiltIn(835);
+            VM.StackPush(nUseable ? 1 : 0);
+            VM.StackPush(oPlaceable);
+            VM.Call(835);
         }
 
         /// <summary>
@@ -133,11 +133,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static string GetDescription(uint oObject, bool bOriginalDescription = false,
             bool bIdentifiedDescription = true)
         {
-            Internal.NativeFunctions.StackPushInteger(bIdentifiedDescription ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger(bOriginalDescription ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(836);
-            return Internal.NativeFunctions.StackPopString();
+            VM.StackPush(bIdentifiedDescription ? 1 : 0);
+            VM.StackPush(bOriginalDescription ? 1 : 0);
+            VM.StackPush(oObject);
+            VM.Call(836);
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -154,10 +154,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetDescription(uint oObject, string sNewDescription = "", bool bIdentifiedDescription = true)
         {
-            Internal.NativeFunctions.StackPushInteger(bIdentifiedDescription ? 1 : 0);
-            Internal.NativeFunctions.StackPushString(sNewDescription);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(837);
+            VM.StackPush(bIdentifiedDescription ? 1 : 0);
+            VM.StackPush(sNewDescription);
+            VM.StackPush(oObject);
+            VM.Call(837);
         }
 
         /// <summary>
@@ -173,10 +173,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetColor(uint oObject, ColorChannel nColorChannel)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nColorChannel);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(843);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)nColorChannel);
+            VM.StackPush(oObject);
+            VM.Call(843);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -192,10 +192,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetColor(uint oObject, ColorChannel nColorChannel, int nColorValue)
         {
-            Internal.NativeFunctions.StackPushInteger(nColorValue);
-            Internal.NativeFunctions.StackPushInteger((int)nColorChannel);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(844);
+            VM.StackPush(nColorValue);
+            VM.StackPush((int)nColorChannel);
+            VM.StackPush(oObject);
+            VM.Call(844);
         }
 
         /// <summary>
@@ -205,9 +205,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetKeyRequiredFeedback(uint oObject)
         {
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(819);
-            return Internal.NativeFunctions.StackPopStringUTF8();
+            VM.StackPush(oObject);
+            VM.Call(819);
+            return NWNCore.NativeFunctions.StackPopStringUTF8();
         }
 
         /// <summary>
@@ -221,9 +221,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetKeyRequiredFeedback(uint oObject, string sFeedbackMessage)
         {
-            Internal.NativeFunctions.StackPushString(sFeedbackMessage);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(820);
+            VM.StackPush(sFeedbackMessage);
+            VM.StackPush(oObject);
+            VM.Call(820);
         }
 
         /// <summary>
@@ -235,9 +235,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void LockCameraPitch(uint oPlayer, bool bLocked = true)
         {
-            Internal.NativeFunctions.StackPushInteger(bLocked ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(823);
+            VM.StackPush(bLocked ? 1 : 0);
+            VM.StackPush(oPlayer);
+            VM.Call(823);
         }
 
         /// <summary>
@@ -249,9 +249,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void LockCameraDistance(uint oPlayer, bool bLocked = true)
         {
-            Internal.NativeFunctions.StackPushInteger(bLocked ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(824);
+            VM.StackPush(bLocked ? 1 : 0);
+            VM.StackPush(oPlayer);
+            VM.Call(824);
         }
 
         /// <summary>
@@ -264,9 +264,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void LockCameraDirection(uint oPlayer, bool bLocked = true)
         {
-            Internal.NativeFunctions.StackPushInteger(bLocked ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oPlayer);
-            Internal.NativeFunctions.CallBuiltIn(825);
+            VM.StackPush(bLocked ? 1 : 0);
+            VM.StackPush(oPlayer);
+            VM.Call(825);
         }
 
         /// <summary>
@@ -277,9 +277,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetHardness(uint oObject = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(796);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oObject);
+            VM.Call(796);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -291,9 +291,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetHardness(int nHardness, uint oObject = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.StackPushInteger(nHardness);
-            Internal.NativeFunctions.CallBuiltIn(797);
+            VM.StackPush(oObject);
+            VM.StackPush(nHardness);
+            VM.Call(797);
         }
 
         /// <summary>
@@ -306,9 +306,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLockKeyRequired(uint oObject, bool nKeyRequired = true)
         {
-            Internal.NativeFunctions.StackPushInteger(nKeyRequired ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(798);
+            VM.StackPush(nKeyRequired ? 1 : 0);
+            VM.StackPush(oObject);
+            VM.Call(798);
         }
 
         /// <summary>
@@ -321,9 +321,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLockKeyTag(uint oObject, string sNewKeyTag)
         {
-            Internal.NativeFunctions.StackPushStringUTF8(sNewKeyTag);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(799);
+            VM.StackPush(sNewKeyTag);
+            VM.StackPush(oObject);
+            VM.Call(799);
         }
 
         /// <summary>
@@ -333,9 +333,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLockLockable(uint oObject, bool nLockable = true)
         {
-            Internal.NativeFunctions.StackPushInteger(nLockable ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(800);
+            VM.StackPush(nLockable ? 1 : 0);
+            VM.StackPush(oObject);
+            VM.Call(800);
         }
 
         /// <summary>
@@ -345,9 +345,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLockUnlockDC(uint oObject, int nNewUnlockDC)
         {
-            Internal.NativeFunctions.StackPushInteger(nNewUnlockDC);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(801);
+            VM.StackPush(nNewUnlockDC);
+            VM.StackPush(oObject);
+            VM.Call(801);
         }
 
         /// <summary>
@@ -357,9 +357,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLockLockDC(uint oObject, int nNewLockDC)
         {
-            Internal.NativeFunctions.StackPushInteger(nNewLockDC);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(802);
+            VM.StackPush(nNewLockDC);
+            VM.StackPush(oObject);
+            VM.Call(802);
         }
 
         /// <summary>
@@ -369,9 +369,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetWillSavingThrow(uint oObject, int nWillSave)
         {
-            Internal.NativeFunctions.StackPushInteger(nWillSave);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(811);
+            VM.StackPush(nWillSave);
+            VM.StackPush(oObject);
+            VM.Call(811);
         }
 
         /// <summary>
@@ -381,9 +381,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetReflexSavingThrow(uint oObject, int nReflexSave)
         {
-            Internal.NativeFunctions.StackPushInteger(nReflexSave);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(812);
+            VM.StackPush(nReflexSave);
+            VM.StackPush(oObject);
+            VM.Call(812);
         }
 
         /// <summary>
@@ -393,9 +393,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetFortitudeSavingThrow(uint oObject, int nFortitudeSave)
         {
-            Internal.NativeFunctions.StackPushInteger(nFortitudeSave);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(813);
+            VM.StackPush(nFortitudeSave);
+            VM.StackPush(oObject);
+            VM.Call(813);
         }
 
         /// <summary>
@@ -405,9 +405,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetWeight(uint oTarget = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(706);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oTarget);
+            VM.Call(706);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -415,8 +415,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetModuleItemAcquiredBy()
         {
-            Internal.NativeFunctions.CallBuiltIn(707);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(707);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -427,9 +427,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SpeakStringByStrRef(int nStrRef, TalkVolume nTalkVolume = TalkVolume.Talk)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nTalkVolume);
-            Internal.NativeFunctions.StackPushInteger(nStrRef);
-            Internal.NativeFunctions.CallBuiltIn(691);
+            VM.StackPush((int)nTalkVolume);
+            VM.StackPush(nStrRef);
+            VM.Call(691);
         }
 
         /// <summary>
@@ -442,13 +442,13 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint CopyObject(uint oSource, Location locLocation, uint oOwner = OBJECT_INVALID, string sNewTag = "", bool bCopyLocalState = false)
         {
-            Internal.NativeFunctions.StackPushInteger(bCopyLocalState ? 1 : 0);
-            Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
-            Internal.NativeFunctions.StackPushObject(oOwner);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, locLocation);
-            Internal.NativeFunctions.StackPushObject(oSource);
-            Internal.NativeFunctions.CallBuiltIn(600);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(bCopyLocalState ? 1 : 0);
+            VM.StackPush(sNewTag);
+            VM.StackPush(oOwner);
+            VM.StackPush((int)EngineStructure.Location, locLocation);
+            VM.StackPush(oSource);
+            VM.Call(600);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -457,9 +457,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetResRef(uint oObject)
         {
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(582);
-            return Internal.NativeFunctions.StackPopStringUTF8();
+            VM.StackPush(oObject);
+            VM.Call(582);
+            return NWNCore.NativeFunctions.StackPopStringUTF8();
         }
 
         /// <summary>
@@ -469,9 +469,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetHasInventory(uint oObject)
         {
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(570);
-            return Internal.NativeFunctions.StackPopInteger() == 1;
+            VM.StackPush(oObject);
+            VM.Call(570);
+            return VM.StackPopInt() == 1;
         }
 
         /// <summary>
@@ -481,9 +481,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetDeity(uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(489);
-            return Internal.NativeFunctions.StackPopString();
+            VM.StackPush(oCreature);
+            VM.Call(489);
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -492,9 +492,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetSubRace(uint oTarget)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(490);
-            return Internal.NativeFunctions.StackPopString();
+            VM.StackPush(oTarget);
+            VM.Call(490);
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -504,9 +504,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetFortitudeSavingThrow(uint oTarget)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(491);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oTarget);
+            VM.Call(491);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -516,9 +516,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetWillSavingThrow(uint oTarget)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(492);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oTarget);
+            VM.Call(492);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -528,9 +528,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetReflexSavingThrow(uint oTarget)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(493);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oTarget);
+            VM.Call(493);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -539,9 +539,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float GetChallengeRating(uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(494);
-            return Internal.NativeFunctions.StackPopFloat();
+            VM.StackPush(oCreature);
+            VM.Call(494);
+            return VM.StackPopFloat();
         }
 
         /// <summary>
@@ -550,9 +550,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetAge(uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(495);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oCreature);
+            VM.Call(495);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -561,9 +561,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetMovementRate(uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(496);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oCreature);
+            VM.Call(496);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -571,9 +571,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetPlotFlag(uint oTarget = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(455);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oTarget);
+            VM.Call(455);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -581,9 +581,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPlotFlag(uint oTarget, bool nPlotFlag)
         {
-            Internal.NativeFunctions.StackPushInteger(nPlotFlag ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(456);
+            VM.StackPush(nPlotFlag ? 1 : 0);
+            VM.StackPush(oTarget);
+            VM.Call(456);
         }
 
         /// <summary>
@@ -593,9 +593,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void PlayVoiceChat(VoiceChat nVoiceChatID, uint oTarget = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.StackPushInteger((int)nVoiceChatID);
-            Internal.NativeFunctions.CallBuiltIn(421);
+            VM.StackPush(oTarget);
+            VM.StackPush((int)nVoiceChatID);
+            VM.Call(421);
         }
 
         /// <summary>
@@ -603,9 +603,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetGold(uint oTarget = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(418);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oTarget);
+            VM.Call(418);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -613,8 +613,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SoundObjectPlay(uint oSound)
         {
-            Internal.NativeFunctions.StackPushObject(oSound);
-            Internal.NativeFunctions.CallBuiltIn(413);
+            VM.StackPush(oSound);
+            VM.Call(413);
         }
 
         /// <summary>
@@ -622,8 +622,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SoundObjectStop(uint oSound)
         {
-            Internal.NativeFunctions.StackPushObject(oSound);
-            Internal.NativeFunctions.CallBuiltIn(414);
+            VM.StackPush(oSound);
+            VM.Call(414);
         }
 
         /// <summary>
@@ -633,9 +633,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SoundObjectSetVolume(uint oSound, int nVolume)
         {
-            Internal.NativeFunctions.StackPushInteger(nVolume);
-            Internal.NativeFunctions.StackPushObject(oSound);
-            Internal.NativeFunctions.CallBuiltIn(415);
+            VM.StackPush(nVolume);
+            VM.StackPush(oSound);
+            VM.Call(415);
         }
 
         /// <summary>
@@ -643,9 +643,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SoundObjectSetPosition(uint oSound, Vector3 vPosition)
         {
-            Internal.NativeFunctions.StackPushVector(vPosition);
-            Internal.NativeFunctions.StackPushObject(oSound);
-            Internal.NativeFunctions.CallBuiltIn(416);
+            VM.StackPush(vPosition);
+            VM.StackPush(oSound);
+            VM.Call(416);
         }
 
         /// <summary>
@@ -656,9 +656,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SpeakOneLinerConversation(string sDialogResRef = "", uint oTokenTarget = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oTokenTarget);
-            Internal.NativeFunctions.StackPushStringUTF8(sDialogResRef);
-            Internal.NativeFunctions.CallBuiltIn(417);
+            VM.StackPush(oTokenTarget);
+            VM.StackPush(sDialogResRef);
+            VM.Call(417);
         }
 
         /// <summary>
@@ -671,10 +671,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void SetIsDestroyable(bool bDestroyable = true, bool bRaiseable = true,
             bool bSelectableWhenDead = false)
         {
-            Internal.NativeFunctions.StackPushInteger(bSelectableWhenDead ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger(bRaiseable ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger(bDestroyable ? 1 : 0);
-            Internal.NativeFunctions.CallBuiltIn(323);
+            VM.StackPush(bSelectableWhenDead ? 1 : 0);
+            VM.StackPush(bRaiseable ? 1 : 0);
+            VM.StackPush(bDestroyable ? 1 : 0);
+            VM.Call(323);
         }
 
         /// <summary>
@@ -682,9 +682,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLocked(uint oTarget, bool nLocked)
         {
-            Internal.NativeFunctions.StackPushInteger(nLocked ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(324);
+            VM.StackPush(nLocked ? 1 : 0);
+            VM.StackPush(oTarget);
+            VM.Call(324);
         }
 
         /// <summary>
@@ -692,9 +692,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetLocked(uint oTarget)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(325);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oTarget);
+            VM.Call(325);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -709,13 +709,13 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static uint CreateObject(ObjectType nObjectType, string sTemplate, Location lLocation,
             bool nUseAppearAnimation = false, string sNewTag = "")
         {
-            Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
-            Internal.NativeFunctions.StackPushInteger(nUseAppearAnimation ? 1 : 0);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lLocation);
-            Internal.NativeFunctions.StackPushStringUTF8(sTemplate);
-            Internal.NativeFunctions.StackPushInteger((int)nObjectType);
-            Internal.NativeFunctions.CallBuiltIn(243);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(sNewTag);
+            VM.StackPush(nUseAppearAnimation ? 1 : 0);
+            VM.StackPush((int)EngineStructure.Location, lLocation);
+            VM.StackPush(sTemplate);
+            VM.StackPush((int)nObjectType);
+            VM.Call(243);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -727,11 +727,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetNearestObject(ObjectType nObjectType = ObjectType.All, uint oTarget = OBJECT_INVALID, int nNth = 1)
         {
-            Internal.NativeFunctions.StackPushInteger(nNth);
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.StackPushInteger((int)nObjectType);
-            Internal.NativeFunctions.CallBuiltIn(227);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(nNth);
+            VM.StackPush(oTarget);
+            VM.StackPush((int)nObjectType);
+            VM.Call(227);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -744,11 +744,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static uint GetNearestObjectToLocation(Location lLocation, ObjectType nObjectType = ObjectType.All,
             int nNth = 1)
         {
-            Internal.NativeFunctions.StackPushInteger(nNth);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, lLocation);
-            Internal.NativeFunctions.StackPushInteger((int)nObjectType);
-            Internal.NativeFunctions.CallBuiltIn(228);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(nNth);
+            VM.StackPush((int)EngineStructure.Location, lLocation);
+            VM.StackPush((int)nObjectType);
+            VM.Call(228);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -757,11 +757,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetNearestObjectByTag(string sTag, uint oTarget = OBJECT_INVALID, int nNth = 1)
         {
-            Internal.NativeFunctions.StackPushInteger(nNth);
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.StackPushStringUTF8(sTag);
-            Internal.NativeFunctions.CallBuiltIn(229);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(nNth);
+            VM.StackPush(oTarget);
+            VM.StackPush(sTag);
+            VM.Call(229);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -772,10 +772,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetAC(uint oObject)
         {
-            Internal.NativeFunctions.StackPushInteger(0);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(116);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(0);
+            VM.StackPush(oObject);
+            VM.Call(116);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -784,9 +784,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ObjectType GetObjectType(uint oTarget)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(106);
-            return (ObjectType)Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oTarget);
+            VM.Call(106);
+            return (ObjectType)VM.StackPopInt();
         }
 
         /// <summary>
@@ -795,9 +795,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetCurrentHitPoints(uint oObject = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(49);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oObject);
+            VM.Call(49);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -806,9 +806,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetMaxHitPoints(uint oObject = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(50);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oObject);
+            VM.Call(50);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -816,9 +816,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsObjectValid(uint oObject)
         {
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(42);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oObject);
+            VM.Call(42);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -827,9 +827,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint StringToObject(string sHex)
         {
-            Internal.NativeFunctions.StackPushString(sHex);
-            Internal.NativeFunctions.CallBuiltIn(936);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(sHex);
+            VM.Call(936);
+            return VM.StackPopObject();
         }
 
 
@@ -841,10 +841,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ReplaceObjectTexture(uint oObject, string sOld, string sNew = "")
         {
-            Internal.NativeFunctions.StackPushString(sNew);
-            Internal.NativeFunctions.StackPushString(sOld);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(920);
+            VM.StackPush(sNew);
+            VM.StackPush(sOld);
+            VM.StackPush(oObject);
+            VM.Call(920);
         }
 
         /// <summary>
@@ -858,9 +858,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetCurrentHitPoints(uint oObject, int nHitPoints)
         {
-            Internal.NativeFunctions.StackPushInteger(nHitPoints);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(937);
+            VM.StackPush(nHitPoints);
+            VM.StackPush(oObject);
+            VM.Call(937);
         }
     }
 }

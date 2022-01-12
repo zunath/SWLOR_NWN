@@ -2,6 +2,7 @@
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature
@@ -30,7 +31,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("mod_exit")]
         public static void AuditClientDisconnection()
         {
-            var player = GetEnteringObject();
+            var player = GetExitingObject();
             var ipAddress = GetPCIPAddress(player);
             var cdKey = GetPCPublicCDKey(player);
             var account = GetPCPlayerName(player);

@@ -11,11 +11,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemAppearance(uint oItem, ItemAppearanceType nType, int nIndex)
         {
-            Internal.NativeFunctions.StackPushInteger(nIndex);
-            Internal.NativeFunctions.StackPushInteger((int)nType);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(732);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(nIndex);
+            VM.StackPush((int)nType);
+            VM.StackPush(oItem);
+            VM.Call(732);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -24,9 +24,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemStackSize(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(605);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oItem);
+            VM.Call(605);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -39,9 +39,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetItemStackSize(uint oItem, int nSize)
         {
-            Internal.NativeFunctions.StackPushInteger(nSize);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(606);
+            VM.StackPush(nSize);
+            VM.StackPush(oItem);
+            VM.Call(606);
         }
 
         /// <summary>
@@ -50,9 +50,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemCharges(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(607);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oItem);
+            VM.Call(607);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -65,9 +65,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetItemCharges(uint oItem, int nCharges)
         {
-            Internal.NativeFunctions.StackPushInteger(nCharges);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(608);
+            VM.StackPush(nCharges);
+            VM.StackPush(oItem);
+            VM.Call(608);
         }
 
         /// <summary>
@@ -85,11 +85,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint CopyItem(uint oItem, uint oTargetInventory = OBJECT_INVALID, bool bCopyVars = false)
         {
-            Internal.NativeFunctions.StackPushInteger(bCopyVars ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oTargetInventory);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(584);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(bCopyVars ? 1 : 0);
+            VM.StackPush(oTargetInventory);
+            VM.StackPush(oItem);
+            VM.Call(584);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -99,8 +99,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetModuleItemAcquiredStackSize()
         {
-            Internal.NativeFunctions.CallBuiltIn(579);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.Call(579);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -108,9 +108,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetNumStackedItems(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(475);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oItem);
+            VM.Call(475);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -122,9 +122,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetHiddenWhenEquipped(uint oItem, bool nValue)
         {
-            Internal.NativeFunctions.StackPushInteger(nValue ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(864);
+            VM.StackPush(nValue ? 1 : 0);
+            VM.StackPush(oItem);
+            VM.Call(864);
         }
 
         /// <summary>
@@ -132,9 +132,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetHiddenWhenEquipped(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(865);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oItem);
+            VM.Call(865);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -146,9 +146,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetInfiniteFlag(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(827);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oItem);
+            VM.Call(827);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -161,9 +161,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetInfiniteFlag(uint oItem, bool bInfinite = true)
         {
-            Internal.NativeFunctions.StackPushInteger(bInfinite ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(828);
+            VM.StackPush(bInfinite ? 1 : 0);
+            VM.StackPush(oItem);
+            VM.Call(828);
         }
 
         /// <summary>
@@ -171,9 +171,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetStolenFlag(uint oItem, bool nStolen)
         {
-            Internal.NativeFunctions.StackPushInteger(nStolen ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(774);
+            VM.StackPush(nStolen ? 1 : 0);
+            VM.StackPush(oItem);
+            VM.Call(774);
         }
 
         /// <summary>
@@ -181,9 +181,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetPickpocketableFlag(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(786);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oItem);
+            VM.Call(786);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -193,9 +193,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetPickpocketableFlag(uint oItem, bool bPickpocketable)
         {
-            Internal.NativeFunctions.StackPushInteger(bPickpocketable ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(787);
+            VM.StackPush(bPickpocketable ? 1 : 0);
+            VM.StackPush(oItem);
+            VM.Call(787);
         }
 
         /// <summary>
@@ -206,9 +206,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetDroppableFlag(uint oItem, bool bDroppable)
         {
-            Internal.NativeFunctions.StackPushInteger(bDroppable ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(705);
+            VM.StackPush(bDroppable ? 1 : 0);
+            VM.StackPush(oItem);
+            VM.Call(705);
         }
 
         /// <summary>
@@ -217,9 +217,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetDroppableFlag(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(586);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oItem);
+            VM.Call(586);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -227,9 +227,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetUseableFlag(uint oObject = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(587);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oObject);
+            VM.Call(587);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -237,9 +237,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetStolenFlag(uint oStolen)
         {
-            Internal.NativeFunctions.StackPushObject(oStolen);
-            Internal.NativeFunctions.CallBuiltIn(588);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oStolen);
+            VM.Call(588);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -247,9 +247,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetWeaponRanged(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(511);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oItem);
+            VM.Call(511);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -257,8 +257,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetSpellCastItem()
         {
-            Internal.NativeFunctions.CallBuiltIn(438);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(438);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -266,8 +266,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetItemActivated()
         {
-            Internal.NativeFunctions.CallBuiltIn(439);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(439);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -276,8 +276,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetItemActivator()
         {
-            Internal.NativeFunctions.CallBuiltIn(440);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(440);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -286,8 +286,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Location GetItemActivatedTargetLocation()
         {
-            Internal.NativeFunctions.CallBuiltIn(441);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Location);
+            VM.Call(441);
+            return VM.StackPopStruct((int)EngineStructure.Location);
         }
 
         /// <summary>
@@ -295,8 +295,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetItemActivatedTarget()
         {
-            Internal.NativeFunctions.CallBuiltIn(442);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(442);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -305,9 +305,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemACValue(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(401);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oItem);
+            VM.Call(401);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -316,9 +316,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static BaseItem GetBaseItemType(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(397);
-            return (BaseItem)Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oItem);
+            VM.Call(397);
+            return (BaseItem)VM.StackPopInt();
         }
 
         /// <summary>
@@ -330,10 +330,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetItemHasItemProperty(uint oItem, ItemPropertyType nProperty)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nProperty);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(398);
-            return Internal.NativeFunctions.StackPopInteger() == 1;
+            VM.StackPush((int)nProperty);
+            VM.StackPush(oItem);
+            VM.Call(398);
+            return VM.StackPopInt() == 1;
         }
 
         /// <summary>
@@ -344,9 +344,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetFirstItemInInventory(uint oTarget = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(339);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(oTarget);
+            VM.Call(339);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -357,9 +357,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetNextItemInInventory(uint oTarget = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oTarget);
-            Internal.NativeFunctions.CallBuiltIn(340);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(oTarget);
+            VM.Call(340);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -367,9 +367,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIdentified(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(332);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oItem);
+            VM.Call(332);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -377,9 +377,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetIdentified(uint oItem, bool bIdentified)
         {
-            Internal.NativeFunctions.StackPushInteger(bIdentified ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(333);
+            VM.StackPush(bIdentified ? 1 : 0);
+            VM.StackPush(oItem);
+            VM.Call(333);
         }
 
         /// <summary>
@@ -388,9 +388,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetGoldPieceValue(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(311);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush(oItem);
+            VM.Call(311);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -399,8 +399,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetModuleItemAcquired()
         {
-            Internal.NativeFunctions.CallBuiltIn(282);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(282);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -410,8 +410,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetModuleItemAcquiredFrom()
         {
-            Internal.NativeFunctions.CallBuiltIn(283);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(283);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -423,10 +423,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetItemInSlot(InventorySlot nInventorySlot, uint oCreature = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.StackPushInteger((int)nInventorySlot);
-            Internal.NativeFunctions.CallBuiltIn(155);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(oCreature);
+            VM.StackPush((int)nInventorySlot);
+            VM.Call(155);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -438,10 +438,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetBaseItemFitsInInventory(BaseItem baseItemType, uint target)
         {
-            Internal.NativeFunctions.StackPushObject(target);
-            Internal.NativeFunctions.StackPushInteger((int) baseItemType);
-            Internal.NativeFunctions.CallBuiltIn(944);
-            return Internal.NativeFunctions.StackPopInteger() == 1;
+            VM.StackPush(target);
+            VM.StackPush((int) baseItemType);
+            VM.Call(944);
+            return VM.StackPopInt() == 1;
         }
     }
 }

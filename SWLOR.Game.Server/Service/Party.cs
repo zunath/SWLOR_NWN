@@ -88,7 +88,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (!GetIsPC(player) || GetIsDM(player)) return;
             if (!_playerToParty.ContainsKey(player)) return;
-
+            
             var partyId = _playerToParty[player];
 
             // Remove this player from the caches.
@@ -99,6 +99,11 @@ namespace SWLOR.Game.Server.Service
             // Party needs to be disbanded and caches updated.
             if (_parties[partyId].Count <= 1)
             {
+                foreach (var member in _parties[partyId])
+                {
+                    _playerToParty.Remove(member);
+                }
+
                 _parties.Remove(partyId);
                 _partyLeaders.Remove(partyId);
                 return;

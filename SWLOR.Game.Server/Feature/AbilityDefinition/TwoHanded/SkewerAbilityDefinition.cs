@@ -63,10 +63,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                     break;
             }
 
+            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
+
             var perception = GetAbilityModifier(AbilityType.Might, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, false);
+            var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
             if (inflict)
             {
@@ -74,8 +76,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 SendMessageToPC(activator, ColorToken.Gray(GetName(target)) + "'s  concentration has been broken.");
                 SendMessageToPC(target, ColorToken.Gray(GetName(activator)) + " broke your concentration.");
             }
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.TwoHanded, 3);
         }
 
         private static void Skewer1(AbilityBuilder builder)
@@ -86,6 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
+                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -97,6 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
+                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -108,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwoHanded
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
+                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

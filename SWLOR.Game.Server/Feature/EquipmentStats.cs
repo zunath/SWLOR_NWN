@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="isAdding">If true, we're adding the HP, if false we're removing it</param>
         private static void ApplyHPBonus(uint player, uint item, ItemProperty ip, bool isAdding)
         {
-            var amount = GetItemPropertyCostTableValue(ip);
+            var amount = GetItemPropertyCostTableValue(ip) * 5;
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
@@ -125,11 +125,11 @@ namespace SWLOR.Game.Server.Feature
 
             if (isAdding)
             {
-                Stat.AdjustPlayerMaxFP(dbPlayer, amount);
+                Stat.AdjustPlayerMaxFP(dbPlayer, amount, player);
             }
             else
             {
-                Stat.AdjustPlayerMaxFP(dbPlayer, -amount);
+                Stat.AdjustPlayerMaxFP(dbPlayer, -amount, player);
             }
 
             DB.Set(dbPlayer);
@@ -150,11 +150,11 @@ namespace SWLOR.Game.Server.Feature
 
             if (isAdding)
             {
-                Stat.AdjustPlayerMaxSTM(dbPlayer, amount);
+                Stat.AdjustPlayerMaxSTM(dbPlayer, amount, player);
             }
             else
             {
-                Stat.AdjustPlayerMaxSTM(dbPlayer, -amount);
+                Stat.AdjustPlayerMaxSTM(dbPlayer, -amount, player);
             }
 
             DB.Set(dbPlayer);

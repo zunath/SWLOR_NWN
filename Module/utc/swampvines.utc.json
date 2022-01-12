@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 13.0
+    "value": 0.125
   },
   "ClassList": {
     "type": "list",
@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 15
+          "value": 5
         }
       }
     ]
@@ -80,6 +80,13 @@
         "EquippedRes": {
           "type": "resref",
           "value": "swampvinethorns"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "v_cairnmoga_prop"
         }
       }
     ]
@@ -210,7 +217,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 575
+    "value": 535
   },
   "NaturalAC": {
     "type": "byte",
@@ -539,7 +546,7 @@
   },
   "WalkRate": {
     "type": "int",
-    "value": 3
+    "value": 1
   },
   "willbonus": {
     "type": "short",

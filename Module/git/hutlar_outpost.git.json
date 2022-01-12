@@ -11685,27 +11685,27 @@
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
-                      "value": 11
+                      "value": 0
                     },
                     "ArmorPart_LBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 246
                     },
                     "ArmorPart_LFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 247
                     },
                     "ArmorPart_LFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 200
                     },
                     "ArmorPart_LHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 1
                     },
                     "ArmorPart_LShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 103
                     },
                     "ArmorPart_LShoul": {
                       "type": "byte",
@@ -11713,31 +11713,31 @@
                     },
                     "ArmorPart_LThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 107
                     },
                     "ArmorPart_Neck": {
                       "type": "byte",
-                      "value": 1
+                      "value": 2
                     },
                     "ArmorPart_Pelvis": {
                       "type": "byte",
-                      "value": 6
+                      "value": 105
                     },
                     "ArmorPart_RBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 246
                     },
                     "ArmorPart_RFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 247
                     },
                     "ArmorPart_RFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 200
                     },
                     "ArmorPart_RHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 1
                     },
                     "ArmorPart_Robe": {
                       "type": "byte",
@@ -11745,7 +11745,7 @@
                     },
                     "ArmorPart_RShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 103
                     },
                     "ArmorPart_RShoul": {
                       "type": "byte",
@@ -11753,11 +11753,11 @@
                     },
                     "ArmorPart_RThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 107
                     },
                     "ArmorPart_Torso": {
                       "type": "byte",
-                      "value": 45
+                      "value": 222
                     },
                     "BaseItem": {
                       "type": "int",
@@ -11769,11 +11769,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 19
+                      "value": 128
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 16
+                      "value": 116
                     },
                     "Cost": {
                       "type": "dword",
@@ -11805,7 +11805,7 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 1
+                      "value": 124
                     },
                     "Leather2Color": {
                       "type": "byte",
@@ -11820,11 +11820,11 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 12
+                      "value": 51
                     },
                     "Metal2Color": {
                       "type": "byte",
-                      "value": 1
+                      "value": 51
                     },
                     "Plot": {
                       "type": "byte",
@@ -12012,19 +12012,19 @@
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
-                      "value": 11
+                      "value": 0
                     },
                     "ArmorPart_LBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 17
                     },
                     "ArmorPart_LFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 58
                     },
                     "ArmorPart_LFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 106
                     },
                     "ArmorPart_LHand": {
                       "type": "byte",
@@ -12036,11 +12036,11 @@
                     },
                     "ArmorPart_LShoul": {
                       "type": "byte",
-                      "value": 0
+                      "value": 102
                     },
                     "ArmorPart_LThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 116
                     },
                     "ArmorPart_Neck": {
                       "type": "byte",
@@ -12048,19 +12048,19 @@
                     },
                     "ArmorPart_Pelvis": {
                       "type": "byte",
-                      "value": 6
+                      "value": 101
                     },
                     "ArmorPart_RBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 17
                     },
                     "ArmorPart_RFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 58
                     },
                     "ArmorPart_RFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 106
                     },
                     "ArmorPart_RHand": {
                       "type": "byte",
@@ -12076,15 +12076,15 @@
                     },
                     "ArmorPart_RShoul": {
                       "type": "byte",
-                      "value": 0
+                      "value": 100
                     },
                     "ArmorPart_RThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 116
                     },
                     "ArmorPart_Torso": {
                       "type": "byte",
-                      "value": 45
+                      "value": 62
                     },
                     "BaseItem": {
                       "type": "int",
@@ -12096,11 +12096,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 19
+                      "value": 115
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 16
+                      "value": 115
                     },
                     "Cost": {
                       "type": "dword",
@@ -12132,11 +12132,11 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 1
+                      "value": 117
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 7
+                      "value": 115
                     },
                     "LocalizedName": {
                       "id": 12843,
@@ -12147,11 +12147,11 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 12
+                      "value": 54
                     },
                     "Metal2Color": {
                       "type": "byte",
-                      "value": 1
+                      "value": 0
                     },
                     "Plot": {
                       "type": "byte",
@@ -12339,59 +12339,59 @@
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
-                      "value": 11
+                      "value": 63
                     },
                     "ArmorPart_LBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 1
                     },
                     "ArmorPart_LFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 198
                     },
                     "ArmorPart_LFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 186
                     },
                     "ArmorPart_LHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 63
                     },
                     "ArmorPart_LShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 186
                     },
                     "ArmorPart_LShoul": {
                       "type": "byte",
-                      "value": 0
+                      "value": 19
                     },
                     "ArmorPart_LThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 232
                     },
                     "ArmorPart_Neck": {
                       "type": "byte",
-                      "value": 1
+                      "value": 2
                     },
                     "ArmorPart_Pelvis": {
                       "type": "byte",
-                      "value": 6
+                      "value": 232
                     },
                     "ArmorPart_RBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 156
                     },
                     "ArmorPart_RFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 198
                     },
                     "ArmorPart_RFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 186
                     },
                     "ArmorPart_RHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 63
                     },
                     "ArmorPart_Robe": {
                       "type": "byte",
@@ -12399,19 +12399,19 @@
                     },
                     "ArmorPart_RShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 186
                     },
                     "ArmorPart_RShoul": {
                       "type": "byte",
-                      "value": 0
+                      "value": 19
                     },
                     "ArmorPart_RThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 232
                     },
                     "ArmorPart_Torso": {
                       "type": "byte",
-                      "value": 45
+                      "value": 187
                     },
                     "BaseItem": {
                       "type": "int",
@@ -12423,11 +12423,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 19
+                      "value": 115
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 16
+                      "value": 1
                     },
                     "Cost": {
                       "type": "dword",
@@ -12459,11 +12459,11 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 1
+                      "value": 22
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 7
+                      "value": 0
                     },
                     "LocalizedName": {
                       "id": 12843,
@@ -12474,11 +12474,11 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 12
+                      "value": 35
                     },
                     "Metal2Color": {
                       "type": "byte",
-                      "value": 1
+                      "value": 165
                     },
                     "Plot": {
                       "type": "byte",
@@ -12666,27 +12666,27 @@
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
-                      "value": 11
+                      "value": 0
                     },
                     "ArmorPart_LBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 75
                     },
                     "ArmorPart_LFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 75
                     },
                     "ArmorPart_LFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 75
                     },
                     "ArmorPart_LHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 75
                     },
                     "ArmorPart_LShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 75
                     },
                     "ArmorPart_LShoul": {
                       "type": "byte",
@@ -12694,7 +12694,7 @@
                     },
                     "ArmorPart_LThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 75
                     },
                     "ArmorPart_Neck": {
                       "type": "byte",
@@ -12702,23 +12702,23 @@
                     },
                     "ArmorPart_Pelvis": {
                       "type": "byte",
-                      "value": 6
+                      "value": 75
                     },
                     "ArmorPart_RBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 75
                     },
                     "ArmorPart_RFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 75
                     },
                     "ArmorPart_RFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 75
                     },
                     "ArmorPart_RHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 75
                     },
                     "ArmorPart_Robe": {
                       "type": "byte",
@@ -12726,7 +12726,7 @@
                     },
                     "ArmorPart_RShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 75
                     },
                     "ArmorPart_RShoul": {
                       "type": "byte",
@@ -12734,11 +12734,11 @@
                     },
                     "ArmorPart_RThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 75
                     },
                     "ArmorPart_Torso": {
                       "type": "byte",
-                      "value": 45
+                      "value": 75
                     },
                     "BaseItem": {
                       "type": "int",
@@ -12750,11 +12750,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 19
+                      "value": 23
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 16
+                      "value": 23
                     },
                     "Cost": {
                       "type": "dword",
@@ -12786,11 +12786,11 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 1
+                      "value": 45
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 7
+                      "value": 23
                     },
                     "LocalizedName": {
                       "id": 12843,
@@ -12801,11 +12801,11 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 12
+                      "value": 60
                     },
                     "Metal2Color": {
                       "type": "byte",
-                      "value": 1
+                      "value": 44
                     },
                     "Plot": {
                       "type": "byte",
@@ -12966,7 +12966,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.092053150474398e-019
                     },
                     "XPosition": {
                       "type": "float",
@@ -12993,27 +12993,27 @@
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
-                      "value": 11
+                      "value": 12
                     },
                     "ArmorPart_LBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 11
                     },
                     "ArmorPart_LFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 1
                     },
                     "ArmorPart_LFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 11
                     },
                     "ArmorPart_LHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 1
                     },
                     "ArmorPart_LShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 8
                     },
                     "ArmorPart_LShoul": {
                       "type": "byte",
@@ -13021,7 +13021,7 @@
                     },
                     "ArmorPart_LThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 4
                     },
                     "ArmorPart_Neck": {
                       "type": "byte",
@@ -13029,23 +13029,23 @@
                     },
                     "ArmorPart_Pelvis": {
                       "type": "byte",
-                      "value": 6
+                      "value": 16
                     },
                     "ArmorPart_RBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 11
                     },
                     "ArmorPart_RFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 1
                     },
                     "ArmorPart_RFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 11
                     },
                     "ArmorPart_RHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 1
                     },
                     "ArmorPart_Robe": {
                       "type": "byte",
@@ -13053,7 +13053,7 @@
                     },
                     "ArmorPart_RShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 8
                     },
                     "ArmorPart_RShoul": {
                       "type": "byte",
@@ -13061,11 +13061,11 @@
                     },
                     "ArmorPart_RThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 4
                     },
                     "ArmorPart_Torso": {
                       "type": "byte",
-                      "value": 45
+                      "value": 49
                     },
                     "BaseItem": {
                       "type": "int",
@@ -13320,27 +13320,27 @@
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
-                      "value": 11
+                      "value": 0
                     },
                     "ArmorPart_LBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 17
                     },
                     "ArmorPart_LFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 154
                     },
                     "ArmorPart_LFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 102
                     },
                     "ArmorPart_LHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 1
                     },
                     "ArmorPart_LShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 92
                     },
                     "ArmorPart_LShoul": {
                       "type": "byte",
@@ -13348,7 +13348,7 @@
                     },
                     "ArmorPart_LThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 109
                     },
                     "ArmorPart_Neck": {
                       "type": "byte",
@@ -13356,23 +13356,23 @@
                     },
                     "ArmorPart_Pelvis": {
                       "type": "byte",
-                      "value": 6
+                      "value": 106
                     },
                     "ArmorPart_RBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 17
                     },
                     "ArmorPart_RFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 154
                     },
                     "ArmorPart_RFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 102
                     },
                     "ArmorPart_RHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 1
                     },
                     "ArmorPart_Robe": {
                       "type": "byte",
@@ -13380,7 +13380,7 @@
                     },
                     "ArmorPart_RShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 92
                     },
                     "ArmorPart_RShoul": {
                       "type": "byte",
@@ -13388,11 +13388,11 @@
                     },
                     "ArmorPart_RThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 109
                     },
                     "ArmorPart_Torso": {
                       "type": "byte",
-                      "value": 45
+                      "value": 70
                     },
                     "BaseItem": {
                       "type": "int",
@@ -13404,11 +13404,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 19
+                      "value": 21
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 16
+                      "value": 21
                     },
                     "Cost": {
                       "type": "dword",
@@ -13440,11 +13440,11 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 1
+                      "value": 105
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 7
+                      "value": 23
                     },
                     "LocalizedName": {
                       "id": 12843,
@@ -13647,27 +13647,27 @@
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
-                      "value": 11
+                      "value": 7
                     },
                     "ArmorPart_LBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 17
                     },
                     "ArmorPart_LFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 154
                     },
                     "ArmorPart_LFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 205
                     },
                     "ArmorPart_LHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 1
                     },
                     "ArmorPart_LShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 16
                     },
                     "ArmorPart_LShoul": {
                       "type": "byte",
@@ -13675,31 +13675,31 @@
                     },
                     "ArmorPart_LThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 17
                     },
                     "ArmorPart_Neck": {
                       "type": "byte",
-                      "value": 1
+                      "value": 2
                     },
                     "ArmorPart_Pelvis": {
                       "type": "byte",
-                      "value": 6
+                      "value": 10
                     },
                     "ArmorPart_RBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 17
                     },
                     "ArmorPart_RFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 154
                     },
                     "ArmorPart_RFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 205
                     },
                     "ArmorPart_RHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 1
                     },
                     "ArmorPart_Robe": {
                       "type": "byte",
@@ -13707,7 +13707,7 @@
                     },
                     "ArmorPart_RShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 16
                     },
                     "ArmorPart_RShoul": {
                       "type": "byte",
@@ -13715,11 +13715,11 @@
                     },
                     "ArmorPart_RThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 17
                     },
                     "ArmorPart_Torso": {
                       "type": "byte",
-                      "value": 45
+                      "value": 53
                     },
                     "BaseItem": {
                       "type": "int",
@@ -13731,11 +13731,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 19
+                      "value": 129
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 16
+                      "value": 3
                     },
                     "Cost": {
                       "type": "dword",
@@ -13767,11 +13767,11 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 1
+                      "value": 2
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 7
+                      "value": 2
                     },
                     "LocalizedName": {
                       "id": 12843,
@@ -13974,27 +13974,27 @@
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
-                      "value": 11
+                      "value": 0
                     },
                     "ArmorPart_LBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 1
                     },
                     "ArmorPart_LFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 1
                     },
                     "ArmorPart_LFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 205
                     },
                     "ArmorPart_LHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 1
                     },
                     "ArmorPart_LShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 16
                     },
                     "ArmorPart_LShoul": {
                       "type": "byte",
@@ -14002,39 +14002,39 @@
                     },
                     "ArmorPart_LThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 17
                     },
                     "ArmorPart_Neck": {
                       "type": "byte",
-                      "value": 1
+                      "value": 129
                     },
                     "ArmorPart_Pelvis": {
                       "type": "byte",
-                      "value": 6
+                      "value": 117
                     },
                     "ArmorPart_RBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 1
                     },
                     "ArmorPart_RFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 1
                     },
                     "ArmorPart_RFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 205
                     },
                     "ArmorPart_RHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 1
                     },
                     "ArmorPart_Robe": {
                       "type": "byte",
-                      "value": 0
+                      "value": 236
                     },
                     "ArmorPart_RShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 16
                     },
                     "ArmorPart_RShoul": {
                       "type": "byte",
@@ -14042,11 +14042,11 @@
                     },
                     "ArmorPart_RThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 17
                     },
                     "ArmorPart_Torso": {
                       "type": "byte",
-                      "value": 45
+                      "value": 170
                     },
                     "BaseItem": {
                       "type": "int",
@@ -14058,11 +14058,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 19
+                      "value": 119
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 16
+                      "value": 133
                     },
                     "Cost": {
                       "type": "dword",
@@ -14094,11 +14094,11 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 1
+                      "value": 115
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 7
+                      "value": 118
                     },
                     "LocalizedName": {
                       "id": 12843,
@@ -14301,27 +14301,27 @@
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
-                      "value": 11
+                      "value": 0
                     },
                     "ArmorPart_LBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 101
                     },
                     "ArmorPart_LFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 101
                     },
                     "ArmorPart_LFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 63
                     },
                     "ArmorPart_LHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 1
                     },
                     "ArmorPart_LShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 220
                     },
                     "ArmorPart_LShoul": {
                       "type": "byte",
@@ -14329,7 +14329,7 @@
                     },
                     "ArmorPart_LThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 237
                     },
                     "ArmorPart_Neck": {
                       "type": "byte",
@@ -14337,23 +14337,23 @@
                     },
                     "ArmorPart_Pelvis": {
                       "type": "byte",
-                      "value": 6
+                      "value": 103
                     },
                     "ArmorPart_RBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 101
                     },
                     "ArmorPart_RFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 101
                     },
                     "ArmorPart_RFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 63
                     },
                     "ArmorPart_RHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 1
                     },
                     "ArmorPart_Robe": {
                       "type": "byte",
@@ -14361,7 +14361,7 @@
                     },
                     "ArmorPart_RShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 220
                     },
                     "ArmorPart_RShoul": {
                       "type": "byte",
@@ -14369,11 +14369,11 @@
                     },
                     "ArmorPart_RThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 237
                     },
                     "ArmorPart_Torso": {
                       "type": "byte",
-                      "value": 45
+                      "value": 104
                     },
                     "BaseItem": {
                       "type": "int",
@@ -14385,11 +14385,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 19
+                      "value": 110
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 16
+                      "value": 1
                     },
                     "Cost": {
                       "type": "dword",
@@ -14425,7 +14425,7 @@
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 7
+                      "value": 56
                     },
                     "LocalizedName": {
                       "id": 12843,
@@ -14628,27 +14628,27 @@
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
-                      "value": 11
+                      "value": 156
                     },
                     "ArmorPart_LBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 101
                     },
                     "ArmorPart_LFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 101
                     },
                     "ArmorPart_LFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 105
                     },
                     "ArmorPart_LHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 1
                     },
                     "ArmorPart_LShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 102
                     },
                     "ArmorPart_LShoul": {
                       "type": "byte",
@@ -14656,7 +14656,7 @@
                     },
                     "ArmorPart_LThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 102
                     },
                     "ArmorPart_Neck": {
                       "type": "byte",
@@ -14664,23 +14664,23 @@
                     },
                     "ArmorPart_Pelvis": {
                       "type": "byte",
-                      "value": 6
+                      "value": 102
                     },
                     "ArmorPart_RBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 101
                     },
                     "ArmorPart_RFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 101
                     },
                     "ArmorPart_RFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 105
                     },
                     "ArmorPart_RHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 1
                     },
                     "ArmorPart_Robe": {
                       "type": "byte",
@@ -14688,7 +14688,7 @@
                     },
                     "ArmorPart_RShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 102
                     },
                     "ArmorPart_RShoul": {
                       "type": "byte",
@@ -14696,11 +14696,11 @@
                     },
                     "ArmorPart_RThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 102
                     },
                     "ArmorPart_Torso": {
                       "type": "byte",
-                      "value": 45
+                      "value": 101
                     },
                     "BaseItem": {
                       "type": "int",
@@ -14712,11 +14712,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 19
+                      "value": 111
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 16
+                      "value": 130
                     },
                     "Cost": {
                       "type": "dword",
@@ -14748,7 +14748,7 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 1
+                      "value": 2
                     },
                     "Leather2Color": {
                       "type": "byte",
@@ -14955,27 +14955,27 @@
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
-                      "value": 11
+                      "value": 107
                     },
                     "ArmorPart_LBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 52
                     },
                     "ArmorPart_LFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 169
                     },
                     "ArmorPart_LFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 160
                     },
                     "ArmorPart_LHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 1
                     },
                     "ArmorPart_LShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 232
                     },
                     "ArmorPart_LShoul": {
                       "type": "byte",
@@ -14983,7 +14983,7 @@
                     },
                     "ArmorPart_LThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 255
                     },
                     "ArmorPart_Neck": {
                       "type": "byte",
@@ -14991,23 +14991,23 @@
                     },
                     "ArmorPart_Pelvis": {
                       "type": "byte",
-                      "value": 6
+                      "value": 237
                     },
                     "ArmorPart_RBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 53
                     },
                     "ArmorPart_RFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 168
                     },
                     "ArmorPart_RFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 160
                     },
                     "ArmorPart_RHand": {
                       "type": "byte",
-                      "value": 4
+                      "value": 63
                     },
                     "ArmorPart_Robe": {
                       "type": "byte",
@@ -15015,7 +15015,7 @@
                     },
                     "ArmorPart_RShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 232
                     },
                     "ArmorPart_RShoul": {
                       "type": "byte",
@@ -15023,11 +15023,11 @@
                     },
                     "ArmorPart_RThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 255
                     },
                     "ArmorPart_Torso": {
                       "type": "byte",
-                      "value": 45
+                      "value": 196
                     },
                     "BaseItem": {
                       "type": "int",
@@ -15039,11 +15039,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 19
+                      "value": 154
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 16
+                      "value": 165
                     },
                     "Cost": {
                       "type": "dword",
@@ -15075,11 +15075,11 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 1
+                      "value": 22
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 7
+                      "value": 22
                     },
                     "LocalizedName": {
                       "id": 12843,
@@ -15090,11 +15090,11 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 12
+                      "value": 54
                     },
                     "Metal2Color": {
                       "type": "byte",
-                      "value": 1
+                      "value": 56
                     },
                     "Plot": {
                       "type": "byte",
@@ -15282,19 +15282,19 @@
                     },
                     "ArmorPart_Belt": {
                       "type": "byte",
-                      "value": 11
+                      "value": 140
                     },
                     "ArmorPart_LBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 247
                     },
                     "ArmorPart_LFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 247
                     },
                     "ArmorPart_LFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 102
                     },
                     "ArmorPart_LHand": {
                       "type": "byte",
@@ -15302,15 +15302,15 @@
                     },
                     "ArmorPart_LShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 89
                     },
                     "ArmorPart_LShoul": {
                       "type": "byte",
-                      "value": 0
+                      "value": 185
                     },
                     "ArmorPart_LThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 123
                     },
                     "ArmorPart_Neck": {
                       "type": "byte",
@@ -15318,19 +15318,19 @@
                     },
                     "ArmorPart_Pelvis": {
                       "type": "byte",
-                      "value": 6
+                      "value": 123
                     },
                     "ArmorPart_RBicep": {
                       "type": "byte",
-                      "value": 7
+                      "value": 247
                     },
                     "ArmorPart_RFArm": {
                       "type": "byte",
-                      "value": 15
+                      "value": 247
                     },
                     "ArmorPart_RFoot": {
                       "type": "byte",
-                      "value": 4
+                      "value": 102
                     },
                     "ArmorPart_RHand": {
                       "type": "byte",
@@ -15342,19 +15342,19 @@
                     },
                     "ArmorPart_RShin": {
                       "type": "byte",
-                      "value": 7
+                      "value": 89
                     },
                     "ArmorPart_RShoul": {
                       "type": "byte",
-                      "value": 0
+                      "value": 185
                     },
                     "ArmorPart_RThigh": {
                       "type": "byte",
-                      "value": 6
+                      "value": 123
                     },
                     "ArmorPart_Torso": {
                       "type": "byte",
-                      "value": 45
+                      "value": 193
                     },
                     "BaseItem": {
                       "type": "int",
@@ -15366,11 +15366,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 19
+                      "value": 119
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 16
+                      "value": 85
                     },
                     "Cost": {
                       "type": "dword",
@@ -15402,11 +15402,11 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 1
+                      "value": 114
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 7
+                      "value": 124
                     },
                     "LocalizedName": {
                       "id": 12843,
@@ -15417,11 +15417,11 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 12
+                      "value": 74
                     },
                     "Metal2Color": {
                       "type": "byte",
-                      "value": 1
+                      "value": 56
                     },
                     "Plot": {
                       "type": "byte",
@@ -15617,11 +15617,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 128
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 20
                     },
                     "Cost": {
                       "type": "dword",
@@ -15633,7 +15633,9 @@
                     },
                     "DescIdentified": {
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": "It's rusty and junky and hard to see out of."
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
@@ -15651,11 +15653,11 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 20
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 37
+                      "value": 20
                     },
                     "LocalizedName": {
                       "id": 90531,
@@ -15666,15 +15668,15 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 35
+                      "value": 50
                     },
                     "Metal2Color": {
                       "type": "byte",
-                      "value": 63
+                      "value": 54
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 10
                     },
                     "Plot": {
                       "type": "byte",
@@ -15835,7 +15837,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 5.090568397574444e-039
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -15870,7 +15872,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 20
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -15904,7 +15906,7 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 109
                     },
                     "Leather2Color": {
                       "type": "byte",
@@ -15919,7 +15921,7 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 35
+                      "value": 39
                     },
                     "Metal2Color": {
                       "type": "byte",
@@ -15927,7 +15929,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 47
+                      "value": 4
                     },
                     "Plot": {
                       "type": "byte",
@@ -16161,7 +16163,7 @@
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 37
+                      "value": 23
                     },
                     "LocalizedName": {
                       "id": 90531,
@@ -16172,15 +16174,15 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 35
+                      "value": 60
                     },
                     "Metal2Color": {
                       "type": "byte",
-                      "value": 63
+                      "value": 53
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 45
                     },
                     "Plot": {
                       "type": "byte",
@@ -16376,7 +16378,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 21
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -16410,11 +16412,11 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 21
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 37
+                      "value": 3
                     },
                     "LocalizedName": {
                       "id": 90531,
@@ -16425,15 +16427,15 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 35
+                      "value": 7
                     },
                     "Metal2Color": {
                       "type": "byte",
-                      "value": 63
+                      "value": 12
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 47
+                      "value": 83
                     },
                     "Plot": {
                       "type": "byte",
@@ -16594,7 +16596,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.005002850822973e-038
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -16629,11 +16631,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 118
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 74
                     },
                     "Cost": {
                       "type": "dword",
@@ -16667,7 +16669,7 @@
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 37
+                      "value": 58
                     },
                     "LocalizedName": {
                       "id": 90531,
@@ -16678,15 +16680,15 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 35
+                      "value": 54
                     },
                     "Metal2Color": {
                       "type": "byte",
-                      "value": 63
+                      "value": 90
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 47
+                      "value": 166
                     },
                     "Plot": {
                       "type": "byte",
@@ -16882,7 +16884,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 3
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -16939,7 +16941,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 47
+                      "value": 33
                     },
                     "Plot": {
                       "type": "byte",
@@ -17100,7 +17102,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.96161088849269e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -17135,7 +17137,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 2
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -17169,7 +17171,7 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 22
                     },
                     "Leather2Color": {
                       "type": "byte",
@@ -17192,7 +17194,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 47
+                      "value": 33
                     },
                     "Plot": {
                       "type": "byte",
@@ -17353,7 +17355,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 8.407790785948902e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -17388,11 +17390,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 20
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 20
                     },
                     "Cost": {
                       "type": "dword",
@@ -17422,11 +17424,11 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 21
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 37
+                      "value": 20
                     },
                     "LocalizedName": {
                       "id": 90531,
@@ -17437,15 +17439,15 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 35
+                      "value": 54
                     },
                     "Metal2Color": {
                       "type": "byte",
-                      "value": 63
+                      "value": 168
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 3
                     },
                     "Plot": {
                       "type": "byte",
@@ -17606,7 +17608,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 4.354254718196504e-041
+                      "value": 8.407790785948902e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -17641,7 +17643,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 16
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -17675,11 +17677,11 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 109
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 37
+                      "value": 20
                     },
                     "LocalizedName": {
                       "id": 90531,
@@ -17698,7 +17700,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 47
+                      "value": 49
                     },
                     "Plot": {
                       "type": "byte",
@@ -17859,7 +17861,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 9.037998127681135e-010
                     },
                     "XPosition": {
                       "type": "float",
@@ -17894,7 +17896,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 21
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -17928,7 +17930,7 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 21
                     },
                     "Leather2Color": {
                       "type": "byte",
@@ -17951,7 +17953,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 47
+                      "value": 33
                     },
                     "Plot": {
                       "type": "byte",
@@ -18147,11 +18149,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 52
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 92
                     },
                     "Cost": {
                       "type": "dword",
@@ -18181,11 +18183,11 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 23
+                      "value": 171
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 37
+                      "value": 118
                     },
                     "LocalizedName": {
                       "id": 90531,
@@ -18196,15 +18198,15 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 35
+                      "value": 135
                     },
                     "Metal2Color": {
                       "type": "byte",
-                      "value": 63
+                      "value": 139
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 122
                     },
                     "Plot": {
                       "type": "byte",
@@ -18438,7 +18440,7 @@
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 37
+                      "value": 3
                     },
                     "LocalizedName": {
                       "id": 90531,
@@ -18449,15 +18451,15 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 35
+                      "value": 7
                     },
                     "Metal2Color": {
                       "type": "byte",
-                      "value": 63
+                      "value": 20
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 47
+                      "value": 114
                     },
                     "Plot": {
                       "type": "byte",
@@ -18689,7 +18691,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 113
                     },
                     "Plot": {
                       "type": "byte",
@@ -18819,7 +18821,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.802596928649634e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -18890,7 +18892,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 110
                     },
                     "Plot": {
                       "type": "byte",
@@ -19122,7 +19124,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 97
                     },
                     "Plot": {
                       "type": "byte",
@@ -19354,7 +19356,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 48
                     },
                     "Plot": {
                       "type": "byte",
@@ -19586,7 +19588,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 138
                     },
                     "Plot": {
                       "type": "byte",
@@ -19818,7 +19820,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 255
                     },
                     "Plot": {
                       "type": "byte",
@@ -20189,7 +20191,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 137
                     },
                     "Plot": {
                       "type": "byte",
@@ -20653,7 +20655,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 124
                     },
                     "Plot": {
                       "type": "byte",
@@ -20814,7 +20816,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.242077542919707e-044
                     },
                     "XPosition": {
                       "type": "float",
@@ -20885,7 +20887,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 68
                     },
                     "Plot": {
                       "type": "byte",
@@ -21117,7 +21119,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 59
                     },
                     "Plot": {
                       "type": "byte",
@@ -21287,7 +21289,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 226
                     },
                     "Plot": {
                       "type": "byte",
@@ -21519,7 +21521,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 164
                     },
                     "Plot": {
                       "type": "byte",
@@ -21751,7 +21753,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 4
                     },
                     "Plot": {
                       "type": "byte",
@@ -21983,7 +21985,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 154
                     },
                     "Plot": {
                       "type": "byte",
@@ -22144,7 +22146,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.692768544904379e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -22188,7 +22190,9 @@
                     "DescIdentified": {
                       "id": 13336,
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": ""
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
@@ -22211,15 +22215,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 14
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 12
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 51
                     },
                     "Plot": {
                       "type": "byte",
@@ -22380,7 +22384,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 7.791219461645983e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -22424,7 +22428,9 @@
                     "DescIdentified": {
                       "id": 13336,
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": ""
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
@@ -22455,7 +22461,7 @@
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 61
                     },
                     "Plot": {
                       "type": "byte",
@@ -22585,7 +22591,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.802596928649634e-045
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -22656,11 +22662,11 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 41
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 71
                     },
                     "Plot": {
                       "type": "byte",
@@ -22857,15 +22863,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 16
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 32
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 41
                     },
                     "Plot": {
                       "type": "byte",
@@ -23093,15 +23099,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 24
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 41
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 32
                     },
                     "Plot": {
                       "type": "byte",
@@ -23306,7 +23312,9 @@
                     "DescIdentified": {
                       "id": 13336,
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": ""
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
@@ -23329,7 +23337,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 51
                     },
                     "ModelPart2": {
                       "type": "byte",
@@ -23337,7 +23345,7 @@
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 63
                     },
                     "Plot": {
                       "type": "byte",
@@ -23565,15 +23573,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 61
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 41
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 81
                     },
                     "Plot": {
                       "type": "byte",
@@ -23801,15 +23809,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 21
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 41
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 41
                     },
                     "Plot": {
                       "type": "byte",
@@ -23970,7 +23978,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.802596928649634e-045
+                      "value": 1.76451502627781e-041
                     },
                     "XPosition": {
                       "type": "float",
@@ -24037,7 +24045,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 13
                     },
                     "ModelPart2": {
                       "type": "byte",
@@ -24045,7 +24053,7 @@
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 21
                     },
                     "Plot": {
                       "type": "byte",
@@ -24250,7 +24258,9 @@
                     "DescIdentified": {
                       "id": 13336,
                       "type": "cexolocstring",
-                      "value": {}
+                      "value": {
+                        "0": ""
+                      }
                     },
                     "Description": {
                       "type": "cexolocstring",
@@ -24281,7 +24291,7 @@
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 62
                     },
                     "Plot": {
                       "type": "byte",
@@ -24442,7 +24452,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.394261703956364e-038
                     },
                     "XPosition": {
                       "type": "float",
@@ -24509,15 +24519,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 13
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 22
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 71
                     },
                     "Plot": {
                       "type": "byte",
@@ -24745,15 +24755,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 22
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 41
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 22
                     },
                     "Plot": {
                       "type": "byte",
@@ -24914,7 +24924,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.159175077286449e-019
                     },
                     "XPosition": {
                       "type": "float",
@@ -24985,7 +24995,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 176
                     },
                     "Plot": {
                       "type": "byte",
@@ -25418,7 +25428,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 11
                     },
                     "Plot": {
                       "type": "byte",
@@ -25650,7 +25660,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 142
                     },
                     "Plot": {
                       "type": "byte",
@@ -25904,7 +25914,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 99
                     },
                     "Plot": {
                       "type": "byte",
@@ -26100,11 +26110,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 105
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 93
+                      "value": 128
                     },
                     "Cost": {
                       "type": "dword",
@@ -26139,7 +26149,7 @@
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 116
                     },
                     "LocalizedName": {
                       "id": 66559,
@@ -26150,15 +26160,15 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 51
                     },
                     "Metal2Color": {
                       "type": "byte",
-                      "value": 93
+                      "value": 50
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 99
                     },
                     "Plot": {
                       "type": "byte",
@@ -26288,7 +26298,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 9.304621803116785e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -26381,7 +26391,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 99
                     },
                     "Plot": {
                       "type": "byte",
@@ -26546,7 +26556,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 154
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -26581,11 +26591,11 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 92
+                      "value": 22
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 136
                     },
                     "LocalizedName": {
                       "id": 66559,
@@ -26604,7 +26614,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 100
                     },
                     "Plot": {
                       "type": "byte",
@@ -26765,7 +26775,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.129973665773722e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -26800,7 +26810,7 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 140
                     },
                     "Cloth2Color": {
                       "type": "byte",
@@ -26837,11 +26847,11 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 92
+                      "value": 127
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 84
                     },
                     "LocalizedName": {
                       "id": 66559,
@@ -26860,7 +26870,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 20
                     },
                     "Plot": {
                       "type": "byte",
@@ -27114,7 +27124,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 99
                     },
                     "Plot": {
                       "type": "byte",
@@ -27310,11 +27320,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 119
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 93
+                      "value": 128
                     },
                     "Cost": {
                       "type": "dword",
@@ -27351,7 +27361,7 @@
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 92
                     },
                     "LocalizedName": {
                       "id": 66559,
@@ -27362,15 +27372,15 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 36
                     },
                     "Metal2Color": {
                       "type": "byte",
-                      "value": 93
+                      "value": 12
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 2
                     },
                     "Plot": {
                       "type": "byte",
@@ -27626,7 +27636,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 99
                     },
                     "Plot": {
                       "type": "byte",
@@ -27822,11 +27832,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 104
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 93
+                      "value": 169
                     },
                     "Cost": {
                       "type": "dword",
@@ -27857,11 +27867,11 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 92
+                      "value": 137
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 20
                     },
                     "LocalizedName": {
                       "id": 66559,
@@ -27880,7 +27890,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 29
                     },
                     "Plot": {
                       "type": "byte",
@@ -28041,7 +28051,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.802596928649634e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -28134,7 +28144,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 99
                     },
                     "Plot": {
                       "type": "byte",
@@ -28388,7 +28398,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 99
                     },
                     "Plot": {
                       "type": "byte",
@@ -28584,11 +28594,11 @@
                     },
                     "Cloth1Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 69
                     },
                     "Cloth2Color": {
                       "type": "byte",
-                      "value": 93
+                      "value": 20
                     },
                     "Cost": {
                       "type": "dword",
@@ -28621,11 +28631,11 @@
                     },
                     "Leather1Color": {
                       "type": "byte",
-                      "value": 92
+                      "value": 4
                     },
                     "Leather2Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 36
                     },
                     "LocalizedName": {
                       "id": 66559,
@@ -28636,15 +28646,15 @@
                     },
                     "Metal1Color": {
                       "type": "byte",
-                      "value": 88
+                      "value": 40
                     },
                     "Metal2Color": {
                       "type": "byte",
-                      "value": 93
+                      "value": 56
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 5
                     },
                     "Plot": {
                       "type": "byte",
@@ -28805,7 +28815,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.401298464324817e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -28876,7 +28886,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 125
                     },
                     "Plot": {
                       "type": "byte",
@@ -28975,7 +28985,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 9.201556301065695e-039
                     },
                     "XPosition": {
                       "type": "float",
@@ -29046,7 +29056,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 141
                     },
                     "Plot": {
                       "type": "byte",
@@ -29207,7 +29217,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.577721810442024e-030
                     },
                     "XPosition": {
                       "type": "float",
@@ -29278,7 +29288,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 54
                     },
                     "Plot": {
                       "type": "byte",
@@ -29439,7 +29449,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 1.033975888950801e-025
                     },
                     "XPosition": {
                       "type": "float",
@@ -29510,7 +29520,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 7
                     },
                     "Plot": {
                       "type": "byte",
@@ -29742,7 +29752,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 6
                     },
                     "Plot": {
                       "type": "byte",
@@ -29912,7 +29922,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 138
                     },
                     "Plot": {
                       "type": "byte",
@@ -30144,7 +30154,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 126
                     },
                     "Plot": {
                       "type": "byte",
@@ -30376,7 +30386,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 10
                     },
                     "Plot": {
                       "type": "byte",
@@ -30615,7 +30625,7 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 21
+                      "value": 13
                     },
                     "ModelPart3": {
                       "type": "byte",
@@ -30656,7 +30666,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -30788,7 +30798,7 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 21
+                      "value": 12
                     },
                     "ModelPart3": {
                       "type": "byte",
@@ -30829,7 +30839,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -30961,11 +30971,11 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 21
+                      "value": 12
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 51
                     },
                     "Plot": {
                       "type": "byte",
@@ -31002,7 +31012,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -31134,7 +31144,7 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 21
+                      "value": 14
                     },
                     "ModelPart3": {
                       "type": "byte",
@@ -31175,7 +31185,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -31303,15 +31313,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 163
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 21
+                      "value": 162
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 164
                     },
                     "Plot": {
                       "type": "byte",
@@ -31348,7 +31358,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -31523,7 +31533,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -31653,15 +31663,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 101
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 101
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 14
                     },
                     "Plot": {
                       "type": "byte",
@@ -31698,7 +31708,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -31828,15 +31838,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 71
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 53
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 15
                     },
                     "Plot": {
                       "type": "byte",
@@ -31873,7 +31883,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -32003,15 +32013,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 192
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 191
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 191
                     },
                     "Plot": {
                       "type": "byte",
@@ -32048,7 +32058,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -32178,15 +32188,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 71
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 52
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 15
                     },
                     "Plot": {
                       "type": "byte",
@@ -32223,7 +32233,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -32285,7 +32295,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.718975631439333e-020
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -32353,15 +32363,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 133
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 84
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 202
                     },
                     "Plot": {
                       "type": "byte",
@@ -32398,7 +32408,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -32528,7 +32538,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 61
+                      "value": 11
                     },
                     "ModelPart2": {
                       "type": "byte",
@@ -32573,7 +32583,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -32635,7 +32645,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.30273056064993e-020
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -32703,11 +32713,11 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 61
+                      "value": 19
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 91
                     },
                     "ModelPart3": {
                       "type": "byte",
@@ -32748,7 +32758,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -32878,15 +32888,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 61
+                      "value": 232
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 101
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 55
                     },
                     "Plot": {
                       "type": "byte",
@@ -32923,7 +32933,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -32985,7 +32995,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.139760533809453e-020
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -33053,15 +33063,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 61
+                      "value": 91
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 51
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 15
                     },
                     "Plot": {
                       "type": "byte",
@@ -33098,7 +33108,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -33228,15 +33238,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 61
+                      "value": 222
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 222
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 58
                     },
                     "Plot": {
                       "type": "byte",
@@ -33273,7 +33283,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -33335,7 +33345,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.141330884503596e-020
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -33403,15 +33413,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 61
+                      "value": 58
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 104
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 104
                     },
                     "Plot": {
                       "type": "byte",
@@ -33448,7 +33458,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -33622,7 +33632,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -33684,7 +33694,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.147339512703015e-020
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -33755,7 +33765,7 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 24
                     },
                     "ModelPart3": {
                       "type": "byte",
@@ -33796,7 +33806,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -33925,11 +33935,11 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 21
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 31
                     },
                     "ModelPart3": {
                       "type": "byte",
@@ -33970,7 +33980,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -34032,7 +34042,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.146181459845441e-020
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -34099,15 +34109,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 43
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 41
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 41
                     },
                     "Plot": {
                       "type": "byte",
@@ -34144,7 +34154,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -34206,7 +34216,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 1.415311448968065e-043
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -34273,15 +34283,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 22
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 31
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 24
                     },
                     "Plot": {
                       "type": "byte",
@@ -34318,7 +34328,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -34380,7 +34390,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.14504408650318e-020
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -34447,15 +34457,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 34
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 24
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 34
                     },
                     "Plot": {
                       "type": "byte",
@@ -34492,7 +34502,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -34620,15 +34630,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 13
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 12
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 12
                     },
                     "Plot": {
                       "type": "byte",
@@ -34665,7 +34675,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -34727,7 +34737,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.143808485463179e-020
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -34838,7 +34848,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -34869,7 +34879,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 39
+                            "value": 40
                           }
                         }
                       ]
@@ -34966,11 +34976,11 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 12
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 24
                     },
                     "ModelPart3": {
                       "type": "byte",
@@ -35011,7 +35021,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -35073,7 +35083,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.174000577821365e-020
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -35139,7 +35149,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 31
                     },
                     "ModelPart2": {
                       "type": "byte",
@@ -35147,7 +35157,7 @@
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 21
                     },
                     "Plot": {
                       "type": "byte",
@@ -35184,7 +35194,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -35215,7 +35225,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 39
+                            "value": 40
                           }
                         }
                       ]
@@ -35357,7 +35367,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -35485,15 +35495,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 23
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 31
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 31
                     },
                     "Plot": {
                       "type": "byte",
@@ -35530,7 +35540,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -35561,7 +35571,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 39
+                            "value": 40
                           }
                         }
                       ]
@@ -35658,15 +35668,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 53
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 51
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 53
                     },
                     "Plot": {
                       "type": "byte",
@@ -35703,7 +35713,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -35765,7 +35775,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 4.591354418360263e-041
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -35831,15 +35841,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 33
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 22
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 12
                     },
                     "Plot": {
                       "type": "byte",
@@ -35876,7 +35886,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -35907,7 +35917,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 39
+                            "value": 40
                           }
                         }
                       ]
@@ -36004,15 +36014,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 253
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 252
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 253
                     },
                     "Plot": {
                       "type": "byte",
@@ -36049,7 +36059,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -36177,15 +36187,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 33
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 12
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 22
                     },
                     "Plot": {
                       "type": "byte",
@@ -36222,7 +36232,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -36253,7 +36263,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 39
+                            "value": 40
                           }
                         }
                       ]
@@ -36354,11 +36364,11 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 61
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 111
                     },
                     "Plot": {
                       "type": "byte",
@@ -36395,7 +36405,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -36523,7 +36533,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 34
                     },
                     "ModelPart2": {
                       "type": "byte",
@@ -36531,7 +36541,7 @@
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 14
                     },
                     "Plot": {
                       "type": "byte",
@@ -36568,7 +36578,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -36599,7 +36609,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 39
+                            "value": 40
                           }
                         }
                       ]
@@ -36696,15 +36706,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 18
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 21
+                      "value": 29
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 162
                     },
                     "Plot": {
                       "type": "byte",
@@ -36741,7 +36751,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -36873,11 +36883,11 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 13
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 81
                     },
                     "Plot": {
                       "type": "byte",
@@ -36914,7 +36924,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -37042,15 +37052,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 21
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 61
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 41
                     },
                     "Plot": {
                       "type": "byte",
@@ -37087,7 +37097,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -37215,15 +37225,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 61
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 13
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 61
                     },
                     "Plot": {
                       "type": "byte",
@@ -37260,7 +37270,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -37390,15 +37400,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 141
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 141
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 141
                     },
                     "Plot": {
                       "type": "byte",
@@ -37435,7 +37445,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -37565,15 +37575,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 42
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 42
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 31
                     },
                     "Plot": {
                       "type": "byte",
@@ -37610,7 +37620,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -37740,15 +37750,15 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 244
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 244
                     },
                     "ModelPart3": {
                       "type": "byte",
-                      "value": 11
+                      "value": 244
                     },
                     "Plot": {
                       "type": "byte",
@@ -37785,7 +37795,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -37917,7 +37927,7 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 204
                     },
                     "ModelPart3": {
                       "type": "byte",
@@ -37955,6 +37965,37 @@
                           "PropertyName": {
                             "type": "word",
                             "value": 93
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 14
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 61
                           },
                           "Subtype": {
                             "type": "word",
@@ -38090,7 +38131,7 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 211
                     },
                     "ModelPart3": {
                       "type": "byte",
@@ -38128,6 +38169,37 @@
                           "PropertyName": {
                             "type": "word",
                             "value": 93
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 14
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 61
                           },
                           "Subtype": {
                             "type": "word",
@@ -38263,7 +38335,7 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 81
                     },
                     "ModelPart3": {
                       "type": "byte",
@@ -38301,6 +38373,37 @@
                           "PropertyName": {
                             "type": "word",
                             "value": 93
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 14
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 61
                           },
                           "Subtype": {
                             "type": "word",
@@ -38436,7 +38539,7 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 61
                     },
                     "ModelPart3": {
                       "type": "byte",
@@ -38474,6 +38577,37 @@
                           "PropertyName": {
                             "type": "word",
                             "value": 93
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 14
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 61
                           },
                           "Subtype": {
                             "type": "word",
@@ -38650,6 +38784,37 @@
                           },
                           "Subtype": {
                             "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 14
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 61
+                          },
+                          "Subtype": {
+                            "type": "word",
                             "value": 0
                           }
                         },
@@ -38782,7 +38947,7 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 144
                     },
                     "ModelPart3": {
                       "type": "byte",
@@ -38820,6 +38985,37 @@
                           "PropertyName": {
                             "type": "word",
                             "value": 93
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 14
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 61
                           },
                           "Subtype": {
                             "type": "word",
@@ -38912,7 +39108,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 6
+                      "value": 7
                     },
                     "Charges": {
                       "type": "byte",
@@ -38920,7 +39116,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 200
+                      "value": 150
                     },
                     "Cursed": {
                       "type": "byte",
@@ -38998,7 +39194,38 @@
                           },
                           "Subtype": {
                             "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 14
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
                             "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 61
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
                           }
                         },
                         {
@@ -39087,7 +39314,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 6
+                      "value": 7
                     },
                     "Charges": {
                       "type": "byte",
@@ -39095,7 +39322,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 200
+                      "value": 150
                     },
                     "Cursed": {
                       "type": "byte",
@@ -39132,7 +39359,7 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 41
                     },
                     "ModelPart3": {
                       "type": "byte",
@@ -39173,7 +39400,38 @@
                           },
                           "Subtype": {
                             "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 14
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
                             "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 61
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
                           }
                         },
                         {
@@ -39262,7 +39520,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 6
+                      "value": 7
                     },
                     "Charges": {
                       "type": "byte",
@@ -39270,7 +39528,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 200
+                      "value": 150
                     },
                     "Cursed": {
                       "type": "byte",
@@ -39307,7 +39565,7 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 51
                     },
                     "ModelPart3": {
                       "type": "byte",
@@ -39348,7 +39606,38 @@
                           },
                           "Subtype": {
                             "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 14
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
                             "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 61
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
                           }
                         },
                         {
@@ -39437,7 +39726,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 6
+                      "value": 7
                     },
                     "Charges": {
                       "type": "byte",
@@ -39445,7 +39734,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 200
+                      "value": 150
                     },
                     "Cursed": {
                       "type": "byte",
@@ -39482,7 +39771,7 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 21
                     },
                     "ModelPart3": {
                       "type": "byte",
@@ -39523,7 +39812,38 @@
                           },
                           "Subtype": {
                             "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 14
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
                             "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 61
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
                           }
                         },
                         {
@@ -39612,7 +39932,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 6
+                      "value": 7
                     },
                     "Charges": {
                       "type": "byte",
@@ -39620,7 +39940,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 200
+                      "value": 150
                     },
                     "Cursed": {
                       "type": "byte",
@@ -39657,7 +39977,7 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 31
                     },
                     "ModelPart3": {
                       "type": "byte",
@@ -39698,7 +40018,38 @@
                           },
                           "Subtype": {
                             "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 14
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
                             "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 61
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
                           }
                         },
                         {
@@ -39787,7 +40138,7 @@
                     },
                     "BaseItem": {
                       "type": "int",
-                      "value": 6
+                      "value": 7
                     },
                     "Charges": {
                       "type": "byte",
@@ -39795,7 +40146,7 @@
                     },
                     "Cost": {
                       "type": "dword",
-                      "value": 200
+                      "value": 150
                     },
                     "Cursed": {
                       "type": "byte",
@@ -39832,7 +40183,7 @@
                     },
                     "ModelPart2": {
                       "type": "byte",
-                      "value": 11
+                      "value": 21
                     },
                     "ModelPart3": {
                       "type": "byte",
@@ -39873,7 +40224,38 @@
                           },
                           "Subtype": {
                             "type": "word",
+                            "value": 1
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 14
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 1
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
                             "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 61
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 1
                           }
                         },
                         {
@@ -40038,7 +40420,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -40084,7 +40466,7 @@
                     },
                     "StackSize": {
                       "type": "word",
-                      "value": 50
+                      "value": 1
                     },
                     "Stolen": {
                       "type": "byte",
@@ -40166,7 +40548,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 21
                     },
                     "Plot": {
                       "type": "byte",
@@ -40203,7 +40585,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -40249,7 +40631,7 @@
                     },
                     "StackSize": {
                       "type": "word",
-                      "value": 50
+                      "value": 1
                     },
                     "Stolen": {
                       "type": "byte",
@@ -40331,7 +40713,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 33
                     },
                     "Plot": {
                       "type": "byte",
@@ -40368,7 +40750,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -40414,7 +40796,7 @@
                     },
                     "StackSize": {
                       "type": "word",
-                      "value": 50
+                      "value": 1
                     },
                     "Stolen": {
                       "type": "byte",
@@ -40498,7 +40880,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 43
                     },
                     "Plot": {
                       "type": "byte",
@@ -40535,7 +40917,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -40581,7 +40963,7 @@
                     },
                     "StackSize": {
                       "type": "word",
-                      "value": 50
+                      "value": 1
                     },
                     "Stolen": {
                       "type": "byte",
@@ -40665,7 +41047,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 32
                     },
                     "Plot": {
                       "type": "byte",
@@ -40702,7 +41084,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -40748,7 +41130,7 @@
                     },
                     "StackSize": {
                       "type": "word",
-                      "value": 50
+                      "value": 1
                     },
                     "Stolen": {
                       "type": "byte",
@@ -40832,7 +41214,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 11
+                      "value": 41
                     },
                     "Plot": {
                       "type": "byte",
@@ -40869,7 +41251,7 @@
                           },
                           "Subtype": {
                             "type": "word",
-                            "value": 0
+                            "value": 1
                           }
                         },
                         {
@@ -40915,7 +41297,7 @@
                     },
                     "StackSize": {
                       "type": "word",
-                      "value": 50
+                      "value": 1
                     },
                     "Stolen": {
                       "type": "byte",
@@ -41013,7 +41395,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 28
                     },
                     "Plot": {
                       "type": "byte",
@@ -41245,7 +41627,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 22
                     },
                     "Plot": {
                       "type": "byte",
@@ -41446,7 +41828,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 19
                     },
                     "Plot": {
                       "type": "byte",
@@ -41647,7 +42029,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 7
                     },
                     "Plot": {
                       "type": "byte",
@@ -41808,7 +42190,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.802596928649634e-045
                     },
                     "XPosition": {
                       "type": "float",
@@ -41879,7 +42261,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 238
                     },
                     "Plot": {
                       "type": "byte",
@@ -42040,7 +42422,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.148435527014648e-020
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -42111,7 +42493,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 44
                     },
                     "Plot": {
                       "type": "byte",
@@ -42343,7 +42725,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 46
                     },
                     "Plot": {
                       "type": "byte",
@@ -42575,7 +42957,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 15
                     },
                     "Plot": {
                       "type": "byte",
@@ -42776,7 +43158,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 25
                     },
                     "Plot": {
                       "type": "byte",
@@ -43008,7 +43390,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 21
                     },
                     "Plot": {
                       "type": "byte",
@@ -43169,7 +43551,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 7.482933799494523e-043
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -43240,7 +43622,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 17
                     },
                     "Plot": {
                       "type": "byte",
@@ -43472,7 +43854,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 247
                     },
                     "Plot": {
                       "type": "byte",
@@ -43704,7 +44086,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 92
                     },
                     "Plot": {
                       "type": "byte",
@@ -43936,7 +44318,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 25
                     },
                     "Plot": {
                       "type": "byte",
@@ -44137,7 +44519,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 11
                     },
                     "Plot": {
                       "type": "byte",
@@ -44307,7 +44689,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 36
                     },
                     "Plot": {
                       "type": "byte",
@@ -44539,7 +44921,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 35
                     },
                     "Plot": {
                       "type": "byte",
@@ -44771,7 +45153,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 85
                     },
                     "Plot": {
                       "type": "byte",
@@ -45003,7 +45385,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 40
                     },
                     "Plot": {
                       "type": "byte",
@@ -45235,7 +45617,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 4
                     },
                     "Plot": {
                       "type": "byte",
@@ -45405,7 +45787,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 178
                     },
                     "Plot": {
                       "type": "byte",
@@ -45637,7 +46019,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 19
                     },
                     "Plot": {
                       "type": "byte",
@@ -45869,7 +46251,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 10
                     },
                     "Plot": {
                       "type": "byte",
@@ -46101,7 +46483,7 @@
                     },
                     "ModelPart1": {
                       "type": "byte",
-                      "value": 1
+                      "value": 7
                     },
                     "Plot": {
                       "type": "byte",
@@ -46427,7 +46809,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 2.242077542919707e-043
                     },
                     "XPosition": {
                       "type": "float",
@@ -46532,7 +46914,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 5.331913584288211e-018
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -46706,7 +47088,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 3.388022601176344e-018
                     },
                     "XPosition": {
                       "type": "float",
@@ -47187,7 +47569,7 @@
                       "id": 13362,
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Medical Supplies x50"
+                        "0": "Medical Supplies"
                       }
                     },
                     "ModelPart1": {
@@ -47228,7 +47610,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 3.388022601176344e-018
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -47334,7 +47716,7 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 0.0
+                      "value": 5.331913584288211e-018
                     },
                     "XPosition": {
                       "type": "float",
@@ -47399,7 +47781,7 @@
                       "id": 13362,
                       "type": "cexolocstring",
                       "value": {
-                        "0": "Stim Pack x50"
+                        "0": "Stim Pack"
                       }
                     },
                     "ModelPart1": {
@@ -47440,7 +47822,474 @@
                     },
                     "XOrientation": {
                       "type": "float",
-                      "value": 2.242077542919707e-043
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 9,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 200
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 29
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 200
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Hutlar - Outpost Map"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 35
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
+                        }
+                      ]
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 8
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "KEY_ITEM"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "map_024"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "KEY_ITEM_ID"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 24
+                          }
+                        }
+                      ]
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 10,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 200
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 29
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 200
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {}
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Hutlar Orbit Map"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 35
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 335
+                          }
+                        }
+                      ]
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 3
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "KEY_ITEM"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "map_031"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "KEY_ITEM_ID"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 1
+                          },
+                          "Value": {
+                            "type": "int",
+                            "value": 31
+                          }
+                        }
+                      ]
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
+                    },
+                    "XPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "YOrientation": {
+                      "type": "float",
+                      "value": 1.0
+                    },
+                    "YPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    },
+                    "ZPosition": {
+                      "type": "float",
+                      "value": -1.0
+                    }
+                  },
+                  {
+                    "__struct_id": 11,
+                    "AddCost": {
+                      "type": "dword",
+                      "value": 40
+                    },
+                    "BaseItem": {
+                      "type": "int",
+                      "value": 513
+                    },
+                    "Charges": {
+                      "type": "byte",
+                      "value": 200
+                    },
+                    "Cost": {
+                      "type": "dword",
+                      "value": 40
+                    },
+                    "Cursed": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "DescIdentified": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Use this on a resource to harvest it."
+                      }
+                    },
+                    "Description": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": ""
+                      }
+                    },
+                    "Identified": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "Infinite": {
+                      "type": "byte",
+                      "value": 1
+                    },
+                    "LocalizedName": {
+                      "type": "cexolocstring",
+                      "value": {
+                        "0": "Resource Harvester III"
+                      }
+                    },
+                    "ModelPart1": {
+                      "type": "byte",
+                      "value": 20
+                    },
+                    "Plot": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertiesList": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "ChanceAppear": {
+                            "type": "byte",
+                            "value": 100
+                          },
+                          "CostTable": {
+                            "type": "byte",
+                            "value": 3
+                          },
+                          "CostValue": {
+                            "type": "word",
+                            "value": 13
+                          },
+                          "Param1": {
+                            "type": "byte",
+                            "value": 255
+                          },
+                          "Param1Value": {
+                            "type": "byte",
+                            "value": 0
+                          },
+                          "PropertyName": {
+                            "type": "word",
+                            "value": 15
+                          },
+                          "Subtype": {
+                            "type": "word",
+                            "value": 329
+                          }
+                        }
+                      ]
+                    },
+                    "Repos_PosX": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "Repos_Posy": {
+                      "type": "word",
+                      "value": 3
+                    },
+                    "StackSize": {
+                      "type": "word",
+                      "value": 1
+                    },
+                    "Stolen": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "Tag": {
+                      "type": "cexostring",
+                      "value": "harvest_r_3"
+                    },
+                    "TemplateResRef": {
+                      "type": "resref",
+                      "value": "harvest_r_3"
+                    },
+                    "VarTable": {
+                      "type": "list",
+                      "value": [
+                        {
+                          "__struct_id": 0,
+                          "Name": {
+                            "type": "cexostring",
+                            "value": "SCRIPT"
+                          },
+                          "Type": {
+                            "type": "dword",
+                            "value": 3
+                          },
+                          "Value": {
+                            "type": "cexostring",
+                            "value": "ResourceHarvester"
+                          }
+                        }
+                      ]
+                    },
+                    "XOrientation": {
+                      "type": "float",
+                      "value": 0.0
                     },
                     "XPosition": {
                       "type": "float",
@@ -47716,6 +48565,26 @@
         "ZPosition": {
           "type": "float",
           "value": 0.0
+        }
+      }
+    ]
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "MAP_KEY_ITEM_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 24
         }
       }
     ]

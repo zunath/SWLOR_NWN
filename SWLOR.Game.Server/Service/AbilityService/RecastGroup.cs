@@ -109,8 +109,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         Talon = 50,
         [RecastGroup("Med Kit", "Med Kit")]
         MedKit = 51,
-        [RecastGroup("Bacta Recovery", "B. Recovery")]
-        BactaRecovery = 52,
+        [RecastGroup("Kolto Recovery", "K. Recovery")]
+        KoltoRecovery = 52,
         [RecastGroup("Resuscitation", "Resuscitation")]
         Resuscitation = 53,
         [RecastGroup("Treatment Kit", "Treatment Kit")]

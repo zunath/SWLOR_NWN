@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 16.0
+    "value": 13.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 15
+    "value": 34
   },
   "Conversation": {
     "type": "resref",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 10
+    "value": 20
   },
   "Disarmable": {
     "type": "byte",
@@ -296,11 +296,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 820
+    "value": 920
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 30
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -308,7 +308,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 4
+    "value": 154
   },
   "PerceptionRange": {
     "type": "byte",
@@ -601,7 +601,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 80
+    "value": 34
   },
   "Subrace": {
     "type": "cexostring",
@@ -672,6 +672,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 35
+    "value": 26
   }
 }

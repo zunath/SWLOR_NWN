@@ -51,7 +51,9 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            SendMessageToPC(creature, ColorToken.Red(canUseItem));
+            if(!string.IsNullOrWhiteSpace(canUseItem))
+                SendMessageToPC(creature, ColorToken.Red(canUseItem));
+
             EventsPlugin.SkipEvent();
         }
 
@@ -84,7 +86,8 @@ namespace SWLOR.Game.Server.Feature
                 BaseItem.Kukri,
                 BaseItem.Rapier,
                 BaseItem.Scimitar,
-                BaseItem.Sickle
+                BaseItem.Sickle,
+                BaseItem.Lightsaber
             };
             if (!dualWieldWeapons.Contains(baseItem)) return true;
 

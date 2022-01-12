@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("Report back to the dockmaster.")
 
                 .AddGoldReward(500)
-                .AddItemReward("xp_tome_4", 1);
+                .AddXPReward(1750);
         }
 
         private static void StinkyWomprats(QuestBuilder builder)
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("Return to Haderach in Anchorhead for your reward.")
 
                 .AddGoldReward(1000)
-                .AddItemReward("xp_tome_4", 1);
+                .AddXPReward(1750);
         }
     }
 }

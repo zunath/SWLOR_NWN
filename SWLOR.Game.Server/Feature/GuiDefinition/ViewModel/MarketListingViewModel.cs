@@ -324,7 +324,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var recordId = _itemIds[index];
             var currentPrice = _itemPrices[index];
             var itemName = ItemNames[index];
-            var payload = new PriceSelectionPayload(GuiWindowType.MarketListing, recordId, currentPrice, itemName);
+            var payload = new PriceSelectionPayload(GuiWindowType.MarketListing, recordId, currentPrice, itemName, "Price For:");
             Gui.TogglePlayerWindow(Player, GuiWindowType.PriceSelection, payload);
         };
 

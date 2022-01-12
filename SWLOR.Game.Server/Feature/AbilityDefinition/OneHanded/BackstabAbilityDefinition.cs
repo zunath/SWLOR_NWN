@@ -27,17 +27,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         private static string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
+            var offHand = GetItemInSlot(InventorySlot.LeftHand, activator);
+            var rightHandType = GetBaseItemType(weapon);
+            var leftHandType = GetBaseItemType(offHand);
 
-            if (Item.FinesseVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon))
-                && (GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == BaseItem.SmallShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == BaseItem.LargeShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == BaseItem.TowerShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == BaseItem.Invalid))
+            if (Item.FinesseVibrobladeBaseItemTypes.Contains(rightHandType) ||
+                Item.FinesseVibrobladeBaseItemTypes.Contains(leftHandType))
             {
-                return "This is a one-handed ability.";
+                return string.Empty;
             }
             else
-                return string.Empty;
+                return "This is a finesse vibroblade ability.";
         }
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -70,23 +70,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 dmg /= 2;
             }
 
+            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+
             var perception = GetAbilityModifier(AbilityType.Perception, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, false);
+            var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
         }
 
         private static void Backstab1(AbilityBuilder builder)
         {
             builder.Create(FeatType.Backstab1, PerkType.Backstab)
                 .Name("Backstab I")
-                .HasRecastDelay(RecastGroup.Backstab, 30f)
+                .HasRecastDelay(RecastGroup.Backstab, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -95,10 +96,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.Backstab2, PerkType.Backstab)
                 .Name("Backstab II")
-                .HasRecastDelay(RecastGroup.Backstab, 30f)
+                .HasRecastDelay(RecastGroup.Backstab, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -107,10 +109,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.Backstab3, PerkType.Backstab)
                 .Name("Backstab III")
-                .HasRecastDelay(RecastGroup.Backstab, 30f)
+                .HasRecastDelay(RecastGroup.Backstab, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(8)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

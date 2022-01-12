@@ -19,14 +19,25 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var builder = new DialogBuilder()
                 .WithDataModel(new Model())
+                .AddInitializationAction(Initialize)
                 .AddPage(MainPageId, MainPageInit);
 
             return builder.Build();
         }
 
+        private void Initialize()
+        {
+            var player = GetPC();
+            var questId = GetLocalString(player, "QST_REWARD_SELECTION_QUEST_ID");
+            var model = GetDataModel<Model>();
+
+            model.QuestId = questId;
+            DeleteLocalString(player, "QST_REWARD_SELECTION_QUEST_ID");
+        }
+
         private void MainPageInit(DialogPage page)
         {
-            Model model = GetDataModel<Model>();
+            var model = GetDataModel<Model>();
             var quest = Quest.GetQuestById(model.QuestId);
 
             void HandleRewardSelection(IQuestReward reward)
@@ -36,11 +47,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             }
             page.Header = "Please select a reward.";
 
-            var player = GetPC();
-            string questId = GetLocalString(player, "QST_REWARD_SELECTION_QUEST_ID");
-            DeleteLocalString(player, "QST_REWARD_SELECTION_QUEST_ID");
             var rewardItems = quest.GetRewards().Where(x => x.IsSelectable);
-            model.QuestId = questId;
 
             foreach (var reward in rewardItems)
             {

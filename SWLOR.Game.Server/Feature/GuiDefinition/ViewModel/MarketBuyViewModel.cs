@@ -147,9 +147,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void Search()
         {
-            var sw = new Stopwatch();
-            sw.Start();
-
             var marketDetail = PlayerMarket.GetMarketRegion(_regionType);
             var query = new DBQuery<MarketItem>()
                 .AddFieldSearch(nameof(MarketItem.IsListed), true)
@@ -195,9 +192,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ItemPriceNames = itemPriceNames;
             ItemSellerNames = itemSellerNames;
             ItemBuyEnabled = itemBuyEnabled;
-
-            sw.Stop();
-            Console.WriteLine($"Market search: {sw.ElapsedMilliseconds}ms");
         }
 
         private void UpdatePagination(long totalRecordCount)

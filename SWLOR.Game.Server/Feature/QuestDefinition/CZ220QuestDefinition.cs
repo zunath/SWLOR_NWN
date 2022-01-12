@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.QuestService;
@@ -35,6 +34,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("Selan Flembek, receptionist at CZ-220, has requested you complete three tasks around the base. \n\nSpeak to Avix Tatham, the mining coordinator, for information about retrieving ore from the mine.\n\nTalk to security officer Harlon Linth for information about trouble on the maintenance level.\n\nChat with the Crafting Terminal Droid Operator for details about supplies which need to be constructed.\n\nWhen you've obtained receipts from all three employees, return to Selan to collect your reward.")
 
+                .AddXPReward(1000)
                 .AddGoldReward(500)
                 .AddKeyItemReward(KeyItemType.CZ220ShuttlePass)
 
@@ -57,12 +57,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             builder.Create("cz220_smithery", "CZ-220 Supplies - Smithery")
 
                 .AddState()
-                .SetStateJournalText("The Crafting Terminal Droid operator has requested you create a single unit of Basic Baton C. You will need to purchase the \"One-Handed Blueprints\" perk in order to create this item. Once you have the perk you can use any smithery terminal to make the item. You will find the necessary resources down on the maintenance level.")
-                .AddCollectItemObjective("club_b", 1)
+                .SetStateJournalText("The Crafting Terminal Droid operator has requested you create a single Basic Knife. You will need to purchase the \"One-Handed Blueprints\" perk in order to create this item. Once you have the perk you can use any smithery terminal to make the item. You will find the necessary resources down on the maintenance level of CZ-220.")
+                .AddCollectItemObjective("b_knife", 1)
 
                 .AddState()
                 .SetStateJournalText("Speak to the Crafting Terminal Droid operator for your reward.")
 
+                .AddXPReward(200)
                 .AddGoldReward(50)
                 .AddKeyItemReward(KeyItemType.CraftingTerminalDroidOperatorsWorkReceipt)
 
@@ -80,12 +81,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             builder.Create("cz220_scavenging", "CZ-220 Supplies - Scavenging")
 
                 .AddState()
-                .SetStateJournalText("The Crafting Terminal Droid operator has requested you gather ten units of scrap metal. You will need to scavenge through junk piles throughout the facility. When you have enough, return to the droid to collect your receipt.")
+                .SetStateJournalText("The Crafting Terminal Droid operator has requested you gather ten units of scrap metal. You will need to scavenge through junk piles throughout CZ-220. When you have enough, return to the droid to collect your receipt and reward.")
                 .AddCollectItemObjective("scrap_metal", 10)
 
                 .AddState()
                 .SetStateJournalText("Speak to the Crafting Terminal Droid operator for your reward.")
 
+                .AddXPReward(200)
                 .AddGoldReward(50)
                 .AddKeyItemReward(KeyItemType.CraftingTerminalDroidOperatorsWorkReceipt)
 
@@ -103,12 +105,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
             builder.Create("cz220_fabrication", "CZ-220 Supplies - Fabrication")
 
                 .AddState()
-                .SetStateJournalText("The Crafting Terminal Droid operator has requested you create a single unit of Power Core. You can use any fabrication terminal to make the item. You will find the necessary resources down on the maintenance level.")
-                .AddCollectItemObjective("power_core", 1)
+                .SetStateJournalText("The Crafting Terminal Droid operator has requested you create a simple bed roll. You will need to purchase the \"Furniture Blueprints\" perk in order to create this item. You can use any fabrication terminal to make the item. You will find the necessary resources down on the maintenance level of CZ-220.")
+                .AddCollectItemObjective("furniture_0085", 1)
 
                 .AddState()
                 .SetStateJournalText("Speak to the Crafting Terminal Droid operator for your reward.")
 
+                .AddXPReward(200)
                 .AddGoldReward(50)
                 .AddKeyItemReward(KeyItemType.CraftingTerminalDroidOperatorsWorkReceipt)
 
@@ -129,6 +132,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You found a datapad in the room containing an experimental Colicoid. It contains research details on the creature. There's no name listed anywhere in the data but you assume it belongs to someone on CZ-220. Ask around on the main level and see if it's theirs.")
 
+                .AddXPReward(300)
                 .AddGoldReward(50)
 
                 .OnAcceptAction((player, sourceObject) =>
@@ -148,6 +152,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .AddState()
                 .SetStateJournalText("You've killed five Mynocks and obtained their teeth. Return to Halron Linth to collect your work receipt.")
 
+                .AddXPReward(200)
                 .AddGoldReward(100)
                 .AddKeyItemReward(KeyItemType.HalronLinthsWorkReceipt);
         }
@@ -161,13 +166,13 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 })
 
                 .AddState()
-                .SetStateJournalText("Avix Tatham needs you to head down to the maintenance level and harvest some ore. When you have ten pieces, return to him to collect the work receipt.")
-                .AddCollectItemObjective("raw_veldite", 10)
+                .SetStateJournalText("Avix Tatham needs you to head down to the maintenance level and harvest some ore. When you have four pieces, return to him to collect the work receipt.")
+                .AddCollectItemObjective("raw_veldite", 4)
                 
-
                 .AddState()
                 .SetStateJournalText("Speak to Avix Tatham for your reward.")
 
+                .AddXPReward(200)
                 .AddGoldReward(50)
                 .AddKeyItemReward(KeyItemType.AvixTathamsWorkReceipt);
         }
@@ -178,18 +183,14 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .PrerequisiteQuest("ore_collection")
 
                 .AddState()
-                .SetStateJournalText("Avix Tatham wants you to go down and gather more ore. This time, though, he needs you to refine it at one of the refineries near him. When you have ten pieces of refined Veldite return to him to give them to him.")
-                .AddCollectItemObjective("ref_veldite", 10)
+                .SetStateJournalText("Avix Tatham wants you to go down and gather more ore. This time, though, he needs you to refine it at one of the refineries near him. You will need the perk 'Refining I' to refine the ore. When you have four pieces of refined Veldite return to him to give them to him.")
+                .AddCollectItemObjective("ref_veldite", 4)
 
                 .AddState()
                 .SetStateJournalText("Speak to Avix Tatham for your reward.")
 
-                .HasRewardSelection()
-                .AddGoldReward(85, false)
-                .AddItemReward("rune_cstspd1", 1)
-                .AddItemReward("rune_mining1", 1)
-                .AddItemReward("rune_dmg1", 1)
-                .AddItemReward("rune_dur1", 1);
+                .AddXPReward(300, false)
+                .AddGoldReward(400, false);
         }
         private static void TheMalfunctioningDroids(QuestBuilder builder)
         {
@@ -204,7 +205,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
                 .SetStateJournalText("You've destroyed five malfunctioning droids. Return to Halron Linth for your reward.")
 
                 .AddGoldReward(100, false)
-                .AddItemReward("xp_tome_1", 1);
+                .AddXPReward(200);
         }
         private static void TheColicoidExperiment(QuestBuilder builder)
         {
@@ -218,13 +219,9 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText("You made quick work of the rampaging Colicoid experiment. Return to Halron Linth to let him know the work is done.")
-
-                .HasRewardSelection()
+                
                 .AddGoldReward(250, false)
-                .AddItemReward("colicoid_cap_y", 1)
-                .AddItemReward("colicoid_cap_b", 1)
-                .AddItemReward("colicoid_cap_r", 1)
-                .AddItemReward("colicoid_cap_g", 1)
+                .AddXPReward(600)
                 
                 .OnAcceptAction((player, sourceObject) =>
                 {

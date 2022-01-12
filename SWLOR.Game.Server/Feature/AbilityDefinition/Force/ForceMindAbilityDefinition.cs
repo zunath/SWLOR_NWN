@@ -39,16 +39,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     break;
             }
             // Damage user.
-            ApplyEffectToObject(DurationType.Instant, EffectDamage((int)(GetCurrentHitPoints(activator) * multiplier)), activator);
+            ApplyEffectToObject(DurationType.Instant, EffectHeal((int)(GetCurrentHitPoints(activator) * multiplier)), activator);
 
             // Recover FP on target.
-            Stat.RestoreFP(activator, (int)(GetCurrentHitPoints(activator) * multiplier));
+            Stat.ReduceFP(activator, (int)(GetCurrentHitPoints(activator) * multiplier));
 
             // Play VFX
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Odd), target);
             
             Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+
+            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);       
         }
 
         private static void ForceMind1(AbilityBuilder builder)
@@ -59,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2.0f)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
 
@@ -70,6 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2.0f)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
     }

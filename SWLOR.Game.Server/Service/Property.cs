@@ -5,12 +5,18 @@ using System.Numerics;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PropertyService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -18,7 +24,7 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<StructureType, StructureAttribute> _activeStructures = new();
         private static readonly Dictionary<PropertyType, PropertyTypeAttribute> _propertyTypes = new();
-        private static readonly Dictionary<PropertyLayoutType, PropertyLayoutTypeAttribute> _activeLayouts = new();
+        private static readonly Dictionary<PropertyLayoutType, PropertyLayout> _activeLayouts = new();
         private static readonly Dictionary<PropertyType, List<PropertyLayoutType>> _layoutsByPropertyType = new();
         private static readonly Dictionary<PropertyLayoutType, Vector4> _entrancesByLayout = new();
         private static readonly Dictionary<PropertyPermissionType, PropertyPermissionAttribute> _activePermissions = new();
@@ -28,6 +34,39 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<PropertyType, List<PropertyPermissionType>> _permissionsByPropertyType = new();
 
         private static readonly Dictionary<string, uint> _structurePropertyIdToPlaceable = new();
+        private static readonly Dictionary<StructureType, Dictionary<StructureChangeType, Action<WorldProperty, uint>>> _structureChangedActions = StructureChangedAction.BuildSpawnActions();
+
+        private static readonly Dictionary<int, int> _citizensRequired = new()
+        {
+            { 1, 10 }, // Level 1 requires a minimum of 10 citizens
+            { 2, 15 }, // Level 2 requires a minimum of 15 citizens
+            { 3, 20 }, // Level 3 requires a minimum of 20 citizens
+            { 4, 30 }, // Level 4 requires a minimum of 30 citizens
+            { 5, 40 }  // Level 5 requires a minimum of 40 citizens
+        };
+
+        private static readonly Dictionary<PropertyType, List<StructureType>> _structureTypesByPropertyType = new();
+
+        /// <summary>
+        /// Determines the number of hours before the city will be destroyed due to
+        /// lack of citizens. This starts at the time of city hall placement for the initial check.
+        /// At boot time, if the number of citizens is below the required amount, the player will have 18 hours
+        /// to rectify it. Failure to do so will result in the city being lost upon the next server reboot.
+        /// Note: Due to the cleanup occurring on server boot, which occurs once every 24 hours,
+        ///       it's possible the player will have more time than the value specified here.
+        ///       This is expected.
+        /// </summary>
+        public const int MinimumCitizensGracePeriodHours = 18;
+
+        /// <summary>
+        /// Determines the number of days citizens have to register for an election.
+        /// </summary>
+        public const int ElectionRegistrationDays = 14;
+
+        /// <summary>
+        /// Determines the number of days all citizens have to vote for an election.
+        /// </summary>
+        public const int ElectionVotingDays = 7;
 
         /// <summary>
         /// When the module loads, cache all relevant data into memory.
@@ -40,6 +79,7 @@ namespace SWLOR.Game.Server.Service
             CachePermissions();
             CacheStructures();
             CacheInstanceTemplates();
+            CacheStructuresByPropertyType();
         }
 
         /// <summary>
@@ -48,8 +88,9 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("mod_load")]
         public static void OnModuleLoad()
         {
-            CleanUpData();
             RefreshPermissions();
+            ProcessCities();
+            CleanUpData();
             LoadProperties();
         }
 
@@ -65,22 +106,28 @@ namespace SWLOR.Game.Server.Service
 
         private static void CachePropertyLayoutTypes()
         {
-            var layoutTypes = Enum.GetValues(typeof(PropertyLayoutType)).Cast<PropertyLayoutType>();
-            foreach (var type in layoutTypes)
-            {
-                var layout = type.GetAttribute<PropertyLayoutType, PropertyLayoutTypeAttribute>();
+            var types = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(s => s.GetTypes())
+                .Where(w => typeof(IPropertyLayoutListDefinition).IsAssignableFrom(w) && !w.IsInterface && !w.IsAbstract);
 
-                if (layout.IsActive)
+            foreach (var type in types)
+            {
+                var instance = (IPropertyLayoutListDefinition)Activator.CreateInstance(type);
+                var layouts = instance.Build();
+
+                foreach (var (layoutType, layout) in layouts)
                 {
-                    _activeLayouts[type] = layout;
+                    _activeLayouts[layoutType] = layout;
 
                     if (!_layoutsByPropertyType.ContainsKey(layout.PropertyType))
                         _layoutsByPropertyType[layout.PropertyType] = new List<PropertyLayoutType>();
 
-                    _layoutsByPropertyType[layout.PropertyType].Add(type);
-                    _entrancesByLayout[type] = GetEntrancePosition(layout.AreaInstanceResref);
+                    _layoutsByPropertyType[layout.PropertyType].Add(layoutType);
+                    _entrancesByLayout[layoutType] = GetEntrancePosition(layout.AreaInstanceResref);
                 }
             }
+
+            Console.WriteLine($"Loaded {_activeLayouts.Count} property layouts.");
         }
 
         private static void CachePermissions()
@@ -109,14 +156,12 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.EditCategories
             };
 
-            _permissionsByPropertyType[PropertyType.Building] = new List<PropertyPermissionType>
+            _permissionsByPropertyType[PropertyType.CityHall] = new List<PropertyPermissionType>
             {
                 PropertyPermissionType.EditStructures,
                 PropertyPermissionType.RetrieveStructures,
                 PropertyPermissionType.RenameProperty,
-                PropertyPermissionType.EnterProperty,
-                PropertyPermissionType.ChangeDescription,
-                PropertyPermissionType.EditCategories
+                PropertyPermissionType.ChangeDescription
             };
 
             _permissionsByPropertyType[PropertyType.Starship] = new List<PropertyPermissionType>
@@ -136,15 +181,60 @@ namespace SWLOR.Game.Server.Service
                 PropertyPermissionType.EditStructures,
                 PropertyPermissionType.RetrieveStructures,
                 PropertyPermissionType.RenameProperty,
-                PropertyPermissionType.ExtendLease,
-                PropertyPermissionType.CancelLease,
                 PropertyPermissionType.EnterProperty,
-                PropertyPermissionType.ChangeDescription
+                PropertyPermissionType.ChangeDescription,
+                PropertyPermissionType.EditTaxes,
+                PropertyPermissionType.AccessTreasury,
+                PropertyPermissionType.ManageUpgrades,
+                PropertyPermissionType.ManageUpkeep
             };
 
             _permissionsByPropertyType[PropertyType.Category] = new List<PropertyPermissionType>
             {
                 PropertyPermissionType.AccessStorage
+            };
+
+            _permissionsByPropertyType[PropertyType.Bank] = new List<PropertyPermissionType>
+            {
+                PropertyPermissionType.EditStructures,
+                PropertyPermissionType.RetrieveStructures,
+                PropertyPermissionType.RenameProperty,
+                PropertyPermissionType.ChangeDescription,
+                PropertyPermissionType.EditCategories,
+            };
+
+            _permissionsByPropertyType[PropertyType.MedicalCenter] = new List<PropertyPermissionType>
+            {
+                PropertyPermissionType.EditStructures,
+                PropertyPermissionType.RetrieveStructures,
+                PropertyPermissionType.RenameProperty,
+                PropertyPermissionType.ChangeDescription,
+            };
+
+            _permissionsByPropertyType[PropertyType.Starport] = new List<PropertyPermissionType>
+            {
+                PropertyPermissionType.EditStructures,
+                PropertyPermissionType.RetrieveStructures,
+                PropertyPermissionType.RenameProperty,
+                PropertyPermissionType.ChangeDescription,
+            };
+
+            _permissionsByPropertyType[PropertyType.Cantina] = new List<PropertyPermissionType>
+            {
+                PropertyPermissionType.EditStructures,
+                PropertyPermissionType.RetrieveStructures,
+                PropertyPermissionType.RenameProperty,
+                PropertyPermissionType.ChangeDescription,
+            };
+
+            _permissionsByPropertyType[PropertyType.House] = new List<PropertyPermissionType>
+            {
+                PropertyPermissionType.EditStructures,
+                PropertyPermissionType.RetrieveStructures,
+                PropertyPermissionType.RenameProperty,
+                PropertyPermissionType.ChangeDescription,
+                PropertyPermissionType.EnterProperty,
+                PropertyPermissionType.EditCategories,
             };
         }
 
@@ -183,6 +273,24 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// When the module loads, link structures back to their property types.
+        /// </summary>
+        private static void CacheStructuresByPropertyType()
+        {
+            foreach (var (structureType, detail) in _activeStructures)
+            {
+                if (detail.LayoutType == PropertyLayoutType.Invalid)
+                    continue;
+
+                var layout = GetLayoutByType(detail.LayoutType);
+                if (!_structureTypesByPropertyType.ContainsKey(layout.PropertyType))
+                    _structureTypesByPropertyType[layout.PropertyType] = new List<StructureType>();
+
+                _structureTypesByPropertyType[layout.PropertyType].Add(structureType);
+            }
+        }
+
+        /// <summary>
         /// Iterates over all areas to find the matching instance assigned to the specified resref.
         /// Then, the entrance waypoint is located and its coordinates are stored into cache.
         /// </summary>
@@ -190,7 +298,7 @@ namespace SWLOR.Game.Server.Service
         /// <returns>X, Y, and Z coordinates of the entrance location</returns>
         private static Vector4 GetEntrancePosition(string areaResref)
         {
-            var area = Cache.GetAreaByResref(areaResref);
+            var area = Area.GetAreaByResref(areaResref);
             
             for (var obj = GetFirstObjectInArea(area); GetIsObjectValid(obj); obj = GetNextObjectInArea(area))
             {
@@ -229,10 +337,10 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="propertyId">The property Id</param>
         /// <param name="instance">The area instance to register</param>
-        public static void RegisterInstance(string propertyId, uint instance)
+        public static void RegisterInstance(string propertyId, uint instance, PropertyLayoutType layoutType)
         {
             AssignPropertyId(instance, propertyId);
-            _propertyInstances[propertyId] = new PropertyInstance(instance);
+            _propertyInstances[propertyId] = new PropertyInstance(instance, layoutType);
         }
 
         /// <summary>
@@ -257,7 +365,6 @@ namespace SWLOR.Game.Server.Service
             var propertyTypesWithLeases = new[]
             {
                 (int)PropertyType.Apartment,
-                (int)PropertyType.City
             };
             var query = new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.PropertyType), propertyTypesWithLeases);
@@ -265,7 +372,7 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var property in properties)
             {
-                var lease = property.Timers[PropertyTimerType.Lease];
+                var lease = property.Dates[PropertyDateType.Lease];
                 if (lease <= now)
                 {
                     Log.Write(LogGroup.Property, $"Property '{property.CustomName}' has an expired lease. Expired on: {lease.ToString("G")}");
@@ -288,32 +395,455 @@ namespace SWLOR.Game.Server.Service
 
             // Starship properties should have their current location wiped on every boot.
             // This ensures the player's ship doesn't get lost in space when they're thrown out of an instance.
-            query = new DBQuery<WorldProperty>()
+            var starshipQuery = new DBQuery<WorldProperty>()
                 .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Starship);
-            properties = DB.Search(query);
+            var starshipProperties = DB.Search(starshipQuery);
 
-            foreach (var property in properties)
+            foreach (var property in starshipProperties)
             {
                 if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
                 {
                     property.Positions.Remove(PropertyLocationType.CurrentPosition);
-                    DB.Set(property);
+                }
+
+                // In the event this starship was docked at a deleted player starport,
+                // it needs to be relocated to the NPC starport found on the planet
+                var dockPosition = property.Positions[PropertyLocationType.DockPosition];
+                if (!string.IsNullOrWhiteSpace(dockPosition.InstancePropertyId))
+                {
+                    var dbStarport = DB.Get<WorldProperty>(dockPosition.InstancePropertyId);
+                    if (dbStarport == null)
+                    {
+                        // The PC starport no longer exists (probably destroyed by the previous cleanup)
+                        // Luckily we track the last NPC starport they visited so we can simply replace
+                        // their docked position with it.
+                        property.Positions[PropertyLocationType.DockPosition] = property.Positions[PropertyLocationType.LastNPCDockPosition];
+
+                        Log.Write(LogGroup.Property, $"Starship '{property.CustomName}' ({property.Id}) was docked at a non-existent player starport. It has been relocated to the last NPC dock position at '{property.Positions[PropertyLocationType.LastNPCDockPosition].AreaResref}'.");
+                    }
+                }
+                
+                DB.Set(property);
+            }
+        }
+
+        /// <summary>
+        /// Handles the processing of each individual city. The following will occur on each boot:
+        /// 1.) Checking for the required number of citizens.
+        ///     If this is the first reboot where they're under the requirement, 18 hours will be given to them for correction.
+        ///     Otherwise if the timer has expired, the city will be destroyed.
+        /// 2.) Processing elections. Moves the election process between stages and calculates votes at the end of the process.
+        ///     If a new mayor is elected, the previous mayor's permissions are removed and given to the new one.
+        /// </summary>
+        private static void ProcessCities()
+        {
+            var cityQuery = new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.City)
+                .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false);
+            var cities = DB.Search(cityQuery);
+            var now = DateTime.UtcNow;
+
+            foreach (var city in cities)
+            {
+                ProcessCityCitizenRequirement(now, city);
+                ProcessCityElections(now, city);
+
+                if (now < city.Dates[PropertyDateType.Upkeep])
+                {
+                    Log.Write(LogGroup.Property, $"City '{city.CustomName}' ({city.Id}) upkeep isn't ready yet.");
+                    return;
+                }
+                else
+                {
+                    ProcessCityLevel(city);
+                    ProcessUpkeep(now, city);
+                    ProcessCitizenshipFees(city);
+
+                    // Next upkeep check should be 7 days from the previous one.
+                    city.Dates[PropertyDateType.Upkeep] = city.Dates[PropertyDateType.Upkeep].AddDays(7);
+                }
+
+                DB.Set(city);
+            }
+        }
+
+        private static void ProcessCityCitizenRequirement(DateTime now, WorldProperty city)
+        {
+            var citizenQuery = new DBQuery<Player>()
+                .AddFieldSearch(nameof(Player.CitizenPropertyId), city.Id, false)
+                .AddFieldSearch(nameof(Player.IsDeleted), false);
+            var citizens = DB.Search(citizenQuery).ToList();
+            var citizenCount = citizens.Count;
+
+            // City is below the number of citizens required to maintain the city.
+            if (citizenCount < _citizensRequired[1])
+            {
+                if (city.Dates.ContainsKey(PropertyDateType.BelowRequiredCitizens))
+                {
+                    // The amount of time has elapsed. It's time to delete the city.
+                    if (now >= city.Dates[PropertyDateType.BelowRequiredCitizens])
+                    {
+                        city.IsQueuedForDeletion = true;
+
+                        Log.Write(LogGroup.Property, $"City '{city.CustomName}' in area '{city.ParentPropertyId}' has been queued for deletion because it fell under the required {_citizensRequired[1]} citizens needed to maintain it.");
+                    }
+                    else
+                    {
+                        Log.Write(LogGroup.Property, $"City '{city.CustomName}' in area '{city.ParentPropertyId}' is below the required citizen count but time has not expired. Next check will occur on the next server reboot.");
+                    }
+                }
+                // This is the first restart where the city is below the required amount.
+                else
+                {
+                    city.Dates[PropertyDateType.BelowRequiredCitizens] = now.AddHours(MinimumCitizensGracePeriodHours);
+
+                    Log.Write(LogGroup.Property, $"City '{city.CustomName}' has fallen below the required {_citizensRequired[1]} citizens required to maintain a city. An expiration has been applied");
                 }
             }
+            // Otherwise they're at or above the required amount. Ensure the date is removed from the property.
+            else
+            {
+                if (city.Dates.ContainsKey(PropertyDateType.BelowRequiredCitizens))
+                {
+                    city.Dates.Remove(PropertyDateType.BelowRequiredCitizens);
+                }
+            }
+
+            DB.Set(city);
+        }
+
+        private static void ProcessCityElections(DateTime now, WorldProperty city)
+        {
+            var incumbentMayorId = city.OwnerPlayerId;
+
+            void TransferPermissions(string winnerPlayerId)
+            {
+                var mayorPermission = DB.Search(new DBQuery<WorldPropertyPermission>()
+                        .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), incumbentMayorId, false)
+                        .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), city.Id, false))
+                    .Single();
+
+                DB.Delete<WorldPropertyPermission>(mayorPermission.Id);
+                
+                var winnerPermission = DB.Search(new DBQuery<WorldPropertyPermission>()
+                        .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), winnerPlayerId, false)
+                        .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), city.Id, false))
+                    .SingleOrDefault() ?? new WorldPropertyPermission
+                {
+                    PlayerId = winnerPlayerId,
+                    PropertyId = city.Id
+                };
+
+                foreach (var permission in _permissionsByPropertyType[PropertyType.City])
+                {
+                    winnerPermission.Permissions[permission] = true;
+                    winnerPermission.GrantPermissions[permission] = true;
+                }
+
+                DB.Set(winnerPermission);
+            }
+
+            // No reason to process deleted cities. Skip.
+            if (city.IsQueuedForDeletion) return;
+
+            Log.Write(LogGroup.Property, $"Election process starting for city {city.CustomName} ({city.Id})");
+            var election = DB.Search(new DBQuery<Election>()
+                .AddFieldSearch(nameof(Election.PropertyId), city.Id, false))
+                .SingleOrDefault();
+
+            // Election hasn't started yet.
+            if (election == null)
+            {
+                // It's time to start a new election.
+                if (now >= city.Dates[PropertyDateType.ElectionStart])
+                {
+                    election = new Election
+                    {
+                        PropertyId = city.Id,
+                        Stage = ElectionStageType.Registration
+                    };
+
+                    DB.Set(election);
+                }
+            }
+            // Election has started. See if it's time to progress to the next stage.
+            else
+            {
+                var registrationCutOff = city.Dates[PropertyDateType.ElectionStart].AddDays(ElectionRegistrationDays);
+                var votingCutOff = registrationCutOff.AddDays(ElectionVotingDays);
+
+                // We're past the voting stage.
+                // Count up the votes for each candidate and determine the winner.
+                // Adjust mayors if incumbent lost.
+                if (now >= votingCutOff)
+                {
+                    var votes = new Dictionary<string, int>();
+                    foreach (var voter in election.VoterSelections.Values)
+                    {
+                        if (!votes.ContainsKey(voter.CandidatePlayerId))
+                            votes[voter.CandidatePlayerId] = 0;
+
+                        votes[voter.CandidatePlayerId]++;
+                    }
+
+                    var orderedVotes = votes.OrderByDescending(x => x.Value).ToList();
+
+                    // Nobody voted at all. Incumbent stays in power.
+                    if (orderedVotes.Count <= 0)
+                    {
+                        Log.Write(LogGroup.Property, $"No one voted. Incumbent mayor '{incumbentMayorId}' stays in power.");
+                    }
+                    // If top two are the same, incumbent mayor wins.
+                    else if (orderedVotes.Count >= 2 && orderedVotes.ElementAt(0).Value != orderedVotes.ElementAt(1).Value)
+                    {
+                        Log.Write(LogGroup.Property, $"Top 2 candidates were tied. Incumbent mayor '{incumbentMayorId}' wins the election.");
+                    }
+                    // Otherwise, take the person with the highest votes.
+                    else 
+                    {
+                        var winnerPlayerId = orderedVotes.ElementAt(0).Key;
+                        TransferPermissions(winnerPlayerId);
+                        city.OwnerPlayerId = winnerPlayerId;
+                        Log.Write(LogGroup.Property, $"New mayor of {city.CustomName} is '{winnerPlayerId}'");
+                    }
+
+                    Log.Write(LogGroup.Property, $"Vote Counts:");
+                    foreach (var (candidatePlayerId, voteCount) in orderedVotes)
+                    {
+                        Log.Write(LogGroup.Property, $"{candidatePlayerId}: {voteCount} votes");
+                    }
+
+                    // The next election should occur in 3 weeks from the end of this election.
+                    // To avoid timing issues between server restarts, we use the start of this election as a reference point.
+                    city.Dates[PropertyDateType.ElectionStart] = city.Dates[PropertyDateType.ElectionStart]
+                        .AddDays(ElectionRegistrationDays + ElectionVotingDays) // This gets us to the end of the election
+                        .AddDays(21); // Then add another 3 weeks.
+
+                    DB.Set(city);
+                    DB.Delete<Election>(election.Id);
+                }
+                // Registration cut-off has passed. 
+                // If no one has registered, the incumbent mayor wins by default.
+                // If only one person has registered, they become mayor without proceeding to the voting stage.
+                //     -> If this was a different person from the incumbent, they receive mayor power immediately.
+                // Otherwise, the election proceeds to the voting stage.
+                else if (now >= registrationCutOff)
+                {
+                    // In the event that absolutely no one ran for election,
+                    // the incumbent mayor stays in power and another election is scheduled
+                    // three weeks from now. 
+                    if (election.CandidatePlayerIds.Count <= 0)
+                    {
+                        city.Dates[PropertyDateType.ElectionStart] = city.Dates[PropertyDateType.ElectionStart]
+                            .AddDays(ElectionRegistrationDays) // This gets us to the end of the registration period
+                            .AddDays(21); // Then add another 3 weeks.
+
+                        DB.Set(city);
+
+                        DB.Delete<Election>(election.Id);
+                        Log.Write(LogGroup.Property, $"No one ran for this election. Existing mayor '{incumbentMayorId}' wins by default.");
+                    }
+                    // In the event only one person ran for election, they automatically win
+                    // and the power shift occurs immediately. Another election is scheduled
+                    // three weeks from now.
+                    else if(election.CandidatePlayerIds.Count == 1)
+                    {
+                        var winnerPlayerId = election.CandidatePlayerIds[0];
+
+                        // The winner was the incumbent mayor. No changes are needed.
+                        if (winnerPlayerId == incumbentMayorId)
+                        {
+                            Log.Write(LogGroup.Property, $"Incumbent mayor '{incumbentMayorId}' ran unopposed. They retain mayor status.");
+                        }
+                        // Someone new won. Transfer mayor permissions over to the new player.
+                        else
+                        {
+                            city.OwnerPlayerId = winnerPlayerId;
+                            TransferPermissions(winnerPlayerId);
+                            Log.Write(LogGroup.Property, $"Only one person '{winnerPlayerId}' ran for mayor. They win by default.");
+                        }
+
+                        city.Dates[PropertyDateType.ElectionStart] = city.Dates[PropertyDateType.ElectionStart]
+                            .AddDays(ElectionRegistrationDays) // This gets us to the end of the registration period
+                            .AddDays(21); // Then add another 3 weeks.
+
+                        DB.Set(city);
+                        DB.Delete<Election>(election.Id);
+                    }
+                    // We're past the registration window. Move into the voting stage.
+                    else
+                    {
+                        election.Stage = ElectionStageType.Voting;
+
+                        DB.Set(election);
+                        Log.Write(LogGroup.Property, $"City '{city.CustomName}' ({city.Id}) has progressed into the Voting stage of the election.");
+                    }
+
+                }
+            }
+        }
+
+        private static void ProcessCityLevel(WorldProperty city)
+        {
+            Log.Write(LogGroup.Property, $"Processing city level for '{city.CustomName}' ({city.Id})...");
+
+            var mayor = DB.Get<Player>(city.OwnerPlayerId);
+            var citizenCount = DB.SearchCount(new DBQuery<Player>()
+                .AddFieldSearch(nameof(Player.CitizenPropertyId), city.Id, false)
+                .AddFieldSearch(nameof(Player.IsDeleted), false));
+            var currentLevel = city.Upgrades[PropertyUpgradeType.CityLevel];
+            var mayorLevel = mayor.Perks.ContainsKey(PerkType.CityManagement)
+                ? mayor.Perks[PerkType.CityManagement] + 1
+                : 0;
+            
+            // Mayor's perk level has fallen below the city level.
+            if (mayorLevel < currentLevel)
+            {
+                currentLevel = mayorLevel;
+                Log.Write(LogGroup.Property, $"City level reduced to {currentLevel} because mayor's perk level is {mayorLevel}");
+            }
+
+            var maxLevelThisCycle = 1;
+            for (var level = 1; level <= 5; level++)
+            {
+                // Mayor can't support a higher city level.
+                if (level > mayorLevel)
+                {
+                    Log.Write(LogGroup.Property, $"Mayor cannot support city level {level} or higher.");
+                    break;
+                }
+
+                // The citizen count requirements are met
+                if (citizenCount >= _citizensRequired[level])
+                {
+                    maxLevelThisCycle = level;
+                    Log.Write(LogGroup.Property, $"Meets citizen requirement for level {level} (Required amount: {_citizensRequired[level]})");
+                }
+            }
+
+            // Current level is higher than max level this cycle. Drop it down that value.
+            if (currentLevel > maxLevelThisCycle)
+            {
+                currentLevel = maxLevelThisCycle;
+                Log.Write(LogGroup.Property, $"City level dropped to {maxLevelThisCycle}");
+            }
+
+            // Upkeep hasn't been paid. City isn't eligible to increase in level.
+            if (city.Upkeep > 0)
+            {
+                Log.Write(LogGroup.Property, $"Unable to upgrade city because upkeep hasn't been fully paid.");
+            }
+            // The city can increase in level and upkeep has been paid. Perform the upgrade now.
+            else if (currentLevel < maxLevelThisCycle)
+            {
+                currentLevel++;
+                Log.Write(LogGroup.Property, $"City increased by one level this cycle.");
+            }
+
+            Log.Write(LogGroup.Property, $"City level changed to {currentLevel} from {city.Upgrades[PropertyUpgradeType.CityLevel]}");
+            city.Upgrades[PropertyUpgradeType.CityLevel] = currentLevel;
+            DB.Set(city);
+
+            Log.Write(LogGroup.Property, $"Finished processing city level for '{city.CustomName}' ({city.Id})");
+        }
+
+        private static void ProcessUpkeep(DateTime now, WorldProperty city)
+        {
+            Log.Write(LogGroup.Property, $"Processing city '{city.CustomName}' ({city.Id}) upkeep...");
+            
+            // If upkeep wasn't fully paid for this week, process the destruction date
+            if (city.Upkeep > 0)
+            {
+                Log.Write(LogGroup.Property, $"City upkeep was not paid for the past week.");
+
+                // This is a consecutive week in which upkeep wasn't paid. Check if it's time to destroy the city.
+                if (city.Dates.ContainsKey(PropertyDateType.DisrepairDestruction))
+                {
+                    if (now >= city.Dates[PropertyDateType.DisrepairDestruction])
+                    {
+                        Log.Write(LogGroup.Property, $"City upkeep was not paid for 30 days. City is marked for destruction.");
+                        city.IsQueuedForDeletion = true;
+                    }
+                }
+                else
+                {
+                    city.Dates[PropertyDateType.DisrepairDestruction] = now.AddDays(30);
+                    Log.Write(LogGroup.Property, $"This is the first week upkeep wasn't paid. Destruction will occur on {city.Dates[PropertyDateType.DisrepairDestruction]:yyyy-MM-dd hh:mm:ss}");
+                }
+
+            }
+            // Otherwise upkeep has been paid. Remove the disrepair destruction date if it exists.
+            else
+            {
+                if (city.Dates.ContainsKey(PropertyDateType.DisrepairDestruction))
+                {
+                    city.Dates.Remove(PropertyDateType.DisrepairDestruction);
+                    Log.Write(LogGroup.Property, $"City upkeep was paid. Removing destruction date.");
+                }
+            }
+            
+            // Calculate new upkeep price for this week.
+            var dbMayor = DB.Get<Player>(city.OwnerPlayerId);
+            var upkeepReductionPercent = dbMayor.Perks.ContainsKey(PerkType.Upkeep)
+                ? dbMayor.Perks[PerkType.Upkeep] * 0.05f
+                : 0;
+            var layout = GetLayoutByType(city.Layout);
+            const int UpgradeBasePrice = 10000;
+            var basePrice = layout.PricePerDay * 7;
+            basePrice -= (int)(basePrice * upkeepReductionPercent);
+
+            var upgradePrice = 
+                (city.Upgrades[PropertyUpgradeType.BankLevel] - 1) * UpgradeBasePrice +
+                (city.Upgrades[PropertyUpgradeType.MedicalCenterLevel] - 1) * UpgradeBasePrice +
+                (city.Upgrades[PropertyUpgradeType.StarportLevel] - 1) * UpgradeBasePrice +
+                (city.Upgrades[PropertyUpgradeType.CantinaLevel] - 1) * UpgradeBasePrice;
+
+            Log.Write(LogGroup.Property, $"Weekly upkeep calcuated to be: {basePrice + upgradePrice} credits.");
+            city.Upkeep += basePrice + upgradePrice;
+            DB.Set(city);
+            Log.Write(LogGroup.Property, $"Total upkeep owed: {city.Upkeep} credits.");
+
+            Log.Write(LogGroup.Property, $"Finished processing city upkeep for '{city.CustomName}' ({city.Id})");
+        }
+
+        private static void ProcessCitizenshipFees(WorldProperty city)
+        {
+            Log.Write(LogGroup.Property, $"Processing citizenship fees for '{city.CustomName}' ({city.Id})");
+
+            var citizens = DB.Search(new DBQuery<Player>()
+                .AddFieldSearch(nameof(Player.CitizenPropertyId), city.Id, false)
+                .AddFieldSearch(nameof(Player.IsDeleted), false))
+                .ToList();
+
+            foreach (var citizen in citizens)
+            {
+                citizen.PropertyOwedTaxes += city.Taxes[PropertyTaxType.Citizenship];
+                Log.Write(LogGroup.Property, $"Citizen '{citizen.Name}' owes an additional {city.Taxes[PropertyTaxType.Citizenship]} credits for a total of {citizen.PropertyOwedTaxes} credits");
+                DB.Set(citizen);
+            }
+
+            Log.Write(LogGroup.Property, $"Finished processing citizenship fees for '{city.CustomName}' ({city.Id})");
         }
 
         private static void DeleteProperty(WorldProperty property)
         {
             // Recursively clear any children properties tied to this property.
-            if (property.ChildPropertyIds.Count > 0)
+            foreach (var (childType, propertyIds) in property.ChildPropertyIds)
             {
-                var query = new DBQuery<WorldProperty>()
-                    .AddFieldSearch(nameof(WorldProperty.Id), property.ChildPropertyIds);
-                var children = DB.Search(query);
+                if (childType == PropertyChildType.RegisteredStarport ||
+                    childType == PropertyChildType.Starship)
+                    continue;
 
-                foreach (var child in children)
+                if (propertyIds.Count > 0)
                 {
-                    DeleteProperty(child);
+                    var query = new DBQuery<WorldProperty>()
+                        .AddFieldSearch(nameof(WorldProperty.Id), propertyIds);
+                    var children = DB.Search(query);
+
+                    foreach (var child in children)
+                    {
+                        DeleteProperty(child);
+                    }
                 }
             }
 
@@ -355,6 +885,28 @@ namespace SWLOR.Game.Server.Service
                 Log.Write(LogGroup.Property, $"Deleted property category '{category.Name}', id: '{category.Id}' from property '{category.ParentPropertyId}'");
             }
 
+            // Clear any citizenship assignments on players who may be citizens of this property.
+            var citizenQuery = new DBQuery<Player>()
+                .AddFieldSearch(nameof(Player.CitizenPropertyId), property.Id, false);
+            var citizens = DB.Search(citizenQuery);
+
+            foreach (var citizen in citizens)
+            {
+                Log.Write(LogGroup.Property, $"Citizenship revoked for player '{citizen.Name}' ({citizen.Id}) on property '{property.CustomName}' ({property.Id})");
+                citizen.CitizenPropertyId = string.Empty;
+                DB.Set(citizen);
+            }
+
+            // Clear any bank items stored within this city.
+            var dbBankItems = DB.Search(new DBQuery<InventoryItem>()
+                .AddFieldSearch(nameof(InventoryItem.StorageId), property.Id, false));
+
+            foreach (var item in dbBankItems)
+            {
+                DB.Delete<InventoryItem>(item.Id);
+                Log.Write(LogGroup.Property, $"Deleted bank item '{item.Quantity}x {item.Name}' ({item.Tag} / {item.Resref}) from property '{property.Id}' which was stored by {item.PlayerId}");
+            }
+
             // Finally delete the entire property.
             DB.Delete<WorldProperty>(property.Id);
             Log.Write(LogGroup.Property, $"Property '{property.CustomName}' deleted.");
@@ -369,7 +921,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var propertyQuery = new DBQuery<WorldProperty>()
                     .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)type);
-                var dbProperties = DB.Search(propertyQuery);
+                var dbProperties = DB.Search(propertyQuery).ToList();
 
                 foreach (var property in dbProperties)
                 {
@@ -449,25 +1001,57 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         private static void LoadProperties()
         {
-            var apartments = DB.Search(new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Apartment));
-            var starships = DB.Search(new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Starship));
+            var instanceTypes = _propertyTypes
+                .Where(x => x.Value.SpawnType == PropertySpawnType.Instance)
+                .Select(s => (int)s.Key)
+                .ToList();
+            var worldTypes = _propertyTypes
+                .Where(x => x.Value.SpawnType == PropertySpawnType.World)
+                .Select(s => (int)s.Key)
+                .ToList();
+            var areaTypes = _propertyTypes
+                .Where(x => x.Value.SpawnType == PropertySpawnType.Area)
+                .Select(s => (int)s.Key)
+                .ToList();
 
-            var propertiesWithInstances = new List<WorldProperty>();
-            propertiesWithInstances.AddRange(apartments);
-            propertiesWithInstances.AddRange(starships);
-            foreach (var property in propertiesWithInstances)
+            var instanceProperties = DB.Search(new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), instanceTypes));
+            var worldProperties = DB.Search(new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), worldTypes));
+            var areaProperties = DB.Search(new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), areaTypes));
+
+            foreach (var property in instanceProperties)
             {
                 SpawnIntoWorld(property, OBJECT_INVALID);
             }
-
-            var cities = DB.Search(new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.City));
-            foreach (var city in cities)
+            
+            foreach (var property in worldProperties)
             {
-                var area = Cache.GetAreaByResref(city.ParentPropertyId);
-                SpawnIntoWorld(city, area);
+                // If the parent is contained in the instance list, this world property needs to 
+                // be spawned inside the instance.
+                if (_propertyInstances.ContainsKey(property.ParentPropertyId))
+                {
+                    var instance = _propertyInstances[property.ParentPropertyId];
+                    SpawnIntoWorld(property, instance.Area);
+                }
+                // Otherwise the parent exists within a pre-existing area (non-instance).
+                // We need to find out which area it is by looking at the parent's parent Id,
+                // which will be the resref of the area.
+                else
+                {
+                    var parent = DB.Get<WorldProperty>(property.ParentPropertyId);
+                    var areaResref = parent.ParentPropertyId;
+                    var area = Area.GetAreaByResref(areaResref);
+
+                    SpawnIntoWorld(property, area);
+                }
+            }
+
+            foreach (var property in areaProperties)
+            {
+                var area = Area.GetAreaByResref(property.ParentPropertyId);
+                SpawnIntoWorld(property, area);
             }
         }
 
@@ -503,42 +1087,60 @@ namespace SWLOR.Game.Server.Service
         }
 
         private static WorldProperty CreateProperty(
-            uint player, 
+            uint creatorPlayer,
+            string ownerPlayerId, 
+            string propertyName,
             PropertyType type, 
             PropertyLayoutType layout, 
             uint targetArea = OBJECT_INVALID,
             Action<WorldProperty> constructionAction = null)
         {
-            var ownerId = GetObjectUUID(player);
+            var creatorPlayerId = GetObjectUUID(creatorPlayer);
             var layoutDetail = GetLayoutByType(layout);
             var propertyDetail = _propertyTypes[type];
 
             var property = new WorldProperty
             {
-                CustomName = $"{GetName(player)}'s {propertyDetail.Name}",
+                CustomName = propertyName,
+                IsPubliclyAccessible = propertyDetail.PublicSetting == PropertyPublicType.AlwaysPublic,
                 PropertyType = type,
-                OwnerPlayerId = ownerId,
-                IsPubliclyAccessible = false,
+                OwnerPlayerId = ownerPlayerId,
                 Layout = layout,
                 ItemStorageCount = layoutDetail.ItemStorageLimit
             };
 
             constructionAction?.Invoke(property);
 
-            var permissions = new WorldPropertyPermission
+            var ownerPermissions = new WorldPropertyPermission
             {
                 PropertyId = property.Id,
-                PlayerId = ownerId
+                PlayerId = ownerPlayerId
             };
+
+            var creatorPermissions = creatorPlayerId == ownerPlayerId
+                ? null
+                : new WorldPropertyPermission
+                {
+                    PropertyId = property.Id,
+                    PlayerId = creatorPlayerId
+                };
 
             foreach (var permission in _permissionsByPropertyType[type])
             {
-                permissions.Permissions[permission] = true;
-                permissions.GrantPermissions[permission] = true;
+                ownerPermissions.Permissions[permission] = true;
+                ownerPermissions.GrantPermissions[permission] = true;
+
+                if (creatorPermissions != null)
+                {
+                    creatorPermissions.Permissions[permission] = true;
+                    creatorPermissions.GrantPermissions[permission] = true;
+                }
             }
 
             DB.Set(property);
-            DB.Set(permissions);
+            DB.Set(ownerPermissions);
+            if(creatorPermissions != null)
+                DB.Set(creatorPermissions);
 
             if (propertyDetail.HasStorage)
             {
@@ -550,7 +1152,7 @@ namespace SWLOR.Game.Server.Service
                     var categoryPermission = new WorldPropertyPermission
                     {
                         PropertyId = category.Id,
-                        PlayerId = ownerId
+                        PlayerId = ownerPlayerId
                     };
 
                     foreach (var permission in _permissionsByPropertyType[PropertyType.Category])
@@ -562,11 +1164,10 @@ namespace SWLOR.Game.Server.Service
                     DB.Set(categoryPermission);
                 }
             }
+            
+            SpawnIntoWorld(property, targetArea);
 
-            if (propertyDetail.ExistsInGameWorld)
-            {
-                SpawnIntoWorld(property, targetArea);
-            }
+            Log.Write(LogGroup.Property, $"{GetName(creatorPlayer)} ({GetPCPlayerName(creatorPlayer)} / {GetPCPublicCDKey(creatorPlayer)}) placed {propertyDetail.Name}.");
 
             return property;
         }
@@ -579,9 +1180,11 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The new world property.</returns>
         public static WorldProperty CreateApartment(uint player, PropertyLayoutType layout)
         {
-            return CreateProperty(player, PropertyType.Apartment, layout, OBJECT_INVALID, property =>
+            var playerId = GetObjectUUID(player);
+            var propertyName = $"{GetName(player)}'s Apartment";
+            return CreateProperty(player, playerId, propertyName, PropertyType.Apartment, layout, OBJECT_INVALID, property =>
             {
-                property.Timers[PropertyTimerType.Lease] = DateTime.UtcNow.AddDays(7);
+                property.Dates[PropertyDateType.Lease] = DateTime.UtcNow.AddDays(7);
             });
         }
 
@@ -590,10 +1193,16 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player to associate the starship with.</param>
         /// <param name="layout">The layout to use.</param>
+        /// <param name="planetType">The planet where this starship is being created.</param>
         /// <param name="spaceLocation">Location of the space transfer point (when a player is converted to a ship)</param>
         /// <param name="landingLocation">Location of the ground transfer point (when a player is converted back to normal)</param>
         /// <returns>The new world property.</returns>
-        public static WorldProperty CreateStarship(uint player, PropertyLayoutType layout, Location spaceLocation, Location landingLocation)
+        public static WorldProperty CreateStarship(
+            uint player, 
+            PropertyLayoutType layout, 
+            PlanetType planetType,
+            Location spaceLocation, 
+            Location landingLocation)
         {
             var spacePosition = GetPositionFromLocation(spaceLocation);
             var spaceOrientation = GetFacingFromLocation(spaceLocation);
@@ -604,16 +1213,41 @@ namespace SWLOR.Game.Server.Service
             var landingOrientation = GetFacingFromLocation(landingLocation);
             var landingArea = GetAreaFromLocation(landingLocation);
             var landingAreaResref = GetResRef(landingArea);
+            var landingPropertyId = GetPropertyId(landingArea);
 
-            return CreateProperty(player, PropertyType.Starship, layout, OBJECT_INVALID, property =>
+            // In the event the starport a ship is located at is destroyed or otherwise disappears,
+            // we need to know the location of the planet's NPC starport so the ship can be returned there.
+            // If we don't capture this correctly, the ship will be lost in limbo and the players won't be 
+            // able to access it.
+            var planet = Planet.GetPlanetByType(planetType);
+            var npcLandingWaypoint = GetWaypointByTag(planet.LandingWaypointTag);
+            var npcLandingPosition = GetPosition(npcLandingWaypoint);
+            var npcLandingOrientation = GetFacing(npcLandingWaypoint);
+            var npcLandingArea = GetArea(npcLandingWaypoint);
+            var npcLandingResref = GetResRef(npcLandingArea);
+
+            var playerId = GetObjectUUID(player);
+            var propertyName = $"{GetName(player)}'s Starship";
+
+            return CreateProperty(player, playerId, propertyName, PropertyType.Starship, layout, OBJECT_INVALID, property =>
             {
+                property.Positions[PropertyLocationType.LastNPCDockPosition] = new PropertyLocation
+                {
+                    X = npcLandingPosition.X,
+                    Y = npcLandingPosition.Y,
+                    Z = npcLandingPosition.Z,
+                    Orientation = npcLandingOrientation,
+                    AreaResref = npcLandingResref
+                };
+
                 property.Positions[PropertyLocationType.DockPosition] = new PropertyLocation
                 {
                     X = landingPosition.X,
                     Y = landingPosition.Y,
                     Z = landingPosition.Z,
                     Orientation = landingOrientation,
-                    AreaResref = landingAreaResref
+                    AreaResref = string.IsNullOrWhiteSpace(landingPropertyId) ? landingAreaResref : string.Empty,
+                    InstancePropertyId = !string.IsNullOrWhiteSpace(landingPropertyId) ? landingPropertyId : string.Empty
                 };
 
                 property.Positions[PropertyLocationType.SpacePosition] = new PropertyLocation
@@ -628,14 +1262,110 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Creates a new building in the database for a given player and returns the world property.
+        /// Creates a new city in the specified area and assigns the specified player to become the owner.
+        /// A city hall structure and interior will also be spawned at the specified location.
+        /// The specified item will be destroyed.
+        /// </summary>
+        /// <param name="player">The player who will become mayor.</param>
+        /// <param name="area">The area to claim.</param>
+        /// <param name="item">The item used to place the city hall</param>
+        /// <param name="location">The location to spawn city hall.</param>
+        public static void CreateCity(uint player, uint area, uint item, Location location)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var propertyName = $"{GetName(player)}'s City";
+            var now = DateTime.UtcNow;
+            var city = CreateProperty(player, playerId, propertyName, PropertyType.City, PropertyLayoutType.City, area, property =>
+            {
+                property.ParentPropertyId = GetResRef(area);
+                AssignPropertyId(area, property.Id);
+
+                // Maintenance fees will be collected one week from now.
+                property.Dates[PropertyDateType.Upkeep] = now.AddDays(7);
+
+                // The first voting cycle will begin three weeks from now.
+                property.Dates[PropertyDateType.ElectionStart] = now.AddDays(21);
+
+                // The property will be cleaned up on the first server reset after 18 hours have passed
+                // if there are less than the required number of citizens registered.
+                property.Dates[PropertyDateType.BelowRequiredCitizens] = now.AddHours(18);
+
+                // Initialize taxes at zero.
+                property.Taxes[PropertyTaxType.Citizenship] = 0;
+                property.Taxes[PropertyTaxType.Transportation] = 0;
+
+                // Upgrades
+                property.Upgrades[PropertyUpgradeType.CityLevel] = 1;
+                property.Upgrades[PropertyUpgradeType.BankLevel] = 1;
+                property.Upgrades[PropertyUpgradeType.MedicalCenterLevel] = 1;
+                property.Upgrades[PropertyUpgradeType.StarportLevel] = 1;
+                property.Upgrades[PropertyUpgradeType.CantinaLevel] = 1;
+            });
+
+            CreateBuilding(
+                player,
+                item,
+                city.Id,
+                PropertyType.CityHall,
+                PropertyLayoutType.CityHallStyle1,
+                StructureType.CityHall,
+                location);
+
+            dbPlayer.CitizenPropertyId = city.Id;
+            DB.Set(dbPlayer);
+
+            Log.Write(LogGroup.Property, $"{GetName(player)} ({GetPCPlayerName(player)} / {GetPCPublicCDKey(player)}) founded a new city in {GetName(area)}.");
+        }
+
+        /// <summary>
+        /// Creates a new structure and interior property associated with the building.
         /// </summary>
         /// <param name="player">The player to associate the building with.</param>
+        /// <param name="parentCityId">The parent city Id.</param>
+        /// <param name="propertyType">The type of property to create</param>
         /// <param name="layout">The layout to use.</param>
+        /// <param name="item">The item used to create the building.</param>
+        /// <param name="structureType">The type of structure to create.</param>
+        /// <param name="location">The location to spawn the structure.</param>
         /// <returns>The new world property.</returns>
-        public static WorldProperty CreateBuilding(uint player, PropertyLayoutType layout)
+        public static void CreateBuilding(
+            uint player, 
+            uint item, 
+            string parentCityId, 
+            PropertyType propertyType, 
+            PropertyLayoutType layout,
+            StructureType structureType,
+            Location location)
         {
-            return CreateProperty(player, PropertyType.Building, layout); // todo: need to target the city and area to add this to.
+            var layoutDetail = GetLayoutByType(layout);
+            var propertyName = $"{GetName(player)}'s {layoutDetail.Name}";
+            var city = DB.Get<WorldProperty>(parentCityId);
+
+            // Hierarchy goes:
+            //      City  (Top Level)
+            //          -> Contains: Structure (buildings)
+            //              -> Contains: Building interiors
+            var buildingStructure = CreateStructure(parentCityId, item, structureType, location);
+            
+            var interior = CreateProperty(
+                player,
+                city.OwnerPlayerId,
+                propertyName, 
+                propertyType, 
+                layout, 
+                OBJECT_INVALID, 
+                interiorProperty =>
+            {
+                interiorProperty.ParentPropertyId = buildingStructure.Id;
+                interiorProperty.CustomName = buildingStructure.CustomName;
+            });
+
+            if (!buildingStructure.ChildPropertyIds.ContainsKey(PropertyChildType.Interior))
+                buildingStructure.ChildPropertyIds[PropertyChildType.Interior] = new List<string>();
+
+            buildingStructure.ChildPropertyIds[PropertyChildType.Interior].Add(interior.Id);
+            DB.Set(buildingStructure);
         }
 
         /// <summary>
@@ -645,7 +1375,7 @@ namespace SWLOR.Game.Server.Service
         /// <param name="item">The item used to spawn the structure.</param>
         /// <param name="type">The type of structure to spawn.</param>
         /// <param name="location">The location to spawn the structure at.</param>
-        public static void CreateStructure(
+        public static WorldProperty CreateStructure(
             string parentPropertyId, 
             uint item,
             StructureType type, 
@@ -656,14 +1386,22 @@ namespace SWLOR.Game.Server.Service
             var areaResref = GetResRef(area);
             var position = GetPositionFromLocation(location);
             var parentProperty = DB.Get<WorldProperty>(parentPropertyId);
-            var structureItemStorage = structureDetail.ItemStorage; // todo: add structure bonus property increases
+            var structureItemStorage = structureDetail.ItemStorage;
+
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) != ItemPropertyType.StructureBonus)
+                    continue;
+
+                structureItemStorage += GetItemPropertyCostTableValue(ip);
+            }
 
             var structure = new WorldProperty
             {
                 CustomName = structureDetail.Name,
                 PropertyType = PropertyType.Structure,
                 SerializedItem = ObjectPlugin.Serialize(item),
-                OwnerPlayerId = string.Empty,
+                OwnerPlayerId = parentProperty.OwnerPlayerId,
                 ParentPropertyId = parentPropertyId,
                 StructureType = type,
                 ItemStorageCount = structureItemStorage
@@ -678,7 +1416,10 @@ namespace SWLOR.Game.Server.Service
                 Z = position.Z
             };
 
-            parentProperty.ChildPropertyIds.Add(structure.Id);
+            if (!parentProperty.ChildPropertyIds.ContainsKey(PropertyChildType.Structure))
+                parentProperty.ChildPropertyIds[PropertyChildType.Structure] = new List<string>();
+
+            parentProperty.ChildPropertyIds[PropertyChildType.Structure].Add(structure.Id);
             parentProperty.ItemStorageCount += structureItemStorage; 
 
             DB.Set(structure);
@@ -689,6 +1430,11 @@ namespace SWLOR.Game.Server.Service
             AssignPropertyId(placeable, structure.Id);
 
             _structurePropertyIdToPlaceable[structure.Id] = placeable;
+
+            DestroyObject(item);
+            RunStructureChangedEvent(type, StructureChangeType.PositionChanged, structure, placeable);
+
+            return structure;
         }
 
         /// <summary>
@@ -717,7 +1463,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="type">The type of layout to retrieve.</param>
         /// <returns>A property layout</returns>
-        public static PropertyLayoutTypeAttribute GetLayoutByType(PropertyLayoutType type)
+        public static PropertyLayout GetLayoutByType(PropertyLayoutType type)
         {
             return _activeLayouts[type];
         }
@@ -784,6 +1530,16 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Retrieves the property detail for a given type of property.
+        /// </summary>
+        /// <param name="type">The type of property to get.</param>
+        /// <returns>A property detail for the given type.</returns>
+        public static PropertyTypeAttribute GetPropertyDetail(PropertyType type)
+        {
+            return _propertyTypes[type];
+        }
+
+        /// <summary>
         /// Retrieves a placeable associated with a property Id.
         /// </summary>
         /// <param name="propertyId">The property Id to search for</param>
@@ -793,6 +1549,19 @@ namespace SWLOR.Game.Server.Service
             return !_structurePropertyIdToPlaceable.ContainsKey(propertyId) 
                 ? OBJECT_INVALID 
                 : _structurePropertyIdToPlaceable[propertyId];
+        }
+
+        /// <summary>
+        /// Retrieves a list of structures which have an interior with the specified property type.
+        /// </summary>
+        /// <param name="propertyType">The property type to search for.</param>
+        /// <returns>A list of structure types.</returns>
+        public static List<StructureType> GetStructuresByInteriorPropertyType(PropertyType propertyType)
+        {
+            if (!_structureTypesByPropertyType.ContainsKey(propertyType))
+                return new List<StructureType>();
+
+            return _structureTypesByPropertyType[propertyType].ToList();
         }
 
         /// <summary>
@@ -1083,13 +1852,40 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler("item_use_bef")]
         public static void PlaceStructure()
         {
+            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
+            if (!GetResRef(item).StartsWith("structure_"))
+                return;
+
             EventsPlugin.SkipEvent();
 
             var player = OBJECT_SELF;
             var area = GetArea(player);
-            var item = StringToObject(EventsPlugin.GetEventData("ITEM_OBJECT_ID"));
             var propertyId = GetPropertyId(area);
             var playerId = GetObjectUUID(player);
+            var structureType = GetStructureTypeFromItem(item);
+            var position = Vector3(
+                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_X")),
+                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Y")),
+                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Z")));
+
+            // Special case: City Hall pulls up a menu with details about the land and an option to place it down, claiming the land.
+            if (structureType == StructureType.CityHall)
+            {
+                if (!GetLocalBool(area, "IS_BUILDABLE"))
+                {
+                    FloatingTextStringOnCreature("Cities cannot be founded here.", player, false);
+                    return;
+                }
+
+                SetLocalObject(player, "PROPERTY_CITY_HALL_ITEM", item);
+                SetLocalFloat(player, "PROPERTY_CITY_HALL_X", position.X);
+                SetLocalFloat(player, "PROPERTY_CITY_HALL_Y", position.Y);
+                SetLocalFloat(player, "PROPERTY_CITY_HALL_Z", position.Z);
+                Dialog.StartConversation(player, player, nameof(PlaceCityHallDialog));
+                return;
+            }
+            
+            if (structureType == StructureType.Invalid) return;
 
             // Must be in a player property.
             if (string.IsNullOrWhiteSpace(propertyId))
@@ -1111,39 +1907,68 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
             
-            var propertyQuery = new DBQuery<WorldProperty>()
-                .AddFieldSearch(nameof(WorldProperty.Id), propertyId, false);
-            var property = DB.Search(propertyQuery).Single();
-            var structureLimit = property.ChildPropertyIds.Count;
+            var property = DB.Get<WorldProperty>(propertyId);
             var layout = GetLayoutByType(property.Layout);
+            int structureLimit;
+            var structureDetail = GetStructureByType(structureType);
+            var structures = DB.Search(new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), propertyId, false)
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Structure));
+            int structureCount;
+            string fixtureName;
+
+            // Special Case: Cities differentiate between structures and buildings.
+            // They use the BuildingLimit value for buildings and StructureLimit for everything else.
+            // Buildings are determined by structures whose restrictions are solely to "City" property types.
+            if (property.PropertyType == PropertyType.City &&
+                structureDetail.RestrictedPropertyTypes == PropertyType.City)
+            {
+                structureCount = structures.Count(x => GetStructureByType(x.StructureType).LayoutType != PropertyLayoutType.Invalid);
+                structureLimit = layout.BuildingLimit;
+                fixtureName = "Building";
+            }
+            else
+            {
+                structureCount = structures.Count(x => GetStructureByType(x.StructureType).LayoutType == PropertyLayoutType.Invalid);
+                structureLimit = layout.StructureLimit;
+                fixtureName = "Structure";
+            }
 
             // Over the structure limit.
-            if (structureLimit >= layout.StructureLimit)
+            if (structureCount >= structureLimit)
             {
-                FloatingTextStringOnCreature($"No more structures may be placed here.", player, false);
+                FloatingTextStringOnCreature($"{fixtureName} limit reached for this property.", player, false);
                 return;
             }
 
             // Structure can't be placed within this type of property.
-            var structureType = GetStructureTypeFromItem(item);
-            var structureDetail = GetStructureByType(structureType);
-
             if (!structureDetail.RestrictedPropertyTypes.HasFlag(property.PropertyType))
             {
-                FloatingTextStringOnCreature($"This type of structure cannot be placed within this type of property.", player, false);
+                FloatingTextStringOnCreature($"This {fixtureName} cannot be placed within this type of property.", player, false);
                 return;
             }
 
-            var position = Vector3(
-                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_X")),
-                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Y")),
-                (float)Convert.ToDouble(EventsPlugin.GetEventData("TARGET_POSITION_Z")));
             var location = Location(area, position, 0.0f);
 
-            CreateStructure(propertyId, item, structureType, location);
-            DestroyObject(item);
+            // If no interior layout is defined, this is a basic structure.
+            if (structureDetail.LayoutType == PropertyLayoutType.Invalid)
+            {
+                CreateStructure(propertyId, item, structureType, location);
+            }
+            // Otherwise we have a layout which means an interior must be spawned.
+            else
+            {
+                var structureLayout = GetLayoutByType(structureDetail.LayoutType);
+                CreateBuilding(
+                    player, 
+                    item, 
+                    propertyId, 
+                    structureLayout.PropertyType, 
+                    structureDetail.LayoutType, 
+                    structureType, location);
+            }
 
-            SendMessageToPC(player, $"Furniture Limit: {property.ChildPropertyIds.Count+1} / {layout.StructureLimit}");
+            SendMessageToPC(player, $"{fixtureName} Limit: {structureCount+1} / {structureLimit}");
         }
 
         /// <summary>
@@ -1155,8 +1980,10 @@ namespace SWLOR.Game.Server.Service
         /// <param name="area">The area to spawn the property into. Leave OBJECT_INVALID if spawning an instance.</param>
         private static void SpawnIntoWorld(WorldProperty property, uint area)
         {
-            // Structures represent placeables within the game world such as furniture and buildings
-            if (property.PropertyType == PropertyType.Structure)
+            var propertyDetail = _propertyTypes[property.PropertyType];
+
+            // World spawns represent placeables within the game world such as furniture and buildings
+            if (propertyDetail.SpawnType == PropertySpawnType.World)
             {
                 var furniture = GetStructureByType(property.StructureType);
 
@@ -1168,39 +1995,246 @@ namespace SWLOR.Game.Server.Service
                 AssignPropertyId(placeable, property.Id);
 
                 _structurePropertyIdToPlaceable[property.Id] = placeable;
+
+                // Some structures have custom spawn-in actions which also need to be run
+                // when brought into the world. 
+                RunStructureChangedEvent(property.StructureType, StructureChangeType.PositionChanged, property, placeable);
             }
-            // All other property types are area instances or regular areas (in the case of cities)
+            // Instance spawns are instanced areas that are spawned dynamically into the game world.
+            else if(propertyDetail.SpawnType == PropertySpawnType.Instance)
+            {
+                // If no interior layout is defined, the provided area will be used.
+                var layout = GetLayoutByType(property.Layout);
+                var targetArea = CreateArea(layout.AreaInstanceResref);
+                RegisterInstance(property.Id, targetArea, property.Layout);
+                
+                SetName(targetArea, property.CustomName);
+
+                if (layout.OnSpawnAction != null)
+                {
+                    layout.OnSpawnAction(targetArea);
+                }
+            }
+            // Area spawns exist in a pre-built area.
+            else if(propertyDetail.SpawnType == PropertySpawnType.Area)
+            {
+                AssignPropertyId(area, property.Id);
+            }
+        }
+
+        /// <summary>
+        /// When a building entrance is used, port the player inside the instance if they have permission
+        /// or display an error message saying they don't have permission to enter.
+        /// </summary>
+        [NWNEventHandler("enter_property")]
+        public static void EnterBuilding()
+        {
+            var player = GetLastUsedBy();
+            var playerId = GetObjectUUID(player);
+            var door = OBJECT_SELF;
+            
+            // Buildings only ever have one child which is the interior area instance
+            var buildingId = GetPropertyId(door);
+            var building = DB.Get<WorldProperty>(buildingId);
+            var interiorId = building.ChildPropertyIds[PropertyChildType.Interior].Single();
+            var interior = DB.Get<WorldProperty>(interiorId);
+
+            var instance = GetRegisteredInstance(interior.Id);
+            var entrance = GetEntrancePosition(interior.Layout);
+            var position = Vector3(entrance.X, entrance.Y, entrance.Z);
+            var location = Location(instance.Area, position, entrance.W);
+            var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), interiorId, false))
+                .SingleOrDefault();
+
+            // Building is publicly accessible or the player has permission to enter.
+            if (interior.IsPubliclyAccessible ||
+                !interior.IsPubliclyAccessible && permission != null && permission.Permissions[PropertyPermissionType.EnterProperty])
+            {
+                StoreOriginalLocation(player);
+                AssignCommand(player, () => ActionJumpToLocation(location));
+            }
             else
             {
-                uint targetArea;
-
-                // If no interior layout is defined, the provided area will be used.
-                if (property.Layout == PropertyLayoutType.Invalid)
-                {
-                    targetArea = area;
-                }
-                // If there is an interior, create an instance and use that as our target.
-                else
-                {
-                    var layout = GetLayoutByType(property.Layout);
-                    targetArea = CreateArea(layout.AreaInstanceResref);
-                    RegisterInstance(property.Id, targetArea);
-
-                    SetName(targetArea, property.CustomName);
-                }
-
-                if (property.ChildPropertyIds.Count > 0)
-                {
-                    var query = new DBQuery<WorldProperty>()
-                        .AddFieldSearch(nameof(WorldProperty.Id), property.ChildPropertyIds);
-                    var children = DB.Search(query);
-
-                    foreach (var child in children)
-                    {
-                        SpawnIntoWorld(child, targetArea);
-                    }
-                }
+                SendMessageToPC(player, "You do not have permission to enter.");
             }
+        }
+
+        /// <summary>
+        /// If a structure changed action is registered, this will perform the action on the specified
+        /// property and placeable. If not registered, nothing will happen.
+        /// </summary>
+        /// <param name="structureType">The type of structure</param>
+        /// <param name="changeType">The type of change.</param>
+        /// <param name="property">The world property to target</param>
+        /// <param name="placeable">The placeable to target</param>
+        public static void RunStructureChangedEvent(StructureType structureType, StructureChangeType changeType, WorldProperty property, uint placeable)
+        {
+            if (!_structureChangedActions.ContainsKey(structureType))
+                return;
+
+            if (!_structureChangedActions[structureType].ContainsKey(changeType))
+                return;
+
+            _structureChangedActions[structureType][changeType](property, placeable);
+        }
+
+        /// <summary>
+        /// When the Citizenship terminal is used, open the Manage Citizenship UI.
+        /// </summary>
+        [NWNEventHandler("open_citizenship")]
+        public static void OpenCitizenshipMenu()
+        {
+            var player = GetLastUsedBy();
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            var terminal = OBJECT_SELF;
+            var area = GetArea(terminal);
+            var propertyId = GetPropertyId(area);
+            var dbProperty = DB.Get<WorldProperty>(propertyId);
+            var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
+
+            // Player is a citizen of another city. Their citizenship needs to be revoked before
+            // they're able to access this terminal.
+            if (!string.IsNullOrWhiteSpace(dbPlayer.CitizenPropertyId) &&
+                dbPlayer.CitizenPropertyId != Guid.Empty.ToString() &&
+                dbBuilding.ParentPropertyId != dbPlayer.CitizenPropertyId)
+            {
+                SendMessageToPC(player, ColorToken.Red("You are a citizen of another city. You cannot access this terminal unless you revoke your citizenship first."));
+            }
+            else
+            {
+                Gui.TogglePlayerWindow(player, GuiWindowType.ManageCitizenship, null, terminal);
+            }
+        }
+
+        /// <summary>
+        /// When the City Management terminal is used, open the City Management UI.
+        /// </summary>
+        [NWNEventHandler("open_city_manage")]
+        public static void OpenCityManagementMenu()
+        {
+            var player = GetLastUsedBy();
+            var playerId = GetObjectUUID(player);
+            var terminal = OBJECT_SELF;
+            var area = GetArea(terminal);
+            var propertyId = GetPropertyId(area);
+            var dbProperty = DB.Get<WorldProperty>(propertyId);
+            var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
+
+            var permission = DB.Search(new DBQuery<WorldPropertyPermission>()
+                .AddFieldSearch(nameof(WorldPropertyPermission.PropertyId), dbBuilding.ParentPropertyId, false)
+                .AddFieldSearch(nameof(WorldPropertyPermission.PlayerId), playerId, false))
+                .SingleOrDefault();
+
+            // Player has at least one permission. Display the window.
+            if (permission != null && (permission.Permissions[PropertyPermissionType.RenameProperty] ||
+                                       permission.Permissions[PropertyPermissionType.EditTaxes] ||
+                                       permission.Permissions[PropertyPermissionType.AccessTreasury] ||
+                                       permission.Permissions[PropertyPermissionType.ManageUpgrades] ||
+                                       permission.Permissions[PropertyPermissionType.ManageUpkeep]))
+            {
+                Gui.TogglePlayerWindow(player, GuiWindowType.ManageCity, null, terminal);
+            }
+            else
+            {
+                SendMessageToPC(player, ColorToken.Red("You do not have permission to access this terminal."));
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the name of a particular city level.
+        /// </summary>
+        /// <param name="level">The level to retrieve</param>
+        /// <returns>A string representing the city level.</returns>
+        public static string GetCityLevelName(int level)
+        {
+            switch (level)
+            {
+                case 1:
+                    return "Outpost";
+                case 2:
+                    return "Village";
+                case 3:
+                    return "Township";
+                case 4:
+                    return "City";
+                case 5:
+                    return "Metropolis";
+            }
+
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Retrieves the number of citizens required for the next city level.
+        /// If level isn't supported, -1 will be returned.
+        /// </summary>
+        /// <param name="level">The level to retrieve</param>
+        /// <returns>The number of citizens required to level up the city.</returns>
+        public static int GetCitizensRequiredForNextCityLevel(int level)
+        {
+            return _citizensRequired.ContainsKey(level)
+                ? _citizensRequired[level]
+                : -1;
+        }
+
+        /// <summary>
+        /// Retrieves the effective upgrade level of a city, taking into account the city's overall level
+        /// into the calculation.
+        /// </summary>
+        /// <param name="cityId">The property Id of the city.</param>
+        /// <param name="upgradeType">The type of upgrade to check</param>
+        /// <returns>A value ranging between 0 and 5.</returns>
+        public static int GetEffectiveUpgradeLevel(string cityId, PropertyUpgradeType upgradeType)
+        {
+            if (string.IsNullOrWhiteSpace(cityId))
+                return 0;
+
+            var property = DB.Get<WorldProperty>(cityId);
+            if (property == null)
+                return 0;
+
+            if (!property.Upgrades.ContainsKey(upgradeType))
+                return 0;
+
+            var cityLevel = property.Upgrades[PropertyUpgradeType.CityLevel];
+            var upgradeLevel = property.Upgrades[upgradeType];
+            var effectiveLevel = cityLevel < upgradeLevel ? cityLevel : upgradeLevel;
+            var structureType = StructureType.Invalid;
+
+            switch (upgradeType)
+            {
+                case PropertyUpgradeType.BankLevel:
+                    structureType = StructureType.Bank;
+                    break;
+                case PropertyUpgradeType.MedicalCenterLevel:
+                    structureType = StructureType.MedicalCenter;
+                    break;
+                case PropertyUpgradeType.StarportLevel:
+                    structureType = StructureType.Starport;
+                    break;
+                case PropertyUpgradeType.CantinaLevel:
+                    structureType = StructureType.Cantina;
+                    break;
+            }
+
+            if (structureType == StructureType.Invalid)
+                return 0;
+
+            // At least one building property of the given type must exist within the city.
+            var buildingCount = DB.SearchCount(new DBQuery<WorldProperty>()
+                .AddFieldSearch(nameof(WorldProperty.IsQueuedForDeletion), false)
+                .AddFieldSearch(nameof(WorldProperty.PropertyType), (int)PropertyType.Structure)
+                .AddFieldSearch(nameof(WorldProperty.StructureType), (int)structureType)
+                .AddFieldSearch(nameof(WorldProperty.ParentPropertyId), cityId, false));
+
+            if (buildingCount <= 0)
+                return 0;
+
+            return effectiveLevel - 1;
         }
     }
 }

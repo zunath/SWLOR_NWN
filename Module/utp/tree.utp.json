@@ -110,7 +110,7 @@
   },
   "OnHeartbeat": {
     "type": "resref",
-    "value": "script_2"
+    "value": "res_heartbeat"
   },
   "OnInvDisturbed": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "OnUsed": {
     "type": "resref",
-    "value": "script_1"
+    "value": "res_used"
   },
   "OnUserDefined": {
     "type": "resref",
@@ -234,7 +234,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "SCRIPT_1"
+          "value": "HARVESTING_LOOT_TABLE"
         },
         "Type": {
           "type": "dword",
@@ -242,29 +242,14 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "Placeable.Resource.OnUsed"
+          "value": "HARVESTING_TREE"
         }
       },
       {
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "SCRIPT_2"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Placeable.Resource.OnHeartbeat"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "RESOURCE_TYPE"
+          "value": "HARVESTER_REQUIRED_LEVEL"
         },
         "Type": {
           "type": "dword",
@@ -272,7 +257,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 2
+          "value": 1
         }
       }
     ]

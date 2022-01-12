@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Ship - The Gwenivere"
+      "0": "[Prefab] Ship - The Gwenivere"
     }
   },
   "NoRest": {
@@ -11169,7 +11169,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 16
+    "value": 17
   },
   "Width": {
     "type": "int",

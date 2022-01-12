@@ -20,93 +20,93 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Gets the number of players in area
         public static int GetNumberOfPlayersInArea(uint area)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetNumberOfPlayersInArea");
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetNumberOfPlayersInArea");
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         // Gets the creature that last entered area
         public static uint GetLastEntered(uint area)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetLastEntered");
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopObject();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetLastEntered");
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopObject();
         }
 
         // Gets the creature that last left area
         public static uint GetLastLeft(uint area)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetLastLeft");
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopObject();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetLastLeft");
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopObject();
         }
 
         // Get the PVP setting of area
         // Returns NWNX_AREA_PVP_SETTING_*
         public static PvPSetting GetPVPSetting(uint area)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetPVPSetting");
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return (PvPSetting)Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetPVPSetting");
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return (PvPSetting)NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         // Set the PVP setting of area
         // pvpSetting = NWNX_AREA_PVP_SETTING_*
         public static void SetPVPSetting(uint area, PvPSetting pvpSetting)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetPVPSetting");
-            Internal.NativeFunctions.nwnxPushInt((int)pvpSetting);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetPVPSetting");
+            NWNCore.NativeFunctions.nwnxPushInt((int)pvpSetting);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Get the spot modifier of area
         public static int GetAreaSpotModifier(uint area)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAreaSpotModifier");
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAreaSpotModifier");
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         // Set the spot modifier of area
         public static void SetAreaSpotModifier(uint area, int spotModifier)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAreaSpotModifier");
-            Internal.NativeFunctions.nwnxPushInt(spotModifier);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAreaSpotModifier");
+            NWNCore.NativeFunctions.nwnxPushInt(spotModifier);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Get the listen modifer of area
         public static int GetAreaListenModifier(uint area)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAreaListenModifier");
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAreaListenModifier");
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         // Set the listen modifier of area
         public static void SetAreaListenModifier(uint area, int listenModifier)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAreaListenModifier");
-            Internal.NativeFunctions.nwnxPushInt(listenModifier);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAreaListenModifier");
+            NWNCore.NativeFunctions.nwnxPushInt(listenModifier);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Returns TRUE if resting is not allowed in area
         public static bool GetNoRestingAllowed(uint area)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetNoRestingAllowed");
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt() == 1;
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetNoRestingAllowed");
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt() == 1;
         }
 
         // Set whether resting is allowed in area
@@ -114,40 +114,40 @@ namespace SWLOR.Game.Server.Core.NWNX
         // FALSE: Resting allowed
         public static void SetNoRestingAllowed(uint area, bool bNoRestingAllowed)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetNoRestingAllowed");
-            Internal.NativeFunctions.nwnxPushInt(bNoRestingAllowed ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetNoRestingAllowed");
+            NWNCore.NativeFunctions.nwnxPushInt(bNoRestingAllowed ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Get the wind power in area
         public static int GetWindPower(uint area)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetWindPower");
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetWindPower");
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         // Set the wind power in area
         // windPower = 0-2
         public static void SetWindPower(uint area, int windPower)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetWindPower");
-            Internal.NativeFunctions.nwnxPushInt(windPower);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetWindPower");
+            NWNCore.NativeFunctions.nwnxPushInt(windPower);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Get the weather chance of type in area
         // type = NWNX_AREA_WEATHER_CHANCE_*
         public static int GetWeatherChance(uint area, WeatherEffectType type)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetWeatherChance");
-            Internal.NativeFunctions.nwnxPushInt((int)type);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetWeatherChance");
+            NWNCore.NativeFunctions.nwnxPushInt((int)type);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         // Set the weather chance of type in area
@@ -155,49 +155,49 @@ namespace SWLOR.Game.Server.Core.NWNX
         // chance = 0-100
         public static void SetWeatherChance(uint area, WeatherEffectType type, int chance)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetWeatherChance");
-            Internal.NativeFunctions.nwnxPushInt(chance);
-            Internal.NativeFunctions.nwnxPushInt((int)type);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetWeatherChance");
+            NWNCore.NativeFunctions.nwnxPushInt(chance);
+            NWNCore.NativeFunctions.nwnxPushInt((int)type);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Get the fog clip distance in area
         public static float GetFogClipDistance(uint area)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFogClipDistance");
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopFloat();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFogClipDistance");
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopFloat();
         }
 
         // Set the fog clip distance in area
         public static void SetFogClipDistance(uint area, float distance)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetFogClipDistance");
-            Internal.NativeFunctions.nwnxPushFloat(distance);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetFogClipDistance");
+            NWNCore.NativeFunctions.nwnxPushFloat(distance);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
 
         // Get the shadow opacity of area
         public static int GetShadowOpacity(uint area)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetShadowOpacity");
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetShadowOpacity");
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         // Set the shadow opacity of area
         // shadowOpacity = 0-100
         public static void SetShadowOpacity(uint area, int shadowOpacity)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetShadowOpacity");
-            Internal.NativeFunctions.nwnxPushInt(shadowOpacity);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetShadowOpacity");
+            NWNCore.NativeFunctions.nwnxPushInt(shadowOpacity);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
 
@@ -205,20 +205,20 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Returns NWNX_AREA_DAYNIGHTCYCLE_*
         public static DayNightCycle GetDayNightCycle(uint area)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetDayNightCycle");
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return (DayNightCycle)Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetDayNightCycle");
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return (DayNightCycle)NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         // Set the day/night cycle of area
         // type = NWNX_AREA_DAYNIGHTCYCLE_*
         public static void SetDayNightCycle(uint area, DayNightCycle type)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetDayNightCycle");
-            Internal.NativeFunctions.nwnxPushInt((int)type);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetDayNightCycle");
+            NWNCore.NativeFunctions.nwnxPushInt((int)type);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Get the Sun/Moon Ambient/Diffuse colors of area
@@ -227,11 +227,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Returns FOG_COLOR_* or a custom value, -1 on error
         public static int GetSunMoonColors(uint area, ColorType type)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSunMoonColors");
-            Internal.NativeFunctions.nwnxPushInt((int)type);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetSunMoonColors");
+            NWNCore.NativeFunctions.nwnxPushInt((int)type);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         // Set the Sun/Moon Ambient/Diffuse colors of area
@@ -245,11 +245,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         // DD would represent the amount of blue in the color.
         public static void SetSunMoonColors(uint area, ColorType type, int color)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSunMoonColors");
-            Internal.NativeFunctions.nwnxPushInt(color);
-            Internal.NativeFunctions.nwnxPushInt((int)type);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetSunMoonColors");
+            NWNCore.NativeFunctions.nwnxPushInt(color);
+            NWNCore.NativeFunctions.nwnxPushInt((int)type);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Create and returns a transition (square shaped of specified size) at a location
@@ -258,29 +258,29 @@ namespace SWLOR.Game.Server.Core.NWNX
         public static uint CreateTransition(uint area, uint target, float x, float y, float z, float size = 2.0f,
             string tag = "")
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "CreateTransition");
-            Internal.NativeFunctions.nwnxPushString(tag);
-            Internal.NativeFunctions.nwnxPushFloat(size);
-            Internal.NativeFunctions.nwnxPushFloat(z);
-            Internal.NativeFunctions.nwnxPushFloat(y);
-            Internal.NativeFunctions.nwnxPushFloat(x);
-            Internal.NativeFunctions.nwnxPushObject(target);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopObject();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "CreateTransition");
+            NWNCore.NativeFunctions.nwnxPushString(tag);
+            NWNCore.NativeFunctions.nwnxPushFloat(size);
+            NWNCore.NativeFunctions.nwnxPushFloat(z);
+            NWNCore.NativeFunctions.nwnxPushFloat(y);
+            NWNCore.NativeFunctions.nwnxPushFloat(x);
+            NWNCore.NativeFunctions.nwnxPushObject(target);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopObject();
         }
 
         // Get the state of a tile animation loop
         // nAnimLoop = 1-3
         public static int GetTileAnimationLoop(uint area, float tileX, float tileY, int animLoop)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetTileAnimationLoop");
-            Internal.NativeFunctions.nwnxPushInt(animLoop);
-            Internal.NativeFunctions.nwnxPushFloat(tileY);
-            Internal.NativeFunctions.nwnxPushFloat(tileX);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetTileAnimationLoop");
+            NWNCore.NativeFunctions.nwnxPushInt(animLoop);
+            NWNCore.NativeFunctions.nwnxPushFloat(tileY);
+            NWNCore.NativeFunctions.nwnxPushFloat(tileX);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         // Set the state of a tile animation loop
@@ -289,13 +289,13 @@ namespace SWLOR.Game.Server.Core.NWNX
         // NOTE: Requires clients to re-enter the area for it to take effect
         public static void SetTileAnimationLoop(uint area, float tileX, float tileY, int animLoop, bool enabled)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetTileAnimationLoop");
-            Internal.NativeFunctions.nwnxPushInt(enabled ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushInt(animLoop);
-            Internal.NativeFunctions.nwnxPushFloat(tileY);
-            Internal.NativeFunctions.nwnxPushFloat(tileX);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetTileAnimationLoop");
+            NWNCore.NativeFunctions.nwnxPushInt(enabled ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushInt(animLoop);
+            NWNCore.NativeFunctions.nwnxPushFloat(tileY);
+            NWNCore.NativeFunctions.nwnxPushFloat(tileX);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Create and return a generic trigger (square shaped of specified size) at a location.
@@ -307,15 +307,15 @@ namespace SWLOR.Game.Server.Core.NWNX
         public static uint CreateGenericTrigger(uint area, float x, float y, float z, string tag = "",
             float size = 1.0f)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "CreateGenericTrigger");
-            Internal.NativeFunctions.nwnxPushFloat(size);
-            Internal.NativeFunctions.nwnxPushString(tag);
-            Internal.NativeFunctions.nwnxPushFloat(z);
-            Internal.NativeFunctions.nwnxPushFloat(y);
-            Internal.NativeFunctions.nwnxPushFloat(x);
-            Internal.NativeFunctions.nwnxPushObject(area);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopObject();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "CreateGenericTrigger");
+            NWNCore.NativeFunctions.nwnxPushFloat(size);
+            NWNCore.NativeFunctions.nwnxPushString(tag);
+            NWNCore.NativeFunctions.nwnxPushFloat(z);
+            NWNCore.NativeFunctions.nwnxPushFloat(y);
+            NWNCore.NativeFunctions.nwnxPushFloat(x);
+            NWNCore.NativeFunctions.nwnxPushObject(area);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopObject();
         }
 
 
@@ -323,18 +323,18 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @param oObject The object to add
         public static void AddObjectToExclusionList(uint oObject)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddObjectToExclusionList");
-            Internal.NativeFunctions.nwnxPushObject(oObject);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "AddObjectToExclusionList");
+            NWNCore.NativeFunctions.nwnxPushObject(oObject);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         /// @brief Remove oObject from the ExportGIT exclusion list.
         /// @param oObject The object to add
         public static void RemoveObjectFromExclusionList(uint oObject)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveObjectFromExclusionList");
-            Internal.NativeFunctions.nwnxPushObject(oObject);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RemoveObjectFromExclusionList");
+            NWNCore.NativeFunctions.nwnxPushObject(oObject);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         /// @brief Export the GIT of oArea to the UserDirectory/nwnx folder.
@@ -348,15 +348,15 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return TRUE if exported successfully, FALSE if not.
         public static int ExportGIT(uint oArea, string sFileName = "", bool bExportVarTable = true, bool bExportUUID = true, int nObjectFilter = 0)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ExportGIT");
-            Internal.NativeFunctions.nwnxPushInt(nObjectFilter);
-            Internal.NativeFunctions.nwnxPushInt(bExportUUID ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushInt(bExportVarTable ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushString(sFileName);
-            Internal.NativeFunctions.nwnxPushObject(oArea);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ExportGIT");
+            NWNCore.NativeFunctions.nwnxPushInt(nObjectFilter);
+            NWNCore.NativeFunctions.nwnxPushInt(bExportUUID ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushInt(bExportVarTable ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushString(sFileName);
+            NWNCore.NativeFunctions.nwnxPushObject(oArea);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
-            return Internal.NativeFunctions.nwnxPopInt();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
 
@@ -366,19 +366,19 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return A NWNX_Area_TileInfo struct with tile info.
         public static TileInfo GetTileInfo(uint oArea, float fTileX, float fTileY)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetTileInfo");
-            Internal.NativeFunctions.nwnxPushFloat(fTileY);
-            Internal.NativeFunctions.nwnxPushFloat(fTileX);
-            Internal.NativeFunctions.nwnxPushObject(oArea);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetTileInfo");
+            NWNCore.NativeFunctions.nwnxPushFloat(fTileY);
+            NWNCore.NativeFunctions.nwnxPushFloat(fTileX);
+            NWNCore.NativeFunctions.nwnxPushObject(oArea);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
             var str = new TileInfo
             {
-                nGridY = Internal.NativeFunctions.nwnxPopInt(),
-                nGridX = Internal.NativeFunctions.nwnxPopInt(),
-                nOrientation = Internal.NativeFunctions.nwnxPopInt(),
-                nHeight = Internal.NativeFunctions.nwnxPopInt(),
-                nID = Internal.NativeFunctions.nwnxPopInt()
+                nGridY = NWNCore.NativeFunctions.nwnxPopInt(),
+                nGridX = NWNCore.NativeFunctions.nwnxPopInt(),
+                nOrientation = NWNCore.NativeFunctions.nwnxPopInt(),
+                nHeight = NWNCore.NativeFunctions.nwnxPopInt(),
+                nID = NWNCore.NativeFunctions.nwnxPopInt()
             };
 
             return str;
@@ -393,15 +393,15 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return TRUE if exported successfully, FALSE if not.
         public static bool ExportARE(uint oArea, string sFileName, string sNewName = "", string sNewTag = "", string sAlias = "NWNX")
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ExportARE");
-            Internal.NativeFunctions.nwnxPushString(sAlias);
-            Internal.NativeFunctions.nwnxPushString(sNewTag);
-            Internal.NativeFunctions.nwnxPushString(sNewName);
-            Internal.NativeFunctions.nwnxPushString(sFileName);
-            Internal.NativeFunctions.nwnxPushObject(oArea);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "ExportARE");
+            NWNCore.NativeFunctions.nwnxPushString(sAlias);
+            NWNCore.NativeFunctions.nwnxPushString(sNewTag);
+            NWNCore.NativeFunctions.nwnxPushString(sNewName);
+            NWNCore.NativeFunctions.nwnxPushString(sFileName);
+            NWNCore.NativeFunctions.nwnxPushObject(oArea);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
-            return Internal.NativeFunctions.nwnxPopInt() == 1;
+            return NWNCore.NativeFunctions.nwnxPopInt() == 1;
         }
 
         /// @brief Get the ambient sound playing in an area during the day.
@@ -409,11 +409,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return The ambient soundtrack. See ambientsound.2da.
         public static int GetAmbientSoundDay(uint oArea)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAmbientSoundDay");
-            Internal.NativeFunctions.nwnxPushObject(oArea);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAmbientSoundDay");
+            NWNCore.NativeFunctions.nwnxPushObject(oArea);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
-            return Internal.NativeFunctions.nwnxPopInt();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         /// @brief Get the ambient sound playing in an area during the night.
@@ -421,11 +421,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return The ambient soundtrack. See ambientsound.2da.
         public static int GetAmbientSoundNight(uint oArea)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAmbientSoundNight");
-            Internal.NativeFunctions.nwnxPushObject(oArea);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAmbientSoundNight");
+            NWNCore.NativeFunctions.nwnxPushObject(oArea);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
-            return Internal.NativeFunctions.nwnxPopInt();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         /// @brief Get the volume of the ambient sound playing in an area during the day.
@@ -433,11 +433,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return The volume.
         public static int GetAmbientSoundDayVolume(uint oArea)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAmbientSoundDayVolume");
-            Internal.NativeFunctions.nwnxPushObject(oArea);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAmbientSoundDayVolume");
+            NWNCore.NativeFunctions.nwnxPushObject(oArea);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
-            return Internal.NativeFunctions.nwnxPopInt();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         /// @brief Get the volume of the ambient sound playing in an area during the night.
@@ -445,11 +445,11 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return The volume.
         public static int GetAmbientSoundNightVolume(uint oArea)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAmbientSoundNightVolume");
-            Internal.NativeFunctions.nwnxPushObject(oArea);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAmbientSoundNightVolume");
+            NWNCore.NativeFunctions.nwnxPushObject(oArea);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
-            return Internal.NativeFunctions.nwnxPopInt();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         /// @brief Create a sound object.
@@ -459,15 +459,15 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return The sound object.
         public static uint CreateSoundObject(uint oArea, Vector3 vPosition, string sResRef)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "CreateSoundObject");
-            Internal.NativeFunctions.nwnxPushString(sResRef);
-            Internal.NativeFunctions.nwnxPushFloat(vPosition.Z);
-            Internal.NativeFunctions.nwnxPushFloat(vPosition.Y);
-            Internal.NativeFunctions.nwnxPushFloat(vPosition.X);
-            Internal.NativeFunctions.nwnxPushObject(oArea);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "CreateSoundObject");
+            NWNCore.NativeFunctions.nwnxPushString(sResRef);
+            NWNCore.NativeFunctions.nwnxPushFloat(vPosition.Z);
+            NWNCore.NativeFunctions.nwnxPushFloat(vPosition.Y);
+            NWNCore.NativeFunctions.nwnxPushFloat(vPosition.X);
+            NWNCore.NativeFunctions.nwnxPushObject(oArea);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
-            return Internal.NativeFunctions.nwnxPopObject();
+            return NWNCore.NativeFunctions.nwnxPopObject();
         }
     }
 }

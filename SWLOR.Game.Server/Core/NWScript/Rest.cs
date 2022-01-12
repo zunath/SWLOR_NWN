@@ -9,8 +9,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ForceRest(uint oCreature)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(775);
+            VM.StackPush(oCreature);
+            VM.Call(775);
         }
 
         /// <summary>
@@ -18,9 +18,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsResting(uint oCreature = OBJECT_INVALID)
         {
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.CallBuiltIn(505);
-            return Internal.NativeFunctions.StackPopInteger() != 0;
+            VM.StackPush(oCreature);
+            VM.Call(505);
+            return VM.StackPopInt() != 0;
         }
 
         /// <summary>
@@ -28,8 +28,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint GetLastPCRested()
         {
-            Internal.NativeFunctions.CallBuiltIn(506);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.Call(506);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -38,8 +38,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static RestEventType GetLastRestEventType()
         {
-            Internal.NativeFunctions.CallBuiltIn(508);
-            return (RestEventType)Internal.NativeFunctions.StackPopInteger();
+            VM.Call(508);
+            return (RestEventType)VM.StackPopInt();
         }
 
         /// <summary>
@@ -53,8 +53,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void ActionRest(bool bCreatureToEnemyLineOfSightCheck = false)
         {
-            Internal.NativeFunctions.StackPushInteger(bCreatureToEnemyLineOfSightCheck ? 1 : 0);
-            Internal.NativeFunctions.CallBuiltIn(402);
+            VM.StackPush(bCreatureToEnemyLineOfSightCheck ? 1 : 0);
+            VM.Call(402);
         }
     }
 }

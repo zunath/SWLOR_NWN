@@ -559,12 +559,12 @@ namespace SWLOR.Game.Server.Service
         private static void _DoWindKnockdown(uint oCreature)
         {
             var nDC = (GetHitDice(oCreature) / 2) + 10;
-            var nDiscipline = GetSkillRank(Core.NWScript.Enum.Skill.Discipline, oCreature);
+            var nDiscipline = GetSkillRank(Core.NWScript.Enum.NWNSkillType.Discipline, oCreature);
             var nReflexSave = GetReflexSavingThrow(oCreature);
             int nSuccess;
 
             if (nDiscipline > nReflexSave)
-                nSuccess = GetIsSkillSuccessful(oCreature, Core.NWScript.Enum.Skill.Discipline, nDC) ? 1 : 0;
+                nSuccess = GetIsSkillSuccessful(oCreature, Core.NWScript.Enum.NWNSkillType.Discipline, nDC) ? 1 : 0;
             else
                 nSuccess = ReflexSave(oCreature, nDC) == SaveReturn.Success ? 1 : 0;
 

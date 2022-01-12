@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 3.0
+    "value": 2.0
   },
   "ClassList": {
     "type": "list",
@@ -63,12 +63,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "The average Kinrath. Of a light yellow-brownish color, but other varieties show different markings and come in colors as diverse as orange and green. Kinrath seem to be hive creatures, and a single female kinrath matriarch is the leader of a hive. Kinrath have four legs and a leg-like, poisonous appendage coming out of their faces that they used to attack prey or other perceived enemies. All kinrath are blind but can sense heat which allows them to navigate their way around and identify potential threats. They identify members of their own hive using a specialized sweat gland in the abdomen which excreted a specific scent."
+      "0": "The average Kinrath. Of a light yellow-brownish color, but other varieties show different markings and come in colors as diverse as orange and green. Kinrath seem to be hive creatures, and a single female kinrath matriarch is the leader of a hive. Kinrath have four legs and a leg-like, poisonous appendage coming out of their faces that they used to attack prey or other perceived enemies. All kinrath are blind but can sense heat which allows them to navigate their way around and identify potential threats, and makes them effective ambush hunters. They identify members of their own hive using a specialized sweat gland in the abdomen which excreted a specific scent."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 20
+    "value": 16
   },
   "Disarmable": {
     "type": "byte",
@@ -89,6 +89,13 @@
         "EquippedRes": {
           "type": "resref",
           "value": "kinrath_bite"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "ww_kin_skin"
         }
       }
     ]
@@ -167,7 +174,7 @@
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 6
+    "value": 1
   },
   "NoPermDeath": {
     "type": "byte",
@@ -175,7 +182,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 11
+    "value": 151
   },
   "PerceptionRange": {
     "type": "byte",
@@ -499,7 +506,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 20
+    "value": 12
   },
   "Subrace": {
     "type": "cexostring",
@@ -570,6 +577,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 8
+    "value": 10
   }
 }

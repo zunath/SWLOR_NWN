@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature
                 return;
 
             // If the area isn't in the cache, it must be an instance. Don't save locations inside instances.
-            if (Cache.GetAreaByResref(areaResref) == OBJECT_INVALID) return;
+            if (Area.GetAreaByResref(areaResref) == OBJECT_INVALID) return;
 
             var position = GetPosition(player);
             var orientation = GetFacing(player);
@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (dbPlayer == null || string.IsNullOrWhiteSpace(dbPlayer.LocationAreaResref)) return;
 
-            var locationArea = Cache.GetAreaByResref(dbPlayer.LocationAreaResref);
+            var locationArea = Area.GetAreaByResref(dbPlayer.LocationAreaResref);
             var position = Vector3(dbPlayer.LocationX, dbPlayer.LocationY, dbPlayer.LocationZ);
 
             var location = Location(locationArea, position, dbPlayer.LocationOrientation);

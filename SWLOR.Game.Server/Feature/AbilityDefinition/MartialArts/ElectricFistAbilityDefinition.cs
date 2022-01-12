@@ -51,31 +51,32 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
             {
                 case 1:
                     dmg = 4.0f;
-                    inflict = true;
+                    if (d2() == 1) inflict = true;
                     duration = 30f;
                     break;
                 case 2:
                     dmg = 6.0f;
-                    inflict = true;
+                    if (d4() > 1) inflict = true;
                     duration = 60f;
                     break;
                 case 3:
                     dmg = 9.5f;
+                    inflict = true;
                     duration = 60f;
                     break;
                 default:
                     break;
             }
 
+            CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
+
             var perception = GetAbilityModifier(AbilityType.Perception, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical) +
                           Stat.GetDefense(target, CombatDamageType.Electrical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, false);
+            var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Electrical), target);
             if (inflict) StatusEffect.Apply(activator, target, StatusEffectType.Shock, duration);
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.MartialArts, 3);
         }
 
         private static void ElectricFist1(AbilityBuilder builder)
@@ -86,6 +87,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
+                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -97,6 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(4)
                 .IsWeaponAbility()
+                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -108,6 +111,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.MartialArts
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
+                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

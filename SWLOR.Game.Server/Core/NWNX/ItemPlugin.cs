@@ -9,10 +9,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Set oItem's weight. Will not persist through saving.
         public static void SetWeight(uint oItem, int w)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetWeight");
-            Internal.NativeFunctions.nwnxPushInt(w);
-            Internal.NativeFunctions.nwnxPushObject(oItem);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetWeight");
+            NWNCore.NativeFunctions.nwnxPushInt(w);
+            NWNCore.NativeFunctions.nwnxPushObject(oItem);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Set oItem's base value in gold pieces (Total cost = base_value +
@@ -20,38 +20,38 @@ namespace SWLOR.Game.Server.Core.NWNX
         // NOTE: Equivalent to SetGoldPieceValue NWNX2 function
         public static void SetBaseGoldPieceValue(uint oItem, int g)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetBaseGoldPieceValue");
-            Internal.NativeFunctions.nwnxPushInt(g);
-            Internal.NativeFunctions.nwnxPushObject(oItem);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetBaseGoldPieceValue");
+            NWNCore.NativeFunctions.nwnxPushInt(g);
+            NWNCore.NativeFunctions.nwnxPushObject(oItem);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Set oItem's additional value in gold pieces (Total cost = base_value +
         // additional_value). Will persist through saving.
         public static void SetAddGoldPieceValue(uint oItem, int g)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAddGoldPieceValue");
-            Internal.NativeFunctions.nwnxPushInt(g);
-            Internal.NativeFunctions.nwnxPushObject(oItem);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetAddGoldPieceValue");
+            NWNCore.NativeFunctions.nwnxPushInt(g);
+            NWNCore.NativeFunctions.nwnxPushObject(oItem);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Get oItem's base value in gold pieces.
         public static int GetBaseGoldPieceValue(uint oItem)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetBaseGoldPieceValue");
-            Internal.NativeFunctions.nwnxPushObject(oItem);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetBaseGoldPieceValue");
+            NWNCore.NativeFunctions.nwnxPushObject(oItem);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         // Get oItem's additional value in gold pieces.
         public static int GetAddGoldPieceValue(uint oItem)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAddGoldPieceValue");
-            Internal.NativeFunctions.nwnxPushObject(oItem);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAddGoldPieceValue");
+            NWNCore.NativeFunctions.nwnxPushObject(oItem);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         // Set oItem's base item type. This will not be visible until the
@@ -59,10 +59,10 @@ namespace SWLOR.Game.Server.Core.NWNX
         // and back in).
         public static void SetBaseItemType(uint oItem, BaseItem baseitem)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetBaseItemType");
-            Internal.NativeFunctions.nwnxPushInt((int)baseitem);
-            Internal.NativeFunctions.nwnxPushObject(oItem);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetBaseItemType");
+            NWNCore.NativeFunctions.nwnxPushInt((int)baseitem);
+            NWNCore.NativeFunctions.nwnxPushObject(oItem);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Make a single change to the appearance of an item. This will not be visible to PCs until
@@ -88,49 +88,49 @@ namespace SWLOR.Game.Server.Core.NWNX
         // function 'clear colour override', which clears the per-part override for that part.
         public static void SetItemAppearance(uint oItem, int nType, int nIndex, int nValue)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetItemAppearance");
-            Internal.NativeFunctions.nwnxPushInt(nValue);
-            Internal.NativeFunctions.nwnxPushInt(nIndex);
-            Internal.NativeFunctions.nwnxPushInt(nType);
-            Internal.NativeFunctions.nwnxPushObject(oItem);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetItemAppearance");
+            NWNCore.NativeFunctions.nwnxPushInt(nValue);
+            NWNCore.NativeFunctions.nwnxPushInt(nIndex);
+            NWNCore.NativeFunctions.nwnxPushInt(nType);
+            NWNCore.NativeFunctions.nwnxPushObject(oItem);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Return a String containing the entire appearance for oItem which can later be
         // passed to RestoreItemAppearance().
         public static string GetEntireItemAppearance(uint oItem)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetEntireItemAppearance");
-            Internal.NativeFunctions.nwnxPushObject(oItem);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopString();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetEntireItemAppearance");
+            NWNCore.NativeFunctions.nwnxPushObject(oItem);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopString();
         }
 
         // Restore an item's appearance with the value returned by GetEntireItemAppearance().
         public static void RestoreItemAppearance(uint oItem, string sApp)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RestoreItemAppearance");
-            Internal.NativeFunctions.nwnxPushString(sApp);
-            Internal.NativeFunctions.nwnxPushObject(oItem);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "RestoreItemAppearance");
+            NWNCore.NativeFunctions.nwnxPushString(sApp);
+            NWNCore.NativeFunctions.nwnxPushObject(oItem);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Get oItem's base armor class
         public static int GetBaseArmorClass(uint oItem)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetBaseArmorClass");
-            Internal.NativeFunctions.nwnxPushObject(oItem);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetBaseArmorClass");
+            NWNCore.NativeFunctions.nwnxPushObject(oItem);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         // Get oItem's minimum level needed to equip
         public static int GetMinEquipLevel(uint oItem)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMinEquipLevel");
-            Internal.NativeFunctions.nwnxPushObject(oItem);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMinEquipLevel");
+            NWNCore.NativeFunctions.nwnxPushObject(oItem);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
     }
 }

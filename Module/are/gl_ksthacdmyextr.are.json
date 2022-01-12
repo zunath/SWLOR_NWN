@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Korriban - Sith Academy Exterior"
+      "0": "[Prefab] Korriban - Sith Academy Exterior"
     }
   },
   "NoRest": {
@@ -3773,7 +3773,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 22
+    "value": 23
   },
   "Width": {
     "type": "int",

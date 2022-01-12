@@ -2803,7 +2803,19 @@
         "__struct_id": 11,
         "ActionParams": {
           "type": "list",
-          "value": []
+          "value": [
+            {
+              "__struct_id": 0,
+              "Key": {
+                "type": "cexostring",
+                "value": "action-advance-quest"
+              },
+              "Value": {
+                "type": "cexostring",
+                "value": "help_talyron_family"
+              }
+            }
+          ]
         },
         "Animation": {
           "type": "dword",
@@ -2851,7 +2863,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": "next_state_1"
+          "value": "action"
         },
         "Sound": {
           "type": "resref",

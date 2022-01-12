@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
@@ -53,7 +55,7 @@ namespace SWLOR.Game.Server.Service
         /// When a creature dies, skill XP is given to all players who contributed during battle.
         /// Then, those combat points are cleared out.
         /// </summary>
-        [NWNEventHandler("crea_death")]
+        [NWNEventHandler("crea_death_aft")]
         public static void OnCreatureDeath()
         {
             // Clears the combat point cache information for an NPC and all player associated.
@@ -79,69 +81,10 @@ namespace SWLOR.Game.Server.Service
             {
                 var npc = OBJECT_SELF;
 
-                // Calculates a rank range penalty. If there's a level difference greater than 10, a penalty is applied.
-                static float CalculateRankRangePenalty(int highestSkillRank, int skillRank)
-                {
-                    int levelDifference = highestSkillRank - skillRank;
-                    float levelDifferencePenalty = 1.0f;
-                    if (levelDifference > 10)
-                    {
-                        levelDifferencePenalty = 1.0f - 0.05f * (levelDifference - 10);
-                        if (levelDifferencePenalty < 0.20f) levelDifferencePenalty = 0.20f;
-                    }
-
-                    return levelDifferencePenalty;
-                }
-
-                // Calculates the number of armor points based on what the player currently has equipped.
-                static int CalculateArmorPoints(uint player)
-                {
-                    var armorPoints = 0;
-
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Head, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Chest, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Boots, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Arms, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Cloak, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.LeftRing, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.RightRing, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Neck, player))) armorPoints++;
-                    if (GetIsObjectValid(GetItemInSlot(InventorySlot.Belt, player))) armorPoints++;
-
-                    return armorPoints;
-                }
-
-                // Applies an individual armor skill's XP portion.
-                static int CalculateAdjustedXP(int highestRank, int baseXP, SkillType skillType, float totalPoints, int points, Dictionary<SkillType, PlayerSkill> playerSkills)
-                {
-                    var percentage = points / totalPoints;
-                    var skillRank = playerSkills[skillType].Rank;
-                    var rangePenalty = CalculateRankRangePenalty(highestRank, skillRank);
-                    var adjustedXP = baseXP * percentage * rangePenalty;
-                    return (int)adjustedXP;
-                }
-
-                int GetNPCLevel()
-                {
-                    var skin = GetItemInSlot(InventorySlot.CreatureArmor, npc);
-                    if (!GetIsObjectValid(skin))
-                        return 0;
-
-                    for (var ip = GetFirstItemProperty(skin); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(skin))
-                    {
-                        if (GetItemPropertyType(ip) == ItemPropertyType.NPCLevel)
-                        {
-                            return GetItemPropertyCostTableValue(ip);
-                        }
-                    }
-
-                    return 0;
-                }
-
                 var combatPoints = _creatureCombatPointTracker.ContainsKey(npc) ? _creatureCombatPointTracker[npc] : null;
                 if (combatPoints == null) return;
 
-                var npcLevel = GetNPCLevel();
+                var npcLevel = Combat.GetNPCLevel(npc);
 
                 foreach (var (player, cpList) in combatPoints)
                 {
@@ -176,21 +119,17 @@ namespace SWLOR.Game.Server.Service
                     foreach (var (skillType, cp) in cpList)
                     {
                         var percentage = cp / totalPoints;
-                        var skillRangePenalty = CalculateRankRangePenalty(highestRank, dbPlayer.Skills[skillType].Rank);
-                        var adjustedXP = baseXP * percentage * skillRangePenalty;
+                        var adjustedXP = baseXP * percentage;
 
                         Skill.GiveSkillXP(player, skillType, (int)adjustedXP);
                     }
 
                     // Armor XP is calculated the same way but is separate from other skills used during combat.
-                    var armorPoints = CalculateArmorPoints(player);
-                    if (armorPoints <= 0) return;
                     var armorRank = dbPlayer.Skills[SkillType.Armor].Rank;
 
                     delta = npcLevel - armorRank;
                     baseXP = Skill.GetDeltaXP(delta);
-                    var xp = CalculateAdjustedXP(armorRank, baseXP, SkillType.Armor, totalPoints, armorPoints, dbPlayer.Skills);
-                    Skill.GiveSkillXP(player, SkillType.Armor, xp);
+                    Skill.GiveSkillXP(player, SkillType.Armor, (int) baseXP);
                 }
 
             }
@@ -265,8 +204,47 @@ namespace SWLOR.Game.Server.Service
 
             // Increment points for this player and skill.
             tracker[player][skill] += amount;
-
             _creatureCombatPointTracker[creature] = tracker;
+
+            // We track the level of the last creature to add a combat point for two minutes.
+            // During this time period, various skills can continue to gain XP even after battle.
+            var level = Combat.GetNPCLevel(creature);
+            UpdateLastCreatureLevel(player, level);
+        }
+
+        /// <summary>
+        /// Updates the level of the last creature associated with an added combat point.
+        /// Also refreshes the expiration time by 2 minutes.
+        /// </summary>
+        /// <param name="player">The player to update.</param>
+        /// <param name="level">The new level to assign.</param>
+        private static void UpdateLastCreatureLevel(uint player, int level)
+        {
+            var expiration = DateTime.UtcNow.AddMinutes(2);
+            SetLocalInt(player, "COMBAT_POINT_LAST_NPC_LEVEL", level);
+            SetLocalString(player, "COMBAT_POINT_LAST_NPC_EXPIRATION", expiration.ToString("yyyy-MM-dd HH:mm:ss"));
+        }
+
+        /// <summary>
+        /// Retrieves the level of the last enemy a player was involved in combat with.
+        /// Returns -1 if it has been longer than two minutes since the level was updated
+        /// or the value isn't there (some creatures are level 0).
+        /// </summary>
+        /// <param name="player">The player to retrieve from</param>
+        /// <returns>The level of the last enemy a player was involved in combat with or zero if expired/unavailable.</returns>
+        public static int GetRecentEnemyLevel(uint player)
+        {
+            var now = DateTime.UtcNow;
+            var expirationString = GetLocalString(player, "COMBAT_POINT_LAST_NPC_EXPIRATION");
+            if (string.IsNullOrWhiteSpace(expirationString))
+                return -1;
+
+            var expiration = DateTime.ParseExact(expirationString, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+
+            if (now >= expiration)
+                return -1;
+
+            return GetLocalInt(player, "COMBAT_POINT_LAST_NPC_LEVEL");
         }
 
         /// <summary>
@@ -275,14 +253,17 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to receiving the point.</param>
         /// <param name="skill">The skill to associate with the point.</param>
         /// <param name="amount">The number of points to add.</param>
-        public static void AddCombatPointToAllTagged(uint player, SkillType skill, int amount = 1)
+        /// <returns>True if at least one creature is tagged, false otherwise.</returns>
+        public static bool AddCombatPointToAllTagged(uint player, SkillType skill, int amount = 1)
         {
-            if (!_playerToCreatureTracker.ContainsKey(player)) return;
+            if (!_playerToCreatureTracker.ContainsKey(player)) return false;
 
             foreach (var creature in _playerToCreatureTracker[player])
             {
                 AddCombatPoint(player, creature, skill, amount);
             }
+
+            return true;
         }
 
         /// <summary>

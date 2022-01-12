@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Service.PerkService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -172,7 +173,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     var numberOfUpgrades = GetLightsaberLevel(target) + 1;
                     var dmgItemPropertyId = DetermineDMGValue(numberOfUpgrades);
 
-                    var dmgItemProperty = ItemPropertyCustom(ItemPropertyType.DMG, -1, dmgItemPropertyId);
+                    var dmgItemProperty = ItemPropertyCustom(ItemPropertyType.DMG, (int)CombatDamageType.Physical, dmgItemPropertyId);
                     var perkRequirementItemProperty = ItemPropertyCustom(ItemPropertyType.UseLimitationPerk, (int)PerkType.LightsaberProficiency, numberOfUpgrades+1);
 
                     BiowareXP2.IPSafeAddItemProperty(target, dmgItemProperty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);

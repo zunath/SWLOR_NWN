@@ -47,7 +47,75 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         [KeyItem(KeyItemCategoryType.Keys, "Coxxion Base Key", true, "This key will unlock the doors to the Coxxion base located in the deep mountains of Viscara.")]
         CoxxionBaseKey = 20,
         [KeyItem(KeyItemCategoryType.Keys, "Taxi Hailing Device", true, "This device will enable you to call upon a taxi to quickly transport you across a region.")]
-        TaxiHailingDevice = 21
+        TaxiHailingDevice = 21,
+
+        [KeyItem(KeyItemCategoryType.Maps, "CZ-220 - Maintenance Level Map", true, "Map of the CZ-220 Maintenance Level.")]
+        CZ220MaintenanceLevelMap = 22,
+        [KeyItem(KeyItemCategoryType.Maps, "CZ-220 - Offices & Labs Map", true, "Map of the CZ-220 Offices & Labs.")]
+        CZ220OfficesAndLabsMap = 23,
+        [KeyItem(KeyItemCategoryType.Maps, "Hutlar - Outpost Map", true, "Map of the Hutlar Outpost.")]
+        HutlarOutpostMap = 24,
+        [KeyItem(KeyItemCategoryType.Maps, "Hutlar - Qion Tundra Map", true, "Map of Qion Tundra.")]
+        QionTundraMap = 25,
+        [KeyItem(KeyItemCategoryType.Maps, "Hutlar - Qion Valley Map", true, "Map of Qion Valley.")]
+        QionValleyMap = 26,
+        [KeyItem(KeyItemCategoryType.Maps, "Mon Cala - Coral Isles Facility Map", true, "Map of the Coral Isles Facility.")]
+        CoralIslesFacilityMap = 27,
+        [KeyItem(KeyItemCategoryType.Maps, "Mon Cala - Coral Isles Inner Map", true, "Map of the Inner Coral Isles.")]
+        CoralIslesInnerMap = 28,
+        [KeyItem(KeyItemCategoryType.Maps, "Mon Cala - Coral Isles Outer Map", true, "Map of the Outer Coral Isles.")]
+        CoralIslesOuterMap = 29,
+        [KeyItem(KeyItemCategoryType.Maps, "Mon Cala - The 'Elite' Hotel Map", true, "Map of the 'Elite' Hotel.")]
+        EliteHotelMap = 30,
+
+        [KeyItem(KeyItemCategoryType.Maps, "Hutlar Orbit Map", true, "Map of the space surrounding Hutlar.")]
+        HutlarOrbitMap = 31,
+        [KeyItem(KeyItemCategoryType.Maps, "Mon Cala Orbit Map", true, "Map of the space surrounding Mon Cala.")]
+        MonCalaOrbitMap = 32,
+        [KeyItem(KeyItemCategoryType.Maps, "Tatooine Orbit Map", true, "Map of the space surrounding Tatooine.")]
+        TatooineOrbitMap = 33,
+        [KeyItem(KeyItemCategoryType.Maps, "Viscara Orbit Map", true, "Map of the space surrounding Viscara and CZ-220.")]
+        ViscaraOrbitMap = 34,
+
+        [KeyItem(KeyItemCategoryType.Maps, "Tatooine - Anchorhead Map", true, "Map of Anchorhead.")]
+        AnchorheadMap = 35,
+        [KeyItem(KeyItemCategoryType.Maps, "Tatooine - Desert Map", true, "Map of the Tatooine deserts.")]
+        TatooineDesertMap = 36,
+        [KeyItem(KeyItemCategoryType.Maps, "Tatooine - Mos Esper Map", true, "Map of Mos Esper.")]
+        MosEsperMap = 37,
+        [KeyItem(KeyItemCategoryType.Maps, "Tatooine - Tusken Raider Cave Map", true, "Map of Tusken Raider cave.")]
+        TuskenRaiderCaveMap = 38,
+
+        [KeyItem(KeyItemCategoryType.Maps, "Viscara - Cavern Map", true, "Map of Viscara caverns.")]
+        ViscaraCavernMap = 39,
+        [KeyItem(KeyItemCategoryType.Maps, "Viscara - Veles Colony Map", true, "Map of Veles Colony.")]
+        VelesColonyMap = 40,
+        [KeyItem(KeyItemCategoryType.Maps, "Viscara - Coxxion Base Map", true, "Map of the Coxxion Base.")]
+        CoxxionBaseMap = 41,
+        [KeyItem(KeyItemCategoryType.Maps, "Viscara - Deep Mountains Map", true, "Map of the Deep Mountains.")]
+        DeepMountainsMap = 42,
+        [KeyItem(KeyItemCategoryType.Maps, "Viscara - Deepwoods Map", true, "Map of the Deepwoods.")]
+        DeepwoodsMap = 43,
+        [KeyItem(KeyItemCategoryType.Maps, "Viscara - Druzer Map", true, "Map of Druzer.")]
+        DruzerMap = 44,
+        [KeyItem(KeyItemCategoryType.Maps, "Viscara - Swamplands Map", true, "Map of Swamplands.")]
+        ViscaraSwamplandsMap = 45,
+        [KeyItem(KeyItemCategoryType.Maps, "Viscara - Jedi Temple Map", true, "Map of the Viscara Jedi Temple.")]
+        ViscaraJediTempleMap = 46,
+        [KeyItem(KeyItemCategoryType.Maps, "Viscara - Wildlands Map", true, "Map of the Wildlands.")]
+        WildlandsMap = 47,
+        [KeyItem(KeyItemCategoryType.Maps, "Viscara - Mandalorian Facility Map", true, "Map of the Mandalorian Facility.")]
+        MandalorianFacilityMap = 48,
+        [KeyItem(KeyItemCategoryType.Maps, "Viscara - Mountain Valley Map", true, "Map of the Mountain Valley.")]
+        MountainValleyMap = 49,
+        [KeyItem(KeyItemCategoryType.Maps, "Viscara - Republic Base Map", true, "Map of the Viscara Republic Base.")]
+        ViscaraRepublicBaseMap = 50,
+        [KeyItem(KeyItemCategoryType.Maps, "Viscara - Sith Lake Outpost Map", true, "Map of the Viscara Sith Lake Outpost.")]
+        SithLakeOutpostMap = 51,
+        [KeyItem(KeyItemCategoryType.Maps, "Viscara - Sewers Map", true, "Map of the Viscara Sewers.")]
+        ViscaraSewersMap = 52,
+        [KeyItem(KeyItemCategoryType.Maps, "Viscara - Wildwoods Map", true, "Map of the Wildwoods.")]
+        WildwoodsMap = 53,
     }
 
     public class KeyItemAttribute : Attribute

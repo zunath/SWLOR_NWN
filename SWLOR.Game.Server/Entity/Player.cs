@@ -83,6 +83,8 @@ namespace SWLOR.Game.Server.Entity
             AbilityPointsByLevel = new Dictionary<int, int>();
             ObjectVisibilities = new Dictionary<string, VisibilityType>();
             WindowGeometries = new Dictionary<GuiWindowType, GuiRectangle>();
+            SubdualMode = false;
+            AppearanceScale = 1.0f;
         }
 
 
@@ -140,6 +142,9 @@ namespace SWLOR.Game.Server.Entity
         public float MovementRate { get; set; }
         public int AbilityRecastReduction { get; set; }
         public int MarketTill { get; set; }
+        [Indexed]
+        public string CitizenPropertyId { get; set; }
+        public int PropertyOwedTaxes { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<AbilityType, int> BaseStats { get; set; }
@@ -162,6 +167,8 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<string, VisibilityType> ObjectVisibilities { get; set; }
         public Dictionary<CombatDamageType, int> Defenses { get; set; }
         public Dictionary<GuiWindowType, GuiRectangle> WindowGeometries { get; set; }
+        public bool SubdualMode { get; set; }
+        public float AppearanceScale { get; set; }
     }
 
     public class MapPin
@@ -202,12 +209,14 @@ namespace SWLOR.Game.Server.Entity
         public bool DisplayAchievementNotification { get; set; }
         public bool IsHolonetEnabled { get; set; }
         public bool ShowHelmet { get; set; }
+        public bool IsSubdualModeEnabled { get; set; }
 
         public PlayerSettings()
         {
             DisplayAchievementNotification = true;
             ShowHelmet = true;
             IsHolonetEnabled = true;
+            IsSubdualModeEnabled = false;
         }
     }
 

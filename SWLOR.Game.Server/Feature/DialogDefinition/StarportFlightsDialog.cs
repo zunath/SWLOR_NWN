@@ -1,6 +1,9 @@
-﻿using SWLOR.Game.Server.Enumeration;
+﻿using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PropertyService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
@@ -12,6 +15,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             public int Price { get; set; }
             public string DestinationTag { get; set; }
             public string PlanetName { get; set; }
+            public float Tax { get; set; }
+            public string CityPropertyId { get; set; }
         }
 
         private const string MainPageId = "MAIN_PAGE";
@@ -21,11 +26,31 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var builder = new DialogBuilder()
                 .WithDataModel(new Model())
+                .AddInitializationAction(Initialize)
                 .AddPage(MainPageId, MainPageInit)
                 .AddPage(ConfirmPageId, ConfirmPageInit);
 
             return builder.Build();
         }
+
+        private void Initialize()
+        {
+            var terminal = GetDialogTarget();
+            var area = GetArea(terminal);
+            var propertyId = Property.GetPropertyId(area);
+            var model = GetDataModel<Model>();
+
+            if (string.IsNullOrWhiteSpace(propertyId))
+                return;
+
+            var dbProperty = DB.Get<WorldProperty>(propertyId);
+            var dbBuilding = DB.Get<WorldProperty>(dbProperty.ParentPropertyId);
+            var dbCity = DB.Get<WorldProperty>(dbBuilding.ParentPropertyId);
+
+            model.Tax = 0.01f * dbCity.Taxes[PropertyTaxType.Transportation];
+            model.CityPropertyId = dbCity.Id;
+        }
+
 
         private void MainPageInit(DialogPage page)
         {
@@ -35,52 +60,24 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             page.Header = "Charter flights leave hourly. Please select one our available destinations below.";
 
-            if (currentLocation != PlanetType.Viscara)
+            var planets = Planet.GetAllPlanets();
+
+            foreach (var (type, planet) in planets)
             {
-                page.AddResponse("Viscara", () =>
+                if (currentLocation != type)
                 {
-                    model.PlanetName = "Viscara";
-                    model.Price = 100;
-                    model.DestinationTag = "VISCARA_LANDING";
+                    var tax = (int)(model.Tax * planet.NPCTransportationFee);
+                    var price = planet.NPCTransportationFee + tax;
+                    var optionText = $"{planet.Name} [{price} cr]";
+                    page.AddResponse(optionText, () =>
+                    {
+                        model.PlanetName = planet.Name;
+                        model.Price = planet.NPCTransportationFee;
+                        model.DestinationTag = planet.LandingWaypointTag;
 
-                    ChangePage(ConfirmPageId);
-                });
-            }
-
-            if (currentLocation != PlanetType.MonCala)
-            {
-                page.AddResponse("Mon Cala", () =>
-                {
-                    model.PlanetName = "Mon Cala";
-                    model.Price = 200;
-                    model.DestinationTag = "MON_CALA_LANDING";
-
-                    ChangePage(ConfirmPageId);
-                });
-            }
-
-            if (currentLocation != PlanetType.Hutlar)
-            {
-                page.AddResponse("Hutlar", () =>
-                {
-                    model.PlanetName = "Hutlar";
-                    model.Price = 300;
-                    model.DestinationTag = "HUTLAR_LANDING";
-
-                    ChangePage(ConfirmPageId);
-                });
-            }
-
-            if (currentLocation != PlanetType.Tatooine)
-            {
-                page.AddResponse("Tatooine", () =>
-                {
-                    model.PlanetName = "Tatooine";
-                    model.Price = 400;
-                    model.DestinationTag = "TATOOINE_LANDING";
-
-                    ChangePage(ConfirmPageId);
-                });
+                        ChangePage(ConfirmPageId);
+                    });
+                }
             }
         }
 
@@ -88,12 +85,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         {
             var player = GetPC();
             var model = GetDataModel<Model>();
+            var tax = (int)(model.Tax * model.Price);
+            var price = model.Price + tax;
+
             page.Header = ColorToken.Green("Selected Destination: ") + model.PlanetName + "\n" +
-                ColorToken.Green("Price: ") + model.Price + "\n\n" +
-                "This trip is one-way and non-refundable. Are you sure you want to take this flight?";
+                          ColorToken.Green("Price: ") + price + "\n\n" +
+                          "This trip is one-way and non-refundable. Are you sure you want to take this flight?";
 
             var notEnoughGoldMessage = ColorToken.Red("You do not have enough credits to purchase this flight!");
-            if (GetGold(player) < model.Price)
+            if (GetGold(player) < price)
             {
                 page.Header += "\n\n" + notEnoughGoldMessage;
             }
@@ -101,13 +101,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 page.AddResponse("Confirm Flight", () =>
                 {
-                    if (GetGold(player) < model.Price)
+                    if (GetGold(player) < price)
                     {
                         SendMessageToPC(player, notEnoughGoldMessage);
                         return;
                     }
 
-                    TakeGoldFromCreature(model.Price, player, true);
+                    TakeGoldFromCreature(price, player, true);
                     var location = GetLocation(GetWaypointByTag(model.DestinationTag));
 
                     AssignCommand(player, () =>
@@ -117,6 +117,18 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     });
 
                     EndConversation();
+
+                    if (!string.IsNullOrWhiteSpace(model.CityPropertyId))
+                    {
+                        var dbCity = DB.Get<WorldProperty>(model.CityPropertyId);
+                        if (dbCity == null)
+                            return;
+
+                        dbCity.Treasury += tax;
+                        DB.Set(dbCity);
+                        Log.Write(LogGroup.Property, $"{GetName(player)} paid {tax} credits in tax for their trip to {model.PlanetName}.");
+                    }
+
                 });
             }
         }

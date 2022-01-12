@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
             RangedHealing();
             FrugalMedic();
             MedKit();
-            BactaRecovery();
+            KoltoRecovery();
             Resuscitation();
             TreatmentKit();
             StasisField();
@@ -118,31 +118,31 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.MedKit5);
         }
 
-        private void BactaRecovery()
+        private void KoltoRecovery()
         {
-            _builder.Create(PerkCategoryType.FirstAid, PerkType.BactaRecovery)
-                .Name("Bacta Recovery")
+            _builder.Create(PerkCategoryType.FirstAid, PerkType.KoltoRecovery)
+                .Name("Kolto Recovery")
 
                 .AddPerkLevel()
                 .Description("Restores HP to all allies within 3 meters of you. Consumes medical supplies on use.")
                 .Price(3)
                 .RequirementSkill(SkillType.FirstAid, 15)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.BactaRecovery1)
+                .GrantsFeat(FeatType.KoltoRecovery1)
 
                 .AddPerkLevel()
                 .Description("Restores HP to all allies within 3 meters of you. Consumes medical supplies on use.")
                 .Price(4)
                 .RequirementSkill(SkillType.FirstAid, 30)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.BactaRecovery2)
+                .GrantsFeat(FeatType.KoltoRecovery2)
 
                 .AddPerkLevel()
                 .Description("Restores HP to all allies within 3 meters of you. Consumes medical supplies on use.")
                 .Price(5)
                 .RequirementSkill(SkillType.FirstAid, 45)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.BactaRecovery3);
+                .GrantsFeat(FeatType.KoltoRecovery3);
         }
 
         private void Resuscitation()

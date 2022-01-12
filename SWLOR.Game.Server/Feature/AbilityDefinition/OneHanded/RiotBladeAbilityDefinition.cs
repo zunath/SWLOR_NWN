@@ -29,17 +29,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         private static string Validation(uint activator, uint target, int level, Location targetLocation)
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
-
-            if (Item.VibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon))
-                && (GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == BaseItem.SmallShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == BaseItem.LargeShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == BaseItem.TowerShield ||
-                    GetBaseItemType((GetItemInSlot(InventorySlot.LeftHand))) == BaseItem.Invalid))
+            var offHand = GetItemInSlot(InventorySlot.LeftHand, activator);
+            var rightHandType = GetBaseItemType(weapon);
+            var leftHandType = GetBaseItemType(offHand);
+            
+            if (Item.VibrobladeBaseItemTypes.Contains(rightHandType) || 
+                Item.VibrobladeBaseItemTypes.Contains(leftHandType))
             {
-                return "This is a one-handed ability.";
+                return string.Empty;
             }
             else
-                return string.Empty;
+                return "This is a Vibroblade ability (finesse vibroblades are not heavy enough).";
         }
 
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -65,23 +65,24 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     break;
             }
 
+            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
+
             var might = GetAbilityModifier(AbilityType.Might, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = Combat.CalculateDamage(dmg, might, defense, vitality, false);
+            var damage = Combat.CalculateDamage(dmg, might, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Slashing), target);
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.OneHanded, 3);
         }
 
         private static void RiotBlade1(AbilityBuilder builder)
         {
             builder.Create(FeatType.RiotBlade1, PerkType.RiotBlade)
                 .Name("Riot Blade I")
-                .HasRecastDelay(RecastGroup.RiotBlade, 30f)
+                .HasRecastDelay(RecastGroup.RiotBlade, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -90,10 +91,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.RiotBlade2, PerkType.RiotBlade)
                 .Name("Riot Blade II")
-                .HasRecastDelay(RecastGroup.RiotBlade, 30f)
+                .HasRecastDelay(RecastGroup.RiotBlade, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -102,10 +104,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             builder.Create(FeatType.RiotBlade3, PerkType.RiotBlade)
                 .Name("Riot Blade III")
-                .HasRecastDelay(RecastGroup.RiotBlade, 30f)
+                .HasRecastDelay(RecastGroup.RiotBlade, 60f)
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(8)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

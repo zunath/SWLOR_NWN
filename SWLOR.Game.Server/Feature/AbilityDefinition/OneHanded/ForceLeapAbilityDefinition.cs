@@ -2,14 +2,12 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
-using Random = SWLOR.Game.Server.Service.Random;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
 {
@@ -29,16 +27,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
         {
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var offHand = GetItemInSlot(InventorySlot.LeftHand, activator);
-            var rightHandBaseItemType = GetBaseItemType(weapon);
-            var leftHandBaseItemType = GetBaseItemType(offHand);
-            
-            if (rightHandBaseItemType == BaseItem.Lightsaber
-                && (leftHandBaseItemType == BaseItem.SmallShield ||
-                    leftHandBaseItemType == BaseItem.LargeShield ||
-                    leftHandBaseItemType == BaseItem.TowerShield ||
-                    leftHandBaseItemType == BaseItem.Invalid))
+            var rightHandType = GetBaseItemType(weapon);
+            var leftHandType = GetBaseItemType(offHand);
+
+            if (!Item.LightsaberBaseItemTypes.Contains(rightHandType) &&
+                !Item.LightsaberBaseItemTypes.Contains(leftHandType))
             {
-                return "This is a one-handed ability.";
+                return "This is a lightsaber ability.";
             }
 
             if (GetDistanceBetween(activator, target) < 8)
@@ -79,10 +74,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 ActionPlayAnimation(Animation.ForceLeap, 2.0f, 1.0f);
             });
 
+            Enmity.ModifyEnmityOnAll(activator, 1);
+            CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+
             var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = Combat.CalculateDamage(dmg, willpower, defense, vitality, false);
+            var damage = Combat.CalculateDamage(dmg, willpower, defense, vitality, 0);
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var rightHandBaseItemType = GetBaseItemType(weapon);
 
@@ -103,9 +101,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                     ActionJumpToObject(target);
                 });
             });
-
-            Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
 
         private static void ForceLeap1(AbilityBuilder builder)
@@ -115,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
                 .RequirementStamina(3)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -126,6 +122,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
                 .RequirementStamina(4)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -137,6 +134,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.OneHanded
                 .HasRecastDelay(RecastGroup.ForceLeap, 30f)
                 .RequirementStamina(5)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .UnaffectedByHeavyArmor()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

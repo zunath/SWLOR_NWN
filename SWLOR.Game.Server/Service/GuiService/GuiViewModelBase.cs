@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             public Type Type { get; set; }
             public bool HasEventBeenHooked { get; set; }
             public bool IsGuiList { get; set; }
+            public bool SkipNotify { get; set; }
         }
 
         private static readonly GuiPropertyConverter _converter = new GuiPropertyConverter();
@@ -120,7 +121,8 @@ namespace SWLOR.Game.Server.Service.GuiService
                 _propertyValues[propertyName].IsGuiList = true;
             }
 
-            OnPropertyChanged(propertyName);
+            if(!_propertyValues[propertyName].SkipNotify)
+                OnPropertyChanged(propertyName);
         }
 
         private void OnListChanged(object sender, ListChangedEventArgs e)
@@ -210,12 +212,18 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             _propertyValues[propertyName].Value = value;
 
-            if(propertyName != nameof(Geometry))
+            if (propertyName != nameof(Geometry))
+            {
+                _propertyValues[propertyName].SkipNotify = true;
                 GetType().GetProperty(propertyName)?.SetValue(this, value);
+                _propertyValues[propertyName].SkipNotify = false;
+            }
 
             // Update Modal geometry if this VM has it active.
             if (propertyName == nameof(Geometry))
+            {
                 Gui.GetPlayerModal(Player, WindowType).ViewModel.Geometry = Geometry;
+            }
         }
 
         /// <summary>
@@ -232,8 +240,8 @@ namespace SWLOR.Game.Server.Service.GuiService
             var value = _propertyValues[propertyName].Value;
             var json = _converter.ToJson(value);
 
-            NuiSetBindWatch(Player, WindowToken, propertyName, true);
             NuiSetBind(Player, WindowToken, propertyName, json);
+            NuiSetBindWatch(Player, WindowToken, propertyName, true);
         }
         
         /// <summary>
@@ -270,6 +278,12 @@ namespace SWLOR.Game.Server.Service.GuiService
             var window = Gui.GetWindowTemplate(WindowType);
             var partial = window.PartialViews[partialName];
             NuiSetGroupLayout(Player, WindowToken, elementId, partial);
+
+            // The following two lines work around a NUI issue where the new partial view won't display on screen until the window resizes.
+            // We force a change to the geometry of the window to ensure it redraws appropriately.
+            // If/when a fix is implemented by Beamdog, this can be removed.
+            Geometry.Height += (int)Geometry.Height % 2 == 0 ? 1.0f : -1.0f;
+            OnPropertyChanged(nameof(Geometry));
         }
     }
 }

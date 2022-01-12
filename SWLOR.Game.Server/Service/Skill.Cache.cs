@@ -12,22 +12,23 @@ namespace SWLOR.Game.Server.Service
     public static partial class Skill
     {
         // All categories, including inactive
-        private static readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _allCategories = new Dictionary<SkillCategoryType, SkillCategoryAttribute>();
-        private static readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _allCategoriesWithSkillContributing = new Dictionary<SkillCategoryType, SkillCategoryAttribute>();
+        private static readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _allCategories = new();
+        private static readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _allCategoriesWithSkillContributing = new();
 
         // Active categories only
-        private static readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _activeCategories = new Dictionary<SkillCategoryType, SkillCategoryAttribute>();
-        private static readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _activeCategoriesWithSkillContributing = new Dictionary<SkillCategoryType, SkillCategoryAttribute>();
+        private static readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _activeCategories = new();
+        private static readonly Dictionary<SkillCategoryType, SkillCategoryAttribute> _activeCategoriesWithSkillContributing = new();
 
         // All skills, including inactive
-        private static readonly Dictionary<SkillType, SkillAttribute> _allSkills = new Dictionary<SkillType, SkillAttribute>();
-        private static readonly Dictionary<SkillCategoryType, List<SkillType>> _allSkillsByCategory = new Dictionary<SkillCategoryType, List<SkillType>>();
-        private static readonly Dictionary<SkillType, SkillAttribute> _allSkillsContributingToCap = new Dictionary<SkillType, SkillAttribute>();
+        private static readonly Dictionary<SkillType, SkillAttribute> _allSkills = new();
+        private static readonly Dictionary<SkillCategoryType, List<SkillType>> _allSkillsByCategory = new();
+        private static readonly Dictionary<SkillType, SkillAttribute> _allSkillsContributingToCap = new();
 
         // Active skills only
-        private static readonly Dictionary<SkillType, SkillAttribute> _activeSkills = new Dictionary<SkillType, SkillAttribute>();
-        private static readonly Dictionary<SkillCategoryType, List<SkillType>> _activeSkillsByCategory = new Dictionary<SkillCategoryType, List<SkillType>>();
-        private static readonly Dictionary<SkillType, SkillAttribute> _activeSkillsContributingToCap = new Dictionary<SkillType, SkillAttribute>();
+        private static readonly Dictionary<SkillType, SkillAttribute> _activeSkills = new();
+        private static readonly Dictionary<SkillCategoryType, List<SkillType>> _activeSkillsByCategory = new();
+        private static readonly Dictionary<SkillType, SkillAttribute> _activeSkillsContributingToCap = new();
+        private static readonly Dictionary<SkillType, SkillAttribute> _activeCraftingSkills = new();
 
         /// <summary>
         /// When the module loads, skills and categories are organized into dictionaries for quick look-ups later on.
@@ -85,6 +86,11 @@ namespace SWLOR.Game.Server.Service
                         _activeSkillsByCategory[skillDetail.Category] = new List<SkillType>();
 
                     _activeSkillsByCategory[skillDetail.Category].Add(skillType);
+
+                    if (skillDetail.IsShownInCraftMenu)
+                    {
+                        _activeCraftingSkills[skillType] = skillDetail;
+                    }
                 }
 
                 // Add to active category cache if the skill and category are both active.
@@ -92,7 +98,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     _activeCategories[skillDetail.Category] = categoryDetail;
                 }
-
+                
                 // Add to the skills by category cache.
                 _allSkillsByCategory[skillDetail.Category].Add(skillType);
             }
@@ -145,6 +151,15 @@ namespace SWLOR.Game.Server.Service
         public static Dictionary<SkillCategoryType, SkillCategoryAttribute> GetAllSkillCategories()
         {
             return _allCategories.ToDictionary(x => x.Key, y => y.Value);
+        }
+
+        /// <summary>
+        /// Retrieves a dictionary of all active skills which are displayed in the crafting menu.
+        /// </summary>
+        /// <returns>A dictionary of active skills which are displayed in the crafting menu.</returns>
+        public static Dictionary<SkillType, SkillAttribute> GetActiveCraftingSkills()
+        {
+            return _activeCraftingSkills.ToDictionary(x => x.Key, y => y.Value);
         }
 
         /// <summary>

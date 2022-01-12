@@ -44,7 +44,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                         effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.ForceStun1);
                         ApplyEffectToObject(DurationType.Permanent, effect, target);
                     }
-                    CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
+
+                    if (!CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3))
+                    {
+                        CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
+                    }
                 })
                 .RemoveAction((target) =>
                 {
@@ -78,16 +82,20 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     var targetCreature = GetFirstObjectInShape(Shape.Sphere, radiusSize, GetLocation(target), true);
                     while (GetIsObjectValid(targetCreature))
                     {
-                        if (targetCreature != target && GetIsReactionTypeHostile(target, source))
+                        if (targetCreature != target && GetIsReactionTypeHostile(targetCreature, source))
                         {
                             // Apply to nearest other creature, then exit loop. 
                             // Intentionally applying Force Stun I so that it doesn't continue to chain exponentially.
-                            StatusEffect.Apply(source, target, StatusEffectType.ForceStun1, 0f);
+                            StatusEffect.Apply(source, targetCreature, StatusEffectType.ForceStun1, 0f);
                             break;
                         }
                         targetCreature = GetNextObjectInShape(Shape.Sphere, radiusSize, GetLocation(target), true);
                     }
-                    CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
+
+                    if (!CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3))
+                    {
+                        CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
+                    }
                 })
                 .RemoveAction((target) =>
                 {
@@ -121,15 +129,19 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                     var targetCreature = GetFirstObjectInShape(Shape.Sphere, radiusSize, GetLocation(target), true);
                     while (GetIsObjectValid(targetCreature))
                     {
-                        if (targetCreature != target && GetIsReactionTypeHostile(target, source))
+                        if (targetCreature != target && GetIsReactionTypeHostile(targetCreature, source))
                         {
                             // Apply to nearest other creature, then move on to the next.
                             // Intentionally applying Force Stun I so that it doesn't continue to chain exponentially.
-                            StatusEffect.Apply(source, target, StatusEffectType.ForceStun1, 0f);
+                            StatusEffect.Apply(source, targetCreature, StatusEffectType.ForceStun1, 0f);
                         }
                         targetCreature = GetNextObjectInShape(Shape.Sphere, radiusSize, GetLocation(target), true);
                     }
-                    CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
+
+                    if (!CombatPoint.AddCombatPointToAllTagged(source, SkillType.Force, 3))
+                    {
+                        CombatPoint.AddCombatPoint(source, target, SkillType.Force, 3);
+                    }
                 })
                 .RemoveAction((target) =>
                 {

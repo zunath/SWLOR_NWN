@@ -747,11 +747,11 @@
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 0
+                "value": 8
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 10
+                "value": 6
               }
             },
             {
@@ -766,7 +766,7 @@
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 2
+                "value": 0
               },
               "Repos_Posy": {
                 "type": "word",
@@ -785,11 +785,11 @@
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 8
+                "value": 2
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 6
+                "value": 7
               }
             },
             {
@@ -804,11 +804,11 @@
               },
               "Repos_PosX": {
                 "type": "word",
-                "value": 9
+                "value": 3
               },
               "Repos_Posy": {
                 "type": "word",
-                "value": 6
+                "value": 7
               }
             }
           ]
@@ -1052,6 +1052,25 @@
               "Repos_PosX": {
                 "type": "word",
                 "value": 4
+              },
+              "Repos_Posy": {
+                "type": "word",
+                "value": 1
+              }
+            },
+            {
+              "__struct_id": 6,
+              "Infinite": {
+                "type": "byte",
+                "value": 1
+              },
+              "InventoryRes": {
+                "type": "resref",
+                "value": "map_023"
+              },
+              "Repos_PosX": {
+                "type": "word",
+                "value": 6
               },
               "Repos_Posy": {
                 "type": "word",

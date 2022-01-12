@@ -7,5 +7,6 @@
         DockPosition = 2,
         SpacePosition = 3,
         CurrentPosition = 4,
+        LastNPCDockPosition = 5,
     }
 }

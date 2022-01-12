@@ -88,7 +88,24 @@ namespace SWLOR.Game.Server.Service
                 SkinColorId = 54,
                 HairColorId = 0,
                 AppearanceType = AppearanceType.HalfOrc,
-                HeadId = 27
+                HeadId = 27,
+                NeckId = 201,
+                TorsoId = 201,
+                PelvisId = 201,
+
+                RightBicepId = 201,
+                RightForearmId = 201,
+                RightHandId = 201,
+                RightThighId = 201,
+                RightShinId = 201,
+                RightFootId = 201,
+
+                LeftBicepId = 201,
+                LeftForearmId = 201,
+                LeftHandId = 201,
+                LeftThighId = 201,
+                LeftShinId = 201,
+                LeftFootId = 201
             };
             _defaultRaceAppearancesMale[RacialType.Togruta] = new RacialAppearance
             {
@@ -241,7 +258,30 @@ namespace SWLOR.Game.Server.Service
                 SkinColorId = 54,
                 HairColorId = 0,
                 AppearanceType = AppearanceType.HalfOrc,
-                HeadId = 18
+                HeadId = 18,
+                NeckId = 201,
+                TorsoId = 201,
+                PelvisId = 201,
+
+                RightBicepId = 201,
+                RightForearmId = 201,
+                RightHandId = 201,
+                RightThighId = 201,
+                RightShinId = 201,
+                RightFootId = 201,
+
+                LeftBicepId = 201,
+                LeftForearmId = 201,
+                LeftHandId = 201,
+                LeftThighId = 201,
+                LeftShinId = 201,
+                LeftFootId = 201
+            };
+            _defaultRaceAppearancesFemale[RacialType.Togruta] = new RacialAppearance
+            {
+                SkinColorId = 22,
+                HairColorId = 83,
+                HeadId = 200
             };
             _defaultRaceAppearancesFemale[RacialType.Togruta] = new RacialAppearance
             {

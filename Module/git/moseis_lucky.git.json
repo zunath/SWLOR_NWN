@@ -18616,74 +18616,29 @@
       }
     ]
   },
-  "WaypointList": {
+  "VarTable": {
     "type": "list",
     "value": [
       {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 1
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 1
-        },
-        "LinkedTo": {
+        "__struct_id": 0,
+        "Name": {
           "type": "cexostring",
-          "value": ""
+          "value": "MAP_KEY_ITEM_ID"
         },
-        "LocalizedName": {
-          "id": 14814,
-          "type": "cexolocstring",
-          "value": {
-            "2": "Lucky Despot"
-          }
-        },
-        "MapNote": {
-          "id": 14815,
-          "type": "cexolocstring",
-          "value": {
-            "2": "Lucky Despot"
-          }
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
+        "Type": {
+          "type": "dword",
           "value": 1
         },
-        "Tag": {
-          "type": "cexostring",
-          "value": "NW_MAPNOTE001"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "nw_mapnote001"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 29.5053882598877
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 53.90456008911133
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 4.999994277954102
+        "Value": {
+          "type": "int",
+          "value": 37
         }
-      },
+      }
+    ]
+  },
+  "WaypointList": {
+    "type": "list",
+    "value": [
       {
         "__struct_id": 5,
         "Appearance": {
@@ -18800,69 +18755,6 @@
         "ZPosition": {
           "type": "float",
           "value": 0.02500052936375141
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 1
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 1
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "id": 14814,
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNote": {
-          "id": 14815,
-          "type": "cexolocstring",
-          "value": {
-            "2": "Boutique : Chez Malek"
-          }
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 1
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "NW_MAPNOTE001"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "nw_mapnote001"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": 0.0
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 94.46994781494141
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": 1.0
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 15.20272731781006
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": 0.2000004053115845
         }
       }
     ]

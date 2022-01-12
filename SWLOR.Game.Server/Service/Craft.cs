@@ -32,8 +32,6 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, Dictionary<RecipeType, RecipeDetail>>> _recipesBySkillAndCategory = new();
         private static readonly Dictionary<SkillType, Dictionary<RecipeCategoryType, RecipeCategoryAttribute>> _categoriesBySkill = new();
 
-        private static readonly Dictionary<SkillType, Tuple<AbilityType, AbilityType>> _craftSkillToAbility = new();
-
         private static readonly RecipeLevelChart _levelChart = new();
         private static readonly HashSet<string> _componentResrefs = new();
 
@@ -45,7 +43,6 @@ namespace SWLOR.Game.Server.Service
         {
             CacheCategories();
             CacheRecipes();
-            CacheCraftSkillToAbilities();
 
             Console.WriteLine($"Loaded {_recipes.Count} recipes.");
         }
@@ -124,16 +121,6 @@ namespace SWLOR.Game.Server.Service
                     }
                 }
             }
-        }
-
-        /// <summary>
-        /// Maps craft skills to the primary/secondary abilities they use during crafting.
-        /// </summary>
-        private static void CacheCraftSkillToAbilities()
-        {
-            _craftSkillToAbility[SkillType.Smithery] = new Tuple<AbilityType, AbilityType>(AbilityType.Perception, AbilityType.Might);
-            _craftSkillToAbility[SkillType.Fabrication] = new Tuple<AbilityType, AbilityType>(AbilityType.Might, AbilityType.Vitality);
-            _craftSkillToAbility[SkillType.FirstAid] = new Tuple<AbilityType, AbilityType>(AbilityType.Vitality, AbilityType.Perception);
         }
 
         /// <summary>
@@ -227,47 +214,6 @@ namespace SWLOR.Game.Server.Service
                 return new Dictionary<RecipeCategoryType, RecipeCategoryAttribute>();
 
             return _categoriesBySkill[skill].ToDictionary(x => x.Key, y => y.Value);
-        }
-
-        /// <summary>
-        /// Retrieves a recipe category's details by a given type.
-        /// If the type has not been registered, an exception will be thrown.
-        /// </summary>
-        /// <param name="categoryType">The type of category to retrieve.</param>
-        /// <returns>A recipe category's details.</returns>
-        public static RecipeCategoryAttribute GetCategoryDetail(RecipeCategoryType categoryType)
-        {
-            return _allCategories[categoryType];
-        }
-
-        /// <summary>
-        /// Calculates a player's chance to craft a specific recipe.
-        /// </summary>
-        /// <param name="player">The player to calculate for</param>
-        /// <param name="recipeType">The type of recipe to calculate for</param>
-        /// <returns>A value between 0 and 95 representing the chance to craft an item.</returns>
-        public static float CalculateChanceToCraft(uint player, RecipeType recipeType)
-        {
-            var chance = 60f;
-            var playerId = GetObjectUUID(player);
-            var dbPlayer = DB.Get<Player>(playerId);
-
-            var recipe = GetRecipe(recipeType);
-            var playerLevel = dbPlayer.Skills[recipe.Skill].Rank;
-            var (primary, secondary) = _craftSkillToAbility[recipe.Skill];
-            var levelDelta = playerLevel - recipe.Level;
-
-            var attributeAdjustment = GetAbilityModifier(primary) * 2.0f + GetAbilityModifier(secondary) * 1.5f;
-            var levelAdjustment = levelDelta * 10f;
-
-            chance += levelAdjustment + attributeAdjustment;
-
-            if (chance < 0)
-                chance = 0;
-            else if (chance >= 95)
-                chance = 95;
-
-            return chance;
         }
 
         /// <summary>

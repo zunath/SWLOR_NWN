@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// </summary>
         /// <param name="vfx">The visual effect to display.</param>
         /// <returns>An ability builder with the configured options</returns>
-        public AbilityBuilder DisplaysVisualEffectWhenActivating(VisualEffect vfx = VisualEffect.Vfx_Dur_Elemental_Shield)
+        public AbilityBuilder DisplaysVisualEffectWhenActivating(VisualEffect vfx = VisualEffect.Vfx_Dur_Iounstone_Yellow)
         {
             _activeAbility.ActivationVisualEffect = vfx;
 
@@ -211,9 +211,20 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// <returns>An ability builder with the configured options</returns>
         public AbilityBuilder RequirementFP(int requiredFP)
         {
-            var requirement = new PerkFPRequirement(requiredFP);
+            var requirement = new AbilityRequirementFP(requiredFP);
             _activeAbility.Requirements.Add(requirement);
 
+            return this;
+        }
+
+        /// <summary>
+        /// Updates the max range of this ability (default is 2.0, i.e. melee range).
+        /// </summary>
+        /// <param name="maxRange">The maximum range of the ability.</param>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder HasMaxRange(float maxRange)
+        {
+            _activeAbility.MaxRange = maxRange;
             return this;
         }
 
@@ -224,7 +235,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         /// <returns>An ability builder with the configured options</returns>
         public AbilityBuilder RequirementStamina(int requiredSTM)
         {
-            var requirement = new AbilityStaminaRequirement(requiredSTM);
+            var requirement = new AbilityRequirementStamina(requiredSTM);
             _activeAbility.Requirements.Add(requirement);
 
             return this;
@@ -237,6 +248,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder UnaffectedByHeavyArmor()
         {
             _activeAbility.IgnoreHeavyArmorPenalty = true;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Indicates this ability is a hostile ability and should not target friendlies.
+        /// </summary>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder IsHostileAbility()
+        {
+            _activeAbility.IsHostileAbility = true;
 
             return this;
         }

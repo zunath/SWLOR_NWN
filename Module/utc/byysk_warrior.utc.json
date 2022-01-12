@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 12.0
+    "value": 11.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 18
+    "value": 20
   },
   "Conversation": {
     "type": "resref",
@@ -63,12 +63,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Fiercely territorial, the Byysk tribal peoples tend to keep to themselves... but react poorly to intruders."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 40
+    "value": 18
   },
   "Disarmable": {
     "type": "byte",
@@ -92,17 +92,10 @@
         }
       },
       {
-        "__struct_id": 16384,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "nw_it_crewpsp015"
-        }
-      },
-      {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "mc_amphihy_hide"
+          "value": "hu_byysk_hide"
         }
       }
     ]
@@ -146,7 +139,35 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
+          "value": 1151
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1152
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1153
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
           "value": 41
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1140
         }
       },
       {
@@ -226,11 +247,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 161
+    "value": 170
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 8
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -607,7 +628,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 34
+    "value": 26
   },
   "Subrace": {
     "type": "cexostring",
@@ -661,6 +682,21 @@
           "type": "cexostring",
           "value": "HUTLAR_BYYSK,40,2"
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "HUTLAR_BYYSK_RARES,5,1"
+        }
       }
     ]
   },
@@ -678,6 +714,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 18
+    "value": 16
   }
 }

@@ -210,13 +210,12 @@ namespace SWLOR.Game.Server.Feature
                 charges--;
                 SetLocalInt(refinery, "REFINERY_CHARGES", charges);
             }
-            else
+            
+            if(charges <= 0)
             {
                 var flames = GetLocalObject(refinery, "REFINERY_FLAMES");
                 DestroyObject(flames);
             }
         }
-
-
     }
 }

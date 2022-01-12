@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 12
+    "value": 16
   },
   "Conversation": {
     "type": "resref",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 16
+    "value": 10
   },
   "Disarmable": {
     "type": "byte",
@@ -82,6 +82,13 @@
         "EquippedRes": {
           "type": "resref",
           "value": "vellen_claw"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "flesheater_skin"
         }
       }
     ]
@@ -163,7 +170,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 206
+    "value": 222
   },
   "NaturalAC": {
     "type": "byte",
@@ -175,7 +182,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 45
+    "value": 151
   },
   "PerceptionRange": {
     "type": "byte",
@@ -499,7 +506,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 28
+    "value": 18
   },
   "Subrace": {
     "type": "cexostring",
@@ -553,6 +560,21 @@
           "type": "cexostring",
           "value": "VISCARA_VELLEN_FLESHEATER,40,2"
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_VELLEN_FLESHEATER_RARES,5,1"
+        }
       }
     ]
   },
@@ -570,6 +592,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 3
+    "value": 18
   }
 }

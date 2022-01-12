@@ -11,76 +11,77 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 {
     public class TwoHandedPerkDefinition : IPerkListDefinition
     {
+        private readonly PerkBuilder _builder = new();
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
-            var builder = new PerkBuilder();
-            PowerAttack(builder);
-            SuperiorWeaponFocus(builder);
-            IncreasedMultiplier(builder);
-            Cleave(builder);
-            WeaponFocusHeavyVibroblades(builder);
-            ImprovedCriticalHeavyVibroblades(builder);
-            HeavyVibrobladeProficiency(builder);
-            HeavyVibrobladeMastery(builder);
-            CrescentMoon(builder);
-            HardSlash(builder);
-            WeaponFocusPolearms(builder);
-            ImprovedCriticalPolearms(builder);
-            PolearmProficiency(builder);
-            PolearmMastery(builder);
-            Skewer(builder);
-            DoubleThrust(builder);
-            WeaponFocusTwinBlades(builder);
-            ImprovedCriticalTwinBlades(builder);
-            TwinBladeProficiency(builder);
-            TwinBladeMastery(builder);
-            LegSweep(builder);
-            CrossCut(builder);
-            WeaponFocusSaberstaffs(builder);
-            ImprovedCriticalSaberstaffs(builder);
-            SaberstaffProficiency(builder);
-            SaberstaffMastery(builder);
-            CircleSlash(builder);
-            DoubleStrike(builder);
+            PowerAttack();
+            SuperiorWeaponFocus();
+            IncreasedMultiplier();
+            Cleave();
+            WeaponFocusHeavyVibroblades();
+            ImprovedCriticalHeavyVibroblades();
+            HeavyVibrobladeProficiency();
+            HeavyVibrobladeMastery();
+            CrescentMoon();
+            HardSlash();
+            WeaponFocusPolearms();
+            ImprovedCriticalPolearms();
+            PolearmProficiency();
+            PolearmMastery();
+            Skewer();
+            DoubleThrust();
+            WeaponFocusTwinBlades();
+            ImprovedCriticalTwinBlades();
+            TwinBladeProficiency();
+            TwinBladeMastery();
+            LegSweep();
+            CrossCut();
+            WeaponFocusSaberstaffs();
+            ImprovedCriticalSaberstaffs();
+            SaberstaffProficiency();
+            SaberstaffMastery();
+            CircleSlash();
+            DoubleStrike();
+            ImprovedTwoWeaponFighting();
 
-            return builder.Build();
+            return _builder.Build();
         }
 
-        private void PowerAttack(PerkBuilder builder)
+        private void PowerAttack()
         {
-            builder.Create(PerkCategoryType.TwoHandedGeneral, PerkType.PowerAttack)
+            _builder.Create(PerkCategoryType.TwoHandedGeneral, PerkType.PowerAttack)
                 .Name("Power Attack")
 
                 .AddPerkLevel()
-                .Description("Grants the Power Attack feat which grants a +5 bonus to damage roll at the cost of -5 to attack roll.")
+                .Description("Grants the Power Attack feat which grants a +1.0 bonus to damage roll at the cost of -5 to attack roll.")
                 .Price(3)
                 .RequirementSkill(SkillType.TwoHanded, 15)
                 .GrantsFeat(FeatType.PowerAttack)
 
                 .AddPerkLevel()
-                .Description("Grants the Improved Power Attack feat which grants a +10 bonus to damage roll at the cost of -10 to attack roll.")
+                .Description("Grants the Improved Power Attack feat which grants a +2.5 bonus to damage roll at the cost of -10 to attack roll.")
                 .Price(4)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.ImprovedPowerAttack);
         }
 
-        private void SuperiorWeaponFocus(PerkBuilder builder)
+        private void SuperiorWeaponFocus()
         {
-            builder.Create(PerkCategoryType.TwoHandedGeneral, PerkType.SuperiorWeaponFocus)
+            _builder.Create(PerkCategoryType.TwoHandedGeneral, PerkType.SuperiorWeaponFocus)
                 .Name("Superior Weapon Focus")
 
                 .AddPerkLevel()
-                .Description("Two-Handed weapons gain +1 bonus to all attack rolls.")
+                .Description("Two-Handed weapons gain +5% bonus to all attack rolls.")
                 .Price(5)
                 .RequirementSkill(SkillType.TwoHanded, 35)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.SuperiorWeaponFocus);
         }
 
-        private void IncreasedMultiplier(PerkBuilder builder)
+        private void IncreasedMultiplier()
         {
-            builder.Create(PerkCategoryType.TwoHandedGeneral, PerkType.IncreasedMultiplier)
+            _builder.Create(PerkCategoryType.TwoHandedGeneral, PerkType.IncreasedMultiplier)
                 .Name("Increased Multiplier")
 
                 .AddPerkLevel()
@@ -91,9 +92,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.IncreaseMultiplier);
         }
 
-        private void Cleave(PerkBuilder builder)
+        private void Cleave()
         {
-            builder.Create(PerkCategoryType.TwoHandedGeneral, PerkType.Cleave)
+            _builder.Create(PerkCategoryType.TwoHandedGeneral, PerkType.Cleave)
                 .Name("Cleave")
 
                 .AddPerkLevel()
@@ -103,9 +104,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Cleave);
         }
 
-        private void WeaponFocusHeavyVibroblades(PerkBuilder builder)
+        private void WeaponFocusHeavyVibroblades()
         {
-            builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.WeaponFocusHeavyVibroblades)
+            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.WeaponFocusHeavyVibroblades)
                 .Name("Weapon Focus - Heavy Vibroblades")
 
                 .AddPerkLevel()
@@ -122,9 +123,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WeaponSpecializationHeavyVibroblades);
         }
 
-        private void ImprovedCriticalHeavyVibroblades(PerkBuilder builder)
+        private void ImprovedCriticalHeavyVibroblades()
         {
-            builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.ImprovedCriticalHeavyVibroblades)
+            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.ImprovedCriticalHeavyVibroblades)
                 .Name("Improved Critical - Heavy Vibroblades")
 
                 .AddPerkLevel()
@@ -135,9 +136,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ImprovedCriticalHeavyVibroblades);
         }
 
-        private void HeavyVibrobladeProficiency(PerkBuilder builder)
+        private void HeavyVibrobladeProficiency()
         {
-            builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.HeavyVibrobladeProficiency)
+            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.HeavyVibrobladeProficiency)
                 .Name("Heavy Vibroblade Proficiency")
 
                 .AddPerkLevel()
@@ -170,9 +171,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.HeavyVibrobladeProficiency5);
         }
 
-        private void HeavyVibrobladeMastery(PerkBuilder builder)
+        private void HeavyVibrobladeMastery()
         {
-            builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.HeavyVibrobladeMastery)
+            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.HeavyVibrobladeMastery)
                 .Name("Heavy Vibroblade Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
@@ -181,7 +182,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + level;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -192,8 +193,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
 
                 })
@@ -204,7 +204,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + 1;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -215,36 +215,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.HeavyVibrobladeBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
                 })
 
                 .AddPerkLevel()
-                .Description("Grants +1 BAB when equipped with a Heavy Vibroblade.")
+                .Description("Grants an additional attack when equipped with a Heavy Vibroblade.")
                 .Price(8)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.HeavyVibrobladeMastery1)
 
                 .AddPerkLevel()
-                .Description("Grants +2 BAB when equipped with a Heavy Vibroblade.")
-                .Price(8)
-                .RequirementSkill(SkillType.TwoHanded, 40)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.HeavyVibrobladeMastery2)
-
-                .AddPerkLevel()
-                .Description("Grants +3 BAB when equipped with a Heavy Vibroblade.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Heavy Vibroblade.")
+                .Price(12)
                 .RequirementSkill(SkillType.TwoHanded, 50)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.HeavyVibrobladeMastery3);
+                .GrantsFeat(FeatType.HeavyVibrobladeMastery2);
         }
 
-        private void CrescentMoon(PerkBuilder builder)
+        private void CrescentMoon()
         {
-            builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.CrescentMoon)
+            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.CrescentMoon)
                 .Name("Crescent Moon")
 
                 .AddPerkLevel()
@@ -268,9 +260,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CrescentMoon3);
         }
 
-        private void HardSlash(PerkBuilder builder)
+        private void HardSlash()
         {
-            builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.HardSlash)
+            _builder.Create(PerkCategoryType.TwoHandedHeavyVibroblade, PerkType.HardSlash)
                 .Name("Hard Slash")
 
                 .AddPerkLevel()
@@ -293,9 +285,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.HardSlash3);
         }
 
-        private void WeaponFocusPolearms(PerkBuilder builder)
+        private void WeaponFocusPolearms()
         {
-            builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.WeaponFocusPolearms)
+            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.WeaponFocusPolearms)
                 .Name("Weapon Focus - Polearms")
 
                 .AddPerkLevel()
@@ -312,9 +304,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WeaponSpecializationPolearms);
         }
 
-        private void ImprovedCriticalPolearms(PerkBuilder builder)
+        private void ImprovedCriticalPolearms()
         {
-            builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.ImprovedCriticalPolearms)
+            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.ImprovedCriticalPolearms)
                 .Name("Improved Critical - Polearms")
 
                 .AddPerkLevel()
@@ -325,9 +317,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ImprovedCriticalPolearms);
         }
 
-        private void PolearmProficiency(PerkBuilder builder)
+        private void PolearmProficiency()
         {
-            builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.PolearmProficiency)
+            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.PolearmProficiency)
                 .Name("Polearm Proficiency")
 
                 .AddPerkLevel()
@@ -360,9 +352,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.PolearmProficiency5);
         }
 
-        private void PolearmMastery(PerkBuilder builder)
+        private void PolearmMastery()
         {
-            builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.PolearmMastery)
+            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.PolearmMastery)
                 .Name("Polearm Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
@@ -371,7 +363,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.PolearmBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + level;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -382,8 +374,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.PolearmBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
 
                 })
@@ -394,7 +385,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.PolearmBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + 1;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -405,36 +396,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.PolearmBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
                 })
 
                 .AddPerkLevel()
-                .Description("Grants +1 BAB when equipped with a Polearm.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Polearm.")
+                .Price(12)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.PolearmMastery1)
-
+                
                 .AddPerkLevel()
-                .Description("Grants +2 BAB when equipped with a Polearm.")
-                .Price(8)
-                .RequirementSkill(SkillType.TwoHanded, 40)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.PolearmMastery2)
-
-                .AddPerkLevel()
-                .Description("Grants +3 BAB when equipped with a Polearm.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Polearm.")
+                .Price(12)
                 .RequirementSkill(SkillType.TwoHanded, 50)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.PolearmMastery3);
+                .GrantsFeat(FeatType.PolearmMastery2);
         }
 
-        private void Skewer(PerkBuilder builder)
+        private void Skewer()
         {
-            builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.Skewer)
+            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.Skewer)
                 .Name("Skewer")
 
                 .AddPerkLevel()
@@ -458,9 +441,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.Skewer3);
         }
 
-        private void DoubleThrust(PerkBuilder builder)
+        private void DoubleThrust()
         {
-            builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.DoubleThrust)
+            _builder.Create(PerkCategoryType.TwoHandedPolearm, PerkType.DoubleThrust)
                 .Name("Double Thrust")
 
                 .AddPerkLevel()
@@ -484,9 +467,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.DoubleThrust3);
         }
 
-        private void WeaponFocusTwinBlades(PerkBuilder builder)
+        private void WeaponFocusTwinBlades()
         {
-            builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.WeaponFocusTwinBlades)
+            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.WeaponFocusTwinBlades)
                 .Name("Weapon Focus - Twin Blades")
 
                 .AddPerkLevel()
@@ -503,9 +486,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WeaponSpecializationTwinBlades);
         }
 
-        private void ImprovedCriticalTwinBlades(PerkBuilder builder)
+        private void ImprovedCriticalTwinBlades()
         {
-            builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.ImprovedCriticalTwinBlades)
+            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.ImprovedCriticalTwinBlades)
                 .Name("Improved Critical - Twin Blades")
 
                 .AddPerkLevel()
@@ -516,9 +499,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ImprovedCriticalTwinBlades);
         }
 
-        private void TwinBladeProficiency(PerkBuilder builder)
+        private void TwinBladeProficiency()
         {
-            builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.TwinBladeProficiency)
+            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.TwinBladeProficiency)
                 .Name("Twin Blade Proficiency")
 
                 .AddPerkLevel()
@@ -551,9 +534,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.TwinBladeProficiency5);
         }
 
-        private void TwinBladeMastery(PerkBuilder builder)
+        private void TwinBladeMastery()
         {
-            builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.TwinBladeMastery)
+            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.TwinBladeMastery)
                 .Name("Twin Blade Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
@@ -562,7 +545,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.TwinBladeBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + level;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -573,8 +556,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.TwinBladeBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
 
                 })
@@ -585,7 +567,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.TwinBladeBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + 1;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -596,36 +578,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.TwinBladeBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
                 })
 
                 .AddPerkLevel()
-                .Description("Grants +1 BAB when equipped with a Twin Blade.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Twin Blade.")
+                .Price(12)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .GrantsFeat(FeatType.TwinBladeMastery1)
-
+                
                 .AddPerkLevel()
-                .Description("Grants +2 BAB when equipped with a Twin Blade.")
-                .Price(8)
-                .RequirementSkill(SkillType.TwoHanded, 40)
-                .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.TwinBladeMastery2)
-
-                .AddPerkLevel()
-                .Description("Grants +3 BAB when equipped with a Twin Blade.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Twin Blade.")
+                .Price(12)
                 .RequirementSkill(SkillType.TwoHanded, 50)
                 .RequirementCharacterType(CharacterType.Standard)
-                .GrantsFeat(FeatType.TwinBladeMastery3);
+                .GrantsFeat(FeatType.TwinBladeMastery2);
         }
 
-        private void LegSweep(PerkBuilder builder)
+        private void LegSweep()
         {
-            builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.LegSweep)
+            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.LegSweep)
                 .Name("Leg Sweep")
 
                 .AddPerkLevel()
@@ -649,9 +623,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.LegSweep3);
         }
 
-        private void CrossCut(PerkBuilder builder)
+        private void CrossCut()
         {
-            builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.CrossCut)
+            _builder.Create(PerkCategoryType.TwoHandedTwinBlade, PerkType.CrossCut)
                 .Name("Cross Cut")
 
                 .AddPerkLevel()
@@ -675,9 +649,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CrossCut3);
         }
 
-        private void WeaponFocusSaberstaffs(PerkBuilder builder)
+        private void WeaponFocusSaberstaffs()
         {
-            builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.WeaponFocusSaberstaffs)
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.WeaponFocusSaberstaffs)
                 .Name("Weapon Focus - Saberstaffs")
 
                 .AddPerkLevel()
@@ -695,9 +669,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.WeaponSpecializationSaberstaffs);
         }
 
-        private void ImprovedCriticalSaberstaffs(PerkBuilder builder)
+        private void ImprovedCriticalSaberstaffs()
         {
-            builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.ImprovedCriticalSaberstaffs)
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.ImprovedCriticalSaberstaffs)
                 .Name("Improved Critical - Saberstaffs")
 
                 .AddPerkLevel()
@@ -708,9 +682,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ImprovedCriticalSaberstaffs);
         }
 
-        private void SaberstaffProficiency(PerkBuilder builder)
+        private void SaberstaffProficiency()
         {
-            builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.SaberstaffProficiency)
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.SaberstaffProficiency)
                 .Name("Saberstaff Proficiency")
 
                 .AddPerkLevel()
@@ -748,9 +722,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.SaberstaffProficiency5);
         }
 
-        private void SaberstaffMastery(PerkBuilder builder)
+        private void SaberstaffMastery()
         {
-            builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.SaberstaffMastery)
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.SaberstaffMastery)
                 .Name("Saberstaff Mastery")
                 .TriggerEquippedItem((player, item, slot, type, level) =>
                 {
@@ -759,7 +733,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.SaberstaffBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + level;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -770,8 +744,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                     var itemType = GetBaseItemType(item);
                     if (Item.SaberstaffBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
 
                 })
@@ -782,7 +755,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.SaberstaffBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) + 1;
+                        var bab = level == 1 ? 6 : 11;
                         CreaturePlugin.SetBaseAttackBonus(player, bab);
                     }
                 })
@@ -793,36 +766,28 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                     if (Item.SaberstaffBaseItemTypes.Contains(itemType))
                     {
-                        var bab = GetBaseAttackBonus(player) - level;
-                        CreaturePlugin.SetBaseAttackBonus(player, bab);
+                        CreaturePlugin.SetBaseAttackBonus(player, 1);
                     }
                 })
 
                 .AddPerkLevel()
-                .Description("Grants +1 BAB when equipped with a Saberstaff.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Saberstaff.")
+                .Price(12)
                 .RequirementSkill(SkillType.TwoHanded, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.SaberstaffMastery1)
-
+                
                 .AddPerkLevel()
-                .Description("Grants +2 BAB when equipped with a Saberstaff.")
-                .Price(8)
-                .RequirementSkill(SkillType.TwoHanded, 40)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.SaberstaffMastery2)
-
-                .AddPerkLevel()
-                .Description("Grants +3 BAB when equipped with a Saberstaff.")
-                .Price(8)
+                .Description("Grants an additional attack when equipped with a Saberstaff.")
+                .Price(12)
                 .RequirementSkill(SkillType.TwoHanded, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.SaberstaffMastery3);
+                .GrantsFeat(FeatType.SaberstaffMastery2);
         }
 
-        private void CircleSlash(PerkBuilder builder)
+        private void CircleSlash()
         {
-            builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.CircleSlash)
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.CircleSlash)
                 .Name("Circle Slash")
 
                 .AddPerkLevel()
@@ -847,9 +812,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CircleSlash3);
         }
 
-        private void DoubleStrike(PerkBuilder builder)
+        private void DoubleStrike()
         {
-            builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.DoubleStrike)
+            _builder.Create(PerkCategoryType.TwoHandedSaberstaff, PerkType.DoubleStrike)
                 .Name("Double Strike")
 
                 .AddPerkLevel()
@@ -872,6 +837,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.TwoHanded, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.DoubleStrike3);
+        }
+
+        private void ImprovedTwoWeaponFighting()
+        {
+            _builder.Create(PerkCategoryType.TwoHandedGeneral, PerkType.ImprovedTwoWeaponFightingTwoHanded)
+                .Name("Improved Two Weapon Fighting (Two-Handed)")
+
+                .AddPerkLevel()
+                .Description("Grants an additional off-hand attack when dual wielding or using a double-sided weapon.")
+                .Price(10)
+                .RequirementSkill(SkillType.TwoHanded, 40)
+                .RequirementCannotHavePerk(PerkType.ImprovedTwoWeaponFightingOneHanded)
+                .GrantsFeat(FeatType.ImprovedTwoWeaponFighting);
         }
     }
 }

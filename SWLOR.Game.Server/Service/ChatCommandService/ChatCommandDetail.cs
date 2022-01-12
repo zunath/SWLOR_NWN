@@ -1,4 +1,5 @@
 ﻿using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.ChatCommandService
@@ -27,6 +28,7 @@ namespace SWLOR.Game.Server.Service.ChatCommandService
         public ExecuteChatCommandDelegate DoAction { get; set; }
         public ValidateArgumentsDelegate ValidateArguments { get; set; }
         public bool RequiresTarget { get; set; }
+        public ObjectType ValidTargetTypes { get; set; }
         public bool IsEmote { get; set; }
 
     }

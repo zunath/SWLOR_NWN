@@ -18,17 +18,71 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
         private void Byysk()
         {
-            _builder.Create("HUTLAR_BYYSK");
+            _builder.Create("HUTLAR_BYYSK")
+                .AddItem("elec_good", 10)
+                .AddItem("fiberp_good", 10)
+                .AddItem("byysk_longsword", 5)
+                .AddItem("byysk_knife", 5)
+                .AddItem("byysk_gswd", 5)
+                .AddItem("byysk_spear", 5)
+                .AddItem("byysk_katar", 5)
+                .AddItem("byysk_staff", 5)
+                .AddItem("byysk_pistol", 5)
+                .AddItem("byysk_shuriken", 5)
+                .AddItem("byysk_twinblade", 5)
+                .AddItem("byysk_rifle", 5)
+                
+                .AddItem("byysk_shield", 5)
+                .AddItem("byysk_cloak", 5)
+                .AddItem("byysk_belt", 5)
+                .AddItem("byysk_ring", 5)
+                .AddItem("byysk_necklace", 5)
+                .AddItem("byysk_armor", 5)
+                .AddItem("byysk_helmet", 5)
+                .AddItem("byysk_bracer", 5)
+                .AddItem("byysk_leggings", 5)
+
+                .AddItem("inq_cloak", 5)
+                .AddItem("inq_belt", 5)
+                .AddItem("inq_ring", 5)
+                .AddItem("inq_necklace", 5)
+                .AddItem("inq_tunic", 5)
+                .AddItem("inq_cap", 5)
+                .AddItem("inq_gloves", 5)
+                .AddItem("inq_boots", 5)
+
+                .AddItem("agent_cloak", 5)
+                .AddItem("agent_belt", 5)
+                .AddItem("agent_ring", 5)
+                .AddItem("agent_necklace", 5)
+                .AddItem("agent_tunic", 5)
+                .AddItem("agent_cap", 5)
+                .AddItem("agent_gloves", 5)
+                .AddItem("agent_boots", 5)
+
+                .AddGold(40, 10)
+                ;
+
+
+            _builder.Create("HUTLAR_BYYSK_RARES")
+                .AddItem("map_025", 20, 1, true)
+                .AddItem("map_026", 20, 1, true)
+                .AddItem("citrine", 5, 1, true);
         }
 
         private void QionSlugs()
         {
-            _builder.Create("HUTLAR_QION_SLUGS");
+            _builder.Create("HUTLAR_QION_SLUGS")
+                .AddItem("slug_bile", 5)
+                .AddItem("slug_tooth", 20);
         }
 
         private void QionTigers()
         {
-            _builder.Create("HUTLAR_QION_TIGERS");
+            _builder.Create("HUTLAR_QION_TIGERS")
+                .AddItem("lth_good", 20)
+                .AddItem("qion_tiger_fang", 10)
+                .AddItem("tiger_blood", 8);
         }
     }
 }

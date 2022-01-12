@@ -26,6 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2.0f)
                 .RequirementFP(3)
                 .IsConcentrationAbility(StatusEffectType.BattleInsight1)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
         private static void BattleInsight2(AbilityBuilder builder)
@@ -36,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasActivationDelay(2.0f)
                 .RequirementFP(5)
                 .IsConcentrationAbility(StatusEffectType.BattleInsight2)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
     }

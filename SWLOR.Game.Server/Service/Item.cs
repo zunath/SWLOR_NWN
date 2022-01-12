@@ -11,6 +11,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -19,6 +20,7 @@ namespace SWLOR.Game.Server.Service
     public static class Item
     {
         private static readonly Dictionary<string, ItemDetail> _items = new Dictionary<string, ItemDetail>();
+        private static readonly Dictionary<int, int[]> _2dacache = new Dictionary<int, int[]>();
 
         /// <summary>
         /// When the module loads, all item details are loaded into the cache.
@@ -42,6 +44,23 @@ namespace SWLOR.Game.Server.Service
             }
 
             Console.WriteLine($"Loaded {_items.Count} items.");
+
+            // Cache 2da values that we need.  Create a new array for each row, otherwise they
+            // end up pointing to the same array object (and get overwritten).
+            foreach (var baseItem in Enum.GetValues(typeof(BaseItem)).Cast<int>())
+            {
+                int[] values = new int[3];
+                string threat = Get2DAString("baseitems", "CritThreat", baseItem);
+                string mult = Get2DAString("baseitems", "CritHitMult", baseItem);
+                string size = Get2DAString("baseitems", "WeaponSize", baseItem);
+
+                values[0] = string.IsNullOrEmpty(threat) ? 0 : Int32.Parse(threat);
+                values[1] = string.IsNullOrEmpty(mult) ? 0 : Int32.Parse(mult);
+                values[2] = string.IsNullOrEmpty(size) ? 0 : Int32.Parse(size);
+                _2dacache[baseItem] = values;
+            }
+
+            Console.WriteLine($"Loaded {_2dacache.Count} base items.");
         }
         
         /// <summary>
@@ -519,6 +538,16 @@ namespace SWLOR.Game.Server.Service
             BaseItem.LightMace,
         };
 
+        /// <summary>
+        /// Retrieves the list of Creature base item types.
+        /// </summary>
+        public static List<BaseItem> CreatureBaseItemTypes { get; } = new List<BaseItem>
+        {
+            BaseItem.CreatureBludgeWeapon,
+            BaseItem.CreatureSlashWeapon,
+            BaseItem.CreaturePierceWeapon,
+            BaseItem.CreatureSlashPierceWeapon
+        };
 
         /// <summary>
         /// Retrieves the icon used on the UIs. 
@@ -691,6 +720,31 @@ namespace SWLOR.Game.Server.Service
             }
 
             return string.Empty;
+        }
+
+        // The values below are taken from the 2das, and cached on startup in CacheData() above.
+        public static int GetCriticalThreatRange(BaseItem item)
+        {
+            int range = _2dacache[(int)item][0];
+            Log.Write(LogGroup.Attack, "Threat range for item type " + item + "(" + (int)item + ") is " + range);
+            
+            return range;
+        }
+
+        public static int GetCriticalModifier(BaseItem item)
+        {
+            int mod = _2dacache[(int)item][1];
+            Log.Write(LogGroup.Attack, "Crit multiplier for item type " + item + " is " + mod);
+
+            return mod;
+        }
+
+        public static int GetWeaponSize(BaseItem item)
+        {
+            int size = _2dacache[(int)item][2];
+            Log.Write(LogGroup.Attack, "Size of item type " + item + " is " + size);
+
+            return size;
         }
     }
 }

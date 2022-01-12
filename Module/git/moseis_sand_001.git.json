@@ -323,6 +323,21 @@
               },
               "PointZ": {
                 "type": "float",
+                "value": 0.2245323956012726
+              }
+            },
+            {
+              "__struct_id": 3,
+              "PointX": {
+                "type": "float",
+                "value": 0.0
+              },
+              "PointY": {
+                "type": "float",
+                "value": -2.899444580078125
+              },
+              "PointZ": {
+                "type": "float",
                 "value": 0.02500000037252903
               }
             },
@@ -330,21 +345,6 @@
               "__struct_id": 3,
               "PointX": {
                 "type": "float",
-                "value": 0.0
-              },
-              "PointY": {
-                "type": "float",
-                "value": -2.899444580078125
-              },
-              "PointZ": {
-                "type": "float",
-                "value": 0.02500005997717381
-              }
-            },
-            {
-              "__struct_id": 3,
-              "PointX": {
-                "type": "float",
                 "value": 17.85749816894531
               },
               "PointY": {
@@ -353,7 +353,7 @@
               },
               "PointZ": {
                 "type": "float",
-                "value": 0.02500005997717381
+                "value": 0.05325343459844589
               }
             },
             {
@@ -368,7 +368,7 @@
               },
               "PointZ": {
                 "type": "float",
-                "value": 0.02500005997717381
+                "value": 0.05325331538915634
               }
             },
             {
@@ -383,7 +383,7 @@
               },
               "PointZ": {
                 "type": "float",
-                "value": 0.02500005997717381
+                "value": 0.2310999929904938
               }
             }
           ]
@@ -504,6 +504,26 @@
         "ZPosition": {
           "type": "float",
           "value": 9.5367431640625e-007
+        }
+      }
+    ]
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "MAP_KEY_ITEM_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 36
         }
       }
     ]

@@ -9,136 +9,136 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         public static string GetCurrentScriptName(int depth = 0)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCurrentScriptName");
-            Internal.NativeFunctions.nwnxPushInt(depth);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopString();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetCurrentScriptName");
+            NWNCore.NativeFunctions.nwnxPushInt(depth);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopString();
         }
 
         public static string GetAsciiTableString()
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAsciiTableString");
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopString();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetAsciiTableString");
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopString();
         }
 
         public static int Hash(string str)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "Hash");
-            Internal.NativeFunctions.nwnxPushString(str);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "Hash");
+            NWNCore.NativeFunctions.nwnxPushString(str);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         public static int GetModuleMTime()
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetModuleMtime");
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetModuleMtime");
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         public static string GetCustomToken(int customTokenNumber)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "customTokenNumber");
-            Internal.NativeFunctions.nwnxPushInt(customTokenNumber);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopString();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "customTokenNumber");
+            NWNCore.NativeFunctions.nwnxPushInt(customTokenNumber);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopString();
         }
 
         public static ItemProperty EffectToItemProperty(Effect effect)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "EffectTypeCast");
-            Internal.NativeFunctions.nwnxPushEffect(effect.Handle);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return new ItemProperty(Internal.NativeFunctions.nwnxPopItemProperty());
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "EffectTypeCast");
+            NWNCore.NativeFunctions.nwnxPushEffect(effect.Handle);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return new ItemProperty(NWNCore.NativeFunctions.nwnxPopItemProperty());
         }
 
         public static Effect ItemPropertyToEffect(ItemProperty ip)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "EffectTypeCast");
-            Internal.NativeFunctions.nwnxPushItemProperty(ip.Handle);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return new Effect(Internal.NativeFunctions.nwnxPopEffect());
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "EffectTypeCast");
+            NWNCore.NativeFunctions.nwnxPushItemProperty(ip.Handle);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return new Effect(NWNCore.NativeFunctions.nwnxPopEffect());
         }
 
         public static string StripColors(string str)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "StripColors");
-            Internal.NativeFunctions.nwnxPushString(str);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopString();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "StripColors");
+            NWNCore.NativeFunctions.nwnxPushString(str);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopString();
         }
 
         public static int IsValidResRef(string resRef, int type = (int)ResRefType.Creature)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "IsValidResRef");
-            Internal.NativeFunctions.nwnxPushInt(type);
-            Internal.NativeFunctions.nwnxPushString(resRef);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "IsValidResRef");
+            NWNCore.NativeFunctions.nwnxPushInt(type);
+            NWNCore.NativeFunctions.nwnxPushString(resRef);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         public static string GetEnvironmentVariable(string varname)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetEnvironmentVariable");
-            Internal.NativeFunctions.nwnxPushString(varname);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetEnvironmentVariable");
+            NWNCore.NativeFunctions.nwnxPushString(varname);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
-            return Internal.NativeFunctions.nwnxPopString();
+            return NWNCore.NativeFunctions.nwnxPopString();
         }
 
         public static int GetMinutesPerHour()
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMinutesPerHour");
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetMinutesPerHour");
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         public static void SetMinutesPerHour(int minutes)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetMinutesPerHour");
-            Internal.NativeFunctions.nwnxPushInt(minutes);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetMinutesPerHour");
+            NWNCore.NativeFunctions.nwnxPushInt(minutes);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         public static string EncodeStringForURL(string url)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "EncodeStringForURL");
-            Internal.NativeFunctions.nwnxPushString(url);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopString();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "EncodeStringForURL");
+            NWNCore.NativeFunctions.nwnxPushString(url);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopString();
         }
 
         public static int Get2DARowCount(string str)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "Get2DARowCount");
-            Internal.NativeFunctions.nwnxPushString(str);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "Get2DARowCount");
+            NWNCore.NativeFunctions.nwnxPushString(str);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         public static string GetFirstResRef(ResRefType type, string regexFilter = "", bool moduleResourcesOnly = true)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFirstResRef");
-            Internal.NativeFunctions.nwnxPushInt(moduleResourcesOnly ? 1 : 0);
-            Internal.NativeFunctions.nwnxPushString(regexFilter);
-            Internal.NativeFunctions.nwnxPushInt((int)type);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopString();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetFirstResRef");
+            NWNCore.NativeFunctions.nwnxPushInt(moduleResourcesOnly ? 1 : 0);
+            NWNCore.NativeFunctions.nwnxPushString(regexFilter);
+            NWNCore.NativeFunctions.nwnxPushInt((int)type);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopString();
         }
 
         public static string GetNextResRef()
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetNextResRef");
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopString();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetNextResRef");
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopString();
         }
 
         public static int GetServerTicksPerSecond()
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetServerTicksPerSecond");
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetServerTicksPerSecond");
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
 
         /// @brief Get the world time as calendar day and time of day.
@@ -148,15 +148,15 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return A NWNX_Util_WorldTime struct with the calendar day and time of day.
         public static WorldTime GetWorldTime(float fAdjustment = 0.0f)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetWorldTime");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetWorldTime");
 
-            Internal.NativeFunctions.nwnxPushFloat(fAdjustment);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxPushFloat(fAdjustment);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
             return new WorldTime
             {
-                TimeOfDay = Internal.NativeFunctions.nwnxPopInt(),
-                CalendarDay = Internal.NativeFunctions.nwnxPopInt()
+                TimeOfDay = NWNCore.NativeFunctions.nwnxPopInt(),
+                CalendarDay = NWNCore.NativeFunctions.nwnxPopInt()
             };
         }
 
@@ -169,24 +169,24 @@ namespace SWLOR.Game.Server.Core.NWNX
 
         public static void SetResourceOverride(int nResType, string sOldName, string sNewName)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetResourceOverride");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetResourceOverride");
 
-            Internal.NativeFunctions.nwnxPushString(sNewName);
-            Internal.NativeFunctions.nwnxPushString(sOldName);
-            Internal.NativeFunctions.nwnxPushInt(nResType);
+            NWNCore.NativeFunctions.nwnxPushString(sNewName);
+            NWNCore.NativeFunctions.nwnxPushString(sOldName);
+            NWNCore.NativeFunctions.nwnxPushInt(nResType);
 
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         public static string GetResourceOverride(int nResType, string sName)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetResourceOverride");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetResourceOverride");
 
-            Internal.NativeFunctions.nwnxPushString(sName);
-            Internal.NativeFunctions.nwnxPushInt(nResType);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxPushString(sName);
+            NWNCore.NativeFunctions.nwnxPushInt(nResType);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
-            return Internal.NativeFunctions.nwnxPopString();
+            return NWNCore.NativeFunctions.nwnxPopString();
         }
 
         /// @brief Create a door.
@@ -196,30 +196,30 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// @return The door, or OBJECT_INVALID on failure.
         public static uint CreateDoor(string sResRef, Location locLocation, string sNewTag)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "CreateDoor");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "CreateDoor");
 
             var vPosition = NWScript.NWScript.GetPositionFromLocation(locLocation);
 
-            Internal.NativeFunctions.nwnxPushString(sNewTag);
-            Internal.NativeFunctions.nwnxPushFloat(NWScript.NWScript.GetFacingFromLocation(locLocation));
-            Internal.NativeFunctions.nwnxPushFloat(vPosition.Z);
-            Internal.NativeFunctions.nwnxPushFloat(vPosition.Y);
-            Internal.NativeFunctions.nwnxPushFloat(vPosition.X);
-            Internal.NativeFunctions.nwnxPushObject(NWScript.NWScript.GetAreaFromLocation(locLocation));
-            Internal.NativeFunctions.nwnxPushString(sResRef);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxPushString(sNewTag);
+            NWNCore.NativeFunctions.nwnxPushFloat(NWScript.NWScript.GetFacingFromLocation(locLocation));
+            NWNCore.NativeFunctions.nwnxPushFloat(vPosition.Z);
+            NWNCore.NativeFunctions.nwnxPushFloat(vPosition.Y);
+            NWNCore.NativeFunctions.nwnxPushFloat(vPosition.X);
+            NWNCore.NativeFunctions.nwnxPushObject(NWScript.NWScript.GetAreaFromLocation(locLocation));
+            NWNCore.NativeFunctions.nwnxPushString(sResRef);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
-            return Internal.NativeFunctions.nwnxPopObject();
+            return NWNCore.NativeFunctions.nwnxPopObject();
         }
 
         /// @brief Set the object that will be returned by GetItemActivator.
         /// @param oObject An object.
         public static void SetItemActivator(uint oObject)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetItemActivator");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetItemActivator");
 
-            Internal.NativeFunctions.nwnxPushObject(oObject);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxPushObject(oObject);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         /// <summary>
@@ -229,39 +229,39 @@ namespace SWLOR.Game.Server.Core.NWNX
         /// <returns>true if script param is set, false if not or on error.</returns>
         public static bool GetScriptParamIsSet(string paramName)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetScriptParamIsSet");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetScriptParamIsSet");
 
-            Internal.NativeFunctions.nwnxPushString(paramName);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxPushString(paramName);
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
-            return Convert.ToBoolean(Internal.NativeFunctions.nwnxPopInt());
+            return Convert.ToBoolean(NWNCore.NativeFunctions.nwnxPopInt());
         }
 
         public static void SetDawnHour(int nDawnHour)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetDawnHour");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetDawnHour");
 
-            Internal.NativeFunctions.nwnxPushInt(nDawnHour);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxPushInt(nDawnHour);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         public static void SetDuskHour(int nDuskHour)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetDuskHour");
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetDuskHour");
 
-            Internal.NativeFunctions.nwnxPushInt(nDuskHour);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxPushInt(nDuskHour);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         public static HighResTimestamp GetHighResTimeStamp()
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetHighResTimeStamp");
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetHighResTimeStamp");
+            NWNCore.NativeFunctions.nwnxCallFunction();
 
             return new HighResTimestamp
             {
-                Microseconds = Internal.NativeFunctions.nwnxPopInt(),
-                Seconds = Internal.NativeFunctions.nwnxPopInt()
+                Microseconds = NWNCore.NativeFunctions.nwnxPopInt(),
+                Seconds = NWNCore.NativeFunctions.nwnxPopInt()
             };
         }
 }

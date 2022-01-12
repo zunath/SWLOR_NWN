@@ -260,9 +260,15 @@ namespace SWLOR.Game.Server.Core.Beamdog
         /// border and a scrollbar if needed.
         /// </summary>
         /// <param name="jValue">Bind:String</param>
-        public static Json Text(Json jValue)
+        /// <param name="showBorder">bool</param>
+        /// <param name="scrollbars">int</param>
+        public static Json Text(Json jValue, bool showBorder = true, NuiScrollbars scrollbars = NuiScrollbars.Auto)
         {
-            return NuiElement("text", JsonNull(), jValue);
+            Json ret = NuiElement("text", JsonNull(), jValue);
+            ret = JsonObjectSet(ret, "border", JsonBool(showBorder));
+            ret = JsonObjectSet(ret, "scrollbars", JsonInt((int)scrollbars));
+
+            return ret;
         }
 
         /// <summary>
@@ -411,12 +417,22 @@ namespace SWLOR.Game.Server.Core.Beamdog
         /// <param name="jTemplate">NuiListTemplateCell[]</param>
         /// <param name="jRowCount">Bind:Int</param>
         /// <param name="fRowHeight">Height of the row</param>
-        public static Json List(Json jTemplate, Json jRowCount, float fRowHeight = NuiStyle.RowHeight)
+        /// <param name="showBorder">true to show the border, false otherwise</param>
+        /// <param name="scrollbars">The type of scroll bars to use, if any.</param>
+        public static Json List(
+            Json jTemplate, 
+            Json jRowCount, 
+            float fRowHeight = NuiStyle.RowHeight,
+            bool showBorder = true,
+            NuiScrollbars scrollbars = NuiScrollbars.Y)
         {
             Json ret = NuiElement("list", JsonNull(), JsonNull());
             ret = JsonObjectSet(ret, "row_template", jTemplate);
             ret = JsonObjectSet(ret, "row_count", jRowCount);
             ret = JsonObjectSet(ret, "row_height", JsonFloat(fRowHeight));
+            ret = JsonObjectSet(ret, "border", JsonBool(showBorder));
+            ret = JsonObjectSet(ret, "scrollbars", JsonInt((int)scrollbars));
+
             return ret;
         }
 

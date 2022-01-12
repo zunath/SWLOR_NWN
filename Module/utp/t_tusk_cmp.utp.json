@@ -104,7 +104,7 @@
   },
   "OnDeath": {
     "type": "resref",
-    "value": ""
+    "value": "plc_death"
   },
   "OnDisarm": {
     "type": "resref",
@@ -160,7 +160,7 @@
   },
   "Plot": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "PortraitId": {
     "type": "word",
@@ -221,36 +221,6 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "SCRIPT_1"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Placeable.ScavengePoint.OnOpened"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCAVENGE_POINT_LOOT_TABLE_ID"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 107
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
           "value": "SCAVENGE_POINT_LEVEL"
         },
         "Type": {
@@ -259,14 +229,14 @@
         },
         "Value": {
           "type": "int",
-          "value": 15
+          "value": 5
         }
       },
       {
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "SCRIPT_3"
+          "value": "SCAVENGE_POINT_LOOT_TABLE_NAME"
         },
         "Type": {
           "type": "dword",
@@ -274,37 +244,7 @@
         },
         "Value": {
           "type": "cexostring",
-          "value": "Placeable.ScavengePoint.OnDisturbed"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCRIPT_4"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 3
-        },
-        "Value": {
-          "type": "cexostring",
-          "value": "Placeable.ScavengePoint.OnClosed"
-        }
-      },
-      {
-        "__struct_id": 0,
-        "Name": {
-          "type": "cexostring",
-          "value": "SCAVENGE_POINT_ALWAYS_DESTROYS"
-        },
-        "Type": {
-          "type": "dword",
-          "value": 1
-        },
-        "Value": {
-          "type": "int",
-          "value": 1
+          "value": "TATOOINE_TUSKEN_CRATE"
         }
       }
     ]

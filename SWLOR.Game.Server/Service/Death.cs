@@ -1,12 +1,23 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PropertyService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Service
 {
     public class Death
     {
+        /// <summary>
+        /// When a player starts dying, instantly kill them.
+        /// </summary>
+        [NWNEventHandler("mod_dying")]
+        public static void OnPlayerDying()
+        {
+            ApplyEffectToObject(DurationType.Instant, EffectDeath(), GetLastPlayerDying());
+        }
+
         /// <summary>
         /// Handles resetting a player's standard faction reputations and displaying the respawn pop-up menu.
         /// </summary>
@@ -16,6 +27,8 @@ namespace SWLOR.Game.Server.Service
 
             var player = GetLastPlayerDied();
             var hostile = GetLastHostileActor(player);
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
 
             SetStandardFactionReputation(StandardFaction.Commoner, 100, player);
             SetStandardFactionReputation(StandardFaction.Merchant, 100, player);
@@ -28,10 +41,27 @@ namespace SWLOR.Game.Server.Service
                 factionMember = GetNextFactionMember(hostile, false);
             }
 
-            const string RespawnMessage = "You have died. You can wait for another player to revive you or respawn to go to your home point.";
-            PopUpDeathGUIPanel(player, true, true, 0, RespawnMessage);
+            if (dbPlayer.Settings.IsSubdualModeEnabled)
+            {
+                SendMessageToPC(player, "You have been subdued.");
+                SetCurrentHitPoints(player, 1);                
+                ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), player, 60f);
+                ApplyEffectToObject(DurationType.Temporary, EffectSlow(), player, 300f);
+                ApplyEffectToObject(DurationType.Temporary, EffectACDecrease(10), player, 300f);
+                ApplyEffectToObject(DurationType.Temporary, EffectAttackDecrease(10), player, 300f);
+                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Might, 10), player, 300f);
+                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Perception, 10), player, 300f);
+                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Social, 10), player, 300f);
+                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Vitality, 10), player, 300f);
+                ApplyEffectToObject(DurationType.Temporary, EffectAbilityDecrease(AbilityType.Willpower, 10), player, 300f);
+            }
+            else
+            {
+                const string RespawnMessage = "You have died. You can wait for another player to revive you or respawn to go to your home point.";
+                PopUpDeathGUIPanel(player, true, true, 0, RespawnMessage);
 
-            WriteAudit(player);
+                WriteAudit(player);
+            }
         }
 
         /// <summary>
@@ -111,7 +141,7 @@ namespace SWLOR.Game.Server.Service
         {
             var playerId = GetObjectUUID(player);
             var entity = DB.Get<Player>(playerId);
-            var area = Cache.GetAreaByResref(entity.RespawnAreaResref);
+            var area = Area.GetAreaByResref(entity.RespawnAreaResref);
             var position = Vector3(
                 entity.RespawnLocationX,
                 entity.RespawnLocationY,
@@ -144,8 +174,12 @@ namespace SWLOR.Game.Server.Service
             // 0 - 49
             else
                 multiplier = 15;
-            
-            dbPlayer.XPDebt = dbPlayer.TotalSPAcquired * multiplier;
+
+            var newDebt = dbPlayer.TotalSPAcquired * multiplier;
+            var effectiveMedicalCenterLevel = Property.GetEffectiveUpgradeLevel(dbPlayer.CitizenPropertyId, PropertyUpgradeType.MedicalCenterLevel);
+            newDebt -= (int)(newDebt * (effectiveMedicalCenterLevel * 0.05f));
+
+            dbPlayer.XPDebt += newDebt;
             DB.Set(dbPlayer);
 
             return dbPlayer.XPDebt;

@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 0.125
+    "value": 50.0
   },
   "ClassList": {
     "type": "list",
@@ -27,7 +27,7 @@
         },
         "ClassLevel": {
           "type": "short",
-          "value": 11
+          "value": 15
         }
       }
     ]
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 15
+    "value": 30
   },
   "Conversation": {
     "type": "resref",
@@ -46,7 +46,7 @@
   },
   "CRAdjust": {
     "type": "int",
-    "value": -72
+    "value": -19
   },
   "CurrentHitPoints": {
     "type": "short",
@@ -62,7 +62,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Run.  Run now."
+    }
   },
   "Dex": {
     "type": "byte",
@@ -80,6 +82,13 @@
         "EquippedRes": {
           "type": "resref",
           "value": "vellenking_0001"
+        }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "v_kraptor_skin"
         }
       }
     ]
@@ -138,7 +147,7 @@
   "FirstName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Vellen King"
+      "0": "Vellen King Raptor"
     }
   },
   "fortbonus": {
@@ -189,11 +198,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 1522
+    "value": 1650
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 14
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -795,7 +804,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 50
+    "value": 30
   },
   "Subrace": {
     "type": "cexostring",
@@ -831,6 +840,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 20
   }
 }

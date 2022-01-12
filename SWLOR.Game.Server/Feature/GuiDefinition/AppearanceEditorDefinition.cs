@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetIsResizable(true)
                 .SetInitialGeometry(0, 0, 476.57895f, 530.2632f)
                 .SetTitle("Appearance Editor")
+                .BindOnClosed(model => model.OnCloseWindow())
 
                 .AddColumn(col =>
                 {
@@ -32,6 +33,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHeight(32f)
                             .BindIsToggled(model => model.IsEquipmentSelected)
                             .BindOnClicked(model => model.OnSelectEquipment());
+
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddSpacer();
+
+                        row.AddButton()
+                            .SetText("Increase Height")
+                            .SetHeight(24f)
+                            .SetWidth(128f)
+                            .BindOnClicked(model => model.OnIncreaseAppearanceScale());
+
+                        row.AddButton()
+                            .SetText("Decrease Height")
+                            .SetHeight(24f)
+                            .SetWidth(128f)
+                            .BindOnClicked(model => model.OnDecreaseAppearanceScale());
+
+                        row.AddButton()
+                            .SetText("Save Height")
+                            .SetHeight(24f)
+                            .SetWidth(128f)
+                            .BindOnClicked(model => model.OnSaveAppearanceScale());
 
                         row.AddSpacer();
                     });

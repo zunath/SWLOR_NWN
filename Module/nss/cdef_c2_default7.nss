@@ -49,5 +49,5 @@ void main()
     {
          SignalEvent(OBJECT_SELF, EventUserDefined(1007));
     }
-    craft_drop_items(oKiller);
+    //craft_drop_items(oKiller);
 }

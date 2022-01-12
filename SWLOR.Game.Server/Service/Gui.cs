@@ -76,18 +76,30 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var (type, window) in _windowTemplates)
             {
+                var defaultGeometry = window.InitialGeometry;
+                var playerGeometry = dbPlayer.WindowGeometries.ContainsKey(type)
+                    ? dbPlayer.WindowGeometries[type]
+                    : defaultGeometry;
+                var resizable = JsonObjectGet(window.Window, "resizable");
+
+                // If the window cannot be resized and there isn't a bind on it, 
+                // the default width and height are used.
+                var forceResize = JsonGetInt(resizable) != 1 &&
+                                  string.IsNullOrWhiteSpace(JsonGetString(JsonObjectGet(resizable, "bind")));
+                if (forceResize && type != GuiWindowType.Modal)
+                {
+                    playerGeometry.Width = defaultGeometry.Width;
+                    playerGeometry.Height = defaultGeometry.Height;
+                }
+
                 // Add the window
                 var playerWindow = window.CreatePlayerWindowAction();
-                playerWindow.ViewModel.Geometry = dbPlayer.WindowGeometries.ContainsKey(type)
-                    ? dbPlayer.WindowGeometries[type]
-                    : window.InitialGeometry;
+                playerWindow.ViewModel.Geometry = playerGeometry;
                 _playerWindows[playerId][type] = playerWindow;
 
                 // All windows also get a separate modal window added to the cache.
                 var modalWindow = _windowTemplates[GuiWindowType.Modal].CreatePlayerWindowAction();
-                modalWindow.ViewModel.Geometry = dbPlayer.WindowGeometries.ContainsKey(type)
-                    ? dbPlayer.WindowGeometries[type]
-                    : window.InitialGeometry;
+                modalWindow.ViewModel.Geometry = playerGeometry;
                 _playerModals[playerId][type] = modalWindow;
             }
         }
@@ -287,6 +299,9 @@ namespace SWLOR.Game.Server.Service
             GuiPayloadBase payload = null,
             uint tetherObject = OBJECT_INVALID)
         {
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
             var playerId = GetObjectUUID(player);
             var template = _windowTemplates[type];
             var playerWindow = _playerWindows[playerId][type];

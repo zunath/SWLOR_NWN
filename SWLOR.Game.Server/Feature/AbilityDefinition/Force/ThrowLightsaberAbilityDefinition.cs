@@ -32,9 +32,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var weapon = GetItemInSlot(InventorySlot.RightHand, activator);
             var distance = GetDistanceBetween(activator, target);
 
+            var validWeapon = GetIsObjectValid(weapon) &&
+                                 (Item.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
+                                  Item.VibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)) ||
+                                  Item.FinesseVibrobladeBaseItemTypes.Contains(GetBaseItemType(weapon)));
+
             if (distance > 15)
                 return "You must be within 15 meters of your target.";
-            if (!GetIsObjectValid(weapon) || !Item.LightsaberBaseItemTypes.Contains(GetBaseItemType(weapon)))
+            if (!validWeapon)
                 return "You cannot force throw your currently held object.";
             else return string.Empty;
         }
@@ -60,10 +65,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             switch (level)
             {
                 case 1:
-                    dmg = 5.0f;
+                    dmg = 2.0f;
                     break;
                 case 2:
-                    dmg = 7.5f;
+                    dmg = 6.0f;
                     break;
                 case 3:
                     dmg = 9.0f;
@@ -73,13 +78,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             // apply to target
             DelayCommand(delay, () =>
             {
+                CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
                 var defense = Stat.GetDefense(target, CombatDamageType.Physical);
                 var targetWillpower = GetAbilityModifier(AbilityType.Willpower, target);
-                var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, false);
+                var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, 0);
                 ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), target);
             });
-            
-            
+                        
             // apply to next nearest creature in the spellcylinder
             var nearby = GetFirstObjectInShape(Shape.SpellCylinder, Range, GetLocation(target), true, ObjectType.Creature, GetPosition(activator));
             while (GetIsObjectValid(nearby) && count < level)
@@ -90,9 +95,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     var nearbyCopy = nearby;
                     DelayCommand(delay, () =>
                     {
+                        CombatPoint.AddCombatPoint(activator, nearby, SkillType.Force, 3);
                         var defense = Stat.GetDefense(nearbyCopy, CombatDamageType.Physical);
                         var targetWillpower = GetAbilityModifier(AbilityType.Willpower, nearbyCopy);
-                        var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, false);
+                        var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, 0);
                         ApplyEffectToObject(DurationType.Instant, EffectLinkEffects(EffectVisualEffect(VisualEffect.Vfx_Imp_Sonic), EffectDamage(damage, DamageType.Sonic)), nearbyCopy);
                     });
 
@@ -102,17 +108,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             }
 
             Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
         }
 
         private static void ThrowLightsaber1(AbilityBuilder builder)
         {
             builder.Create(FeatType.ThrowLightsaber1, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber I")
-                .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(2)
                 .IsCastedAbility()
+                .IsHostileAbility()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -121,10 +129,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowLightsaber2, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber II")
-                .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(4)
                 .IsCastedAbility()
+                .IsHostileAbility()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
@@ -133,10 +144,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         {
             builder.Create(FeatType.ThrowLightsaber3, PerkType.ThrowLightsaber)
                 .Name("Throw Lightsaber III")
-                .HasRecastDelay(RecastGroup.ThrowLightsaber, 60f)
+                .HasRecastDelay(RecastGroup.ThrowLightsaber, 30f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(6)
                 .IsCastedAbility()
+                .IsHostileAbility()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);

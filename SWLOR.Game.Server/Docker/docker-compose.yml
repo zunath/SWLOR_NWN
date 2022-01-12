@@ -1,5 +1,4 @@
 version: "3.7"
-
 services:
     redis:
         hostname: redis
@@ -7,11 +6,6 @@ services:
         volumes:
           - ${PWD-.}/redis:/data
         restart: unless-stopped
-        ports:
-            - "6379:6379"
-        networks:
-            swlor_network:
-                ipv4_address: 172.22.0.100
                 
     redis-commander:
         container_name: redis-commander
@@ -24,69 +18,55 @@ services:
             - REDIS_HOSTS=local:redis:6379
         ports:
             - "8081:8081"
-        networks:
-            swlor_network:
-                ipv4_address: 172.22.0.99
 
+    swlor-server:
+        hostname: nwnx-server
+        stop_signal: SIGINT
+        image: nwnxee/unified:latest
+        env_file: ${PWD-.}/swlor.env
+        links:
+            - "redis:redis"
+        stdin_open: true
+        tty: true
+        volumes:
+            - ${PWD-.}/logs:/nwn/run/logs.0
+            - ${PWD-.}/:/nwn/home
+            - ${PWD-.}/logs:/nwn/data/bin/linux-x86/logs.0
+        ports:
+            - "5121:5121/udp"
+            
     influxdb:
         hostname: influxdb
-        image: influxdb:1.7
+        image: influxdb:1.8
         restart: unless-stopped
         environment:
-            - INFLUXDB_DB=metrics
+            - INFLUXDB_DB=nwn
             - INFLUXDB_ADMIN_USER=admin
             - INFLUXDB_ADMIN_PASSWORD=admin
             - INFLUXDB_USER=docker
             - INFLUXDB_USER_PASSWORD=docker
             - INFLUXDB_UDP_ENABLED=true
             - INFLUXDB_UDP_BIND_ADDRESS=:8089
-            - INFLUXDB_UDP_DATABASE=metrics
+            - INFLUXDB_UDP_DATABASE=nwn
         volumes:
-        - ${PWD-.}/influxdb:/var/lib/influxdb
-        logging:
-            driver: "none"
-        networks:
-            swlor_network:
-                ipv4_address: 172.22.0.102
+            - ./influxdb:/var/lib/influxdb
+        ports:
+            - "8086:8086"
             
     grafana:
         hostname: grafana
-        image: grafana/grafana:6.0.1
+        image: grafana/grafana:latest
         restart: unless-stopped
         environment:
             - GF_SECURITY_ADMIN_PASSWORD=admin
-        ports:
-            - "3000:3000"
         depends_on:
             - influxdb
         volumes:
             - ./grafana-provisioning:/etc/grafana/provisioning
-        networks:
-            swlor_network:
-                ipv4_address: 172.22.0.103
-            
-    swlor-server:
-        hostname: nwnx-server
-        image: nwnxee/unified:latest
-        env_file: ${PWD-.}/swlor.env
-        stdin_open: true
-        tty: true
-        depends_on:
-            - redis
-        volumes:
-            - ${PWD-.}/logs:/nwn/run/logs.0
-            - ${PWD-.}/:/nwn/home
-            - ${PWD-.}/logs:/nwn/data/bin/linux-x86/logs.0
-            - ${PWD-.}/wait-for-it.sh:/usr/local/bin/wait-for-it.sh
+            - grafana:/var/lib/grafana
         ports:
-            - "5121:5121/udp"
-        networks:
-          swlor_network:
-            ipv4_address: 172.22.0.101
+            - "3000:3000"
             
-networks:
-    swlor_network:
-        ipam:
-            driver: default
-            config:
-                - subnet: 172.22.0.0/16
+volumes:
+    influxdb:
+    grafana:

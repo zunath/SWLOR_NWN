@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 16
+    "value": 20
   },
   "DecayTime": {
     "type": "dword",
@@ -134,7 +134,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 16
+    "value": 20
   },
   "Int": {
     "type": "byte",
@@ -168,7 +168,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 20
+    "value": 24
   },
   "NaturalAC": {
     "type": "byte",
@@ -473,7 +473,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 12
+    "value": 10
   },
   "Subrace": {
     "type": "cexostring",
@@ -527,6 +527,36 @@
           "type": "cexostring",
           "value": "CZ220_LOOT_DROID"
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "CZ220_CREDITS,80,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_3"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "CZ220_LOOT_DROID_RARES,2,1"
+        }
       }
     ]
   },
@@ -544,6 +574,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 11
+    "value": 10
   }
 }

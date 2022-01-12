@@ -101,7 +101,9 @@ namespace SWLOR.Game.Server.Core.NWScript.Enum.Item
         UseLimitationPerk = 100,
         ArmorEnhancement = 101,
         WeaponEnhancement = 102,
+        PrimaryStat = 103,
         EnhancementLevel = 104,
+        StructureBonus = 105,
 
         Evasion = 117,
         AbilityRecastReduction = 118,

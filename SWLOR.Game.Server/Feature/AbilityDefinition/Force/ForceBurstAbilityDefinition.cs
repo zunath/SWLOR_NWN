@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var willpower = GetAbilityModifier(AbilityType.Willpower, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Force);
             var targetWillpower = GetAbilityModifier(AbilityType.Willpower, target);
-            var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, false);
+            var damage = Combat.CalculateDamage(dmg, willpower, defense, targetWillpower, 0);
             var delay = GetDistanceBetweenLocations(GetLocation(activator), targetLocation) / 18.0f + 0.35f;
 
             AssignCommand(activator, () =>
@@ -68,7 +68,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             });
 
             Enmity.ModifyEnmityOnAll(activator, 1);
-            CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3);
+
+            if (!CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Force, 3))
+            {
+                CombatPoint.AddCombatPoint(activator, target, SkillType.Force, 3);
+            }
         }
 
         private static void ForceBurst1(AbilityBuilder builder)
@@ -76,9 +80,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst1, PerkType.ForceBurst)
                 .Name("Force Burst I")
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
-                .RequirementFP(2)
+                .HasMaxRange(30.0f)
+                .RequirementFP(4)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
 
@@ -87,9 +94,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst2, PerkType.ForceBurst)
                 .Name("Force Burst II")
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
-                .RequirementFP(3)
+                .HasMaxRange(30.0f)
+                .RequirementFP(5)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
 
@@ -98,9 +108,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst3, PerkType.ForceBurst)
                 .Name("Force Burst III")
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
-                .RequirementFP(4)
+                .HasMaxRange(30.0f)
+                .RequirementFP(6)
                 .IsCastedAbility()
+                .IsHostileAbility()
                 .DisplaysVisualEffectWhenActivating()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
 
@@ -109,9 +122,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             builder.Create(FeatType.ForceBurst4, PerkType.ForceBurst)
                 .Name("Force Burst IV")
                 .HasRecastDelay(RecastGroup.ForceBurst, 30f)
-                .RequirementFP(5)
+                .RequirementFP(7)
                 .IsCastedAbility()
                 .DisplaysVisualEffectWhenActivating()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .HasImpactAction(ImpactAction);
         }
         private static void DoFireball(uint target)

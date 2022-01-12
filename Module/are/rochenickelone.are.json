@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Roche System - Nickel One"
+      "0": "[Prefab] Roche System - Nickel One"
     }
   },
   "NoRest": {
@@ -28541,7 +28541,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 4
+    "value": 5
   },
   "Width": {
     "type": "int",

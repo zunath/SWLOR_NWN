@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -15,10 +16,12 @@ namespace SWLOR.Game.Server.Service
         {
             public uint Source { get; set; }
             public DateTime Expiration { get; set; }
+            public FeatType ConcentrationFeatType { get; set; }
         }
 
-        private static readonly Dictionary<StatusEffectType, StatusEffectDetail> _statusEffects = new Dictionary<StatusEffectType, StatusEffectDetail>();
-        private static readonly Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>> _creaturesWithStatusEffects = new Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>>();
+        private static readonly Dictionary<StatusEffectType, StatusEffectDetail> _statusEffects = new();
+        private static readonly Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>> _creaturesWithStatusEffects = new();
+        private static readonly Dictionary<uint, Dictionary<StatusEffectType, StatusEffectGroup>> _loggedOutPlayersWithEffects = new();
 
         /// <summary>
         /// When the module loads, cache all status effects.
@@ -49,41 +52,79 @@ namespace SWLOR.Game.Server.Service
         /// it will be extended to the length specified.
         /// </summary>
         /// <param name="source">The source of the status effect.</param>
-        /// <param name="creature">The creature receiving the status effect.</param>
+        /// <param name="target">The creature receiving the status effect.</param>
         /// <param name="statusEffectType">The type of status effect to give.</param>
         /// <param name="length">The amount of time the status effect should last. Set to 0.0f to make it permanent.</param>
-        public static void Apply(uint source, uint creature, StatusEffectType statusEffectType, float length)
+        /// <param name="concentrationFeatType">If status effect is associated with a concentration ability, this will track the feat type used.</param>
+        public static void Apply(uint source, uint target, StatusEffectType statusEffectType, float length, FeatType concentrationFeatType = FeatType.Invalid)
         {
-            if(!_creaturesWithStatusEffects.ContainsKey(creature))
-                _creaturesWithStatusEffects[creature] = new Dictionary<StatusEffectType, StatusEffectGroup>();
+            if (!_creaturesWithStatusEffects.ContainsKey(target))
+                _creaturesWithStatusEffects[target] = new Dictionary<StatusEffectType, StatusEffectGroup>();
 
-            if(!_creaturesWithStatusEffects[creature].ContainsKey(statusEffectType))
-                _creaturesWithStatusEffects[creature][statusEffectType] = new StatusEffectGroup();
+            if (!_creaturesWithStatusEffects[target].ContainsKey(statusEffectType))
+                _creaturesWithStatusEffects[target][statusEffectType] = new StatusEffectGroup();
 
             var expiration = length == 0.0f ? DateTime.MaxValue : DateTime.UtcNow.AddSeconds(length);
 
             // If the existing status effect will expire later than this, exit early.
-            if (_creaturesWithStatusEffects[creature].ContainsKey(statusEffectType))
+            if (_creaturesWithStatusEffects[target].ContainsKey(statusEffectType))
             {
-                if (_creaturesWithStatusEffects[creature][statusEffectType].Expiration > expiration)
+                if (_creaturesWithStatusEffects[target][statusEffectType].Expiration > expiration)
                     return;
             }
 
             // Set the group details.
-            _creaturesWithStatusEffects[creature][statusEffectType].Source = source;
-            _creaturesWithStatusEffects[creature][statusEffectType].Expiration = expiration;
+            _creaturesWithStatusEffects[target][statusEffectType].Source = source;
+            _creaturesWithStatusEffects[target][statusEffectType].Expiration = expiration;
+            _creaturesWithStatusEffects[target][statusEffectType].ConcentrationFeatType = concentrationFeatType;
 
             // Run the Grant Action, if applicable.
             var statusEffectDetail = _statusEffects[statusEffectType];
-            statusEffectDetail.AppliedAction?.Invoke(source, creature, length);
+            statusEffectDetail.AppliedAction?.Invoke(source, target, length);
 
             // Add the status effect icon if there is one.
             if (statusEffectDetail.EffectIconId > 0)
             {
-                ObjectPlugin.AddIconEffect(creature, statusEffectDetail.EffectIconId);
+                ObjectPlugin.AddIconEffect(target, statusEffectDetail.EffectIconId);
             }
 
-            Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} receives the effect of {statusEffectDetail.Name}.");
+            Messaging.SendMessageNearbyToPlayers(target, $"{GetName(target)} receives the effect of {statusEffectDetail.Name}.");
+        }
+
+        /// <summary>
+        /// When a player enters the server, if any of their status effects in limbo, re-add them to the
+        /// dictionary for processing.
+        /// </summary>
+        [NWNEventHandler("mod_enter")]
+        public static void PlayerEnter()
+        {
+            var player = GetEnteringObject();
+
+            if (!_loggedOutPlayersWithEffects.ContainsKey(player))
+                return;
+
+            var effects = _loggedOutPlayersWithEffects[player].ToDictionary(x => x.Key, y => y.Value);
+            _creaturesWithStatusEffects[player] = effects;
+
+            _loggedOutPlayersWithEffects.Remove(player);
+        }
+
+        /// <summary>
+        /// When a player leaves the server, move their status effects to a different dictionary
+        /// so they aren't processed unnecessarily.  
+        /// </summary>
+        [NWNEventHandler("mod_exit")]
+        public static void PlayerExit()
+        {
+            var player = GetExitingObject();
+
+            if (!_creaturesWithStatusEffects.ContainsKey(player))
+                return;
+
+            var effects = _creaturesWithStatusEffects[player].ToDictionary(x => x.Key, y => y.Value);
+            _loggedOutPlayersWithEffects[player] = effects;
+
+            _creaturesWithStatusEffects.Remove(player);
         }
 
         /// <summary>
@@ -97,15 +138,37 @@ namespace SWLOR.Game.Server.Service
             foreach (var (creature, statusEffects) in _creaturesWithStatusEffects)
             {
                 // Creature is dead or invalid. Remove its status effects.
-                bool removeAllEffects = !GetIsObjectValid(creature) || GetIsDead(creature);
+                var removeAllEffects = !GetIsObjectValid(creature) || GetIsDead(creature);
 
                 // Iterate over each status effect, cleaning them up if they've expired or executing their tick if applicable.
                 foreach (var (statusEffect, group) in statusEffects)
                 {
+                    var activeConcentration = Ability.GetActiveConcentration(group.Source);
+
+                    // Concentration check - If caster is no longer channeling this feat, remove the status effect.
+                    if (group.ConcentrationFeatType != FeatType.Invalid)
+                    {
+                        if (activeConcentration.Feat != group.ConcentrationFeatType)
+                        {
+                            Remove(creature, statusEffect);
+                            continue;
+                        }
+                    }
+
                     // Status effect has expired or creature is no longer valid. Remove it.
                     if (removeAllEffects || now > group.Expiration)
                     {
                         Remove(creature, statusEffect);
+
+                        // Concentration - End the ability if this status effect was tied to a concentration ability
+                        // and the creature was the target.
+                        if (group.ConcentrationFeatType != FeatType.Invalid &&
+                            activeConcentration.Feat == group.ConcentrationFeatType &&
+                            activeConcentration.Target == creature)
+                        {
+                            Ability.EndConcentrationAbility(group.Source);
+                        }
+
                     }
                     // Otherwise do a Tick.
                     else
@@ -124,19 +187,40 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// When a player dies, remove any status effects which are present.
+        /// </summary>
+        [NWNEventHandler("mod_death")]
+        public static void OnPlayerDeath()
+        {
+            var player = GetLastPlayerDied();
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            if (!_creaturesWithStatusEffects.ContainsKey(player))
+                return;
+
+            var statusEffects = _creaturesWithStatusEffects[player].Select(s => s.Key);
+
+            foreach (var effect in statusEffects)
+            {
+                Remove(player, effect);
+            }
+        }
+
+        /// <summary>
         /// Removes a status effect from a creature.
         /// </summary>
         /// <param name="creature">The creature to remove the status effect from.</param>
         /// <param name="statusEffectType">The type of status effect to remove.</param>
         public static void Remove(uint creature, StatusEffectType statusEffectType)
         {
-            if (!HasStatusEffect(creature, statusEffectType,  true)) return;
+            if (!HasStatusEffect(creature, statusEffectType, true)) return;
             _creaturesWithStatusEffects[creature].Remove(statusEffectType);
 
             var statusEffectDetail = _statusEffects[statusEffectType];
             statusEffectDetail.RemoveAction?.Invoke(creature);
 
-            if (statusEffectDetail.EffectIconId > 0)
+            if (statusEffectDetail.EffectIconId > 0 && GetIsObjectValid(creature))
             {
                 ObjectPlugin.RemoveIconEffect(creature, statusEffectDetail.EffectIconId);
             }
@@ -192,20 +276,5 @@ namespace SWLOR.Game.Server.Service
 
             return false;
         }
-
-        /// <summary>
-        /// Returns the source of a status effect which was applied onto a target creature.
-        /// If the status effect cannot be found, OBJECT_INVALID will be returned.
-        /// If source cannot be determined, OBJECT_INVALID will be returned.
-        /// </summary>
-        /// <param name="creature">The creature to check.</param>
-        /// <param name="statusEffectType">The status effect type to look for.</param>
-        /// <returns>The source of a status effect, or OBJECT_INVALID if it cannot be determined.</returns>
-        public static uint GetSource(uint creature, StatusEffectType statusEffectType)
-        {
-            if (!HasStatusEffect(creature, statusEffectType)) return OBJECT_INVALID;
-            return _creaturesWithStatusEffects[creature][statusEffectType].Source;
-        }
-
     }
 }

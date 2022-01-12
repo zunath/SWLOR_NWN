@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler("mod_load")]
         public static void CreateInstances()
         {
-            var source = Cache.GetAreaByResref("cardgame003");
+            var source = Area.GetAreaByResref("cardgame003");
             if (!GetIsObjectValid(source)) return;
 
             // Create 20 instances of the card game area.

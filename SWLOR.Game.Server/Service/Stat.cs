@@ -399,14 +399,15 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustPlayerMaxFP(Player entity, int adjustBy)
+        public static void AdjustPlayerMaxFP(Player entity, int adjustBy, uint player)
         {
             // Note: It's possible for Max FP to drop to a negative number. This is expected to ensure calculations stay in sync.
             // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
             entity.MaxFP += adjustBy;
 
-            if (entity.FP > entity.MaxFP)
-                entity.FP = entity.MaxFP;
+            // Note - must call GetMaxFP here to account for ability-based increase to FP cap. 
+            if (entity.FP > GetMaxFP(player))
+                entity.FP = GetMaxFP(player);
 
             // Current FP, however, should never drop below zero.
             if (entity.FP < 0)
@@ -419,14 +420,15 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="entity">The entity to modify</param>
         /// <param name="adjustBy">The amount to adjust by</param>
-        public static void AdjustPlayerMaxSTM(Player entity, int adjustBy)
+        public static void AdjustPlayerMaxSTM(Player entity, int adjustBy, uint player)
         {
             // Note: It's possible for Max STM to drop to a negative number. This is expected to ensure calculations stay in sync.
             // If there are any visual indicators (GUI elements for example) be sure to account for this scenario.
             entity.MaxStamina += adjustBy;
 
-            if (entity.Stamina > entity.MaxStamina)
-                entity.Stamina = entity.MaxStamina;
+            // Note - must call GetMaxFP here to account for ability-based increase to STM cap. 
+            if (entity.Stamina > GetMaxStamina(player))
+                entity.Stamina = GetMaxStamina(player);
 
             // Current STM, however, should never drop below zero.
             if (entity.Stamina < 0)
@@ -548,7 +550,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When a creature spawns, load its relevant defense information based on their equipment.
         /// </summary>
-        [NWNEventHandler("crea_spawn")]
+        [NWNEventHandler("crea_spawn_bef")]
         public static void LoadNPCDefense()
         {
             var creature = OBJECT_SELF;
@@ -577,7 +579,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        [NWNEventHandler("crea_death")]
+        [NWNEventHandler("crea_death_aft")]
         public static void ClearNPCDefense()
         {
             if (_npcDefenses.ContainsKey(OBJECT_SELF))

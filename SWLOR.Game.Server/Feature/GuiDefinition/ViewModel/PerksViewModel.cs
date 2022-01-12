@@ -9,7 +9,9 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Skill = SWLOR.Game.Server.Service.Skill;
 
@@ -104,6 +106,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public GuiBindingList<string> PerkButtonIcons
+        {
+            get => Get<GuiBindingList<string>>();
+            set => Set(value);
+        }
+
         public GuiBindingList<string> PerkButtonTexts
         {
             get => Get<GuiBindingList<string>>();
@@ -161,6 +169,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public PerksViewModel()
         {
             _filteredPerks = new List<PerkType>();
+            PerkButtonIcons = new GuiBindingList<string>();
             PerkButtonColors = new GuiBindingList<GuiColor>();
             PerkButtonTexts = new GuiBindingList<string>();
             PerkDetailSelected = new GuiBindingList<bool>();
@@ -211,11 +220,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
 
             _filteredPerks.Clear();
-
-            var sw = new Stopwatch();
-            sw.Start();
             
             var perkButtonColors = new GuiBindingList<GuiColor>();
+            var perkButtonIcons = new GuiBindingList<string>();
             var perkButtonTexts = new GuiBindingList<string>();
             var perkDetailSelected = new GuiBindingList<bool>();
             var pageNumbers = new GuiBindingList<GuiComboEntry>();
@@ -267,29 +274,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 _filteredPerks.Add(type);
+                perkButtonIcons.Add(detail.IconResref);
                 perkButtonTexts.Add($"{detail.Name} ({playerRank} / {detail.PerkLevels.Count})");
                 perkDetailSelected.Add(false);
                 perkButtonColors.Add(meetsRequirements ? _green : _red);
             }
 
             PerkButtonColors = perkButtonColors;
+            PerkButtonIcons = perkButtonIcons;
             PerkButtonTexts = perkButtonTexts;
             PerkDetailSelected = perkDetailSelected;
             PageNumbers = pageNumbers;
-
-            sw.Stop();
-            Console.WriteLine($"LoadPerks: {sw.ElapsedMilliseconds}ms");
         }
 
         private string BuildSelectedPerkDetailText(PerkDetail detail, PerkLevel currentUpgrade, PerkLevel nextUpgrade)
         {
+            var categoryDetail = Perk.GetPerkCategoryDetails(detail.Category);
             var selectedDetails = detail.Name + "\n\n";
 
             // Perk Description
             if (detail.Description != null)
             {
-                selectedDetails += "Description: \n" + detail.Description + "\n\n";
+                selectedDetails += "Description: \n" + detail.Description + "\n";
             }
+
+            selectedDetails += $"[{categoryDetail.Name}]\n\n";
 
             if (currentUpgrade != null)
             {
@@ -399,14 +408,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             foreach (var feat in nextLevel.GrantedFeats)
             {
                 if (GetHasFeat(feat, Player)) continue;
+                CreaturePlugin.AddFeatByLevel(Player, feat, 1);
 
-                // If feat isn't registered or the ability doesn't have an impact action,
+                // If feat isn't registered or the ability doesn't have an impact or concentration action,
                 // don't add the feat to the player's hot bar.
                 if (!Ability.IsFeatRegistered(feat)) continue;
                 var abilityDetail = Ability.GetAbilityDetail(feat);
-                if (abilityDetail.ImpactAction == null) continue;
+                if (abilityDetail.ImpactAction == null && abilityDetail.ConcentrationStatusEffectType == StatusEffectType.Invalid) continue;
 
-                CreaturePlugin.AddFeatByLevel(Player, feat, 1);
                 AddFeatToHotBar(feat);
             }
         }
@@ -541,6 +550,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var playerId = GetObjectUUID(Player);
                 var dbPlayer = DB.Get<Player>(playerId);
+                var selectedPerk = _filteredPerks[SelectedPerkIndex];
+                var perkDetail = Perk.GetPerkDetails(selectedPerk);
 
                 if (dbPlayer.NumberPerkResetsAvailable <= 0)
                 {
@@ -555,8 +566,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
                 else
                 {
-                    var selectedPerk = _filteredPerks[SelectedPerkIndex];
-                    var perkDetail = Perk.GetPerkDetails(selectedPerk);
+                    // Some individual perks have validation checks. 
+                    // Run that now if specified.
+                    var canRefund = perkDetail.RefundRequirement == null
+                        ? string.Empty
+                        : perkDetail.RefundRequirement(Player, selectedPerk, Perk.GetEffectivePerkLevel(Player, selectedPerk));
+                    if (!string.IsNullOrWhiteSpace(canRefund))
+                    {
+                        FloatingTextStringOnCreature(canRefund, Player, false);
+                        return;
+                    }
+
                     var pcPerkLevel = dbPlayer.Perks[selectedPerk];
                     var refundAmount = perkDetail.PerkLevels
                         .Where(x => x.Key <= pcPerkLevel)

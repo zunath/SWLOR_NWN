@@ -2,9 +2,12 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.VisualEffect;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.SkillService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Random = SWLOR.Game.Server.Service.Random;
 
@@ -48,6 +51,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var willpowerMod = GetAbilityModifier(AbilityType.Willpower, activator);
             var amount = baseAmount + willpowerMod * 10 + Random.D10(1);
 
+            // Scale XP to the thing we just fought.
+            // Retrieve the level of our recent enemy from the CombatPoint service, and use the Skill service 
+            // delta function to get base XP based on relative level. 
+            int enemyLevel = CombatPoint.GetRecentEnemyLevel(activator);
+            var playerId = GetObjectUUID(activator);
+            var dbPlayer = DB.Get<Player>(playerId);
+            var firstAidLevel = dbPlayer.Skills[SkillType.FirstAid].Rank;
+            int nXP = enemyLevel != -1 ? Service.Skill.GetDeltaXP(enemyLevel - firstAidLevel) : 0;
+
+            Service.Skill.GiveSkillXP(activator, SkillType.FirstAid, nXP);
             ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Head_Heal), target);
             TakeMedicalSupplies(activator);
@@ -59,6 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .Name("Med Kit I")
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
+                .HasMaxRange(30.0f)
                 .RequirementStamina(1)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
@@ -76,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .Name("Med Kit II")
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
+                .HasMaxRange(30.0f)
                 .RequirementStamina(2)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
@@ -93,6 +108,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .Name("Med Kit III")
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
+                .HasMaxRange(30.0f)
                 .RequirementStamina(3)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
@@ -110,6 +126,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .Name("Med Kit IV")
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
+                .HasMaxRange(30.0f)
                 .RequirementStamina(4)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
@@ -126,6 +143,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .Name("Med Kit V")
                 .HasRecastDelay(RecastGroup.MedKit, 6f)
                 .HasActivationDelay(2f)
+                .HasMaxRange(30.0f)
                 .RequirementStamina(5)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()

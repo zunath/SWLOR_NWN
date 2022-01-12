@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
-using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
@@ -12,15 +11,15 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Ability
     {
-        private static readonly Dictionary<FeatType, AbilityDetail> _abilities = new Dictionary<FeatType, AbilityDetail>();
+        private static readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
 
-        private static readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new Dictionary<uint, ActiveConcentrationAbility>();
+        private static readonly Dictionary<uint, ActiveConcentrationAbility> _activeConcentrationAbilities = new();
 
         /// <summary>
         /// When the module caches, abilities will be cached and events will be scheduled.
         /// </summary>
         [NWNEventHandler("mod_cache")]
-        public static void OnModuleLoad()
+        public static void CacheData()
         {
             CacheAbilities();
         }
@@ -130,6 +129,20 @@ namespace SWLOR.Game.Server.Service
             if (Activity.IsBusy(activator))
             {
                 SendMessageToPC(activator, "You are busy.");
+                return false;
+            }
+
+            // Range check.
+            if (GetDistanceBetween(activator, target) > ability.MaxRange)
+            {
+                SendMessageToPC(activator, "You are out of range.  This ability has a range of " + ability.MaxRange + " meters.");
+                return false;
+            }
+
+            // Hostility check
+            if (!GetIsReactionTypeHostile(target, activator) && ability.IsHostileAbility)
+            {
+                SendMessageToPC(activator, "You may only use this ability on enemies.");
                 return false;
             }
 
@@ -244,12 +257,13 @@ namespace SWLOR.Game.Server.Service
         /// If there is already a concentration ability active, it will be replaced with this one.
         /// </summary>
         /// <param name="creature">The creature who will perform the concentration.</param>
+        /// <param name="target">The target of the concentration effect.</param>
         /// <param name="feat">The type of ability to activate.</param>
         /// <param name="statusEffectType">The concentration status effect to apply.</param>
-        public static void StartConcentrationAbility(uint creature, FeatType feat, StatusEffectType statusEffectType)
+        public static void StartConcentrationAbility(uint creature, uint target, FeatType feat, StatusEffectType statusEffectType)
         {
-            _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(feat, statusEffectType);
-            StatusEffect.Apply(creature, creature, statusEffectType, 0.0f);
+            _activeConcentrationAbilities[creature] = new ActiveConcentrationAbility(target, feat, statusEffectType);
+            StatusEffect.Apply(creature, target, statusEffectType, 0.0f, feat);
 
             Messaging.SendMessageNearbyToPlayers(creature, $"{GetName(creature)} begins concentrating...");
         }
@@ -267,7 +281,7 @@ namespace SWLOR.Game.Server.Service
                 return _activeConcentrationAbilities[creature];
             }
 
-            return new ActiveConcentrationAbility(FeatType.Invalid, StatusEffectType.Invalid);
+            return new ActiveConcentrationAbility(OBJECT_INVALID, FeatType.Invalid, StatusEffectType.Invalid);
         }
         
         /// <summary>
@@ -296,9 +310,9 @@ namespace SWLOR.Game.Server.Service
         /// /// <param name="secondaryAbilityType"></param>
         public static bool GetAbilityResisted(uint activator, uint target)
         {
-            if (GetAbilityModifier(AbilityType.Willpower, activator) * 0.5 + d20(1)
+            if (GetAbilityModifier(AbilityType.Willpower, activator) * 10 + d100(1)
                 >
-                GetAbilityModifier(AbilityType.Willpower, target) * 0.5 + d20(1)
+                GetAbilityModifier(AbilityType.Willpower, target) * 10 + 50
                 )
             {
                 

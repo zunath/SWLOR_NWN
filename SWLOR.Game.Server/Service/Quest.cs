@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.QuestService;
 using Player = SWLOR.Game.Server.Entity.Player;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
+using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -253,7 +254,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When an NPC is killed, any objectives for quests a player currently has active will be updated.
         /// </summary>
-        [NWNEventHandler("crea_death")]
+        [NWNEventHandler("crea_death_bef")]
         public static void ProgressKillTargetObjectives()
         {
             var creature = OBJECT_SELF;
@@ -262,7 +263,13 @@ namespace SWLOR.Game.Server.Service
             var possibleQuests = GetQuestsAssociatedWithNPCGroup(npcGroupType);
             if (possibleQuests.Count <= 0) return;
 
-            var killer = GetLastKiller();
+            // We can't use GetLastKiller() as various abilities deal damage that isn't sourced from
+            // the PC.  So use the enmity service to pull the highest enmity PC (i.e. the one that 
+            // did the most attacks).  If we can't find one for some reason, pull the nearest PC.
+            // Note: this event needs to be called before the Enmity tables are cleared up after
+            // creature death. 
+            var killer = Enmity.GetHighestEnmityTarget(creature);
+            if (killer == OBJECT_INVALID) killer = GetNearestCreature(CreatureType.PlayerCharacter, 1, creature);
 
             // Iterate over every player in the killer's party.
             // Every player who needs this NPCGroupType for a quest will have their objective advanced.

@@ -361,20 +361,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "foszfacility"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "foszrobotis"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "moncalacifacilit"
         }
       },
@@ -446,13 +432,6 @@
         "Area_Name": {
           "type": "resref",
           "value": "anchor_entreesud"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
-          "value": "anchor_jawa_int"
         }
       },
       {
@@ -879,13 +858,6 @@
         "__struct_id": 6,
         "Area_Name": {
           "type": "resref",
-          "value": "deepmountrepub"
-        }
-      },
-      {
-        "__struct_id": 6,
-        "Area_Name": {
-          "type": "resref",
           "value": "v_repubbase_1"
         }
       },
@@ -1294,6 +1266,55 @@
           "type": "resref",
           "value": "v_sithlake_int"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "city_hall"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "bank"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "medical_center"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "cantina"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "starport"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "yavin"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "v_swamp_base"
+        }
       }
     ]
   },
@@ -1341,7 +1362,7 @@
   },
   "Mod_Entry_Y": {
     "type": "float",
-    "value": 5.0
+    "value": 6.0
   },
   "Mod_Entry_Z": {
     "type": "float",
@@ -1601,7 +1622,7 @@
   },
   "Mod_MinGameVer": {
     "type": "cexostring",
-    "value": "1.85"
+    "value": "1.86"
   },
   "Mod_MinPerHour": {
     "type": "byte",
@@ -1716,5 +1737,25 @@
   "Mod_XPScale": {
     "type": "byte",
     "value": 0
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "X2_L_NOTREASURE"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   }
 }

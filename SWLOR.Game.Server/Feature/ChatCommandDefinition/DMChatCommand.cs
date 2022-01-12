@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             _builder.Create("copyitem")
                 .Description("Copies the targeted item.")
+                .RequiresTarget()
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {

@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 18.0
+    "value": 14.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 14
+    "value": 36
   },
   "Conversation": {
     "type": "resref",
@@ -62,11 +62,13 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Run away."
+    }
   },
   "Dex": {
     "type": "byte",
-    "value": 10
+    "value": 36
   },
   "Disarmable": {
     "type": "byte",
@@ -88,6 +90,13 @@
           "type": "resref",
           "value": "sandwormbite"
         }
+      },
+      {
+        "__struct_id": 131072,
+        "EquippedRes": {
+          "type": "resref",
+          "value": "sandworm_hide"
+        }
       }
     ]
   },
@@ -98,13 +107,6 @@
   "FeatList": {
     "type": "list",
     "value": [
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1172
-        }
-      },
       {
         "__struct_id": 1,
         "Feat": {
@@ -137,28 +139,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 23
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1118
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 746
-        }
-      },
-      {
-        "__struct_id": 1,
-        "Feat": {
-          "type": "word",
-          "value": 1265
+          "value": 1744
         }
       },
       {
@@ -224,11 +205,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 2050
+    "value": 2325
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 2
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -236,7 +217,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 4
+    "value": 154
   },
   "PerceptionRange": {
     "type": "byte",
@@ -529,7 +510,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 60
+    "value": 30
   },
   "Subrace": {
     "type": "cexostring",
@@ -558,15 +539,15 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "LOOT_TABLE_ID_1"
+          "value": "LOOT_TABLE_1"
         },
         "Type": {
           "type": "dword",
-          "value": 1
+          "value": 3
         },
         "Value": {
-          "type": "int",
-          "value": 118
+          "type": "cexostring",
+          "value": "TATOOINE_SAND_WORM,60,2"
         }
       },
       {
@@ -600,6 +581,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 90
+    "value": 26
   }
 }

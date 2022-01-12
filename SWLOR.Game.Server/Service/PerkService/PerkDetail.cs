@@ -1,12 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Enumeration;
 
 namespace SWLOR.Game.Server.Service.PerkService
 {
+    public delegate string PerkRefundRequirementAction(uint player, PerkType perkType, int effectivePerkLevel);
+
     public delegate void PerkTriggerEquippedAction(uint player, uint item, InventorySlot slot, PerkType perkType, int effectivePerkLevel);
     public delegate void PerkTriggerUnequippedAction(uint player, uint item, InventorySlot slot, PerkType perkType, int effectivePerkLevel);
     public delegate void PerkTriggerPurchasedRefundedAction(uint player, PerkType perkType, int effectivePerkLevel);
+
 
     public class PerkDetail
     {
@@ -15,7 +19,9 @@ namespace SWLOR.Game.Server.Service.PerkService
         public string Name { get; set; }
         public string Description { get; set; }
         public bool IsActive { get; set; }
+        public string IconResref { get; set; }
 
+        public PerkRefundRequirementAction RefundRequirement { get; set; }
         public Dictionary<int, PerkLevel> PerkLevels { get; set; }
         public List<PerkTriggerEquippedAction> EquippedTriggers { get; set; }
         public List<PerkTriggerUnequippedAction> UnequippedTriggers { get; set; }

@@ -29,8 +29,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Heal 1")
                 .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .HasActivationDelay(2.0f)
-                .RequirementFP(2)
+                .RequirementFP(1)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal1)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -40,8 +41,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Heal II")
                 .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .HasActivationDelay(2.0f)
-                .RequirementFP(3)
+                .RequirementFP(2)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal2)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -51,8 +53,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Heal III")
                 .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .HasActivationDelay(2.0f)
-                .RequirementFP(4)
+                .RequirementFP(3)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal3)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -62,8 +65,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Heal IV")
                 .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .HasActivationDelay(4.0f)
-                .RequirementFP(5)
+                .RequirementFP(4)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal4)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -73,8 +77,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Heal V")
                 .HasRecastDelay(RecastGroup.ForceHeal, 60f)
                 .HasActivationDelay(4.0f)
-                .RequirementFP(6)
+                .RequirementFP(5)
                 .IsConcentrationAbility(StatusEffectType.ForceHeal5)
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
     }

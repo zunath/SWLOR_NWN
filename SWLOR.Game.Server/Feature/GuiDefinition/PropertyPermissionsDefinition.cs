@@ -131,16 +131,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             col2.AddRow(row2 =>
                             {
+                                row2.AddCheckBox()
+                                    .SetText("Publicly Accessible")
+                                    .BindIsChecked(model => model.IsPublic)
+                                    .BindIsEnabled(model => model.CanChangePublicSetting)
+                                    .SetTooltip("If enabled, all players will be able to enter regardless of permissions.");
+                            });
+
+                            col2.AddRow(row2 =>
+                            {
                                 row2.AddButton()
                                     .SetHeight(35f)
                                     .BindOnClicked(model => model.OnClickSaveChanges())
-                                    .BindIsEnabled(model => model.IsPlayerSelected)
                                     .SetText("Save Changes");
 
                                 row2.AddButton()
                                     .SetHeight(35f)
                                     .BindOnClicked(model => model.OnClickReset())
-                                    .BindIsEnabled(model => model.IsPlayerSelected)
                                     .SetText("Reset Changes");
                             });
 

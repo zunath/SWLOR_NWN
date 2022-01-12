@@ -27,7 +27,7 @@
               "__struct_id": 0,
               "NAME": {
                 "type": "cexostring",
-                "value": "Anti-Spawn Trigger"
+                "value": "No Spawn Zone"
               },
               "RESREF": {
                 "type": "resref",

@@ -21,7 +21,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private void ReturnToLastDockedPosition(uint player, PropertyLocation propertyLocation)
         {
-            var returningArea = Cache.GetAreaByResref(propertyLocation.AreaResref);
+            var returningArea = string.IsNullOrWhiteSpace(propertyLocation.AreaResref)
+                ? Property.GetRegisteredInstance(propertyLocation.InstancePropertyId).Area
+                : Area.GetAreaByResref(propertyLocation.AreaResref);
+            
             var location = Location(
                 returningArea,
                 Vector3(propertyLocation.X, propertyLocation.Y, propertyLocation.Z),
@@ -41,7 +44,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
             // The existence of a current position means this is a starship currently in space.
             // Players should only have the "Emergency Exit" option.
-            if (property.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
+            if (property != null &&
+                property.Positions.ContainsKey(PropertyLocationType.CurrentPosition))
             {
                 page.Header += "\nYou may perform an emergency exit to return to the last dock at which this ship landed. If you are the last person on board, the ship will be towed back, damaging the ship's shields and hull.";
 
@@ -54,7 +58,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 });
             }
             // The existence of a "Last Docked" position means this is a starship currently docked at a starport.
-            else if (property.Positions.ContainsKey(PropertyLocationType.DockPosition))
+            else if (property != null && 
+                     property.Positions.ContainsKey(PropertyLocationType.DockPosition))
             {
                 page.AddResponse("Exit", () =>
                 {
@@ -67,7 +72,18 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 page.AddResponse("Exit", () =>
                 {
-                    Property.JumpToOriginalLocation(player);
+                    // Building interiors will have a location set identifying where their doors are located.
+                    // Jump to this location if it's set.
+                    if (GetLocalBool(area, "BUILDING_EXIT_SET"))
+                    {
+                        var location = GetLocalLocation(area, "BUILDING_EXIT_LOCATION");
+                        AssignCommand(player, () => ActionJumpToLocation(location));
+                    }
+                    // Otherwise jump the player to their original location.
+                    else
+                    {
+                        Property.JumpToOriginalLocation(player);
+                    }
                 });
             }
         }

@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Area;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SpawnService;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 
@@ -41,13 +42,13 @@ namespace SWLOR.Game.Server.Service
             public Guid SpawnDetailId { get; set; }
         }
 
-        private static readonly Dictionary<Guid, SpawnDetail> _spawns = new Dictionary<Guid, SpawnDetail>();
-        private static readonly List<QueuedSpawn> _queuedSpawns = new List<QueuedSpawn>();
-        private static readonly Dictionary<uint, List<QueuedSpawn>> _queuedSpawnsByArea = new Dictionary<uint, List<QueuedSpawn>>();
-        private static readonly Dictionary<uint, DateTime> _queuedAreaDespawns = new Dictionary<uint, DateTime>();
-        private static readonly Dictionary<string, SpawnTable> _spawnTables = new Dictionary<string, SpawnTable>();
-        private static readonly Dictionary<uint, List<Guid>> _allSpawnsByArea = new Dictionary<uint, List<Guid>>();
-        private static readonly Dictionary<uint, List<ActiveSpawn>> _activeSpawnsByArea = new Dictionary<uint, List<ActiveSpawn>>();
+        private static readonly Dictionary<Guid, SpawnDetail> _spawns = new();
+        private static readonly List<QueuedSpawn> _queuedSpawns = new();
+        private static readonly Dictionary<uint, List<QueuedSpawn>> _queuedSpawnsByArea = new();
+        private static readonly Dictionary<uint, DateTime> _queuedAreaDespawns = new();
+        private static readonly Dictionary<string, SpawnTable> _spawnTables = new();
+        private static readonly Dictionary<uint, List<Guid>> _allSpawnsByArea = new();
+        private static readonly Dictionary<uint, List<ActiveSpawn>> _activeSpawnsByArea = new();
 
         [NWNEventHandler("mod_cache")]
         public static void CacheData()
@@ -60,7 +61,7 @@ namespace SWLOR.Game.Server.Service
         /// When the module loads, all spawn tables are loaded with reflection and stored into a dictionary cache.
         /// If any spawn tables with the same ID are found, an exception will be raised.
         /// </summary>
-        public static void LoadSpawnTables()
+        private static void LoadSpawnTables()
         {
             // Get all implementations of spawn table definitions.
             var types = AppDomain.CurrentDomain.GetAssemblies()
@@ -91,12 +92,46 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+
         /// <summary>
-        /// When the module loads, spawns are located in all areas. Details about those spawns are stored
-        /// into the cached data.
+        /// When the module loads, spawns are located in all areas. Details about those spawns are stored into the cached data.
+        /// Spawns can be hand placed creatures, waypoints, or marked as a local variable on the area.
+        /// Resource spawn tables use 'RESOURCE_SPAWN_TABLE_ID' for the table name and 'RESOURCE_SPAWN_COUNT' for the number of spawns.
+        /// Creature spawn tables use 'CREATURE_SPAWN_TABLE_ID' for the table name and 'CREATURE_SPAWN_COUNT' for the number of spawns.
         /// </summary>
-        public static void StoreSpawns()
+        private static void StoreSpawns()
         {
+            void RegisterAreaSpawnTable(uint area, string variableName, int spawnCount)
+            {
+                var spawnTableId = GetLocalString(area, variableName);
+                if (!string.IsNullOrWhiteSpace(spawnTableId))
+                {
+                    if (!_spawnTables.ContainsKey(spawnTableId))
+                    {
+                        Log.Write(LogGroup.Error, $"Area has an invalid spawn table Id. ({spawnTableId}) is not defined. Do you have the right spawn table Id?");
+                        return;
+                    }
+
+                    for (var count = 1; count <= spawnCount; count++)
+                    {
+                        var id = Guid.NewGuid();
+                        var spawnTable = _spawnTables[spawnTableId];
+                        _spawns.Add(id, new SpawnDetail
+                        {
+                            SpawnTableId = spawnTableId,
+                            Area = area,
+                            RespawnDelayMinutes = spawnTable.RespawnDelayMinutes,
+                            UseRandomSpawnLocation = true
+                        });
+
+                        if (!_allSpawnsByArea.ContainsKey(area))
+                            _allSpawnsByArea[area] = new List<Guid>();
+
+                        _allSpawnsByArea[area].Add(id);
+                    }
+                }
+            }
+
             for(var area = GetFirstArea(); GetIsObjectValid(area); area = GetNextArea())
             {
                 // Process spawns within the area.
@@ -110,6 +145,13 @@ namespace SWLOR.Game.Server.Service
                     // Hand-placed creature information is stored and the actual NPC is destroyed so it can be spawned by the system.
                     if (type == ObjectType.Creature)
                     {
+                        // Some plot creatures use the Object Visibility service.  This relies on object references so we 
+                        // should not spawn new instances of those creatures.  Just leave them as they are.
+                        if (!String.IsNullOrEmpty(GetLocalString(obj, "VISIBILITY_OBJECT_ID")))
+                        {
+                            continue;
+                        }
+
                         _spawns.Add(id, new SpawnDetail
                         {
                             SerializedObject = ObjectPlugin.Serialize(obj),
@@ -155,35 +197,11 @@ namespace SWLOR.Game.Server.Service
                         }
                     }
                 }
-                // Process resource spawns by local variable on the area.
-                var resourceSpawnTableId = GetLocalString(area, "RESOURCE_SPAWN_TABLE_ID");
-                if (!string.IsNullOrWhiteSpace(resourceSpawnTableId))
-                {
-                    if (!_spawnTables.ContainsKey(resourceSpawnTableId))
-                    {
-                        Log.Write(LogGroup.Error, $"Area has an invalid resource spawn table Id. ({resourceSpawnTableId}) is not defined. Do you have the right spawn table Id?");
-                        continue;
-                    }
 
-                    var spawnCount = CalculateResourceSpawnCount(area);
-                    for (var count = 1; count <= spawnCount; count++)
-                    {
-                        var id = Guid.NewGuid();
-                        var spawnTable = _spawnTables[resourceSpawnTableId];
-                        _spawns.Add(id, new SpawnDetail
-                        {
-                            SpawnTableId = resourceSpawnTableId,
-                            Area = area,
-                            RespawnDelayMinutes = spawnTable.RespawnDelayMinutes,
-                            UseRandomSpawnLocation = true
-                        });
-
-                        if (!_allSpawnsByArea.ContainsKey(area))
-                            _allSpawnsByArea[area] = new List<Guid>();
-
-                        _allSpawnsByArea[area].Add(id);
-                    }
-                }
+                // Resource and creature spawn tables can be placed as a local variable on the area.
+                // If one is found, it will be registered.
+                RegisterAreaSpawnTable(area, "RESOURCE_SPAWN_TABLE_ID", CalculateResourceSpawnCount(area));
+                RegisterAreaSpawnTable(area, "CREATURE_SPAWN_TABLE_ID", CalculateCreatureSpawnCount(area));
             }
         }
 
@@ -219,6 +237,35 @@ namespace SWLOR.Game.Server.Service
                 count = 40;
             else if (size <= 1024)
                 count = 50;
+
+            return count;
+        }
+
+        private static int CalculateCreatureSpawnCount(uint area)
+        {
+            var count = GetLocalInt(area, "CREATURE_SPAWN_COUNT");
+
+            // Found the local variable. Use that count.
+            if (count > 0) return count;
+
+            // Local variable wasn't found or was zero. 
+            // Determine the count by the size of the area.
+            var width = GetAreaSize(Dimension.Width, area);
+            var height = GetAreaSize(Dimension.Height, area);
+            var size = width * height;
+
+            if (size <= 12)
+                count = 3;
+            else if (size <= 32)
+                count = 6;
+            else if (size <= 64)
+                count = 14;
+            else if (size <= 256)
+                count = 20;
+            else if (size <= 512)
+                count = 35;
+            else if (size <= 1024)
+                count = 45;
 
             return count;
         }
@@ -307,20 +354,25 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// When a creature dies, its details need to be queued up for a respawn.
+        /// NOTE: plc_death and crea_death_aft will not trigger if the object is 'killed'
+        /// via DestroyObject.  Call this method directly if you need to use DestroyObject
+        /// on a respawning object.
         /// </summary>
-        [NWNEventHandler("crea_death")]
+        [NWNEventHandler("crea_death_aft")]
         [NWNEventHandler("plc_death")]
         public static void QueueRespawn()
         {
-            var creature = OBJECT_SELF;
+            uint creature = OBJECT_SELF;
             var spawnId = GetLocalString(creature, "SPAWN_ID");
             if (string.IsNullOrWhiteSpace(spawnId)) return;
+            if (GetLocalInt(creature, "RESPAWN_QUEUED") == 1) return;
 
             var spawnGuid = new Guid(spawnId);
             var detail = _spawns[spawnGuid];
             var respawnTime = DateTime.UtcNow.AddMinutes(detail.RespawnDelayMinutes);
 
             CreateQueuedSpawn(spawnGuid, respawnTime);
+            SetLocalInt(creature, "RESPAWN_QUEUED", 1);
         }
 
         /// <summary>
@@ -405,7 +457,7 @@ namespace SWLOR.Game.Server.Service
 
                     // Remove area from the various cache collections.
                     _queuedSpawnsByArea.Remove(area);
-                    _activeSpawnsByArea.Remove(area);
+                    _activeSpawnsByArea[area].Clear();
                     _queuedAreaDespawns.Remove(area);
                 }
             }

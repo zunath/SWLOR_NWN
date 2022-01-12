@@ -14,11 +14,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonParse(string jValue, int nIndent = -1)
         {
-            Internal.NativeFunctions.StackPushInteger(nIndent);
-            Internal.NativeFunctions.StackPushString(jValue);
-            Internal.NativeFunctions.CallBuiltIn(968);
+            VM.StackPush(nIndent);
+            VM.StackPush(jValue);
+            VM.Call(968);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -29,11 +29,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string JsonDump(Json jValue, int nIndent = -1)
         {
-            Internal.NativeFunctions.StackPushInteger(nIndent);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jValue);
-            Internal.NativeFunctions.CallBuiltIn(969);
+            VM.StackPush(nIndent);
+            VM.StackPush((int)EngineStructure.Json, jValue);
+            VM.Call(969);
 
-            return Internal.NativeFunctions.StackPopString();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -42,10 +42,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static JsonType JsonGetType(Json jValue)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jValue);
-            Internal.NativeFunctions.CallBuiltIn(970);
+            VM.StackPush((int)EngineStructure.Json, jValue);
+            VM.Call(970);
 
-            return (JsonType) Internal.NativeFunctions.StackPopInteger();
+            return (JsonType) VM.StackPopInt();
         }
 
         /// <summary>
@@ -57,10 +57,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int JsonGetLength(Json jValue)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jValue);
-            Internal.NativeFunctions.CallBuiltIn(971);
+            VM.StackPush((int)EngineStructure.Json, jValue);
+            VM.Call(971);
 
-            return Internal.NativeFunctions.StackPopInteger();
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -69,10 +69,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string JsonGetError(Json jValue)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jValue);
-            Internal.NativeFunctions.CallBuiltIn(972);
+            VM.StackPush((int)EngineStructure.Json, jValue);
+            VM.Call(972);
 
-            return Internal.NativeFunctions.StackPopString();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -80,10 +80,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonNull(string sError = "")
         {
-            Internal.NativeFunctions.StackPushString(sError);
-            Internal.NativeFunctions.CallBuiltIn(973);
+            VM.StackPush(sError);
+            VM.Call(973);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -91,8 +91,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonObject()
         {
-            Internal.NativeFunctions.CallBuiltIn(974);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            VM.Call(974);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -100,8 +100,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonArray()
         {
-            Internal.NativeFunctions.CallBuiltIn(975);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            VM.Call(975);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -110,10 +110,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonString(string sValue)
         {
-            Internal.NativeFunctions.StackPushString(sValue);
-            Internal.NativeFunctions.CallBuiltIn(976);
+            VM.StackPush(sValue);
+            VM.Call(976);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -121,10 +121,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonInt(int nValue)
         {
-            Internal.NativeFunctions.StackPushInteger(nValue);
-            Internal.NativeFunctions.CallBuiltIn(977);
+            VM.StackPush(nValue);
+            VM.Call(977);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -132,10 +132,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonFloat(float fValue)
         {
-            Internal.NativeFunctions.StackPushFloat(fValue);
-            Internal.NativeFunctions.CallBuiltIn(978);
+            VM.StackPush(fValue);
+            VM.Call(978);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -143,10 +143,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonBool(bool bValue)
         {
-            Internal.NativeFunctions.StackPushInteger(bValue ? 1 : 0);
-            Internal.NativeFunctions.CallBuiltIn(979);
+            VM.StackPush(bValue ? 1 : 0);
+            VM.Call(979);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -156,10 +156,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string JsonGetString(Json jValue)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jValue);
-            Internal.NativeFunctions.CallBuiltIn(980);
+            VM.StackPush((int)EngineStructure.Json, jValue);
+            VM.Call(980);
 
-            return Internal.NativeFunctions.StackPopString();
+            return VM.StackPopString();
         }
 
         /// <summary>
@@ -172,10 +172,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int JsonGetInt(Json jValue)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jValue);
-            Internal.NativeFunctions.CallBuiltIn(981);
+            VM.StackPush((int)EngineStructure.Json, jValue);
+            VM.Call(981);
 
-            return Internal.NativeFunctions.StackPopInteger();
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -187,10 +187,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static float JsonGetFloat(Json jValue)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jValue);
-            Internal.NativeFunctions.CallBuiltIn(982);
+            VM.StackPush((int)EngineStructure.Json, jValue);
+            VM.Call(982);
 
-            return Internal.NativeFunctions.StackPopInteger();
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -199,10 +199,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonObjectKeys(Json jObject)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jObject);
-            Internal.NativeFunctions.CallBuiltIn(983);
+            VM.StackPush((int)EngineStructure.Json, jObject);
+            VM.Call(983);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int) EngineStructure.Json);
+            return VM.StackPopStruct((int) EngineStructure.Json);
         }
 
         /// <summary>
@@ -211,11 +211,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonObjectGet(Json jObject, string sKey)
         {
-            Internal.NativeFunctions.StackPushString(sKey);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jObject);
-            Internal.NativeFunctions.CallBuiltIn(984);
+            VM.StackPush(sKey);
+            VM.StackPush((int)EngineStructure.Json, jObject);
+            VM.Call(984);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -224,12 +224,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonObjectSet(Json jObject, string sKey, Json jValue)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jValue);
-            Internal.NativeFunctions.StackPushString(sKey);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jObject);
-            Internal.NativeFunctions.CallBuiltIn(985);
+            VM.StackPush((int)EngineStructure.Json, jValue);
+            VM.StackPush(sKey);
+            VM.StackPush((int)EngineStructure.Json, jObject);
+            VM.Call(985);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -238,11 +238,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonObjectDel(Json jObject, string sKey)
         {
-            Internal.NativeFunctions.StackPushString(sKey);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jObject);
-            Internal.NativeFunctions.CallBuiltIn(986);
+            VM.StackPush(sKey);
+            VM.StackPush((int)EngineStructure.Json, jObject);
+            VM.Call(986);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -251,11 +251,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonArrayGet(Json jArray, int nIndex)
         {
-            Internal.NativeFunctions.StackPushInteger(nIndex);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jArray);
-            Internal.NativeFunctions.CallBuiltIn(987);
+            VM.StackPush(nIndex);
+            VM.StackPush((int)EngineStructure.Json, jArray);
+            VM.Call(987);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -265,12 +265,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonArraySet(Json jArray, int nIndex, Json jValue)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jValue);
-            Internal.NativeFunctions.StackPushInteger(nIndex);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jArray);
-            Internal.NativeFunctions.CallBuiltIn(988);
+            VM.StackPush((int)EngineStructure.Json, jValue);
+            VM.StackPush(nIndex);
+            VM.StackPush((int)EngineStructure.Json, jArray);
+            VM.Call(988);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -283,12 +283,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonArrayInsert(Json jArray, Json jValue, int nIndex = -1)
         {
-            Internal.NativeFunctions.StackPushInteger(nIndex);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jValue);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jArray);
-            Internal.NativeFunctions.CallBuiltIn(989);
+            VM.StackPush(nIndex);
+            VM.StackPush((int)EngineStructure.Json, jValue);
+            VM.StackPush((int)EngineStructure.Json, jArray);
+            VM.Call(989);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -299,11 +299,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonArrayDel(Json jArray, int nIndex)
         {
-            Internal.NativeFunctions.StackPushInteger(nIndex);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jArray);
-            Internal.NativeFunctions.CallBuiltIn(990);
+            VM.StackPush(nIndex);
+            VM.StackPush((int)EngineStructure.Json, jArray);
+            VM.Call(990);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -316,11 +316,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json ObjectToJson(uint oObject, bool bSaveObjectState = false)
         {
-            Internal.NativeFunctions.StackPushInteger(bSaveObjectState ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(991);
+            VM.StackPush(bSaveObjectState ? 1 : 0);
+            VM.StackPush(oObject);
+            VM.Call(991);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -332,13 +332,13 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static uint JsonToObject(Json jObject, Location locLocation, uint oOwner = OBJECT_INVALID, bool bLoadObjectState = false)
         {
-            Internal.NativeFunctions.StackPushInteger(bLoadObjectState ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oOwner);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Location, locLocation);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jObject);
-            Internal.NativeFunctions.CallBuiltIn(992);
+            VM.StackPush(bLoadObjectState ? 1 : 0);
+            VM.StackPush(oOwner);
+            VM.StackPush((int)EngineStructure.Location, locLocation);
+            VM.StackPush((int)EngineStructure.Json, jObject);
+            VM.Call(992);
 
-            return Internal.NativeFunctions.StackPopObject();
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -348,11 +348,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonPointer(Json jData, string sPointer)
         {
-            Internal.NativeFunctions.StackPushString(sPointer);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jData);
-            Internal.NativeFunctions.CallBuiltIn(993);
+            VM.StackPush(sPointer);
+            VM.StackPush((int)EngineStructure.Json, jData);
+            VM.Call(993);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int) EngineStructure.Json);
+            return VM.StackPopStruct((int) EngineStructure.Json);
         }
 
         /// <summary>
@@ -369,11 +369,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonPatch(Json jData, Json jPatch)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jPatch);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jData);
-            Internal.NativeFunctions.CallBuiltIn(994);
+            VM.StackPush((int)EngineStructure.Json, jPatch);
+            VM.StackPush((int)EngineStructure.Json, jData);
+            VM.Call(994);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -382,11 +382,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonDiff(Json jLHS, Json jRHS)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jRHS);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jLHS);
-            Internal.NativeFunctions.CallBuiltIn(995);
+            VM.StackPush((int)EngineStructure.Json, jRHS);
+            VM.StackPush((int)EngineStructure.Json, jLHS);
+            VM.Call(995);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -397,11 +397,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json JsonMerge(Json jData, Json jMerge)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jMerge);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jData);
-            Internal.NativeFunctions.CallBuiltIn(996);
+            VM.StackPush((int)EngineStructure.Json, jMerge);
+            VM.StackPush((int)EngineStructure.Json, jData);
+            VM.Call(996);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -410,11 +410,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json GetLocalJson(uint oObject, string sVarName)
         {
-            Internal.NativeFunctions.StackPushString(sVarName);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(997);
+            VM.StackPush(sVarName);
+            VM.StackPush(oObject);
+            VM.Call(997);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
         /// <summary>
@@ -422,10 +422,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetLocalJson(uint oObject, string sVarName, Json jValue)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.Json, jValue);
-            Internal.NativeFunctions.StackPushString(sVarName);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(998);
+            VM.StackPush((int)EngineStructure.Json, jValue);
+            VM.StackPush(sVarName);
+            VM.StackPush(oObject);
+            VM.Call(998);
         }
 
         /// <summary>
@@ -433,9 +433,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void DeleteLocalJson(uint oObject, string sVarName)
         {
-            Internal.NativeFunctions.StackPushString(sVarName);
-            Internal.NativeFunctions.StackPushObject(oObject);
-            Internal.NativeFunctions.CallBuiltIn(999);
+            VM.StackPush(sVarName);
+            VM.StackPush(oObject);
+            VM.Call(999);
         }
 
         /// <summary>
@@ -454,11 +454,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static Json TemplateToJson(string sResRef, ResType nResType)
         {
-            Internal.NativeFunctions.StackPushInteger((int) nResType);
-            Internal.NativeFunctions.StackPushString(sResRef);
-            Internal.NativeFunctions.CallBuiltIn(1007);
+            VM.StackPush((int) nResType);
+            VM.StackPush(sResRef);
+            VM.Call(1007);
 
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.Json);
+            return VM.StackPopStruct((int)EngineStructure.Json);
         }
 
     }

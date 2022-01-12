@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 2.0
+    "value": 1.0
   },
   "ClassList": {
     "type": "list",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "\nCrystal spiders are arachnids that inhabit the abandoned ore mines of Viscara. They live in complete darkness inside the mine's caves spinning webs around the crystals, made of glitterstim. The spiders shoot webbing from their mouths to capture prey, impale them and then quickly suck the life energy from them. "
+      "0": "\nCrystal spiders are arachnids that inhabit the abandoned ore mines of Viscara. They live in complete darkness inside the mine's caves spinning webs around the crystals, made of glitterstim. The spiders shoot webbing from their mouths to capture prey, impale them and then quickly suck the life energy from them."
     }
   },
   "Dex": {
@@ -105,6 +105,20 @@
         "Feat": {
           "type": "word",
           "value": 332
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1350
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1364
         }
       },
       {
@@ -174,7 +188,7 @@
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 6
+    "value": 0
   },
   "NoPermDeath": {
     "type": "byte",
@@ -182,7 +196,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 11
+    "value": 151
   },
   "PerceptionRange": {
     "type": "byte",
@@ -467,23 +481,7 @@
   },
   "SpecAbilityList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 4,
-        "Spell": {
-          "type": "word",
-          "value": 192
-        },
-        "SpellCasterLevel": {
-          "type": "byte",
-          "value": 14
-        },
-        "SpellFlags": {
-          "type": "byte",
-          "value": 1
-        }
-      }
-    ]
+    "value": []
   },
   "StartingPackage": {
     "type": "byte",
@@ -491,7 +489,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 20
+    "value": 18
   },
   "Subrace": {
     "type": "cexostring",
@@ -544,6 +542,21 @@
         "Value": {
           "type": "int",
           "value": 16
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "VISCARA_CRYSTAL_SPIDER_RARES,5,1"
         }
       }
     ]

@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 8.0
+    "value": 7.0
   },
   "ClassList": {
     "type": "list",
@@ -86,7 +86,7 @@
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "nw_it_creitem005"
+          "value": "mc_amphihy_hi001"
         }
       }
     ]
@@ -103,6 +103,13 @@
         "Feat": {
           "type": "word",
           "value": 195
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1750
         }
       },
       {
@@ -179,7 +186,7 @@
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 6
+    "value": 3
   },
   "NoPermDeath": {
     "type": "byte",
@@ -480,7 +487,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 16
+    "value": 14
   },
   "Subrace": {
     "type": "cexostring",
@@ -551,6 +558,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 12
+    "value": 10
   }
 }

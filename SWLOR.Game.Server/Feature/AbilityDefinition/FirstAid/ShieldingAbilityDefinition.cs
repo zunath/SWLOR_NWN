@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 return "Your target is too far away.";
             }
 
-            if (!HasMedicalSupplies(activator))
+            if (!HasStimPack(activator))
             {
                 return "You have no stim packs.";
             }
@@ -56,6 +56,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .Name("Shielding I")
                 .HasRecastDelay(RecastGroup.Shielding, 30f)
                 .HasActivationDelay(2f)
+                .HasMaxRange(30.0f)
                 .RequirementStamina(3)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
@@ -73,6 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .Name("Shielding II")
                 .HasRecastDelay(RecastGroup.Shielding, 30f)
                 .HasActivationDelay(2f)
+                .HasMaxRange(30.0f)
                 .RequirementStamina(4)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
@@ -90,6 +92,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .Name("Shielding III")
                 .HasRecastDelay(RecastGroup.Shielding, 30f)
                 .HasActivationDelay(2f)
+                .HasMaxRange(30.0f)
                 .RequirementStamina(5)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()
@@ -107,6 +110,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .Name("Shielding IV")
                 .HasRecastDelay(RecastGroup.Shielding, 30f)
                 .HasActivationDelay(2f)
+                .HasMaxRange(30.0f)
                 .RequirementStamina(6)
                 .UsesAnimation(Animation.LoopingGetMid)
                 .IsCastedAbility()

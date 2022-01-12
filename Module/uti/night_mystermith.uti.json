@@ -27,7 +27,7 @@
   "DescIdentified": {
     "type": "cexolocstring",
     "value": {
-      "0": "Not even that bartenders know what goes into these drinks. All they know is it comes in a giant metal barrel and tastes delicious."
+      "0": "Not even the bartenders know what goes into these drinks. All they know is it comes in a giant metal barrel and tastes delicious."
     }
   },
   "Description": {
@@ -43,7 +43,7 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Mysetrious Mithreas"
+      "0": "Mysterious Mithreas"
     }
   },
   "ModelPart1": {
@@ -56,7 +56,7 @@
   },
   "Plot": {
     "type": "byte",
-    "value": 1
+    "value": 0
   },
   "PropertiesList": {
     "type": "list",

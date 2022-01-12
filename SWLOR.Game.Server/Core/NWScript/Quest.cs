@@ -17,13 +17,13 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void AddJournalQuestEntry(string szPlotID, int nState, uint oCreature,
             bool bAllPartyMembers = true, bool bAllPlayers = false, bool bAllowOverrideHigher = false)
         {
-            Internal.NativeFunctions.StackPushInteger(bAllowOverrideHigher ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger(bAllPlayers ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger(bAllPartyMembers ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.StackPushInteger(nState);
-            Internal.NativeFunctions.StackPushStringUTF8(szPlotID);
-            Internal.NativeFunctions.CallBuiltIn(367);
+            VM.StackPush(bAllowOverrideHigher ? 1 : 0);
+            VM.StackPush(bAllPlayers ? 1 : 0);
+            VM.StackPush(bAllPartyMembers ? 1 : 0);
+            VM.StackPush(oCreature);
+            VM.StackPush(nState);
+            VM.StackPush(szPlotID);
+            VM.Call(367);
         }
 
         /// <summary>
@@ -38,11 +38,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void RemoveJournalQuestEntry(string szPlotID, uint oCreature, bool bAllPartyMembers = true,
             bool bAllPlayers = false)
         {
-            Internal.NativeFunctions.StackPushInteger(bAllPlayers ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger(bAllPartyMembers ? 1 : 0);
-            Internal.NativeFunctions.StackPushObject(oCreature);
-            Internal.NativeFunctions.StackPushStringUTF8(szPlotID);
-            Internal.NativeFunctions.CallBuiltIn(368);
+            VM.StackPush(bAllPlayers ? 1 : 0);
+            VM.StackPush(bAllPartyMembers ? 1 : 0);
+            VM.StackPush(oCreature);
+            VM.StackPush(szPlotID);
+            VM.Call(368);
         }
     }
 }

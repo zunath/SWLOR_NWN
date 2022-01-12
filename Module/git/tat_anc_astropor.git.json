@@ -51308,7 +51308,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 4
+                "value": 2
               }
             },
             {
@@ -51570,7 +51570,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 4
+                "value": 2
               }
             },
             {
@@ -51832,7 +51832,7 @@
               },
               "Value": {
                 "type": "int",
-                "value": 4
+                "value": 2
               }
             },
             {
@@ -57284,7 +57284,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "VoirMap"
+          "value": "MAP_KEY_ITEM_ID"
         },
         "Type": {
           "type": "dword",
@@ -57292,7 +57292,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 1
+          "value": 35
         }
       }
     ]
@@ -58202,6 +58202,69 @@
         "ZPosition": {
           "type": "float",
           "value": -5.7220458984375e-006
+        }
+      },
+      {
+        "__struct_id": 5,
+        "Appearance": {
+          "type": "byte",
+          "value": 4
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {
+            "0": ""
+          }
+        },
+        "HasMapNote": {
+          "type": "byte",
+          "value": 0
+        },
+        "LinkedTo": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "LocalizedName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "Anchorhead"
+          }
+        },
+        "MapNote": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "MapNoteEnabled": {
+          "type": "byte",
+          "value": 0
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "STARSHIP_DOCKPOINT"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "starship_dockpoi"
+        },
+        "XOrientation": {
+          "type": "float",
+          "value": 0.1224109306931496
+        },
+        "XPosition": {
+          "type": "float",
+          "value": 100.3631896972656
+        },
+        "YOrientation": {
+          "type": "float",
+          "value": -0.9924795031547546
+        },
+        "YPosition": {
+          "type": "float",
+          "value": 164.1558990478516
+        },
+        "ZPosition": {
+          "type": "float",
+          "value": -1.192092895507813e-007
         }
       }
     ]

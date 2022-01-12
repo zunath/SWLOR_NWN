@@ -5,9 +5,10 @@ using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using Player = SWLOR.Game.Server.Entity.Player;
-using Skill = SWLOR.Game.Server.Core.NWScript.Enum.Skill;
 using static SWLOR.Game.Server.Core.NWScript.NWScript;
 using Race = SWLOR.Game.Server.Service.Race;
 
@@ -109,7 +110,7 @@ namespace SWLOR.Game.Server.Feature
         {
             for (var iCurSkill = 1; iCurSkill <= 27; iCurSkill++)
             {
-                var skill = (Skill) (iCurSkill - 1);
+                var skill = (NWNSkillType) (iCurSkill - 1);
                 CreaturePlugin.SetSkillRank(player, skill, 0);
             }
         }
@@ -162,17 +163,14 @@ namespace SWLOR.Game.Server.Feature
             CreaturePlugin.AddFeatByLevel(player, FeatType.WeaponProficiencyMartial, 1);
             CreaturePlugin.AddFeatByLevel(player, FeatType.WeaponProficiencySimple, 1);
             CreaturePlugin.AddFeatByLevel(player, FeatType.UncannyDodge1, 1);
-            CreaturePlugin.AddFeatByLevel(player, FeatType.ChatCommandTargeter, 1);
             CreaturePlugin.AddFeatByLevel(player, FeatType.PropertyMenu, 1);
         }
 
         private static void InitializeHotBar(uint player)
         {
-            var chatCommandTargeter = PlayerQuickBarSlot.UseFeat(FeatType.ChatCommandTargeter);
             var structureTool = PlayerQuickBarSlot.UseFeat(FeatType.PropertyMenu);
             
-            PlayerPlugin.SetQuickBarSlot(player, 0, chatCommandTargeter);
-            PlayerPlugin.SetQuickBarSlot(player, 1, structureTool);
+            PlayerPlugin.SetQuickBarSlot(player, 0, structureTool);
         }
 
         /// <summary>
@@ -186,9 +184,9 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.Version = 1;
             dbPlayer.Name = GetName(player);
             dbPlayer.BAB = 1;
-            Stat.AdjustPlayerMaxHP(dbPlayer, player, 40);
-            Stat.AdjustPlayerMaxFP(dbPlayer, 10);
-            Stat.AdjustPlayerMaxSTM(dbPlayer, 10);
+            Stat.AdjustPlayerMaxHP(dbPlayer, player, 70);
+            Stat.AdjustPlayerMaxFP(dbPlayer, 10, player);
+            Stat.AdjustPlayerMaxSTM(dbPlayer, 10, player);
             CreaturePlugin.SetBaseAttackBonus(player, 1);
             dbPlayer.HP = GetCurrentHitPoints(player);
             dbPlayer.FP = Stat.GetMaxFP(player, dbPlayer);
@@ -200,6 +198,11 @@ namespace SWLOR.Game.Server.Feature
             dbPlayer.BaseStats[AbilityType.Willpower] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Willpower);
             dbPlayer.BaseStats[AbilityType.Unused] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Unused);
             dbPlayer.BaseStats[AbilityType.Social] = CreaturePlugin.GetRawAbilityScore(player, AbilityType.Social);
+
+            foreach (var (type, _) in dbPlayer.Defenses)
+            {
+                dbPlayer.Defenses[type] = 5;
+            }
         }
 
         /// <summary>
@@ -304,9 +307,6 @@ namespace SWLOR.Game.Server.Feature
         {
             var item = CreateItemOnObject("survival_knife", player);
             SetName(item, GetName(player) + "'s Survival Knife");
-            SetItemCursedFlag(item, true);
-
-            item = CreateItemOnObject("tk_omnidye", player);
             SetItemCursedFlag(item, true);
 
             GiveGoldToCreature(player, 100);

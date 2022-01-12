@@ -46,12 +46,12 @@ namespace SWLOR.Game.Server.Core.NWNX
         // NOTE: Does not change the Examine Window portrait
         public static void SetOverride(uint player, uint creature, OverrideType type, int value)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetOverride");
-            Internal.NativeFunctions.nwnxPushInt(value);
-            Internal.NativeFunctions.nwnxPushInt((int)type);
-            Internal.NativeFunctions.nwnxPushObject(creature);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "SetOverride");
+            NWNCore.NativeFunctions.nwnxPushInt(value);
+            NWNCore.NativeFunctions.nwnxPushInt((int)type);
+            NWNCore.NativeFunctions.nwnxPushObject(creature);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
         }
 
         // Get oCreature's nValue of nType for oPlayer
@@ -59,12 +59,12 @@ namespace SWLOR.Game.Server.Core.NWNX
         // Returns -1 when not set
         public static int GetOverride(uint player, uint creature, OverrideType type)
         {
-            Internal.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetOverride");
-            Internal.NativeFunctions.nwnxPushInt((int)type);
-            Internal.NativeFunctions.nwnxPushObject(creature);
-            Internal.NativeFunctions.nwnxPushObject(player);
-            Internal.NativeFunctions.nwnxCallFunction();
-            return Internal.NativeFunctions.nwnxPopInt();
+            NWNCore.NativeFunctions.nwnxSetFunction(PLUGIN_NAME, "GetOverride");
+            NWNCore.NativeFunctions.nwnxPushInt((int)type);
+            NWNCore.NativeFunctions.nwnxPushObject(creature);
+            NWNCore.NativeFunctions.nwnxPushObject(player);
+            NWNCore.NativeFunctions.nwnxCallFunction();
+            return NWNCore.NativeFunctions.nwnxPopInt();
         }
     }
 }

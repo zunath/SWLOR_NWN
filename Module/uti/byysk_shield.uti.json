@@ -2,11 +2,11 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 44
+    "value": 0
   },
   "BaseItem": {
     "type": "int",
-    "value": 14
+    "value": 56
   },
   "Charges": {
     "type": "byte",
@@ -14,19 +14,22 @@
   },
   "Comment": {
     "type": "cexostring",
-    "value": "1"
+    "value": ""
   },
   "Cost": {
     "type": "dword",
-    "value": 53
+    "value": 50
   },
   "Cursed": {
     "type": "byte",
     "value": 0
   },
   "DescIdentified": {
+    "id": 100926,
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": ""
+    }
   },
   "Description": {
     "type": "cexolocstring",
@@ -39,7 +42,7 @@
     "value": 1
   },
   "LocalizedName": {
-    "id": 179,
+    "id": 90461,
     "type": "cexolocstring",
     "value": {
       "0": "Byysk Shield"
@@ -47,11 +50,11 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 64
+    "value": 48
   },
   "PaletteID": {
     "type": "byte",
-    "value": 10
+    "value": 11
   },
   "Plot": {
     "type": "byte",
@@ -68,11 +71,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 50
+          "value": 35
         },
         "CostValue": {
           "type": "word",
-          "value": 1
+          "value": 4
         },
         "Param1": {
           "type": "byte",
@@ -84,7 +87,69 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 117
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 2
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 35
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 6
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 37
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 5
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 90
         },
         "Subtype": {
           "type": "word",
@@ -99,11 +164,11 @@
         },
         "CostTable": {
           "type": "byte",
-          "value": 42
+          "value": 33
         },
         "CostValue": {
           "type": "word",
-          "value": 15
+          "value": 3
         },
         "Param1": {
           "type": "byte",
@@ -115,11 +180,11 @@
         },
         "PropertyName": {
           "type": "word",
-          "value": 109
+          "value": 100
         },
         "Subtype": {
           "type": "word",
-          "value": 0
+          "value": 110
         }
       }
     ]

@@ -27,11 +27,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             builder.Create(StatusEffectType.BurstOfSpeed1)
                 .Name("Burst of Speed I")
-                .EffectIcon(25) // 25 = Haste
                 .GrantAction((source, target, length) =>
                 {
-                    Core.Effect effect = EffectMovementSpeedIncrease(20);
-                    TagEffect(effect, "StatusEffectType." + StatusEffectType.BurstOfSpeed1);
+                    var effect = EffectMovementSpeedIncrease(20);
+                    effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BurstOfSpeed1);
                     ApplyEffectToObject(DurationType.Permanent, effect, target);
 
                     CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
@@ -44,12 +43,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private void BurstOfSpeed2(StatusEffectBuilder builder)
         {
             builder.Create(StatusEffectType.BurstOfSpeed2)
-                .Name("Burst of Speed I")
-                .EffectIcon(25) // 25 = Haste
+                .Name("Burst of Speed II")
                 .GrantAction((source, target, length) =>
                 {
-                    Core.Effect effect = EffectMovementSpeedIncrease(30);
-                    TagEffect(effect, "StatusEffectType." + StatusEffectType.BurstOfSpeed2);
+                    var effect = EffectMovementSpeedIncrease(30);
+                    effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BurstOfSpeed2);
                     ApplyEffectToObject(DurationType.Permanent, effect, target);
 
                     CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
@@ -62,12 +60,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private void BurstOfSpeed3(StatusEffectBuilder builder)
         {
             builder.Create(StatusEffectType.BurstOfSpeed3)
-                .Name("Burst of Speed I")
-                .EffectIcon(25) // 25 = Haste
+                .Name("Burst of Speed III")
                 .GrantAction((source, target, length) =>
                 {
-                    Core.Effect effect = EffectMovementSpeedIncrease(40);
-                    TagEffect(effect, "StatusEffectType." + StatusEffectType.BurstOfSpeed3);
+                    var effect = EffectMovementSpeedIncrease(40);
+                    effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BurstOfSpeed3);
                     ApplyEffectToObject(DurationType.Permanent, effect, target);
 
                     CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
@@ -80,12 +77,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private void BurstOfSpeed4(StatusEffectBuilder builder)
         {
             builder.Create(StatusEffectType.BurstOfSpeed4)
-                .Name("Burst of Speed I")
-                .EffectIcon(25) // 25 = Haste
+                .Name("Burst of Speed IV")
                 .GrantAction((source, target, length) =>
                 {
-                    Core.Effect effect = EffectMovementSpeedIncrease(50);
-                    TagEffect(effect, "StatusEffectType." + StatusEffectType.BurstOfSpeed4);
+                    var effect = EffectMovementSpeedIncrease(50);
+                    effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BurstOfSpeed4);
                     ApplyEffectToObject(DurationType.Permanent, effect, target);
 
                     CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);
@@ -98,12 +94,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         private void BurstOfSpeed5(StatusEffectBuilder builder)
         {
             builder.Create(StatusEffectType.BurstOfSpeed5)
-                .Name("Burst of Speed I")
-                .EffectIcon(25) // 25 = Haste
+                .Name("Burst of Speed V")
                 .GrantAction((source, target, length) =>
                 {
-                    Core.Effect effect = EffectMovementSpeedIncrease(60);
-                    TagEffect(effect, "StatusEffectType." + StatusEffectType.BurstOfSpeed5);
+                    var effect = EffectMovementSpeedIncrease(60);
+                    effect = TagEffect(effect, "StatusEffectType." + StatusEffectType.BurstOfSpeed5);
                     ApplyEffectToObject(DurationType.Permanent, effect, target);
 
                     CombatPoint.AddCombatPointToAllTagged(target, SkillType.Force, 3);

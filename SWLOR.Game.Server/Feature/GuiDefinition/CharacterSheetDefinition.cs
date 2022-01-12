@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.CharacterSheet)
                 .SetInitialGeometry(0, 0, 565f, 320f)
                 .SetTitle("Character Sheet")
+                .SetIsCollapsible(true)
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>
@@ -110,6 +111,63 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         row.AddLabel()
                             .BindText(model => model.STM)
                             .SetColor(0, 139, 0)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddButton()
+                            .SetWidth(IncreaseButtonSize)
+                            .SetHeight(IncreaseButtonSize)
+                            .SetText("+")
+                            .SetIsVisible(false);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText("Evasion")
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddLabel()
+                            .BindText(model => model.Evasion)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddButton()
+                            .SetWidth(IncreaseButtonSize)
+                            .SetHeight(IncreaseButtonSize)
+                            .SetText("+")
+                            .SetIsVisible(false);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText("SP")
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddLabel()
+                            .BindText(model => model.SP)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddButton()
+                            .SetWidth(IncreaseButtonSize)
+                            .SetHeight(IncreaseButtonSize)
+                            .SetText("+")
+                            .SetIsVisible(false);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText("AP")
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddLabel()
+                            .BindText(model => model.AP)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
 
@@ -235,26 +293,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetText("Defense")
+                            .SetText("Phys. DEF")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
 
                         row.AddLabel()
-                            .BindText(model => model.Defense)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                    });
-
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("Evasion")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-
-                        row.AddLabel()
-                            .BindText(model => model.Evasion)
+                            .BindText(model => model.DefensePhysical)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
                     });
@@ -262,25 +306,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetText("SP")
+                            .SetText("Force DEF")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
 
                         row.AddLabel()
-                            .BindText(model => model.SP)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddLabel()
-                            .SetText("AP")
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
-
-                        row.AddLabel()
-                            .BindText(model => model.AP)
+                            .BindText(model => model.DefenseForce)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
                     });
@@ -288,12 +319,51 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     col.AddRow(row =>
                     {
                         row.AddLabel()
-                            .SetText("BAB")
+                            .SetText("Fire DEF")
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
 
                         row.AddLabel()
-                            .BindText(model => model.BAB)
+                            .BindText(model => model.DefenseFire)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText("Pois. DEF")
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddLabel()
+                            .BindText(model => model.DefensePoison)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText("Elec. DEF")
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddLabel()
+                            .BindText(model => model.DefenseElectrical)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                    });
+
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetText("Ice DEF")
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
+                        row.AddLabel()
+                            .BindText(model => model.DefenseIce)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHorizontalAlign(NuiHorizontalAlign.Left);
                     });

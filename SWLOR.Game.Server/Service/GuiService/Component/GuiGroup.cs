@@ -8,8 +8,8 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
     public class GuiGroup<T> : GuiExpandableComponent<T>
         where T: IGuiViewModel
     {
-        public bool ShowBorder { get; private set; }
-        public NuiScrollbars Scrollbars { get; private set; }
+        private bool ShowBorder { get; set; }
+        private NuiScrollbars Scrollbars { get; set; }
 
         public GuiGroup()
         {

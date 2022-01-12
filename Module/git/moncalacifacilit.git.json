@@ -179350,6 +179350,21 @@
           "type": "int",
           "value": 1
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "MAP_KEY_ITEM_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 27
+        }
       }
     ]
   },
@@ -179855,69 +179870,6 @@
         "ZPosition": {
           "type": "float",
           "value": -9.5367431640625e-007
-        }
-      },
-      {
-        "__struct_id": 5,
-        "Appearance": {
-          "type": "byte",
-          "value": 2
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {
-            "0": ""
-          }
-        },
-        "HasMapNote": {
-          "type": "byte",
-          "value": 0
-        },
-        "LinkedTo": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "LocalizedName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "Mon Cala - Animals"
-          }
-        },
-        "MapNote": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "MapNoteEnabled": {
-          "type": "byte",
-          "value": 0
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "MONCALA_CORAL_ISLES"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "mon_cala_animals"
-        },
-        "XOrientation": {
-          "type": "float",
-          "value": -0.04906915500760078
-        },
-        "XPosition": {
-          "type": "float",
-          "value": 53.33456802368164
-        },
-        "YOrientation": {
-          "type": "float",
-          "value": -0.9987953901290894
-        },
-        "YPosition": {
-          "type": "float",
-          "value": 29.95071792602539
-        },
-        "ZPosition": {
-          "type": "float",
-          "value": -5.7220458984375e-006
         }
       },
       {

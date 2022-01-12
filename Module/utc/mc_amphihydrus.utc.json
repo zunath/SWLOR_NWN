@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 8.0
+    "value": 9.0
   },
   "ClassList": {
     "type": "list",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 20
+    "value": 18
   },
   "Disarmable": {
     "type": "byte",
@@ -81,7 +81,7 @@
         "__struct_id": 16384,
         "EquippedRes": {
           "type": "resref",
-          "value": "nw_it_crewpsp015"
+          "value": "amphih_claw"
         }
       },
       {
@@ -111,7 +111,7 @@
         "__struct_id": 1,
         "Feat": {
           "type": "word",
-          "value": 1203
+          "value": 1730
         }
       },
       {
@@ -181,7 +181,7 @@
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 0
+    "value": 3
   },
   "NoPermDeath": {
     "type": "byte",
@@ -612,6 +612,21 @@
           "type": "int",
           "value": 19
         }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "MONCALA_AMPHIHYDRUS_RARES,5,1"
+        }
       }
     ]
   },
@@ -629,6 +644,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 20
+    "value": 24
   }
 }

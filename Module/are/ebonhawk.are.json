@@ -87,7 +87,7 @@
   "Name": {
     "type": "cexolocstring",
     "value": {
-      "0": "Ebon Hawk"
+      "0": "[Prefab] Ebon Hawk"
     }
   },
   "NoRest": {
@@ -11169,7 +11169,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 14
+    "value": 15
   },
   "Width": {
     "type": "int",

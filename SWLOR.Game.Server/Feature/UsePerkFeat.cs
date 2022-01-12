@@ -62,43 +62,47 @@ namespace SWLOR.Game.Server.Feature
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
             if (!Ability.IsFeatRegistered(feat)) return;
             var ability = Ability.GetAbilityDetail(feat);
-            
+
             // Creature cannot use the feat.
-            var effectivePerkLevel = 
-                ability.EffectiveLevelPerkType == PerkType.Invalid 
+            var effectivePerkLevel =
+                ability.EffectiveLevelPerkType == PerkType.Invalid
                     ? 1 // If there's not an associated perk, default level to 1.
                     : Perk.GetEffectivePerkLevel(activator, ability.EffectiveLevelPerkType);
-            if (!Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
-            {
-                return;
-            }
 
             // Weapon abilities are queued for the next time the activator's attack lands on an enemy.
             if (ability.ActivationType == AbilityActivationType.Weapon)
             {
-                Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name}.");
-                QueueWeaponAbility(activator, ability, feat, effectivePerkLevel);
+                if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
+                {
+                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name}.");
+                    QueueWeaponAbility(activator, ability, feat, effectivePerkLevel);
+                }
             }
             // Concentration abilities are triggered once per tick.
             else if (ability.ActivationType == AbilityActivationType.Concentration)
             {
                 // Using the same concentration feat ends the effect.
                 var activeConcentrationAbility = Ability.GetActiveConcentration(activator);
-                if(activeConcentrationAbility.Feat == feat)
+                if (activeConcentrationAbility.Feat == feat)
                 {
                     Ability.EndConcentrationAbility(activator);
                 }
                 else
                 {
-                    ActivateAbility(activator, target, feat, ability, effectivePerkLevel, targetLocation);
+                    if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
+                    {
+                        ActivateAbility(activator, target, feat, ability, effectivePerkLevel, targetLocation);
+                    }
                 }
-                
             }
             // All other abilities are funneled through the same process.
             else
             {
-                Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name} on {GetName(target)}.");
-                ActivateAbility(activator, target, feat, ability, effectivePerkLevel, targetLocation);
+                if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
+                {
+                    Messaging.SendMessageNearbyToPlayers(activator, $"{GetName(activator)} readies {ability.Name} on {GetName(target)}.");
+                    ActivateAbility(activator, target, feat, ability, effectivePerkLevel, targetLocation);
+                }
             }
         }
 
@@ -145,7 +149,7 @@ namespace SWLOR.Game.Server.Feature
                 var penaltyMessage = string.Empty;
                 for (var slot = 0; slot < NumberOfInventorySlots; slot++)
                 {
-                    var item = GetItemInSlot((InventorySlot) slot, activator);
+                    var item = GetItemInSlot((InventorySlot)slot, activator);
                     var armorType = Item.GetArmorType(item);
                     if (armorType == ArmorType.Heavy && !ability.IgnoreHeavyArmorPenalty)
                     {
@@ -199,8 +203,8 @@ namespace SWLOR.Game.Server.Feature
 
                 // Completed abilities should no longer run.
                 var status = GetLocalInt(activator, activationId);
-                if (status == (int) ActivationStatus.Completed || status == (int)ActivationStatus.Invalid) return;
-                
+                if (status == (int)ActivationStatus.Completed || status == (int)ActivationStatus.Invalid) return;
+
                 var currentPosition = GetPosition(activator);
 
                 if (currentPosition.X != originalPosition.X ||
@@ -223,16 +227,25 @@ namespace SWLOR.Game.Server.Feature
                 DeleteLocalInt(activator, id);
 
                 // Moved during casting or activator died. Cancel the activation.
-                if (GetLocalInt(activator, id) == (int) ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0) 
+                if (GetLocalInt(activator, id) == (int)ActivationStatus.Interrupted || GetCurrentHitPoints(activator) <= 0)
                     return;
-                
+
                 ApplyRequirementEffects(activator, ability);
                 ability.ImpactAction?.Invoke(activator, target, effectivePerkLevel, targetLocation);
                 ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay);
 
                 if (ability.ConcentrationStatusEffectType != StatusEffectType.Invalid)
                 {
-                    Ability.StartConcentrationAbility(activator, feat, ability.ConcentrationStatusEffectType);
+                    Ability.StartConcentrationAbility(activator, target, feat, ability.ConcentrationStatusEffectType);
+                }
+
+                // If this is an attack... make the NPC react.
+                if (ability.IsHostileAbility)
+                {
+                    if (!GetIsInCombat(target))
+                    {
+                        AssignCommand(target, () => { ClearAllActions(); ActionAttack(activator); });
+                    }
                 }
 
                 Activity.ClearBusy(activator);

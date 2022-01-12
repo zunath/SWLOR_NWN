@@ -1634,7 +1634,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 80
+          "value": 86
         },
         "NaturalAC": {
           "type": "byte",
@@ -8608,7 +8608,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 70
+          "value": 81
         },
         "NaturalAC": {
           "type": "byte",
@@ -9500,7 +9500,7 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 75
+          "value": 83
         },
         "NaturalAC": {
           "type": "byte",
@@ -45270,7 +45270,7 @@
         "__struct_id": 0,
         "Name": {
           "type": "cexostring",
-          "value": "VoirMap"
+          "value": "MAP_KEY_ITEM_ID"
         },
         "Type": {
           "type": "dword",
@@ -45278,7 +45278,7 @@
         },
         "Value": {
           "type": "int",
-          "value": 1
+          "value": 35
         }
       }
     ]

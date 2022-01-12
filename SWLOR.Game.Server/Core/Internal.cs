@@ -1,114 +1,208 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using SWLOR.Game.Server.Core.Async;
+using SWLOR.Game.Server.Core.NWNX;
+using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Core
 {
-    internal partial class Internal
+    public static class Internal
     {
-        public const uint OBJECT_INVALID = 0x7F000000;
-        public static uint OBJECT_SELF { get; set; } = OBJECT_INVALID;
-
-        public static void OnMainLoop(ulong frame)
+        private class ActionScript
         {
+            public Action Action { get; set; }
+            public string Name { get; set; }
+        }
+
+        private class ConditionalScript
+        {
+            public ConditionalScriptDelegate Action { get; set; }
+            public string Name { get; set; }
+        }
+
+        private const int MaxCharsInScriptName = 16;
+        private const int ScriptHandled = 0;
+        private const int ScriptNotHandled = -1;
+
+        private delegate bool ConditionalScriptDelegate();
+
+        private static Dictionary<string, List<ActionScript>> _scripts;
+        private static Dictionary<string, List<ConditionalScript>> _conditionalScripts;
+
+        public static event Action OnScriptContextBegin;
+        public static event Action OnScriptContextEnd;
+
+        private static ICoreEventHandler _coreGameManager;
+
+        public static int Bootstrap(IntPtr nativeHandlesPtr, int nativeHandlesLength)
+        {
+            var retVal = NWNCore.Init(nativeHandlesPtr, nativeHandlesLength, out CoreGameManager coreGameManager);
+            coreGameManager.OnSignal += OnSignal;
+            coreGameManager.OnServerLoop += OnServerLoop;
+            coreGameManager.OnRunScript += OnRunScript;
+            _coreGameManager = coreGameManager;
+
+            Console.WriteLine("Registering loggers...");
+            Log.Register();
+            Console.WriteLine("Loggers registered successfully.");
+
+            Console.WriteLine("Registering scripts...");
+            LoadHandlersFromAssembly();
+            Console.WriteLine("Scripts registered successfully.");
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// Directly executes a script. This bypasses the NWScript round-trip.
+        /// </summary>
+        /// <param name="scriptName">Name of the script.</param>
+        /// <param name="objectSelf">The object to execute the script upon.</param>
+        public static void DirectRunScript(string scriptName, uint objectSelf)
+        {
+            _coreGameManager.OnRunScript(scriptName, objectSelf);
+        }
+
+        private static void OnRunScript(string scriptName, uint objectSelf, out int scriptHandlerResult)
+        {
+            var retVal = RunScripts(scriptName);
+
+            scriptHandlerResult = retVal == -1 ? ScriptNotHandled : retVal;
+        }
+
+        private static void OnSignal(string signal)
+        {
+
+        }
+
+        private static void OnServerLoop(ulong frame)
+        {
+            OnScriptContextBegin?.Invoke();
+
             try
             {
-                Entrypoints.OnMainLoop(frame);
+                NwTask.MainThreadSynchronizationContext.Update();
+                Scheduler.Process();
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e.ToString());
+                Log.Write(LogGroup.Error, ex.ToMessageAndCompleteStacktrace());
             }
+
+            OnScriptContextEnd?.Invoke();
         }
 
-        private struct ScriptContext
-        {
-            public uint OwnerObject;
-            public string ScriptName;
-        }
-        private static Stack<ScriptContext> ScriptContexts = new Stack<ScriptContext>();
-        public static int OnRunScript(string script, uint oidSelf)
-        {
-            var ret = 0;
-            OBJECT_SELF = oidSelf;
-            ScriptContexts.Push(new ScriptContext { OwnerObject = oidSelf, ScriptName = script });
-            try
-            {
-                ret = Entrypoints.OnRunScript(script, oidSelf);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-            ScriptContexts.Pop();
-            OBJECT_SELF = ScriptContexts.Count == 0 ? OBJECT_INVALID : ScriptContexts.Peek().OwnerObject;
-            return ret;
-        }
 
-        private struct Closure
+        private static int RunScripts(string script)
         {
-            public uint OwnerObject;
-            public ActionDelegate Run;
-        }
-        private static ulong NextEventId = 0;
-        private static Dictionary<ulong, Closure> Closures = new Dictionary<ulong, Closure>();
+            if (_conditionalScripts.ContainsKey(script))
+            {
+                // Always default conditional scripts to true. If one or more of the actions return a false,
+                // we will return a false (even if others are true).
+                // This ensures all actions get fired when the script is called.
+                var result = true;
 
-        public static void OnClosure(ulong eid, uint oidSelf)
-        {
-            var old = OBJECT_SELF;
-            OBJECT_SELF = oidSelf;
-            try
-            {
-                Closures[eid].Run();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-            Closures.Remove(eid);
-            OBJECT_SELF = old;
-        }
-
-        public static void OnSignal(string signal)
-        {
-            try
-            {
-                switch (signal)
+                if (_conditionalScripts.ContainsKey(script))
                 {
-                    case "ON_MODULE_LOAD_FINISH":
-                        Entrypoints.OnModuleLoad();
-                        break;
-                    case "ON_DESTROY_SERVER":
-                        Entrypoints.OnShutdown();
-                        break;
+                    foreach (var action in _conditionalScripts[script])
+                    {
+                        ProfilerPlugin.PushPerfScope(script, "RunScript", "Script");
+                        var actionResult = action.Action.Invoke();
+                        ProfilerPlugin.PopPerfScope();
+
+                        if (result) 
+                            result = actionResult;
+                    }
                 }
+
+                return result ? 1 : 0;
             }
-            catch (Exception e)
+            else if (_scripts.ContainsKey(script))
             {
-                Console.WriteLine(e.ToString());
+                if (_scripts.ContainsKey(script))
+                {
+                    foreach (var action in _scripts[script])
+                    {
+                        try
+                        {
+                            ProfilerPlugin.PushPerfScope(script, "RunScript", "Script");
+                            action.Action();
+                            ProfilerPlugin.PopPerfScope();
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Write(LogGroup.Error, $"C# Script '{script}' threw an exception. Details: {Environment.NewLine}{Environment.NewLine}{ex.ToMessageAndCompleteStacktrace()}");
+                        }
+                    }
+                }
+
+                return ScriptHandled;
             }
+
+            return ScriptNotHandled;
         }
 
-        public static void ClosureAssignCommand(uint obj, ActionDelegate func)
-        {
-            if (NativeFunctions.ClosureAssignCommand(obj, NextEventId) != 0)
-            {
-                Closures.Add(NextEventId++, new Closure { OwnerObject = obj, Run = func });
-            }
-        }
 
-        public static void ClosureDelayCommand(uint obj, float duration, ActionDelegate func)
+        private static void LoadHandlersFromAssembly()
         {
-            if (NativeFunctions.ClosureDelayCommand(obj, duration, NextEventId) != 0)
-            {
-                Closures.Add(NextEventId++, new Closure { OwnerObject = obj, Run = func });
-            }
-        }
+            _scripts = new Dictionary<string, List<ActionScript>>();
+            _conditionalScripts = new Dictionary<string, List<ConditionalScript>>();
 
-        public static void ClosureActionDoCommand(uint obj, ActionDelegate func)
-        {
-            if (NativeFunctions.ClosureActionDoCommand(obj, NextEventId) != 0)
+            var handlers = Assembly.GetExecutingAssembly()
+                .GetTypes()
+                .SelectMany(t => t.GetMethods())
+                .Where(m => m.GetCustomAttributes(typeof(NWNEventHandler), false).Length > 0)
+                .ToArray();
+
+            foreach (var mi in handlers)
             {
-                Closures.Add(NextEventId++, new Closure { OwnerObject = obj, Run = func });
+                foreach (var attr in mi.GetCustomAttributes(typeof(NWNEventHandler), false))
+                {
+                    var script = ((NWNEventHandler)attr).Script;
+                    if (script.Length > MaxCharsInScriptName || script.Length == 0)
+                    {
+                        Log.Write(LogGroup.Error, $"Script name '{script}' is invalid on method {mi.Name}.");
+                        throw new ApplicationException();
+                    }
+
+                    // If the return type is a bool, it is assumed to be a conditional script.
+                    if (mi.ReturnType == typeof(bool))
+                    {
+                        var del = (ConditionalScriptDelegate)mi.CreateDelegate(typeof(ConditionalScriptDelegate));
+
+                        if (!_conditionalScripts.ContainsKey(script))
+                            _conditionalScripts[script] = new List<ConditionalScript>();
+
+                        _conditionalScripts[script].Add(new ConditionalScript
+                        {
+                            Action = del,
+                            Name = del.Method.DeclaringType?.Name + "." + del.Method.Name
+                        });
+                    }
+                    // Otherwise it's a normal script.
+                    else if (mi.ReturnType == typeof(void))
+                    {
+                        var del = (Action)mi.CreateDelegate(typeof(Action));
+
+                        if (!_scripts.ContainsKey(script))
+                            _scripts[script] = new List<ActionScript>();
+
+                        _scripts[script].Add(new ActionScript
+                        {
+                            Action = del,
+                            Name = del.Method.DeclaringType?.Name + "." + del.Method.Name
+                        });
+                    }
+                    else
+                    {
+                        Log.Write(LogGroup.Error, $"Method '{mi.Name}' tied to script '{script}' has an invalid return type. This script was NOT loaded.", true);
+                    }
+
+                }
             }
         }
     }

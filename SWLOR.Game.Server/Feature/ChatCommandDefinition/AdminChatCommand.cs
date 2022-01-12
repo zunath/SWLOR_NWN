@@ -8,18 +8,18 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
     public class AdminChatCommand: IChatCommandListDefinition
     {
+        private readonly ChatCommandBuilder _builder = new ();
+
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
-            var builder = new ChatCommandBuilder();
+            ManageStaffCommand();
 
-            ManageStaffCommand(builder);
-
-            return builder.Build();
+            return _builder.Build();
         }
 
-        private static void ManageStaffCommand(ChatCommandBuilder builder)
+        private void ManageStaffCommand()
         {
-            builder.Create("managestaff")
+            _builder.Create("managestaff")
                 .Description("Toggles the manage staff window to add/remove staff members.")
                 .Permissions(AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
@@ -27,5 +27,6 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     Gui.TogglePlayerWindow(user, GuiWindowType.ManageStaff);
                 });
         }
+
     }
 }

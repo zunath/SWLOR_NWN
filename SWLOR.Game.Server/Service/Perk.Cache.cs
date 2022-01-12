@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Service
                     // If the perk has an "unlock requirement", add it to that cache.
                     foreach (var level in perkDetail.PerkLevels)
                     {
-                        var reqExists = level.Value.Requirements.Count(x => x.GetType() == typeof(PerkUnlockRequirement)) > 0;
+                        var reqExists = level.Value.Requirements.Count(x => x.GetType() == typeof(PerkRequirementUnlock)) > 0;
                         if (reqExists)
                         {
                             _perksWithUnlockRequirements[perkType] = perkDetail;

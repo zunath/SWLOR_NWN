@@ -67,14 +67,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                     break;
             }
 
+            CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
+
             var perception = GetAbilityModifier(AbilityType.Perception, activator);
             var defense = Stat.GetDefense(target, CombatDamageType.Physical);
             var vitality = GetAbilityModifier(AbilityType.Vitality, target);
-            var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, false);
+            var damage = Combat.CalculateDamage(dmg, perception, defense, vitality, 0);
             ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, DamageType.Piercing), target);
             if (inflict) ApplyEffectToObject(DurationType.Temporary, EffectSlow(), target, duration);
-
-            CombatPoint.AddCombatPoint(activator, target, SkillType.Ranged, 3);
         }
 
         private static void CripplingShot1(AbilityBuilder builder)
@@ -85,6 +85,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(3)
                 .IsWeaponAbility()
+                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -96,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(5)
                 .IsWeaponAbility()
+                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }
@@ -107,6 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Ranged
                 .HasActivationDelay(2.0f)
                 .RequirementStamina(8)
                 .IsWeaponAbility()
+                .IsHostileAbility()
                 .HasCustomValidation(Validation)
                 .HasImpactAction(ImpactAction);
         }

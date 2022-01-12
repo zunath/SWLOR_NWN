@@ -116,7 +116,7 @@
   },
   "ResRef": {
     "type": "resref",
-    "value": "nw_tatdungtunnel"
+    "value": "tat_tuskcavetunn"
   },
   "ShadowOpacity": {
     "type": "byte",
@@ -7428,7 +7428,7 @@
   },
   "Version": {
     "type": "dword",
-    "value": 16
+    "value": 17
   },
   "Width": {
     "type": "int",

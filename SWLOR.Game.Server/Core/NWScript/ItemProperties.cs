@@ -17,11 +17,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static void AddItemProperty(DurationType nDurationType, ItemProperty ipProperty, uint oItem,
             float fDuration = 0.0f)
         {
-            Internal.NativeFunctions.StackPushFloat(fDuration);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.ItemProperty, ipProperty);
-            Internal.NativeFunctions.StackPushInteger((int)nDurationType);
-            Internal.NativeFunctions.CallBuiltIn(609);
+            VM.StackPush(fDuration);
+            VM.StackPush(oItem);
+            VM.StackPush((int)EngineStructure.ItemProperty, ipProperty);
+            VM.StackPush((int)nDurationType);
+            VM.Call(609);
         }
 
         /// <summary>
@@ -29,9 +29,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void RemoveItemProperty(uint oItem, ItemProperty ipProperty)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.ItemProperty, ipProperty);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(610);
+            VM.StackPush((int)EngineStructure.ItemProperty, ipProperty);
+            VM.StackPush(oItem);
+            VM.Call(610);
         }
 
         /// <summary>
@@ -39,9 +39,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static bool GetIsItemPropertyValid(ItemProperty ipProperty)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.ItemProperty, ipProperty);
-            Internal.NativeFunctions.CallBuiltIn(611);
-            return Internal.NativeFunctions.StackPopInteger() == 1;
+            VM.StackPush((int)EngineStructure.ItemProperty, ipProperty);
+            VM.Call(611);
+            return VM.StackPopInt() == 1;
         }
 
         /// <summary>
@@ -49,9 +49,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty GetFirstItemProperty(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(612);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(oItem);
+            VM.Call(612);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -60,9 +60,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty GetNextItemProperty(uint oItem)
         {
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(613);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(oItem);
+            VM.Call(613);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -70,9 +70,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemPropertyType GetItemPropertyType(ItemProperty ip)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.ItemProperty, ip);
-            Internal.NativeFunctions.CallBuiltIn(614);
-            return (ItemPropertyType)Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.ItemProperty, ip);
+            VM.Call(614);
+            return (ItemPropertyType)VM.StackPopInt();
         }
 
         /// <summary>
@@ -80,9 +80,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static DurationType GetItemPropertyDurationType(ItemProperty ip)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.ItemProperty, ip);
-            Internal.NativeFunctions.CallBuiltIn(615);
-            return (DurationType)Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.ItemProperty, ip);
+            VM.Call(615);
+            return (DurationType)VM.StackPopInt();
         }
 
         /// <summary>
@@ -92,10 +92,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyAbilityBonus(AbilityType nAbility, int nBonus)
         {
-            Internal.NativeFunctions.StackPushInteger(nBonus);
-            Internal.NativeFunctions.StackPushInteger((int)nAbility);
-            Internal.NativeFunctions.CallBuiltIn(616);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nBonus);
+            VM.StackPush((int)nAbility);
+            VM.Call(616);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -105,9 +105,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyACBonus(int nBonus)
         {
-            Internal.NativeFunctions.StackPushInteger(nBonus);
-            Internal.NativeFunctions.CallBuiltIn(617);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nBonus);
+            VM.Call(617);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -119,10 +119,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyACBonusVsAlign(AlignmentGroup nAlignGroup, int ACBonus)
         {
-            Internal.NativeFunctions.StackPushInteger(ACBonus);
-            Internal.NativeFunctions.StackPushInteger((int)nAlignGroup);
-            Internal.NativeFunctions.CallBuiltIn(618);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(ACBonus);
+            VM.StackPush((int)nAlignGroup);
+            VM.Call(618);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -135,10 +135,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyACBonusVsDmgType(ItemPropertyDamageType nDamageType, int ACBonus)
         {
-            Internal.NativeFunctions.StackPushInteger(ACBonus);
-            Internal.NativeFunctions.StackPushInteger((int)nDamageType);
-            Internal.NativeFunctions.CallBuiltIn(619);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(ACBonus);
+            VM.StackPush((int)nDamageType);
+            VM.Call(619);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -149,10 +149,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyACBonusVsRace(RacialType nRace, int nACBonus)
         {
-            Internal.NativeFunctions.StackPushInteger(nACBonus);
-            Internal.NativeFunctions.StackPushInteger((int)nRace);
-            Internal.NativeFunctions.CallBuiltIn(620);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nACBonus);
+            VM.StackPush((int)nRace);
+            VM.Call(620);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -163,10 +163,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyACBonusVsSAlign(Alignment nAlign, int nACBonus)
         {
-            Internal.NativeFunctions.StackPushInteger(nACBonus);
-            Internal.NativeFunctions.StackPushInteger((int)nAlign);
-            Internal.NativeFunctions.CallBuiltIn(621);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nACBonus);
+            VM.StackPush((int)nAlign);
+            VM.Call(621);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -176,9 +176,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyEnhancementBonus(int nEnhancementBonus)
         {
-            Internal.NativeFunctions.StackPushInteger(nEnhancementBonus);
-            Internal.NativeFunctions.CallBuiltIn(622);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nEnhancementBonus);
+            VM.Call(622);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -190,10 +190,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyEnhancementBonusVsAlign(AlignmentGroup nAlignGroup,
             int nBonus)
         {
-            Internal.NativeFunctions.StackPushInteger(nBonus);
-            Internal.NativeFunctions.StackPushInteger((int)nAlignGroup);
-            Internal.NativeFunctions.CallBuiltIn(623);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nBonus);
+            VM.StackPush((int)nAlignGroup);
+            VM.Call(623);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -204,10 +204,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyEnhancementBonusVsRace(RacialType nRace, int nBonus)
         {
-            Internal.NativeFunctions.StackPushInteger(nBonus);
-            Internal.NativeFunctions.StackPushInteger((int)nRace);
-            Internal.NativeFunctions.CallBuiltIn(624);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nBonus);
+            VM.StackPush((int)nRace);
+            VM.Call(624);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -219,10 +219,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyEnhancementBonusVsSAlign(Alignment nAlign,
             int nBonus)
         {
-            Internal.NativeFunctions.StackPushInteger(nBonus);
-            Internal.NativeFunctions.StackPushInteger((int)nAlign);
-            Internal.NativeFunctions.CallBuiltIn(625);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nBonus);
+            VM.StackPush((int)nAlign);
+            VM.Call(625);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -232,9 +232,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyEnhancementPenalty(int nPenalty)
         {
-            Internal.NativeFunctions.StackPushInteger(nPenalty);
-            Internal.NativeFunctions.CallBuiltIn(626);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nPenalty);
+            VM.Call(626);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -243,9 +243,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyWeightReduction(ReducedWeight nReduction)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nReduction);
-            Internal.NativeFunctions.CallBuiltIn(627);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nReduction);
+            VM.Call(627);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -254,9 +254,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyBonusFeat(ItemPropertyFeat nFeat)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nFeat);
-            Internal.NativeFunctions.CallBuiltIn(628);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nFeat);
+            VM.Call(628);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -267,10 +267,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyBonusLevelSpell(Class nClass, SpellLevel nSpellLevel)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nSpellLevel);
-            Internal.NativeFunctions.StackPushInteger((int)nClass);
-            Internal.NativeFunctions.CallBuiltIn(629);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nSpellLevel);
+            VM.StackPush((int)nClass);
+            VM.Call(629);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -289,10 +289,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyCastSpell(CastSpell nSpell, CastSpellNumberUses nNumUses)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nNumUses);
-            Internal.NativeFunctions.StackPushInteger((int)nSpell);
-            Internal.NativeFunctions.CallBuiltIn(630);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nNumUses);
+            VM.StackPush((int)nSpell);
+            VM.Call(630);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -304,10 +304,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyDamageBonus(ItemPropertyDamageType nDamageType,
             DamageBonus nDamage)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nDamage);
-            Internal.NativeFunctions.StackPushInteger((int)nDamageType);
-            Internal.NativeFunctions.CallBuiltIn(631);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nDamage);
+            VM.StackPush((int)nDamageType);
+            VM.Call(631);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -320,11 +320,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyDamageBonusVsAlign(AlignmentGroup nAlignGroup,
             ItemPropertyDamageType nDamageType, DamageBonus nDamage)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nDamage);
-            Internal.NativeFunctions.StackPushInteger((int)nDamageType);
-            Internal.NativeFunctions.StackPushInteger((int)nAlignGroup);
-            Internal.NativeFunctions.CallBuiltIn(632);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nDamage);
+            VM.StackPush((int)nDamageType);
+            VM.StackPush((int)nAlignGroup);
+            VM.Call(632);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -337,11 +337,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyDamageBonusVsRace(RacialType nRace,
             ItemPropertyDamageType nDamageType, DamageBonus nDamage)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nDamage);
-            Internal.NativeFunctions.StackPushInteger((int)nDamageType);
-            Internal.NativeFunctions.StackPushInteger((int)nRace);
-            Internal.NativeFunctions.CallBuiltIn(633);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nDamage);
+            VM.StackPush((int)nDamageType);
+            VM.StackPush((int)nRace);
+            VM.Call(633);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -354,11 +354,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyDamageBonusVsSAlign(Alignment nAlign,
             ItemPropertyDamageType nDamageType, DamageBonus nDamage)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nDamage);
-            Internal.NativeFunctions.StackPushInteger((int)nDamageType);
-            Internal.NativeFunctions.StackPushInteger((int)nAlign);
-            Internal.NativeFunctions.CallBuiltIn(634);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nDamage);
+            VM.StackPush((int)nDamageType);
+            VM.StackPush((int)nAlign);
+            VM.Call(634);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -371,10 +371,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyDamageImmunity(ItemPropertyDamageType nDamageType,
             DamageImmunity nImmuneBonus)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nImmuneBonus);
-            Internal.NativeFunctions.StackPushInteger((int)nDamageType);
-            Internal.NativeFunctions.CallBuiltIn(635);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nImmuneBonus);
+            VM.StackPush((int)nDamageType);
+            VM.Call(635);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -385,9 +385,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyDamagePenalty(int nPenalty)
         {
             if (nPenalty > 5) nPenalty = 5;
-            Internal.NativeFunctions.StackPushInteger((int)nPenalty);
-            Internal.NativeFunctions.CallBuiltIn(636);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nPenalty);
+            VM.Call(636);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -398,10 +398,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyDamageReduction(DamageReduction nEnhancement, DamageSoak nHPSoak)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nHPSoak);
-            Internal.NativeFunctions.StackPushInteger((int)nEnhancement);
-            Internal.NativeFunctions.CallBuiltIn(637);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nHPSoak);
+            VM.StackPush((int)nEnhancement);
+            VM.Call(637);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -412,10 +412,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyDamageResistance(ItemPropertyDamageType nDamageType,
             DamageResist nHPResist)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nHPResist);
-            Internal.NativeFunctions.StackPushInteger((int)nDamageType);
-            Internal.NativeFunctions.CallBuiltIn(638);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nHPResist);
+            VM.StackPush((int)nDamageType);
+            VM.Call(638);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -426,10 +426,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyDamageVulnerability(ItemPropertyDamageType nDamageType,
             DamageVulnerability nVulnerability)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nVulnerability);
-            Internal.NativeFunctions.StackPushInteger((int)nDamageType);
-            Internal.NativeFunctions.CallBuiltIn(639);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nVulnerability);
+            VM.StackPush((int)nDamageType);
+            VM.Call(639);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -437,8 +437,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyDarkvision()
         {
-            Internal.NativeFunctions.CallBuiltIn(640);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.Call(640);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -448,10 +448,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyDecreaseAbility(Ability nAbility, int nModifier)
         {
-            Internal.NativeFunctions.StackPushInteger(nModifier);
-            Internal.NativeFunctions.StackPushInteger((int)nAbility);
-            Internal.NativeFunctions.CallBuiltIn(641);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nModifier);
+            VM.StackPush((int)nAbility);
+            VM.Call(641);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -461,10 +461,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyDecreaseAC(ArmorClassModiferType nModifierType, int nPenalty)
         {
-            Internal.NativeFunctions.StackPushInteger(nPenalty);
-            Internal.NativeFunctions.StackPushInteger((int)nModifierType);
-            Internal.NativeFunctions.CallBuiltIn(642);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nPenalty);
+            VM.StackPush((int)nModifierType);
+            VM.Call(642);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -472,12 +472,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   skill to be decreased(SKILL_*) and the amount of the penalty.  The penalty
         ///   must be a POSITIVE integer between 1 and 10 (ie. 1 = -1).
         /// </summary>
-        public static ItemProperty ItemPropertyDecreaseSkill(Skill nSkill, int nPenalty)
+        public static ItemProperty ItemPropertyDecreaseSkill(NWNSkillType nSkill, int nPenalty)
         {
-            Internal.NativeFunctions.StackPushInteger(nPenalty);
-            Internal.NativeFunctions.StackPushInteger((int)nSkill);
-            Internal.NativeFunctions.CallBuiltIn(643);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nPenalty);
+            VM.StackPush((int)nSkill);
+            VM.Call(643);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -487,9 +487,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyContainerReducedWeight(ContainerWeight nContainerType)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nContainerType);
-            Internal.NativeFunctions.CallBuiltIn(644);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nContainerType);
+            VM.Call(644);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -501,9 +501,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyExtraMeleeDamageType(ItemPropertyDamageType nDamageType)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nDamageType);
-            Internal.NativeFunctions.CallBuiltIn(645);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nDamageType);
+            VM.Call(645);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -515,9 +515,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyExtraRangeDamageType(ItemPropertyDamageType nDamageType)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nDamageType);
-            Internal.NativeFunctions.CallBuiltIn(646);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nDamageType);
+            VM.Call(646);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -525,8 +525,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyHaste()
         {
-            Internal.NativeFunctions.CallBuiltIn(647);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.Call(647);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -534,8 +534,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyHolyAvenger()
         {
-            Internal.NativeFunctions.CallBuiltIn(648);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.Call(648);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -544,9 +544,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyImmunityMisc(ImmunityMisc nImmunityType)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nImmunityType);
-            Internal.NativeFunctions.CallBuiltIn(649);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nImmunityType);
+            VM.Call(649);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -554,8 +554,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyImprovedEvasion()
         {
-            Internal.NativeFunctions.CallBuiltIn(650);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.Call(650);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -564,9 +564,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyBonusSpellResistance(SpellResistanceBonus nBonus)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nBonus);
-            Internal.NativeFunctions.CallBuiltIn(651);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nBonus);
+            VM.Call(651);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -577,10 +577,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyBonusSavingThrowVsX(SaveVs nBonusType, int nBonus)
         {
-            Internal.NativeFunctions.StackPushInteger(nBonus);
-            Internal.NativeFunctions.StackPushInteger((int)nBonusType);
-            Internal.NativeFunctions.CallBuiltIn(652);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nBonus);
+            VM.StackPush((int)nBonusType);
+            VM.Call(652);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -591,10 +591,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyBonusSavingThrow(SaveBaseType nBaseSaveType, int nBonus)
         {
-            Internal.NativeFunctions.StackPushInteger(nBonus);
-            Internal.NativeFunctions.StackPushInteger((int)nBaseSaveType);
-            Internal.NativeFunctions.CallBuiltIn(653);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nBonus);
+            VM.StackPush((int)nBaseSaveType);
+            VM.Call(653);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -603,8 +603,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyKeen()
         {
-            Internal.NativeFunctions.CallBuiltIn(654);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.Call(654);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -614,10 +614,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyLight(LightBrightness nBrightness, LightColor nColor)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nColor);
-            Internal.NativeFunctions.StackPushInteger((int)nBrightness);
-            Internal.NativeFunctions.CallBuiltIn(655);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nColor);
+            VM.StackPush((int)nBrightness);
+            VM.Call(655);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -627,9 +627,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyMaxRangeStrengthMod(int nModifier)
         {
-            Internal.NativeFunctions.StackPushInteger(nModifier);
-            Internal.NativeFunctions.CallBuiltIn(656);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nModifier);
+            VM.Call(656);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -638,8 +638,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyNoDamage()
         {
-            Internal.NativeFunctions.CallBuiltIn(657);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.Call(657);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -685,11 +685,11 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyOnHitProps(int nProperty, int nSaveDC, int nSpecial = 0)
         {
-            Internal.NativeFunctions.StackPushInteger(nSpecial);
-            Internal.NativeFunctions.StackPushInteger(nSaveDC);
-            Internal.NativeFunctions.StackPushInteger(nProperty);
-            Internal.NativeFunctions.CallBuiltIn(658);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nSpecial);
+            VM.StackPush(nSaveDC);
+            VM.StackPush(nProperty);
+            VM.Call(658);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -700,10 +700,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyReducedSavingThrowVsX(SaveVs nBaseSaveType, int nPenalty)
         {
-            Internal.NativeFunctions.StackPushInteger(nPenalty);
-            Internal.NativeFunctions.StackPushInteger((int)nBaseSaveType);
-            Internal.NativeFunctions.CallBuiltIn(659);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nPenalty);
+            VM.StackPush((int)nBaseSaveType);
+            VM.Call(659);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -714,10 +714,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyReducedSavingThrow(SaveBaseType nBonusType, int nPenalty)
         {
-            Internal.NativeFunctions.StackPushInteger(nPenalty);
-            Internal.NativeFunctions.StackPushInteger((int)nBonusType);
-            Internal.NativeFunctions.CallBuiltIn(660);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nPenalty);
+            VM.StackPush((int)nBonusType);
+            VM.Call(660);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -726,9 +726,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyRegeneration(int nRegenAmount)
         {
-            Internal.NativeFunctions.StackPushInteger(nRegenAmount);
-            Internal.NativeFunctions.CallBuiltIn(661);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nRegenAmount);
+            VM.Call(661);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -736,12 +736,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         ///   will get a bonus(SKILL_*) and the amount of the bonus.  The bonus amount must
         ///   be an integer between 1 and 50.
         /// </summary>
-        public static ItemProperty ItemPropertySkillBonus(Skill nSkill, int nBonus)
+        public static ItemProperty ItemPropertySkillBonus(NWNSkillType nSkill, int nBonus)
         {
-            Internal.NativeFunctions.StackPushInteger(nBonus);
-            Internal.NativeFunctions.StackPushInteger((int)nSkill);
-            Internal.NativeFunctions.CallBuiltIn(662);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nBonus);
+            VM.StackPush((int)nSkill);
+            VM.Call(662);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -750,9 +750,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertySpellImmunitySpecific(ImmunitySpell nSpell)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nSpell);
-            Internal.NativeFunctions.CallBuiltIn(663);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nSpell);
+            VM.Call(663);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -761,9 +761,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertySpellImmunitySchool(SpellSchool nSchool)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nSchool);
-            Internal.NativeFunctions.CallBuiltIn(664);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nSchool);
+            VM.Call(664);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -772,9 +772,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyThievesTools(int nModifier)
         {
-            Internal.NativeFunctions.StackPushInteger(nModifier);
-            Internal.NativeFunctions.CallBuiltIn(665);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nModifier);
+            VM.Call(665);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -783,9 +783,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyAttackBonus(int nBonus)
         {
-            Internal.NativeFunctions.StackPushInteger(nBonus);
-            Internal.NativeFunctions.CallBuiltIn(666);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nBonus);
+            VM.Call(666);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -796,10 +796,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static ItemProperty ItemPropertyAttackBonusVsAlign(AlignmentGroup nAlignGroup,
             int nBonus)
         {
-            Internal.NativeFunctions.StackPushInteger(nBonus);
-            Internal.NativeFunctions.StackPushInteger((int)nAlignGroup);
-            Internal.NativeFunctions.CallBuiltIn(667);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nBonus);
+            VM.StackPush((int)nAlignGroup);
+            VM.Call(667);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -809,10 +809,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyAttackBonusVsRace(RacialType nRace, int nBonus)
         {
-            Internal.NativeFunctions.StackPushInteger(nBonus);
-            Internal.NativeFunctions.StackPushInteger((int)nRace);
-            Internal.NativeFunctions.CallBuiltIn(668);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nBonus);
+            VM.StackPush((int)nRace);
+            VM.Call(668);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -822,10 +822,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyAttackBonusVsSAlign(Alignment nAlignment, int nBonus)
         {
-            Internal.NativeFunctions.StackPushInteger(nBonus);
-            Internal.NativeFunctions.StackPushInteger((int)nAlignment);
-            Internal.NativeFunctions.CallBuiltIn(669);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nBonus);
+            VM.StackPush((int)nAlignment);
+            VM.Call(669);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -834,9 +834,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyAttackPenalty(int nPenalty)
         {
-            Internal.NativeFunctions.StackPushInteger(nPenalty);
-            Internal.NativeFunctions.CallBuiltIn(670);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nPenalty);
+            VM.Call(670);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -848,9 +848,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyUnlimitedAmmo(Unlimited nAmmoDamage = Unlimited.Basic)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nAmmoDamage);
-            Internal.NativeFunctions.CallBuiltIn(671);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nAmmoDamage);
+            VM.Call(671);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -859,9 +859,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyLimitUseByAlign(AlignmentGroup nAlignGroup)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nAlignGroup);
-            Internal.NativeFunctions.CallBuiltIn(672);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nAlignGroup);
+            VM.Call(672);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -870,9 +870,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyLimitUseByClass(Class nClass)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nClass);
-            Internal.NativeFunctions.CallBuiltIn(673);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nClass);
+            VM.Call(673);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -881,9 +881,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyLimitUseByRace(RacialType nRace)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nRace);
-            Internal.NativeFunctions.CallBuiltIn(674);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nRace);
+            VM.Call(674);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -892,9 +892,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyLimitUseBySAlign(Alignment nAlignment)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nAlignment);
-            Internal.NativeFunctions.CallBuiltIn(675);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nAlignment);
+            VM.Call(675);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -902,8 +902,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty BadBadReplaceMeThisDoesNothing()
         {
-            Internal.NativeFunctions.CallBuiltIn(676);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.Call(676);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -912,9 +912,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyVampiricRegeneration(int nRegenAmount)
         {
-            Internal.NativeFunctions.StackPushInteger(nRegenAmount);
-            Internal.NativeFunctions.CallBuiltIn(677);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nRegenAmount);
+            VM.Call(677);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -923,10 +923,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyTrap(TrapStrength nTrapLevel, TrapType nTrapType)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nTrapType);
-            Internal.NativeFunctions.StackPushInteger((int)nTrapLevel);
-            Internal.NativeFunctions.CallBuiltIn(678);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nTrapType);
+            VM.StackPush((int)nTrapLevel);
+            VM.Call(678);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -934,8 +934,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyTrueSeeing()
         {
-            Internal.NativeFunctions.CallBuiltIn(679);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.Call(679);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -961,10 +961,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyOnMonsterHitProperties(int nProperty, int nSpecial = 0)
         {
-            Internal.NativeFunctions.StackPushInteger(nSpecial);
-            Internal.NativeFunctions.StackPushInteger(nProperty);
-            Internal.NativeFunctions.CallBuiltIn(680);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nSpecial);
+            VM.StackPush(nProperty);
+            VM.Call(680);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -973,9 +973,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyTurnResistance(int nModifier)
         {
-            Internal.NativeFunctions.StackPushInteger(nModifier);
-            Internal.NativeFunctions.CallBuiltIn(681);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nModifier);
+            VM.Call(681);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -984,9 +984,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyMassiveCritical(DamageBonus nDamage)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nDamage);
-            Internal.NativeFunctions.CallBuiltIn(682);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nDamage);
+            VM.Call(682);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -994,8 +994,8 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyFreeAction()
         {
-            Internal.NativeFunctions.CallBuiltIn(683);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.Call(683);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -1006,9 +1006,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyMonsterDamage(MonsterDamage nDamage)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nDamage);
-            Internal.NativeFunctions.CallBuiltIn(684);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nDamage);
+            VM.Call(684);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -1019,9 +1019,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyImmunityToSpellLevel(int nLevel)
         {
-            Internal.NativeFunctions.StackPushInteger(nLevel);
-            Internal.NativeFunctions.CallBuiltIn(685);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nLevel);
+            VM.Call(685);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -1031,9 +1031,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertySpecialWalk()
         {
-            Internal.NativeFunctions.StackPushInteger(0);
-            Internal.NativeFunctions.CallBuiltIn(686);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(0);
+            VM.Call(686);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -1042,9 +1042,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyHealersKit(int nModifier)
         {
-            Internal.NativeFunctions.StackPushInteger(nModifier);
-            Internal.NativeFunctions.CallBuiltIn(687);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nModifier);
+            VM.Call(687);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -1053,9 +1053,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyWeightIncrease(WeightIncrease nWeight)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nWeight);
-            Internal.NativeFunctions.CallBuiltIn(688);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nWeight);
+            VM.Call(688);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -1064,9 +1064,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static string GetItemPropertyTag(ItemProperty nProperty)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.ItemProperty, nProperty);
-            Internal.NativeFunctions.CallBuiltIn(854);
-            return Internal.NativeFunctions.StackPopStringUTF8();
+            VM.StackPush((int)EngineStructure.ItemProperty, nProperty);
+            VM.Call(854);
+            return NWNCore.NativeFunctions.StackPopStringUTF8();
         }
 
         /// <summary>
@@ -1074,9 +1074,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemPropertyCostTable(ItemProperty iProp)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.ItemProperty, iProp);
-            Internal.NativeFunctions.CallBuiltIn(769);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.ItemProperty, iProp);
+            VM.Call(769);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -1085,9 +1085,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemPropertyCostTableValue(ItemProperty iProp)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.ItemProperty, iProp);
-            Internal.NativeFunctions.CallBuiltIn(770);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.ItemProperty, iProp);
+            VM.Call(770);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -1095,9 +1095,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemPropertyParam1(ItemProperty iProp)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.ItemProperty, iProp);
-            Internal.NativeFunctions.CallBuiltIn(771);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.ItemProperty, iProp);
+            VM.Call(771);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -1105,9 +1105,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemPropertyParam1Value(ItemProperty iProp)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.ItemProperty, iProp);
-            Internal.NativeFunctions.CallBuiltIn(772);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.ItemProperty, iProp);
+            VM.Call(772);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -1130,13 +1130,13 @@ namespace SWLOR.Game.Server.Core.NWScript
         public static uint CopyItemAndModify(uint oItem, ItemAppearanceType nType, int nIndex, int nNewValue,
             bool bCopyVars = false)
         {
-            Internal.NativeFunctions.StackPushInteger(bCopyVars ? 1 : 0);
-            Internal.NativeFunctions.StackPushInteger(nNewValue);
-            Internal.NativeFunctions.StackPushInteger(nIndex);
-            Internal.NativeFunctions.StackPushInteger((int)nType);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(731);
-            return Internal.NativeFunctions.StackPopObject();
+            VM.StackPush(bCopyVars ? 1 : 0);
+            VM.StackPush(nNewValue);
+            VM.StackPush(nIndex);
+            VM.StackPush((int)nType);
+            VM.StackPush(oItem);
+            VM.Call(731);
+            return VM.StackPopObject();
         }
 
         /// <summary>
@@ -1146,10 +1146,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyOnHitCastSpell(OnHitCastSpellType nSpellType, int nLevel)
         {
-            Internal.NativeFunctions.StackPushInteger(nLevel);
-            Internal.NativeFunctions.StackPushInteger((int)nSpellType);
-            Internal.NativeFunctions.CallBuiltIn(733);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nLevel);
+            VM.StackPush((int)nSpellType);
+            VM.Call(733);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -1157,9 +1157,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemPropertySubType(ItemProperty iProperty)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.ItemProperty, iProperty);
-            Internal.NativeFunctions.CallBuiltIn(734);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.ItemProperty, iProperty);
+            VM.Call(734);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -1168,10 +1168,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty TagItemProperty(ItemProperty nProperty, string sNewTag)
         {
-            Internal.NativeFunctions.StackPushStringUTF8(sNewTag);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.ItemProperty, nProperty);
-            Internal.NativeFunctions.CallBuiltIn(855);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(sNewTag);
+            VM.StackPush((int)EngineStructure.ItemProperty, nProperty);
+            VM.Call(855);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -1180,9 +1180,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemPropertyDuration(ItemProperty nProperty)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.ItemProperty, nProperty);
-            Internal.NativeFunctions.CallBuiltIn(856);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.ItemProperty, nProperty);
+            VM.Call(856);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -1191,9 +1191,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemPropertyDurationRemaining(ItemProperty nProperty)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.ItemProperty, nProperty);
-            Internal.NativeFunctions.CallBuiltIn(857);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.ItemProperty, nProperty);
+            VM.Call(857);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -1204,9 +1204,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyMaterial(int nMaterialType)
         {
-            Internal.NativeFunctions.StackPushInteger(nMaterialType);
-            Internal.NativeFunctions.CallBuiltIn(845);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nMaterialType);
+            VM.Call(845);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -1217,9 +1217,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyQuality(Quality nQuality)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nQuality);
-            Internal.NativeFunctions.CallBuiltIn(846);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nQuality);
+            VM.Call(846);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -1230,9 +1230,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyAdditional(Additional nAdditionalProperty)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nAdditionalProperty);
-            Internal.NativeFunctions.CallBuiltIn(847);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nAdditionalProperty);
+            VM.Call(847);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -1241,9 +1241,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyArcaneSpellFailure(ArcaneSpellFailure nModLevel)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nModLevel);
-            Internal.NativeFunctions.CallBuiltIn(758);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nModLevel);
+            VM.Call(758);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -1252,9 +1252,9 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyVisualEffect(ItemVisual nEffect)
         {
-            Internal.NativeFunctions.StackPushInteger((int)nEffect);
-            Internal.NativeFunctions.CallBuiltIn(739);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush((int)nEffect);
+            VM.Call(739);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
         /// <summary>
@@ -1264,10 +1264,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static int GetItemPropertyUsesPerDayRemaining(uint oItem, IntPtr ip)
         {
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.ItemProperty, ip);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(908);
-            return Internal.NativeFunctions.StackPopInteger();
+            VM.StackPush((int)EngineStructure.ItemProperty, ip);
+            VM.StackPush(oItem);
+            VM.Call(908);
+            return VM.StackPopInt();
         }
 
         /// <summary>
@@ -1277,10 +1277,10 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static void SetItemPropertyUsesPerDayRemaining(uint oItem, IntPtr ip, int nUsesPerDay)
         {
-            Internal.NativeFunctions.StackPushInteger(nUsesPerDay);
-            Internal.NativeFunctions.StackPushGameDefinedStructure((int)EngineStructure.ItemProperty, ip);
-            Internal.NativeFunctions.StackPushObject(oItem);
-            Internal.NativeFunctions.CallBuiltIn(909);
+            VM.StackPush(nUsesPerDay);
+            VM.StackPush((int)EngineStructure.ItemProperty, ip);
+            VM.StackPush(oItem);
+            VM.Call(909);
         }
 
         /// <summary>
@@ -1290,12 +1290,12 @@ namespace SWLOR.Game.Server.Core.NWScript
         /// </summary>
         public static ItemProperty ItemPropertyCustom(ItemPropertyType nType, int nSubType = -1, int nCostTableValue = -1, int nParam1Value = -1)
         {
-            Internal.NativeFunctions.StackPushInteger(nParam1Value);
-            Internal.NativeFunctions.StackPushInteger(nCostTableValue);
-            Internal.NativeFunctions.StackPushInteger(nSubType);
-            Internal.NativeFunctions.StackPushInteger((int)nType);
-            Internal.NativeFunctions.CallBuiltIn(954);
-            return Internal.NativeFunctions.StackPopGameDefinedStructure((int)EngineStructure.ItemProperty);
+            VM.StackPush(nParam1Value);
+            VM.StackPush(nCostTableValue);
+            VM.StackPush(nSubType);
+            VM.StackPush((int)nType);
+            VM.Call(954);
+            return VM.StackPopStruct((int)EngineStructure.ItemProperty);
         }
 
     }

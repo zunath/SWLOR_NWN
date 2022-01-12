@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 16.0
+    "value": 2.0
   },
   "ClassList": {
     "type": "list",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 450
+    "value": 300
   },
   "DecayTime": {
     "type": "dword",
@@ -63,12 +63,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Sandswimmers were spider-like creatures that dwelled on Tatooine. They were among the planet's most deadly predators, as they would \"swim\" underneath the arid sands of the desert before moving up to the surface to drain all fluids from their prey. The Sandswimmer exoskeleton provided a natural resistance to Tatooine's harsh conditions"
+      "0": "Sandswimmers were spider-like creatures that dwelled on Tatooine. They were among the planet's most deadly predators, as they would \"swim\" underneath the arid sands of the desert before moving up to the surface to drain all fluids from their prey, using a sonic shriek to try and paralyse the foe so it didn't resist. The Sandswimmer exoskeleton provided a natural resistance to Tatooine's harsh conditions"
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 35
+    "value": 20
   },
   "Disarmable": {
     "type": "byte",
@@ -88,7 +88,7 @@
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "nw_it_creitem005"
+          "value": "sandswimmer_hide"
         }
       }
     ]
@@ -164,7 +164,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 450
+    "value": 300
   },
   "Int": {
     "type": "byte",
@@ -198,11 +198,11 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 585
+    "value": 435
   },
   "NaturalAC": {
     "type": "byte",
-    "value": 25
+    "value": 1
   },
   "NoPermDeath": {
     "type": "byte",
@@ -210,7 +210,7 @@
   },
   "PaletteID": {
     "type": "byte",
-    "value": 48
+    "value": 154
   },
   "PerceptionRange": {
     "type": "byte",
@@ -500,11 +500,11 @@
         "__struct_id": 4,
         "Spell": {
           "type": "word",
-          "value": 90
+          "value": 799
         },
         "SpellCasterLevel": {
           "type": "byte",
-          "value": 10
+          "value": 0
         },
         "SpellFlags": {
           "type": "byte",
@@ -515,11 +515,11 @@
         "__struct_id": 4,
         "Spell": {
           "type": "word",
-          "value": 799
+          "value": 90
         },
         "SpellCasterLevel": {
           "type": "byte",
-          "value": 0
+          "value": 10
         },
         "SpellFlags": {
           "type": "byte",
@@ -534,7 +534,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 55
+    "value": 20
   },
   "Subrace": {
     "type": "cexostring",
@@ -605,6 +605,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 20
+    "value": 28
   }
 }

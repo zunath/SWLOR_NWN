@@ -29,8 +29,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Drain 1")
                 .HasRecastDelay(RecastGroup.ForceDrain, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(2)
                 .IsConcentrationAbility(StatusEffectType.ForceDrain1)
+                .IsHostileAbility()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -40,8 +43,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Drain II")
                 .HasRecastDelay(RecastGroup.ForceDrain, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(3)
                 .IsConcentrationAbility(StatusEffectType.ForceDrain2)
+                .IsHostileAbility()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -51,8 +57,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Drain III")
                 .HasRecastDelay(RecastGroup.ForceDrain, 60f)
                 .HasActivationDelay(2.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(4)
                 .IsConcentrationAbility(StatusEffectType.ForceDrain3)
+                .IsHostileAbility()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -62,8 +71,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Drain IV")
                 .HasRecastDelay(RecastGroup.ForceDrain, 60f)
                 .HasActivationDelay(4.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(5)
                 .IsConcentrationAbility(StatusEffectType.ForceDrain4)
+                .IsHostileAbility()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
 
@@ -73,8 +85,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Drain V")
                 .HasRecastDelay(RecastGroup.ForceDrain, 60f)
                 .HasActivationDelay(4.0f)
+                .HasMaxRange(15.0f)
                 .RequirementFP(6)
                 .IsConcentrationAbility(StatusEffectType.ForceDrain5)
+                .IsHostileAbility()
+                .UsesAnimation(Animation.LoopingConjure1)
                 .DisplaysVisualEffectWhenActivating();
         }
     }

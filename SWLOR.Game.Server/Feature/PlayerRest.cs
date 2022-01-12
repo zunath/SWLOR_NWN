@@ -1,5 +1,6 @@
 ﻿using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWScript.Enum;
+using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -37,6 +38,13 @@ namespace SWLOR.Game.Server.Feature
                     return "You cannot rest during combat.";
                 }
 
+                // Is an enemy nearby the activator?
+                var nearestEnemy = GetNearestCreature(CreatureType.Reputation, (int)ReputationType.Enemy, player);
+                if (GetIsObjectValid(nearestEnemy) && GetDistanceBetween(player, nearestEnemy) <= 20f)
+                {
+                    return "You cannot rest while enemies are nearby.";
+                }
+
                 // Are any of their party members in combat?
                 foreach (var member in Party.GetAllPartyMembersWithinRange(player, 20f))
                 {
@@ -54,18 +62,14 @@ namespace SWLOR.Game.Server.Feature
             if (type != RestEventType.Started)
                 return;
 
+            AssignCommand(player, () => ClearAllActions());
+
             var errorMessage = CanRest();
             if (!string.IsNullOrWhiteSpace(errorMessage))
             {
                 SendMessageToPC(player, errorMessage);
                 return;
             }
-
-            AssignCommand(player, () =>
-            {
-                ClearAllActions();
-                ActionPlayAnimation(Animation.LoopingSitCross, 1f, 9999f);
-            });
 
             StatusEffect.Apply(player, player, StatusEffectType.Rest, 0f);
         }

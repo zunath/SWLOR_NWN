@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Core.NWScript.Enum;
 using SWLOR.Game.Server.Core.NWScript.Enum.Creature;
 using SWLOR.Game.Server.Core.NWScript.Enum.Item;
@@ -577,6 +578,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadItemParts();
             SelectedColorCategoryIndex = 0;
         };
+        public Action OnDecreaseAppearanceScale() => () =>
+        {
+            var scale = GetObjectVisualTransform(Player, ObjectVisualTransform.Scale);
+            const float Increment = 0.01f;
+            const float MinimumScale = 0.85f;
+            
+            if (scale - Increment < MinimumScale)
+            {
+                SendMessageToPC(Player, "You cannot decrease your height any further.");
+            }
+            else
+            {
+                SetObjectVisualTransform(Player, ObjectVisualTransform.Scale, scale - Increment);
+            }
+        };
+        public Action OnIncreaseAppearanceScale() => () =>
+        {
+            var scale = GetObjectVisualTransform(Player, ObjectVisualTransform.Scale);
+            const float Increment = 0.01f;
+            const float MaximumScale = 1.15f;
+
+            if (scale + Increment > MaximumScale)
+            {
+                SendMessageToPC(Player, "You cannot increase your height any further.");
+            }
+            else
+            {
+                SetObjectVisualTransform(Player, ObjectVisualTransform.Scale, scale + Increment);
+            }
+        };
+
+        public Action OnSaveAppearanceScale() => () =>
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            dbPlayer.AppearanceScale = GetObjectVisualTransform(Player, ObjectVisualTransform.Scale);
+
+            DB.Set(dbPlayer);
+
+            SendMessageToPC(Player, "Height saved successfully.");
+        };
 
         public Action OnSelectColorCategory() => () =>
         {
@@ -867,6 +910,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadPart()
         {
+            if (SelectedPartIndex <= -1)
+                return;
+
             if (IsAppearanceSelected)
             {
                 LoadBodyPart();
@@ -917,5 +963,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.Outfits);
         };
 
+        public Action OnCloseWindow() => () =>
+        {
+            var playerId = GetObjectUUID(Player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            SetObjectVisualTransform(Player, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
+        };
     }
 }

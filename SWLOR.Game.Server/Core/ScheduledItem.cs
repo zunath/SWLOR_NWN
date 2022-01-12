@@ -5,7 +5,7 @@ namespace SWLOR.Game.Server.Core
 {
     internal class ScheduledItem : IDisposable
     {
-        private readonly Action task;
+        private readonly Action _task;
 
         public double ExecutionTime { get; private set; }
 
@@ -14,14 +14,14 @@ namespace SWLOR.Game.Server.Core
 
         public ScheduledItem(Action task, double executionTime)
         {
-            this.task = task;
+            _task = task;
             ExecutionTime = executionTime;
             Repeating = false;
         }
 
         public ScheduledItem(Action task, double executionTime, double schedule)
         {
-            this.task = task;
+            _task = task;
             ExecutionTime = executionTime;
             Schedule = schedule;
             Repeating = true;
@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Core
 
         public void Execute()
         {
-            task();
+            _task();
         }
 
         public void Dispose()

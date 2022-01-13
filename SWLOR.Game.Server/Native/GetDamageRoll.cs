@@ -16,8 +16,7 @@ using InventorySlot = SWLOR.Game.Server.Core.NWScript.Enum.InventorySlot;
 using ObjectType = NWN.Native.API.ObjectType;
 using RacialType = SWLOR.Game.Server.Core.NWScript.Enum.RacialType;
 using Random = SWLOR.Game.Server.Service.Random;
-using Skill = SWLOR.Game.Server.Service.Skill;
-using SWLOR.Game.Server.Service.SkillService;
+using DamageType = NWN.Native.API.DamageType;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -42,6 +41,8 @@ namespace SWLOR.Game.Server.Native
             var attacker = CNWSCreature.FromPointer(attackerStats.m_pBaseCreature);
             var targetObject = CNWSObject.FromPointer(pTarget);
             var damageFlags = attackerStats.m_pBaseCreature.GetDamageFlags();
+            var pCombatRound = attacker.m_pcCombatRound;
+            var pAttackData = pCombatRound.GetAttack(pCombatRound.m_nCurrentAttack);
 
             // On a critical hit, this method appears to be invoked multiple times, with an invalid target the second and
             // subsequent times.  Bail out early.
@@ -117,7 +118,7 @@ namespace SWLOR.Game.Server.Native
             dmgValues[CombatDamageType.Electrical] = 0;
             dmgValues[CombatDamageType.Poison] = 0;
             dmgValues[CombatDamageType.Ice] = 0;
-            var totalDamage = 0;
+            var physicalDamage = 0;
             var specializationDMGBonus = 0f;
 
             // Calculate attacker's base DMG
@@ -282,11 +283,34 @@ namespace SWLOR.Game.Server.Native
                 {
                     damage = 0;
                 }
-                // Combine all damage into a single number, since applying damage effects in this method has side effects.
-                totalDamage += damage;
+
+                if (damageType == CombatDamageType.Physical)
+                {
+                    physicalDamage = damage;
+                }
+                else if (damageType == CombatDamageType.Force && damage > 0)
+                {
+                    pAttackData.AddDamage((ushort)DamageType.Sonic, damage);
+                }
+                else if (damageType == CombatDamageType.Fire && damage > 0)
+                {
+                    pAttackData.AddDamage((ushort)DamageType.Fire, damage);
+                }
+                else if (damageType == CombatDamageType.Poison && damage > 0)
+                {
+                    pAttackData.AddDamage((ushort)DamageType.Acid, damage);
+                }
+                else if (damageType == CombatDamageType.Electrical && damage > 0)
+                {
+                    pAttackData.AddDamage((ushort)DamageType.Electrical, damage);
+                }
+                else if (damageType == CombatDamageType.Ice && damage > 0)
+                {
+                    pAttackData.AddDamage((ushort)DamageType.Cold, damage);
+                }
             }
 
-            return totalDamage;
+            return physicalDamage;
         }
 
         private static float CalculateSpecializationDMG(CNWSCreature attacker, CNWSItem weapon)

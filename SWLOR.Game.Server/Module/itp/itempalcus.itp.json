@@ -2730,6 +2730,17 @@
                     "__struct_id": 0,
                     "NAME": {
                       "type": "cexostring",
+                      "value": "[NPC] Arc's Armor"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "arc_outfit"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
                       "value": "[NPC] Art's Robes"
                     },
                     "RESREF": {
@@ -3010,6 +3021,17 @@
                     "RESREF": {
                       "type": "resref",
                       "value": "shu_clothes"
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "NAME": {
+                      "type": "cexostring",
+                      "value": "[NPC] The Dark One outfit"
+                    },
+                    "RESREF": {
+                      "type": "resref",
+                      "value": "darkonegear"
                     }
                   },
                   {
@@ -5752,11 +5774,11 @@
                           "__struct_id": 0,
                           "NAME": {
                             "type": "cexostring",
-                            "value": "Basic Scarf"
+                            "value": "Basic Cowl"
                           },
                           "RESREF": {
                             "type": "resref",
-                            "value": "basicscarf"
+                            "value": "cowl"
                           }
                         },
                         {
@@ -5790,6 +5812,17 @@
                           "RESREF": {
                             "type": "resref",
                             "value": "jeweled_cloak"
+                          }
+                        },
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "One-Shoulder Cloak"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "basicscarf"
                           }
                         }
                       ]
@@ -17010,6 +17043,17 @@
                     "LIST": {
                       "type": "list",
                       "value": [
+                        {
+                          "__struct_id": 0,
+                          "NAME": {
+                            "type": "cexostring",
+                            "value": "[NPC] Arc's Sword of the Hero"
+                          },
+                          "RESREF": {
+                            "type": "resref",
+                            "value": "archerosword"
+                          }
+                        },
                         {
                           "__struct_id": 0,
                           "NAME": {

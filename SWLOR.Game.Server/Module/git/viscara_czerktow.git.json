@@ -18187,7 +18187,7 @@
         },
         "ChallengeRating": {
           "type": "float",
-          "value": 0.5
+          "value": 4.0
         },
         "ClassList": {
           "type": "list",
@@ -18200,7 +18200,7 @@
               },
               "ClassLevel": {
                 "type": "short",
-                "value": 1
+                "value": 5
               }
             }
           ]
@@ -18223,7 +18223,7 @@
         },
         "Con": {
           "type": "byte",
-          "value": 16
+          "value": 20
         },
         "Conversation": {
           "type": "resref",
@@ -18251,7 +18251,7 @@
         },
         "Dex": {
           "type": "byte",
-          "value": 13
+          "value": 18
         },
         "Disarmable": {
           "type": "byte",
@@ -18465,7 +18465,7 @@
               },
               "Cursed": {
                 "type": "byte",
-                "value": 1
+                "value": 0
               },
               "DescIdentified": {
                 "type": "cexolocstring",
@@ -18483,7 +18483,7 @@
                 "id": 1522,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Security Officer Baton"
+                  "0": "Shock Baton"
                 }
               },
               "ModelPart1": {
@@ -18492,15 +18492,15 @@
               },
               "ModelPart2": {
                 "type": "byte",
-                "value": 121
+                "value": 51
               },
               "ModelPart3": {
                 "type": "byte",
-                "value": 121
+                "value": 111
               },
               "Plot": {
                 "type": "byte",
-                "value": 1
+                "value": 0
               },
               "PropertiesList": {
                 "type": "list",
@@ -18513,11 +18513,42 @@
                     },
                     "CostTable": {
                       "type": "byte",
+                      "value": 4
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 13
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 16
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 9
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
                       "value": 2
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 1
+                      "value": 4
                     },
                     "Param1": {
                       "type": "byte",
@@ -18529,69 +18560,7 @@
                     },
                     "PropertyName": {
                       "type": "word",
-                      "value": 56
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 128
-                    },
-                    "Subtype": {
-                      "type": "word",
-                      "value": 0
-                    }
-                  },
-                  {
-                    "__struct_id": 0,
-                    "ChanceAppear": {
-                      "type": "byte",
-                      "value": 100
-                    },
-                    "CostTable": {
-                      "type": "byte",
-                      "value": 33
-                    },
-                    "CostValue": {
-                      "type": "word",
-                      "value": 0
-                    },
-                    "Param1": {
-                      "type": "byte",
-                      "value": 255
-                    },
-                    "Param1Value": {
-                      "type": "byte",
-                      "value": 0
-                    },
-                    "PropertyName": {
-                      "type": "word",
-                      "value": 100
+                      "value": 6
                     },
                     "Subtype": {
                       "type": "word",
@@ -18610,11 +18579,11 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "club_s"
+                "value": "shockprod"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "club_s"
+                "value": "shock_prod"
               },
               "XOrientation": {
                 "type": "float",
@@ -18779,11 +18748,11 @@
         },
         "MaxHitPoints": {
           "type": "short",
-          "value": 13
+          "value": 35
         },
         "NaturalAC": {
           "type": "byte",
-          "value": 0
+          "value": 10
         },
         "NoPermDeath": {
           "type": "byte",
@@ -19080,7 +19049,7 @@
         },
         "Str": {
           "type": "byte",
-          "value": 16
+          "value": 20
         },
         "Subrace": {
           "type": "cexostring",

@@ -6,5 +6,6 @@
         Weapon = 1,
         Armor = 2,
         Furniture = 3,
+        Food = 4,
     }
 }

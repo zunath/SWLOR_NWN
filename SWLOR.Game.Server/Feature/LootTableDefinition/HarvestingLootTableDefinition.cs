@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             OreVeins();
             Trees();
             Bushes();
+            Herbs();
 
             return _builder.Build();
         }
@@ -82,6 +83,19 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("fiberp_high", 50)
                 .AddItem("fiberp_imperfect", 20)
                 .AddItem("fiberp_good", 5);
+        }
+        private void Herbs()
+        {
+            _builder.Create("HERBS_1")
+                .AddItem("herb_v", 50);
+            _builder.Create("HERBS_2")
+                .AddItem("herb_m", 50);
+            _builder.Create("HERBS_3")
+                .AddItem("herb_c", 50);
+            _builder.Create("HERBS_4")
+                .AddItem("herb_t", 50);
+            _builder.Create("HERBS_5")
+                .AddItem("herb_x", 50);
         }
     }
 }

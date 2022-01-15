@@ -42,16 +42,19 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
         {
             _builder.Create("RESOURCES_VISCARA_DEEPMOUNTAINS")
                 .AddSpawn(ObjectType.Placeable, "veldite_vein")
-                .WithFrequency(60)
+                .WithFrequency(10)
 
                 .AddSpawn(ObjectType.Placeable, "scordspar_vein")
+                .WithFrequency(60)
+
+                .AddSpawn(ObjectType.Placeable, "herbs_patch")
                 .WithFrequency(10)
 
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_1")
-                .WithFrequency(5)
+                .WithFrequency(1)
 
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_2")
-                .WithFrequency(1);
+                .WithFrequency(5);
         }
 
         private void MandalorianFacilityResources()
@@ -66,11 +69,20 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "veldite_vein")
                 .WithFrequency(50)
 
+                .AddSpawn(ObjectType.Placeable, "scordspar_vein")
+                .WithFrequency(25)
+
+                .AddSpawn(ObjectType.Placeable, "herbs_patch")
+                .WithFrequency(10)
+
                 .AddSpawn(ObjectType.Placeable, "tree")
                 .WithFrequency(5)
 
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_1")
-                .WithFrequency(10);
+                .WithFrequency(10)
+
+                .AddSpawn(ObjectType.Placeable, "fiberp_bush_2")
+                .WithFrequency(5);
         }
 
         private void WildlandsResources()
@@ -81,6 +93,9 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
 
                 .AddSpawn(ObjectType.Placeable, "tree")
                 .WithFrequency(50)
+
+                .AddSpawn(ObjectType.Placeable, "herbs_patch")
+                .WithFrequency(10)
 
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_1")
                 .WithFrequency(30);
@@ -95,27 +110,36 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
                 .AddSpawn(ObjectType.Placeable, "tree")
                 .WithFrequency(70)
 
+                .AddSpawn(ObjectType.Placeable, "herbs_patch")
+                .WithFrequency(30)
+
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_1")
-                .WithFrequency(30);
+                .WithFrequency(20);
         }
 
         private void SwamplandResources()
         {
             _builder.Create("RESOURCES_VISCARA_SWAMPLANDS")
                 .AddSpawn(ObjectType.Placeable, "veldite_vein")
-                .WithFrequency(20)
+                .WithFrequency(1)
+
+                .AddSpawn(ObjectType.Placeable, "scordspar_vein")
+                .WithFrequency(5)
 
                 .AddSpawn(ObjectType.Placeable, "tree")
-                .WithFrequency(50)
-
-                .AddSpawn(ObjectType.Placeable, "oak_tree")
                 .WithFrequency(20)
 
+                .AddSpawn(ObjectType.Placeable, "herbs_patch")
+                .WithFrequency(10)
+
+                .AddSpawn(ObjectType.Placeable, "oak_tree")
+                .WithFrequency(50)
+
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_1")
-                .WithFrequency(30)
+                .WithFrequency(25)
 
                 .AddSpawn(ObjectType.Placeable, "fiberp_bush_2")
-                .WithFrequency(10);
+                .WithFrequency(50);
         }
 
         private void VelesSewersResources()

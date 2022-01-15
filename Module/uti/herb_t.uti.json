@@ -2,7 +2,7 @@
   "__data_type": "UTI ",
   "AddCost": {
     "type": "dword",
-    "value": 25
+    "value": 75
   },
   "BaseItem": {
     "type": "int",
@@ -18,7 +18,7 @@
   },
   "Cost": {
     "type": "dword",
-    "value": 25
+    "value": 75
   },
   "Cursed": {
     "type": "byte",
@@ -43,12 +43,12 @@
   "LocalizedName": {
     "type": "cexolocstring",
     "value": {
-      "0": "Mandalorian Thyme"
+      "0": "Tattooine Desert Sage"
     }
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 12
+    "value": 17
   },
   "PaletteID": {
     "type": "byte",
@@ -72,10 +72,10 @@
   },
   "Tag": {
     "type": "cexostring",
-    "value": "herb_m"
+    "value": "herb_t"
   },
   "TemplateResRef": {
     "type": "resref",
-    "value": "herb_m"
+    "value": "herb_t"
   }
 }

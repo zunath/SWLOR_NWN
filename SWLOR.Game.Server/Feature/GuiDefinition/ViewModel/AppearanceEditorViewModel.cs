@@ -32,6 +32,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _racialAppearances[RacialType.Twilek] = new TwilekRacialAppearanceDefinition();
             _racialAppearances[RacialType.Mirialan] = new MirialanRacialAppearanceDefinition();
             _racialAppearances[RacialType.Echani] = new EchaniRacialAppearanceDefinition();
+            _racialAppearances[RacialType.KelDor] = new KelDorRacialAppearanceDefinition();
             _racialAppearances[RacialType.Cyborg] = new CyborgRacialAppearanceDefinition();
             _racialAppearances[RacialType.Cathar] = new CatharRacialAppearanceDefinition();
             _racialAppearances[RacialType.Rodian] = new RodianRacialAppearanceDefinition();

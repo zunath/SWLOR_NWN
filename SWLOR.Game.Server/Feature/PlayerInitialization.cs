@@ -266,6 +266,9 @@ namespace SWLOR.Game.Server.Feature
                 case RacialType.Rodian:
                     languages.Add(SkillType.Rodese);
                     break;
+                case RacialType.KelDor:
+                    languages.Add(SkillType.KelDor);
+                    break;
             }
 
             // Fair warning: We're short-circuiting the skill system here.

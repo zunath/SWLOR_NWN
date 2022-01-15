@@ -204,6 +204,15 @@ namespace SWLOR.Game.Server.Service
                 RightHandId = 44,
                 LeftHandId = 44
             };
+            _defaultRaceAppearancesMale[RacialType.KelDor] = new RacialAppearance
+            {
+                SkinColorId = 2,
+                HairColorId = 22,
+                AppearanceType = AppearanceType.Human,
+                HeadId = 223,
+                RightHandId = 45,
+                LeftHandId = 45
+            };
 
             // Female appearances
             _defaultRaceAppearancesFemale[RacialType.Human] = new RacialAppearance();
@@ -267,6 +276,12 @@ namespace SWLOR.Game.Server.Service
                 LeftThighId = 201,
                 LeftShinId = 201,
                 LeftFootId = 201
+            };
+            _defaultRaceAppearancesFemale[RacialType.Togruta] = new RacialAppearance
+            {
+                SkinColorId = 22,
+                HairColorId = 83,
+                HeadId = 200
             };
             _defaultRaceAppearancesFemale[RacialType.Togruta] = new RacialAppearance
             {
@@ -363,6 +378,15 @@ namespace SWLOR.Game.Server.Service
                 HeadId = 10,
                 RightHandId = 44,
                 LeftHandId = 44
+            };
+            _defaultRaceAppearancesFemale[RacialType.KelDor] = new RacialAppearance
+            {
+                SkinColorId = 2,
+                HairColorId = 22,
+                AppearanceType = AppearanceType.Human,
+                HeadId = 228,
+                RightHandId = 45,
+                LeftHandId = 45
             };
 
         }

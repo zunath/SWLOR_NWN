@@ -40,7 +40,8 @@ namespace SWLOR.Game.Server.Service
                 { SkillType.Rodese, new TranslatorRodese() },
                 { SkillType.Mirialan, new TranslatorMirialan() },
                 { SkillType.MonCalamarian, new TranslatorMonCalamarian() },
-                { SkillType.Ugnaught, new TranslatorUgnaught() }
+                { SkillType.Ugnaught, new TranslatorUgnaught() },
+                { SkillType.KelDor, new TranslatorKelDor() }
             };
         }
 
